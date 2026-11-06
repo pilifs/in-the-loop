@@ -232,23 +232,41 @@ impl Layout {
         self.receiver.is_some() || self.result.0.is_some() || self.result.1.is_some() || self.args.iter().any(|s| matches!(s, Slot::Record { .. }))
     }
 
-    /// `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`.
+    /// `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`; an array parameter is `a: int[] of
+    /// length ≤ 8, not null`, as [`domain`] says.
     pub fn domain(&self, max_array_length: u32) -> String {
-        self.receiver
+        let parts: Vec<(String, bool)> = self
+            .receiver
             .iter()
             .chain(self.args.iter())
             .map(|s| match s {
                 Slot::Plain(i) => {
                     let p = &self.params[*i];
-                    match p.ty {
-                        Type::Array(_) => format!("{}: {} of length ≤ {max_array_length}", p.name, p.ty.java_name()),
-                        _ => format!("{}: {}", p.name, p.ty.java_name()),
-                    }
+                    (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
-                Slot::Record { name, record, .. } => format!("{name}: {}", record.describe()),
+                Slot::Record { name, record, .. } => (format!("{name}: {}", record.describe()), false),
             })
-            .collect::<Vec<_>>()
-            .join(" × ")
+            .collect();
+        domain(parts, max_array_length)
+    }
+}
+
+/// The domain of a proof, from each parameter's `name: type` and whether it is an array: the parts joined by
+/// ` × `. An array parameter is `of length ≤ N, not null`, and with two or more of them the domain ends `; no two
+/// the same array`, since both engines give each array parameter an array of its own (JBMC under
+/// `--java-assume-inputs-non-null`). A claim the JVM refutes only with a null or a shared array is outside the
+/// domain, and the domain says so (step 1d of `llm-dlc/loops/sound-verdicts.md`).
+pub fn domain(parts: Vec<(String, bool)>, max_array_length: u32) -> String {
+    let arrays = parts.iter().filter(|(_, array)| *array).count();
+    let joined = parts
+        .into_iter()
+        .map(|(part, array)| if array { format!("{part} of length ≤ {max_array_length}, not null") } else { part })
+        .collect::<Vec<_>>()
+        .join(" × ");
+    if arrays > 1 {
+        format!("{joined}; no two the same array")
+    } else {
+        joined
     }
 }
 

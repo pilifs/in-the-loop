@@ -407,7 +407,10 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         }
         Native::StringBuilder(_) => {
             let initial = match descriptor {
-                "()V" | "(I)V" => String::new(),
+                "()V" => String::new(),
+                // AbstractStringBuilder allocates the capacity: a negative one is a NegativeArraySizeException.
+                "(I)V" if args[0].as_int() < 0 => return Err(m.throw("java/lang/NegativeArraySizeException", Some(&args[0].as_int().to_string()))),
+                "(I)V" => String::new(),
                 "(Ljava/lang/String;)V" | "(Ljava/lang/CharSequence;)V" => char_sequence(m, args[0])?,
                 _ => return unsupported(format!("StringBuilder.<init>{descriptor}")),
             };
@@ -415,7 +418,9 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         }
         Native::List { .. } => {
             let elements = match descriptor {
-                "()V" | "(I)V" => Vec::new(),
+                "()V" => Vec::new(),
+                "(I)V" if args[0].as_int() < 0 => return Err(m.throw("java/lang/IllegalArgumentException", Some(&format!("Illegal Capacity: {}", args[0].as_int())))),
+                "(I)V" => Vec::new(),
                 "(Ljava/util/Collection;)V" => collection_elements(m, args[0])?,
                 _ => return unsupported(format!("ArrayList.<init>{descriptor}")),
             };
@@ -423,6 +428,7 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         }
         Native::Set { .. } => {
             let mut elements = Vec::new();
+            hash_capacity(m, descriptor, &args)?;
             if descriptor == "(Ljava/util/Collection;)V" {
                 for e in collection_elements(m, args[0])? {
                     if !contains(m, &elements, e)? {
@@ -435,6 +441,7 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
             *m.heap.get_mut(r) = Object::Native(Native::Set { elements, mutable: true });
         }
         Native::Map { .. } => {
+            hash_capacity(m, descriptor, &args)?;
             let entries = match descriptor {
                 "()V" | "(I)V" | "(IF)V" => Vec::new(),
                 "(Ljava/util/Map;)V" => map_entries(m, args[0])?,
@@ -445,6 +452,20 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         other => return unsupported(format!("{}.<init>", other.class_name().replace('/', "."))),
     }
     Ok(None)
+}
+
+/// What `HashMap(int)` and `HashMap(int, float)` check, and the sets built on one: a negative capacity, or a load
+/// factor that is not positive, is an IllegalArgumentException, as on the JVM.
+fn hash_capacity(m: &mut Machine, descriptor: &str, args: &[Value]) -> Exec<()> {
+    if matches!(descriptor, "(I)V" | "(IF)V") && args[0].as_int() < 0 {
+        return Err(m.throw("java/lang/IllegalArgumentException", Some(&format!("Illegal initial capacity: {}", args[0].as_int()))));
+    }
+    if let ("(IF)V", Some(Value::Float(f))) = (descriptor, args.get(1)) {
+        if f.is_nan() || *f <= 0.0 {
+            return Err(m.throw("java/lang/IllegalArgumentException", Some(&format!("Illegal load factor: {}", super::render::float_to_string(*f)))));
+        }
+    }
+    Ok(())
 }
 
 fn init_throwable(m: &mut Machine, r: Ref, descriptor: &str, args: &[Value]) -> Exec<()> {

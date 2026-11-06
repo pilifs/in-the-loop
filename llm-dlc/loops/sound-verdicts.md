@@ -380,6 +380,42 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Not done: a `getstatic` of a `String` constant field is still refused (javac inlines those as `ldc`).
   - Next: 1d, the conformance corpus. It starts from 1b's and 1c's reproducers, then covers exceptions, aliasing,
     null array parameters, record constructors and arithmetic edge cases.
+- **1d, the conformance corpus (2026-11-06).**
+  - [`lib/tests/conformance.rs`](../../lib/tests/conformance.rs) holds 54 small methods
+    ([`Conformance.java`](../../lib/tests/conformance/conformance/Conformance.java)) and 93 claims, 48 of them refuted
+    on the JVM. The cases cover:
+    - 1b's and 1c's reproducers;
+    - JDK constructors given a negative capacity;
+    - exceptions: `finally` over a return, nested handlers, bounds, casts, `throw null` and rethrowing;
+    - aliasing, `null` arrays, record constructors (rejecting, normalizing, and `equals`), and dispatch;
+    - arithmetic edge cases: `MIN_VALUE / -1` in both widths, negative remainders, shift counts of 32, 33, 64 and
+      -1, narrowing, and overflow.
+  - The JVM is the reference. A Java runner (`Runner.java`) runs each call, and each claim's generated harness, in a
+    class loader of its own, so every line sees the classes uninitialized. Whether a claim is refuted is the JVM's
+    answer on the harness, not the corpus author's: every refuted claim has an input the JVM confirms, and every
+    engine witness is run on the JVM too.
+  - Inline (11 s): the tool's own checker under strict and assume, and the interpreter against the JVM call by call.
+    **No `Verified` under strict for a claim the JVM refutes, and no witness the JVM doesn't reproduce.** Under
+    assume, a refuted claim is `Verified` only with its gap named. Every native verdict is recorded per claim. The
+    refusals by name are a gap (the four capacity constructors, `Random`, three class initializers) or a construct
+    outside the fragment (record `equals` through `invokedynamic`, `i2f`).
+  - **The corpus found a bug in the interpreter, not the engine.** `new ArrayList<>(n)`, `new HashMap<>(n)`,
+    `new HashSet<>(n)`, `HashMap(4, f)` and `new StringBuilder(n)` returned normally for a negative `n` (or a load
+    factor of 0 or less) where the JVM throws. That is the shared-semantics hazard of [How to work through
+    it](#how-to-work-through-it), and it would also have put a wrong behavioural contract (B8) on such a method. They
+    now throw what the JVM does. The corpus failed on it before the fix.
+  - **A `null` array, or one array passed as two parameters, is outside the domain, and the domain now says so.**
+    Both engines give each array parameter a non-null array of its own (JBMC through
+    `--java-assume-inputs-non-null`), and the domain line read `a: int[] of length ≤ 8`. It now reads
+    `a: int[] of length ≤ 8, not null`, ending `; no two the same array` when there are two arrays or more
+    (`harness::domain`). The corpus's three such cases check that a `Verified` states the restriction that leaves out
+    the JVM's refuting input. Recorded pages keep the old text until they are re-run. Modelling `null` and aliased
+    arrays would change every recorded array verdict, so 2a takes them as data instead.
+  - JBMC and `--engine auto` run the same corpus in an ignored test, pipeline job
+    `20261106-021741-conformance-corpus-under-jbmc-and-engine`. **This departs from the brief:** the JBMC cases aren't
+    examples under a `false-success` tag. A corpus is a table of claims over one class, and examples would put one
+    claim on each page. So the tag is not added.
+  - Next: 1e, `--confirm` for `--engine auto`.
 
 ## Loop settings
 

@@ -230,14 +230,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     }
     let params = harness::params(&names, &descriptor.params);
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
-    let domain = params
-        .iter()
-        .map(|p| match p.ty {
-            Type::Array(_) => format!("{}: {} of length ≤ {}", p.name, p.ty.java_name(), options.max_array_length),
-            _ => format!("{}: {}", p.name, p.ty.java_name()),
-        })
-        .collect::<Vec<_>>()
-        .join(" × ");
+    let domain = harness::domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))).collect(), options.max_array_length);
 
     // 2. The statement. A declared exception is named as in Java, `java.lang.ArithmeticException`, or by its simple
     // name when it is in java.lang or the target's package.

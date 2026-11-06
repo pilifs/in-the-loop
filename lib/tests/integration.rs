@@ -790,7 +790,7 @@ fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
     let Some(clamped) = compile_buffers("clamped", &clamped) else { return };
     let proved = buffers_run(&before, &clamped, None, "buffers-clamped");
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
-    assert!(proved.output.contains("over a: int[] of length ≤ 8 × n: int × v: int"), "{}", proved.output);
+    assert!(proved.output.contains("over a: int[] of length ≤ 8, not null × n: int × v: int"), "{}", proved.output);
     let statement = std::fs::read_to_string(proved.statement.unwrap()).unwrap();
     assert!(statement.contains("int[] a_before = java.util.Arrays.copyOf(a, a.length);"), "{statement}");
     assert!(statement.contains("&& java.util.Arrays.equals(a, a_before);"), "{statement}");

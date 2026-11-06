@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T01:58:30.152Z",
-  "duration_seconds": 8641,
+  "ended": "2026-11-06T02:18:38.492Z",
+  "duration_seconds": 9849,
   "stats": {
-    "turns": 24,
-    "api_calls": 356,
-    "tool_calls": 358,
+    "turns": 29,
+    "api_calls": 418,
+    "tool_calls": 420,
     "tool_errors": 2,
-    "compactions": 3,
+    "compactions": 4,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 730,
-      "output_tokens": 340229,
-      "cache_read_input_tokens": 62841188,
-      "cache_creation_input_tokens": 981473
+      "input_tokens": 856,
+      "output_tokens": 411739,
+      "cache_read_input_tokens": 72103545,
+      "cache_creation_input_tokens": 1201383
     }
   },
   "tools": {
-    "Bash": 329,
-    "Read": 14,
-    "Write": 8,
+    "Bash": 384,
+    "Read": 18,
+    "Write": 11,
     "Edit": 4,
     "WebFetch": 2,
     "ToolSearch": 1
@@ -40,6 +40,9 @@
     "examples/tools/result_format.py",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
+    "lib/tests/conformance.rs",
+    "lib/tests/conformance/Runner.java",
+    "lib/tests/conformance/conformance/Conformance.java",
     "llm-dlc/loops/jbmc-patch-queue.md",
     "llm-dlc/loops/sound-verdicts.md",
     "~/.claude/projects/-home-user-code-java-formal-verification/memory/sound-verdicts-loop.md"
@@ -90,24 +93,38 @@
     {
       "index": 3,
       "started": "2026-11-06T01:39:46.969Z",
-      "ended": "2026-11-06T01:58:30.152Z",
-      "turns": 4,
-      "api_calls": 59,
+      "ended": "2026-11-06T01:59:55.808Z",
+      "turns": 5,
+      "api_calls": 65,
       "usage": {
-        "input_tokens": 118,
-        "output_tokens": 54038,
-        "cache_read_input_tokens": 8390549,
-        "cache_creation_input_tokens": 182789
+        "input_tokens": 132,
+        "output_tokens": 57177,
+        "cache_read_input_tokens": 9582127,
+        "cache_creation_input_tokens": 198775
       },
-      "peak_context_tokens": 195869
+      "peak_context_tokens": 211857
+    },
+    {
+      "index": 4,
+      "started": "2026-11-06T02:00:37.007Z",
+      "ended": "2026-11-06T02:18:38.492Z",
+      "turns": 4,
+      "api_calls": 56,
+      "usage": {
+        "input_tokens": 112,
+        "output_tokens": 68371,
+        "cache_read_input_tokens": 8070779,
+        "cache_creation_input_tokens": 203924
+      },
+      "peak_context_tokens": 217004
     }
   ],
   "log": {
-    "sha256": "115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f",
-    "bytes": 10138795,
-    "lines": 3581,
-    "gzip_bytes": 1759902,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f.jsonl.gz"
+    "sha256": "e970a900beb3a9a033aa8ba055118573acb9b3c26f118dd7445b129249c63787",
+    "bytes": 12056557,
+    "lines": 4255,
+    "gzip_bytes": 2123981,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/e970a900beb3a9a033aa8ba055118573acb9b3c26f118dd7445b129249c63787.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -190,6 +207,14 @@
       "summary": "Identity and initialization: a hidden field is a second field and a literal one object, as on the JVM, and a class initializer the tool's own checker does not run is a named gap",
       "body": "Step 1c of llm-dlc/loops/sound-verdicts.md. Fields are now resolved by the JVM's field lookup (JVMS 5.4.3.2, ClassPath::resolve_field). A field that a subclass declares again is kept as a second field under its declaring class's name (ClassPath::field_key), in both the tool's own checker and the interpreter that replays its witnesses. The interpreter had the same name-only keying, so it confirmed the engine's wrong witness. Each path of the checker keeps one object per distinct string or class literal, as the JVM interns them. A string concatenation stays a new object, as JLS 15.18.1 says; this was checked on JDK 25.\n\nA class whose initialization runs an application <clinit> is a class-initializer gap. gaps::initializers lists those initializers in JVMS 5.5 order: superclasses first, then superinterfaces with default methods, then the class itself. The engine meets the gap at a path's first new, getstatic or invokestatic of the class, and the static scan uses the same function. Under --gaps strict the path is refused by name; under --gaps assume the initializer is taken to have run and thrown nothing, and the verdict names it. --engine auto now asks JBMC when every gap the checker refused is a class initializer, because JBMC runs initializers; JDK-call gaps still don't fall back. Because hidden fields and literal identity are now implemented, they are no longer gap kinds (the result schema and docs follow).\n\nVerified by the new integration test identity_and_initialization_agree_with_the_jvm, which runs every claim on a real JVM first. On the parent commit's binary, four claims the JVM refutes came back Verified: hiding 'result == 2', sameLiteral '!result', sameClass '!result', and boom 'result == n', which throws ExceptionInInitializerError on the JVM. Now the first three are violations that the interpreter replays. boom is refused by name under strict and Verified-with-assumption under assume, and JBMC gives a violation (ExceptionInInitializerError) for it under auto; a harmless initializer is refused under strict too. cargo test --release passes (119 unit, 53 integration tests), and so do build.py's 136 tests. build.py --scan-gaps rescanned all 56 B9/B11 examples in 41 s. Only 013's and 071's notes changed (their literal-identity gap is gone, their four enum initializers stay), so strict mode still moves no recorded verdict and no verification job is needed.\n\nWhere the brief is out of date: its 'checked at HEAD' list still says fields are keyed by name, and the 1a Progress entry lists hidden-field and literal-identity as kinds. Both are now historical. 1c allowed 'reference comparison on a literal is a gap'; the faithful identity was implemented instead. 1b's rule that auto never falls back after a refused gap is now limited to gaps JBMC also approximates. Still refused: a getstatic of a String constant field, which javac inlines as ldc anyway. Next: 1d, the conformance corpus.",
       "log_sha256": "115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f"
+    },
+    {
+      "change_id": "syquyqqkprxutoprnxrtupmxnsqtwwzu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Conformance corpus: 93 claims about 54 small methods, each held to a real JVM, and no Verified the JVM refutes from the tool's own checker under strict (verification pending)",
+      "body": "Step 1d of llm-dlc/loops/sound-verdicts.md. lib/tests/conformance.rs runs a corpus of small Java methods (lib/tests/conformance/conformance/Conformance.java). The cases cover the gap reproducers of steps 1b and 1c, JDK constructors given a negative capacity, exceptions (finally over a return, nested handlers, bounds, casts, throw null, rethrow), aliasing, null arrays, record constructors, dispatch, and arithmetic edge cases (MIN_VALUE / -1 in both widths, negative remainders, shift counts of 32, 33, 64 and -1, narrowing, overflow). The JVM is the reference. A Java runner (lib/tests/conformance/Runner.java) runs every call, and every claim's generated property harness, each in a class loader of its own. So whether a claim is refuted is the JVM's answer on the harness, and every witness an engine reports is run on the JVM as well.\n\nInline, in 11 s, the corpus checks the tool's own checker under --gaps strict and assume, and the interpreter against the JVM call by call. Of the 93 claims, 48 are refuted on the JVM. None of them is Verified under strict, and every violation's witness refutes the harness on the JVM. Under assume a refuted claim is Verified only with its gap named. The native verdict is recorded for each claim, so coverage changes show up too.\n\nThe corpus found a bug in the interpreter, which replays every witness and executes the behavioural contracts (B8). new ArrayList<>(n), new HashMap<>(n), new HashSet<>(n), new HashMap<>(4, f) and new StringBuilder(n) returned normally there for a negative capacity (or a load factor of 0 or less), where the JVM throws IllegalArgumentException or NegativeArraySizeException. The test failed on capacity(-1) before the fix, which makes lib/src/interp/natives.rs throw what the JVM does. This is the brief's point that the engines and the interpreter share semantics, so their agreement proves nothing about the JVM.\n\nA null array parameter, or one array passed as two parameters, is outside the domain both engines prove over (JBMC runs under --java-assume-inputs-non-null), but the domain line did not say so. It now reads 'a: int[] of length ≤ 8, not null', ending '; no two the same array' when there are two arrays or more (harness::domain, used by both regression and property proofs). The corpus has three such cases, and checks that a Verified for them states the restriction that leaves out the JVM's refuting input. Pages already recorded keep the old text until they are re-run; build.py's domain regexes still match.\n\nThe brief is out of date in one respect: it plans the JBMC side of the corpus as examples under a new false-success defect tag. A corpus is a table of claims over one class, and examples would put one claim on each page. So JBMC and --engine auto run the same corpus in an ignored test, the_corpus_agrees_with_the_jvm_under_jbmc_and_auto (cargo test --release --test conformance -- --ignored), queued as pipeline job 20261106-021741-conformance-corpus-under-jbmc-and-engine. The tag is not added. lib/README.md documents the corpus and the domain's wording.",
+      "log_sha256": "e970a900beb3a9a033aa8ba055118573acb9b3c26f118dd7445b129249c63787"
     }
   ],
   "logs": {
@@ -240,6 +265,12 @@
       "lines": 421,
       "gzip_bytes": 245458,
       "url": "https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/b99c8a55cee254ea157b73fe7f3714a48dc219b4ea727256346ef47385a3b6d8.jsonl.gz"
+    },
+    "e970a900beb3a9a033aa8ba055118573acb9b3c26f118dd7445b129249c63787": {
+      "bytes": 12056557,
+      "lines": 4255,
+      "gzip_bytes": 2123981,
+      "url": null
     },
     "ebba896385379de1f82d431df6fe6dd0da934eda6edc0b28be027689f39e76e4": {
       "bytes": 660761,

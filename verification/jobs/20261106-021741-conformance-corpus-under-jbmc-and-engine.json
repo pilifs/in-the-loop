@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-021741-conformance-corpus-under-jbmc-and-engine",
+  "title": "Conformance corpus under JBMC and --engine auto: no Verified the JVM refutes",
+  "description": "Step 1d of llm-dlc/loops/sound-verdicts.md. lib/tests/conformance.rs holds 54 small Java methods (lib/tests/conformance/conformance/Conformance.java) with 93 claims, 48 of which a real JVM refutes. The cases cover the gaps and their reproducers (a negative capacity to ArrayList, HashMap, HashSet and StringBuilder; synchronized (null); Random.nextBytes), field hiding, literal identity, class initializers that throw, exceptions (finally overriding a return, nested handlers, bounds, casts, throw null, rethrow), aliasing, null arrays, record constructors, virtual and default-method dispatch, and arithmetic edge cases (MIN_VALUE / -1, negative remainders, shift counts out of range, narrowing, overflow). A Java runner executes every call and every claim's generated harness on the JVM. The test run inline covers the tool's own checker under --gaps strict and assume. This job runs the ignored test, which puts every claim through --engine jbmc and --engine auto under --gaps strict. It fails if either engine says Verified for a claim the JVM refutes, or reports a violation whose witness does not refute the harness on the JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs",
+      "lib/tests/conformance/conformance/Conformance.java",
+      "llm-dlc/loops/sound-verdicts.md"
+    ]
+  },
+  "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_jbmc_and_auto passes. The log lists each claim's verdict per engine. A failure lists each disagreement with the JVM, which is a finding about JBMC or the adapter to triage under the brief's Progress, not something to retry.",
+  "submitted": {
+    "at": "2026-11-06T02:17:41+00:00",
+    "session": "7cacdb56-4c74-4880-a06e-f98031283c0f",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "timeout": "60m",
+    "notes": "about 93 JBMC property runs on methods of a line or two, up to three interval stages each, plus the auto fallbacks on about 14 refused claims; the native half of the same test takes 11 s in the session"
+  },
+  "steps": [
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/conformance-jbmc.log"
+  ]
+}
