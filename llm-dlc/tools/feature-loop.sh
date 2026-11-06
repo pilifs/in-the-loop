@@ -17,6 +17,8 @@
 #   relational  make relational verification more efficient and accurate, with examples
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
+#   foundations  work through llm-dlc/loops/foundations.md (relational heap, proof caching, observations, alignment)
+#   foundations-STREAM  one stream of it run in parallel: llm-dlc/loops/foundations-STREAM.md
 #   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
 #   CYCLES    how many cycles to run at most; without it there is no limit
 #   UNTIL     instructions the session weighs after each commit to decide whether
@@ -74,7 +76,7 @@ WORKSPACE=
 FORK_FROM=
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|foundations|foundations-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -96,6 +98,8 @@ BRIEF=
 case "$PROMPT" in
   engines) PROMPT=llm-dlc/loops/engine-priorities.md ;;
   engines-*) PROMPT=llm-dlc/loops/engine-priorities-${PROMPT#engines-}.md ;;
+  foundations) PROMPT=llm-dlc/loops/foundations.md ;;
+  foundations-*) PROMPT=llm-dlc/loops/foundations-${PROMPT#foundations-}.md ;;
 esac
 case "$PROMPT" in
   *.md)

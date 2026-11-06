@@ -97,9 +97,11 @@ is a fork of the conversation that planned the streams; where your memory and a 
 
 ## Loop settings
 
+- session: e65240e3-5cf7-41e9-b648-0b36ce9f1129
 - model: claude-opus-5-5
 - effort: high
 - workspace: observations
+- fork: ae994066-d1ea-4620-b03e-176a07061175
 
 ## Loop until
 

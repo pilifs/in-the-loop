@@ -95,9 +95,11 @@ is a fork of the conversation that planned the streams; where your memory and a 
 
 ## Loop settings
 
+- session: 750c8a36-92b9-44e3-adad-ef96dc6aa676
 - model: claude-opus-5-5
 - effort: high
 - workspace: heap
+- fork: ae994066-d1ea-4620-b03e-176a07061175
 
 ## Loop until
 

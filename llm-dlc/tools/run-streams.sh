@@ -4,8 +4,11 @@
 # brief's own loop, which merges them and finishes the work. You are needed only
 # once that loop is done.
 #
-# Usage: [RUN_STREAMS_POLL=300] [RUN_STREAMS_JOB_WAIT=43200] llm-dlc/tools/run-streams.sh engines
-#   engines   llm-dlc/loops/engine-priorities.md: the streams jbmc and native, then the merge
+# Usage: [RUN_STREAMS_POLL=300] [RUN_STREAMS_JOB_WAIT=43200] [RUN_STREAMS_INTEGRATION_EVERY=3600] \
+#          llm-dlc/tools/run-streams.sh engines|foundations
+#   engines      llm-dlc/loops/engine-priorities.md: the streams jbmc and native, then the merge
+#   foundations  llm-dlc/loops/foundations.md: the streams heap, summaries, observations and
+#                alignment, with an integration check while they run, then the merge
 #
 # From the default workspace, in order:
 #  1. Before any stream has a session, it compacts the conversation that planned
@@ -17,6 +20,8 @@
 #     the loops submit are run, collected and committed.
 #  4. It runs each stream's loop, feature-loop.sh NAME-STREAM, from its
 #     workspace, side by side, and looks after each until it is finished.
+#     If the brief's Loop settings name "- integration: SCRIPT", it also runs
+#     the integration check while they do (below).
 #  5. It runs the brief's own loop, feature-loop.sh NAME, here: the merge (see
 #     the brief's Streams section), then whatever is left. It starts in a fresh
 #     session of its own.
@@ -39,13 +44,28 @@
 # a loop whose status is done or blocked is not run again (set its status back
 # to working to run it), and each loop finishes what an interrupted cycle left.
 #
+# The integration check, for a brief that names one, shows while the streams
+# run whether their work fits together, rather than only at the merge. It keeps
+# a workspace of its own, integration (../REPO-integration), used for nothing
+# else: never committed from or pushed. Whenever a stream's @- has moved since the
+# last check, at most once every RUN_STREAMS_INTEGRATION_EVERY seconds, it makes
+# there a merge of every stream's @- and runs SCRIPT (a path in the repo, run
+# from that workspace's root) in the systemd scope
+# feature-loop-NAME-integration.scope with the loops' 3.5 GB cap, so the
+# verification runner leaves it room as it does a loop. What it found, with the
+# commits it merged, goes to llm-dlc/loop-summaries/NAME-integration.md here
+# (NAME being the brief's), which each stream reads every cycle. A merge with
+# conflicts is reported, not resolved, and SCRIPT isn't run on it. The previous
+# check's merge is abandoned at the next; the reconcile loop forgets the
+# workspace. Neither the streams' branches nor the default workspace change.
+#
 # Exits 0 when the brief's own loop is finished, 1 if it is blocked or the setup
 # fails, 2 for a bad argument and 130 if interrupted.
 
 set -uo pipefail
 
 usage() {
-  echo "usage: run-streams.sh engines" >&2
+  echo "usage: run-streams.sh engines|foundations" >&2
   exit 2
 }
 
@@ -53,11 +73,13 @@ usage() {
 NAME=$1
 case "$NAME" in
   engines) BRIEF=llm-dlc/loops/engine-priorities.md STREAMS=(jbmc native) ;;
+  foundations) BRIEF=llm-dlc/loops/foundations.md STREAMS=(heap summaries observations alignment) ;;
   *) usage ;;
 esac
 POLL=${RUN_STREAMS_POLL:-300}
 JOB_WAIT=${RUN_STREAMS_JOB_WAIT:-43200}
-[[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ ]] || usage
+INTEGRATION_EVERY=${RUN_STREAMS_INTEGRATION_EVERY:-3600}
+[[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ && "$INTEGRATION_EVERY" =~ ^[0-9]+$ ]] || usage
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
 cd "$ROOT" || exit 1
@@ -192,6 +214,84 @@ supervise() {
   done
 }
 
+# The integration check (see the header), when the brief names a script for it.
+INTEGRATION=$(setting "$BRIEF" integration)
+if [[ -n "$INTEGRATION" ]]; then
+  [[ -x "$INTEGRATION" ]] || { log "the brief's integration script $INTEGRATION isn't an executable file here"; exit 1; }
+  INTEGRATION_DIR=$(jj workspace root --ignore-working-copy --name integration 2>/dev/null) || INTEGRATION_DIR=
+  if [[ -z "$INTEGRATION_DIR" ]]; then
+    INTEGRATION_DIR=$(dirname "$ROOT")/$(basename "$ROOT")-integration
+    log "adding jj workspace integration at $INTEGRATION_DIR, for the integration check"
+    jj workspace add --name integration -r @- "$INTEGRATION_DIR" >/dev/null || { log "could not add workspace integration"; exit 1; }
+  fi
+  INTEGRATION_REPORT=$ROOT/llm-dlc/loop-summaries/$(basename "$BRIEF" .md)-integration.md
+  INTEGRATION_SCOPE=feature-loop-$(basename "$BRIEF" .md)-integration
+fi
+
+# Every stream's @-, as short commit ids, in the order of STREAMS.
+stream_heads() {
+  local s
+  for s in "${STREAMS[@]}"; do
+    jj log --ignore-working-copy --no-graph -r "$s@-" -T 'commit_id.short(12) ++ " "' 2>/dev/null || printf '? '
+  done
+}
+
+# One check of the streams' current commits: merge, run the script, report.
+integrate_once() {
+  local heads=$1 s revs=() previous conflicted code tmp
+  for s in "${STREAMS[@]}"; do revs+=("$s@-"); done
+  tmp=$(mktemp) || return 1
+  {
+    printf '# Integration check of %s\n\n' "$BRIEF"
+    printf -- '- When: %s\n' "$(date '+%F %T')"
+    printf -- '- Merged: '
+    for s in "${!STREAMS[@]}"; do printf '%s@- %s; ' "${STREAMS[$s]}" "$(cut -d' ' -f$(( s + 1 )) <<<"$heads")"; done
+    printf '\n- Where: the workspace integration, %s\n' "$INTEGRATION_DIR"
+  } >"$tmp"
+  previous=$(cd "$INTEGRATION_DIR" && jj log --no-graph -r @ -T 'if(description, "", change_id)' 2>/dev/null)
+  if ! (cd "$INTEGRATION_DIR" && jj new --quiet "${revs[@]}" >/dev/null 2>&1); then
+    printf -- '- Result: the merge could not be made (jj new failed)\n' >>"$tmp"
+    mv "$tmp" "$INTEGRATION_REPORT"
+    return 1
+  fi
+  [[ -n "$previous" ]] && (cd "$INTEGRATION_DIR" && jj abandon --quiet "$previous" >/dev/null 2>&1)
+  conflicted=$(cd "$INTEGRATION_DIR" && jj resolve --list 2>/dev/null)
+  if [[ -n "$conflicted" ]]; then
+    printf -- '- Result: the streams conflict; the script was not run. Files in conflict:\n\n```\n%s\n```\n' "$conflicted" >>"$tmp"
+    mv "$tmp" "$INTEGRATION_REPORT"
+    log "[integration] the streams conflict: see $INTEGRATION_REPORT"
+    return 0
+  fi
+  log "[integration] running $INTEGRATION on $heads"
+  (cd "$INTEGRATION_DIR" && systemd-run --user --scope --quiet --collect --unit="$INTEGRATION_SCOPE" \
+    -p MemoryMax=3.5G -p MemorySwapMax=0 -p OOMPolicy=continue \
+    timeout 3600 "$INTEGRATION_DIR/$INTEGRATION" </dev/null) >"$tmp.out" 2>&1
+  code=$?
+  printf -- '- Result: %s (exit %s)\n\n## Output, last 200 lines\n\n```\n' \
+    "$( (( code == 0 )) && echo passed || echo failed )" "$code" >>"$tmp"
+  tail -n 200 "$tmp.out" >>"$tmp"
+  printf '```\n' >>"$tmp"
+  rm -f "$tmp.out"
+  mv "$tmp" "$INTEGRATION_REPORT"
+  log "[integration] $( (( code == 0 )) && echo passed || echo "failed (exit $code)" ): see $INTEGRATION_REPORT"
+}
+
+# Runs until killed: a check whenever a stream's @- has moved, at most every INTEGRATION_EVERY seconds.
+integrate() {
+  local last= heads
+  mkdir -p "$(dirname "$INTEGRATION_REPORT")"
+  while :; do
+    heads=$(stream_heads)
+    if [[ "$heads" != "$last" ]]; then
+      integrate_once "$heads"
+      last=$heads
+      sleep "$INTEGRATION_EVERY"
+    else
+      sleep "$POLL"
+    fi
+  done
+}
+
 # Each stream runs in a process group of its own (job control), so a Ctrl-C here
 # reaches only this script, which passes it on to each group whole: the loop, its
 # claude and its output. Without job control, bash would start them ignoring
@@ -199,9 +299,11 @@ supervise() {
 set -m
 declare -A PID
 VERIFY=
+INTEGRATE=
 stop_all() {
   log "stopping every loop"
   for p in "${PID[@]}" $VERIFY; do kill -INT -- "-$p" 2>/dev/null; done
+  [[ -n "$INTEGRATE" ]] && kill -TERM -- "-$INTEGRATE" 2>/dev/null
 }
 trap 'stop_all; wait; exit 130' INT TERM
 
@@ -231,6 +333,11 @@ for s in "${STREAMS[@]}"; do
   supervise "$s" "${DIR[$s]}" "$NAME-$s" "$brief" &
   PID[$s]=$!
 done
+if [[ -n "$INTEGRATION" ]] && (( ${#PID[@]} )); then
+  log "[integration] checking the streams together as they commit, into $INTEGRATION_REPORT"
+  integrate &
+  INTEGRATE=$!
+fi
 
 for s in "${!PID[@]}"; do
   wait "${PID[$s]}"
@@ -239,6 +346,12 @@ for s in "${!PID[@]}"; do
   log "[$s] finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
 done
 PID=()
+if [[ -n "$INTEGRATE" ]]; then
+  kill -TERM -- "-$INTEGRATE" 2>/dev/null
+  wait "$INTEGRATE" 2>/dev/null
+  INTEGRATE=
+  log "[integration] stopped: every stream is finished"
+fi
 
 code=0
 status=$(status_of "$ROOT/$BRIEF")

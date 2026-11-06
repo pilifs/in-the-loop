@@ -176,12 +176,31 @@ If the engines loop stops with arrays of references not done, the heap stream do
 
 ## Launch prerequisites
 
-After approval and before `run-streams.sh foundations`, by the planning session:
-1. **Register the names.** `foundations` and `foundations-STREAM` in `feature-loop.sh`, and `foundations` with its
-   four streams in `run-streams.sh`.
-2. **The integration check** in `run-streams.sh` ([below](#the-integration-check)), with its tests.
-3. **Phase 0**, committed in the default workspace.
-4. **Session ids** in the five briefs' Loop settings, and `- fork:` naming the planning session.
+The planning session is `ae994066-d1ea-4620-b03e-176a07061175`, the conversation that drafted this brief, in the
+default workspace. The streams fork from it (`- fork:`), so it does the last steps before launch itself, and nothing
+else is done in it afterwards.
+
+Done on the branch `foundations-draft` (2026-11-06):
+1. **The names.** `foundations` and `foundations-STREAM` in `feature-loop.sh`, and `foundations` with its four streams
+   in `run-streams.sh`.
+2. **The integration check** in `run-streams.sh` ([below](#the-integration-check)), run for a brief whose Loop settings
+   name `- integration: SCRIPT`; this brief's is `llm-dlc/tools/foundations-integration.sh`. Tested on a throwaway jj
+   repository: a clean merge runs the script and reports, a new commit in one stream triggers the next check and
+   abandons the previous merge, and conflicting streams are reported with the files in conflict, the script not run.
+   The engines brief names no script, so its run is unchanged.
+3. **Session ids** in the five briefs' Loop settings, and `- fork:` naming the planning session in the four streams'.
+
+Still to do, in this order, once `engine-priorities` is merged into `main` and its jobs are back and verified:
+4. **Bring the branch up to date.** Rebase `foundations-draft` onto the merged `main`, and recheck
+   [Where it starts from](#where-it-starts-from) against the merged code: the engines streams changed `statement.rs`,
+   `equivalence.rs` and `main.rs`, and may have finished arrays of references (H0).
+5. **Phase 0** on top of it, by the planning session: the types, interfaces, fixture and `lib/tests/foundations.rs`,
+   whose tests `foundations-integration.sh` runs. It wasn't done on the draft branch because it rewrites
+   `statement.rs`, which the jbmc stream is changing.
+6. **Merge the branch into the default workspace's line**, so that `run-streams.sh foundations` runs from the default
+   workspace with the new scripts, and forget the `foundations` workspace.
+7. **Close the planning session**, then the user runs `llm-dlc/tools/run-streams.sh foundations` from the default
+   workspace in tmux. It compacts the planning session once, before the forks.
 
 ## Streams
 
@@ -217,18 +236,19 @@ its branch. The reconcile loop starts on finished streams, never on inactive one
 
 So that a disagreement between streams (alignment emits a relation the heap engine reads differently; observations
 produces an effect kind the harness can't record) shows up while they run, not after:
-- `run-streams.sh` keeps a disposable workspace of its own, `integration`. When every stream has committed since its
-  last check (and at most every few hours), it makes there a merge of the four streams' current `@-` commits,
-  `jj new heap@- summaries@- observations@- alignment@-`, and runs the integration contract's tests on it (compiling
-  and unit-level only; proofs stay queued).
+- `run-streams.sh` keeps a disposable workspace of its own, `integration` (`../in-the-loop-integration`). Whenever a
+  stream's `@-` has moved since the last check, at most once an hour (`RUN_STREAMS_INTEGRATION_EVERY`), it makes
+  there a merge of the four streams' current `@-` commits, `jj new heap@- summaries@- observations@- alignment@-`, and
+  runs `llm-dlc/tools/foundations-integration.sh` on it: the integration contract's tests, compiling and unit-level
+  only (proofs stay queued). The script runs in the scope `feature-loop-foundations-integration.scope` with the loops'
+  3.5 GB cap, so the verification runner leaves it room as it does a loop's.
 - It writes what it found, with the four commit ids, to `llm-dlc/loop-summaries/foundations-integration.md` in the
   default workspace. Each stream reads that file at the start of every cycle (by its absolute path) and treats a
-  failure in its own part as the next piece of work. A merge conflict is reported, not resolved.
-- The workspace is never committed from, pushed, or used for anything else. The streams' rule against merging or
-  rebasing their own branches is unchanged.
-
-If the check isn't built before launch, the reconcile loop does it once at its start, and the risk it covers is
-accepted.
+  failure in its own part as the next piece of work. A merge conflict is reported with the files in conflict, and the
+  tests aren't run on it.
+- The workspace is never committed from, pushed, or used for anything else; each check abandons the previous one's
+  merge. The streams' rule against merging or rebasing their own branches is unchanged. It needs its own build, about
+  3 GB on disk, like each stream's workspace.
 
 **How the streams ran, and where their work is**: as in `engine-priorities`'s
 [table](engine-priorities.md#streams), with the stream names `heap`, `summaries`, `observations` and `alignment`,
@@ -236,7 +256,8 @@ scopes `feature-loop-foundations-STREAM.scope`, and the integration file above. 
 `- fork:` once approved.
 
 **Reconciling** follows `engine-priorities`'s seven steps, for four streams: check all four are finished (status,
-not only inactive scope), record each stream's last turns, copy their logs, merge with
+not only inactive scope) and that `feature-loop-foundations-integration.scope` is inactive too, record each stream's
+last turns, copy their logs, merge with
 `jj new @- heap@- summaries@- observations@- alignment@-`, commit, fold their Progress here, and forget the
 workspaces (and `integration`). Where the streams extended the shared IR in different directions, reconcile the IR
 first, then the code that uses it, and say under Progress what was chosen.
@@ -297,8 +318,11 @@ interfaces, fixtures and tests; no behaviour change to any existing command.
 - the joint example's fixture ([Phase 5](#phase-5-the-joint-example)): the before and after builds and each defective
   sibling, committed under the joint example's reserved numbers;
 - golden files of its preservation contract, domain, observations, correspondence and canonical claim;
-- a test per stream's part, expected to fail with the named unsupported result until that stream's part lands, and
-  the final verdicts each case must reach;
+- `lib/tests/foundations.rs`, a test per stream's part and per case, with the final verdict each must reach. A test
+  passes when its part reaches that verdict or still stops with its named unsupported result, and fails on anything
+  else (a different error, a wrong verdict, two parts disagreeing about a type). It prints which parts are still
+  unsupported, so the integration report shows progress as well as breakage. `foundations-integration.sh` runs it;
+  the joint example is done when nothing is unsupported;
 - the parts each stream owns, listed in its brief.
 
 Also: serialization round-trip tests, a page in `lib/README.md` on what each type means, and the reserved example
@@ -423,14 +447,16 @@ annotations or configuration, which S1 adds.
 
 ## Progress
 
-- Drafted on the branch `foundations-draft`, with its inputs, and revised after the review of the draft. Not
-  approved.
-- Status: blocked: the open decisions, then the `engine-priorities` merge and the launch prerequisites.
+- Drafted on the branch `foundations-draft`, with its inputs, and revised after the review of the draft.
+- Launch prerequisites 1–3 done on that branch: the names, the integration check, the session ids.
+- Status: blocked: the open decisions, then the `engine-priorities` merge and launch prerequisites 4–7.
 
 ## Loop settings
 
+- session: 2df7775c-45a1-40a7-924b-75602d8ad256
 - model: claude-opus-5-5
 - effort: high
+- integration: llm-dlc/tools/foundations-integration.sh
 
 ## Loop until
 

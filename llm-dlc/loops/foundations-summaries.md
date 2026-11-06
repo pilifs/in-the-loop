@@ -102,9 +102,11 @@ is a fork of the conversation that planned the streams; where your memory and a 
 
 ## Loop settings
 
+- session: be22079e-0c8d-41e4-ace3-12f7f213f1f9
 - model: claude-opus-5-5
 - effort: high
 - workspace: summaries
+- fork: ae994066-d1ea-4620-b03e-176a07061175
 
 ## Loop until
 
