@@ -401,8 +401,57 @@ are yours, but say under Progress which JBMC results they may change.
     library-record claims, and the benchmark file.
   - **Not in scope:** the own checker still refuses `List.of` and `copyOf` (JBMC-only models over JDK list
     classes). 4b's order didn't include them; they're a candidate for 4c's inventory.
+- **6c, step 1: Bitwuzla behind the `Sat` trait** (inline; Bitwuzla 0.8.2 from job `-194049`'s install, CaDiCaL
+  1.9.5 bundled).
+  - **The binding.** `lib/src/bmc/bitwuzla.rs` (new) gives Bitwuzla the engine's own clauses: a variable is a Boolean
+    constant, a clause the `or` of its literals, and a call is `check_sat_assuming`. The per-call limit is a
+    termination callback, and a model's values are read with `get_value`. The options are `produce-models` and
+    `sat-solver cadical`, otherwise Bitwuzla's defaults, and the signature says so. Only the solver differs, not the
+    encoding.
+  - **Nothing links it.** The C API is loaded at run time (`dlopen`) from `JVMCONTRACT_BITWUZLA` (the library or its
+    install directory), or else from `~/tools/bitwuzla/current`. Its enum values were printed by a C program
+    compiled against the installed headers. A version other than 0.8.2 is refused. The build and its tests don't
+    need Bitwuzla: its tests say "skipped" where it isn't installed.
+  - **Choosing it.** `JVMCONTRACT_SOLVER` is `cadical` (the default) or `bitwuzla`. Like the transcripts' variable, it
+    reaches every check of the process, so 6c's job needs no change in `lib/benchmark/`.
+    - It is read once (`sat::configuration`). `Options::default().solver` is now `sat::configured`, and `check`
+      fails on a choice that can't load.
+    - `jvmcontract transcript --solver bitwuzla FILE` replays a transcript on it.
+  - **Results name the solver the check ran on.** This was 6b's open point:
+    - `bmc::solver_signature()`, which the statement's `checker.solver` uses, is now the configured solver's.
+    - `Outcome::solver` was the literal `"CaDiCaL"`. It is now the first word of the solver's signature, so it is
+      unchanged under CaDiCaL, and so are the messages built from it.
+  - **Checked.**
+    - Unit tests of `Bitwuzla` behind the trait: incremental answers, assumptions per call, no model after `unsat`,
+      the empty clause. A call past its limit (pigeonhole 10/9, 0.05 s) stops with no answer.
+    - An engine test, `a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls`:
+      - a refuted division and a verified product get the same verdicts on both solvers;
+      - Bitwuzla's violating input is a real one;
+      - CaDiCaL's transcripts replay on Bitwuzla with no contradiction.
+    - The engine's 46 unit tests with `JVMCONTRACT_SOLVER=bitwuzla`: 44 pass. The two that fail pin CaDiCaL's
+      models: a different violating input (12, 4 against 15, 5), and one solver call fewer, since a path keeps its
+      models and `Engine::sides` splits without a call when they fall on both sides.
+    - End to end, `held/lower-bound` (`equivalence --engine native`, unwind 9, arrays up to 8):
+      - Under each solver it is verified, with the same two transcripts by count (460 calls over 43,478 clauses,
+        and 5 over 3,037). The statement names Bitwuzla under Bitwuzla.
+      - CaDiCaL's transcripts replay on Bitwuzla with no contradiction.
+    - Unit (157), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record
+      claims, and the benchmark file.
+  - **What the job has to measure, from one inline run** (indicative only, not evidence):
+    - CaDiCaL's 460 calls take 0.18 s replayed on CaDiCaL, and 6.2 s on Bitwuzla with its defaults.
+    - Bitwuzla's per-call cost grows with the formula (median 18 ms, 5.5 s in the second half of the calls).
+    - With Bitwuzla's `preprocess` off, it takes 1.06 s; `rewrite-level 0` alone doesn't help.
+    - So 6c's job runs Bitwuzla in both configurations, and compares whole replays, not only time inside calls.
+      Bitwuzla does its share of the encoding inside `check_sat`, while CaDiCaL takes clauses in `add_clause`,
+      which the replay doesn't time.
+    - The binding has no way to set `preprocess` yet. That comes with the job's script.
+  - **Shared files changed:** `lib/src/main.rs` (`transcript --solver`) and `lib/README.md` (a command line and the
+    solver-interface paragraph).
+  - **Also changed (mine):** `lib/src/bmc/bitwuzla.rs` (new), `sat.rs`, `mod.rs` (the module, the default solver,
+    `solver_signature`, the outcome's solver name, the test), and `lib/solvers/bitwuzla/README.md`.
+  - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
 - **Next:** 6c's job. Before it can be submitted:
-  - Bitwuzla behind the `Sat` trait;
+  - Bitwuzla's configuration (`preprocess`) selectable, named in its signature;
   - the word-level prototype for the five workloads;
   - the job's script.
 

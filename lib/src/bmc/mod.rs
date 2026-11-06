@@ -72,6 +72,7 @@
 //! a primitive result a fresh value, and end a path the contract's assertion excludes; an initializer whose contract throws nothing is taken to have run.
 //! The outcome names every gap a contract closed, with the contract (treatment `contract`).
 
+pub mod bitwuzla;
 pub mod bits;
 pub mod gaps;
 pub mod sat;
@@ -85,7 +86,6 @@ use crate::classfile::{ArithOp, ArrayKind, BootstrapArg, ClassFile, Cond, Except
 use crate::classpath::ClassPath;
 use crate::{Error, Verdict};
 use bits::{Bits, Blaster, Lit, Model, FALSE, TRUE};
-use sat::Sat as _;
 use gaps::{Closing, Closure, Gap, GapKind, GapMode, GapRecord, GapSetting, GapTreatment, JdkCall, Site};
 
 /// What the engine is allowed.
@@ -110,14 +110,15 @@ pub struct Options {
     /// The file to write the run's solver calls to ([`transcript`]); when `None`, the directory the environment
     /// variable [`transcript::ENV`] names, if it is set.
     pub transcript: Option<std::path::PathBuf>,
-    /// Makes the SAT solver the check is run on, empty ([`sat`]): CaDiCaL unless a test or an experiment puts
-    /// another behind the same interface. Results name the solver by [`solver_signature`], which is CaDiCaL's.
+    /// Makes the SAT solver the check is run on, empty ([`sat`]): by default the one the environment variable
+    /// [`sat::ENV`] chooses, CaDiCaL unless it names another, and otherwise what a test puts behind the same
+    /// interface. Results name the solver by [`solver_signature`], the default's.
     pub solver: fn() -> Box<dyn sat::Sat>,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::cadical }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured }
     }
 }
 
@@ -620,6 +621,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     };
     let m = harness.method_by_name(method).ok_or_else(|| Error::new(format!("no method {method} in {class}")))?.clone();
     let descriptor = MethodDescriptor::parse(&m.descriptor)?;
+    sat::configuration()?;
     let solver = (options.solver)();
     let transcript = match transcript::destination(options.transcript.as_deref()) {
         None => None,
@@ -840,9 +842,13 @@ pub fn refused_gaps(gaps: &[GapRecord], mode: GapMode) -> String {
     format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps {mode}): {list}. {after}", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" }, mode = mode.name())
 }
 
-/// The SAT solver the engine is built with, by name and version: `CaDiCaL 1.9.5 (bundled)`.
+/// The SAT solver checks run on by default, by name and version: `CaDiCaL 1.9.5 (bundled)`, unless the environment
+/// variable [`sat::ENV`] chooses another.
 pub fn solver_signature() -> String {
-    sat::Cadical::new().signature()
+    match sat::configuration() {
+        Ok(make) => make().signature(),
+        Err(e) => format!("none: {}", e.0),
+    }
 }
 
 /// Runs the engine on a harness for the proof drivers: the class path is the harness, the application classes
@@ -2754,8 +2760,9 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
 }
 
 impl Blaster {
+    /// The solver by name alone, as [`Outcome::solver`] gives it: the first word of its signature (`CaDiCaL`).
     fn signature(&self) -> String {
-        "CaDiCaL".to_string()
+        self.solver_signature().split_whitespace().next().unwrap_or_default().to_string()
     }
 
     /// A cell of an array of `element`s as the value a load pushes: extended to an int, without sign for a
@@ -3352,6 +3359,65 @@ mod tests {
         let replayed = sat::Logged::take();
         assert_eq!(replayed.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>(), events.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>());
         assert_eq!(replayed.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a.clone(), *r)) } else { None }).collect::<Vec<_>>(), calls.iter().map(|(a, r)| ((*a).clone(), *r)).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls() {
+        // Bitwuzla given the engine's clauses (Phase 6c's SAT-only comparison), when it is installed here. Its
+        // models may differ from CaDiCaL's, and so the lemmas and the input found, but not the verdicts.
+        if let Err(e) = bitwuzla::available() {
+            eprintln!("skipped: {}", e.0);
+            return;
+        }
+        let division = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let product = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.iconst(8);
+            code.if_icmp(Cond::Ne, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x68); // imul
+            code.load(Kind::Int, 0);
+            code.iconst(3);
+            code.op(0x78); // ishl
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let dir = tempfile::tempdir().unwrap();
+        for (name, cp, expected) in [("division", &division, Verdict::Violation), ("product", &product, Verdict::Verified)] {
+            let cadical_path = dir.path().join(format!("{name}-cadical.icnf"));
+            let bitwuzla_path = dir.path().join(format!("{name}-bitwuzla.icnf"));
+            let on_cadical = check(cp, "Check", "check", &Options { solver: sat::cadical, transcript: Some(cadical_path.clone()), ..Options::default() }).unwrap();
+            let on_bitwuzla = check(cp, "Check", "check", &Options { solver: bitwuzla::boxed, transcript: Some(bitwuzla_path.clone()), ..Options::default() }).unwrap();
+            assert_eq!(on_cadical.verdict, expected, "{name}: {}", on_cadical.summary());
+            assert_eq!(on_bitwuzla.verdict, expected, "{name}: {}", on_bitwuzla.summary());
+            assert_eq!((on_cadical.solver.as_str(), on_bitwuzla.solver.as_str()), ("CaDiCaL", "Bitwuzla"));
+            if expected == Verdict::Violation {
+                // The input Bitwuzla's model gives is a violation too: x >= 0, y != 0 and x / y == 3.
+                let (x, y): (i32, i32) = (on_bitwuzla.raw_inputs[&0].parse().unwrap(), on_bitwuzla.raw_inputs[&1].parse().unwrap());
+                assert!(x >= 0 && y != 0 && x.wrapping_div(y) == 3, "{x} / {y}");
+            }
+            // Each transcript names its solver, and CaDiCaL's calls, replayed on Bitwuzla, get CaDiCaL's answers.
+            let text = std::fs::read_to_string(&bitwuzla_path).unwrap();
+            assert!(text.contains("\nc solver: Bitwuzla 0.8.2 "), "{text}");
+            let replay = transcript::replay_on(&mut bitwuzla::Bitwuzla::new().unwrap(), &cadical_path, None).unwrap();
+            assert_eq!(replay.clauses, on_cadical.clauses);
+            assert_eq!(replay.contradictions, 0, "{name}: {}", replay.summary());
+            assert!(replay.solver.starts_with("Bitwuzla 0.8.2 "), "{}", replay.solver);
+        }
     }
     #[test]
     fn a_multiplication_is_built_in_full_only_when_the_solver_gets_it_wrong() {

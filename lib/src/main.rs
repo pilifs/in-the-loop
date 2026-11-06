@@ -188,8 +188,8 @@ enum Command {
         #[arg(long)]
         code: bool,
     },
-    /// Run a transcript of the own checker's solver calls again on the bundled CaDiCaL, call by call, and compare
-    /// the answers with the recorded ones. A check writes one when the environment variable
+    /// Run a transcript of the own checker's solver calls again on the bundled CaDiCaL, or on another solver, call
+    /// by call, and compare the answers with the recorded ones. A check writes one when the environment variable
     /// JVMCONTRACT_TRANSCRIPTS names a directory. Exits 1 when an answer contradicts the recorded one.
     Transcript {
         /// The transcript (`p inccnf`, with each call's recorded answer in a comment after it).
@@ -197,6 +197,10 @@ enum Command {
         /// Give every call this many seconds, instead of the limit recorded for it.
         #[arg(long)]
         limit: Option<f32>,
+        /// The solver to run it on: `cadical` (bundled), or `bitwuzla`, loaded from JVMCONTRACT_BITWUZLA or
+        /// ~/tools/bitwuzla/current.
+        #[arg(long, default_value = "cadical")]
+        solver: String,
         /// Print JSON, with every call.
         #[arg(long)]
         json: bool,
@@ -773,8 +777,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
             print!("{}", jvmcontract::classfile::describe(&class, code)?);
             Ok(0)
         }
-        Command::Transcript { file, limit, json } => {
-            let replay = jvmcontract::bmc::transcript::replay(&file, limit)?;
+        Command::Transcript { file, limit, solver, json } => {
+            let make = jvmcontract::bmc::sat::named(&solver)?;
+            let replay = jvmcontract::bmc::transcript::replay_on(&mut *make(), &file, limit)?;
             if json {
                 println!("{}", serde_json::to_string_pretty(&replay).map_err(|e| Error::new(e.to_string()))?);
             } else {

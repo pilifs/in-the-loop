@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.005Z",
-  "ended": "2026-11-06T22:04:36.131Z",
-  "duration_seconds": 10172,
+  "ended": "2026-11-06T22:27:29.746Z",
+  "duration_seconds": 11546,
   "stats": {
-    "turns": 44,
-    "api_calls": 456,
-    "tool_calls": 461,
-    "tool_errors": 4,
-    "compactions": 8,
+    "turns": 49,
+    "api_calls": 517,
+    "tool_calls": 525,
+    "tool_errors": 7,
+    "compactions": 9,
     "peak_context_tokens": 298900,
     "usage": {
-      "input_tokens": 918,
-      "output_tokens": 438670,
-      "cache_read_input_tokens": 68812240,
-      "cache_creation_input_tokens": 1407855
+      "input_tokens": 1040,
+      "output_tokens": 485272,
+      "cache_read_input_tokens": 76248439,
+      "cache_creation_input_tokens": 1549511
     }
   },
   "tools": {
-    "Bash": 414,
-    "Read": 27,
-    "Write": 9,
-    "Edit": 6,
+    "Bash": 470,
+    "Read": 30,
+    "Edit": 10,
+    "Write": 10,
     "ToolSearch": 4,
     "TaskStop": 1
   },
@@ -44,7 +44,9 @@
     "lib/models/java/util/List.java",
     "lib/solvers/bitwuzla/README.md",
     "lib/solvers/bitwuzla/build.sh",
+    "lib/src/bmc/bitwuzla.rs",
     "lib/src/bmc/gaps.rs",
+    "lib/src/bmc/mod.rs",
     "lib/src/bmc/sat.rs",
     "lib/src/bmc/transcript.rs",
     "llm-dlc/loops/engine-priorities-native.md"
@@ -165,24 +167,38 @@
     {
       "index": 8,
       "started": "2026-11-06T21:28:17.185Z",
-      "ended": "2026-11-06T22:04:36.131Z",
-      "turns": 4,
-      "api_calls": 79,
+      "ended": "2026-11-06T22:05:21.915Z",
+      "turns": 5,
+      "api_calls": 83,
       "usage": {
-        "input_tokens": 158,
-        "output_tokens": 85513,
-        "cache_read_input_tokens": 14471905,
-        "cache_creation_input_tokens": 259974
+        "input_tokens": 166,
+        "output_tokens": 88323,
+        "cache_read_input_tokens": 15570711,
+        "cache_creation_input_tokens": 265467
       },
-      "peak_context_tokens": 273053
+      "peak_context_tokens": 278546
+    },
+    {
+      "index": 9,
+      "started": "2026-11-06T22:06:20.300Z",
+      "ended": "2026-11-06T22:27:29.746Z",
+      "turns": 4,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 114,
+        "output_tokens": 43792,
+        "cache_read_input_tokens": 6337393,
+        "cache_creation_input_tokens": 136163
+      },
+      "peak_context_tokens": 149242
     }
   ],
   "log": {
-    "sha256": "eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f",
-    "bytes": 12694194,
-    "lines": 4848,
-    "gzip_bytes": 2309747,
-    "path": "llm-dlc/traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/logs/eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f.jsonl.gz"
+    "sha256": "812061b5e73ea09f16d0118ff2c05aa174341d16749839f971bb89be4641ff3f",
+    "bytes": 14125166,
+    "lines": 5451,
+    "gzip_bytes": 2576140,
+    "path": "llm-dlc/traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/logs/812061b5e73ea09f16d0118ff2c05aa174341d16749839f971bb89be4641ff3f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -249,6 +265,14 @@
       "summary": "Run enums in the own checker: arrays of references, Enum's model, switch maps (Phase 5, step 3)",
       "body": "The own checker (lib/src/bmc) now has arrays of references: anewarray, aaload and aastore, a cell holding an object or null. An index that is an input splits the path per cell, since a reference is not a choice among bits, and a path that runs the instruction again at a join does so without waiting there, so that merging does not make its constant a choice again. An array's clone() is a copy, an aastore that would throw ArrayStoreException is refused, and arrays are named by descriptor, as ClassPath::is_subtype names them. The model of java.lang.Enum in lib/models, until now on JBMC's class path only, is run by the own checker too (models::CHECKER_RUNS, ClassPath::checker_model, checker_method, checker_runs); the interpreter keeps its natives and JBMC's class path is unchanged. Enum initializers, $VALUES and javac's $SwitchMap classes therefore run where the JVM runs them. The gap scan agrees: anewarray is no longer refused, an array clone is exact, and an abstract application method is no longer counted as a JDK gap (an earlier flaw that an enum with constant bodies showed under --gaps advised).\n\nChecked: five new conformance cases (enumValues, enumSwitch, enumBodies, enumBroken, enumValueOf) were run on JVM 25.0.5 first. The own checker decides the first four, and enumState, as the JVM does in every native mode; valueOf stays a gap. The models test covers the four that go through Enum's model. A new engine unit test covers the per-cell split merged and unmerged, and the ArrayStoreException refusal. initializer_shapes.py (static) counts 0 class-initializer gaps over the four apps, where 4b counted 49, and none over the recorded examples (013 and 071 reached four Quorum enums). Unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record claims on JDK 25.0.5, and lib/benchmark/conformance.json, the JBMC stream's file, which is now 10 more claims behind. Three integration fixtures that used a String[] to keep an initializer out now use a double[].\n\nThe main brief's Phase 5 text says the own checker refuses arrays of references; that is no longer so, though it still refuses List.of and copyOf, whose models stay JBMC-only.",
       "log_sha256": "eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f"
+    },
+    {
+      "change_id": "osspkxkzomwykunrqkrrvxsskkzqptpw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put Bitwuzla behind the own checker's solver interface, chosen by JVMCONTRACT_SOLVER (Phase 6c, step 1)",
+      "body": "lib/src/bmc/bitwuzla.rs (new) gives Bitwuzla 0.8.2 the engine's own bit-blasted clauses through the Sat trait: each variable is a Boolean constant, each clause an 'or', each call check_sat_assuming, with the per-call limit as a termination callback. Nothing links it: the C API is loaded at run time from JVMCONTRACT_BITWUZLA or ~/tools/bitwuzla/current, and any version other than 0.8.2 is refused. JVMCONTRACT_SOLVER=bitwuzla runs every check of a process on it, and 'jvmcontract transcript --solver bitwuzla' replays a transcript on it. Results now name the solver the check ran on: solver_signature() is the configured solver's, and the outcome's short solver name comes from the solver's signature instead of a literal, so it is unchanged under CaDiCaL.",
+      "log_sha256": "812061b5e73ea09f16d0118ff2c05aa174341d16749839f971bb89be4641ff3f"
     }
   ],
   "logs": {
@@ -268,6 +292,12 @@
       "bytes": 7549270,
       "lines": 2903,
       "gzip_bytes": 1359286,
+      "url": null
+    },
+    "812061b5e73ea09f16d0118ff2c05aa174341d16749839f971bb89be4641ff3f": {
+      "bytes": 14125166,
+      "lines": 5451,
+      "gzip_bytes": 2576140,
       "url": null
     },
     "830031c5a38e48cf5499d2d8a81c560159d90fb2f50586b41380b7f2c823fa2a": {

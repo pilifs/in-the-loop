@@ -10,7 +10,9 @@
 //!
 //! The encoding hands the solver nothing but clauses and calls, so a transcript of them ([`super::transcript`]) is
 //! the whole of what the solver was asked, and another solver that implements [`Sat`] can be put behind the same
-//! encoding, or behind a transcript's replay, without the engine changing. [`Cadical`] is the one the engine uses.
+//! encoding, or behind a transcript's replay, without the engine changing. [`Cadical`] is the one the engine uses;
+//! [`super::bitwuzla::Bitwuzla`], given the same clauses, is the one the solver comparison puts beside it, chosen by
+//! the environment variable [`ENV`].
 
 use super::bits::Lit;
 
@@ -31,6 +33,43 @@ pub trait Sat {
     fn value(&self, lit: Lit) -> Option<bool>;
     /// The largest variable used so far.
     fn variables(&self) -> i32;
+}
+
+/// The environment variable choosing the solver for checks whose options don't: `cadical` (the default) or
+/// `bitwuzla` ([`super::bitwuzla`]). Like the transcripts' variable, it reaches the checks that the proof drivers,
+/// the benchmark or a job run, and the results name the solver it chose ([`super::solver_signature`]).
+pub const ENV: &str = "JVMCONTRACT_SOLVER";
+
+/// The solvers by the names [`ENV`] and `jvmcontract transcript --solver` take.
+pub const NAMES: &[&str] = &["cadical", "bitwuzla"];
+
+/// The maker of the solver called `name`, once it is known to work here: Bitwuzla's library must load.
+pub fn named(name: &str) -> Result<fn() -> Box<dyn Sat>, crate::Error> {
+    match name {
+        "cadical" => Ok(cadical),
+        "bitwuzla" => super::bitwuzla::available().map(|()| super::bitwuzla::boxed as fn() -> Box<dyn Sat>),
+        _ => Err(crate::Error::new(format!("{ENV}: no solver called {name:?} (the solvers are {})", NAMES.join(", ")))),
+    }
+}
+
+static CONFIGURED: std::sync::OnceLock<Result<fn() -> Box<dyn Sat>, String>> = std::sync::OnceLock::new();
+
+/// The solver [`ENV`] chooses, read once per process; CaDiCaL when it is unset or empty.
+pub fn configuration() -> Result<fn() -> Box<dyn Sat>, crate::Error> {
+    let chosen = CONFIGURED.get_or_init(|| match std::env::var(ENV) {
+        Ok(name) if !name.is_empty() => named(&name).map_err(|e| e.0),
+        _ => Ok(cadical as fn() -> Box<dyn Sat>),
+    });
+    chosen.clone().map_err(crate::Error::new)
+}
+
+/// A new, empty solver of the kind [`ENV`] chooses, as [`super::Options::solver`] makes one by default. A check
+/// asks for [`configuration`] first, so a choice that doesn't work here is an error, not this panic.
+pub fn configured() -> Box<dyn Sat> {
+    match configuration() {
+        Ok(make) => make(),
+        Err(e) => panic!("{}", e.0),
+    }
 }
 
 /// CaDiCaL as the `cadical` crate bundles it (1.9.5 in crate 0.1.16), with its time limit per call.

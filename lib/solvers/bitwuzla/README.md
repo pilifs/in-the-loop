@@ -2,7 +2,11 @@
 
 Phase 6 of [`engine-priorities.md`](../../../llm-dlc/loops/engine-priorities.md) puts
 [Bitwuzla](https://github.com/bitwuzla/bitwuzla) against the CaDiCaL the own checker links (the `cadical` crate's
-1.9.5), first on the engine's bit-blasted clauses and then on word-level terms. Nothing in `jvmcontract` depends on it.
+1.9.5), first on the engine's bit-blasted clauses and then on word-level terms. Nothing in `jvmcontract` links it:
+[`src/bmc/bitwuzla.rs`](../../src/bmc/bitwuzla.rs) loads the C API at run time, from `JVMCONTRACT_BITWUZLA` (the library, or
+the install directory) or else `~/tools/bitwuzla/current`, and refuses a version other than 0.8.2, whose enum values it
+is written with. `JVMCONTRACT_SOLVER=bitwuzla` runs a process's checks on it, and `jvmcontract transcript --solver
+bitwuzla FILE` replays a transcript on it.
 
 [`build.sh`](build.sh) builds a pinned release from source as a verification pipeline job, since it fetches from the
 network and takes minutes:
