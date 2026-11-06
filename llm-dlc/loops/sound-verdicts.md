@@ -259,6 +259,22 @@ settles it.
 7. **What CI accepts:** `--max-trust 0`, so trusted contracts fail and tested ones pass, with the evidence on the page.
    The user may tighten it to proved-only.
 
+Decided by the user on 2026-11-06, after the loop's run (the numbers above are unchanged):
+
+- **Question 3, the recorded examples:** decided once job `20261106-082917` (the JBMC gaps each recorded JBMC example
+  reaches) is back, with its table in hand. Until then they stay in `assume`. The job is at priority 10.
+- **Question 1, a vacuous `Verified`:** the exit code stays 0, the status is the signal.
+- **Question 7, what CI accepts:** proved and tested (`--max-trust 0`) for now. The accepted evidence level is to become
+  configurable, likely per project, especially as more runs use `assume`.
+- **The benchmark's departures (5a):** the user reviews group 2's properties. Group 3 and the rest are accepted as
+  recorded. A CVE kernel is future work, done well before any public claim rests on the corpus.
+- **The landing page at terminalvalue.net:** no update needed; the item is dropped.
+- **The JBMC fork (question 4):** ranked from job `20261106-102624`'s table when it is back; fork or not is decided
+  from that ranking.
+- **Leftovers:** the relative `--jbmc` path and the console report's statement and phases are fixed next. For
+  `real/bucket/fix-confined` (the timeout) and `--confirm` with contracts, an analysis comes first, and the user
+  decides from it whether to do them.
+
 ## Done when
 
 | Phase | Criterion |
