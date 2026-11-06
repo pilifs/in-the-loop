@@ -51,7 +51,9 @@
 //! result. Calls of [`INTRINSICS`] mean what bytecode cannot say: `open(int)` (the gap of contract `int` is met: an
 //! input outside `assume:`), `havoc(Object)` (the array's elements become fresh values), `anyInt()` and
 //! `anyLong()` (a primitive result is any value, which the method narrows to the result's type and the assertion
-//! constrains) and `infeasible()` (no run of the JDK's call takes this path, as the assertion says).
+//! constrains) and `infeasible()` (no run of the JDK's call takes this path, as the assertion says). Under
+//! `--engine jbmc` (or JBMC's turn under `auto`), JBMC runs the same class, the call sites rewritten into calls of
+//! its methods and the intrinsics a class of JBMC's own ([`crate::jbmc_contracts`]).
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};

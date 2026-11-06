@@ -2307,8 +2307,8 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
 /// JBMC alone proves both claims the JVM refutes) and `Verified, assuming ...` under assume, with the own checker's
 /// ids. `synchronized (null)`, which JBMC proves returns, is a `monitor` gap, since JBMC drops monitor
 /// instructions. Two call sites JBMC does not link, whose value it takes to be zero, prove two more claims the JVM
-/// refutes, and are refused as `invokedynamic` gaps. `--gaps advised` needs the
-/// own checker, which applies the contracts.
+/// refutes, and are refused as `invokedynamic` gaps. Under `--gaps advised` a gap JBMC reaches with no contract
+/// goes to the agent.
 #[test]
 fn jbmc_own_approximations_are_gaps_in_the_same_modes() {
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
@@ -2395,9 +2395,16 @@ fn jbmc_own_approximations_are_gaps_in_the_same_modes() {
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     assert!(o.search.as_ref().unwrap().gaps.is_empty(), "{}", o.output);
     assert!(std::fs::read_to_string(o.work.join("jbmc-goto.txt")).unwrap().contains("java::java.lang.Class.getPrimitiveClass:"), "the initializer's stub is there");
-    // JBMC applies no contract: advised is the own checker's.
-    let e = prove("capacity", "result == 1", GapMode::Advised).unwrap_err();
-    assert!(e.to_string().contains("JBMC applies none"), "{e}");
+    // Under advised, the contract library's contracts close the gaps of 1b's reproducers, and JBMC gives the answers
+    // the own checker and the JVM give: the negative capacity, and the byte Random(1) writes, run on a JVM
+    // (jbmc_applies_the_contracts_for_its_gaps has the protocol).
+    let o = prove("capacity", "result == 1", GapMode::Advised).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert_eq!(o.counterexample.as_ref().unwrap().input, "capacity(n=-1)", "{}", o.output);
+    assert!(o.replay.as_ref().unwrap().reproduced, "{}", o.output);
+    let o = prove("firstByte", "out.length == 0 || result == \\old(out[0])", GapMode::Advised).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert_eq!(o.replay.as_ref().map(|r| r.by.as_str()), Some("jvm"), "{}", o.output);
     // A regression proof on JBMC meets them the same way: a JDK constructor added to a method that returns 1.
     let (Some(before), Some(after)) = (
         compile_writers("jbmc-sized-before", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { return 1; } }"),
@@ -2420,6 +2427,195 @@ fn jbmc_own_approximations_are_gaps_in_the_same_modes() {
         if gaps == GapMode::Assume {
             assert!(o.output.contains("assuming 1 behaviour JBMC does not implement"), "{}", o.output);
         }
+    }
+}
+
+/// Step 4c of llm-dlc/loops/sound-verdicts.md, second part: under `--engine jbmc --gaps advised`, JBMC applies the
+/// contracts for its gaps. The gaps are those JBMC's goto program names, with the own checker's ids; one with no
+/// contract stops the run before anything is solved, with the advice. A contract's call sites are rewritten into
+/// calls of its method, which JBMC runs over its own intrinsics: the review's `new ArrayList<>(n)` is then the
+/// violation the JVM gives, a contract the JVM refutes goes back to the agent, an input outside a contract's
+/// `assume:` meets the gap, an array the call modifies takes any values, and a primitive result any value its
+/// assertion admits. What no contract closes under JBMC (a monitor it drops) is refused as under strict.
+#[test]
+fn jbmc_applies_the_contracts_for_its_gaps() {
+    use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
+    use jvmcontract::Engine;
+    if !has("jbmc") || !has("java") {
+        return;
+    }
+    let dir = target_tmp().join("jbmc-contracts-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Contracted.java"), CONTRACTED).unwrap();
+    let Some(classes) = compile("jbmc-contracts", &[dir.join("Contracted.java")]) else { return };
+    let jdk = jvmcontract::bmc::gaps::jdk_release().map(|v| format!("@jdk-{v}")).unwrap_or_default();
+    let block = |id: &str, body: &str| format!("\n{id}{jdk}\n{body}  written-by: the test\n");
+    let capacity = "jdk-constructor:java.util.ArrayList.<init>(I)V";
+    let throwing = block(capacity, "  call: java.util.ArrayList.<init>(int capacity)\n  throws: IllegalArgumentException when capacity < 0\n  modifies: nothing\n");
+    let silent = block(capacity, "  call: java.util.ArrayList.<init>(int capacity)\n  modifies: nothing\n");
+    let narrow = block(capacity, "  call: java.util.ArrayList.<init>(int capacity)\n  assume: capacity >= 0\n  modifies: nothing\n");
+    let random = block("jdk-constructor:java.util.Random.<init>(J)V", "  call: java.util.Random.<init>(long seed)\n  modifies: nothing\n");
+    let fill = block("jdk-void-method:java.util.Random.nextBytes([B)V", "  call: java.util.Random.nextBytes(byte[] bytes)\n  modifies: this, bytes\n");
+    let next = block("jdk-primitive-method:java.util.Random.nextInt(I)I", "  call: java.util.Random.nextInt(int bound) -> int\n  throws: IllegalArgumentException when bound <= 0\n  assert: 0 <= result && result < bound\n  modifies: this\n");
+    let prove = |name: &str, method: &str, assert: &str, throws: &[&str], blocks: &[&str]| {
+        let file = dir.join(format!("{name}.contracts"));
+        std::fs::write(&file, format!("kind: gap-contracts\n{}", blocks.concat())).unwrap();
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Contracted#{method}"));
+        options.assert = Some(assert.into());
+        options.throws = throws.iter().map(|t| t.to_string()).collect();
+        options.engine = Engine::Jbmc;
+        options.gaps = GapMode::Advised;
+        options.contract_library = false;
+        options.contracts = Some(file);
+        let work = target_tmp().join(format!("property-jbmc-contracts-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let contracts = |o: &property::Outcome| -> Vec<String> {
+        let search = o.search.as_ref().expect("a checker ran");
+        assert_eq!(search.engine, "jbmc", "{}", o.output);
+        let applied: Vec<_> = search.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).collect();
+        assert!(applied.iter().all(|g| g.checker.as_deref() == Some("jbmc") && g.contract.is_some()), "{applied:?}");
+        applied.iter().map(|g| g.id.split('@').next().unwrap().to_string()).collect()
+    };
+
+    // No contract: the gap JBMC's program reaches goes to the agent, with nothing solved.
+    let o = prove("none", "capacity", "result == 1", &[], &[]);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.search.is_none() && !o.work.join("jbmc.log").exists(), "nothing was solved: {}", o.output);
+    let a = o.advice.as_ref().expect("advice");
+    assert_eq!(a.checker.as_deref(), Some("jbmc"));
+    assert_eq!(a.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>(), [capacity]);
+    assert!(o.problem.as_deref().unwrap().starts_with("the proof reaches 1 gap of JBMC with no contract (--gaps advised)"), "{}", o.output);
+    assert!(a.template.starts_with("# Contracts for the gaps of JBMC, which jvmcontract runs, (--gaps advised)"), "{}", a.template);
+    assert!(o.work.join("contracts.template").exists());
+
+    // The review's reproducer, with the contract the JVM's behaviour has: the violation, which the interpreter
+    // reproduces with the JVM's message.
+    let o = prove("throwing", "capacity", "result == 1", &[], &[&throwing]);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert_eq!((c.input.as_str(), c.outcome.as_str()), ("capacity(n=-1)", "throws IllegalArgumentException(\"Illegal Capacity: -1\")"), "{}", o.output);
+    assert!(o.replay.as_ref().unwrap().reproduced, "{}", o.output);
+    assert_eq!(contracts(&o), [capacity]);
+    assert!(o.output.contains("note: JBMC applies 1 contract for its gaps, at their call sites in 1 class rewritten"), "{}", o.output);
+    let rewritten = o.work.join("jbmc-contracts/redirected/fixtures/Contracted.class");
+    assert!(rewritten.exists(), "the application's class, rewritten");
+    // With the exception declared, the proof, resting on the contract, tested on the JVM.
+    let o = prove("throwing-declared", "capacity", "result == 1", &["IllegalArgumentException when n < 0"], &[&throwing]);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains(", relying on 1 contract for gaps of JBMC, 1 tested (--gaps advised) (JBMC "), "{}", o.output);
+    assert!(o.output.contains(&format!("\n  contract: {capacity}{jdk} at fixtures.Contracted.capacity:")), "{}", o.output);
+    assert_eq!(contracts(&o), [capacity]);
+    let stated = o.stated.as_ref().unwrap();
+    let assumption = stated.assumptions.iter().find(|a| a.kind == jvmcontract::statement::AssumptionKind::Contract).expect("the contract is an assumption");
+    assert_eq!(assumption.basis, jvmcontract::statement::Basis::Tested);
+    assert_eq!(stated.gap_mode, Some(GapMode::Advised));
+
+    // "`new ArrayList<>(n)` doesn't throw" is refuted by the JVM at n = -1, and the gap goes back to the agent.
+    let o = prove("silent", "capacity", "result == 1", &[], &[&silent]);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    let refused = o.advice.as_ref().and_then(|a| a.gaps[0].refused_contract.clone()).unwrap_or_default();
+    assert!(refused.starts_with("a JVM refutes it: on capacity=-1 the JVM's call throws java.lang.IllegalArgumentException"), "{}", o.output);
+
+    // Outside a contract's `assume:` the gap is open: JBMC meets it there, and the proof is no verdict.
+    let o = prove("narrow", "capacity", "result == 1", &[], &[&narrow]);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().starts_with(&format!("an input outside the `assume:` of the contract for {capacity}{jdk} reaches its gap")), "{}", o.output);
+
+    // An array the call modifies takes any values: the witness is one the contracts admit, which a JVM runs, and
+    // Random(1) writes 115 there; the array's length stays, which is proved.
+    let o = prove("firstByte", "firstByte", "out.length == 0 || result == \\old(out[0])", &[], &[&random, &fill]);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.counterexample.as_ref().unwrap().outcome.starts_with("115, leaving out=[115"), "{}", o.output);
+    assert_eq!(o.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", o.output);
+    assert_eq!(contracts(&o), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"], "{}", o.output);
+    let o = prove("filled", "filled", "result == out.length", &[], &[&random, &fill]);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("relying on 2 contracts for gaps of JBMC, 2 tested"), "{}", o.output);
+
+    // A primitive result is any value the assertion admits: within it the property holds, and a property the
+    // range does not decide has a witness through the contract, which the JVM does not give (Random(7).nextInt(10)
+    // is 6), so it is no verdict.
+    let o = prove("roll", "roll", "result >= 1 && result <= sides", &["IllegalArgumentException when sides <= 0"], &[&random, &next]);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(contracts(&o), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-primitive-method:java.util.Random.nextInt(I)I"], "{}", o.output);
+    let o = prove("roll-ten", "roll", "sides != 10 || result != 3", &["IllegalArgumentException when sides <= 0"], &[&random, &next]);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().starts_with("JBMC's counterexample roll(sides=10) goes through the contracts for "), "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().contains("does not reproduce on a JVM"), "{}", o.output);
+
+    // A reference result is the object the contract names: the receiver, passed through the contract's method.
+    let builder = block("jdk-constructor:java.lang.StringBuilder.<init>()V", "  call: java.lang.StringBuilder.<init>()\n  modifies: nothing\n");
+    let append = block("jdk-reference-method:java.lang.StringBuilder.append(I)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(int i) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
+    let o = prove("chained", "chained", "result", &[], &[&builder, &append]);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(contracts(&o).len(), 2, "{}", o.output);
+
+    // A gap of no JDK call, a monitor JBMC drops, takes no contract: the advice lists it as approximated whatever
+    // the contracts, and a proof that reaches it is refused as under strict.
+    let o = prove("locked-none", "lockedCapacity", "result == 1", &["IllegalArgumentException when n < 0"], &[]);
+    let a = o.advice.as_ref().expect("advice");
+    assert_eq!(a.gaps.len(), 1, "the constructor alone: {}", o.output);
+    assert!(o.output.contains("\n  approximated by JBMC whatever the contracts: JBMC drops monitors"), "{}", o.output);
+    let o = prove("locked", "lockedCapacity", "result == 1", &["IllegalArgumentException when n < 0"], &[&throwing]);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    let search = o.search.as_ref().unwrap();
+    assert!(search.gaps.iter().any(|g| g.id.starts_with("monitor:") && g.treatment == Some(GapTreatment::Refused)), "{:?}", search.gaps);
+    assert!(o.problem.as_deref().unwrap().contains("(--gaps advised): monitor:fixtures.Contracted.lockedCapacity(I)I"), "{}", o.output);
+
+    // Under auto, JBMC's turn applies the own checker's contracts: the own checker refuses the floating point after
+    // the call, and JBMC proves the method through the same contract.
+    let file = dir.join("scaled.contracts");
+    std::fs::write(&file, format!("kind: gap-contracts\n{throwing}")).unwrap();
+    let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.Contracted#scaled");
+    options.assert = Some("result == 1".into());
+    options.throws = vec!["IllegalArgumentException when n < 0".into()];
+    options.engine = Engine::Auto;
+    options.gaps = GapMode::Advised;
+    options.contract_library = false;
+    options.contracts = Some(file);
+    let work = target_tmp().join("property-jbmc-contracts-scaled");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let o = property::run(&options).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.search.as_ref().unwrap().fallback.is_some(), "JBMC's turn: {}", o.output);
+    assert_eq!(contracts(&o), [capacity], "{}", o.output);
+    assert!(o.output.contains(", relying on 1 contract for gaps of JBMC, 1 tested"), "{}", o.output);
+
+    // A regression proof the same way: a JDK constructor added to a method that returns 1 is the violation the
+    // JVM gives, on JBMC, through the contract.
+    let (Some(before), Some(after)) = (
+        compile_writers("jbmc-contracted-before", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { return 1; } }"),
+        compile_writers("jbmc-contracted-after", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; } }"),
+    ) else {
+        return;
+    };
+    for (name, blocks) in [("none", ""), ("throwing", throwing.as_str())] {
+        let file = dir.join(format!("sized-{name}.contracts"));
+        std::fs::write(&file, format!("kind: gap-contracts\n{blocks}")).unwrap();
+        let mut options = equivalence::Options::new(&before, &after, "fixtures.Sized#capacity");
+        options.engine = Engine::Jbmc;
+        options.gaps = GapMode::Advised;
+        options.contract_library = false;
+        options.contracts = Some(file);
+        let work = target_tmp().join(format!("equivalence-jbmc-contracts-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let o = equivalence::run(&options).unwrap();
+        if blocks.is_empty() {
+            assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+            assert_eq!(o.advice.as_ref().map(|a| a.gaps.len()), Some(1), "{}", o.output);
+            continue;
+        }
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert!(o.output.contains("capacity(n=-1)") && o.output.contains("Illegal Capacity: -1"), "{}", o.output);
+        let search = o.search.as_ref().unwrap();
+        assert_eq!(search.engine, "jbmc");
+        assert!(search.gaps.iter().any(|g| g.treatment == Some(GapTreatment::Contract)), "{:?}", search.gaps);
     }
 }
 
@@ -2490,8 +2686,13 @@ fn advised_stops_before_solving_with_each_gap_and_what_its_contract_states() {
         assert!(o.advice.is_none());
         assert_eq!(o.search.as_ref().unwrap().gap_mode, Some(GapMode::Advised));
     }
-    let e = prove("capacity", "result == 1", Engine::Jbmc).unwrap_err();
-    assert!(e.to_string().contains("--gaps advised needs --engine native or auto"), "{e}");
+    // Under JBMC, the gaps are those its goto program names, with the same ids.
+    if has("jbmc") {
+        let o = prove("capacity", "result == 1", Engine::Jbmc).unwrap();
+        let a = o.advice.as_ref().expect("advice");
+        assert_eq!(ids(a), ["jdk-constructor:java.util.ArrayList.<init>(I)V"], "{}", o.output);
+        assert!(o.problem.as_deref().unwrap().contains("reaches 1 gap of JBMC with no contract"), "{}", o.output);
+    }
 
     // A regression proof the same way.
     let (Some(before), Some(after)) = (
@@ -2534,6 +2735,8 @@ public class Contracted {
     public static int initialised(int n) { return Table.first() + n; }
     public static int bits(int n) { return 32 - Integer.numberOfLeadingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
+    public static int lockedCapacity(int n) { synchronized (Contracted.class) { new java.util.ArrayList<Object>(n); } return 1; }
+    public static int scaled(int n, float f) { new java.util.ArrayList<Object>(n); return f == f ? 1 : 1; }
 }
 "#;
 

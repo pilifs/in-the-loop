@@ -326,8 +326,9 @@ struct EquivalenceArgs {
     /// is refused there too); `advised` scans the harness before solving and,
     /// when it reaches a gap with no contract, stops with each gap, what a contract for it must state and a
     /// template (`advice` in `--json`), and is otherwise strict. JBMC's own approximations (its stubs of methods
-    /// it has no bytecode for, the call sites it does not link, the monitors it drops) are gaps in strict and assume
-    /// too, found from its goto program before its proof; JBMC applies no contract, so advised needs the own checker.
+    /// it has no bytecode for, the call sites it does not link, the monitors it drops) are gaps in each mode too,
+    /// found from its goto program before its proof; under advised JBMC applies a contract for a JDK call at its call
+    /// sites, and what no contract closes (a monitor, an unlinked call site) is refused as under strict.
     #[arg(long, default_value = "strict")]
     gaps: String,
     /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes
@@ -434,8 +435,9 @@ struct ProveArgs {
     /// is refused there too); `advised` scans the harness before solving and,
     /// when it reaches a gap with no contract, stops with each gap, what a contract for it must state and a
     /// template (`advice` in `--json`), and is otherwise strict. JBMC's own approximations (its stubs of methods
-    /// it has no bytecode for, the call sites it does not link, the monitors it drops) are gaps in strict and assume
-    /// too, found from its goto program before its proof; JBMC applies no contract, so advised needs the own checker.
+    /// it has no bytecode for, the call sites it does not link, the monitors it drops) are gaps in each mode too,
+    /// found from its goto program before its proof; under advised JBMC applies a contract for a JDK call at its call
+    /// sites, and what no contract closes (a monitor, an unlinked call site) is refused as under strict.
     #[arg(long, default_value = "strict")]
     gaps: String,
     /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes

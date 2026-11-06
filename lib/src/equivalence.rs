@@ -392,7 +392,8 @@ pub(crate) fn unconfirmed_through_contracts(result: &JbmcResult, rendered: &str,
     }
     let why = replay.trim_start_matches("<could not replay: ").replace(['<', '>'], "");
     Some(format!(
-        "the tool's own checker's counterexample {rendered} goes through the contract{s} for {list}, and the interpreter cannot run the method on it to confirm it ({why}). A contract admits what the JDK's call may never do, so the witness is one the contract{s} admit{verb}: run the method on it on a JVM",
+        "{who}'s counterexample {rendered} goes through the contract{s} for {list}, and the interpreter cannot run the method on it to confirm it ({why}). A contract admits what the JDK's call may never do, so the witness is one the contract{s} admit{verb}: run the method on it on a JVM",
+        who = checker_name(result),
         s = if applied.len() == 1 { "" } else { "s" },
         verb = if applied.len() == 1 { "s" } else { "" },
         list = applied.join(", ")
@@ -413,11 +414,21 @@ pub(crate) fn not_reproduced_on_jvm(result: &JbmcResult, rendered: &str, jdk: &s
         "; a contract that says more of the call (the value it returns, not only a range) may decide the claim"
     };
     format!(
-        "the tool's own checker's counterexample {rendered} goes through the contract{s} for {list}, and does not reproduce on a JVM (JDK {jdk}): {what}. The contract{s} admit{verb} what the JDK's call{s} did not do on this input, so the witness is not the JVM's{hint}",
+        "{who}'s counterexample {rendered} goes through the contract{s} for {list}, and does not reproduce on a JVM (JDK {jdk}): {what}. The contract{s} admit{verb} what the JDK's call{s} did not do on this input, so the witness is not the JVM's{hint}",
+        who = checker_name(result),
         s = if applied.len() == 1 { "" } else { "s" },
         verb = if applied.len() == 1 { "s" } else { "" },
         list = applied.join(", ")
     )
+}
+
+/// The checker that gave a result, as a message names it: `the tool's own checker`, or `JBMC`.
+fn checker_name(result: &JbmcResult) -> &'static str {
+    if result.native.is_some() {
+        "the tool's own checker"
+    } else {
+        "JBMC"
+    }
 }
 
 /// How a witness was confirmed when the interpreter could not run it and a JVM did.
@@ -435,7 +446,7 @@ pub(crate) fn relied_contracts(result: &JbmcResult) -> (String, String) {
     }
     let n = used.len();
     let levels = contract_levels(used.iter().filter_map(|g| g.contract.as_ref().map(|c| c.evidence)));
-    let words = format!(", relying on {n} contract{} for gaps of the tool's own checker, {levels} (--gaps advised)", if n == 1 { "" } else { "s" });
+    let words = format!(", relying on {n} contract{} for gaps of {}, {levels} (--gaps advised)", if n == 1 { "" } else { "s" }, checker_name(result));
     let lines = used
         .iter()
         .map(|g| match &g.contract {
@@ -611,9 +622,6 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: None, advice: None })
     };
 
-    if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc {
-        return Err(Error::new(crate::property::ADVISED_NEEDS_OWN_CHECKER));
-    }
     if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
         return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
     }
@@ -927,31 +935,34 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut stages = crate::deadline::stages_for(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
+    let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+    let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
+    let claim = crate::advice::Claim { kind: "regression".into(), target: options.target.clone(), text: format!("{relation}{restriction}"), harness: statement.clone() };
+    // Under advised, a gap the proof reaches with no contract goes to the agent before anything is solved.
+    let stop_with = |out: &mut String, advice: crate::advice::Advice| -> Result<Outcome, Error> {
+        let p = advice.problem();
+        let message = format!("{} cannot be verified: {p}", options.target);
+        let _ = writeln!(out, "✗ {message}");
+        out.push_str(&advice.lines());
+        let findings = vec![Finding::new("gaps-need-contracts", message, uri.clone(), line)];
+        if let Some(report) = &options.report {
+            sarif::write(&report.join("equivalence.sarif"), &findings)?;
+        }
+        let mut s = stated(None, None, false);
+        s.checker = crate::statement::scan_checker();
+        s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) })
+    };
     if options.engine != crate::Engine::Jbmc {
-        let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         // Under advised, what the harness may reach first: the contract library closes only gaps it reaches.
         let scanned = if options.gaps == crate::bmc::gaps::GapMode::Advised { Some(crate::advice::scan_harness(&entries, options.models, harness::CLASS, harness::METHOD)?) } else { None };
-        let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
         let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, &contract_options, scanned.as_ref().map(|(_, s)| s), &entries, options.models, &work)?;
         gap_setting = setting;
         out.push_str(&notes);
-        // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
-            let claim = crate::advice::Claim { kind: "regression".into(), target: options.target.clone(), text: format!("{relation}{restriction}"), harness: statement.clone() };
             let (cp, scan) = scanned.as_ref().expect("scanned under advised");
-            if let Some(advice) = crate::advice::preflight(cp, scan, claim, &work, loaded.as_ref())? {
-                let p = advice.problem();
-                let message = format!("{} cannot be verified: {p}", options.target);
-                let _ = writeln!(out, "✗ {message}");
-                out.push_str(&advice.lines());
-                let findings = vec![Finding::new("gaps-need-contracts", message, uri.clone(), line)];
-                if let Some(report) = &options.report {
-                    sarif::write(&report.join("equivalence.sarif"), &findings)?;
-                }
-                let mut s = stated(None, None, false);
-                s.checker = crate::statement::scan_checker();
-                s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
-                return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
+            if let Some(advice) = crate::advice::preflight(cp, scan, claim.clone(), &work, loaded.as_ref(), None)? {
+                return stop_with(&mut out, advice);
             }
         }
         let budget = own_budget(&deadline, options.engine);
@@ -989,12 +1000,39 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         extra_args: extra_args.clone(),
         read: jbmc::Reading::from_env(),
     };
+    // Under `--engine jbmc --gaps advised`, the contracts for the gaps JBMC's program reaches, with the advice when
+    // one has none ([`crate::jbmc_contracts`]); under `auto`, JBMC applies the own checker's.
+    if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc && !stages.is_empty() {
+        let pre = crate::jbmc_gaps::preflight(&base(&classpath, ""), deadline.share(crate::deadline::STAGE_SHARE))?;
+        let prepared = crate::jbmc_contracts::prepare(&pre, &contract_options, claim.clone(), &entries, options.models, &work)?;
+        out.push_str(&prepared.notes);
+        gap_setting = prepared.setting;
+        if let Some(advice) = prepared.advice {
+            return stop_with(&mut out, advice);
+        }
+    }
+    let contract_cp = witness::classpath(entries.iter().map(PathBuf::as_path))?;
     // Each class path's runs are held to what JBMC approximates on it (its stubs, the call sites it does not
-    // link), from its goto program ([`crate::jbmc_gaps`]).
+    // link), from its goto program ([`crate::jbmc_gaps`]); under advised, with the contracts for its gaps applied.
     let run_stages = |classpath: &[PathBuf], tag: &str, purpose: &str, runs: &mut Vec<Run>, notes: &mut String| -> Result<Option<JbmcResult>, Error> {
         let mut last: Option<JbmcResult> = None;
-        let first = base(classpath, tag);
-        let preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&first, deadline.share(crate::deadline::STAGE_SHARE))?) };
+        let mut first = base(classpath, tag);
+        let mut preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&first, deadline.share(crate::deadline::STAGE_SHARE))?) };
+        let mut applied = None;
+        if let (crate::bmc::gaps::GapMode::Advised, Some(found)) = (options.gaps, preflight.as_ref().and_then(|p| p.found.as_ref())) {
+            if !gap_setting.contracts.is_empty() {
+                let dir = work.join(format!("jbmc-contracts{tag}"));
+                let rewrite: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+                let a = crate::jbmc_contracts::apply(&gap_setting, found, classpath, &rewrite, &contract_cp, &dir)?;
+                notes.push_str(&a.notes);
+                if !a.records.is_empty() {
+                    let _ = writeln!(notes, "note: JBMC applies {} contract{} for its gaps, at their call sites in {} class{} rewritten ({})", a.records.len(), if a.records.len() == 1 { "" } else { "s" }, a.classes, if a.classes == 1 { "" } else { "es" }, dir.display());
+                    first = JbmcRun { classpath: a.classpath.clone(), log: dir.join("jbmc.log"), ..first };
+                    preflight = Some(crate::jbmc_gaps::preflight(&first, deadline.share(crate::deadline::STAGE_SHARE))?);
+                    applied = Some(a);
+                }
+            }
+        }
         for stage in &stages {
             let budget = deadline.for_stage(*stage);
             let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{tag}{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..first.clone() };
@@ -1010,6 +1048,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let (Some(result), Some(pre)) = (last.as_mut(), preflight.as_ref()) {
             notes.push_str(&pre.note());
             crate::jbmc_gaps::hold(result, pre, options.gaps);
+            if let Some(a) = &applied {
+                crate::jbmc_contracts::settle(result, a);
+            }
         }
         Ok(last)
     };

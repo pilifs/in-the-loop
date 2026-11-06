@@ -36,6 +36,7 @@
           }
         },
         "jdk": { "description": "The JDK the gaps of JDK members are about.", "type": "string" },
+        "checker": { "description": "The checker whose gaps they are: `jbmc` when JBMC's goto program named them (--engine jbmc, lib/src/jbmc_contracts.rs); absent for the tool's own checker's.", "enum": ["jbmc"] },
         "gaps": {
           "type": "array",
           "items": {
@@ -782,7 +783,7 @@
       }
     },
     "advice": {
-      "description": "Under --gaps advised (approach.gaps), when the proof reached gaps of the tool's own checker with no contract and stopped before solving: each gap with what a contract for it must state, and a template (lib/src/advice.rs, step 3a of llm-dlc/loops/sound-verdicts.md). The template is copied to `templateFile` in the example's folder. Null otherwise; absent in results written before 2026-11-06.",
+      "description": "Under --gaps advised (approach.gaps), when the proof reached gaps of the tool's own checker, or of JBMC under --engine jbmc, with no contract and stopped before solving: each gap with what a contract for it must state, and a template (lib/src/advice.rs, step 3a of llm-dlc/loops/sound-verdicts.md). The template is copied to `templateFile` in the example's folder. Null otherwise; absent in results written before 2026-11-06.",
       "anyOf": [{ "$ref": "#/$defs/advice" }, { "type": "null" }]
     },
     "stated": {

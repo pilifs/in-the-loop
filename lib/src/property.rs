@@ -229,9 +229,6 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         })
     };
 
-    if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc {
-        return Err(Error::new(ADVISED_NEEDS_OWN_CHECKER));
-    }
     if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
         return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
     }
@@ -353,32 +350,35 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut stages = crate::deadline::stages_for(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
+    let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+    let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
+    let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
+    let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on every input{where_}"), harness: statement.clone() };
+    // Under advised, a gap the proof reaches with no contract goes to the agent before anything is solved.
+    let stop_with = |out: &mut String, advice: crate::advice::Advice| -> Result<Outcome, Error> {
+        let p = advice.problem();
+        let message = format!("{} cannot be verified: {p}", options.target);
+        let _ = writeln!(out, "✗ {message}");
+        out.push_str(&advice.lines());
+        let findings = vec![Finding::new("gaps-need-contracts", message, uri.clone(), line)];
+        if let Some(report) = &options.report {
+            sarif::write(&report.join("property.sarif"), &findings)?;
+        }
+        let mut s = stated(None, None, false);
+        s.checker = crate::statement::scan_checker();
+        s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), assume: options.assume.clone(), assert: Some(assertion.clone()), throws: options.throws.clone(), throws_checked: throws_checked.clone(), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) })
+    };
     if options.engine != crate::Engine::Jbmc {
-        let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         // Under advised, what the harness may reach first: the contract library closes only gaps it reaches.
         let scanned = if options.gaps == crate::bmc::gaps::GapMode::Advised { Some(crate::advice::scan_harness(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD)?) } else { None };
-        let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
         let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, &contract_options, scanned.as_ref().map(|(_, s)| s), &entries, options.models, &work)?;
         gap_setting = setting;
         out.push_str(&notes);
-        // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
-            let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
-            let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on every input{where_}"), harness: statement.clone() };
             let (cp, scan) = scanned.as_ref().expect("scanned under advised");
-            if let Some(advice) = crate::advice::preflight(cp, scan, claim, &work, loaded.as_ref())? {
-                let p = advice.problem();
-                let message = format!("{} cannot be verified: {p}", options.target);
-                let _ = writeln!(out, "✗ {message}");
-                out.push_str(&advice.lines());
-                let findings = vec![Finding::new("gaps-need-contracts", message, uri.clone(), line)];
-                if let Some(report) = &options.report {
-                    sarif::write(&report.join("property.sarif"), &findings)?;
-                }
-                let mut s = stated(None, None, false);
-                s.checker = crate::statement::scan_checker();
-                s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
-                return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
+            if let Some(advice) = crate::advice::preflight(cp, scan, claim.clone(), &work, loaded.as_ref(), None)? {
+                return stop_with(&mut out, advice);
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
@@ -418,7 +418,33 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         read: jbmc::Reading::from_env(),
     };
     // What JBMC approximates on the way (its stubs, the call sites it does not link), from its goto program.
-    let preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&base, deadline.share(crate::deadline::STAGE_SHARE))?) };
+    let mut preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&base, deadline.share(crate::deadline::STAGE_SHARE))?) };
+    // Under advised, JBMC applies the contracts for its gaps ([`crate::jbmc_contracts`]): under `--engine jbmc` they
+    // are read for the gaps its program reaches, with the advice when one has none; under `auto`, they are the own
+    // checker's.
+    let mut base = base;
+    let mut applied = None;
+    if let (crate::bmc::gaps::GapMode::Advised, Some(pre)) = (options.gaps, preflight.as_ref()) {
+        if options.engine == crate::Engine::Jbmc {
+            let prepared = crate::jbmc_contracts::prepare(pre, &contract_options, claim.clone(), &entries, options.models, &work)?;
+            out.push_str(&prepared.notes);
+            gap_setting = prepared.setting;
+            if let Some(advice) = prepared.advice {
+                return stop_with(&mut out, advice);
+            }
+        }
+        if let Some(found) = pre.found.as_ref().filter(|_| !gap_setting.contracts.is_empty()) {
+            let a = crate::jbmc_contracts::apply(&gap_setting, found, &base.classpath, &entries, &cp, &work.join("jbmc-contracts"))?;
+            out.push_str(&a.notes);
+            if !a.records.is_empty() {
+                let _ = writeln!(out, "note: JBMC applies {} contract{} for its gaps, at their call sites in {} class{} rewritten ({})", a.records.len(), if a.records.len() == 1 { "" } else { "s" }, a.classes, if a.classes == 1 { "" } else { "es" }, work.join("jbmc-contracts").display());
+                base = JbmcRun { classpath: a.classpath.clone(), log: work.join("jbmc-contracts").join("jbmc.log"), ..base };
+                // What JBMC still approximates once the contracts stand at their calls.
+                preflight = Some(crate::jbmc_gaps::preflight(&base, deadline.share(crate::deadline::STAGE_SHARE))?);
+                applied = Some(a);
+            }
+        }
+    }
     for stage in &stages {
         let budget = deadline.for_stage(*stage);
         let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..base.clone() };
@@ -435,6 +461,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if let Some(pre) = preflight.as_ref().filter(|_| last.native.is_none()) {
         out.push_str(&pre.note());
         crate::jbmc_gaps::hold(&mut last, pre, options.gaps);
+        if let Some(a) = &applied {
+            crate::jbmc_contracts::settle(&mut last, a);
+        }
     }
     let seconds = started.elapsed().as_secs_f64();
     // Under `--confirm`, the own checker's proof is JBMC's to prove again, over every input in one run: the stages
@@ -760,8 +789,6 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     })
 }
 
-/// Why `--gaps advised` is refused with `--engine jbmc`.
-pub(crate) const ADVISED_NEEDS_OWN_CHECKER: &str = "--gaps advised needs --engine native or auto: a contract for a gap is the tool's own checker's to apply, and JBMC applies none; under --engine jbmc, --gaps strict or assume names JBMC's own approximations (its stubs and the call sites it does not link)";
 
 /// What the interpreter made of a witness of JBMC's that refutes a proof of the own checker's, which shares its
 /// models: evidence for a person, not a verdict.
@@ -840,10 +867,18 @@ pub fn read_declarations(file: &std::path::Path) -> Result<Vec<Declaration>, Err
 /// Copies the declared exceptions that are JDK classes, and their superclasses up to one JBMC has a model of,
 /// out of the JDK image into `dir`.
 fn extract_exception_classes(dir: &std::path::Path, cp: &ClassPath, signals: &[Signal]) -> Result<(), Error> {
+    let names: Vec<String> = signals.iter().map(|s| s.class.clone()).collect();
+    extract_exceptions(dir, cp, &names)
+}
+
+/// Each JDK exception class of `names` that JBMC has no model of and the harness does not catch by name, with its
+/// superclasses up to one JBMC models, taken from the JDK image into `dir`: JBMC matches a handler by class, so
+/// a class it has no bytecode for is no `Throwable` to it.
+pub(crate) fn extract_exceptions(dir: &std::path::Path, cp: &ClassPath, names: &[String]) -> Result<(), Error> {
     const MODELLED: &[&str] = &["java/lang/Object", "java/lang/Throwable", "java/lang/Exception", "java/lang/Error", "java/lang/RuntimeException"];
     let mut done = std::collections::HashSet::new();
-    for signal in signals {
-        let mut current = Some(signal.class.clone());
+    for class in names {
+        let mut current = Some(class.clone());
         while let Some(name) = current {
             if MODELLED.contains(&name.as_str()) || harness::EXCEPTIONS.contains(&name.as_str()) || cp.is_application(&name) || !done.insert(name.clone()) {
                 break;

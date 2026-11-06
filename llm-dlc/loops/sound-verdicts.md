@@ -1256,6 +1256,91 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     callees are redirected (`lib/src/shared.rs`). That makes advised work under `--engine jbmc`, and a contract it
     cannot apply leaves the gap open. Then the text parser's removal once job `-073804` agrees, then Phase 5.
 
+- **4c, second part: JBMC applies contracts (2026-11-06).**
+  - `--gaps advised` now works under `--engine jbmc`, and in JBMC's turn under `auto`
+    ([`lib/src/jbmc_contracts.rs`](../../lib/src/jbmc_contracts.rs)). Both drivers no longer refuse it.
+  - **The protocol is the own checker's, on JBMC's gaps.** The gaps that JBMC's preflight finds in its goto program
+    are the scan.
+    - A JDK-call gap with no contract stops the run before anything is solved. It returns the advice, with
+      `checker: "jbmc"`, the problem `the proof reaches 1 gap of JBMC with no contract`, and a template headed for
+      JBMC.
+    - The contracts are read and checked exactly as for the own checker: proved, tested on a JVM or trusted, the
+      library's records, `--max-trust`. A JBMC gap of a JDK call has the own checker's id, so one contract serves
+      both checkers.
+    - No contract closes a `monitor`, `invokedynamic` or `missing-body` gap under JBMC. The advice lists these as
+      "approximated by JBMC whatever the contracts", and the proof is refused as under strict.
+  - **How JBMC applies a contract: it runs the same contract method as the own checker.**
+    - In the harness and the application's class directories, every call site of a closed gap is rewritten into an
+      `invokestatic` of the contract's method. `shared::redirect_calls` now takes any kind of call, and turns an
+      `invokeinterface` into `invokestatic` plus two `nop`s, so no offset moves.
+    - A constructor's call goes through `GapContractCalls.k<N>`, which takes the still-uninitialized receiver and
+      drops it.
+    - The intrinsics are a class over JBMC's `org.cprover.CProver`:
+      - `anyInt`/`anyLong` call `nondetInt`/`nondetLong`;
+      - `infeasible` is `assume(false)`;
+      - `havoc` loops over the array's elements, giving each a nondet value;
+      - `open` throws an `AssertionError`, which JBMC reports as a property of its own,
+        `jvmcontract.GapIntrinsics.open`. A run in which it fails is no verdict: "an input outside the `assume:` of
+        the contract for ... reaches its gap".
+    - Checked first on JBMC 6.11.0, with no CProver class on the class path. An assertion in a helper is its own
+      property. `CProver.assume` constrains values. The goto program shows the uninitialized object cast to
+      `Object` and passed on.
+    - **A second preflight runs on the rewritten class path.** Whatever JBMC still approximates there is held as
+      under strict.
+    - **Some call sites are not rewritten, and their gaps stay open:**
+      - a call whose JDK method an application class overrides, since the JVM would dispatch to the override (it
+        gets a note);
+      - calls made from the JDK's own bytecode;
+      - classes in jars.
+    - An exception a contract throws that is not among the harness's 15 has its class and superclasses taken from
+      the JDK image (`property::extract_exceptions`). JBMC matches handlers by class, so without this it would not
+      know the class is a `Throwable`.
+  - **What a result says.**
+    - Each contract applied is a gap record with treatment `contract` and `checker: "jbmc"`.
+    - The verdict reads `relying on 1 contract for gaps of JBMC, 1 tested`, with a note saying how many contracts
+      were applied and how many classes rewritten.
+    - A witness that goes through a contract is replayed by the interpreter, or run on a JVM, exactly as before. The
+      messages name JBMC.
+    - `build.py` puts JBMC's name on the page (the advice paragraph and the contracts paragraph). The schema has
+      `advice.checker`.
+  - **Acceptance, inline, on the real JBMC 6.11.0**: `jbmc_applies_the_contracts_for_its_gaps` (integration.rs).
+    - No contract: the advice is returned, with nothing solved.
+    - The review's `new ArrayList<>(n)`:
+      - with the contract the JVM's behaviour has, it is the violation `capacity(n=-1)`, which the interpreter
+        reproduces with the JVM's message;
+      - with the exception declared, it is Verified, `1 tested`, with basis `tested` in the statement;
+      - "doesn't throw" is refuted by the JVM at `n = -1` and goes back to the agent;
+      - `assume: capacity >= 0` meets the gap at a negative `n`.
+    - `Random`:
+      - `firstByte` is a violation whose witness the JVM runs (`115, leaving out=[115...`);
+      - `filled` is Verified on 2 tested contracts;
+      - `roll` is Verified within `nextInt`'s range;
+      - a property the range does not decide gives a witness that does not reproduce on the JVM, so no verdict.
+    - `StringBuilder.append` with `result == this` is Verified.
+    - A method that synchronizes around the call: the advice lists the monitor as approximated by JBMC, and with the
+      contract the proof is refused for the monitor.
+    - Under auto, the own checker refuses a `float` comparison after the call, and JBMC's turn proves it through the
+      same contract.
+    - A regression proof (`new ArrayList<>(n)` added) stops with the advice without a contract, and is the
+      violation with one.
+    - Two older tests that expected advised to be refused under JBMC now check its advice. All Rust tests pass, and
+      so do the 158 Python tests, one of them new.
+  - **1b's reproducers now give the own checker's answers under JBMC in each mode.** The exception is
+    `synchronized (null)`, as part one recorded. JBMC drops monitors, so no contract closes that gap, and it stays a
+    named gap.
+  - No recorded example runs under JBMC with `--gaps advised`, so no page changed and no job was needed. The
+    `--gaps` help, `lib/README.md`, the module docs and the skill's `reference.md` say JBMC applies contracts.
+  - Not done:
+    - **`--confirm` still does not ask JBMC** about a proof that rests on contracts (`not-asked`). JBMC could now
+      apply the same contracts there.
+    - A static JDK method that the own checker reproduces exactly but JBMC stubs is refused by the contract reader,
+      with the own checker's reason. None is known on the recorded examples.
+    - The preflights' time is still not in `search.runs`.
+  - Phase 4 is done, apart from removing the text parser, which waits for job `-073804`.
+  - Next: Phase 5a, the benchmark corpus in three groups. It assembles the conformance corpus, the real regressions
+    with a known bad and fixed version, and held-out performance cases, and reports correctness, supported coverage
+    per gap mode, time and memory separately for both engines. The text parser goes as soon as `-073804` agrees.
+
 ## Loop settings
 
 The session is fixed: further work on this brief resumes it.

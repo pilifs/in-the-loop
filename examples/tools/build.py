@@ -1715,8 +1715,9 @@ def advice_lines(folder, res):
     lines = []
     for n, a in advices:
         k = len(a["gaps"])
-        lines += [f"**{'Property ' + str(n) + ': t' if n else 'T'}he proof reaches {k} gap{'s' if k != 1 else ''} of the tool's own "
-                  f"checker with no contract, and stopped before solving** (`--gaps advised`): a construct the checker "
+        whose = "JBMC" if a.get("checker") == "jbmc" else "the tool's own checker"
+        lines += [f"**{'Property ' + str(n) + ': t' if n else 'T'}he proof reaches {k} gap{'s' if k != 1 else ''} of {whose} "
+                  f"with no contract, and stopped before solving** (`--gaps advised`): a construct the checker "
                   f"does not implement as the JVM does, which a contract written for it would close. Nothing was proved "
                   f"or refuted. For each, what a contract must state:", ""]
         lines += [f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: "
@@ -1728,7 +1729,8 @@ def advice_lines(folder, res):
         if a.get("closed"):
             lines += ["Closed by a contract given (`--contracts`): " + ", ".join(f"`{c}`" for c in a["closed"]) + ".", ""]
         for why, r in sorted((a.get("outside") or {}).items()):
-            lines += [f"Outside the checker's fragment whatever the contracts: {why}, {r['first']} at {r['at']}.", ""]
+            outside = "Approximated by JBMC whatever the contracts" if a.get("checker") == "jbmc" else "Outside the checker's fragment whatever the contracts"
+            lines += [f"{outside}: {why}, {r['first']} at {r['at']}.", ""]
         if (folder / a["templateFile"]).exists():
             lines += details(f"The contract template (`{a['templateFile']}`)", "text", (folder / a["templateFile"]).read_text())
     return lines
@@ -1804,9 +1806,11 @@ def contract_lines(res):
         return []
     n = len(relied)
     library = " and the tool's contract library" if any(g["contract"]["file"].startswith(LIBRARY) for g in relied) else ""
-    lines = [f"**The proof rests on {n} contract{'s' if n != 1 else ''} for gaps of the tool's own checker** (`--gaps advised "
-             f"--contracts`{library}): at each call below the checker applied what the contract states in place of the call, which it "
-             "does not implement.", ""]
+    jbmc = all(g.get("checker") == "jbmc" for g in relied)
+    whose, how = (("JBMC", "JBMC ran the contract's method in place of the call, each call site rewritten into a call of it")
+                  if jbmc else ("the tool's own checker", "the checker applied what the contract states in place of the call"))
+    lines = [f"**The proof rests on {n} contract{'s' if n != 1 else ''} for gaps of {whose}** (`--gaps advised "
+             f"--contracts`{library}): at each call below {how}, which it does not implement.", ""]
     for g in relied:
         c = g["contract"]
         where = (f"the contract library's `{c['file'][len(LIBRARY):]}`" if c["file"].startswith(LIBRARY)

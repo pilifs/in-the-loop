@@ -60,6 +60,10 @@ pub struct Advice {
     pub template: String,
     /// Where the template was written, in the work directory.
     pub template_file: PathBuf,
+    /// The checker whose gaps they are: `jbmc` when JBMC's goto program named them ([`crate::jbmc_contracts`]),
+    /// absent for the tool's own checker's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checker: Option<String>,
 }
 
 /// The claim a run under advised was asked to prove.
@@ -153,8 +157,9 @@ pub fn scan_harness(entries: &[PathBuf], models: bool, class: &str, method: &str
 }
 
 /// The advice when the harness's `scan` ([`scan_harness`]) reaches a gap that none of `contracts` closes; none when
-/// the proof can go on. The template, of the gaps still open, is written to `work/contracts.template`.
-pub fn preflight(cp: &ClassPath, scan: &gaps::Scan, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>) -> Result<Option<Advice>, Error> {
+/// the proof can go on. The template, of the gaps still open, is written to `work/contracts.template`. `checker` is
+/// `jbmc` when the gaps are JBMC's ([`crate::jbmc_contracts`]), none for the tool's own checker's.
+pub fn preflight(cp: &ClassPath, scan: &gaps::Scan, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>, checker: Option<&str>) -> Result<Option<Advice>, Error> {
     let jdk = scan.jdk.clone();
     let is_closed = |g: &Gap| contracts.is_some_and(|c| c.closed.contains_key(g));
     let closed: Vec<String> = scan.gaps.keys().filter(|g| is_closed(g)).map(|g| g.id(jdk.as_deref())).collect();
@@ -173,10 +178,10 @@ pub fn preflight(cp: &ClassPath, scan: &gaps::Scan, claim: Claim, work: &Path, c
             a
         })
         .collect();
-    let template = template(&advised, jdk.as_deref());
+    let template = template(&advised, jdk.as_deref(), checker);
     let template_file = work.join("contracts.template");
     std::fs::write(&template_file, &template)?;
-    Ok(Some(Advice { status: "contracts-needed".into(), claim, jdk, gaps: advised, closed, outside: scan.refused.clone(), template, template_file }))
+    Ok(Some(Advice { status: "contracts-needed".into(), claim, jdk, gaps: advised, closed, outside: scan.refused.clone(), template, template_file, checker: checker.map(str::to_string) }))
 }
 
 /// The advice for one gap.
@@ -317,9 +322,10 @@ fn describe(kind: GapKind) -> &'static str {
 }
 
 /// The template file: a header, then each gap's block.
-pub fn template(gaps: &[GapAdvice], jdk: Option<&str>) -> String {
+pub fn template(gaps: &[GapAdvice], jdk: Option<&str>, checker: Option<&str>) -> String {
     let mut out = String::new();
-    let _ = writeln!(out, "# Contracts for the gaps of jvmcontract's own checker (--gaps advised), one block per gap, under its id.");
+    let whose = if checker == Some("jbmc") { "JBMC, which jvmcontract runs," } else { "jvmcontract's own checker" };
+    let _ = writeln!(out, "# Contracts for the gaps of {whose} (--gaps advised), one block per gap, under its id.");
     let _ = writeln!(out, "# Replace each TODO: `throws:` may be repeated or removed, and `assume:` narrows the inputs a contract is about.");
     let _ = writeln!(out, "# The conditions name the parameters as the `call:` line does, which may rename them (a JDK class file keeps no names).");
     if let Some(v) = jdk {
@@ -339,8 +345,9 @@ impl Advice {
         let n = self.gaps.len();
         let list = self.gaps.iter().map(|g| format!("{} ({} at {})", g.id, g.call, g.sites.join(", "))).collect::<Vec<_>>().join("; ");
         format!(
-            "the proof reaches {n} gap{s} of the tool's own checker with no contract (--gaps advised), so nothing was solved: {list}. Write a contract for {each} from the template in {file}.",
+            "the proof reaches {n} gap{s} of {who} with no contract (--gaps advised), so nothing was solved: {list}. Write a contract for {each} from the template in {file}.",
             s = if n == 1 { "" } else { "s" },
+            who = if self.checker.as_deref() == Some("jbmc") { "JBMC" } else { "the tool's own checker" },
             each = if n == 1 { "it" } else { "each" },
             file = self.template_file.display()
         )
@@ -364,7 +371,8 @@ impl Advice {
             let _ = writeln!(out, "  closed by a contract: {}", self.closed.join(", "));
         }
         for (why, r) in &self.outside {
-            let _ = writeln!(out, "  outside the fragment whatever the contracts: {why}: {} at {}{}", r.first, r.at, if r.sites > 1 { format!(", {} sites in all", r.sites) } else { String::new() });
+            let outside = if self.checker.as_deref() == Some("jbmc") { "approximated by JBMC whatever the contracts" } else { "outside the fragment whatever the contracts" };
+            let _ = writeln!(out, "  {outside}: {why}: {} at {}{}", r.first, r.at, if r.sites > 1 { format!(", {} sites in all", r.sites) } else { String::new() });
         }
         let _ = writeln!(out, "\n{}", self.template.trim_end());
         out
@@ -415,7 +423,7 @@ mod tests {
         let a = advise(&cp, &gap, vec!["p.C.m:6".into()], Some("25"));
         assert_eq!(a.id, "class-initializer:p.Boom.<clinit>()V", "no JDK version on an application's initializer");
         assert!(a.must_state.iter().any(|o| o.part == Part::State));
-        let file = template(&[a], Some("25"));
+        let file = template(&[a], Some("25"), None);
         assert!(file.contains("\nkind: gap-contracts\n\nclass-initializer:p.Boom.<clinit>()V\n"), "{file}");
 
         // A call whose value the proof reads: its result is a condition over `result`, and assume has no form of it.

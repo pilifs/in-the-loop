@@ -2306,6 +2306,23 @@ class AdviceTest(unittest.TestCase):
         self.assertEqual(build.advice_lines(root, rerun), [])
 
 
+    def test_jbmc_s_gaps_are_named_as_jbmc_s(self):
+        """Step 4c's second part: under --engine jbmc the gaps are JBMC's, and the page says so, with what no
+        contract closes there as approximated by JBMC."""
+        import jsonschema
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        advice = {**self.ADVICE, "checker": "jbmc",
+                  "outside": {"JBMC drops monitors": {"first": "a synchronized block or method in a.B.m(I)I", "at": "a.B.m:12", "sites": 1}}}
+        result = self.recorded(root, advice)
+        self.assertEqual(result["advice"]["checker"], "jbmc")
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["advice"], {**schema["$defs"]["advice"], "$defs": schema["$defs"]})
+        lines = build.advice_lines(root, result)
+        self.assertTrue(lines[0].startswith("**The proof reaches 1 gap of JBMC with no contract, and stopped before solving**"), lines[0])
+        self.assertIn("Approximated by JBMC whatever the contracts: JBMC drops monitors, a synchronized block or method in a.B.m(I)I at a.B.m:12.", "\n".join(lines))
+
+
 class ContractsTest(unittest.TestCase):
     """Steps 3b and 3c of llm-dlc/loops/sound-verdicts.md: an example under --gaps advised names a file of contracts
     for its gaps (`approach.contracts`), which the runner puts where the tool is pointed at it; a verdict that rests
@@ -2367,6 +2384,11 @@ class ContractsTest(unittest.TestCase):
                       "throws java.lang.IllegalArgumentException when capacity < 0; modifies nothing. Written by an agent "
                       "(`gaps.contracts`, line 3); trusted: checked against neither the JDK's bytecode nor a JVM", text)
         self.assertEqual(build.contract_lines({**result, "verdict": "violation"}), [], "only a verified verdict rests on one")
+        # Under --engine jbmc, JBMC ran the contract's method at each call site.
+        jbmc = {**result, "search": {**result["search"], "gaps": [{**result["search"]["gaps"][0], "checker": "jbmc"}]}}
+        text = "\n".join(build.contract_lines(jbmc))
+        self.assertIn("**The proof rests on 1 contract for gaps of JBMC** (`--gaps advised --contracts`): at each call below JBMC ran the "
+                      "contract's method in place of the call, each call site rewritten into a call of it, which it does not implement.", text)
 
     def test_a_tested_contract_says_what_the_jvm_ran_and_a_trusted_one_why_it_did_not(self):
         root = Path(tempfile.mkdtemp(prefix="build-test-"))

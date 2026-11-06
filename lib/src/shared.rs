@@ -632,13 +632,35 @@ pub fn stub(cp: &ClassPath, callees: &[Callee]) -> Result<Vec<u8>, Error> {
 /// Returns `None` when the class calls none of them. The constant pool gains the entries the new references
 /// need; nothing else moves, so the code's offsets are unchanged.
 pub fn redirect(bytes: &[u8], lookup: &dyn Fn(&MemberRef) -> Option<String>) -> Result<Option<Vec<u8>>, Error> {
+    redirect_calls(bytes, &|invoke, m| if invoke == Invoke::Static { lookup(m).map(|name| MemberRef::new(CLASS, &name, &m.descriptor)) } else { None })
+}
+
+/// How a call site invokes its method.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Invoke {
+    Static,
+    /// `invokespecial`: a constructor, a private method or a superclass's.
+    Special,
+    Virtual,
+    Interface,
+}
+
+/// Rewrites each call site `lookup` gives a static method for into an `invokestatic` of that method, which takes
+/// what the call left on the stack: for any call but a static one, the receiver first, then the arguments. Returns
+/// `None` when no call site is rewritten. The constant pool gains the entries the new references need, and
+/// nothing else moves: an `invokeinterface`, five bytes long, becomes an `invokestatic` and two `nop`s, so the
+/// code's offsets are unchanged. The class is no longer one a verifier accepts when a constructor's receiver,
+/// still uninitialized, is passed on; JBMC, the one checker that runs such classes, verifies nothing.
+pub fn redirect_calls(bytes: &[u8], lookup: &dyn Fn(Invoke, &MemberRef) -> Option<MemberRef>) -> Result<Option<Vec<u8>>, Error> {
     let class = ClassFile::parse(bytes)?;
     let (pool_end, mut count) = pool_extent(bytes)?;
     let code_offsets = code_offsets(bytes, &class.pool, pool_end)?;
     let mut added: Vec<u8> = Vec::new();
-    let mut stub_class: Option<u16> = None;
-    let mut refs: BTreeMap<String, u16> = BTreeMap::new();
-    let mut patches: Vec<(usize, u16)> = Vec::new();
+    let mut classes: BTreeMap<String, u16> = BTreeMap::new();
+    let mut refs: BTreeMap<(String, String, String), u16> = BTreeMap::new();
+    // Where each rewritten instruction's opcode is, the method reference it takes, and whether it was an
+    // `invokeinterface`.
+    let mut patches: Vec<(usize, u16, bool)> = Vec::new();
     let push_utf8 = |added: &mut Vec<u8>, count: &mut u16, s: &str| -> u16 {
         let encoded = encode_modified_utf8(s);
         added.push(1);
@@ -650,25 +672,32 @@ pub fn redirect(bytes: &[u8], lookup: &dyn Fn(&MemberRef) -> Option<String>) -> 
     for (method, offset) in class.methods.iter().zip(&code_offsets) {
         let (Some(code), Some(offset)) = (&method.code, offset) else { continue };
         for (pc, insn) in code.instructions()? {
-            let Insn::InvokeStatic(i) = insn else { continue };
+            let (invoke, i) = match insn {
+                Insn::InvokeStatic(i) => (Invoke::Static, i),
+                Insn::InvokeSpecial(i) => (Invoke::Special, i),
+                Insn::InvokeVirtual(i) => (Invoke::Virtual, i),
+                Insn::InvokeInterface(i) => (Invoke::Interface, i),
+                _ => continue,
+            };
             let Ok(callee) = class.pool.member(i) else { continue };
-            let Some(stub_method) = lookup(&callee) else { continue };
-            let index = match refs.get(&stub_method) {
+            let Some(target) = lookup(invoke, &callee) else { continue };
+            let key = (target.owner.clone(), target.name.clone(), target.descriptor.clone());
+            let index = match refs.get(&key) {
                 Some(index) => *index,
                 None => {
-                    let class_index = match stub_class {
-                        Some(c) => c,
+                    let class_index = match classes.get(&target.owner) {
+                        Some(c) => *c,
                         None => {
-                            let name = push_utf8(&mut added, &mut count, CLASS);
+                            let name = push_utf8(&mut added, &mut count, &target.owner);
                             added.push(7);
                             added.extend(name.to_be_bytes());
                             count += 1;
-                            stub_class = Some(count - 1);
+                            classes.insert(target.owner.clone(), count - 1);
                             count - 1
                         }
                     };
-                    let name = push_utf8(&mut added, &mut count, &stub_method);
-                    let descriptor = push_utf8(&mut added, &mut count, &callee.descriptor);
+                    let name = push_utf8(&mut added, &mut count, &target.name);
+                    let descriptor = push_utf8(&mut added, &mut count, &target.descriptor);
                     added.push(12);
                     added.extend(name.to_be_bytes());
                     added.extend(descriptor.to_be_bytes());
@@ -678,11 +707,11 @@ pub fn redirect(bytes: &[u8], lookup: &dyn Fn(&MemberRef) -> Option<String>) -> 
                     added.extend(class_index.to_be_bytes());
                     added.extend(nat.to_be_bytes());
                     count += 1;
-                    refs.insert(stub_method, count - 1);
+                    refs.insert(key, count - 1);
                     count - 1
                 }
             };
-            patches.push((offset + pc as usize + 1, index));
+            patches.push((offset + pc as usize, index, invoke == Invoke::Interface));
         }
     }
     if patches.is_empty() {
@@ -695,8 +724,14 @@ pub fn redirect(bytes: &[u8], lookup: &dyn Fn(&MemberRef) -> Option<String>) -> 
     out.extend_from_slice(&added);
     out.extend_from_slice(&bytes[pool_end..]);
     let shift = added.len();
-    for (at, index) in patches {
-        out[at + shift..at + shift + 2].copy_from_slice(&index.to_be_bytes());
+    for (at, index, interface) in patches {
+        let at = at + shift;
+        out[at] = 0xb8; // invokestatic
+        out[at + 1..at + 3].copy_from_slice(&index.to_be_bytes());
+        if interface {
+            out[at + 3] = 0x00; // nop
+            out[at + 4] = 0x00;
+        }
     }
     Ok(Some(out))
 }
@@ -780,6 +815,12 @@ fn code_offsets(bytes: &[u8], pool: &ConstantPool, pool_end: usize) -> Result<Ve
 /// Copies into `output` every class under `input` that calls a shared callee, with the calls redirected; the
 /// classes that call none stay where they are. Returns how many were written.
 pub fn redirect_directory(input: &Path, output: &Path, lookup: &dyn Fn(&MemberRef) -> Option<String>) -> Result<usize, Error> {
+    redirect_calls_directory(input, output, &|invoke, m| if invoke == Invoke::Static { lookup(m).map(|name| MemberRef::new(CLASS, &name, &m.descriptor)) } else { None })
+}
+
+/// Copies into `output` every class under `input` with a call site `lookup` redirects ([`redirect_calls`]); the
+/// others stay where they are. Returns how many were written.
+pub fn redirect_calls_directory(input: &Path, output: &Path, lookup: &dyn Fn(Invoke, &MemberRef) -> Option<MemberRef>) -> Result<usize, Error> {
     let mut written = 0;
     let mut dirs = vec![input.to_path_buf()];
     while let Some(dir) = dirs.pop() {
@@ -789,7 +830,7 @@ pub fn redirect_directory(input: &Path, output: &Path, lookup: &dyn Fn(&MemberRe
                 dirs.push(path);
             } else if path.extension().is_some_and(|e| e == "class") {
                 let bytes = std::fs::read(&path)?;
-                if let Some(patched) = redirect(&bytes, lookup)? {
+                if let Some(patched) = redirect_calls(&bytes, lookup)? {
                     let target = output.join(path.strip_prefix(input).unwrap_or(&path));
                     if let Some(parent) = target.parent() {
                         std::fs::create_dir_all(parent)?;

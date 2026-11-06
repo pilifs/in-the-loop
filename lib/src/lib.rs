@@ -45,6 +45,7 @@ pub mod equivalence;
 pub mod harness;
 pub mod interp;
 pub mod jbmc;
+pub mod jbmc_contracts;
 pub mod jbmc_gaps;
 pub mod jdk_facts;
 pub mod jimage;

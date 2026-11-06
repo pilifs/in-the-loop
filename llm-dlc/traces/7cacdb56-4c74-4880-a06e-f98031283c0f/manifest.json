@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T08:30:47.708Z",
-  "duration_seconds": 32178,
+  "ended": "2026-11-06T09:17:47.443Z",
+  "duration_seconds": 34998,
   "stats": {
-    "turns": 106,
-    "api_calls": 1500,
-    "tool_calls": 1514,
-    "tool_errors": 14,
-    "compactions": 19,
-    "peak_context_tokens": 340299,
+    "turns": 112,
+    "api_calls": 1608,
+    "tool_calls": 1621,
+    "tool_errors": 15,
+    "compactions": 20,
+    "peak_context_tokens": 361492,
     "usage": {
-      "input_tokens": 3042,
-      "output_tokens": 1456441,
-      "cache_read_input_tokens": 272307406,
-      "cache_creation_input_tokens": 4930631
+      "input_tokens": 3262,
+      "output_tokens": 1565783,
+      "cache_read_input_tokens": 299878267,
+      "cache_creation_input_tokens": 5294893
     }
   },
   "tools": {
-    "Bash": 1356,
-    "Read": 106,
-    "Write": 22,
+    "Bash": 1456,
+    "Read": 111,
+    "Write": 23,
     "Edit": 20,
-    "ToolSearch": 6,
+    "ToolSearch": 7,
     "WebFetch": 4
   },
   "files_touched": [
@@ -49,6 +49,7 @@
     "lib/src/digest.rs",
     "lib/src/equivalence.rs",
     "lib/src/gap_contracts.rs",
+    "lib/src/jbmc_contracts.rs",
     "lib/src/jbmc_gaps.rs",
     "lib/src/jvm_witness.rs",
     "lib/src/property.rs",
@@ -331,24 +332,38 @@
     {
       "index": 19,
       "started": "2026-11-06T07:44:07.199Z",
-      "ended": "2026-11-06T08:30:47.708Z",
-      "turns": 4,
-      "api_calls": 115,
+      "ended": "2026-11-06T08:31:45.310Z",
+      "turns": 5,
+      "api_calls": 118,
       "usage": {
-        "input_tokens": 232,
-        "output_tokens": 118900,
-        "cache_read_input_tokens": 25809186,
-        "cache_creation_input_tokens": 313493
+        "input_tokens": 238,
+        "output_tokens": 120893,
+        "cache_read_input_tokens": 26795849,
+        "cache_creation_input_tokens": 329343
       },
-      "peak_context_tokens": 326573
+      "peak_context_tokens": 342423
+    },
+    {
+      "index": 20,
+      "started": "2026-11-06T08:32:43.803Z",
+      "ended": "2026-11-06T09:17:47.443Z",
+      "turns": 5,
+      "api_calls": 105,
+      "usage": {
+        "input_tokens": 214,
+        "output_tokens": 107349,
+        "cache_read_input_tokens": 26584198,
+        "cache_creation_input_tokens": 348412
+      },
+      "peak_context_tokens": 361492
     }
   ],
   "log": {
-    "sha256": "83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486",
-    "bytes": 46017608,
-    "lines": 15621,
-    "gzip_bytes": 8609416,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486.jsonl.gz"
+    "sha256": "80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7",
+    "bytes": 49147189,
+    "lines": 16712,
+    "gzip_bytes": 9212744,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -559,6 +574,14 @@
       "summary": "JBMC's own approximations are gaps under strict and assume: its stubs of methods it has no bytecode for, the invokedynamic call sites it gives the value zero or null, and the monitors it drops are named from its goto program, and a JBMC proof that reaches one is no verdict under strict (verification pending)",
       "body": "Step 4c, first part, of llm-dlc/loops/sound-verdicts.md. Before JBMC's proof, jvmcontract now runs JBMC with --show-goto-functions on the harness (lib/src/jbmc_gaps.rs). That converts what the proof would and solves nothing: 40 ms on the review's reproducers. It then walks JBMC's own call graph from the harness. Three things count as approximations:\n- a method reached with no bytecode on JBMC's class path: JBMC's stub returns any value of its type and does nothing else;\n- an invokedynamic that JBMC links to no class of its own making: JBMC takes its value to be zero or null. This covers string concatenation, a record's equals/hashCode/toString, and a lambda for a JDK interface. JBMC never checks the bootstrap method's name, as read from CBMC 6.11.0's lambda_synthesis.cpp;\n- a method that synchronizes: JBMC drops monitor instructions, so synchronized (null) throws nothing.\nThey are gaps with the own checker's ids where the call is the same, plus three JBMC-only kinds: missing-body, invokedynamic and monitor. Stubs that only a JDK class's initializer reaches stay under the statement's engine assumption.\n\nUnder --gaps strict (the library's default), a JBMC proof that reaches a gap is Unverifiable, and a counterexample stands only if the interpreter replays it. Under --gaps assume the verdict names each gap. --confirm holds JBMC's proof to its gaps too. build.py now passes the recorded gap mode (assume) to the examples JBMC proves.\n\nVerified inline on the real JBMC 6.11.0 by the new integration test jbmc_own_approximations_are_gaps_in_the_same_modes. JBMC alone proved five claims the JVM refutes: new ArrayList<>(n) returning, Random.nextBytes leaving its array, synchronized (null) returning, a string concatenation being null, and a record unequal to its copy. Under strict all five are now refused by name, and under assume each is Verified naming its gap. A regression proof under --engine jbmc behaves the same. All Rust tests pass (138 unit, 5 conformance, 59 integration, 1 skill), and so do the 157 Python tests. The existing integration tests, with their 151 real JBMC runs, pass unchanged under the new strict default. Re-rendering every page changed none.\n\nJob 20261106-082917-jbmc-s-own-approximations-as-gaps-every runs build.py on a copy of the 41 recorded JBMC examples under assume, where no verdict should move. It tabulates the JBMC gaps each one reaches, which is what strict would cost them.\n\nWhere the brief is wrong or out of date:\n- It names stubs and the invokedynamic fallback, but not monitors, which JBMC also drops.\n- Its acceptance, 1b's reproducers giving the same answer under JBMC in each mode, cannot hold for synchronized (null). JBMC gives a named gap where the own checker gives the violation, which still meets 1b's own acceptance (a named gap or a correct violation).\n- Advised gives the same answer only through the own checker, since JBMC does not apply contracts yet. That is 4c's second part, recorded under Progress as next.",
       "log_sha256": "83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486"
+    },
+    {
+      "change_id": "nnlwukypumolskonxwrwvnpzkrvlqlqw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC applies the contracts for its gaps: under --engine jbmc --gaps advised a JDK call JBMC stubs takes the contract the own checker would, its call sites rewritten into calls of the contract's method, and a gap with no contract stops the run with the advice",
+      "body": "Step 4c, second part, of llm-dlc/loops/sound-verdicts.md (lib/src/jbmc_contracts.rs). The gaps JBMC's goto-program preflight finds are the advice protocol's scan: a JDK-call gap with no contract stops the run before solving (advice.checker \"jbmc\"), and contracts are read and checked as for the own checker (proved, tested on a JVM, trusted, the library's records, --max-trust); a JBMC gap has the own checker's id, so one contract serves both checkers. Monitors, unlinked invokedynamic and missing bodies outside the JDK take no contract: the advice lists them as approximated by JBMC whatever the contracts, and the proof is refused as under strict. JBMC runs the same GapContracts class: every call site of a closed gap in the harness and application class directories is rewritten into an invokestatic of the contract's method (shared::redirect_calls now takes any call kind; invokeinterface becomes invokestatic plus two nops, so no offset moves), a constructor through GapContractCalls.k<N>, which takes the uninitialized receiver; the intrinsics are a class over org.cprover.CProver (nondetInt/nondetLong, assume(false), a nondet loop over an array's elements, and open as an AssertionError that JBMC reports as its own property, which is no verdict: an input outside the contract's assume:). A second preflight on the rewritten class path holds whatever JBMC still approximates. A call site whose JDK method an application class overrides, calls from JDK bytecode and jars are not rewritten, so their gaps stay open. Under auto, JBMC's turn applies the own checker's contracts. The verdict reads 'relying on N contracts for gaps of JBMC'; build.py and the schema (advice.checker) name JBMC on the page. Both drivers no longer refuse --gaps advised under --engine jbmc.\n\nVerified inline on the real JBMC 6.11.0 by jbmc_applies_the_contracts_for_its_gaps (integration.rs): the advice with nothing solved; new ArrayList<>(n) is the violation capacity(n=-1) the interpreter reproduces with the JVM's message, Verified with the exception declared (1 tested), a contract that says it never throws is refuted by the JVM and goes back to the agent, assume: capacity >= 0 meets the gap; Random nextBytes/nextInt contracts give a violation the JVM runs, two proofs, and a witness the JVM does not reproduce; StringBuilder.append result == this; a monitor next to the call is refused; the auto fallback and a regression proof. The 4c part one test now gets the violations the JVM gives on 1b's reproducers under advised, from the contract library. All Rust tests pass (141 unit, 5 conformance, 60 integration, 1 skill), the native regression test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs after a rerun (it failed once at 629 s on a loaded machine, and passed alone in 18 s); 158 Python tests pass. Re-rendering every page changed none, and no job was needed, since no recorded example runs JBMC under advised. Not done: --confirm still does not ask JBMC about a proof that rests on contracts. Phase 4 is done apart from removing the text parser, which waits on job 20261106-073804.",
+      "log_sha256": "80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7"
     }
   ],
   "logs": {
@@ -650,6 +673,12 @@
       "bytes": 20056807,
       "lines": 6891,
       "gzip_bytes": 3663096,
+      "url": null
+    },
+    "80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7": {
+      "bytes": 49147189,
+      "lines": 16712,
+      "gzip_bytes": 9212744,
       "url": null
     },
     "83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486": {
