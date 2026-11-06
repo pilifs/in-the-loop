@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T13:25:58.636Z",
-  "duration_seconds": 9444,
+  "ended": "2026-11-06T13:45:58.665Z",
+  "duration_seconds": 10644,
   "stats": {
-    "turns": 17,
-    "api_calls": 281,
-    "tool_calls": 281,
+    "turns": 18,
+    "api_calls": 285,
+    "tool_calls": 284,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 448311,
+    "peak_context_tokens": 450703,
     "usage": {
-      "input_tokens": 592,
-      "output_tokens": 165308,
-      "cache_read_input_tokens": 75303221,
-      "cache_creation_input_tokens": 410391
+      "input_tokens": 602,
+      "output_tokens": 166729,
+      "cache_read_input_tokens": 77101304,
+      "cache_creation_input_tokens": 412410
     }
   },
   "tools": {
-    "Bash": 263,
+    "Bash": 266,
     "AskUserQuestion": 11,
     "Edit": 3,
     "Write": 3,
@@ -46,24 +46,24 @@
     {
       "index": 0,
       "started": "2026-11-06T10:48:34.990Z",
-      "ended": "2026-11-06T13:25:58.636Z",
-      "turns": 17,
-      "api_calls": 281,
+      "ended": "2026-11-06T13:45:58.665Z",
+      "turns": 18,
+      "api_calls": 285,
       "usage": {
-        "input_tokens": 592,
-        "output_tokens": 165308,
-        "cache_read_input_tokens": 75303221,
-        "cache_creation_input_tokens": 410391
+        "input_tokens": 602,
+        "output_tokens": 166729,
+        "cache_read_input_tokens": 77101304,
+        "cache_creation_input_tokens": 412410
       },
-      "peak_context_tokens": 448311
+      "peak_context_tokens": 450703
     }
   ],
   "log": {
-    "sha256": "fcffff9abc26d374792e972966695b9a6b26e1f14e3c2f6f866df115fbee9895",
-    "bytes": 5794535,
-    "lines": 2514,
-    "gzip_bytes": 892728,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/fcffff9abc26d374792e972966695b9a6b26e1f14e3c2f6f866df115fbee9895.jsonl.gz"
+    "sha256": "08db3f2f2ccb3826c4adcb4cbee77a6ccbec0167917af19c6da00251b6f79483",
+    "bytes": 5863418,
+    "lines": 2543,
+    "gzip_bytes": 904314,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/08db3f2f2ccb3826c4adcb4cbee77a6ccbec0167917af19c6da00251b6f79483.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -197,7 +197,7 @@
     },
     {
       "change_id": "rnorolyuzyuqvtwkprvymtsvotrmszqw",
-      "commit_id": null,
+      "commit_id": "f09072dee0bdce3112b6f791554504ba3ead3a54",
       "immutable": false,
       "summary": "The recorded examples run in strict, the library's default: the user's decision on open question 3",
       "body": "build.py ran a recorded B9 or B11 example that names no approach.gaps in assume (RECORDED_GAP_MODE), so that the library's strict default did not move recorded verdicts before the user decided how they move. The user decided on 2026-11-06, from both checkers' gap scans: the own checker's (1a: only 013 and 071 meet gaps, and the own checker refuses both examples anyway) and JBMC's (job 20261106-082917: the same two, at Enum.<init>(String, int), List.copyOf and List.of). Strict moves no example's verdict; on its next run, 071's first two property proofs become no verdict. RECORDED_GAP_MODE is now strict; the schema, examples/README.md and the brief say so.\n\nNo example is re-run only to move: each takes strict when it next runs. Verified: build.py's tests updated for the new default (161 pass); every page re-rendered with build.py --render-only, and none changed.",
@@ -205,7 +205,7 @@
     },
     {
       "change_id": "vlwoplzuqkwstltsqkuqvorlwzzrxkkn",
-      "commit_id": null,
+      "commit_id": "268c42b3efec1f0cee386657ef1dacd1783c9d2d",
       "immutable": false,
       "summary": "JBMC is read through --json-ui alone: the text reader is removed, both readings having agreed on every recorded JBMC example",
       "body": "Step 4b of the sound-verdicts brief kept the text reader (parse_output, JVMCONTRACT_JBMC_READ=text|both, the differential record and JVMCONTRACT_JBMC_DIFFERENTIAL) until a differential test over every recorded JBMC example showed the two readings agree. Jobs 20261106-073804 (78 runs) and 20261106-123940 (the five examples the first could not run, 10 runs) read 88 runs both ways with no disagreement. Removed: the Reading modes and JbmcRun.read, the second run, Differential and Account, canonical, parse_output and parse_arrays; parse_value stays, since the JSON reader's witnesses go through it.",
@@ -213,11 +213,19 @@
     },
     {
       "change_id": "vkvypzrvynznplqvxsprwvzmnmuuqvxs",
-      "commit_id": null,
+      "commit_id": "a5d31ec2d6debc261aba3b09a1f479a632f70b55",
       "immutable": false,
       "summary": "A gap table over a run's results, per obligation: which gaps each proof reaches and which strict would refuse",
       "body": "Job 20261106-082917 tabulated JBMC's gaps with an inline script that read result format 1 ('verdict') and failed on the format 2 results build.py now writes, after every example had run as expected; the table was then computed by hand from the job's kept results. examples/tools/gap_table.py does it reusably: it reads a run's copy of examples/ (format 2), gives a row per obligation (each property of a B11 example), the gaps it reaches, by checker (--checker jbmc|native), and whether strict would refuse it (established, and reaching a gap; a refuted obligation stands when its witness replays). Results without gap records, as the flat results the repository records, are counted as skipped. The job file itself is a committed record and is left as it is.",
       "log_sha256": "fcffff9abc26d374792e972966695b9a6b26e1f14e3c2f6f866df115fbee9895"
+    },
+    {
+      "change_id": "syprxoqtrrsoowntuwwltsmkmnpumqmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "08db3f2f2ccb3826c4adcb4cbee77a6ccbec0167917af19c6da00251b6f79483"
     }
   ],
   "logs": {
@@ -226,6 +234,12 @@
       "lines": 1010,
       "gzip_bytes": 441219,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32.jsonl.gz"
+    },
+    "08db3f2f2ccb3826c4adcb4cbee77a6ccbec0167917af19c6da00251b6f79483": {
+      "bytes": 5863418,
+      "lines": 2543,
+      "gzip_bytes": 904314,
+      "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/08db3f2f2ccb3826c4adcb4cbee77a6ccbec0167917af19c6da00251b6f79483.jsonl.gz"
     },
     "261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8": {
       "bytes": 3449331,
@@ -243,7 +257,7 @@
       "bytes": 5770788,
       "lines": 2509,
       "gzip_bytes": 889856,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/3c0f19cb3814b6826d526e0fa5c13169e3145c126a50c63ca3cb935b8a19f99b.jsonl.gz"
     },
     "3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0": {
       "bytes": 2306623,
@@ -297,7 +311,7 @@
       "bytes": 5194404,
       "lines": 2213,
       "gzip_bytes": 810548,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/e4adea3a3248293e49da1afbac32eea3cb21f9277bdce8614e81abc77f5a9139.jsonl.gz"
     },
     "eed05f3817e80bf43b3350c599364c3a096e25bc23ce8d4f64d51af8e70908f2": {
       "bytes": 4919807,
@@ -327,7 +341,7 @@
       "bytes": 5794535,
       "lines": 2514,
       "gzip_bytes": 892728,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/fcffff9abc26d374792e972966695b9a6b26e1f14e3c2f6f866df115fbee9895.jsonl.gz"
     }
   },
   "redaction_policy": 4,
