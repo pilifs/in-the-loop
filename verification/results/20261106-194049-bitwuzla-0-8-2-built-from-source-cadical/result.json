@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical",
+  "title": "Bitwuzla 0.8.2 built from source, CaDiCaL linked static (fetches from the network)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.7s, peak 1.9 GiB (estimated 5m00s, 2.5 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-194049-bitwuzla-0-8-2-built-from-source-cadical.json",
+    "sha256": "070d61c0cace1177ce57458568b790c62d8761aa33ece05eae61423ae18a7e34",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical",
+      "title": "Bitwuzla 0.8.2 built from source, CaDiCaL linked static (fetches from the network)",
+      "description": "Phase 1c of llm-dlc/loops/engine-priorities.md (the native stream), resubmitted after job 20261106-192008, which built and installed Bitwuzla 0.8.2 but whose binary could not load libcadical.so: the project-wide -Ddefault_library=shared reached the CaDiCaL subproject, and meson does not install a subproject's library. build.sh now passes -Dcadical:default_library=static (CaDiCaL's own default; a configure-only meson check showed the cadical target becoming a static library linked into Bitwuzla's shared ones), and fails with the missing libraries named if ldd still finds any. This job fetches from the network: git ls-remote and the release tarball of github.com/bitwuzla/bitwuzla at tag 0.8.2, meson and ninja from PyPI into a venv in the job, and CaDiCaL 2.1.2 and SymFPU through Bitwuzla's own meson wrap files. It installs into ~/tools/bitwuzla/bitwuzla-0.8.2 (replacing the broken install there; ~/tools/bitwuzla/current points at it; nothing else on the machine changes), and writes lib/solvers/bitwuzla/build.json: the tag's commit, the tarball's sha256, each subproject's wrap (the CaDiCaL it links, with its digest), GMP, the compiler, the build tools, the machine, the answers of three smoke queries (bit-vector sat, bit-vector unsat, read over write unsat), and the version the C API reports when a C program is linked through pkg-config. Phase 6 runs on this install. The brief says ARM64; this runner is x86_64, and the record names the architecture.",
+      "kind": "other",
+      "capabilities": [
+        "solver:bitwuzla",
+        "build:from-source"
+      ],
+      "links": {
+        "paths": [
+          "lib/solvers/bitwuzla/build.sh"
+        ],
+        "jobs": [
+          "20261106-192008-bitwuzla-0-8-2-built-from-source-for-the"
+        ]
+      },
+      "expected": "exits 0; build.json written with smoke answers sat, unsat, unsat and a C API version of 0.8.2",
+      "submitted": {
+        "at": "2026-11-06T19:40:49+00:00",
+        "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+        "by": "claude (engines-native stream)"
+      },
+      "requires": [
+        "git",
+        "curl",
+        "c++",
+        "pkg-config"
+      ],
+      "resources": {
+        "cpus": 8.0,
+        "memory": "2.5G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "notes": "Measured on the failed run 20261106-192008: the whole build took 23.7 s at 8 jobs with a peak of 1.9 GiB; the margin covers the downloads"
+      },
+      "steps": [
+        {
+          "name": "build Bitwuzla 0.8.2",
+          "run": "lib/solvers/bitwuzla/build.sh 0.8.2",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/solvers/bitwuzla/build.json"
+      ]
+    }
+  },
+  "sourceCommit": "66dd857b6891f9b188a9ff5d39e41f3a4c29b1fe",
+  "startedAt": "2026-11-06T19:42:06+00:00",
+  "finishedAt": "2026-11-06T19:42:31+00:00",
+  "wallSeconds": 25.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 216147,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 8.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 8.0,
+    "memoryBytes": 2684354560,
+    "durationSeconds": 300.0,
+    "notes": "Measured on the failed run 20261106-192008: the whole build took 23.7 s at 8 jobs with a peak of 1.9 GiB; the margin covers the downloads"
+  },
+  "usage": {
+    "peakMemoryBytes": 2049552384,
+    "wallSeconds": 24.7,
+    "cpuSeconds": 148.6,
+    "memoryOfEstimate": 0.76,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "build Bitwuzla 0.8.2",
+      "run": "lib/solvers/bitwuzla/build.sh 0.8.2",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 24.655,
+      "cpuSeconds": 148.589,
+      "cpuThrottledSeconds": 0.045,
+      "peakMemoryBytes": 2049552384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-bitwuzla-0-8-2.log",
+        "lines": 310,
+        "bytes": 22737,
+        "sha256": "904149f866dbd466a6d86b680c824c5e9cceb586531326423a3739b25b54b9a2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[187/216] Compiling C++ object src/libbitwuzla.so.0.p/rewrite_rewrites_core.cpp.o",
+        "[188/216] Compiling C++ object src/libbitwuzla.so.0.p/preprocess_pass_normalize.cpp.o",
+        "[189/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_bv_bv_bitblast_solver.cpp.o",
+        "[190/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_bv_bv_solver.cpp.o",
+        "[191/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_bv_bv_prop_solver.cpp.o",
+        "[192/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fp_rounding_mode.cpp.o",
+        "[193/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fp_symfpu_nm.cpp.o",
+        "[194/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_array_array_solver.cpp.o",
+        "[195/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fp_fp_solver.cpp.o",
+        "[196/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_bv_aig_bitblaster.cpp.o",
+        "[197/216] Compiling C++ object src/libbitwuzla.so.0.p/rewrite_rewrites_bv.cpp.o",
+        "[198/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_abstract_abstraction_lemmas.cpp.o",
+        "[199/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_result.cpp.o",
+        "[200/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_solver.cpp.o",
+        "[201/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fp_floating_point.cpp.o",
+        "[202/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fun_fun_solver.cpp.o",
+        "[203/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fp_symfpu_wrapper.cpp.o",
+        "[204/216] Compiling C++ object src/libbitwuzla.so.0.p/type_type.cpp.o",
+        "[205/216] Compiling C++ object src/libbitwuzla.so.0.p/type_type_data.cpp.o",
+        "[206/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_solver_state.cpp.o",
+        "[207/216] Compiling C++ object src/main/bitwuzla.p/time_limit.cpp.o",
+        "[208/216] Compiling C++ object src/libbitwuzla.so.0.p/type_type_manager.cpp.o",
+        "[209/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_solver_engine.cpp.o",
+        "[210/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_quant_quant_solver.cpp.o",
+        "[211/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_abstract_abstraction_module.cpp.o",
+        "[212/216] Compiling C++ object src/libbitwuzla.so.0.p/solver_fp_word_blaster.cpp.o",
+        "[213/216] Compiling C++ object src/libbitwuzla.so.0.p/solving_context.cpp.o",
+        "[214/216] Linking target src/libbitwuzla.so.0",
+        "[215/216] Generating symbol file src/libbitwuzla.so.0.p/libbitwuzla.so.0.symbols",
+        "[216/216] Linking target src/main/bitwuzla",
+        "INFO: autodetecting backend as ninja",
+        "INFO: calculating backend command to run: /tmp/bitwuzla-build.xDpSUG/venv/bin/ninja -j 8",
+        "ninja: Entering directory `/tmp/bitwuzla-build.xDpSUG/src/build'",
+        "[1/6] Generating src/config.h with a custom command",
+        "[bitwuzla] installed in /home/filip/tools/bitwuzla/bitwuzla-0.8.2 (/home/filip/tools/bitwuzla/current)",
+        "[bitwuzla] bitwuzla --version: 0.8.2",
+        "[bitwuzla] 3x = 1 over 32 bits: sat (expected sat); not x + x = x << 1: unsat (expected unsat); not read over write: unsat (expected unsat)",
+        "[bitwuzla] C API through pkg-config: 0.8.2 ",
+        "[bitwuzla] wrote /home/filip/code/in-the-loop/verification/.state/work/20261106-194049-bitwuzla-0-8-2-built-from-source-cadical/lib/solvers/bitwuzla/build.json",
+        "[bitwuzla] done"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/solvers/bitwuzla/build.json",
+      "change": "added",
+      "bytes": 1948,
+      "sha256": "88a3ef95dab10fc5c44245f249f0103f63f624aa2c0872b48d537b591e1ac19e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T19:49:15+00:00",
+    "applied": [
+      "lib/solvers/bitwuzla/build.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

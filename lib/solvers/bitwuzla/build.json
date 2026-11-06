@@ -1,0 +1,68 @@
+{
+  "tool": "bitwuzla",
+  "version": "0.8.2",
+  "tag": "0.8.2",
+  "commit": "61bdc637a291c27597fc04263328ecd29d36cc12",
+  "source": {
+    "url": "https://github.com/bitwuzla/bitwuzla/archive/refs/tags/0.8.2.tar.gz",
+    "sha256": "637ed0b8d43291004089543b8c7bb744d325231113cab9bfa07f7bb7a154eeb5"
+  },
+  "binaryVersion": "0.8.2",
+  "capi": "0.8.2 ",
+  "configure": "meson setup build --buildtype=release --prefix <install> -Ddefault_library=shared -Dcadical:default_library=static --wrap-mode=default",
+  "install": "~/tools/bitwuzla/bitwuzla-0.8.2",
+  "libDir": "~/tools/bitwuzla/bitwuzla-0.8.2/lib/x86_64-linux-gnu",
+  "pkgConfigPath": "~/tools/bitwuzla/bitwuzla-0.8.2/lib/x86_64-linux-gnu/pkgconfig",
+  "subprojects": {
+    "aiger": {
+      "kind": "provide",
+      "aiger": "aiger_dep"
+    },
+    "cadical": {
+      "kind": "provide",
+      "cadical": "cadical_dep"
+    },
+    "cryptominisat": {
+      "kind": "provide",
+      "cryptominisat5": "cms_dep"
+    },
+    "gmp-6.3.0": {
+      "kind": "provide",
+      "gmp": "gmp_dep"
+    },
+    "kissat": {
+      "kind": "provide",
+      "kissat": "kissat_dep"
+    },
+    "symfpu": {
+      "kind": "provide",
+      "symfpu": "symfpu_dep"
+    }
+  },
+  "subprojectsFetched": [
+    "cadical-rel-2.1.2",
+    "symfpu"
+  ],
+  "satSolvers": " -S <M>, --sat-solver <M> [cadical] backend SAT solver {kissat, cms, cadical} --write-aiger <...> [] write bv abstraction as AIGER to filename ",
+  "gmp": {
+    "package": "libgmp-dev",
+    "version": "2:6.3.0+dfsg-5ubuntu2"
+  },
+  "compiler": "c++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "buildTools": {
+    "meson": "1.12.1",
+    "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+    "python": "3.14.4"
+  },
+  "machine": {
+    "arch": "x86_64",
+    "system": "Linux",
+    "release": "7.0.0-43-generic",
+    "job": "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical"
+  },
+  "smoke": {
+    "bvSat": "sat",
+    "bvUnsat": "unsat",
+    "arrayUnsat": "unsat"
+  }
+}

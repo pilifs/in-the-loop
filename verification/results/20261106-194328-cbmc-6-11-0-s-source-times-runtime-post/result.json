@@ -1,0 +1,193 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-194328-cbmc-6-11-0-s-source-times-runtime-post",
+  "title": "CBMC 6.11.0's source times Runtime Post-process inside Runtime Solver (resubmitted with a matching grep)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 0.2s, peak 5.7 MiB (estimated 1m00s, 100.0 MiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-194328-cbmc-6-11-0-s-source-times-runtime-post.json",
+    "sha256": "e7f79f0ca26bc69ec6e59a69286068a002d79b0c0b5cd1aab65dc16ff84757e7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-194328-cbmc-6-11-0-s-source-times-runtime-post",
+      "title": "CBMC 6.11.0's source times Runtime Post-process inside Runtime Solver (resubmitted with a matching grep)",
+      "description": "Resubmission of job 20261106-192959-cbmc-6-11-0-s-source-times-runtime-post (finding VF-004), whose display grep '^decision_proceduret::resultt run_property_decider' matched nothing in CBMC 6.11.0's bmc_util.cpp, so under pipefail the step exited 1 before any check ran. This job prints run_property_decider with 'grep -n -B2 -A45 \"run_property_decider(\"', and also the 'Runtime decision procedure' line(s) and the post_processing_done guard from both files; the display greps print '(no match)' instead of failing, so the step always reaches the checks. The three grep -q checks are unchanged: 'Runtime Solver' in bmc_util.cpp, 'Runtime Post-process' and 'finish_eager_conversion' in prop_conv_solver.cpp. Network fetch: downloads goto-checker/bmc_util.cpp and solvers/prop/prop_conv_solver.cpp at tag cbmc-6.11.0 from raw.githubusercontent.com. Purpose, from the original job: Phase 1a of llm-dlc/loops/engine-priorities.md reads JBMC's phases per solver call, on the claim that run_property_decider's 'Runtime Solver' times the whole call and that prop_conv_solvert::dec_solve, inside it, runs finish_eager_conversion and reports it as 'Runtime Post-process'; lib/src/phases.rs counts the post-processing under encoding alone and the rest of the call under solving. If a check fails, the printed code above it shows where the string actually lives.",
+      "kind": "other",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/phases.rs",
+          "lib/tests/fixtures/jbmc-phases/README.md"
+        ],
+        "jobs": [
+          "20261106-192959-cbmc-6-11-0-s-source-times-runtime-post"
+        ]
+      },
+      "expected": "Both files download; the log shows run_property_decider timing property_decider.solve() as 'Runtime Solver', the 'Runtime decision procedure' line, the post_processing_done guard, and dec_solve calling finish_eager_conversion() and printing 'Runtime Post-process'. Ends with 'all three strings found' and exits 0.",
+      "submitted": {
+        "at": "2026-11-06T19:43:28+00:00"
+      },
+      "requires": [
+        "curl"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "100M",
+        "duration": "1m",
+        "timeout": "10m",
+        "notes": "the first run took 0.4 s and peaked at 5.4 MiB"
+      },
+      "steps": [
+        {
+          "name": "fetch and show CBMC 6.11.0's solver timers",
+          "run": "set -euo pipefail; base=https://raw.githubusercontent.com/diffblue/cbmc/cbmc-6.11.0/src; d=$(mktemp -d); curl -fsSL \"$base/goto-checker/bmc_util.cpp\" -o \"$d/bmc_util.cpp\"; curl -fsSL \"$base/solvers/prop/prop_conv_solver.cpp\" -o \"$d/prop_conv_solver.cpp\"; sha256sum \"$d\"/*.cpp; cd \"$d\"; echo \"== bmc_util.cpp: run_property_decider\"; { grep -n -B2 -A45 \"run_property_decider(\" bmc_util.cpp || echo \"(no match)\"; } | head -150; echo \"== 'Runtime decision procedure' lines\"; grep -n -H \"Runtime decision procedure\" bmc_util.cpp prop_conv_solver.cpp || echo \"(no match)\"; echo \"== post_processing_done guard\"; grep -n -H -B1 -A6 \"post_processing_done\" bmc_util.cpp prop_conv_solver.cpp || echo \"(no match)\"; echo \"== prop_conv_solver.cpp: dec_solve\"; { grep -n -A40 \"prop_conv_solvert::dec_solve\" prop_conv_solver.cpp || echo \"(no match)\"; } | head -60; echo \"== checks\"; grep -q \"Runtime Solver\" bmc_util.cpp; grep -q \"Runtime Post-process\" prop_conv_solver.cpp; grep -q \"finish_eager_conversion\" prop_conv_solver.cpp; echo \"all three strings found\"; cd /; rm -rf \"$d\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3feadaf0f7a288f4997119fdcd183dda88bfdc7b",
+  "startedAt": "2026-11-06T19:49:35+00:00",
+  "finishedAt": "2026-11-06T19:49:35+00:00",
+  "wallSeconds": 0.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 247040,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 157286400,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 104857600,
+    "durationSeconds": 60.0,
+    "notes": "the first run took 0.4 s and peaked at 5.4 MiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 5992448,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "fetch and show CBMC 6.11.0's solver timers",
+      "run": "set -euo pipefail; base=https://raw.githubusercontent.com/diffblue/cbmc/cbmc-6.11.0/src; d=$(mktemp -d); curl -fsSL \"$base/goto-checker/bmc_util.cpp\" -o \"$d/bmc_util.cpp\"; curl -fsSL \"$base/solvers/prop/prop_conv_solver.cpp\" -o \"$d/prop_conv_solver.cpp\"; sha256sum \"$d\"/*.cpp; cd \"$d\"; echo \"== bmc_util.cpp: run_property_decider\"; { grep -n -B2 -A45 \"run_property_decider(\" bmc_util.cpp || echo \"(no match)\"; } | head -150; echo \"== 'Runtime decision procedure' lines\"; grep -n -H \"Runtime decision procedure\" bmc_util.cpp prop_conv_solver.cpp || echo \"(no match)\"; echo \"== post_processing_done guard\"; grep -n -H -B1 -A6 \"post_processing_done\" bmc_util.cpp prop_conv_solver.cpp || echo \"(no match)\"; echo \"== prop_conv_solver.cpp: dec_solve\"; { grep -n -A40 \"prop_conv_solvert::dec_solve\" prop_conv_solver.cpp || echo \"(no match)\"; } | head -60; echo \"== checks\"; grep -q \"Runtime Solver\" bmc_util.cpp; grep -q \"Runtime Post-process\" prop_conv_solver.cpp; grep -q \"finish_eager_conversion\" prop_conv_solver.cpp; echo \"all three strings found\"; cd /; rm -rf \"$d\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.04,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5992448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fetch-and-show-cbmc-6-11-0-s-s.log",
+        "lines": 110,
+        "bytes": 4622,
+        "sha256": "6a2cd4a3eb3a6c23318e217bc9481050d9ee182720171431c5883d480c38aa0d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "447-  {",
+        "448-    // post-processing isn't incremental yet",
+        "449-    if(!post_processing_done)",
+        "450-    {",
+        "451-      const auto post_process_start = std::chrono::steady_clock::now();",
+        "452-",
+        "453-      log.progress() << \"Post-processing\" << messaget::eom;",
+        "454-      finish_eager_conversion();",
+        "455-      post_processing_done = true;",
+        "456-",
+        "457-      const auto post_process_stop = std::chrono::steady_clock::now();",
+        "458-      std::chrono::duration<double> post_process_runtime =",
+        "459-        std::chrono::duration<double>(post_process_stop - post_process_start);",
+        "460-      log.statistics() << \"Runtime Post-process: \"",
+        "461-                       << post_process_runtime.count() << \"s\" << messaget::eom;",
+        "462-    }",
+        "463-",
+        "464-    log.progress() << \"Solving with \" << prop.solver_text() << messaget::eom;",
+        "465-",
+        "466-    if(assumption.is_nil())",
+        "467-      push();",
+        "468-    else",
+        "469-      push({assumption});",
+        "470-",
+        "471-    auto prop_result = prop.prop_solve(assumption_stack);",
+        "472-",
+        "473-    pop();",
+        "474-",
+        "475-    switch(prop_result)",
+        "476-    {",
+        "477-    case propt::resultt::P_SATISFIABLE:",
+        "478-      return resultt::D_SATISFIABLE;",
+        "479-    case propt::resultt::P_UNSATISFIABLE:",
+        "480-      return resultt::D_UNSATISFIABLE;",
+        "481-    case propt::resultt::P_ERROR:",
+        "482-      return resultt::D_ERROR;",
+        "483-    }",
+        "484-",
+        "== checks",
+        "all three strings found"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-06T19:49:36+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

@@ -18,37 +18,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
-### VF-004: the CBMC 6.11.0 source-reading job's grep for `run_property_decider` matches nothing
-
-- **Status**: open
-- **Raised**: 2026-11-06 on `vm-1` (run with `--memory 8G --workers 2`). Job
-  `20261106-192959-cbmc-6-11-0-s-source-times-runtime-post` at `b4c0164b852f`.
-- **Found**: both files download (sha256 in the log) and step 1 prints the `== bmc_util.cpp: run_property_decider`
-  header, then exits 1 after 0.4 s with no further output. Under `set -euo pipefail` the next command,
-  `grep -n -A45 "^decision_proceduret::resultt run_property_decider" bmc_util.cpp`, matched nothing: that return type
-  and line layout is not how 6.11.0 declares the function (likely a different return type or the name on its own line
-  after the type). So the job never reached the `Runtime Solver` / `Runtime Post-process` / `finish_eager_conversion`
-  checks. This is a defect in the job's step, not a finding about CBMC. I did not edit the step.
-- **Needs**: the submitter resubmits with a pattern that matches (for instance `grep -n -B2 -A45 "run_property_decider("`),
-  or drops the `-n -A` display and keeps the three `grep -q` checks.
-- **Tracked in**: the job's `logs/1-fetch-and-show-cbmc-6-11-0-s-s.log`.
-- **Closes when**: the corrected job passes.
-
-### VF-003: Bitwuzla 0.8.2 builds but the installed binary cannot load `libcadical.so`
-
-- **Status**: open
-- **Raised**: 2026-11-06 on this 24-CPU host (run with `--memory 8G --workers 2`). Job
-  `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` at `3853fcc7e8b7`.
-- **Found**: `lib/solvers/bitwuzla/build.sh 0.8.2` downloads, compiles (217 targets, 24 s, peak 1.9 GiB) and installs into
-  `~/tools/bitwuzla/bitwuzla-0.8.2`, then its check exits 127: `bitwuzla: error while loading shared libraries:
-  libcadical.so: cannot open shared object file`. The shared-library build links CaDiCaL as a shared subproject, but
-  no `libcadical.so` exists anywhere under `~/tools/bitwuzla`: meson did not install it (or no rpath points at it).
-  Deterministic; not a resource problem. The partial install is left in place.
-- **Needs**: whoever owns the solver comparison fixes `build.sh`: install CaDiCaL's library into the prefix with an
-  rpath, or build CaDiCaL static, and check with `ldd` before the version smoke test.
-- **Tracked in**: the job's `logs/1-build-bitwuzla-0-8-2.log`.
-- **Closes when**: the job, resubmitted after the fix, passes.
-
 ### VF-002: examples 147, 148 and 149 never reach a proof
 
 - **Status**: open
@@ -92,5 +61,36 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
 
 ## Decided and closed
+
+### VF-004: the CBMC 6.11.0 source-reading job's grep for `run_property_decider` matches nothing
+
+- **Status**: closed (job `20261106-194328-cbmc-6-11-0-s-source-times-runtime-post`, passed 2026-11-06 at `3feadaf0f7a2`: the corrected grep matched and all three checks found their strings)
+- **Raised**: 2026-11-06 on `vm-1` (run with `--memory 8G --workers 2`). Job
+  `20261106-192959-cbmc-6-11-0-s-source-times-runtime-post` at `b4c0164b852f`.
+- **Found**: both files download (sha256 in the log) and step 1 prints the `== bmc_util.cpp: run_property_decider`
+  header, then exits 1 after 0.4 s with no further output. Under `set -euo pipefail` the next command,
+  `grep -n -A45 "^decision_proceduret::resultt run_property_decider" bmc_util.cpp`, matched nothing: that return type
+  and line layout is not how 6.11.0 declares the function (likely a different return type or the name on its own line
+  after the type). So the job never reached the `Runtime Solver` / `Runtime Post-process` / `finish_eager_conversion`
+  checks. This is a defect in the job's step, not a finding about CBMC. I did not edit the step.
+- **Needs**: the submitter resubmits with a pattern that matches (for instance `grep -n -B2 -A45 "run_property_decider("`),
+  or drops the `-n -A` display and keeps the three `grep -q` checks.
+- **Tracked in**: the job's `logs/1-fetch-and-show-cbmc-6-11-0-s-s.log`.
+- **Closes when**: the corrected job passes.
+
+### VF-003: Bitwuzla 0.8.2 builds but the installed binary cannot load `libcadical.so`
+
+- **Status**: closed (job `20261106-194049-bitwuzla-0-8-2-built-from-source-cadical`, passed 2026-11-06 at `66dd857b6891`: CaDiCaL linked static, `bitwuzla --version` 0.8.2, three smoke queries gave the expected sat/unsat, C API through pkg-config works)
+- **Raised**: 2026-11-06 on this 24-CPU host (run with `--memory 8G --workers 2`). Job
+  `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` at `3853fcc7e8b7`.
+- **Found**: `lib/solvers/bitwuzla/build.sh 0.8.2` downloads, compiles (217 targets, 24 s, peak 1.9 GiB) and installs into
+  `~/tools/bitwuzla/bitwuzla-0.8.2`, then its check exits 127: `bitwuzla: error while loading shared libraries:
+  libcadical.so: cannot open shared object file`. The shared-library build links CaDiCaL as a shared subproject, but
+  no `libcadical.so` exists anywhere under `~/tools/bitwuzla`: meson did not install it (or no rpath points at it).
+  Deterministic; not a resource problem. The partial install is left in place.
+- **Needs**: whoever owns the solver comparison fixes `build.sh`: install CaDiCaL's library into the prefix with an
+  rpath, or build CaDiCaL static, and check with `ldd` before the version smoke test.
+- **Tracked in**: the job's `logs/1-build-bitwuzla-0-8-2.log`.
+- **Closes when**: the job, resubmitted after the fix, passes.
 
 None yet.

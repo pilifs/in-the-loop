@@ -1,0 +1,110 @@
+33d67dcd7e63eb715ae6684c5162035e2e1d672f20428fe8e7d8df93d5da8de2  /tmp/tmp.FHu4wKYloy/bmc_util.cpp
+378b8528a9372c44d59f46c49fe3c54d6867a1b1f536c27c0ee38003a3099397  /tmp/tmp.FHu4wKYloy/prop_conv_solver.cpp
+== bmc_util.cpp: run_property_decider
+370-}
+371-
+372:void run_property_decider(
+373-  incremental_goto_checkert::resultt &result,
+374-  propertiest &properties,
+375-  goto_symex_property_decidert &property_decider,
+376-  ui_message_handlert &ui_message_handler,
+377-  std::chrono::duration<double> solver_runtime,
+378-  bool set_pass)
+379-{
+380-  auto solver_start = std::chrono::steady_clock::now();
+381-
+382-  messaget log(ui_message_handler);
+383-  log.status()
+384-    << "Running "
+385-    << property_decider.get_decision_procedure().decision_procedure_text()
+386-    << messaget::eom;
+387-
+388-  property_decider.add_constraint_from_goals(
+389-    [&properties](const irep_idt &property_id) {
+390-      return is_property_to_check(properties.at(property_id).status);
+391-    });
+392-
+393-  auto const sat_solver_start = std::chrono::steady_clock::now();
+394-
+395-  decision_proceduret::resultt dec_result = property_decider.solve();
+396-
+397-  auto const sat_solver_stop = std::chrono::steady_clock::now();
+398-  std::chrono::duration<double> sat_solver_runtime =
+399-    std::chrono::duration<double>(sat_solver_stop - sat_solver_start);
+400-  log.statistics() << "Runtime Solver: " << sat_solver_runtime.count() << "s"
+401-                   << messaget::eom;
+402-
+403-  property_decider.update_properties_status_from_goals(
+404-    properties, result.updated_properties, dec_result, set_pass);
+405-
+406-  auto solver_stop = std::chrono::steady_clock::now();
+407-  solver_runtime += std::chrono::duration<double>(solver_stop - solver_start);
+408-  log.statistics() << "Runtime decision procedure: " << solver_runtime.count()
+409-                   << "s" << messaget::eom;
+410-
+411-  if(dec_result == decision_proceduret::resultt::D_SATISFIABLE)
+412-  {
+413-    result.progress = incremental_goto_checkert::resultt::progresst::FOUND_FAIL;
+414-  }
+415-}
+== 'Runtime decision procedure' lines
+bmc_util.cpp:408:  log.statistics() << "Runtime decision procedure: " << solver_runtime.count()
+== post_processing_done guard
+prop_conv_solver.cpp-448-    // post-processing isn't incremental yet
+prop_conv_solver.cpp:449:    if(!post_processing_done)
+prop_conv_solver.cpp-450-    {
+prop_conv_solver.cpp-451-      const auto post_process_start = std::chrono::steady_clock::now();
+prop_conv_solver.cpp-452-
+prop_conv_solver.cpp-453-      log.progress() << "Post-processing" << messaget::eom;
+prop_conv_solver.cpp-454-      finish_eager_conversion();
+prop_conv_solver.cpp:455:      post_processing_done = true;
+prop_conv_solver.cpp-456-
+prop_conv_solver.cpp-457-      const auto post_process_stop = std::chrono::steady_clock::now();
+prop_conv_solver.cpp-458-      std::chrono::duration<double> post_process_runtime =
+prop_conv_solver.cpp-459-        std::chrono::duration<double>(post_process_stop - post_process_start);
+prop_conv_solver.cpp-460-      log.statistics() << "Runtime Post-process: "
+prop_conv_solver.cpp-461-                       << post_process_runtime.count() << "s" << messaget::eom;
+== prop_conv_solver.cpp: dec_solve
+444:prop_conv_solvert::dec_solve(const exprt &assumption)
+445-{
+446-  try
+447-  {
+448-    // post-processing isn't incremental yet
+449-    if(!post_processing_done)
+450-    {
+451-      const auto post_process_start = std::chrono::steady_clock::now();
+452-
+453-      log.progress() << "Post-processing" << messaget::eom;
+454-      finish_eager_conversion();
+455-      post_processing_done = true;
+456-
+457-      const auto post_process_stop = std::chrono::steady_clock::now();
+458-      std::chrono::duration<double> post_process_runtime =
+459-        std::chrono::duration<double>(post_process_stop - post_process_start);
+460-      log.statistics() << "Runtime Post-process: "
+461-                       << post_process_runtime.count() << "s" << messaget::eom;
+462-    }
+463-
+464-    log.progress() << "Solving with " << prop.solver_text() << messaget::eom;
+465-
+466-    if(assumption.is_nil())
+467-      push();
+468-    else
+469-      push({assumption});
+470-
+471-    auto prop_result = prop.prop_solve(assumption_stack);
+472-
+473-    pop();
+474-
+475-    switch(prop_result)
+476-    {
+477-    case propt::resultt::P_SATISFIABLE:
+478-      return resultt::D_SATISFIABLE;
+479-    case propt::resultt::P_UNSATISFIABLE:
+480-      return resultt::D_UNSATISFIABLE;
+481-    case propt::resultt::P_ERROR:
+482-      return resultt::D_ERROR;
+483-    }
+484-
+== checks
+all three strings found
