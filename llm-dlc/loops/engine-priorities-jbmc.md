@@ -73,7 +73,12 @@ Progress, so the reconcile loop knows where to look.
     700 MiB, and two solver calls in one run.
   - The nesting shows in the message times. Job `20261106-192959` (network) was to check it against CBMC's source at
     `cbmc-6.11.0`. It failed on its own display grep, which matched nothing under `pipefail` before any check ran
-    (finding VF-004). The runner resubmitted it from the default workspace as `20261106-194328`. Nothing waits on it.
+    (finding VF-004). The runner resubmitted it from the default workspace as `20261106-194328`, which **passed**.
+    In CBMC 6.11.0, `run_property_decider` (`bmc_util.cpp:393–400`) times `property_decider.solve()` as
+    `Runtime Solver`. Inside that call, `prop_conv_solvert::dec_solve` runs `finish_eager_conversion()` and prints
+    `Runtime Post-process` (`prop_conv_solver.cpp:449–461`), guarded by `post_processing_done`, so only a run's
+    first call prints it. That is the nesting `phases.rs` assumes. The constraint from the goals is added before
+    the Solver timer starts, so it lands in `Runtime decision procedure`, which `phases.rs` doesn't read.
   - Shared files changed (added to, nothing reorganized):
     - `lib/README.md`: one clause on `phases_excess` in `--json`'s description;
     - `lib/src/jbmc.rs`: `json_items` is `pub(crate)`, for the tests.

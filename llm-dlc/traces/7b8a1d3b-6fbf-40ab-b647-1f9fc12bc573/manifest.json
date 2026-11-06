@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T20:01:34.331Z",
-  "duration_seconds": 2790,
+  "ended": "2026-11-06T20:02:12.548Z",
+  "duration_seconds": 2828,
   "stats": {
     "turns": 18,
-    "api_calls": 159,
-    "tool_calls": 157,
+    "api_calls": 163,
+    "tool_calls": 161,
     "tool_errors": 1,
     "compactions": 3,
     "peak_context_tokens": 160967,
     "usage": {
-      "input_tokens": 316,
-      "output_tokens": 125834,
-      "cache_read_input_tokens": 16325192,
-      "cache_creation_input_tokens": 420704
+      "input_tokens": 324,
+      "output_tokens": 128287,
+      "cache_read_input_tokens": 16831449,
+      "cache_creation_input_tokens": 430046
     }
   },
   "tools": {
-    "Bash": 149,
+    "Bash": 153,
     "Edit": 5,
     "Read": 2,
     "Write": 1
@@ -86,24 +86,24 @@
     {
       "index": 3,
       "started": "2026-11-06T19:48:43.658Z",
-      "ended": "2026-11-06T20:01:34.331Z",
+      "ended": "2026-11-06T20:02:12.548Z",
       "turns": 4,
-      "api_calls": 36,
+      "api_calls": 40,
       "usage": {
-        "input_tokens": 72,
-        "output_tokens": 27361,
-        "cache_read_input_tokens": 3143155,
-        "cache_creation_input_tokens": 110195
+        "input_tokens": 80,
+        "output_tokens": 29814,
+        "cache_read_input_tokens": 3649412,
+        "cache_creation_input_tokens": 119537
       },
-      "peak_context_tokens": 123274
+      "peak_context_tokens": 132616
     }
   ],
   "log": {
-    "sha256": "0d78378a22c84361d50834a255abd83c43adedf45f5e86b4a97c59c4130e94fd",
-    "bytes": 4057524,
-    "lines": 1646,
-    "gzip_bytes": 746312,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/0d78378a22c84361d50834a255abd83c43adedf45f5e86b4a97c59c4130e94fd.jsonl.gz"
+    "sha256": "1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943",
+    "bytes": 4214800,
+    "lines": 1683,
+    "gzip_bytes": 771292,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -138,6 +138,14 @@
       "summary": "JBMC's staging policy is an option: staged, full range alone, or one tight stage first",
       "body": "Step 2a of llm-dlc/loops/engine-priorities.md. `--jbmc-staging` on `equivalence` and `prove` picks which of JBMC's interval stages run before the full range (`deadline::Staging`). `staged` is today's search and stays the default until the 2b job decides. `full-range` runs the full range alone and shrinks its counterexample in the interpreter. `tight` runs the first stage that leaves out an input on at most a fortieth of the check, then the full range. The deadline, bounds, models, preflights, gap rules and stop rule are the same under each, and the own checker's stages and --confirm don't follow the policy. A JBMC verdict records the policy as search.staging.\n\nVerified with unit tests in deadline.rs for each policy's stages and budgets, and an end-to-end test in conformance.rs (added) against a stand-in JBMC answering stage by stage. It checks the stages and budgets on property and regression checks, a slow first stage handing on, and violations from the wide stage and the full range, both shrunk to the same witness. Mutating equivalence to ignore the option fails it. Lib 155, integration 63 and skill tests pass. Conformance fails only as before: 12 JDK 25.0.5 disagreements in the corpus test, recorded in Progress. Shared files are named under Progress. Noted for 2c: under --engine auto, a staged fallback whose two preliminary stages time out leaves the full range no time.",
       "log_sha256": "0d78378a22c84361d50834a255abd83c43adedf45f5e86b4a97c59c4130e94fd"
+    },
+    {
+      "change_id": "tvquoumwxvrqkvkuwotnmrlllmkvppxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record that CBMC 6.11.0's source nests Runtime Post-process inside Runtime Solver, as phases.rs assumes",
+      "body": "Job 20261106-194328, the resubmitted source check for step 1a of llm-dlc/loops/engine-priorities.md, passed in the default workspace. run_property_decider times property_decider.solve() as Runtime Solver (bmc_util.cpp:393-400). dec_solve, inside it, runs finish_eager_conversion once, guarded by post_processing_done, and prints Runtime Post-process (prop_conv_solver.cpp:449-461). That is the nesting lib/src/phases.rs counts once. Only the Progress note in the stream brief changes.",
+      "log_sha256": "1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943"
     }
   ],
   "logs": {
@@ -145,6 +153,12 @@
       "bytes": 4057524,
       "lines": 1646,
       "gzip_bytes": 746312,
+      "url": null
+    },
+    "1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943": {
+      "bytes": 4214800,
+      "lines": 1683,
+      "gzip_bytes": 771292,
       "url": null
     },
     "5a885317df6c535c722601d9c9204901c7b271796b1076c9917629a27fe0086a": {
