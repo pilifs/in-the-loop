@@ -1519,6 +1519,39 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Next: once job `-102624` is back, rank the patch candidates in `engine-priorities.md` from its table. Remove the
     text parser once `-073804` agrees. Those, with the pending jobs, are what is left of the brief; every phase's
     plan step is done.
+- **The pipeline results of 1d, 1e and 3's Crosscut examples are back (2026-11-06, on `vm-1`). Phase 1 is not done:
+  its criterion fails on both engines' JBMC side.** Not yet triaged or fixed; the findings below are the open work.
+  - Job `20261106-021741-conformance-corpus-under-jbmc-and-engine` (at `470be6c5ff8b`, JBMC 6.11.0) failed with 10
+    disagreements with the JVM. **JBMC says `Verified` under `--gaps strict` for seven claims the JVM refutes**:
+    - `capacity`, `builderCapacity`, `mapCapacity`, `setCapacity` and `loadFactor`: the JDK constructors throw on a
+      negative capacity (or a load factor of 0 or less), and JBMC's library models return normally. This is the
+      models layer [the JBMC review](sound-verdicts-review-jbmc.md) calls the clearest to bring under control
+      (pinned to 2022, with known defects); the own checker names these as gaps and refuses them under strict.
+    - `nullMonitor`: `synchronized ((Object) null)` throws `NullPointerException` on the JVM, and JBMC proves it
+      returns.
+    - `firstByte`: `Random.nextBytes`, a gap for the own checker, which JBMC's models get wrong.
+    - `pairsEqual`: a record's `equals` through `invokedynamic`, outside the own checker's fragment.
+    - **`--engine auto` passes two of them through under strict**: `loadFactor` (floating point) and `pairsEqual`,
+      where the own checker gives no verdict and auto takes JBMC's `Verified`. Auto's fallback to JBMC is unsound
+      wherever JBMC's models are.
+  - Job `20261106-024336-conformance-corpus-under-engine-auto-con` (same commit) failed with 12 disagreements:
+    - **JBMC reports a violation the JVM does not reproduce, on `caught(n=0)` and `nestedHandler(n=0)`**, under
+      strict and assume. Both catch the `ArithmeticException` of an integer division by zero. The own checker proves
+      them, the JVM agrees, and `--confirm` makes them `Unverifiable` ("the engines disagree"), as 1e designed. JBMC
+      treats the division as a failed check rather than a catchable exception: either its semantics, or a flag the
+      adapter does not pass (such as `--throw-runtime-exceptions`). To find out which.
+    - `loadFactor` and `pairsEqual` again, under strict and under assume ("with no gap assumed"), as above.
+  - What closing Phase 1 needs, from these: JBMC's verdicts on JDK calls its models stand in for are gaps under
+    strict (Phase 4's "its stubs as gaps"), `synchronized (null)` and division by zero behave as on the JVM under
+    JBMC (or are refused), and auto does not take a JBMC `Verified` where the own checker had no verdict without
+    the same check. The two jobs are the acceptance test: rerun them, unchanged, once that is done.
+  - Examples 147, 148 and 149 (jobs `20261106-053555-…147…`, `-053555-…148…`, `20261106-061323-…149…`) failed
+    before any proof: their patches create the subject file `Jitter.java` (`--- /dev/null`), and `build.py`'s
+    `excerpts()` requires the subject to have a before side, so it stops with "the patch does not change the subject
+    file". True at the jobs' commits and still on 2026-11-06. Either `excerpts()` takes a created subject (an empty
+    before side), or the examples' patches stop creating it. The examples' notes say so too.
+  - The logs with every disagreement are in `verification/results/<job>/logs/`. Both corpus jobs run long (18 and
+    22 minutes on `vm-1`), well within their estimate's ceiling.
 
 ## Loop settings
 
