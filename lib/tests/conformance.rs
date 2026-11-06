@@ -233,12 +233,20 @@ fn corpus() -> Vec<Case> {
 }
 
 /// The corpus and the runner, compiled.
+#[derive(Clone)]
 struct Compiled {
     classes: PathBuf,
     runner: PathBuf,
 }
 
+/// The corpus and the runner, compiled once for every test of the run: the tests run in parallel, and one that
+/// compiled again would delete the classes another is reading.
 fn compile() -> Option<Compiled> {
+    static COMPILED: std::sync::OnceLock<Option<Compiled>> = std::sync::OnceLock::new();
+    COMPILED.get_or_init(compile_now).clone()
+}
+
+fn compile_now() -> Option<Compiled> {
     if !has("javac") || !has("java") {
         return None;
     }

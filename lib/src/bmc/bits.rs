@@ -174,6 +174,10 @@ pub struct Blaster {
     timing: bool,
     /// The state of the generator that picks which operations are timed.
     sampling: u64,
+    /// Where every clause and call goes as well, when the check is recorded ([`super::transcript`]).
+    transcript: Option<super::transcript::Transcript>,
+    /// The per-call time limit last given to the solver, for the transcript.
+    limit: Option<f32>,
     /// What reading the clock around nothing takes, which each timed operation's time includes once.
     clock: std::time::Duration,
 }
@@ -213,13 +217,30 @@ impl Default for Blaster {
 
 impl Blaster {
     pub fn new() -> Blaster {
-        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost() };
+        Self::recorded(None)
+    }
+
+    /// A blaster whose clauses and calls also go to `transcript`, from the first: the unit clause of the constant.
+    pub fn recorded(transcript: Option<super::transcript::Transcript>) -> Blaster {
+        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None };
         b.clause(&[TRUE]);
         b
     }
 
+    /// Ends the transcript, if there is one, with `last` as its closing comment: where it is, or why it could not be
+    /// written.
+    pub fn finish_transcript(&mut self, last: &str) -> Option<std::io::Result<std::path::PathBuf>> {
+        self.transcript.take().map(|t| t.finish(last))
+    }
+
+    /// Where the transcript is being written, if there is one.
+    pub fn transcript_path(&self) -> Option<&std::path::Path> {
+        self.transcript.as_ref().map(|t| t.path())
+    }
+
     /// Stops the solver after this many seconds on any one call.
     pub fn set_timeout(&mut self, seconds: f32) {
+        self.limit = Some(seconds);
         self.solver.set_callbacks(Some(cadical::Timeout::new(seconds)));
     }
 
@@ -250,6 +271,9 @@ impl Blaster {
     fn clause(&mut self, lits: &[Lit]) {
         self.solver.add_clause(lits.iter().copied());
         self.clauses += 1;
+        if let Some(t) = &mut self.transcript {
+            t.clause(lits);
+        }
     }
 
     /// A fresh variable: an input.
@@ -783,10 +807,10 @@ impl Blaster {
             Op::DivRem => self.sdivrem(&a, &b),
             Op::Mul => (self.mul(&a, &b), Vec::new()),
         };
-        for (&chosen, &real) in self.lazy[i].q.iter().zip(&q).chain(self.lazy[i].r.iter().zip(&r)) {
-            self.solver.add_clause([-chosen, real]);
-            self.solver.add_clause([chosen, -real]);
-            self.clauses += 2;
+        let ties: Vec<(Lit, Lit)> = self.lazy[i].q.iter().zip(&q).chain(self.lazy[i].r.iter().zip(&r)).map(|(&c, &r)| (c, r)).collect();
+        for (chosen, real) in ties {
+            self.clause(&[-chosen, real]);
+            self.clause(&[chosen, -real]);
         }
         self.lazy[i].refined = true;
     }
@@ -913,8 +937,12 @@ impl Blaster {
             return Some(false);
         }
         let started = std::time::Instant::now();
-        let answer = self.solver.solve_with(assumptions.into_iter());
-        self.solving += started.elapsed();
+        let answer = self.solver.solve_with(assumptions.iter().copied());
+        let took = started.elapsed();
+        self.solving += took;
+        if let Some(t) = &mut self.transcript {
+            t.call(&assumptions, self.limit, answer, took);
+        }
         answer
     }
 

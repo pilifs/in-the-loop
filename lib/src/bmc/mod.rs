@@ -70,6 +70,7 @@
 
 pub mod bits;
 pub mod gaps;
+pub mod transcript;
 
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
@@ -100,11 +101,14 @@ pub struct Options {
     /// Under advised, the contracts that close gaps (`--contracts`, [`crate::gap_contracts`]): the engine applies
     /// each at its gap in place of refusing it.
     pub contracts: std::sync::Arc<BTreeMap<Gap, Closure>>,
+    /// The file to write the run's solver calls to ([`transcript`]); when `None`, the directory the environment
+    /// variable [`transcript::ENV`] names, if it is set.
+    pub transcript: Option<std::path::PathBuf>,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default() }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None }
     }
 }
 
@@ -157,6 +161,8 @@ pub struct Outcome {
     /// The gaps the run met, each refused (strict: a path ended there) or assumed, with where.
     pub gaps: Vec<GapRecord>,
     pub gap_mode: GapMode,
+    /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
+    pub transcript: Option<std::path::PathBuf>,
 }
 
 impl Outcome {
@@ -229,6 +235,7 @@ impl Outcome {
             }
         };
         format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+            + &self.transcript.as_ref().map(|t| format!("; solver calls written to {}", t.display())).unwrap_or_default()
     }
 }
 
@@ -587,9 +594,21 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     };
     let m = harness.method_by_name(method).ok_or_else(|| Error::new(format!("no method {method} in {class}")))?.clone();
     let descriptor = MethodDescriptor::parse(&m.descriptor)?;
+    let transcript = match transcript::destination(options.transcript.as_deref()) {
+        None => None,
+        Some(path) => {
+            let header = [
+                format!("jvmcontract {}: the own checker's solver calls, in order ({})", env!("CARGO_PKG_VERSION"), "lib/src/bmc/transcript.rs"),
+                format!("solver: {}", solver_signature()),
+                format!("check: {class}.{method}{}", m.descriptor),
+                format!("options: unwind {}, max array length {}, max paths {}, merge after {}, timeout {:.3} s, gaps {}", options.unwind, options.max_array_length, options.max_paths, options.merge_after, options.timeout.as_secs_f64(), options.gaps.name()),
+            ];
+            Some(transcript::Transcript::create(&path, &header).map_err(|e| Error::new(format!("cannot write the transcript {}: {e}", path.display())))?)
+        }
+    };
     let mut engine = Engine {
         cp,
-        b: Blaster::new(),
+        b: Blaster::recorded(transcript),
         codes: HashMap::new(),
         pending: Vec::new(),
         deferred: Vec::new(),
@@ -643,124 +662,137 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         solver: solver.clone(),
         gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })).into_iter().chain(gaps::contract_records(&engine.applied, &engine.contracts, jdk.as_deref())).collect(),
         gap_mode: engine.gap_mode,
+        transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
-    // The inputs: fresh bits per parameter, in its range; an array parameter is an object of a fresh length up to
-    // the bound (the first path's condition) with fresh cells.
-    let mut locals: Vec<Option<Val>> = Vec::new();
-    let mut objects: Vec<Obj> = Vec::new();
-    let mut cond: Vec<Lit> = Vec::new();
-    let mut slot = 0u32;
-    for t in &descriptor.params {
-        if let Some(why) = unsupported_parameter(t) {
-            return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
+    let result = 'search: {
+        // The inputs: fresh bits per parameter, in its range; an array parameter is an object of a fresh length up to
+        // the bound (the first path's condition) with fresh cells.
+        let mut locals: Vec<Option<Val>> = Vec::new();
+        let mut objects: Vec<Obj> = Vec::new();
+        let mut cond: Vec<Lit> = Vec::new();
+        let mut slot = 0u32;
+        for t in &descriptor.params {
+            if let Some(why) = unsupported_parameter(t) {
+                break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
+            }
+            if let Type::Array(element) = t {
+                let length = engine.b.fresh(32);
+                let zero = engine.b.constant(0, 32);
+                let most = engine.b.constant(i64::from(options.max_array_length), 32);
+                cond.push(engine.b.sle(&zero, &length));
+                cond.push(engine.b.sle(&length, &most));
+                let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
+                engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
+                objects.push(Obj { class: format!("{}[]", element.java_name()), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells }) });
+                locals.push(Some(Val::R(Some(objects.len() - 1))));
+                slot += 1;
+                continue;
+            }
+            let bits = match t {
+                Type::Boolean => {
+                    let mut v = vec![FALSE; 32];
+                    v[0] = engine.b.var();
+                    v
+                }
+                Type::Byte => {
+                    let small = engine.b.fresh(8);
+                    engine.b.sext(&small, 32)
+                }
+                Type::Char => {
+                    let small = engine.b.fresh(16);
+                    engine.b.zext(&small, 32)
+                }
+                Type::Short => {
+                    let small = engine.b.fresh(16);
+                    engine.b.sext(&small, 32)
+                }
+                Type::Int => engine.b.fresh(32),
+                Type::Long => engine.b.fresh(64),
+                _ => unreachable!(),
+            };
+            engine.params.push((slot, t.clone(), bits.clone()));
+            locals.push(Some(if *t == Type::Long { Val::J(bits) } else { Val::I(bits) }));
+            if *t == Type::Long {
+                locals.push(None);
+            }
+            slot += u32::from(t.slots());
         }
-        if let Type::Array(element) = t {
-            let length = engine.b.fresh(32);
-            let zero = engine.b.constant(0, 32);
-            let most = engine.b.constant(i64::from(options.max_array_length), 32);
-            cond.push(engine.b.sle(&zero, &length));
-            cond.push(engine.b.sle(&length, &most));
-            let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
-            engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
-            objects.push(Obj { class: format!("{}[]", element.java_name()), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells }) });
-            locals.push(Some(Val::R(Some(objects.len() - 1))));
-            slot += 1;
-            continue;
-        }
-        let bits = match t {
-            Type::Boolean => {
-                let mut v = vec![FALSE; 32];
-                v[0] = engine.b.var();
-                v
-            }
-            Type::Byte => {
-                let small = engine.b.fresh(8);
-                engine.b.sext(&small, 32)
-            }
-            Type::Char => {
-                let small = engine.b.fresh(16);
-                engine.b.zext(&small, 32)
-            }
-            Type::Short => {
-                let small = engine.b.fresh(16);
-                engine.b.sext(&small, 32)
-            }
-            Type::Int => engine.b.fresh(32),
-            Type::Long => engine.b.fresh(64),
-            _ => unreachable!(),
-        };
-        engine.params.push((slot, t.clone(), bits.clone()));
-        locals.push(Some(if *t == Type::Long { Val::J(bits) } else { Val::I(bits) }));
-        if *t == Type::Long {
-            locals.push(None);
-        }
-        slot += u32::from(t.slots());
-    }
-    let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
-    locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
-    engine.pending.push(first);
+        let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
+        locals.resize(code.max_locals.max(locals.len()), None);
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
+        engine.pending.push(first);
 
-    // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
-    // search, since another path may have one in the first stage, as it does when the first path to fail is an
-    // overflow and the second a rounding. The search for a better one is given as long again as the first took,
-    // within the deadline; the violation stands whatever the remaining paths do.
-    let mut best: Option<(usize, Input)> = None;
-    let violation = |engine: &Engine, best: Option<(usize, Input)>| {
-        let (stage, input) = best.expect("a violation");
-        let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
-        outcome(engine, Verdict::Violation, input, stage, None)
-    };
-    loop {
-        let path = match engine.next_path() {
-            Ok(Some(path)) => path,
-            Ok(None) => break,
-            Err(stop) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
+        // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
+        // search, since another path may have one in the first stage, as it does when the first path to fail is an
+        // overflow and the second a rounding. The search for a better one is given as long again as the first took,
+        // within the deadline; the violation stands whatever the remaining paths do.
+        let mut best: Option<(usize, Input)> = None;
+        let violation = |engine: &Engine, best: Option<(usize, Input)>| {
+            let (stage, input) = best.expect("a violation");
+            let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
+            outcome(engine, Verdict::Violation, input, stage, None)
         };
-        if engine.paths > engine.max_paths {
-            return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
-        }
-        match engine.run(path) {
-            Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) => {}
-            Ok(End::Violation(cond)) => {
-                let (stage, input) = match engine.staged_input(&cond) {
-                    Ok(found) => found,
-                    Err(stop) if best.is_some() => {
-                        let _ = stop;
-                        return Ok(violation(&engine, best));
+        loop {
+            let path = match engine.next_path() {
+                Ok(Some(path)) => path,
+                Ok(None) => break,
+                Err(stop) => break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
+            };
+            if engine.paths > engine.max_paths {
+                break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
+            }
+            match engine.run(path) {
+                Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) => {}
+                Ok(End::Violation(cond)) => {
+                    let (stage, input) = match engine.staged_input(&cond) {
+                        Ok(found) => found,
+                        Err(stop) if best.is_some() => {
+                            let _ = stop;
+                            break 'search Ok(violation(&engine, best));
+                        }
+                        Err(stop) => break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop)))),
+                    };
+                    if best.as_ref().is_none_or(|(s, _)| stage < *s) {
+                        if best.is_none() {
+                            let elapsed = started.elapsed();
+                            engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                        }
+                        best = Some((stage, input));
                     }
-                    Err(stop) => return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop)))),
-                };
-                if best.as_ref().is_none_or(|(s, _)| stage < *s) {
-                    if best.is_none() {
-                        let elapsed = started.elapsed();
-                        engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                    if stage == 0 {
+                        break 'search Ok(violation(&engine, best));
                     }
-                    best = Some((stage, input));
                 }
-                if stage == 0 {
-                    return Ok(violation(&engine, best));
+                Ok(End::Unwound(what)) => {
+                    break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
                 }
+                Err(Stop::Unsupported(what)) => {
+                    break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {what}"))) })
+                }
+                Err(Stop::Budget(what)) => break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(what)) }),
             }
-            Ok(End::Unwound(what)) => {
-                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
-            }
-            Err(Stop::Unsupported(what)) => {
-                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {what}"))) })
-            }
-            Err(Stop::Budget(what)) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(what)) }),
+        }
+        if best.is_some() {
+            break 'search Ok(violation(&engine, best));
+        }
+        if !engine.met.is_empty() && (engine.gap_mode.refuses() || engine.met.keys().any(|g| !g.kind.assumable())) {
+            let refused: BTreeMap<Gap, std::collections::BTreeSet<Site>> = engine.met.iter().filter(|(g, _)| engine.gap_mode.refuses() || !g.kind.assumable()).map(|(g, s)| (g.clone(), s.clone())).collect();
+            let problem = refused_gaps(&gaps::records(&refused, jdk.as_deref(), None), engine.gap_mode);
+            break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
+        }
+        Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
+    };
+    // The transcript ends with how the run ended; one that could not be written fails the run, which was asked for it.
+    let mut result = result;
+    if let Ok(out) = &mut result {
+        let last = format!("{:?}{}", out.verdict, out.problem.as_deref().map(|p| format!(": {p}")).unwrap_or_default());
+        if let Some(written) = engine.b.finish_transcript(&last.replace('\n', " ")) {
+            let path = out.transcript.clone().unwrap_or_default();
+            written.map_err(|e| Error::new(format!("cannot write the transcript {}: {e}", path.display())))?;
         }
     }
-    if best.is_some() {
-        return Ok(violation(&engine, best));
-    }
-    if !engine.met.is_empty() && (engine.gap_mode.refuses() || engine.met.keys().any(|g| !g.kind.assumable())) {
-        let refused: BTreeMap<Gap, std::collections::BTreeSet<Site>> = engine.met.iter().filter(|(g, _)| engine.gap_mode.refuses() || !g.kind.assumable()).map(|(g, s)| (g.clone(), s.clone())).collect();
-        let problem = refused_gaps(&gaps::records(&refused, jdk.as_deref(), None), engine.gap_mode);
-        return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
-    }
-    Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
+    result
 }
 
 /// Why a run that refused gaps has no verdict: each gap by its id, with the call and where.
@@ -3044,6 +3076,54 @@ mod tests {
         assert_eq!(x.wrapping_div(y), 3, "{x} / {y}");
         assert!(out.refined <= 1, "{}", out.summary());
         assert!(out.summary().contains(&format!("{} of 1 divisions and 0 of 0 multiplications built in full", out.refined)));
+    }
+
+    /// A run that writes its solver calls is the same run, and the transcript holds every clause and call it made,
+    /// which give the same answers when run again ([`transcript`]).
+    #[test]
+    fn a_transcript_holds_every_clause_and_call_and_replays_with_the_same_answers() {
+        // x / y == 3 claimed impossible, behind two branches: refuted, after calls on both branches and the
+        // division's facts, perhaps its circuit too.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("deeper/check.icnf");
+        let plain = run(&cp);
+        let recorded = check(&cp, "Check", "check", &Options { transcript: Some(path.clone()), ..Options::default() }).unwrap();
+        let same = |o: &Outcome| (o.verdict, o.paths, o.solves, o.clauses, o.variables, o.raw_inputs.clone(), o.refined);
+        assert_eq!(same(&recorded), same(&plain));
+        assert_eq!((plain.transcript.as_ref(), recorded.transcript.as_ref()), (None, Some(&path)));
+        assert!(recorded.summary().ends_with(&format!("; solver calls written to {}", path.display())), "{}", recorded.summary());
+
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.starts_with(&format!("c jvmcontract {}: the own checker's solver calls, in order", env!("CARGO_PKG_VERSION"))), "{text}");
+        assert!(text.contains(&format!("\nc solver: {}\n", solver_signature())), "{text}");
+        assert!(text.contains("\nc check: Check.check(II)V\nc options: unwind 16, max array length 8, max paths 200000, merge after 512, timeout 600.000 s, gaps strict\np inccnf\n1 0\n"), "{text}");
+        let replay = transcript::replay(&path, None).unwrap();
+        assert!(replay.calls.len() >= 2 && replay.calls.len() as u64 <= recorded.solves, "{} calls of {}", replay.calls.len(), recorded.solves);
+        assert_eq!(replay.clauses, recorded.clauses);
+        assert_eq!(replay.variables, recorded.variables);
+        assert_eq!((replay.contradictions, replay.undecided, replay.decided), (0, 0, 0), "{}", replay.summary());
+        assert!(replay.calls.iter().all(|c| c.limit.is_some_and(|l| l > 0.0 && l <= 600.0)), "{:?}", replay.calls);
+        assert_eq!(replay.calls.last().map(|c| c.recorded), Some("sat"), "the violation's input is the last model asked for");
+        assert_eq!(replay.ending, Some(format!("end: {} clauses, {} calls; Violation", recorded.clauses, replay.calls.len())));
+
+        // One that cannot be written stops the run before it starts, since it was asked for.
+        let blocked = dir.path().join("file");
+        std::fs::write(&blocked, "").unwrap();
+        let e = check(&cp, "Check", "check", &Options { transcript: Some(blocked.join("x.icnf")), ..Options::default() }).unwrap_err();
+        assert!(e.to_string().starts_with("cannot write the transcript"), "{e}");
     }
 
     #[test]

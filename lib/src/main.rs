@@ -188,6 +188,19 @@ enum Command {
         #[arg(long)]
         code: bool,
     },
+    /// Run a transcript of the own checker's solver calls again on the bundled CaDiCaL, call by call, and compare
+    /// the answers with the recorded ones. A check writes one when the environment variable
+    /// JVMCONTRACT_TRANSCRIPTS names a directory. Exits 1 when an answer contradicts the recorded one.
+    Transcript {
+        /// The transcript (`p inccnf`, with each call's recorded answer in a comment after it).
+        file: PathBuf,
+        /// Give every call this many seconds, instead of the limit recorded for it.
+        #[arg(long)]
+        limit: Option<f32>,
+        /// Print JSON, with every call.
+        #[arg(long)]
+        json: bool,
+    },
 }
 
 #[derive(Args, Clone)]
@@ -759,6 +772,15 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let class = jvmcontract::classfile::ClassFile::parse(&bytes)?;
             print!("{}", jvmcontract::classfile::describe(&class, code)?);
             Ok(0)
+        }
+        Command::Transcript { file, limit, json } => {
+            let replay = jvmcontract::bmc::transcript::replay(&file, limit)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&replay).map_err(|e| Error::new(e.to_string()))?);
+            } else {
+                println!("{}", replay.summary());
+            }
+            Ok(if replay.contradictions > 0 { 1 } else { 0 })
         }
     }
 }

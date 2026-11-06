@@ -255,9 +255,50 @@ are yours, but say under Progress which JBMC results they may change.
     (`JVMCONTRACT_BLESS=1`, as in step 1).
   - **Tests:** unit (145), integration (64) and skill pass, and so does conformance, apart from its two known
     failures: the 12 library-record claims, and the benchmark file.
-- **Next:** while the job runs, Phase 6a, transcripts of the own checker's incremental queries. Once it is back,
-  record its result here. After that, enums in the own checker: arrays of references for `$VALUES`, and the `Enum`
-  model run there.
+- **6a: transcripts of the own checker's solver calls** (inline; CaDiCaL 1.9.5, bundled).
+  - **What is recorded.** `lib/src/bmc/transcript.rs` (new) writes every clause the engine gives CaDiCaL and every
+    call it makes, in order. The format is CaDiCaL's own incremental CNF (`p inccnf`; a call is an `a` line of its
+    assumptions). After each call, a comment gives the answer, the seconds and the per-call time limit. The header
+    comments name the tool's version, the solver, the method and the engine's options, and a last comment says how
+    the check ended. A call that the engine settles without the solver (a constant-false assumption) isn't written.
+  - **When.** `bmc::Options::transcript` names a file. Otherwise the environment variable `JVMCONTRACT_TRANSCRIPTS`
+    names a directory, and each check in the process writes `PID-N.icnf` there. The variable reaches the checks of
+    `prove`, `equivalence`, the benchmark's runner and a job without a flag of their own, so 6c needs no change in
+    the JBMC stream's `lib/benchmark/`. A transcript that can't be created, or can't be written in full, fails the
+    check, since it was asked for. Without one, nothing changes.
+  - **Replay.** `jvmcontract transcript FILE [--limit S] [--json]` runs a transcript again on the bundled CaDiCaL,
+    call by call, each with its recorded limit. It reports the time against the recorded time, and the calls whose
+    answers contradict the recorded ones (exit 1), or were decided on one side only.
+  - **Checked.**
+    - Unit tests: the parser, a hand-written transcript, a contradiction, and truncated or out-of-order files.
+    - An engine test (`a_transcript_holds_every_clause_and_call_and_replays_with_the_same_answers`): a recorded check
+      gives the same outcome as an unrecorded one (verdict, paths, calls, clauses, variables, input). The transcript
+      holds every clause and variable, and replays with no contradiction.
+    - End to end on the benchmark's `held/lower-bound` (`equivalence --engine native`, unwind 9, arrays up to 8).
+      The run wrote two transcripts: the proof (460 calls, 43,478 clauses, verified) and a 5-call check (Violation).
+      Both replay with no contradiction, and the proof replays in 0.178 s of solving against 0.179 s recorded.
+  - **Not yet:** the transcripts of the five 6c workloads (binary search, 141, 142, reverse, prefix sums). They are
+    the 6c job's first step, run with the variable set.
+  - **A flaky test, fixed.** `the_models_only_jbmc_runs_agree_with_the_jvm` (step 2) failed once out of three runs of
+    the conformance suite. Every test's `compile()` deleted and rebuilt the shared `conformance-classes` directory,
+    so a test running in parallel could read it half-written. The corpus is now compiled once per run (a
+    `OnceLock`). Both full runs since passed it.
+  - **Shared files changed:**
+    - `lib/src/main.rs`: the `transcript` command (new).
+    - `lib/README.md`: a command line and a paragraph in "The tool's own checker".
+    - `lib/tests/conformance.rs`: `compile()` caches `compile_now()`, and `Compiled` derives `Clone`.
+  - **Also changed (mine):** `lib/src/bmc/bits.rs` (`Blaster::recorded`, the clause and call hooks, the refined
+    operation's ties going through `clause`) and `lib/src/bmc/mod.rs` (the module, `Options::transcript`,
+    `Outcome::transcript`, and `check`'s search as a labelled block, so the transcript is closed on every way out).
+  - **JBMC results:** none change; nothing on JBMC's side was touched.
+  - **Tests:** unit (151), integration (64) and skill pass. Conformance passes apart from its two known failures (the
+    12 library-record claims, and the benchmark file).
+    - In one run of the whole suite, `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` (integration, through
+      JBMC) failed, in a 614 s run. It then passed alone (12 s) and in a full rerun of the integration suite (64 of
+      64, 44 s). The failing run's message wasn't kept, so the cause isn't known. The test doesn't go near the
+      transcript code unless the variable is set.
+- **Next:** Phase 6b, the narrow solver interface, while job `-203501` runs. Once it is back, record its result here.
+  After that, enums in the own checker: arrays of references for `$VALUES`, and the `Enum` model run there.
 - Status: working
 
 ## Loop settings
