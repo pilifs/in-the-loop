@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T15:46:42.051Z",
-  "duration_seconds": 17887,
+  "ended": "2026-11-06T16:02:25.656Z",
+  "duration_seconds": 18831,
   "stats": {
-    "turns": 32,
-    "api_calls": 357,
-    "tool_calls": 348,
+    "turns": 33,
+    "api_calls": 378,
+    "tool_calls": 368,
     "tool_errors": 2,
     "compactions": 1,
     "peak_context_tokens": 451666,
     "usage": {
-      "input_tokens": 764,
-      "output_tokens": 221898,
-      "cache_read_input_tokens": 86527340,
-      "cache_creation_input_tokens": 554403
+      "input_tokens": 808,
+      "output_tokens": 230500,
+      "cache_read_input_tokens": 90555452,
+      "cache_creation_input_tokens": 575787
     }
   },
   "tools": {
-    "Bash": 321,
+    "Bash": 341,
     "AskUserQuestion": 14,
     "Write": 4,
     "Edit": 3,
@@ -63,24 +63,24 @@
     {
       "index": 1,
       "started": "2026-11-06T14:10:30.753Z",
-      "ended": "2026-11-06T15:46:42.051Z",
-      "turns": 13,
-      "api_calls": 70,
+      "ended": "2026-11-06T16:02:25.656Z",
+      "turns": 14,
+      "api_calls": 91,
       "usage": {
-        "input_tokens": 158,
-        "output_tokens": 54764,
-        "cache_read_input_tokens": 8523941,
-        "cache_creation_input_tokens": 141030
+        "input_tokens": 202,
+        "output_tokens": 63366,
+        "cache_read_input_tokens": 12552053,
+        "cache_creation_input_tokens": 162414
       },
-      "peak_context_tokens": 180707
+      "peak_context_tokens": 202629
     }
   ],
   "log": {
-    "sha256": "7a93fb04e6576015d0dd03a5adefbfc8851252bdeb9a1e33ecda85b60d09ac77",
-    "bytes": 8128107,
-    "lines": 3224,
-    "gzip_bytes": 1366072,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/7a93fb04e6576015d0dd03a5adefbfc8851252bdeb9a1e33ecda85b60d09ac77.jsonl.gz"
+    "sha256": "47835e36330e0939d44616dbf94d8a9186fc81bb216979ccdf76a1de01e65d2d",
+    "bytes": 8424406,
+    "lines": 3394,
+    "gzip_bytes": 1405235,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/47835e36330e0939d44616dbf94d8a9186fc81bb216979ccdf76a1de01e65d2d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -299,6 +299,14 @@
       "summary": "A feature-loop cycle finishes only its own interrupted work and keeps other sessions' files out of its commit",
       "body": "Following the previous commit, a cycle treated any change in the working copy as its own interrupted work. That would be wrong while the verification loop or another session has files there uncommitted, and sync.py commit commits the whole working copy. Each cycle now runs jj status and judges what a change is. One that belongs to the brief's current step, by its Progress section or the session's own last turn, is finished, verified and committed, and that is the cycle's piece of work. Anything else is another session's: it is left alone, never finished, reverted or discarded, and kept out of the cycle's commit by moving it below and back, as step 5 of .claude/skills/run-verification/SKILL.md already does the other way round. The header comment and llm-dlc/README.md are updated to match. Verified with bash -n and by expanding the instruction for engine-priorities.md and reading it.",
       "log_sha256": "7a93fb04e6576015d0dd03a5adefbfc8851252bdeb9a1e33ecda85b60d09ac77"
+    },
+    {
+      "change_id": "tmqwwrtxuspnnrmklwwwyunqtkzsmwwv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A push uploads each session's current log, so a session that made no commit is published too",
+      "body": "Session 3048539b, opened on 2026-10-31 and left empty (a 0-byte transcript), had its manifest committed, but its only log was never uploaded: cmd_upload uploaded the logs commits and subagents point at, and that session has neither. On any other machine, where traces/*/logs/ is not checked out, check then fails with 'log e3b0c44298fc is neither stored locally nor uploaded'. At push (include_at), cmd_upload now also uploads each session's current log, the one its committed manifest names. It is scanned like any other, so nothing is published without the redaction check. Only 3048539b had such a log; this session's unuploaded logs belong to commits not pushed yet. New test test_a_push_uploads_the_current_log_of_a_session_that_made_no_commit: a plain upload leaves it alone, and the push's upload puts it on the CDN and records its URL. 102 tests in test_performance.py and 49 in test_review/test_metrics pass.",
+      "log_sha256": "47835e36330e0939d44616dbf94d8a9186fc81bb216979ccdf76a1de01e65d2d"
     }
   ],
   "logs": {
@@ -343,6 +351,12 @@
       "lines": 898,
       "gzip_bytes": 400790,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0.jsonl.gz"
+    },
+    "47835e36330e0939d44616dbf94d8a9186fc81bb216979ccdf76a1de01e65d2d": {
+      "bytes": 8424406,
+      "lines": 3394,
+      "gzip_bytes": 1405235,
+      "url": null
     },
     "4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f": {
       "bytes": 3538660,

@@ -1539,6 +1539,11 @@ def cmd_upload(include_at: bool = False, full: bool = False) -> int:
             continue
         wanted = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256") and c["change_id"] != at}
         wanted |= {s["log"]["sha256"] for s in m.get("subagents", [])}
+        # A push also publishes each session's current log, which its committed manifest names: a session
+        # that made no commit (one opened and left empty, say) would otherwise never be uploaded, and
+        # check fails on every other machine, where the log is neither stored nor on the CDN.
+        if include_at and m.get("log", {}).get("sha256"):
+            wanted.add(m["log"]["sha256"])
         logs = m.setdefault("logs", {})
         todo += [(sid, sha) for sha in sorted(wanted) if not logs.get(sha, {}).get("url")]
     record = UploadRecord()

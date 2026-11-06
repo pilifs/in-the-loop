@@ -1646,6 +1646,18 @@ class Uploads(unittest.TestCase):
             self.assertEqual(self.outcome(sync.cmd_upload, LLM_TRACES_UPLOAD_JOBS=jobs, LLM_TRACES_PUT_JOBS=puts),
                              expected, (jobs, puts))
 
+    def test_a_push_uploads_the_current_log_of_a_session_that_made_no_commit(self):
+        empty = sync.store_log("s3", b"")["sha256"]
+        sync.save_manifest("s3", {"schema": sync.SCHEMA, "commits": [], "subagents": [],
+                                  "log": {"sha256": empty}, "logs": {empty: {}}})
+        code, out, err = self.run_upload(sync.cmd_upload)
+        self.assertEqual((code, out, err), (0, [], []), "only a push publishes a log no commit points at")
+        self.assertIsNone(sync.all_manifests()["s3"]["logs"][empty].get("url"))
+        code, out, err = self.run_upload(lambda: sync.cmd_upload(include_at=True))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(sync.all_manifests()["s3"]["logs"][empty]["url"], sync.log_url("s3", empty))
+        self.assertIn(sync.log_url("s3", empty), self.cdn)
+
     def made_up_r2(self):
         """A token file with made-up values, and a fake S3 endpoint that stores what is put."""
         creds = Path(self.tmp.name) / "r2-credentials"
