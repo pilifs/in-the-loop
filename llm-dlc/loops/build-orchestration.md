@@ -416,6 +416,9 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - Every runner fixture (`run_runner`, `run_tlc`) also checks its result stores whole and validates.
   - Jobs `20261106-000906-example-{133-b9,071-b11,072-d1,110-b12}-…` must keep their verdicts and store format 2, with
     obligations of the kinds each run has.
+- **Next** (2026-11-05, by the user): the next loop is [`sound-verdicts.md`](sound-verdicts.md), named gaps, results
+  that state their assumptions, and agent-advised contracts. It runs before this brief's deferred Phase 5 (proof
+  experiments) and Phase 4 (developer features).
 
 ## Open questions
 
