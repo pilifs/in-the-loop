@@ -56,8 +56,9 @@ are yours, but say under Progress which JBMC results they may change.
   reconcile loop updates the examples' `notes` from them.
 - **Another session is not your concern** beyond the loop's usual rule: the JBMC stream works in its own directory
   and never touches this working copy.
-- **Memory.** This loop has a 2.5 GB cap, the JBMC stream another, and the runner the rest. Keep inline work small:
-  queue anything that isn't. If a build is killed for memory, build with fewer jobs (`cargo test --release -j 3`).
+- **Where you started.** Your session is a fork of the conversation that planned the streams (session `3761db96`,
+  compacted), so you share its context with the other stream. What it settled is in the briefs; where your memory of
+  it and a brief differ, the brief wins.
 
 ## Progress
 
@@ -69,7 +70,7 @@ are yours, but say under Progress which JBMC results they may change.
 - model: claude-opus-5-5
 - effort: high
 - workspace: native
-- memory: 2.5G
+- fork: 3761db96-b870-47f7-aded-2ba264c165f4
 
 ## Loop until
 

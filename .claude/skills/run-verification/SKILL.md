@@ -21,8 +21,8 @@ commands by hand to see: the runner is how they run, under limits.
 2. **Run.** `python3 verification/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
    until the queue is empty and a job can take an hour. Give it the budget the machine has now: check
    `free -h` and which feature loops are running (`systemctl --user list-units 'feature-loop-*'`), each in a scope
-   of its own: 3.5 GB unless its brief sets `- memory:`. With one loop running, the defaults fit; with two (the
-   parallel streams of a brief), `--memory 3G --workers 1`. Without any, `--memory 7G --workers 3`. Use `--watch` only
+   of its own: 3.5 GB unless its brief sets `- memory:`. Leave the runner the machine's memory less the loops' caps. On
+   this 9 GB machine with one loop, the defaults fit; without any, `--memory 7G --workers 3`. Use `--watch` only
    when the user asks for the pipeline to keep going; it does not stop by itself. While it runs, don't start proofs
    of your own, and don't start a second runner: it refuses while the first holds the lock.
 

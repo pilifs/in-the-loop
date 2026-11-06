@@ -140,17 +140,15 @@ The verification runner, in the default workspace, also runs the jobs committed 
 own commits, and collects their results there. The stream briefs say which files each owns and how the shared ones are
 changed. The phase order above still holds within each stream.
 
-**Starting them** (the user, from the default workspace):
+**Starting them** (the user, from the default workspace): `llm-dlc/tools/run-streams.sh engines`.
+- The first time, it compacts this brief's session, the conversation that planned the streams, and adds the
+  workspaces `../java-formal-verification-jbmc` and `-native` from the latest commit.
+- Each stream's session starts as a fork of that compacted conversation (`- fork:` in its Loop settings), so both
+  begin with the same context.
+- Both loops print to the one terminal, each line prefixed with its stream, and Ctrl-C stops both.
+- Running it again continues them, and so does one stream's own `feature-loop.sh engines-STREAM` from its workspace.
 
-```bash
-jj workspace add --name jbmc -r @- ../java-formal-verification-jbmc
-jj workspace add --name native -r @- ../java-formal-verification-native
-../java-formal-verification-jbmc/llm-dlc/tools/feature-loop.sh engines-jbmc       # in one terminal
-../java-formal-verification-native/llm-dlc/tools/feature-loop.sh engines-native   # in another
-```
-
-Each stream has a 2.5 GB cap. While both run, the runner gets what is left: `pipeline.py run --memory 3G --workers 1`,
-with the Langfuse services stopped. A stream that stops is continued by running its command again.
+The runner's budget is the machine's memory less the loops' caps (3.5 GB each).
 
 **Reconciling** is this loop's first piece of work, once both streams have stopped for good: each one's Progress says
 its phases are done, or deferred for the user, and not waiting on a job. Until then, a cycle of this loop does nothing

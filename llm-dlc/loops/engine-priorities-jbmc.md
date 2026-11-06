@@ -50,8 +50,9 @@ Progress, so the reconcile loop knows where to look.
   outputs reach this branch only at the merge, so don't copy them in by hand.
 - **Another session is not your concern** beyond the loop's usual rule: the native stream works in its own directory
   and never touches this working copy.
-- **Memory.** This loop has a 2.5 GB cap, the native stream another, and the runner the rest. Keep inline work small:
-  queue anything that isn't. If a build is killed for memory, build with fewer jobs (`cargo test --release -j 3`).
+- **Where you started.** Your session is a fork of the conversation that planned the streams (session `3761db96`,
+  compacted), so you share its context with the other stream. What it settled is in the briefs; where your memory of
+  it and a brief differ, the brief wins.
 
 ## Progress
 
@@ -63,7 +64,7 @@ Progress, so the reconcile loop knows where to look.
 - model: claude-opus-5-5
 - effort: high
 - workspace: jbmc
-- memory: 2.5G
+- fork: 3761db96-b870-47f7-aded-2ba264c165f4
 
 ## Loop until
 

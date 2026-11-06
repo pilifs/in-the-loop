@@ -39,7 +39,9 @@
 # section of "- session: ID", "- model: ID" and "- effort: LEVEL" lines, the
 # memory cap with "- memory: SIZE", and with "- workspace: NAME" the jj workspace
 # it must run in, so loops run in parallel each on their own branch (see
-# llm-dlc/README.md). FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL,
+# llm-dlc/README.md). "- fork: SESSION" starts the brief's session, when it has
+# no transcript yet, as a fork of that one, so parallel streams all begin from
+# the conversation that planned them. FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL,
 # FEATURE_LOOP_EFFORT and FEATURE_LOOP_MEMORY_MAX override both the brief and
 # the defaults. FEATURE_LOOP_SESSION=new starts a fresh
 # session that the run's cycles share, and a session id with no transcript yet
@@ -69,6 +71,7 @@ MODEL=claude-fable-5-1
 EFFORT=high
 MEMORY_MAX=3.5G
 WORKSPACE=
+FORK_FROM=
 
 usage() {
   echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
@@ -124,6 +127,7 @@ case "$PROMPT" in
     v=$(setting effort); [[ -n "$v" ]] && EFFORT=$v
     v=$(setting memory); [[ -n "$v" ]] && MEMORY_MAX=$v
     WORKSPACE=$(setting workspace)
+    FORK_FROM=$(setting fork)
     [[ "$BRIEF" == "$ROOT"/* ]] && BRIEF=${BRIEF#"$ROOT"/}
     set -- "$BRIEF" "${@:2}"
     PROMPT=$(basename "$BRIEF" .md)
@@ -220,11 +224,13 @@ START=$(jj log --no-graph -r @- -T change_id) || exit 1
 # A fresh session gets its id here, and it and a session with no transcript yet
 # are created by the first turn. Claude Code keeps transcripts under the working
 # directory's path with every other character turned into a dash.
+PROJECTS=${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects
+project_dir() { printf '%s/%s' "$PROJECTS" "$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"; }
 FRESH=
 if [[ "$SESSION_ID" == new ]]; then
   SESSION_ID=$(python3 -c 'import uuid; print(uuid.uuid4())') || exit 1
   FRESH=1
-elif [[ ! -e "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/$(pwd | sed 's/[^A-Za-z0-9]/-/g')/$SESSION_ID.jsonl" ]]; then
+elif [[ ! -e "$(project_dir "$ROOT")/$SESSION_ID.jsonl" ]]; then
   log "session $SESSION_ID has no transcript yet: the first turn creates it"
   FRESH=1
 fi
@@ -428,6 +434,42 @@ next_cycle() {
   cycle=$(( cycle + 1 ))
   [[ "$remaining" == inf ]] || remaining=$(( remaining - 1 ))
 }
+
+# With "- fork: SESSION", a session that has no transcript yet starts as a fork of
+# that one, in a turn of its own. Claude Code finds a session to resume under the
+# directory it runs in, and the parent belongs to the default workspace, so its
+# transcript is copied here for the fork and removed straight after. That turn
+# runs without the repo's hooks or any tool, so the copy is never synced: left
+# here, it would be published again as this workspace's.
+fork_session() {
+  local source here copied=
+  source=$(project_dir "$(jj workspace root --ignore-working-copy --name default 2>/dev/null || echo "$ROOT")")/$FORK_FROM.jsonl
+  here=$(project_dir "$ROOT")
+  if [[ ! -f "$source" ]]; then
+    log "no transcript of session $FORK_FROM to fork, at $source"
+    return 1
+  fi
+  mkdir -p "$here" || return 1
+  if [[ "$source" != "$here/$FORK_FROM.jsonl" ]]; then
+    cp -- "$source" "$here/$FORK_FROM.jsonl" || return 1
+    copied=1
+  fi
+  log "starting session $SESSION_ID as a fork of $FORK_FROM"
+  claude -p "This conversation goes on as one of the parallel streams it planned: the loop of the brief \`$BRIEF\`, in the jj workspace at \`$ROOT\`, on a branch of its own, while other forks of this conversation work the other streams in their own workspaces. From now on, work only in this workspace and only on what that brief gives you. Tools are off for this one turn: reply in a few sentences with how you will approach the brief's phases, given what this conversation established. The loop's first cycle follows." \
+    --resume "$FORK_FROM" --fork-session --session-id "$SESSION_ID" --model "$MODEL" --effort "$EFFORT" \
+    --setting-sources user --tools "" --output-format stream-json --verbose </dev/null | show_progress
+  [[ -n "$copied" ]] && rm -f -- "${here:?}/${FORK_FROM:?}.jsonl"
+  if [[ ! -f "$here/$SESSION_ID.jsonl" ]]; then
+    log "the fork of session $FORK_FROM made no session $SESSION_ID"
+    return 1
+  fi
+  FRESH=
+  note "Session $SESSION_ID was forked from session $FORK_FROM."
+  note
+}
+if [[ -n "$FRESH" && -n "$FORK_FROM" ]]; then
+  fork_session || { note "Stopped $(date '+%F %T'): the fork of session $FORK_FROM failed."; exit 1; }
+fi
 
 if [[ -n "$reader" ]]; then
   printf '%s\n' "$HELP"
