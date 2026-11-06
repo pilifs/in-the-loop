@@ -297,8 +297,40 @@ are yours, but say under Progress which JBMC results they may change.
       JBMC) failed, in a 614 s run. It then passed alone (12 s) and in a full rerun of the integration suite (64 of
       64, 44 s). The failing run's message wasn't kept, so the cause isn't known. The test doesn't go near the
       transcript code unless the variable is set.
-- **Next:** Phase 6b, the narrow solver interface, while job `-203501` runs. Once it is back, record its result here.
-  After that, enums in the own checker: arrays of references for `$VALUES`, and the `Enum` model run there.
+- **6b: the narrow solver interface** (inline; CaDiCaL 1.9.5, bundled).
+  - **The interface.** `lib/src/bmc/sat.rs` (new) is a `Sat` trait: `signature`, `add_clause`, `set_limit`,
+    `solve` under assumptions, `value`, `variables`. `Cadical` implements it over the `cadical` crate. The engine's
+    three layers are now apart:
+    - scheduling, in `Engine` (`mod.rs`): the probes, the deferred paths, the refinement loop in `solve_until`;
+    - encoding, in `Blaster` (`bits.rs`): it holds a `Box<dyn Sat>` and calls nothing else of the solver;
+    - solving, behind `Sat`.
+  - **Where a solver is chosen.** `bmc::Options::solver` makes the solver a check runs on, CaDiCaL by default.
+    `Blaster::over(solver, transcript)` is the constructor behind it. A transcript's header names the solver the
+    check ran on. `transcript::replay_on(solver, …)` replays a transcript on any `Sat` solver; `replay` and
+    `jvmcontract transcript` stay on CaDiCaL. 6c can put Bitwuzla's SAT mode behind the trait, and replay the
+    transcripts or run whole checks on it, with no change to the engine.
+  - **What stays CaDiCaL's.** `solver_signature()` and the results' `solver` field (`statement.rs`) still name
+    CaDiCaL, since nothing outside tests sets another solver. If 6c runs checks on another solver, the statement has
+    to take the name from the check.
+  - **No behaviour change.** The transcript recording stays in `Blaster`, on what crosses the interface, so it is
+    unchanged. One more indirect call per clause and per solver call.
+  - **Checked.**
+    - A unit test of `Cadical` behind the trait: incremental answers, assumptions per call, limits set and cleared.
+    - An engine test (`the_engine_gives_its_solver_nothing_but_clauses_limits_and_calls`): a check on `Logged`, a
+      test double that logs every event behind the trait, gives the plain run's outcome. The logged clauses are the
+      outcome's count, and every call is under a limit within the budget. The transcript names the logged solver,
+      and its calls are the logged calls, answer by answer. A replay on the logged solver gives the same clauses and
+      calls again.
+    - End to end, as in 6a: `held/lower-bound` (`equivalence --engine native`, unwind 9, arrays up to 8) writes
+      the same two transcripts by count: the proof's 460 calls over 43,478 clauses and 13,025 variables, verified,
+      and the 5-call check. Both replay with no contradiction (0.176 s of solving against 0.179 s recorded).
+    - Unit (153), integration (64) and skill pass. Conformance fails only its two known tests: the same 12
+      library-record claims, and the benchmark file.
+  - **Shared files changed:** `lib/README.md` (a paragraph, "The solver interface").
+  - **Also changed (mine):** `lib/src/bmc/bits.rs`, `mod.rs` and `transcript.rs`, as above.
+  - **JBMC results:** none change.
+- **Next:** enums in the own checker, Phase 5's last step: arrays of references for `$VALUES`, and the `Enum` model
+  run there. Record job `-203501`'s result here once it is back.
 - Status: working
 
 ## Loop settings

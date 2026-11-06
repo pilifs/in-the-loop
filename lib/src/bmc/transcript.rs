@@ -140,7 +140,7 @@ impl Transcript {
     }
 }
 
-fn answer_name(answer: Option<bool>) -> &'static str {
+pub(crate) fn answer_name(answer: Option<bool>) -> &'static str {
     match answer {
         Some(true) => "sat",
         Some(false) => "unsat",
@@ -274,9 +274,13 @@ fn parse_line(line: &str, n: usize) -> Result<Line, String> {
 /// Runs the transcript at `path` again on the bundled CaDiCaL, call by call, each with its recorded time limit, or
 /// with `limit` seconds when one is given, and compares the answers with the recorded ones.
 pub fn replay(path: &Path, limit: Option<f32>) -> Result<Replay, crate::Error> {
+    replay_on(&mut super::sat::Cadical::new(), path, limit)
+}
+
+/// [`replay`] on `solver`, which must hold no clauses yet: any solver behind the engine's interface.
+pub fn replay_on(solver: &mut dyn super::sat::Sat, path: &Path, limit: Option<f32>) -> Result<Replay, crate::Error> {
     let started = Instant::now();
     let file = File::open(path).map_err(|e| crate::Error::new(format!("cannot read {}: {e}", path.display())))?;
-    let mut solver: cadical::Solver<cadical::Timeout> = cadical::Solver::new();
     let mut header = false;
     let mut recorded_solver = None;
     let mut ending = None;
@@ -305,7 +309,7 @@ pub fn replay(path: &Path, limit: Option<f32>) -> Result<Replay, crate::Error> {
             Line::Header => header = true,
             _ if !header => return Err(crate::Error::new(format!("{}: line {n}: no `p inccnf` line before the formula", path.display()))),
             Line::Clause(lits) => {
-                solver.add_clause(lits);
+                solver.add_clause(&lits);
                 clauses += 1;
             }
             Line::Call(assumptions) => {
@@ -317,14 +321,9 @@ pub fn replay(path: &Path, limit: Option<f32>) -> Result<Replay, crate::Error> {
                 let Some(assumptions) = open.take() else {
                     return Err(crate::Error::new(format!("{}: line {n}: an answer with no call before it", path.display())));
                 };
-                let given = limit.map(f64::from).or(recorded_limit);
-                if let Some(seconds) = given {
-                    solver.set_callbacks(Some(cadical::Timeout::new(seconds as f32)));
-                } else {
-                    solver.set_callbacks(None);
-                }
+                solver.set_limit(limit.or(recorded_limit.map(|s| s as f32)));
                 let call_started = Instant::now();
-                let replayed = solver.solve_with(assumptions);
+                let replayed = solver.solve(&assumptions);
                 let took = call_started.elapsed();
                 let call = calls.last_mut().expect("the open call");
                 call.recorded = answer_name(answer);
@@ -345,8 +344,8 @@ pub fn replay(path: &Path, limit: Option<f32>) -> Result<Replay, crate::Error> {
     Ok(Replay {
         transcript: path.to_path_buf(),
         recorded_solver,
-        solver: super::solver_signature(),
-        variables: solver.max_variable(),
+        solver: solver.signature(),
+        variables: solver.variables(),
         clauses,
         recorded_seconds: calls.iter().map(|c| c.recorded_seconds).sum(),
         replayed_seconds: calls.iter().map(|c| c.replayed_seconds).sum(),

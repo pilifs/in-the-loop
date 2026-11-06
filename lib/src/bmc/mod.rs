@@ -70,6 +70,7 @@
 
 pub mod bits;
 pub mod gaps;
+pub mod sat;
 pub mod transcript;
 
 use std::collections::{BTreeMap, HashMap};
@@ -80,6 +81,7 @@ use crate::classfile::{ArithOp, ArrayKind, BootstrapArg, ClassFile, Cond, Except
 use crate::classpath::ClassPath;
 use crate::{Error, Verdict};
 use bits::{Bits, Blaster, Lit, Model, FALSE, TRUE};
+use sat::Sat as _;
 use gaps::{Closing, Closure, Gap, GapKind, GapMode, GapRecord, GapSetting, GapTreatment, JdkCall, Site};
 
 /// What the engine is allowed.
@@ -104,11 +106,14 @@ pub struct Options {
     /// The file to write the run's solver calls to ([`transcript`]); when `None`, the directory the environment
     /// variable [`transcript::ENV`] names, if it is set.
     pub transcript: Option<std::path::PathBuf>,
+    /// Makes the SAT solver the check is run on, empty ([`sat`]): CaDiCaL unless a test or an experiment puts
+    /// another behind the same interface. Results name the solver by [`solver_signature`], which is CaDiCaL's.
+    pub solver: fn() -> Box<dyn sat::Sat>,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::cadical }
     }
 }
 
@@ -594,12 +599,13 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     };
     let m = harness.method_by_name(method).ok_or_else(|| Error::new(format!("no method {method} in {class}")))?.clone();
     let descriptor = MethodDescriptor::parse(&m.descriptor)?;
+    let solver = (options.solver)();
     let transcript = match transcript::destination(options.transcript.as_deref()) {
         None => None,
         Some(path) => {
             let header = [
                 format!("jvmcontract {}: the own checker's solver calls, in order ({})", env!("CARGO_PKG_VERSION"), "lib/src/bmc/transcript.rs"),
-                format!("solver: {}", solver_signature()),
+                format!("solver: {}", solver.signature()),
                 format!("check: {class}.{method}{}", m.descriptor),
                 format!("options: unwind {}, max array length {}, max paths {}, merge after {}, timeout {:.3} s, gaps {}", options.unwind, options.max_array_length, options.max_paths, options.merge_after, options.timeout.as_secs_f64(), options.gaps.name()),
             ];
@@ -608,7 +614,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     };
     let mut engine = Engine {
         cp,
-        b: Blaster::recorded(transcript),
+        b: Blaster::over(solver, transcript),
         codes: HashMap::new(),
         pending: Vec::new(),
         deferred: Vec::new(),
@@ -815,11 +821,7 @@ pub fn refused_gaps(gaps: &[GapRecord], mode: GapMode) -> String {
 
 /// The SAT solver the engine is built with, by name and version: `CaDiCaL 1.9.5 (bundled)`.
 pub fn solver_signature() -> String {
-    let signature = cadical::Solver::<cadical::Timeout>::new().signature().to_string();
-    match signature.strip_prefix("cadical-") {
-        Some(version) => format!("CaDiCaL {version} (bundled)"),
-        None => format!("{signature} (bundled)"),
-    }
+    sat::Cadical::new().signature()
 }
 
 /// Runs the engine on a harness for the proof drivers: the class path is the harness, the application classes
@@ -3126,6 +3128,65 @@ mod tests {
         assert!(e.to_string().starts_with("cannot write the transcript"), "{e}");
     }
 
+
+    #[test]
+    fn the_engine_gives_its_solver_nothing_but_clauses_limits_and_calls() {
+        // The same refuted division as the transcript's test, on a solver behind the interface that logs what it is
+        // given: the outcome is the plain run's, and the clauses and calls it saw are the outcome's and the
+        // transcript's, in the same order.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let plain = run(&cp);
+        sat::Logged::take();
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("logged.icnf");
+        let logged = check(&cp, "Check", "check", &Options { solver: sat::Logged::boxed, transcript: Some(path.clone()), ..Options::default() }).unwrap();
+        let events = sat::Logged::take();
+        let same = |o: &Outcome| (o.verdict, o.paths, o.solves, o.clauses, o.variables, o.raw_inputs.clone(), o.refined);
+        assert_eq!(same(&logged), same(&plain));
+
+        let clauses: Vec<&Vec<Lit>> = events.iter().filter_map(|e| if let sat::Event::Clause(c) = e { Some(c) } else { None }).collect();
+        let calls: Vec<(&Vec<Lit>, Option<bool>)> = events.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a, *r)) } else { None }).collect();
+        assert_eq!(clauses.len() as u64, logged.clauses);
+        assert_eq!(clauses.first().map(|c| c.as_slice()), Some(&[TRUE][..]), "the constant first");
+        assert!(calls.len() >= 2 && calls.len() as u64 <= logged.solves, "{} calls of {}", calls.len(), logged.solves);
+        // Every call is made under the limit last set, and the limit is within the check's budget.
+        let mut limit = None;
+        for e in &events {
+            match e {
+                sat::Event::Limit(l) => limit = *l,
+                sat::Event::Solve(..) => assert!(limit.is_some_and(|l| l > 0.0 && l <= 600.0), "{events:?}"),
+                sat::Event::Clause(_) => {}
+            }
+        }
+
+        // The transcript names the solver the check ran on, and holds what that solver was given.
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.contains(&format!("\nc solver: logged {}\n", solver_signature())), "{text}");
+        let replay = transcript::replay_on(&mut sat::Cadical::new(), &path, None).unwrap();
+        assert_eq!(replay.clauses, logged.clauses);
+        assert_eq!(replay.calls.iter().map(|c| c.recorded).collect::<Vec<_>>(), calls.iter().map(|(_, r)| transcript::answer_name(*r)).collect::<Vec<_>>());
+        assert_eq!(replay.calls.iter().map(|c| c.assumptions).collect::<Vec<_>>(), calls.iter().map(|(a, _)| a.len()).collect::<Vec<_>>());
+        assert_eq!(replay.contradictions, 0, "{}", replay.summary());
+
+        // A replay goes through the interface too: on the logged solver it gives the same clauses and calls again.
+        let again = transcript::replay_on(&mut *sat::Logged::boxed(), &path, None).unwrap();
+        assert_eq!(again.solver, format!("logged {}", solver_signature()));
+        let replayed = sat::Logged::take();
+        assert_eq!(replayed.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>(), events.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>());
+        assert_eq!(replayed.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a.clone(), *r)) } else { None }).collect::<Vec<_>>(), calls.iter().map(|(a, r)| ((*a).clone(), *r)).collect::<Vec<_>>());
+    }
     #[test]
     fn a_multiplication_is_built_in_full_only_when_the_solver_gets_it_wrong() {
         // x * y == x << 3 for y == 8: what holds of every product proves it, with no multiplier.
