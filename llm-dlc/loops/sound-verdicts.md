@@ -268,7 +268,10 @@ Decided by the user on 2026-11-06, after the loop's run (the numbers above are u
   every one in `assume`). Only 013 and 071, the Quorum vote rule, reach JBMC gaps: `Enum.<init>(String, int)`,
   `List.copyOf` and `List.of`, the calls the own checker's scan (1a) names too. Strict would move no example's
   verdict; it would turn 071's first two properties, established, into no verdict. With the own checker's scan, that
-  is the whole cost of strict for the recorded examples. The decision is the user's.
+  is the whole cost of strict for the recorded examples. **Decided by the user, 2026-11-06: the recorded examples move
+  to strict** (`build.py`'s `RECORDED_GAP_MODE`). They are not re-run only to move; each runs in strict the next time
+  it runs. 071's two property proofs will then be no verdict, unless contracts for the three calls are added
+  (`approach.gaps: advised`).
 - **Question 1, a vacuous `Verified`:** the exit code stays 0, the status is the signal.
 - **Question 7, what CI accepts:** proved and tested (`--max-trust 0`) for now. The accepted evidence level is to become
   configurable, likely per project, especially as more runs use `assume`.

@@ -384,11 +384,11 @@ def plan(example):
             "outputs": {"always": PLAN_OUTPUTS, "maybe": maybe}}
 
 
-# The gap mode of a recorded example that names none (`approach.gaps`): the tool's own checker keeps the
-# approximations it made before gaps were named and states each as an assumption, so that a rerun records what it
-# assumed rather than changing its verdict. The library's default is strict; how the recorded examples move to it
-# is the user's decision (open question 3 of llm-dlc/loops/sound-verdicts.md).
-RECORDED_GAP_MODE = "assume"
+# The gap mode of a recorded example that names none (`approach.gaps`): strict, the library's default, decided by the
+# user on 2026-11-06 (open question 3 of llm-dlc/loops/sound-verdicts.md) from the gap scans of both checkers: strict
+# moves no recorded example's verdict, and turns two of 071's three property proofs into no verdict, since JBMC
+# stubs the JDK calls they reach. Until then the recorded examples ran in assume.
+RECORDED_GAP_MODE = "strict"
 
 
 def gap_mode(example):

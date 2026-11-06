@@ -1201,7 +1201,7 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(build.plan(ex)["tools"], {"required": ["java", "javac", "jvmcontract", "jbmc"], "optional": []})
         ex["approach"]["engine"] = "native"
         q = build.plan(ex)
-        self.assertEqual((q["engine"], q["options"]), ("native", ["--engine", "native", "--gaps", "assume"]))
+        self.assertEqual((q["engine"], q["options"]), ("native", ["--engine", "native", "--gaps", "strict"]))
         self.assertEqual(q["tools"], {"required": ["java", "javac", "jvmcontract"], "optional": []})
         ex["approach"]["engine"] = "auto"
         self.assertEqual(build.plan(ex)["tools"], {"required": ["java", "javac", "jvmcontract"], "optional": ["jbmc"]})
@@ -1242,7 +1242,7 @@ class PlanTest(unittest.TestCase):
         ex = example(verdict="verified")
         ex["approach"].update({"engine": "native", "unwind": 32, "maxArrayLength": 12})
         options = build.plan(ex)["options"]
-        self.assertEqual(options, ["--engine", "native", "--gaps", "assume", "--unwind", "32", "--max-array-length", "12"])
+        self.assertEqual(options, ["--engine", "native", "--gaps", "strict", "--unwind", "32", "--max-array-length", "12"])
         root = Path(tempfile.mkdtemp(prefix="build-test-"))
         self.addCleanup(shutil.rmtree, root)
         commands = []
@@ -1477,7 +1477,7 @@ class EvidenceTest(unittest.TestCase):
         self.assertEqual((attempt["claim"], attempt["pipeline"]), (result["claim"]["id"], {"jobId": "job-1", "sourceCommit": "abc", "workdir": "/w"}))
         self.assertEqual(attempt["exploration"], {"unwind": 32, "maxArrayLength": 8, "complete": True})
         self.assertEqual(attempt["bytecode"]["after"]["files"], 1)
-        self.assertEqual(attempt["options"], ["--gaps", "assume", "--unwind", "32"])
+        self.assertEqual(attempt["options"], ["--gaps", "strict", "--unwind", "32"])
         self.assertEqual(result["conclusion"], {"claim": result["claim"]["id"], "attempt": attempt["id"], "status": "established",
                                                 "vacuous": False, "expectation": "no", "obligations": []})
         self.assertEqual([a["path"] for a in result["bundle"]["artifacts"]], ["statement.java", "verifier-output.txt"])
@@ -1988,25 +1988,26 @@ class GapModeTest(unittest.TestCase):
            "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
            "treatment": "assumed"}
 
-    def test_the_mode_is_the_example_s_and_assume_for_a_recorded_one(self):
+    def test_the_mode_is_the_example_s_and_strict_for_a_recorded_one(self):
         ex = example()
-        # JBMC's own approximations are gaps too (step 4c): a recorded example JBMC proves runs in assume as well.
-        self.assertEqual(build.gap_mode(ex), "assume")
-        self.assertEqual(build.plan(ex)["options"][-2:], ["--gaps", "assume"])
+        # Strict, the library's default, since the user's decision of 2026-11-06; JBMC's own approximations are gaps
+        # too (step 4c), so a recorded example JBMC proves runs in strict as well.
+        self.assertEqual(build.gap_mode(ex), "strict")
+        self.assertEqual(build.plan(ex)["options"][-2:], ["--gaps", "strict"])
         ex["approach"]["engine"] = "auto"
-        self.assertEqual(build.plan(ex)["options"], ["--engine", "auto", "--gaps", "assume"])
-        ex["approach"]["gaps"] = "strict"
         self.assertEqual(build.plan(ex)["options"], ["--engine", "auto", "--gaps", "strict"])
+        ex["approach"]["gaps"] = "assume"
+        self.assertEqual(build.plan(ex)["options"], ["--engine", "auto", "--gaps", "assume"])
         prop = example(approach="B11")
         prop["approach"]["engine"] = "native"
-        self.assertEqual(build.proof_options(prop), ["--engine", "native", "--gaps", "assume"])
+        self.assertEqual(build.proof_options(prop), ["--engine", "native", "--gaps", "strict"])
         self.assertEqual(build.proof_options(example(approach="B8")), [])
 
-    def test_every_recorded_b9_and_b11_example_runs_in_assume_unless_it_says(self):
+    def test_every_recorded_b9_and_b11_example_runs_in_strict_unless_it_says(self):
         for folder, ex in PlanTest.recorded(None):
             mode = build.gap_mode(ex)
             if ex["approach"]["id"] in ("B9", "B11"):
-                self.assertEqual(mode, ex["approach"].get("gaps") or "assume", folder.name)
+                self.assertEqual(mode, ex["approach"].get("gaps") or "strict", folder.name)
             else:
                 self.assertIsNone(mode, folder.name)
 
