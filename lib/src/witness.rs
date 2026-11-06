@@ -329,23 +329,33 @@ pub const SHRINK_BUDGET: u32 = 4000;
 pub fn shrink_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
     let mut m = Machine::new(cp);
     m.monitor = false;
-    let check_descriptor = format!("({})V", types.iter().map(Type::descriptor).collect::<String>());
-    let mut fails = |arguments: &[Argument]| -> Option<bool> {
-        let mark = m.begin_case();
-        let values = values_for(&mut m, arguments, types);
-        let verdict = match m.call_static(harness_class, harness::METHOD, &check_descriptor, values) {
-            Ok(_) => Some(false),
-            Err(Fault::Throw(r)) if m.class_of(r) == "java/lang/AssertionError" => Some(true),
-            Err(_) => None,
-        };
-        m.end_case(mark);
-        verdict
-    };
+    let mut fails = |arguments: &[Argument]| fails_in(&mut m, harness_class, types, arguments);
     // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
     if fails(&found) != Some(true) {
         return Shrunk { arguments: found, runs: 0 };
     }
     shrink::shrink(types, found, SHRINK_BUDGET, fails)
+}
+
+/// Whether the harness `harness_class` on `cp`, run in the interpreter, refutes the statement on `arguments`
+/// (throws `AssertionError`); `None` when the interpreter cannot run it.
+pub fn fails_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], arguments: &[Argument]) -> Option<bool> {
+    let mut m = Machine::new(cp);
+    m.monitor = false;
+    fails_in(&mut m, harness_class, types, arguments)
+}
+
+fn fails_in(m: &mut Machine, harness_class: &str, types: &[Type], arguments: &[Argument]) -> Option<bool> {
+    let check_descriptor = format!("({})V", types.iter().map(Type::descriptor).collect::<String>());
+    let mark = m.begin_case();
+    let values = values_for(m, arguments, types);
+    let verdict = match m.call_static(harness_class, harness::METHOD, &check_descriptor, values) {
+        Ok(_) => Some(false),
+        Err(Fault::Throw(r)) if m.class_of(r) == "java/lang/AssertionError" => Some(true),
+        Err(_) => None,
+    };
+    m.end_case(mark);
+    verdict
 }
 
 /// A class path over the directories that exist among `entries`, with the JDK.

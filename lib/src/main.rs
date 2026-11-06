@@ -306,6 +306,12 @@ struct EquivalenceArgs {
     /// approximation the gap states and names it in the verdict. No effect on JBMC.
     #[arg(long, default_value = "strict")]
     gaps: String,
+    /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
+    /// JBMC agreeing is a second implementation of the JVM's semantics agreeing; JBMC refuting it is neither
+    /// verdict (unverifiable, with JBMC's witness); JBMC giving none leaves the proof unconfirmed. The result says
+    /// which. JBMC takes ten to a hundred times longer, so this is off unless asked for.
+    #[arg(long)]
+    confirm: bool,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -383,6 +389,12 @@ struct ProveArgs {
     /// approximation the gap states and names it in the verdict. No effect on JBMC.
     #[arg(long, default_value = "strict")]
     gaps: String,
+    /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
+    /// JBMC agreeing is a second implementation of the JVM's semantics agreeing; JBMC refuting it is neither
+    /// verdict (unverifiable, with JBMC's witness); JBMC giving none leaves the proof unconfirmed. The result says
+    /// which. JBMC takes ten to a hundred times longer, so this is off unless asked for.
+    #[arg(long)]
+    confirm: bool,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -458,6 +470,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
             options.engine = args.engine.parse()?;
             options.gaps = args.gaps.parse()?;
+            options.confirm = confirm_option(args.confirm, options.engine)?;
             options.shared_callees = !args.no_shared_callees;
             options.before_target = args.before_target;
             options.before_arguments = args.before_arguments;
@@ -508,6 +521,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
                 options.engine = args.engine.parse()?;
                 options.gaps = args.gaps.parse()?;
+                options.confirm = confirm_option(args.confirm, options.engine)?;
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
@@ -658,4 +672,13 @@ fn load_classpath(classes: &ClassesArgs) -> Result<ClassPath, Error> {
         }
     }
     Ok(cp.with_default_jdk())
+}
+
+/// `--confirm`, which only `--engine auto` has: under `native` there is no JBMC to ask, and under `jbmc` no own
+/// checker's proof to confirm.
+fn confirm_option(confirm: bool, engine: jvmcontract::Engine) -> Result<bool, jvmcontract::Error> {
+    if confirm && engine != jvmcontract::Engine::Auto {
+        return Err(jvmcontract::Error::new("--confirm needs --engine auto: it has JBMC check a proof of the tool's own checker"));
+    }
+    Ok(confirm)
 }

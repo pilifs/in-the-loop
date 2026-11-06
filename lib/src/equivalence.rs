@@ -91,6 +91,9 @@ pub struct Options {
     /// What the tool's own checker does at a gap ([`crate::bmc::gaps`]): refuses it (strict, the default) or
     /// assumes its approximation and names it in the verdict. It has no effect on JBMC.
     pub gaps: crate::bmc::gaps::GapMode,
+    /// Under `--engine auto`, whether a proof of the tool's own checker is checked by JBMC too
+    /// ([`crate::equivalence::Confirmation`]); off by default, since JBMC takes ten to a hundred times longer.
+    pub confirm: bool,
     /// Whether callees unchanged in both versions are taken as one function in both ([`crate::shared`]), and a
     /// target identical in both versions is verified without a proof. On by default.
     pub shared_callees: bool,
@@ -129,6 +132,7 @@ impl Options {
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
+            confirm: false,
             shared_callees: true,
             before_target: None,
             before_arguments: None,
@@ -229,6 +233,77 @@ pub struct Search {
     /// statement takes for granted besides its domain.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub gaps: Vec<crate::bmc::gaps::GapRecord>,
+    /// What JBMC made of the own checker's proof, under `--engine auto --confirm`; none when it was not asked for,
+    /// or when the verdict is no proof of the own checker's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub confirmation: Option<Confirmation>,
+}
+
+/// JBMC's check of a statement the tool's own checker proved (`--engine auto --confirm`): the one expensive check
+/// of step 1e of the sound-verdicts brief, so opt-in. JBMC is a second implementation of the JVM's semantics, with
+/// models of its own, so its proof is evidence the own checker's was not of a different statement.
+#[derive(Debug, Clone, Serialize)]
+pub struct Confirmation {
+    pub status: Confirmed,
+    /// The checker asked, `JBMC 6.11.0`; none when it was not asked.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checker: Option<String>,
+    pub seconds: f64,
+    /// Why it is not confirmed: JBMC's problem, or why JBMC was not asked.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+/// How a confirmation ended.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Confirmed {
+    /// JBMC proved the statement too, over every input.
+    Confirmed,
+    /// JBMC refutes it: the engines disagree, and the verdict is neither theirs (it is unverifiable, with JBMC's
+    /// witness as the counterexample, replayed in the interpreter).
+    Disagreed,
+    /// JBMC gave no verdict (a timeout, its memory, a construct it refuses): the own checker's proof stands, not
+    /// confirmed.
+    NoVerdict,
+    /// JBMC was not asked: the own checker assumed a behaviour (`--gaps assume`) that JBMC approximates too,
+    /// without naming it, so a proof of JBMC's would not check it.
+    NotAsked,
+}
+
+/// Asks JBMC to prove, over every input, the harness the own checker proved (`native`). `run` is JBMC's run of the
+/// same harness, on the same class path. Returns the confirmation, and JBMC's result when it refutes the statement.
+pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun) -> Result<(Confirmation, Option<JbmcResult>), Error> {
+    let approximated: Vec<&str> = native.gaps.iter().filter(|g| !g.kind.jbmc_implements()).map(|g| g.call.as_str()).collect();
+    if !approximated.is_empty() {
+        let reason = format!("the tool's own checker assumed {} (--gaps assume), which JBMC approximates too, without naming it", approximated.join(", "));
+        return Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }, None));
+    }
+    let result = jbmc::run(run)?;
+    let mut confirmation = Confirmation { status: Confirmed::Confirmed, checker: Some(result.version.clone()), seconds: result.seconds, reason: None };
+    match result.verdict {
+        Verdict::Verified => Ok((confirmation, None)),
+        Verdict::Violation => {
+            confirmation.status = Confirmed::Disagreed;
+            Ok((confirmation, Some(result)))
+        }
+        Verdict::Unverifiable => {
+            confirmation.status = Confirmed::NoVerdict;
+            confirmation.reason = Some(result.problem.clone().unwrap_or_else(|| "no reason".into()));
+            Ok((confirmation, None))
+        }
+    }
+}
+
+/// The line under a verified verdict that says what came of `--confirm`.
+pub(crate) fn confirmation_line(c: &Confirmation) -> String {
+    let checker = c.checker.as_deref().unwrap_or("JBMC");
+    match c.status {
+        Confirmed::Confirmed => format!("  confirmed: {checker} proves it too, over every input, in {:.1} s (--confirm)\n", c.seconds),
+        Confirmed::NoVerdict => format!("  not confirmed: {checker} gave no verdict in {:.1} s ({}); the proof is the tool's own checker's alone\n", c.seconds, c.reason.as_deref().unwrap_or("no reason")),
+        Confirmed::NotAsked => format!("  not confirmed: JBMC was not asked, since {}; the proof is the tool's own checker's alone\n", c.reason.as_deref().unwrap_or("no reason")),
+        Confirmed::Disagreed => String::new(),
+    }
 }
 
 /// Whether the own checker's run refused a gap (strict) that JBMC does not implement either: then `--engine auto`
@@ -807,6 +882,27 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     }
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
+    // Under `--confirm`, the own checker's proof is JBMC's to prove again, over every input in one run, on the
+    // class path the own checker proved it on (the callees as written).
+    let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
+        let run = JbmcRun {
+            executable: options.jbmc.clone(),
+            class: harness::CLASS.into(),
+            function: harness::METHOD.into(),
+            classpath: classpath.clone(),
+            unwind: options.unwind,
+            timeout: Duration::from_secs(options.timeout_seconds),
+            stage: None,
+            refine_strings: options.refine_strings,
+            sat_solver: options.sat_solver.clone(),
+            log: work.join("jbmc-confirm.log"),
+            extra_args: extra_args.clone(),
+        };
+        let (c, refuting) = confirm(&last, &run)?;
+        (Some(c), refuting)
+    } else {
+        (None, None)
+    };
     let search = Some(Search {
         engine: if last.native.is_some() { "native" } else { "jbmc" }.into(),
         checker: last.version.clone(),
@@ -819,6 +915,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         native: last.native.clone(),
         gap_mode: last.gap_mode,
         gaps: last.gaps.clone(),
+        confirmation,
     });
     let mut replay = None;
     let sharing = match shared_used.len() {
@@ -833,12 +930,58 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut problem = None;
     let mut vacuous = None;
     let mut verdict = last.verdict;
+    // JBMC refutes what the own checker proved: neither verdict stands. JBMC's witness is the counterexample, with
+    // both versions run on it in the interpreter, which shares the own checker's models and so settles nothing.
+    if let Some(refuting) = &refuting {
+        let found = refuting.arguments(&flat_types)?;
+        let replays = replay_both(&found);
+        let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+        let reproduced = witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &found);
+        let (mut rendered, values) = witness::call_in(&method_name, &layout, &found);
+        if harness.before_args.is_some() {
+            if let Ok(mapped) = map_arguments(&found) {
+                rendered = format!("{rendered}, previously {}", witness::call_in(&before_method_name, &before_layout, &mapped).0);
+            }
+        }
+        let (assuming, _) = assumed_gaps(&last);
+        let p = format!(
+            "the engines disagree: the tool's own checker proves {relation}{restriction}{assuming} ({}, {seconds:.1} s), and {} refutes it on\n  {rendered}\n    before in the interpreter: {}\n    after in the interpreter:  {}, {}",
+            last.version,
+            refuting.version,
+            replays.before,
+            replays.after,
+            crate::property::reproduced_words(reproduced)
+        );
+        let message = format!("{} cannot be verified: {p}", options.target);
+        let _ = writeln!(out, "✗ {message}");
+        let _ = writeln!(out, "\nNeither verdict stands. Run both versions on the input above on a JVM: if they differ there, the tool's own checker is wrong, and otherwise JBMC is.");
+        findings.push(Finding::new("engines-disagree", message, uri.clone(), line));
+        if let Some(report) = &options.report {
+            sarif::write(&report.join("equivalence.sarif"), &findings)?;
+        }
+        let after_target = witness::Target { class_internal: &class_internal, method: &method_name, descriptor: &method.descriptor, is_static: method.is_static(), classes: "after" };
+        let before_target = witness::Target { class_internal: &before_class_internal, method: &before_method_name, descriptor: &before_method.descriptor, is_static: before_method.is_static(), classes: "before" };
+        let call = witness::typed_call(&after_target, &layout, &found, false, &[]);
+        let previous_call = if harness.before_args.is_some() {
+            let sources = previous.as_ref().map(harness::BeforeMethod::argument_sources).unwrap_or_default();
+            map_arguments(&found).ok().map(|mapped| witness::typed_call(&before_target, &before_layout, &mapped, true, &sources))
+        } else {
+            Some(witness::typed_call(&before_target, &layout, &found, true, &[]))
+        };
+        let inputs = witness::typed_inputs(params, &found);
+        let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call });
+        let replay = Some(Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay });
+    }
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
             let (assuming, assumed) = assumed_gaps(&last);
             let _ = writeln!(out, "✓ {} {relation}{restriction}{assuming} ({how})", options.target);
             out.push_str(&assumed);
+            if let Some(c) = search.as_ref().and_then(|s| s.confirmation.as_ref()) {
+                out.push_str(&confirmation_line(c));
+            }
             proof = Some(how);
             // A statement that skips inputs before the calls may skip every one in the domain: a scope every input
             // satisfies, a bound on the arrays below what the scope asks, a constructor that rejects every input.

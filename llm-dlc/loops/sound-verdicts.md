@@ -416,6 +416,34 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     examples under a `false-success` tag. A corpus is a table of claims over one class, and examples would put one
     claim on each page. So the tag is not added.
   - Next: 1e, `--confirm` for `--engine auto`.
+- **1e, `--confirm` for `--engine auto` (2026-11-06).**
+  - With `--engine auto --confirm`, for property and regression proofs alike, JBMC proves again any statement the
+    tool's own checker proved. It runs once over every input, on the same harness and class path: the interval stages
+    only find small witnesses sooner. The option is opt-in, and the CLI refuses it under any other engine.
+  - `search.confirmation` records the result, with a status of `confirmed`, `disagreed`, `no-verdict` or `not-asked`,
+    plus the checker, its seconds and the reason. A line under `✓` says it in words (open question 2).
+  - **A disagreement is neither verdict.** The result is `Unverifiable`, "the engines disagree", with the finding
+    `engines-disagree`, rather than a fourth `Verdict`: every caller already treats `Unverifiable` as no verdict, and
+    the status says why. JBMC's witness is the counterexample, and the interpreter's run of the harness on it is shown
+    (`replay.reproduced`). The interpreter decides nothing, since it shares the own checker's models: the message asks
+    for a JVM run.
+  - **"Wherever JBMC supports the harness"** means wherever it would check what the own checker assumed. A proof
+    under `--gaps assume` that assumed a JDK call is `not-asked`, because JBMC would approximate the same call without
+    naming it (4c). A class initializer assumed to have run is checked, since JBMC runs it. A JBMC with no verdict
+    leaves the proof standing as the own checker's alone, exit 0, and the result says so.
+  - Verified inline by `confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker` in `tests/conformance.rs`. A
+    script stands in for JBMC there, since JBMC is not run inline. It covers each status, both drivers, the one-run
+    command line, the JSON and the CLI refusal.
+  - The real JBMC confirms the whole corpus under strict and assume in the ignored test
+    `the_corpus_agrees_with_the_jvm_under_auto_confirm`, pipeline job
+    `20261106-024336-conformance-corpus-under-engine-auto-con`. It fails on a JBMC confirmation of a
+    claim the JVM refutes, and on a disagreement over one it does not. Under assume, `boom` and `inherited` should be
+    disagreements, with an `ExceptionInInitializerError` witness.
+  - `build.py` doesn't pass `--confirm` (no `approach` field), and no recorded result changes. 2a should take the
+    confirmation into the statement, next to the gap mode.
+  - Seen, not fixed: a relative `--jbmc` path fails, because JBMC runs in the work directory.
+  - Phase 1 is complete, apart from the two pipeline jobs.
+  - Next: 2a, the statement as data.
 
 ## Loop settings
 

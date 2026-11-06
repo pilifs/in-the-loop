@@ -15,14 +15,16 @@
 //! array) is run on the JVM only, and a `Verified` verdict for a claim of that case must state the restriction
 //! that leaves the input out.
 //!
-//! The native engine's verdicts are recorded per claim. JBMC and `--engine auto` run in the ignored test, a
-//! pipeline job: `cargo test --release --test conformance -- --ignored`.
+//! The native engine's verdicts are recorded per claim. JBMC, `--engine auto` and `--engine auto --confirm` run in
+//! the ignored tests, pipeline jobs: `cargo test --release --test conformance -- --ignored`. What `--confirm` does
+//! with each answer JBMC can give is tested here with a script standing in for JBMC.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use jvmcontract::bmc::gaps::GapMode;
+use jvmcontract::equivalence::Confirmed;
 use jvmcontract::interp::Value;
 use jvmcontract::jbmc::Argument;
 use jvmcontract::{property, Engine, Verdict};
@@ -293,17 +295,22 @@ struct Run {
     claim: usize,
     engine: Engine,
     gaps: GapMode,
+    confirm: bool,
     outcome: property::Outcome,
 }
 
-fn prove(case: &Case, claim: &Claim, index: usize, engine: Engine, gaps: GapMode, classes: &Path) -> property::Outcome {
+/// An engine, a gap mode, and whether a proof of the own checker's is confirmed by JBMC (`--confirm`).
+type Mode = (Engine, GapMode, bool);
+
+fn prove(case: &Case, claim: &Claim, index: usize, (engine, gaps, confirm): Mode, classes: &Path) -> property::Outcome {
     let mut options = property::Options::new(std::slice::from_ref(&classes.to_path_buf()), &format!("{CLASS}#{}", case.method));
     options.assume = claim.assume.map(str::to_string);
     options.assert = Some(claim.assert.to_string());
     options.throws = claim.throws.iter().map(|s| s.to_string()).collect();
     options.engine = engine;
     options.gaps = gaps;
-    let work = target_tmp().join(format!("conformance-{engine:?}-{gaps:?}")).join(format!("{}-{index}", case.method));
+    options.confirm = confirm;
+    let work = target_tmp().join(format!("conformance-{engine:?}-{gaps:?}{}", if confirm { "-confirm" } else { "" })).join(format!("{}-{index}", case.method));
     let _ = std::fs::remove_dir_all(&work);
     options.work = Some(work);
     property::run(&options).unwrap()
@@ -323,7 +330,7 @@ fn claim_text(claim: &Claim) -> String {
 
 /// Runs the corpus through `engines` and the JVM, and returns what disagrees with it; `recorded` also holds the
 /// native engine's strict verdicts to the corpus's.
-fn conformance(engines: &[(Engine, GapMode)], recorded: bool) -> Option<Vec<String>> {
+fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
     let compiled = compile()?;
     let corpus = corpus();
     let mut failures = Vec::new();
@@ -368,9 +375,9 @@ fn conformance(engines: &[(Engine, GapMode)], recorded: bool) -> Option<Vec<Stri
     let mut runs = Vec::new();
     for (c, case) in corpus.iter().enumerate() {
         for (k, claim) in case.claims.iter().enumerate() {
-            for &(engine, gaps) in engines {
-                let outcome = prove(case, claim, k, engine, gaps, &compiled.classes);
-                runs.push(Run { case: c, claim: k, engine, gaps, outcome });
+            for &(engine, gaps, confirm) in engines {
+                let outcome = prove(case, claim, k, (engine, gaps, confirm), &compiled.classes);
+                runs.push(Run { case: c, claim: k, engine, gaps, confirm, outcome });
             }
         }
     }
@@ -426,7 +433,8 @@ fn conformance(engines: &[(Engine, GapMode)], recorded: bool) -> Option<Vec<Stri
         let refuted = refuted_on_the_jvm.contains(&(run.case, run.claim));
         let label = format!("{} [{}]", case.method, claim_text(claim));
         let verdict = run.outcome.verdict;
-        let _ = writeln!(table, "{:<16} {:?}/{:?} {:<12} {}", case.method, run.engine, run.gaps, format!("{verdict:?}"), claim_text(claim));
+        let confirmation = run.outcome.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status);
+        let _ = writeln!(table, "{:<16} {:?}/{:?}{} {:<12} {}", case.method, run.engine, run.gaps, confirmation.map(|c| format!(" {c:?}")).unwrap_or_default(), format!("{verdict:?}"), claim_text(claim));
         if refuted != claim.refuted {
             failures.push(format!("{label}: the corpus says it is {}, the JVM {}", if claim.refuted { "refuted" } else { "not refuted" }, if refuted { "refutes it" } else { "does not on any of its calls" }));
         }
@@ -443,6 +451,18 @@ fn conformance(engines: &[(Engine, GapMode)], recorded: bool) -> Option<Vec<Stri
                     failures.push(format!("{label}: verified over the domain {domain:?}, which does not say {says:?}, the words that leave out {}({arguments})", case.method));
                 }
             }
+        }
+        // A confirmation is JBMC's word on the own checker's proof, and the JVM is the judge of both.
+        match (refuted, confirmation) {
+            (true, Some(Confirmed::Confirmed)) => failures.push(format!("{label}: JBMC confirms a proof of the own checker's under --gaps {:?}, and the JVM refutes it: {}", run.gaps, run.outcome.output)),
+            (false, Some(Confirmed::Disagreed)) => failures.push(format!("{label}: JBMC disagrees with a proof of the own checker's under --gaps {:?}, and the JVM does not refute it: {}", run.gaps, run.outcome.output)),
+            _ => {}
+        }
+        if confirmation == Some(Confirmed::Disagreed) && verdict != Verdict::Unverifiable {
+            failures.push(format!("{label}: the engines disagree, and the verdict is {verdict:?}"));
+        }
+        if run.confirm && confirmation.is_none() && verdict == Verdict::Verified && run.outcome.search.as_ref().is_some_and(|s| s.engine == "native") {
+            failures.push(format!("{label}: --confirm left no confirmation on a proof of the own checker's"));
         }
         if recorded && run.engine == Engine::Native && run.gaps == GapMode::Strict && verdict != claim.native {
             failures.push(format!("{label}: the native engine says {verdict:?} where the corpus records {:?}: {}", claim.native, run.outcome.output));
@@ -462,7 +482,7 @@ fn conformance(engines: &[(Engine, GapMode)], recorded: bool) -> Option<Vec<Stri
 /// JVM reproduces; under assume it gives `Verified` for a refuted claim only when it names the gap it assumed.
 #[test]
 fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
-    let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict), (Engine::Native, GapMode::Assume)], true) else { return };
+    let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false), (Engine::Native, GapMode::Assume, false)], true) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 
@@ -474,6 +494,129 @@ fn the_corpus_agrees_with_the_jvm_under_jbmc_and_auto() {
     if !has("jbmc") {
         return;
     }
-    let Some(failures) = conformance(&[(Engine::Jbmc, GapMode::Strict), (Engine::Auto, GapMode::Strict)], false) else { return };
+    let Some(failures) = conformance(&[(Engine::Jbmc, GapMode::Strict, false), (Engine::Auto, GapMode::Strict, false)], false) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
+}
+
+/// `--engine auto --confirm` under strict and assume, on the same corpus: JBMC proves again every claim the own
+/// checker proved, a pipeline job like the one above. Under assume, JBMC runs the class initializers the own checker
+/// assumes ran, so a claim a throwing one refutes is a disagreement, and a claim that assumed a JDK call is not
+/// sent to JBMC. A JBMC confirmation of a claim the JVM refutes fails, as does a disagreement over one it does not.
+#[test]
+#[ignore = "runs JBMC on every claim the own checker proves: a pipeline job"]
+fn the_corpus_agrees_with_the_jvm_under_auto_confirm() {
+    if !has("jbmc") {
+        return;
+    }
+    let Some(failures) = conformance(&[(Engine::Auto, GapMode::Strict, true), (Engine::Auto, GapMode::Assume, true)], false) else { return };
+    assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
+}
+
+/// A stand-in for JBMC that answers every run with `answer.txt` next to it and keeps the arguments it was given in
+/// `args.txt`: what `--confirm` does with each answer is then tested without running JBMC.
+fn fake_jbmc(name: &str) -> PathBuf {
+    let dir = target_tmp().join(format!("fake-jbmc-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let script = dir.join("jbmc");
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" > \"$d/args.txt\"\ncat \"$d/answer.txt\"\n").unwrap();
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
+    script
+}
+
+const PROVED: &str = "JBMC version 6.11.0 (cbmc-6.11.0)\n** 0 of 5 failed (1 iterations)\nVERIFICATION SUCCESSFUL\n";
+const NO_ANSWER: &str = "JBMC version 6.11.0 (cbmc-6.11.0)\nRunning with 8 object bits\n";
+
+fn refuted_by_jbmc(class: &str, descriptor: &str, input: &str) -> String {
+    format!("JBMC version 6.11.0 (cbmc-6.11.0)\n[{class}.check:{descriptor}.assertion.1] line 1 assertion at file {class}.java line 1 function java::{class}.check:{descriptor} bytecode-index 9: FAILURE\n  INPUT arg0a: {input}\n** 1 of 5 failed (2 iterations)\nVERIFICATION FAILED\n")
+}
+
+/// `--engine auto --confirm`: a proof of the own checker's that JBMC proves too is confirmed, one JBMC refutes is
+/// neither verdict, one JBMC has no verdict on stays the own checker's and says so, and one that assumed a JDK call
+/// JBMC would approximate as well is not sent to JBMC. JBMC is a stand-in script here; the real one runs the
+/// corpus in the ignored test.
+#[test]
+fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
+    let Some(compiled) = compile() else { return };
+    let jbmc = fake_jbmc("confirm");
+    let dir = jbmc.parent().unwrap().to_path_buf();
+    let answer = |text: &str| {
+        std::fs::write(dir.join("answer.txt"), text).unwrap();
+        let _ = std::fs::remove_file(dir.join("args.txt"));
+    };
+    let prove = |method: &str, assert: &str, gaps: GapMode, name: &str| {
+        let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#{method}"));
+        options.assert = Some(assert.to_string());
+        options.engine = Engine::Auto;
+        options.gaps = gaps;
+        options.confirm = true;
+        options.jbmc = jbmc.display().to_string();
+        let work = target_tmp().join(format!("confirm-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let status = |o: &property::Outcome| o.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status);
+
+    answer(PROVED);
+    let confirmed = prove("increment", "result == x + 1", GapMode::Strict, "proved");
+    assert_eq!(confirmed.verdict, Verdict::Verified, "{}", confirmed.output);
+    assert_eq!(status(&confirmed), Some(Confirmed::Confirmed));
+    assert!(confirmed.output.contains("  confirmed: JBMC 6.11.0 proves it too, over every input"), "{}", confirmed.output);
+    assert_eq!(confirmed.search.as_ref().unwrap().engine, "native");
+    let args = std::fs::read_to_string(dir.join("args.txt")).unwrap();
+    assert!(args.contains("PropertyHarness") && !args.contains("--java-assume-inputs-interval"), "one run over every input: {args}");
+    let json = serde_json::to_value(&confirmed).unwrap();
+    assert_eq!(json["search"]["confirmation"]["status"], "confirmed");
+
+    answer(&refuted_by_jbmc("PropertyHarness", "(I)V", "5"));
+    let disagreed = prove("increment", "result == x + 1", GapMode::Strict, "refuted");
+    assert_eq!(disagreed.verdict, Verdict::Unverifiable, "neither verdict: {}", disagreed.output);
+    assert_eq!(status(&disagreed), Some(Confirmed::Disagreed));
+    assert!(disagreed.output.contains("the engines disagree") && disagreed.output.contains("increment(x=5)"), "{}", disagreed.output);
+    assert!(disagreed.output.contains("where the harness holds"), "the interpreter runs the witness: {}", disagreed.output);
+    assert_eq!(disagreed.findings[0].rule_id, "engines-disagree");
+    let witness = disagreed.counterexample.as_ref().expect("JBMC's witness");
+    assert_eq!(runner_arguments(&witness.inputs), "5");
+    assert!(!disagreed.replay.as_ref().unwrap().reproduced);
+
+    answer(NO_ANSWER);
+    let unconfirmed = prove("increment", "result == x + 1", GapMode::Strict, "silent");
+    assert_eq!(unconfirmed.verdict, Verdict::Verified, "{}", unconfirmed.output);
+    assert_eq!(status(&unconfirmed), Some(Confirmed::NoVerdict));
+    assert!(unconfirmed.output.contains("  not confirmed: JBMC 6.11.0 gave no verdict"), "{}", unconfirmed.output);
+
+    // `new ArrayList<>(n)` assumed to return: JBMC has no bytecode for it either, so it is not asked.
+    answer(PROVED);
+    let assumed = prove("capacity", "result == 1", GapMode::Assume, "assumed");
+    assert_eq!(assumed.verdict, Verdict::Verified, "{}", assumed.output);
+    assert_eq!(status(&assumed), Some(Confirmed::NotAsked));
+    assert!(!dir.join("args.txt").exists(), "JBMC was run");
+    assert!(assumed.output.contains("not confirmed: JBMC was not asked, since the tool's own checker assumed java.util.ArrayList.<init>(int)"), "{}", assumed.output);
+
+    // A refutation of the own checker's is its own, whatever JBMC would say: nothing to confirm.
+    let refuted = prove("increment", "result > x", GapMode::Strict, "violation");
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    assert_eq!(status(&refuted), None);
+
+    // A regression proof: the same class as both versions, proved rather than taken as identical.
+    answer(&refuted_by_jbmc("EquivalenceHarness", "(I)V", "7"));
+    let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#increment"));
+    options.engine = Engine::Auto;
+    options.confirm = true;
+    options.shared_callees = false;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("confirm-equivalence");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let equivalence = jvmcontract::equivalence::run(&options).unwrap();
+    assert_eq!(equivalence.verdict, Verdict::Unverifiable, "{}", equivalence.output);
+    assert_eq!(equivalence.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status), Some(Confirmed::Disagreed));
+    assert!(equivalence.output.contains("increment(x=7)") && equivalence.output.contains("before in the interpreter: 8"), "{}", equivalence.output);
+
+    // The command line has --confirm under --engine auto only.
+    let cli = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(["prove", "--classes"]).arg(&compiled.classes).args([&format!("{CLASS}#increment"), "--assert", "result == x + 1", "--engine", "native", "--confirm"]).output().unwrap();
+    assert!(!cli.status.success());
+    assert!(String::from_utf8_lossy(&cli.stderr).contains("--confirm needs --engine auto"), "{}", String::from_utf8_lossy(&cli.stderr));
 }
