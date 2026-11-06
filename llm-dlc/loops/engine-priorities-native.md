@@ -329,8 +329,85 @@ are yours, but say under Progress which JBMC results they may change.
   - **Shared files changed:** `lib/README.md` (a paragraph, "The solver interface").
   - **Also changed (mine):** `lib/src/bmc/bits.rs`, `mod.rs` and `transcript.rs`, as above.
   - **JBMC results:** none change.
-- **Next:** enums in the own checker, Phase 5's last step: arrays of references for `$VALUES`, and the `Enum` model
-  run there. Record job `-203501`'s result here once it is back.
+- **5, step 3: enums in the own checker** (inline; JVM 25.0.5). With it, 4b's order for Phase 5 is done: the switch
+  maps came with the enums.
+  - **Arrays of references.** The engine now has `anewarray`, `aaload` and `aastore`: a cell holds an object or
+    `null`. A reference is not a choice among bits, so an index that is an input splits the path per cell
+    (`Engine::concrete_index`), as a switch does. Each side runs the instruction again with its constant, and an
+    index no cell has throws `ArrayIndexOutOfBoundsException`.
+    - At a join, the side that runs the instruction again does so without waiting there. Merged with the paths at
+      that join, its constant would be a choice again.
+    - An array's `clone()` is a copy.
+    - An `aastore` that would throw `ArrayStoreException` is refused.
+    - Arrays are now named by descriptor (`[I`, `[Lp/Color;`), as `ClassPath::is_subtype` names them. Before, an
+      `int[]` was named `int[]`, which a `checkcast [I` never matched.
+  - **`java.lang.Enum`'s model runs in the own checker.**
+    - `models::CHECKER_RUNS` lists it. `ClassPath::checker_model` and `checker_method` find it, and
+      `checker_runs` says the checker runs its instance methods: the constructor, `name()`, `ordinal()`, `toString()`
+      and `equals`.
+    - The interpreter keeps its natives, and JBMC's class path is unchanged. `bytecode_method` behaves as before;
+      it is now `method_in` with the interpreter's lookup.
+    - `compareTo`, `hashCode` and `valueOf` stay JDK gaps.
+  - **The gap scan agrees.**
+    - `anewarray` is no longer refused. `multianewarray` still is.
+    - An array's `clone()` counts as reproduced exactly.
+    - The walk goes through `Enum`'s model.
+    - **An earlier flaw, fixed.** An abstract application method (an enum constant's body, an interface's method)
+      was classed as a JDK call, and so as a gap. The walk already follows its overrides. `enumBodies` showed it,
+      under advised.
+  - **What it closes** (static, `initializer_shapes.py`):
+    - Over the apps, the 49 `class-initializer` gaps are now 0: all 36 enums and 13 switch maps run.
+    - Over the recorded examples, no example reaches one; before, 013 and 071 did, through the four Quorum enums.
+    - In the apps, what keeps code from the checker is now mostly `invokedynamic` (lambdas, 106 sites over the four
+      apps), floating point and array results of JDK methods (30 sites, all in Mica), and JDK gaps.
+  - **Conformance, checked on the JVM.**
+    - `enumState` is now verified and violated as the JVM decides; it was unverifiable.
+    - Five new cases, ten claims:
+      - `enumValues`: `values()` at an input index, and AIOOBE;
+      - `enumSwitch`: through `Conformance$1`'s `$SwitchMap`, over `Hue`, a top-level enum. javac 25 switches on
+        `ordinal()` directly over an enum nested in the same class;
+      - `enumBodies`: constant bodies, and a field `name` beside `Enum`'s private one;
+      - `enumBroken`: `ExceptionInInitializerError`, then `NoClassDefFoundError`;
+      - `enumValueOf`: a gap in every mode.
+    - The own checker decides the first four in every native mode as the JVM does.
+    - `the_models_only_jbmc_runs_agree_with_the_jvm` now also runs the four that go through the model; they agree.
+    - The test still fails only its 12 library-record claims.
+  - **Tests.**
+    - A unit test, `an_array_of_references_holds_its_objects_and_an_input_index_splits_the_path`, merged and
+      unmerged. It also checks the `ArrayStoreException` refusal.
+    - Three integration fixtures kept an initializer out with a `String[]`, which now runs. They use a `double[]`
+      now: `Gaps.Table`, `Contracted.Table` and `Identity.Names`.
+    - `the_gap_scan_gives_each_class_initializer_a_shape` now has the enum and its switch map running, and `Mass`, an
+      enum with a `double` field, still a gap.
+  - **Shared files changed:**
+    - `lib/tests/conformance.rs`: the cases, `enumState`'s verdicts, `ON_THE_MODELS`.
+    - `lib/tests/conformance/conformance/Conformance.java`: the methods, the `Step` and `Broken` enums, and `Hue` at the
+      end of the file.
+    - `lib/tests/integration.rs`: as above.
+    - `lib/README.md`: the fragment, the limits, the gap list and the models paragraph.
+    - Also changed: `lib/src/classpath.rs` (above; `model` is unchanged in what it gives) and `lib/src/models.rs`
+      (`CHECKER_RUNS`).
+  - **Also changed (mine):** `lib/src/bmc/mod.rs` (the engine and its module docs), `lib/src/bmc/gaps.rs`, and
+    `lib/models/README.md`.
+  - **JBMC results:**
+    - JBMC's own runs don't change. Its class path, its models and `exact_jdk_call` are as they were.
+    - Under `--engine auto`, a proof through an enum is now decided by the own checker. Before, it refused the
+      `class-initializer` gap and asked JBMC.
+    - The new cases have not run under JBMC, `auto` or `--confirm`. Those are the ignored conformance tests, for the
+      next conformance job.
+  - **For the reconcile loop:** `lib/benchmark/conformance.json` falls 10 more claims behind the corpus, and
+    `enumState`'s two claims change `nativeStrict`.
+  - **Tests:** unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12
+    library-record claims, and the benchmark file.
+  - **Not in scope:** the own checker still refuses `List.of` and `copyOf` (JBMC-only models over JDK list
+    classes). 4b's order didn't include them; they're a candidate for 4c's inventory.
+- **Next:** 6c's job. Before it can be submitted:
+  - Bitwuzla behind the `Sat` trait;
+  - the word-level prototype for the five workloads;
+  - the job's script.
+
+  Phase 5's own work is done. Job `-203501` has run (the status says failed) and isn't collected yet: record its
+  result here once it is.
 - Status: working
 
 ## Loop settings

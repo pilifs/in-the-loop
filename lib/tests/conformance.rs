@@ -123,7 +123,19 @@ fn corpus() -> Vec<Case> {
         Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): the calls lib/models models for
         // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them.
-        Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], U).refuted(None, "result < 20", &[], U),
+        Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], V).refuted(None, "result < 20", &[], X),
+        // Enums in the own checker (Phase 5, its last step): `$VALUES` at an index that is an input, a switch through
+        // javac's `$SwitchMap` class, constants with bodies and a field named as `Enum`'s private one, an enum whose
+        // initializer throws, and `valueOf`, which stays a gap (`Enum.valueOf(Class, String)` is reflection).
+        Case::new("enumValues", &[("0", "returns 1003"), ("2", "returns 1023"), ("3", "throws java.lang.ArrayIndexOutOfBoundsException"), ("-1", "throws java.lang.ArrayIndexOutOfBoundsException")])
+            .holds(None, "result == 1003 + n * 10", &["ArrayIndexOutOfBoundsException when n < 0 || n > 2"], V)
+            .refuted(Some("n >= 0 && n <= 2"), "result < 1020", &[], X),
+        Case::new("enumSwitch", &[("0", "returns 10"), ("1", "returns 21"), ("101", "returns 32"), ("-7", "returns 21")]).holds(Some("n > 100"), "result == 32", &[], V).refuted(None, "result != 21", &[], X),
+        Case::new("enumBodies", &[("5", "returns 1160"), ("0", "returns 1181"), ("-3", "returns 1151")])
+            .holds(Some("n > 0 && n < 1000"), "result == n * 10 + 1110", &[], V)
+            .refuted(Some("n <= 0 && n > -1000"), "result == 1181", &[], X),
+        Case::new("enumBroken", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 13", &[], X),
+        Case::new("enumValueOf", &[("4", "returns 5")]).holds(None, "result == n + 1", &[], U).refuted(None, "result == n", &[], U),
         Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
             .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], U)
             .refuted(None, "result >= 10", &[], U),
@@ -660,7 +672,7 @@ fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
 
 /// The cases whose calls go through the models of `lib/models` that only JBMC runs (`Model::jbmc_only`:
 /// `java.lang.Enum`, the factories of `java.util.List` and the immutable lists they return).
-const ON_THE_MODELS: &[&str] = &["enumState", "listSizes", "listNull", "listChange", "listCopySame", "listCopyMutable", "listGet", "listSearch", "listEquals", "listIterate", "listOfArray"];
+const ON_THE_MODELS: &[&str] = &["enumState", "enumValues", "enumSwitch", "enumBodies", "enumBroken", "listSizes", "listNull", "listChange", "listCopySame", "listCopyMutable", "listGet", "listSearch", "listEquals", "listIterate", "listOfArray"];
 
 /// The models only JBMC runs, run on a JVM. The interpreter keeps its own natives for these classes, so the corpus
 /// above checks those natives, and this test checks the models themselves: relocated out of `java.*` (a JVM loads

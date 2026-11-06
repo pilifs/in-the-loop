@@ -70,6 +70,12 @@ pub const MODELS: &[Model] = &[
     model!(jbmc "java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListN.class", "an immutable list of none or three or more elements over an array of its own, as the JDK's; JBMC only"),
 ];
 
+/// The models only for JBMC's class path ([`Model::jbmc_only`]) that the tool's own checker runs as bytecode all the
+/// same ([`ClassPath::checker_model`](crate::classpath::ClassPath::checker_model)): `java.lang.Enum`, whose
+/// constructor and accessors an enum's initializer and methods call. Its state is two fields of the enum's own
+/// objects, which the checker holds like any other field; the interpreter keeps its natives for the class.
+pub const CHECKER_RUNS: &[&str] = &["java/lang/Enum"];
+
 /// The model of a class, by internal name, whichever engines run it.
 pub fn find(name: &str) -> Option<&'static Model> {
     MODELS.iter().find(|m| m.name == name)

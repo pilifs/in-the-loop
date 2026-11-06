@@ -8,7 +8,7 @@
 //! | `jdk-void-method` | returns and does nothing | runs it, and it may change its receiver or arguments (`Random.nextBytes` fills its array), or throw | yes |
 //! | `jdk-reference-method` | returns a new object, never null | may return null or an object that exists already, or throw | yes |
 //! | `string-conversion` | makes a new string without converting its arguments | calls `toString` on an object argument, which may throw (bytecode of javac 9 to 18: from 19 on, javac calls `String.valueOf` first, which the engine refuses) | yes |
-//! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing (an initializer it does not run, [`runs_initializer`]: one outside its fragment, as an enum's is; it runs any other) | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
+//! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing (an initializer it does not run, [`runs_initializer`]: one outside its fragment; it runs any other, an enum's included) | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
 //! | `jdk-primitive-method` | nothing: refused as under strict | runs it, and returns a value the engine could only make up (`Random.nextInt(bound)`), or throws | yes |
 //! | `jdk-static-method` | nothing: refused as under strict | runs a static JDK method the engine does not model (`Integer.numberOfLeadingZeros`, `Arrays.fill`), which may return any value, change an argument array, or throw | yes |
 //! | `missing-body` | (JBMC's stub, [`crate::jbmc_gaps`]) returns any value of its type, or `null` or a new object, and does nothing else | runs a method JBMC has no bytecode for (its class is not on JBMC's class path, or it is abstract or native), which may throw or change its arguments | no: JBMC only |
@@ -34,7 +34,7 @@
 //! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
 //! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
-//! written, an array of references, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
+//! written, a multi-dimensional array, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
 //! with no verdict, as it should, in either mode. The scan lists those reasons too, since a method that has one is
 //! outside the engine whatever its gaps. `monitorenter` and `monitorexit` are implemented: they throw
 //! `NullPointerException` on null and otherwise do nothing, which is all they do in a run of one thread.
@@ -602,7 +602,7 @@ pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
 /// Whether the engine runs `class`'s `<clinit>` when a use initializes the class, rather than meeting a
 /// `class-initializer` gap there: the class has one, and nothing in it, or in the application methods it calls,
 /// is outside the engine's fragment ([`scan`]'s refusals). That includes a static field it reads or writes of a
-/// class whose initializer the engine does not run (a constant read apart), so an enum's constants keep its
+/// class whose initializer the engine does not run (a constant read apart), so an enum outside keeps its
 /// `$SwitchMap` classes out with it. Initializers that use each other's fields run if each would given that the
 /// others do.
 pub fn runs_initializer(cp: &ClassPath, class: &str) -> bool {
@@ -858,7 +858,7 @@ impl<'a> Walker<'a> {
     }
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
-        let Some((cf, m)) = self.cp.bytecode_method(owner, name, descriptor) else { return Ok(()) };
+        let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
         if !self.scan.methods.insert(label) {
             return Ok(());
@@ -879,7 +879,7 @@ impl<'a> Walker<'a> {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     self.static_field(&member.owner, &member.name, &member.descriptor, matches!(insn, Insn::PutStatic(_)), &site);
                 }
-                Insn::ANewArray(_) | Insn::MultiANewArray(..) => self.refuse("arrays of references", "a new array of references".into(), &site),
+                Insn::MultiANewArray(..) => self.refuse("multi-dimensional arrays", "a new multi-dimensional array".into(), &site),
                 Insn::Ldc(index) => {
                     if let Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) = cf.pool.loadable(index) {
                         self.refuse("floating point", "a floating-point constant".into(), &site);
@@ -919,13 +919,22 @@ impl<'a> Walker<'a> {
                 Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     let special = matches!(insn, Insn::InvokeSpecial(_));
-                    let resolved = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).filter(|(c, m)| self.cp.is_application(&c.name) && m.code.is_some());
+                    // An array's `clone`, which the engine copies.
+                    if !special && member.owner.starts_with('[') && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" {
+                        *self.scan.exact.entry("array.clone()".into()).or_default() += 1;
+                        continue;
+                    }
+                    let resolved = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, _)| self.cp.checker_runs(&c.name));
                     let overrides = if special { Vec::new() } else { self.overrides(&member.owner, &member.name, &member.descriptor) };
                     for o in &overrides {
                         self.enqueue(o, &member.name, &member.descriptor);
                     }
-                    if let Some((c, _)) = resolved {
-                        self.enqueue(&c.name, &member.name, &member.descriptor);
+                    // An application method; an abstract one (an enum constant's body, an interface's) is one of the
+                    // overrides above on the receiver the engine dispatches on, and no call into the JDK.
+                    if let Some((c, m)) = resolved {
+                        if m.code.is_some() {
+                            self.enqueue(&c.name, &member.name, &member.descriptor);
+                        }
                         continue;
                     }
                     // The method is the JDK's, on this receiver: the engine's fallback.

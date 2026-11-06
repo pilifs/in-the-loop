@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.005Z",
-  "ended": "2026-11-06T21:27:13.896Z",
-  "duration_seconds": 7930,
+  "ended": "2026-11-06T22:04:36.131Z",
+  "duration_seconds": 10172,
   "stats": {
-    "turns": 39,
-    "api_calls": 374,
-    "tool_calls": 379,
+    "turns": 44,
+    "api_calls": 456,
+    "tool_calls": 461,
     "tool_errors": 4,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 298900,
     "usage": {
-      "input_tokens": 754,
-      "output_tokens": 351899,
-      "cache_read_input_tokens": 53969823,
-      "cache_creation_input_tokens": 1144400
+      "input_tokens": 918,
+      "output_tokens": 438670,
+      "cache_read_input_tokens": 68812240,
+      "cache_creation_input_tokens": 1407855
     }
   },
   "tools": {
-    "Bash": 346,
-    "Read": 13,
+    "Bash": 414,
+    "Read": 27,
     "Write": 9,
     "Edit": 6,
     "ToolSearch": 4,
@@ -151,24 +151,38 @@
     {
       "index": 7,
       "started": "2026-11-06T21:09:26.036Z",
-      "ended": "2026-11-06T21:27:13.896Z",
-      "turns": 4,
-      "api_calls": 37,
+      "ended": "2026-11-06T21:27:36.879Z",
+      "turns": 5,
+      "api_calls": 40,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 22862,
-        "cache_read_input_tokens": 3355194,
-        "cache_creation_input_tokens": 109172
+        "input_tokens": 84,
+        "output_tokens": 24120,
+        "cache_read_input_tokens": 3725706,
+        "cache_creation_input_tokens": 112653
       },
-      "peak_context_tokens": 122251
+      "peak_context_tokens": 125732
+    },
+    {
+      "index": 8,
+      "started": "2026-11-06T21:28:17.185Z",
+      "ended": "2026-11-06T22:04:36.131Z",
+      "turns": 4,
+      "api_calls": 79,
+      "usage": {
+        "input_tokens": 158,
+        "output_tokens": 85513,
+        "cache_read_input_tokens": 14471905,
+        "cache_creation_input_tokens": 259974
+      },
+      "peak_context_tokens": 273053
     }
   ],
   "log": {
-    "sha256": "67fd094d3533a2bd8208e5f575e30b9f41de9e11de317910beabcc2ab29abae6",
-    "bytes": 10435443,
-    "lines": 3981,
-    "gzip_bytes": 1925686,
-    "path": "llm-dlc/traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/logs/67fd094d3533a2bd8208e5f575e30b9f41de9e11de317910beabcc2ab29abae6.jsonl.gz"
+    "sha256": "eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f",
+    "bytes": 12694194,
+    "lines": 4848,
+    "gzip_bytes": 2309747,
+    "path": "llm-dlc/traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/logs/eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -227,6 +241,14 @@
       "summary": "Put the own checker's SAT solver behind a narrow interface (Phase 6b)",
       "body": "The own checker's solver is now reached only through a Sat trait (lib/src/bmc/sat.rs: signature, add_clause, set_limit, solve under assumptions, value, variables), with CaDiCaL 1.9.5 as the bundled crate gives it as its one implementation. That separates the engine's three layers: scheduling the queries (Engine in bmc/mod.rs: probes, deferred paths, the refinement loop), encoding them (Blaster in bmc/bits.rs, which now holds a Box<dyn Sat> and calls nothing else of the solver), and solving them. bmc::Options::solver chooses the solver a check runs on (CaDiCaL by default), and transcript::replay_on replays a transcript on any solver behind the trait, so Phase 6c can put Bitwuzla's SAT mode behind it without touching the engine. The transcript's header now names the solver the check ran on. Results still name CaDiCaL through solver_signature(), since nothing outside tests sets another solver.\n\nNo behaviour changes. A new engine test runs a check on a test double that logs everything crossing the trait: it gives the plain run's outcome, its clauses and calls match the outcome's counts and the transcript's, and a replay on the logged solver gives the same clauses and calls again. End to end, held/lower-bound (equivalence --engine native, unwind 9, arrays up to 8) writes the same transcripts by count as before the change: 460 calls over 43,478 clauses and 13,025 variables, verified, plus a 5-call check, both replaying with no contradiction. Unit (153), integration (64) and skill tests pass. Conformance fails only its two known tests: 12 library-record claims (JDK 25.0.5 against a record made on 25.0.4.1) and the JBMC stream's benchmark file. The brief's Progress records this, the shared file changed (lib/README.md), and the next step: enums in the own checker.",
       "log_sha256": "67fd094d3533a2bd8208e5f575e30b9f41de9e11de317910beabcc2ab29abae6"
+    },
+    {
+      "change_id": "ulstzomtvuxtrvolmvnzysxtzqrsltos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Run enums in the own checker: arrays of references, Enum's model, switch maps (Phase 5, step 3)",
+      "body": "The own checker (lib/src/bmc) now has arrays of references: anewarray, aaload and aastore, a cell holding an object or null. An index that is an input splits the path per cell, since a reference is not a choice among bits, and a path that runs the instruction again at a join does so without waiting there, so that merging does not make its constant a choice again. An array's clone() is a copy, an aastore that would throw ArrayStoreException is refused, and arrays are named by descriptor, as ClassPath::is_subtype names them. The model of java.lang.Enum in lib/models, until now on JBMC's class path only, is run by the own checker too (models::CHECKER_RUNS, ClassPath::checker_model, checker_method, checker_runs); the interpreter keeps its natives and JBMC's class path is unchanged. Enum initializers, $VALUES and javac's $SwitchMap classes therefore run where the JVM runs them. The gap scan agrees: anewarray is no longer refused, an array clone is exact, and an abstract application method is no longer counted as a JDK gap (an earlier flaw that an enum with constant bodies showed under --gaps advised).\n\nChecked: five new conformance cases (enumValues, enumSwitch, enumBodies, enumBroken, enumValueOf) were run on JVM 25.0.5 first. The own checker decides the first four, and enumState, as the JVM does in every native mode; valueOf stays a gap. The models test covers the four that go through Enum's model. A new engine unit test covers the per-cell split merged and unmerged, and the ArrayStoreException refusal. initializer_shapes.py (static) counts 0 class-initializer gaps over the four apps, where 4b counted 49, and none over the recorded examples (013 and 071 reached four Quorum enums). Unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record claims on JDK 25.0.5, and lib/benchmark/conformance.json, the JBMC stream's file, which is now 10 more claims behind. Three integration fixtures that used a String[] to keep an initializer out now use a double[].\n\nThe main brief's Phase 5 text says the own checker refuses arrays of references; that is no longer so, though it still refuses List.of and copyOf, whose models stay JBMC-only.",
+      "log_sha256": "eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f"
     }
   ],
   "logs": {
@@ -270,6 +292,12 @@
       "bytes": 5257813,
       "lines": 1911,
       "gzip_bytes": 997440,
+      "url": null
+    },
+    "eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f": {
+      "bytes": 12694194,
+      "lines": 4848,
+      "gzip_bytes": 2309747,
       "url": null
     }
   },

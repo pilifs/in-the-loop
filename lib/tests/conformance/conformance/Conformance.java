@@ -135,6 +135,59 @@ public class Conformance {
         return s.ordinal() * 10 + (s.name() == s.name() ? 1 : 0) + (s.toString() == s.name() ? 2 : 0) + (s.equals(Shade.LIGHT) ? 4 : 0);
     }
 
+    // Enums in the tool's own checker (Phase 5, its last step): $VALUES, an array of references, at an index that is
+    // an input; a switch through javac's $SwitchMap class; constants with bodies of their own and a field that
+    // shares Enum's private `name`; an initializer that throws; and valueOf, which stays a gap.
+
+    public static int enumValues(int n) {
+        Shade[] all = Shade.values();
+        Shade s = all[n];
+        return s.ordinal() * 10 + all.length + (all == Shade.values() ? 100 : 0) + (all[s.ordinal()] == s ? 1000 : 0);
+    }
+
+    static int tone(Hue h) {
+        switch (h) {
+            case RED: return 1;
+            case BLUE: return 3;
+            default: return 2;
+        }
+    }
+
+    public static int enumSwitch(int n) {
+        Hue h = Hue.values()[n > 100 ? 2 : n & 1];
+        return tone(h) * 10 + h.ordinal();
+    }
+
+    enum Step {
+        UP(1) { int apply(int x) { return x + size; } },
+        DOWN(2) { int apply(int x) { return x - size; } };
+        final int size;
+        final int name;
+        Step(int size) { this.size = size; this.name = size * 100; }
+        abstract int apply(int x);
+    }
+
+    public static int enumBodies(int n) {
+        Step s = n > 0 ? Step.UP : Step.DOWN;
+        return s.apply(n) * 10 + s.ordinal() + s.name + (s.name() == s.name() ? 1000 : 0);
+    }
+
+    enum Broken {
+        ONE(0), TWO(1);
+        final int inverse;
+        Broken(int d) { inverse = 10 / d; }
+    }
+
+    public static int enumBroken(int n) {
+        int first = 0;
+        try { first = Broken.values().length; } catch (ExceptionInInitializerError e) { first = 1; }
+        try { return first * 10 + Broken.TWO.inverse + n; } catch (NoClassDefFoundError e) { return first * 10 + 2; }
+    }
+
+    public static int enumValueOf(int n) {
+        return Shade.valueOf("LIGHT").ordinal() + n;
+    }
+
     public static int listSizes(int n) {
         Object a = new Object(), b = new Object(), c = new Object();
         List<Object> l = n == 0 ? List.of() : n == 1 ? List.of(a) : n == 2 ? List.of(a, b) : List.of(a, b, c);
@@ -371,3 +424,7 @@ public class Conformance {
 
     public static int byteSum(byte a, byte b) { return a + b; }
 }
+
+// A top-level enum: javac switches over it through a $SwitchMap class (Conformance$1), as it does for an enum of
+// another class; over an enum nested in the same class it switches on ordinal() directly.
+enum Hue { RED, GREEN, BLUE }

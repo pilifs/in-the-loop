@@ -2091,7 +2091,7 @@ public class Gaps {
     static class A { int x; }
     static class B extends A { int x; }
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 }; static final String[] NAMES = { "two" };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
         static int first() { return 7; }
     }
     record Point(int x, int y) {}
@@ -2153,7 +2153,7 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     assert!(ids.is_empty(), "{ids:?}");
     let (ids, _) = scan("sameLiteral");
     assert!(ids.is_empty(), "{ids:?}");
-    // An initializer outside the engine's fragment (an array of references) is a gap, and is not walked; one in
+    // An initializer outside the engine's fragment (floating point) is a gap, and is not walked; one in
     // it is walked, as the engine runs it, with the static fields it writes and reads.
     let (ids, s) = scan("initialised");
     assert_eq!(ids, ["class-initializer:fixtures.Gaps$Table.<clinit>()V"]);
@@ -2191,6 +2191,7 @@ public class Shapes {
     static class Boom { static final int[] TABLE = table(); static int[] table() { throw new IllegalStateException(); } }
     static class Reader { static final int[] COPY = Literal.PRIMES; }
     public static int light(Light l) { switch (l) { case RED: return 1; default: return 2; } }
+    public static int mass(Mass m) { return m.ordinal(); }
     public static int literal(int n) { return Literal.PRIMES[0] + n; }
     public static int table(int n) { return Table.PRIMES[0] + n; }
     public static int boom(int n) { return Boom.TABLE.length + n; }
@@ -2202,8 +2203,8 @@ public class Shapes {
 /// shape, read from its bytecode and the application methods it calls: an enum's, javac's `$SwitchMap` class for a
 /// switch over an enum (which reads the enum's constants), one that only assigns a literal table, one that throws
 /// through a method it calls, one that reads another class's static field, and one that calls the JDK. Since Phase 5
-/// the engine runs the last four ([`jvmcontract::bmc::gaps::runs_initializer`]), so only the enum and its switch map
-/// are gaps.
+/// the engine runs them all ([`jvmcontract::bmc::gaps::runs_initializer`]), the enum and its switch map since its
+/// last step, enums; an enum whose initializer is outside the fragment (a `double` field) stays a gap, its shape named.
 #[test]
 fn the_gap_scan_gives_each_class_initializer_a_shape() {
     let dir = target_tmp().join("shapes-src");
@@ -2213,7 +2214,8 @@ fn the_gap_scan_gives_each_class_initializer_a_shape() {
     // In a file of its own, as in the apps: javac makes a `$SwitchMap` class for a switch over an enum of another
     // compilation unit.
     std::fs::write(dir.join("Light.java"), "package fixtures;\nenum Light { RED, GREEN }\n").unwrap();
-    let Some(classes) = compile("shapes", &[dir.join("Shapes.java"), dir.join("Light.java")]) else { return };
+    std::fs::write(dir.join("Mass.java"), "package fixtures;\nenum Mass { ONE(1.5); final double kg; Mass(double kg) { this.kg = kg; } }\n").unwrap();
+    let Some(classes) = compile("shapes", &[dir.join("Shapes.java"), dir.join("Light.java"), dir.join("Mass.java")]) else { return };
     let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap().with_models(true);
     let shapes = |method: &str| {
         let targets = vec![format!("fixtures.Shapes#{method}")];
@@ -2221,14 +2223,13 @@ fn the_gap_scan_gives_each_class_initializer_a_shape() {
         let s = jvmcontract::bmc::gaps::scan(&cp, &roots).unwrap();
         s.initializers.values().map(|i| (i.class.clone(), i.shape.name(), i.traits.iter().copied().collect::<Vec<_>>())).collect::<Vec<_>>()
     };
-    let light = shapes("light");
-    let names: Vec<_> = light.iter().map(|(c, s, _)| (c.as_str(), *s)).collect();
-    assert_eq!(names, [("fixtures.Light", "enum"), ("fixtures.Shapes$1", "other-statics")]);
-    assert!(light[1].2.contains(&"switch-map") && light[1].2.contains(&"handlers"), "{light:?}");
-    assert!(light[0].2.contains(&"arrays-of-references"), "{light:?}");
-    // Since Phase 5 the engine runs the other four, so the scan walks them, and they are no gaps; their shapes are
-    // still read from their bytecode.
-    for method in ["literal", "table", "boom", "reader"] {
+    let mass = shapes("mass");
+    let names: Vec<_> = mass.iter().map(|(c, s, _)| (c.as_str(), *s)).collect();
+    assert_eq!(names, [("fixtures.Mass", "enum")]);
+    assert!(mass[0].2.contains(&"arrays-of-references"), "{mass:?}");
+    // The engine runs the others, so the scan walks them, and they are no gaps; their shapes are still read from
+    // their bytecode.
+    for method in ["light", "literal", "table", "boom", "reader"] {
         assert!(shapes(method).is_empty(), "{method}: {:?}", shapes(method));
     }
     let shape = |class: &str| {
@@ -2241,10 +2242,16 @@ fn the_gap_scan_gives_each_class_initializer_a_shape() {
     assert_eq!(boom, "throws");
     assert!(traits.contains(&"athrow") && traits.contains(&"calls-application"), "{traits:?}");
     assert_eq!(shape("fixtures/Shapes$Reader"), ("other-statics", vec!["reads-other-statics"]));
-    for class in ["fixtures/Shapes$Literal", "fixtures/Shapes$Table", "fixtures/Shapes$Boom", "fixtures/Shapes$Reader"] {
+    let (light, traits) = shape("fixtures/Light");
+    assert_eq!(light, "enum");
+    assert!(traits.contains(&"arrays-of-references"), "{traits:?}");
+    let (map, traits) = shape("fixtures/Shapes$1");
+    assert_eq!(map, "other-statics");
+    assert!(traits.contains(&"switch-map") && traits.contains(&"handlers"), "{traits:?}");
+    for class in ["fixtures/Shapes$Literal", "fixtures/Shapes$Table", "fixtures/Shapes$Boom", "fixtures/Shapes$Reader", "fixtures/Light", "fixtures/Shapes$1"] {
         assert!(jvmcontract::bmc::gaps::runs_initializer(&cp, class), "{class}");
     }
-    assert!(!jvmcontract::bmc::gaps::runs_initializer(&cp, "fixtures/Light") && !jvmcontract::bmc::gaps::runs_initializer(&cp, "fixtures/Shapes$1"));
+    assert!(!jvmcontract::bmc::gaps::runs_initializer(&cp, "fixtures/Mass"));
 }
 
 /// Step 1b of llm-dlc/loops/sound-verdicts.md: the tool's own checker meets the gaps as it runs. Under `--gaps strict`
@@ -2789,7 +2796,7 @@ package fixtures;
 
 public class Contracted {
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 }; static final String[] NAMES = { "two" };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
         static int first() { return 7; }
     }
 
@@ -3318,7 +3325,7 @@ public class Identity {
         static int value(int n) { return n; }
     }
     static class Names {
-        static final String[] ALL = { "a", "b" };
+        static final double[] ALL = { 0.5, 1.5 };
         static int value(int n) { return n; }
     }
 
@@ -3404,7 +3411,7 @@ fn identity_and_initialization_agree_with_the_jvm() {
             }
         }
     }
-    // An initializer the engine does not run, since it makes an array of references: refused by name under
+    // An initializer the engine does not run, since it is outside its fragment (floating point): refused by name under
     // strict, and named as an assumption under assume.
     let id = "class-initializer:fixtures.Identity$Names.<clinit>()V";
     let o = prove("named", "result == n", Engine::Native, GapMode::Strict);
