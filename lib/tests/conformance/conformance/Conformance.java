@@ -140,6 +140,16 @@ public class Conformance {
         Range {
             if (lo > hi) throw new IllegalArgumentException("lo > hi");
         }
+
+        int span() { return hi - lo; }
+    }
+    // A record whose constructor meets a gap, for a statement whose vacuity the tool's own checker cannot settle.
+    record Sized(int n) {
+        Sized {
+            new java.util.ArrayList<Object>(n);
+        }
+
+        int twice() { return 2 * n; }
     }
     record Clamp(int v) {
         Clamp {

@@ -32,7 +32,7 @@ use crate::classpath::ClassPath;
 use crate::equivalence::{extract_jdk_classes, STAGES};
 use crate::harness::{self, Signal};
 use crate::interp::Value;
-use crate::jbmc::{self, Argument, JbmcRun};
+use crate::jbmc::{self, Argument, JbmcResult, JbmcRun};
 use crate::sarif::{self, Finding};
 use crate::{witness, Error, Verdict};
 
@@ -293,6 +293,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         checker: crate::statement::checker(search, options.sat_solver.as_deref()),
         gap_mode: last.gap_mode,
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
+        vacuity: None,
     };
 
     // 3. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.
@@ -414,6 +415,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut proof = None;
     let mut problem = None;
     let mut vacuous = None;
+    let mut vacuity_status = None;
     let mut verdict = last.verdict;
     // JBMC refutes what the own checker proved: neither verdict stands. JBMC's witness is the counterexample, and
     // the interpreter's run of the method on it is shown, but it decides nothing: it shares the own checker's
@@ -461,10 +463,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             if !harness.probe.is_empty() {
                 let mut entries = options.classes.clone();
                 entries.extend(options.classpath.iter().cloned());
-                vacuous = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, "failing the assumption (--assume)")?;
-                if let Some(reason) = &vacuous {
-                    let _ = writeln!(out, "  vacuously: {reason}");
-                }
+                let render = |r: &JbmcResult| r.arguments(&descriptor.params).ok().map(|found| witness::call(&method_name, &params, &found).0);
+                let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, "failing the assumption (--assume)", &render)?;
+                vacuous = reason;
+                vacuity_status = Some(status);
+            } else {
+                vacuity_status = Some(crate::statement::Vacuity::every_input());
             }
         }
         Verdict::Violation => {
@@ -615,7 +619,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.{}", if signals.is_empty() { " If the method throws there by design, declare it with --throws." } else { "" });
     }
-    let stated = Some(stated(&last, search.as_ref(), verdict == Verdict::Verified));
+    let mut stated = stated(&last, search.as_ref(), verdict == Verdict::Verified);
+    stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
+    let stated = Some(stated);
     Ok(Outcome {
         verdict,
         target: options.target.clone(),

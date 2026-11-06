@@ -2101,6 +2101,61 @@ class StatementTest(unittest.TestCase):
         self.assertEqual(record["stated"]["bounds"]["maxArrayLength"], 8)
 
 
+
+class VacuityTest(unittest.TestCase):
+    """Step 2b of llm-dlc/loops/sound-verdicts.md: a verified statement says whether it is about any input, as a
+    status (non-vacuous, vacuous, unknown) the result keeps in its statement and the page and label state. A
+    vacuous verdict still matches only an example that expects it, and an unknown one is not called vacuous."""
+
+    def stated(self, status, basis="probe", **extra):
+        s = json.loads(json.dumps(StatementTest.STATED))
+        texts = {"non-vacuous": "Some input in the domain reaches the calls: the tool's own checker found twoArrays(a=[], b=[]).",
+                 "vacuous": "The verdict is vacuous: no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing.",
+                 "unknown": "Whether any input in the domain reaches the calls is not known: the tool's own checker gave no verdict on it (it ran out of time)."}
+        s["vacuity"] = {"status": status, "basis": basis, "text": texts[status], **extra}
+        return s
+
+    def recorded(self, stated, vacuous=None, expect_vacuous=False):
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        out = equivalence_json(root, "verified", stated=stated, vacuous=vacuous)
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(0, out)):
+            result = empty_result()
+            build.run_tool_equivalence(root, example(verdict="verified", vacuous=expect_vacuous), root, "crosscut", result)
+        return result
+
+    def test_each_status_is_kept_and_validates(self):
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        for status in ("non-vacuous", "vacuous", "unknown"):
+            with self.subTest(status=status):
+                result = self.recorded(self.stated(status, witness="twoArrays(a=[], b=[])") if status == "non-vacuous" else self.stated(status))
+                self.assertEqual(result["stated"]["vacuity"]["status"], status)
+                jsonschema.validate(result["stated"], {**schema["$defs"]["statement"], "$defs": schema["$defs"]})
+
+    def test_the_page_says_how_non_vacuity_is_known(self):
+        found = build.statement_paragraph(build.camel(self.stated("non-vacuous", witness="twoArrays(a=[], b=[])")))
+        self.assertTrue(found.endswith("the tool's own checker found twoArrays(a=[], b=[])."), found)
+        every = build.statement_paragraph(build.camel(self.stated("non-vacuous", basis="harness") | {"vacuity": {
+            "status": "non-vacuous", "basis": "harness", "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."}}))
+        self.assertIn("about every one of them", every)
+
+    def test_an_unknown_vacuity_is_in_the_label_and_not_called_vacuous(self):
+        result = self.recorded(self.stated("unknown"))
+        self.assertEqual(result["verdictLabel"], "✓ Verified: equivalent on every input, non-vacuity unknown")
+        self.assertNotIn("coverage", {k: v for k, v in result.items() if v is not None})
+        self.assertIn("is not known: the tool's own checker gave no verdict on it (it ran out of time).", build.statement_lines(result)[0])
+        self.assertEqual(build.expectation(result, example(verdict="verified")["expected"]), "yes")
+
+    def test_a_vacuous_statement_points_at_its_paragraph(self):
+        reason = "no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing"
+        result = self.recorded(self.stated("vacuous"), vacuous=reason, expect_vacuous=True)
+        self.assertEqual(result["coverage"], {"vacuous": True, "reason": reason})
+        self.assertTrue(result["verdictLabel"].startswith("✓ Verified, vacuously"), result["verdictLabel"])
+        self.assertIn("so the verdict is vacuous (below).", build.statement_lines(result)[0])
+
 class GapScanTest(unittest.TestCase):
     """Step 1a of llm-dlc/loops/sound-verdicts.md: the gap scan's note says what strict mode would cost an example,
     and replaces an earlier note rather than adding another."""

@@ -12,6 +12,10 @@
 //! class taken as initialized, a JDK method JBMC has no bytecode for), or a gap assumed under `--gaps assume` with
 //! nothing to show for it. Phase 3 of the brief adds the contracts an agent proposes, with the evidence each was
 //! checked to.
+//!
+//! A verified statement also says whether it is about any input at all ([`Vacuity`], step 2b): an implication whose
+//! A(x) no input in D satisfies holds of every program. Its status is non-vacuous, vacuous, or unknown, with how that
+//! is known. A vacuous `Verified` still exits 0, which is the user's to change (the brief's open question 1).
 
 use serde::Serialize;
 
@@ -36,6 +40,76 @@ pub struct Statement {
     pub gap_mode: Option<GapMode>,
     /// What JBMC made of the own checker's proof under `--confirm`; none when it was not asked for.
     pub confirmation: Option<Confirmed>,
+    /// Whether the statement is about any input: for a `Verified` verdict only. A violation's witness is itself an
+    /// input that reaches the calls, and a statement with no verdict established nothing to be vacuous.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vacuity: Option<Vacuity>,
+}
+
+/// Whether some input in D satisfies A and reaches the calls, so that a proof of the statement says something.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct Vacuity {
+    pub status: VacuityStatus,
+    pub basis: VacuityBasis,
+    /// The status in a sentence, with how it is known.
+    pub text: String,
+    /// An input that reaches the calls, as the probe found it (the harness's arguments, as a call).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub witness: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum VacuityStatus {
+    /// Some input in D reaches the calls.
+    NonVacuous,
+    /// No input in D reaches the calls: the proof covers none, and says nothing.
+    Vacuous,
+    /// Not known either way: the probe gave no verdict.
+    Unknown,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum VacuityBasis {
+    /// Nothing in the harness skips an input before the calls, so every input in D reaches them.
+    Harness,
+    /// The probe: the harness with the calls replaced by a failure, run by the own checker over D. An input that
+    /// reaches the calls violates it; a proof of it is a proof that none does.
+    Probe,
+    /// No harness: the versions' bytecode is identical, so they agree on every input in D, whatever A says.
+    Identical,
+}
+
+impl Vacuity {
+    /// A statement whose harness skips no input before the calls.
+    pub fn every_input() -> Vacuity {
+        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Harness, text: "Nothing skips an input in the domain before the calls, so the verdict is about every one of them.".into(), witness: None }
+    }
+
+    /// Identical bytecode: the versions agree on every input, intended or not.
+    pub fn identical() -> Vacuity {
+        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Identical, text: "The versions' bytecode is identical, so they agree on every input in the domain, among the assumed ones or not.".into(), witness: None }
+    }
+
+    /// The probe found an input that reaches the calls.
+    pub fn reached(witness: Option<String>) -> Vacuity {
+        let text = match &witness {
+            Some(w) => format!("Some input in the domain reaches the calls: the tool's own checker found {w}."),
+            None => "Some input in the domain reaches the calls: the tool's own checker found one.".into(),
+        };
+        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Probe, text, witness }
+    }
+
+    /// The probe was proved: no input reaches the calls. `reason` is the `vacuously:` line.
+    pub fn vacuous(reason: &str) -> Vacuity {
+        Vacuity { status: VacuityStatus::Vacuous, basis: VacuityBasis::Probe, text: format!("The verdict is vacuous: {reason}."), witness: None }
+    }
+
+    /// The probe gave no verdict.
+    pub fn unknown(problem: &str) -> Vacuity {
+        Vacuity { status: VacuityStatus::Unknown, basis: VacuityBasis::Probe, text: format!("Whether any input in the domain reaches the calls is not known: the tool's own checker gave no verdict on it ({problem})."), witness: None }
+    }
 }
 
 /// D: the inputs the statement is about.

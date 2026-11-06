@@ -724,3 +724,110 @@ fn the_statement_says_what_a_verdict_is_about() {
     assert_eq!(json["stated"]["domain"]["parameters"][0]["kind"], "array");
     assert_eq!(json["stated"]["assumptions"][0]["basis"], "engine");
 }
+
+/// Vacuity as a status (step 2b): a verified statement says whether it is about any input, and how that is known.
+/// Nothing skipped before the calls is non-vacuous by the harness; a precondition, a scope or a record's constructor
+/// is probed, and the probe's witness, its proof (vacuous) or its lack of a verdict (unknown) is the status. A record
+/// built through its constructor carries the caveat that the constructors' agreement is another statement.
+#[test]
+fn vacuity_is_a_status_of_a_verified_statement() {
+    use jvmcontract::statement::{AssumptionKind, VacuityBasis, VacuityStatus};
+    let Some(compiled) = compile() else { return };
+    let prove = |name: &str, assume: Option<&str>| {
+        let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#increment"));
+        options.assert = Some("result > x".to_string());
+        options.assume = assume.map(str::to_string);
+        options.engine = Engine::Native;
+        let work = target_tmp().join(format!("vacuity-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let outcome = property::run(&options).unwrap();
+        assert_eq!(outcome.verdict, V, "{}", outcome.output);
+        outcome
+    };
+    let status = |s: &Option<jvmcontract::statement::Statement>| {
+        let v = s.as_ref().and_then(|s| s.vacuity.clone()).expect("a vacuity status");
+        (v.status, v.basis, v.witness, v.text)
+    };
+
+    // A precondition some input satisfies: probed, and the probe's witness is the evidence.
+    let every = prove("assumed", Some("x < 2147483647"));
+    let (st, basis, witness, _) = status(&every.stated);
+    assert_eq!((st, basis), (VacuityStatus::NonVacuous, VacuityBasis::Probe), "{}", every.output);
+    let witness = witness.expect("the probe's witness");
+    assert!(witness.starts_with("increment(x="), "{witness}");
+    assert!(every.output.contains(&format!("\n  not vacuous: {witness} reaches the calls\n")), "{}", every.output);
+    assert!(every.vacuous.is_none());
+    // No precondition: every input reaches the call, and nothing needs probing.
+    let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#increment"));
+    options.assert = Some("result == x + 1".to_string());
+    options.engine = Engine::Native;
+    options.work = Some(target_tmp().join("vacuity-plain"));
+    let plain = property::run(&options).unwrap();
+    assert_eq!(status(&plain.stated).0, VacuityStatus::NonVacuous);
+    assert_eq!(status(&plain.stated).1, VacuityBasis::Harness);
+    assert!(!plain.output.contains("vacuous"), "{}", plain.output);
+
+    // A precondition no input satisfies: vacuous, and `vacuous` keeps its reason for the readers it had.
+    let none = prove("none", Some("x > 0 && x < 0"));
+    let (st, basis, _, text) = status(&none.stated);
+    assert_eq!((st, basis), (VacuityStatus::Vacuous, VacuityBasis::Probe));
+    assert!(none.vacuous.as_deref().is_some_and(|r| text.contains(r)), "{text}");
+    assert!(none.output.contains("\n  vacuously: no input in the domain reaches the calls"), "{}", none.output);
+    let json = serde_json::to_value(&none).unwrap();
+    assert_eq!((json["stated"]["vacuity"]["status"].as_str(), json["stated"]["vacuity"]["basis"].as_str()), (Some("vacuous"), Some("probe")));
+
+    // A violation has no status: its witness is an input that reaches the calls.
+    let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#increment"));
+    options.assert = Some("result > x".to_string());
+    options.engine = Engine::Native;
+    options.work = Some(target_tmp().join("vacuity-violation"));
+    let refuted = property::run(&options).unwrap();
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    assert!(refuted.stated.as_ref().unwrap().vacuity.is_none());
+    assert!(serde_json::to_value(&refuted).unwrap()["stated"].get("vacuity").is_none());
+
+    // A record built through its constructor: probed, and the caveat about the constructors stated.
+    let regress = |name: &str, target: &str, set: &dyn Fn(&mut jvmcontract::equivalence::Options)| {
+        let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}${target}"));
+        options.engine = Engine::Native;
+        options.shared_callees = false;
+        set(&mut options);
+        let work = target_tmp().join(format!("vacuity-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        jvmcontract::equivalence::run(&options).unwrap()
+    };
+    let span = regress("span", "Range#span", &|_| {});
+    assert_eq!(span.verdict, V, "{}", span.output);
+    let (st, basis, witness, _) = status(&span.stated);
+    assert_eq!((st, basis), (VacuityStatus::NonVacuous, VacuityBasis::Probe), "{}", span.output);
+    assert!(witness.as_deref().is_some_and(|w| w.starts_with("span(this=Range[lo=")), "{witness:?}");
+    let caveat = span.stated.as_ref().unwrap().assumptions.iter().find(|a| a.kind == AssumptionKind::Constructible).expect("the constructors' caveat");
+    assert!(caveat.text.contains("whether the constructors accept the same inputs is not part of it"), "{}", caveat.text);
+    assert!(span.output.contains(&format!("\n  constructors: {}\n", caveat.text)), "{}", span.output);
+    // A scope every input satisfies: vacuous, records or not.
+    let scoped = regress("span-scoped", "Range#span", &|o| o.unchanged_unless = Some("this.lo <= this.hi".into()));
+    assert_eq!(status(&scoped.stated).0, VacuityStatus::Vacuous, "{}", scoped.output);
+    // Identical bytecode, constructors included: no caveat, and every input in the domain is covered.
+    let identical = regress("span-identical", "Range#span", &|o| o.shared_callees = true);
+    let s = identical.stated.as_ref().unwrap();
+    assert_eq!(s.checker.engine, "none", "{}", identical.output);
+    assert!(s.assumptions.iter().all(|a| a.kind != AssumptionKind::Constructible), "{:?}", s.assumptions);
+    assert_eq!(status(&identical.stated).1, VacuityBasis::Identical);
+    assert!(!identical.output.contains("constructors:"), "{}", identical.output);
+
+    // Unknown: JBMC (a stand-in here) proves a statement over records whose constructor meets a gap, which the own
+    // checker's probe refuses under strict.
+    let jbmc = fake_jbmc("vacuity");
+    std::fs::write(jbmc.parent().unwrap().join("answer.txt"), PROVED).unwrap();
+    let sized = regress("sized", "Sized#twice", &|o| {
+        o.engine = Engine::Jbmc;
+        o.jbmc = jbmc.display().to_string();
+    });
+    assert_eq!(sized.verdict, V, "{}", sized.output);
+    let (st, basis, witness, text) = status(&sized.stated);
+    assert_eq!((st, basis, witness), (VacuityStatus::Unknown, VacuityBasis::Probe, None), "{}", sized.output);
+    assert!(text.contains("jdk-constructor:java.util.ArrayList.<init>(I)V"), "{text}");
+    assert!(sized.output.contains("\n  vacuity unknown: the tool's own checker gave no verdict on whether any input in the domain reaches the calls ("), "{}", sized.output);
+}

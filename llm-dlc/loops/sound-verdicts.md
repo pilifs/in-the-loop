@@ -480,6 +480,32 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - JBMC's solver is recorded as asked (`cadical`), without the version JBMC bundles.
     - Vacuity stays where it was, for 2b.
   - Next: 2b, vacuity as a status.
+- **2b, vacuity as a status (2026-11-06).**
+  - A verified statement carries `stated.vacuity` ([`Vacuity`](../../lib/src/statement.rs)): a `status` of
+    `non-vacuous`, `vacuous` or `unknown`, a `basis` saying how it is known, a sentence, and the probe's witness.
+    - `harness`: nothing skips an input before the calls (no scope, record, `--before-arguments` or `--assume`), so
+      every input in D reaches them.
+    - `probe`: the existing probe (the harness with the calls replaced by a failure, run by the own checker). Its
+      violation is now kept as evidence, `not vacuous: span(this=Range[lo=20, hi=20]) reaches the calls`. Its proof is
+      `vacuous`, as before (`Outcome.vacuous` keeps the reason for its readers). No verdict is `unknown`, with a
+      line `vacuity unknown: ...` in place of the old `note:`, which nothing read.
+    - `identical`: identical bytecode agrees on every input, whatever the scope.
+  - Only a `Verified` has a status: a violation's witness reaches the calls by being one. Exit code 0 throughout
+    (open question 1).
+  - **The record-constructor caveat** is stated wherever it applies: a line `constructors: ...` under `✓`, the
+    `constructible` assumption (2a), and the page's paragraph. Identical bytecode drops it, since the constructors
+    are among what is identical.
+  - `build.py`: the statement's paragraph ends with the vacuity sentence, and a label gains `, non-vacuity unknown`
+    (or `for k of n` properties). `expectation` is unchanged, so an unknown verdict is not called vacuous. Schema:
+    `$defs/statement/vacuity`.
+  - Acceptance, inline: `vacuity_is_a_status_of_a_verified_statement` (conformance.rs) gets each status from real
+    runs. Unknown comes from JBMC (a stand-in script) proving a method of a record whose constructor meets a gap
+    the own checker's probe refuses under strict. `VacuityTest` (test_build.py) covers the record, label and page.
+  - No recorded result has a status until it is re-run, so no page changed. Job
+    `20261106-031642-example-127-b9-re-run-its-statement-says` re-runs 127 (records, proved by JBMC), whose page
+    should show the probe's witness and the caveat. The pending 2a re-runs of 144/145 will not show a status.
+  - Phase 2 is complete.
+  - Next: 3a, the gap protocol (`--gaps advised`).
 
 ## Loop settings
 

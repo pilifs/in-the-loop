@@ -350,6 +350,18 @@
             "not-asked",
             null
           ]
+        },
+        "vacuity": {
+          "description": "A verified statement's only (step 2b): whether some input in the domain satisfies the assumptions and reaches the calls. Absent for another verdict, or from a tool from before it said.",
+          "type": "object",
+          "required": ["status", "basis", "text"],
+          "additionalProperties": false,
+          "properties": {
+            "status": { "description": "`non-vacuous`: some input reaches the calls; `vacuous`: none does, so the proof covers no input; `unknown`: the probe gave no verdict.", "enum": ["non-vacuous", "vacuous", "unknown"] },
+            "basis": { "description": "How it is known: `harness` (nothing skips an input before the calls), `probe` (the harness with the calls replaced by a failure, run by the tool's own checker), `identical` (the versions' bytecode is identical).", "enum": ["harness", "probe", "identical"] },
+            "text": { "description": "The status in a sentence, as the page states it.", "type": "string" },
+            "witness": { "description": "An input that reaches the calls, as the probe found it.", "type": "string" }
+          }
         }
       }
     }

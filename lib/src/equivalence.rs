@@ -48,6 +48,7 @@ use crate::harness::{self, CallArg};
 use crate::interp::Value;
 use crate::jbmc::{self, Argument, JbmcResult, JbmcRun};
 use crate::sarif::{self, Finding};
+use crate::statement::Vacuity;
 use crate::{shared, witness, Error, Verdict};
 
 /// JDK classes whose real bytecode JBMC analyses, instead of the small models it ships.
@@ -347,9 +348,11 @@ pub struct Replay {
 /// failure, `Harness::probe`) is run by the tool's own checker, over the harness's own domain. An input that
 /// reaches the calls violates it, and a proof of it says no input in the domain does, whichever engine proved
 /// the statement: the statement's proof covers no input. `skipped_by` says how an input is skipped, for the
-/// reason returned. `None` when an input reaches the calls, or when the probe gave no verdict (a note says why).
+/// reason; `render` writes the probe's witness as a call. Returns the `vacuously:` reason when vacuous, and the
+/// status with how it is known (non-vacuous with the probe's witness, vacuous, or unknown when the probe gave no
+/// verdict), each with its line under `✓`.
 #[allow(clippy::too_many_arguments)] // the settings of the proof it probes
-pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: crate::bmc::gaps::GapMode, work: &Path, skipped_by: &str) -> Result<Option<String>, Error> {
+pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: crate::bmc::gaps::GapMode, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>) -> Result<(Option<String>, Vacuity), Error> {
     let probe_dir = work.join("probe");
     std::fs::create_dir_all(&probe_dir)?;
     std::fs::write(probe_dir.join(format!("{class}.class")), probe)?;
@@ -357,11 +360,23 @@ pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[Pa
     probe_entries.extend(entries.iter().cloned());
     let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, gaps, &probe_dir)?;
     Ok(match result.verdict {
-        Verdict::Verified => Some(format!("no input in the domain reaches the calls, every one {skipped_by}; the proof covers no input and says nothing")),
-        Verdict::Violation => None,
+        Verdict::Verified => {
+            let reason = format!("no input in the domain reaches the calls, every one {skipped_by}; the proof covers no input and says nothing");
+            let _ = writeln!(out, "  vacuously: {reason}");
+            let vacuity = Vacuity::vacuous(&reason);
+            (Some(reason), vacuity)
+        }
+        Verdict::Violation => {
+            let witness = render(&result);
+            if let Some(w) = &witness {
+                let _ = writeln!(out, "  not vacuous: {w} reaches the calls");
+            }
+            (None, Vacuity::reached(witness))
+        }
         Verdict::Unverifiable => {
-            let _ = writeln!(out, "note: whether any input in the domain reaches the calls could not be checked ({})", result.problem.as_deref().unwrap_or("no reason"));
-            None
+            let problem = result.problem.as_deref().unwrap_or("no reason");
+            let _ = writeln!(out, "  vacuity unknown: the tool's own checker gave no verdict on whether any input in the domain reaches the calls ({problem})");
+            (None, Vacuity::unknown(problem))
         }
     })
 }
@@ -638,6 +653,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         checker: crate::statement::checker(search, options.sat_solver.as_deref()),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
+        vacuity: None,
     };
 
     // 3. The statement, as a harness JBMC can check.
@@ -696,7 +712,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &[])?;
         }
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: Some(stated(None, None, true)) });
+        // The constructors are among the identical bytecode, so they accept the same inputs: no caveat applies.
+        let mut identical = stated(None, None, true);
+        identical.assumptions.retain(|a| a.kind != crate::statement::AssumptionKind::Constructible);
+        identical.vacuity = Some(Vacuity::identical());
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: Some(identical) });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -949,6 +969,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut proof = None;
     let mut problem = None;
     let mut vacuous = None;
+    let mut vacuity_status = None;
     let mut verdict = last.verdict;
     // JBMC refutes what the own checker proved: neither verdict stands. JBMC's witness is the counterexample, with
     // both versions run on it in the interpreter, which shares the own checker's models and so settles nothing.
@@ -1019,9 +1040,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 }
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
-                vacuous = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, &ways.join(" or "))?;
-                if let Some(reason) = &vacuous {
-                    let _ = writeln!(out, "  vacuously: {reason}");
+                let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
+                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, &ways.join(" or "), &render)?;
+                vacuous = reason;
+                vacuity_status = Some(status);
+            } else {
+                vacuity_status = Some(Vacuity::every_input());
+            }
+            // A record built through its constructor: the statement is about the records it accepts, and whether
+            // the two versions' constructors accept the same inputs is another statement.
+            for a in &claim_assumptions {
+                if a.kind == crate::statement::AssumptionKind::Constructible {
+                    let _ = writeln!(out, "  constructors: {}", a.text);
                 }
             }
         }
@@ -1114,7 +1144,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    let stated = Some(stated(Some(&last), search.as_ref(), verdict == Verdict::Verified));
+    let mut stated = stated(Some(&last), search.as_ref(), verdict == Verdict::Verified);
+    stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
+    let stated = Some(stated);
     Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay, stated })
 }
 

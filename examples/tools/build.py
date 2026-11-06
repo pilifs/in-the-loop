@@ -1459,6 +1459,9 @@ def finish_symbolic(folder, result, statement, fields, verdict_labels):
     if fields["vacuous"]:
         result["coverage"] = {"vacuous": True, "reason": fields["vacuous"]}
         result["verdictLabel"] = f"{VERDICT_LABEL[result['verdict']]}, vacuously: no input in the domain reaches the calls"
+    elif result["verdict"] == "verified" and fields.get("vacuityUnknown"):
+        # Neither vacuous nor shown not to be: the label says so, and the statement's paragraph says why.
+        result["verdictLabel"] += ", non-vacuity unknown"
     label_assumptions(result)
 
 
@@ -1622,7 +1625,15 @@ def statement_paragraph(s):
                     + (f" and the classes of JDK {m['jdk']}." if m.get("jdk") else "."))
     if s.get("confirmation"):
         text.append(CONFIRMATION_WORDS[s["confirmation"]][0].upper() + CONFIRMATION_WORDS[s["confirmation"]][1:] + ".")
+    v = s.get("vacuity")
+    if v:  # a verified statement's: whether it is about any input, and how that is known
+        text.append("No input in the domain reaches the calls, so the verdict is vacuous (below)." if v["status"] == "vacuous" else v["text"])
     return " ".join(text)
+
+
+def vacuity_unknown(stated):
+    """Whether a verified statement's vacuity is unknown: the tool's probe of it gave no verdict."""
+    return ((stated or {}).get("vacuity") or {}).get("status") == "unknown"
 
 
 def statement_lines(res):
@@ -1682,6 +1693,7 @@ def run_tool_equivalence(folder, example, root, module, result):
     result["replay"] = {"by": replay["by"], "reproduced": replay["reproduced"]} if completed and replay else None
     statement = outcome.get("statement") if outcome else None
     fields = {k: (outcome or {}).get(k) for k in ("domain", "proof", "problem", "vacuous")}
+    fields["vacuityUnknown"] = vacuity_unknown(result["stated"])
     finish_symbolic(folder, result, root / statement if statement else None, fields, {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: equivalent on every input" + (" outside the declared change" if intended else ""),
@@ -1918,6 +1930,8 @@ def run_tool_property(folder, example, root, module, result):
     # A verified headline rests on every property, so it is vacuous when any of them is; a refuted one is not.
     vacuous = [(n, r["vacuous"]) for n, r in enumerate(records, 1) if r["vacuous"]] if result["verdict"] == "verified" else []
     fields["vacuous"] = (vacuous[0][1] if not several else "; ".join(f"property {n}: {v}" for n, v in vacuous)) if vacuous else None
+    unknown = [n for n, r in enumerate(records, 1) if vacuity_unknown(r.get("stated"))] if result["verdict"] == "verified" else []
+    fields["vacuityUnknown"] = bool(unknown) and not several
     total, unresolved = len(records), sum(r["verdict"] == "unverifiable" for r in records)
     finish_symbolic(folder, result, statement, fields, {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found"
@@ -1932,6 +1946,10 @@ def run_tool_property(folder, example, root, module, result):
         if vacuous:
             result["verdictLabel"] = (f"{VERDICT_LABEL['verified']}, vacuously for {len(vacuous)} of {total} properties: "
                                       "no input in the domain reaches the calls")
+            label_assumptions(result)
+        elif unknown:
+            result["verdictLabel"] = (f"{VERDICT_LABEL['verified']}: all {total} properties hold on every input, "
+                                      f"non-vacuity unknown for {len(unknown)} of them")
             label_assumptions(result)
 
 
