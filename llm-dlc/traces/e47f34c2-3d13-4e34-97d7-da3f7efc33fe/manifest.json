@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "e47f34c2-3d13-4e34-97d7-da3f7efc33fe",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-06T19:21:14.358Z",
+  "ended": "2026-11-06T19:22:24.027Z",
+  "duration_seconds": 70,
+  "stats": {
+    "turns": 1,
+    "api_calls": 9,
+    "tool_calls": 9,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 41010,
+    "usage": {
+      "input_tokens": 18,
+      "output_tokens": 3090,
+      "cache_read_input_tokens": 273957,
+      "cache_creation_input_tokens": 29626
+    }
+  },
+  "tools": {
+    "Bash": 8,
+    "bash": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T19:21:14.358Z",
+      "ended": "2026-11-06T19:22:24.027Z",
+      "turns": 1,
+      "api_calls": 9,
+      "usage": {
+        "input_tokens": 18,
+        "output_tokens": 3090,
+        "cache_read_input_tokens": 273957,
+        "cache_creation_input_tokens": 29626
+      },
+      "peak_context_tokens": 41010
+    }
+  ],
+  "log": {
+    "sha256": "b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95",
+    "bytes": 347378,
+    "lines": 87,
+    "gzip_bytes": 78424,
+    "path": "llm-dlc/traces/e47f34c2-3d13-4e34-97d7-da3f7efc33fe/logs/b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wtvowsostpzwsmvmkxoztwqvqmszxrvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: Bitwuzla build fails its smoke test (VF-003)",
+      "body": "Ran the one queued job, the Bitwuzla 0.8.2 source build. It compiles and installs but the installed binary cannot load libcadical.so, which meson did not install; build.sh needs an rpath or a static CaDiCaL. Recorded as VF-003 for the submitter. Nothing resubmitted: the failure is deterministic.",
+      "log_sha256": "b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95"
+    }
+  ],
+  "logs": {
+    "b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95": {
+      "bytes": 347378,
+      "lines": 87,
+      "gzip_bytes": 78424,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

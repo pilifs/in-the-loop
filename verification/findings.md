@@ -18,6 +18,21 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-003: Bitwuzla 0.8.2 builds but the installed binary cannot load `libcadical.so`
+
+- **Status**: open
+- **Raised**: 2026-11-06 on this 24-CPU host (run with `--memory 8G --workers 2`). Job
+  `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` at `3853fcc7e8b7`.
+- **Found**: `lib/solvers/bitwuzla/build.sh 0.8.2` downloads, compiles (217 targets, 24 s, peak 1.9 GiB) and installs into
+  `~/tools/bitwuzla/bitwuzla-0.8.2`, then its check exits 127: `bitwuzla: error while loading shared libraries:
+  libcadical.so: cannot open shared object file`. The shared-library build links CaDiCaL as a shared subproject, but
+  no `libcadical.so` exists anywhere under `~/tools/bitwuzla`: meson did not install it (or no rpath points at it).
+  Deterministic; not a resource problem. The partial install is left in place.
+- **Needs**: whoever owns the solver comparison fixes `build.sh`: install CaDiCaL's library into the prefix with an
+  rpath, or build CaDiCaL static, and check with `ldd` before the version smoke test.
+- **Tracked in**: the job's `logs/1-build-bitwuzla-0-8-2.log`.
+- **Closes when**: the job, resubmitted after the fix, passes.
+
 ### VF-002: examples 147, 148 and 149 never reach a proof
 
 - **Status**: open

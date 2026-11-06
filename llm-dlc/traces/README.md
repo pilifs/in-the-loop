@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 28, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 19:11 UTC |
-| Prompts | 834 |
-| Model calls | 8,257 |
-| Tool calls | 9,103 (200 failed) |
-| Compactions | 109 |
+| Sessions | 29, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 19:22 UTC |
+| Prompts | 839 |
+| Model calls | 8,271 |
+| Tool calls | 9,116 (202 failed) |
+| Compactions | 110 |
 | Subagents | 3 |
-| Tokens written | 11,393,478 |
-| Tokens read | 1,418,841,883 (97.9% from cache) |
-| Commits with a trace | 261 |
-| Log snapshots | 322 (991.1 MB gzipped, 322 uploaded) |
+| Tokens written | 11,397,305 |
+| Tokens read | 1,419,419,491 (97.9% from cache) |
+| Commits with a trace | 262 |
+| Log snapshots | 325 (993.3 MB gzipped, 322 uploaded) |
 
 ## Sessions
 
@@ -51,10 +51,11 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
 | 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | ended | 10 h 56 min | `claude-opus-5-5` | 127 | 1,786 | 1,804 | 16 | 23 | 375,335 | 30 |
-| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 8 h 14 min | `claude-opus-5-5` | 44 | 535 | 521 | 7 | 2 | 451,666 | 41 |
+| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 8 h 26 min | `claude-opus-5-5` | 48 | 535 | 521 | 7 | 3 | 451,666 | 42 |
 | 2026-11-06 15:24 UTC | [setup-repo-on-ryzen-machine](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | open | 39 min | `claude-opus-5-5` | 3 | 34 | 36 | 5 | 0 | 103,564 | 2 |
 | 2026-11-06 16:53 UTC | [Commit and publish to remote](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | ended | 1 h 34 min | `claude-opus-5-5` | 12 | 193 | 187 | 6 | 0 | 289,035 | 14 |
-| 2026-11-06 19:07 UTC | [Agent session transfer warnings](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | open | 4 min | `claude-opus-5-5` | 2 | 13 | 12 | 1 | 0 | 53,617 | 2 |
+| 2026-11-06 19:07 UTC | [Agent session transfer warnings](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | open | 4 min | `claude-opus-5-5` | 2 | 18 | 16 | 2 | 0 | 55,294 | 3 |
+| 2026-11-06 19:21 UTC | [e47f34c2-3d13-4e34-97d7-da3f7efc33fe](e47f34c2-3d13-4e34-97d7-da3f7efc33fe/summary.md) | open | 1 min | `claude-sonnet-5-5` | 1 | 9 | 9 | 1 | 0 | 41,010 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -91,13 +92,14 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 401,293 | 1,136 | 881,440 | 123,993,936 | 99.3% | 311 |
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 23,386 | 68 | 72,506 | 2,701,932 | 97.4% | 119 |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 123,882 | 410 | 251,410 | 30,843,927 | 99.2% | 251 |
-| [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 4,261 | 28 | 22,899 | 610,433 | 96.4% | 149 |
+| [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 4,998 | 38 | 24,576 | 882,753 | 97.3% | 182 |
+| [`e47f34c2`](e47f34c2-3d13-4e34-97d7-da3f7efc33fe/summary.md) | 3,090 | 18 | 29,626 | 273,957 | 90.2% | 98 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 7,909 | 86.9% | 28 |
+| `Bash` | 7,921 | 86.9% | 29 |
 | `Edit` | 412 | 4.5% | 14 |
 | `Read` | 308 | 3.4% | 17 |
 | `Write` | 307 | 3.4% | 14 |
@@ -110,7 +112,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | `Agent` | 3 | 0.0% | 2 |
 | `SendMessage` | 3 | 0.0% | 2 |
 | `WebSearch` | 2 | 0.0% | 1 |
-| `bash` | 1 | 0.0% | 1 |
+| `bash` | 2 | 0.0% | 2 |
 
 ## Commits
 
@@ -363,22 +365,23 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 243 | [`7dca2d9d`](https://github.com/pilifs/in-the-loop/commit/7dca2d9d176c92cdf2398ea9e1122d91984e7406) | run-streams.sh runs a brief's whole loop unattended: streams, jobs, then the merge | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz)) |
 | 244 | [`628be0b3`](https://github.com/pilifs/in-the-loop/commit/628be0b3880dacfa52acd14f0f9a9df9365b5a33) | Record session traces | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/863419e8b42e64da7cbcc7a96b8b6881c4c0f5ee02e06c647ba67ce96db2a1e2.jsonl.gz)) |
 | 245 | [`2887a648`](https://github.com/pilifs/in-the-loop/commit/2887a6487c0769668a41645df4c0cc54db70bb78) | Accept finding 7426ada1: the VM's hostname written as an ssh host name in a laptop session | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4a6d26b4daf02e7d9d13258592c8f5d5d9436f9f9e4f693894878d71ef2ed63f.jsonl.gz)), [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) ([log](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/5e8ee7563ee9a084ae5fe407bf2d4a2a37b311212e87b1e47c17ab6c54b47dd8.jsonl.gz)) |
-| 246 | [`04743c9f`](https://github.com/pilifs/in-the-loop/commit/04743c9fa208ede74b0226bec30fdc1b9632aba9) | Installer runs on Ubuntu 26.04 and sets PATH for zsh login shells | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc.jsonl.gz)) |
-| 247 | change `pvplpzpu` | Record session traces | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz)) |
-| 248 | [`d92473f1`](https://github.com/pilifs/in-the-loop/commit/d92473f1f023fc1599bc171d0c15f1daa0a777d2) | Installer runs Dafny and Boogie on hosts with only .NET 10 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/584c77f06146c3e893761af0bedfc3c6c7abc1b6642bb2538f8281b9a0dbed78.jsonl.gz)) |
-| 249 | [`dd8a1b6a`](https://github.com/pilifs/in-the-loop/commit/dd8a1b6ad950ed7c884d7b1c4b3ff392a17289a1) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/46baf1efb1ab47219ef1fb8b695f74e32b788171822531b1b26f9f0d5555351f.jsonl.gz)) |
-| 250 | [`8229dce4`](https://github.com/pilifs/in-the-loop/commit/8229dce4b4ef3cb550ccb3b5d2d0a56885723f44) | Verification report names the machine of every result and calibrates estimates per machine | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f.jsonl.gz)) |
-| 251 | [`89c88701`](https://github.com/pilifs/in-the-loop/commit/89c88701e12f93c747b40bef7c16d1ecc012c8ff) | Results record the runner's machine name, and the installer provides jsonschema | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864.jsonl.gz)) |
-| 252 | [`e4ea2648`](https://github.com/pilifs/in-the-loop/commit/e4ea2648616e0856d23b9687a86d5f3057672a30) | Record verification results for 60 jobs, the first run on the vm-1 VM | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865.jsonl.gz)) |
-| 253 | [`ad20a5d1`](https://github.com/pilifs/in-the-loop/commit/ad20a5d13d272d76fe74a7ed54b62ff495783ef7) | The verification runner stops a step past its timeout only when it has stalled; the installer puts GNU coreutils first on Ubuntu 26.04 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/7d5e20954251764c22c4c405e391d57c172a884b13002f302f1c281c941cb3fd.jsonl.gz)) |
-| 254 | [`e9763b54`](https://github.com/pilifs/in-the-loop/commit/e9763b54db8e56b44f3a92fc48fdd7702bbbd768) | Rerun 39 verification jobs at this commit on vm-1 (verification pending) | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb.jsonl.gz)) |
-| 255 | [`cab155eb`](https://github.com/pilifs/in-the-loop/commit/cab155eba9e5c1b50d724feca12e7ee66a1efd7b) | Setup for Ubuntu moves to examples/setup/ubuntu, with every difference between 24.04 and 26.04 decided in one place | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/4ebf10f3255a4a96a67de9b5e470acda1e4601b94f369723bfa712af51771732.jsonl.gz)) |
-| 256 | [`08f0aa70`](https://github.com/pilifs/in-the-loop/commit/08f0aa70abcf4d28fe2e6c9aac74d340afaa41be) | Record the open JBMC soundness findings and the stuck Crosscut examples where the next session will look | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/9f9022352c28775051ddae384a24218b2846249adf8197b6449ea049de2d69b2.jsonl.gz)) |
-| 257 | [`cd75bd15`](https://github.com/pilifs/in-the-loop/commit/cd75bd15d20d7ec5ff5ca327124d1dd4f85c151d) | Record verification results for the 39 jobs rerun on vm-1: all pass | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/82631b7ab6e98c04c7295b89db8caf291a0b93dcf559567ab42ac4b1d09d4dd5.jsonl.gz)) |
-| 258 | [`cf0c3651`](https://github.com/pilifs/in-the-loop/commit/cf0c3651a85ecd74529c2942ee0213cc2115661b) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/2ae1e3413befcd540d0a5c0caa3dd9b9b90c95670a4991611566016c4d293ca0.jsonl.gz)) |
-| 259 | [`ffe65af7`](https://github.com/pilifs/in-the-loop/commit/ffe65af7b226fcb533d5755980dbe22f1dc66298) | Verification findings that need a person go into verification/findings.md, kept by the agent that runs the pipeline | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c.jsonl.gz)) |
-| 260 | [`7031d336`](https://github.com/pilifs/in-the-loop/commit/7031d336e750e3094a33b3dd6eb00c6c2900a33d) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff.jsonl.gz)) |
-| 261 | change `nvvnwrno` | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz)), [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) ([log](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/3dcf14c608d7609eb57c72f0ba7e862e5834061d8f8950d4b51a65d17c3befc7.jsonl.gz)) |
+| 246 | change `wtvowsos` | Record verification results: Bitwuzla build fails its smoke test (VF-003) | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/8218a28eef1e5205297481dcab9922c93684640e4c2885d021188b8783702738.jsonl.gz)), [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) ([log](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/cef3c5e4d9bd47c9439050b1c3058ec0b5575f1e92aeb1a2e1eb5c7730b410e2.jsonl.gz)), [`e47f34c2`](e47f34c2-3d13-4e34-97d7-da3f7efc33fe/summary.md) ([log](https://terminalvalue.net/raw-traces/e47f34c2-3d13-4e34-97d7-da3f7efc33fe/b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95.jsonl.gz)) |
+| 247 | [`04743c9f`](https://github.com/pilifs/in-the-loop/commit/04743c9fa208ede74b0226bec30fdc1b9632aba9) | Installer runs on Ubuntu 26.04 and sets PATH for zsh login shells | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc.jsonl.gz)) |
+| 248 | change `pvplpzpu` | Record session traces | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz)) |
+| 249 | [`d92473f1`](https://github.com/pilifs/in-the-loop/commit/d92473f1f023fc1599bc171d0c15f1daa0a777d2) | Installer runs Dafny and Boogie on hosts with only .NET 10 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/584c77f06146c3e893761af0bedfc3c6c7abc1b6642bb2538f8281b9a0dbed78.jsonl.gz)) |
+| 250 | [`dd8a1b6a`](https://github.com/pilifs/in-the-loop/commit/dd8a1b6ad950ed7c884d7b1c4b3ff392a17289a1) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/46baf1efb1ab47219ef1fb8b695f74e32b788171822531b1b26f9f0d5555351f.jsonl.gz)) |
+| 251 | [`8229dce4`](https://github.com/pilifs/in-the-loop/commit/8229dce4b4ef3cb550ccb3b5d2d0a56885723f44) | Verification report names the machine of every result and calibrates estimates per machine | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f.jsonl.gz)) |
+| 252 | [`89c88701`](https://github.com/pilifs/in-the-loop/commit/89c88701e12f93c747b40bef7c16d1ecc012c8ff) | Results record the runner's machine name, and the installer provides jsonschema | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864.jsonl.gz)) |
+| 253 | [`e4ea2648`](https://github.com/pilifs/in-the-loop/commit/e4ea2648616e0856d23b9687a86d5f3057672a30) | Record verification results for 60 jobs, the first run on the vm-1 VM | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865.jsonl.gz)) |
+| 254 | [`ad20a5d1`](https://github.com/pilifs/in-the-loop/commit/ad20a5d13d272d76fe74a7ed54b62ff495783ef7) | The verification runner stops a step past its timeout only when it has stalled; the installer puts GNU coreutils first on Ubuntu 26.04 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/7d5e20954251764c22c4c405e391d57c172a884b13002f302f1c281c941cb3fd.jsonl.gz)) |
+| 255 | [`e9763b54`](https://github.com/pilifs/in-the-loop/commit/e9763b54db8e56b44f3a92fc48fdd7702bbbd768) | Rerun 39 verification jobs at this commit on vm-1 (verification pending) | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb.jsonl.gz)) |
+| 256 | [`cab155eb`](https://github.com/pilifs/in-the-loop/commit/cab155eba9e5c1b50d724feca12e7ee66a1efd7b) | Setup for Ubuntu moves to examples/setup/ubuntu, with every difference between 24.04 and 26.04 decided in one place | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/4ebf10f3255a4a96a67de9b5e470acda1e4601b94f369723bfa712af51771732.jsonl.gz)) |
+| 257 | [`08f0aa70`](https://github.com/pilifs/in-the-loop/commit/08f0aa70abcf4d28fe2e6c9aac74d340afaa41be) | Record the open JBMC soundness findings and the stuck Crosscut examples where the next session will look | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/9f9022352c28775051ddae384a24218b2846249adf8197b6449ea049de2d69b2.jsonl.gz)) |
+| 258 | [`cd75bd15`](https://github.com/pilifs/in-the-loop/commit/cd75bd15d20d7ec5ff5ca327124d1dd4f85c151d) | Record verification results for the 39 jobs rerun on vm-1: all pass | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/82631b7ab6e98c04c7295b89db8caf291a0b93dcf559567ab42ac4b1d09d4dd5.jsonl.gz)) |
+| 259 | [`cf0c3651`](https://github.com/pilifs/in-the-loop/commit/cf0c3651a85ecd74529c2942ee0213cc2115661b) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/2ae1e3413befcd540d0a5c0caa3dd9b9b90c95670a4991611566016c4d293ca0.jsonl.gz)) |
+| 260 | [`ffe65af7`](https://github.com/pilifs/in-the-loop/commit/ffe65af7b226fcb533d5755980dbe22f1dc66298) | Verification findings that need a person go into verification/findings.md, kept by the agent that runs the pipeline | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c.jsonl.gz)) |
+| 261 | [`7031d336`](https://github.com/pilifs/in-the-loop/commit/7031d336e750e3094a33b3dd6eb00c6c2900a33d) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff.jsonl.gz)) |
+| 262 | [`978b396f`](https://github.com/pilifs/in-the-loop/commit/978b396f09affd26b9af381c4a730f117d0be6cc) | Record session traces | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz)), [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) ([log](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/3dcf14c608d7609eb57c72f0ba7e862e5834061d8f8950d4b51a65d17c3befc7.jsonl.gz)) |
 
 ## Logs
 
@@ -410,10 +413,11 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 30 | 30 | 131.3 MB | [`77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz) |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 39 | 39 | 44.3 MB | [`4a6d26b4daf0`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4a6d26b4daf02e7d9d13258592c8f5d5d9436f9f9e4f693894878d71ef2ed63f.jsonl.gz) |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 40 | 39 | 46.4 MB | `8218a28eef1e`, not uploaded |
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 2 | 2 | 0.4 MB | [`000c1283aae8`](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz) |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 14 | 14 | 5.4 MB | [`bea739fae396`](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz) |
-| [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 2 | 2 | 0.2 MB | [`3dcf14c608d7`](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/3dcf14c608d7609eb57c72f0ba7e862e5834061d8f8950d4b51a65d17c3befc7.jsonl.gz) |
+| [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 3 | 2 | 0.4 MB | `cef3c5e4d9bd`, not uploaded |
+| [`e47f34c2`](e47f34c2-3d13-4e34-97d7-da3f7efc33fe/summary.md) | 1 | 0 | 0.1 MB | `b4ec97f5e040`, not uploaded |
 
 ## Session notes
 
