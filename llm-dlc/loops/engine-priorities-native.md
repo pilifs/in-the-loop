@@ -4,7 +4,8 @@ One of two streams of [`engine-priorities.md`](engine-priorities.md) that run in
 workspace on its own branch. The other is [`engine-priorities-jbmc.md`](engine-priorities-jbmc.md). Once both have
 stopped, a reconcile loop merges them; [Streams](engine-priorities.md#streams) in the main brief says how.
 
-Run with `llm-dlc/tools/feature-loop.sh engines-native`, from this stream's workspace
+Started with the other stream by `llm-dlc/tools/run-streams.sh engines` from the default workspace, or alone with
+`llm-dlc/tools/feature-loop.sh engines-native` from this stream's workspace
 (`jj workspace root --name native`): the loop refuses any other.
 
 **The main brief is the instruction.** Read [`engine-priorities.md`](engine-priorities.md) in full every cycle, and its
