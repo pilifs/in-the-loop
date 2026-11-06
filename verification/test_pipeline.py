@@ -234,6 +234,14 @@ class PipelineTest(unittest.TestCase):
         self.repo.pipeline("prioritize", b, "--clear")
         self.assertNotIn(b, self.repo.pipeline("prioritize").stdout)
 
+    def test_a_jobs_steps_do_not_see_the_repository_its_export_is_inside(self):
+        # The export lives under .state/work, inside the repository; git there took it for the job's own, and
+        # `git apply` skipped every file of a git-format patch (job 20261106-073804).
+        job_id = self.repo.submit("No enclosing repository", "--run", "! git rev-parse --git-dir")
+        self.repo.commit("job")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        self.assertEqual(self.repo.result(job_id, False)["status"], "passed")
+
     def test_an_output_changed_since_the_jobs_commit_is_not_overwritten(self):
         (self.repo.dir / "o.txt").write_text("committed\n")
         job_id = self.repo.submit("Write o", "--output", "o.txt", "--run", "echo from-job > o.txt")

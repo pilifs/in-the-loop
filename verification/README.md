@@ -196,6 +196,9 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
   example's result says which were. `BUILD_CHECKPOINTS=off` in the runner's environment or a job's `env` keeps none.
 - A job that requires `jvmcontract` gets one built from `lib/` at the job's commit, cached by the tree id of `lib/`,
   on `PATH` and in `$JVMCONTRACT`. The build is recorded as step 0 when it happens.
+- The export is a plain tree inside this repository's own (under `.state/work`), so the runner sets
+  `GIT_CEILING_DIRECTORIES` to keep git in a job from taking this repository for the job's. Without it, `git apply`
+  skipped every file of a git-format patch and exited 0, and an example ran on its unpatched code.
 - `link`: paths outside git that jobs need, linked into every export (none by default; the JDK models that once
   lived in a fork under `libs/` now ship with `jvmcontract`).
 

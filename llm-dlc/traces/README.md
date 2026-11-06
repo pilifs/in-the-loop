@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 25, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 12:23 UTC |
-| Prompts | 782 |
-| Model calls | 7,653 |
-| Tool calls | 8,519 (182 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 12:37 UTC |
+| Prompts | 784 |
+| Model calls | 7,692 |
+| Tool calls | 8,559 (182 failed) |
 | Compactions | 107 |
 | Subagents | 3 |
-| Tokens written | 10,938,764 |
-| Tokens read | 1,293,554,042 (97.8% from cache) |
-| Commits with a trace | 214 |
-| Log snapshots | 274 (944.5 MB gzipped, 274 uploaded) |
+| Tokens written | 10,962,936 |
+| Tokens read | 1,306,504,471 (97.8% from cache) |
+| Commits with a trace | 215 |
+| Log snapshots | 275 (945.2 MB gzipped, 274 uploaded) |
 
 ## Sessions
 
@@ -51,7 +51,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
 | 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | ended | 10 h 56 min | `claude-opus-5-5` | 127 | 1,786 | 1,804 | 16 | 23 | 375,335 | 30 |
-| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 1 h 35 min | `claude-opus-5-5` | 9 | 171 | 172 | 1 | 0 | 309,640 | 10 |
+| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 1 h 49 min | `claude-opus-5-5` | 11 | 210 | 212 | 1 | 0 | 361,405 | 11 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -85,14 +85,14 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,780,300 | 3,618 | 5,965,079 | 337,354,372 | 98.3% | 193 |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 98,108 | 360 | 276,500 | 33,815,424 | 99.2% | 347 |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 122,280 | 442 | 324,395 | 46,717,876 | 99.3% | 385 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 7,357 | 86.4% | 25 |
-| `Edit` | 405 | 4.8% | 13 |
+| `Bash` | 7,397 | 86.4% | 25 |
+| `Edit` | 405 | 4.7% | 13 |
 | `Read` | 302 | 3.5% | 15 |
 | `Write` | 297 | 3.5% | 12 |
 | `ToolSearch` | 60 | 0.7% | 14 |
@@ -316,7 +316,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 202 | [`07ba4a23`](https://github.com/pilifs/in-the-loop/commit/07ba4a23f66e5e6f48515b6635d570bd96dcb21e) | JBMC applies the contracts for its gaps: under --engine jbmc --gaps advised a JDK call JBMC stubs takes the contract the own checker would, its call sites rewritten into calls of the contract's method, and a gap with no contract stops the run with the advice | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7.jsonl.gz)) |
 | 203 | [`e11c7a00`](https://github.com/pilifs/in-the-loop/commit/e11c7a00158bb8d38ddc2e636364886c80b47850) | The benchmark corpus: the conformance corpus, four documented bugs with their broken and fixed versions, and twelve held-out regressions, run on both engines under strict, assume and advised, with every expected answer and every witness checked on the JVM and correctness, coverage, time and memory kept apart (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02.jsonl.gz)) |
 | 204 | [`b2e3b9c5`](https://github.com/pilifs/in-the-loop/commit/b2e3b9c51da8630559a5c816d73be22ff0ef5b12) | Per-phase measurements for both engines: every checker run split into loading, lowering, symbolic execution, encoding, solving and trace, with its formula's size, JBMC's read from its own timings and message times, and a table per workload of which phase dominates (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/28a29aa659f249577fe0c1d6c5e18de692926ee74fa3c2307301a2c80d0db87c.jsonl.gz)) |
-| 205 | change `rwtnuqrm` | Record session traces | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz)), [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f673c85e220b9626ee408ad6b2e49d10d0ec0aaae4f749529334082d4871797b.jsonl.gz)) |
+| 205 | [`042e35d7`](https://github.com/pilifs/in-the-loop/commit/042e35d7b827bd909264c6d9f3998df3d4c39c7c) | Record session traces | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz)), [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f673c85e220b9626ee408ad6b2e49d10d0ec0aaae4f749529334082d4871797b.jsonl.gz)) |
 | 206 | [`85f56439`](https://github.com/pilifs/in-the-loop/commit/85f56439125f4c0ca9b1e50733420b6553133e1b) | Allow list: maintainer approved 08d01372, 16a9205e, 4802395b, 874bad78, 8eb0af9c, ddc847c6 | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914.jsonl.gz)) |
 | 207 | [`c54e8b87`](https://github.com/pilifs/in-the-loop/commit/c54e8b87437bcb8b7f25121f820f15404cffc4d3) | One Langfuse command for several sessions, and a session with nothing to send stops being reported | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914.jsonl.gz)) |
 | 208 | [`cef84b44`](https://github.com/pilifs/in-the-loop/commit/cef84b443a05d890e45e991bd7ab7062f08974a9) | Verification queue priorities: move committed jobs up or down later, and run only the top of the queue | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/60bc21576206b799b4edbd15f0fa480d7f61fc75f0212509984e0a24793f61f8.jsonl.gz)) |
@@ -326,6 +326,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 212 | [`6213df4c`](https://github.com/pilifs/in-the-loop/commit/6213df4c793efb8db87c1bcd5a64f1af649232db) | The own checker makes a division or product of equal operands one value: a functional-consistency lemma before any circuit is built | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f67e8c835e0a9e3fd91473191d986f0eef13e83a52620ff2b8a981fb5cf29d11.jsonl.gz)) |
 | 213 | [`c792ec25`](https://github.com/pilifs/in-the-loop/commit/c792ec25564f07fc5f91c54302ccbd7502feb262) | Confirming a proof that rests on contracts: under --confirm, JBMC applies the own checker's contracts at the same calls and proves it again | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8.jsonl.gz)) |
 | 214 | [`e8d2be6d`](https://github.com/pilifs/in-the-loop/commit/e8d2be6dd567ed165b84bf27e2cbf848680b7adf) | The end-of-turn hook leaves a session that wrote no transcript unmarked, so check stops warning about it | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f.jsonl.gz)) |
+| 215 | change `pnxnynvp` | Pipeline jobs apply git-format patches: git in a job no longer takes this repository for the job's, and a skipped file fails the patch stage | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b.jsonl.gz)) |
 
 ## Logs
 
@@ -357,7 +358,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 30 | 30 | 131.3 MB | [`77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz) |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 9 | 9 | 3.8 MB | [`f673c85e220b`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f673c85e220b9626ee408ad6b2e49d10d0ec0aaae4f749529334082d4871797b.jsonl.gz) |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 10 | 9 | 4.4 MB | `a1b5047cbc93`, not uploaded |
 
 ## Session notes
 

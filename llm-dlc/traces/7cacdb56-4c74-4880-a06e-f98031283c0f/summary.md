@@ -331,7 +331,7 @@ The brief departs in three ways, recorded under Progress. The own checker has no
 
 ### Record session traces
 
-change `rwtnuqrmuwpp` · [log `77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz)
+[`042e35d7b827`](https://github.com/pilifs/in-the-loop/commit/042e35d7b827bd909264c6d9f3998df3d4c39c7c) · [log `77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

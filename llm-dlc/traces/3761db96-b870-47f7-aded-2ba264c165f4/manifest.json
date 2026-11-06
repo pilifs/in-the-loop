@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T12:23:54.673Z",
-  "duration_seconds": 5720,
+  "ended": "2026-11-06T12:37:47.592Z",
+  "duration_seconds": 6553,
   "stats": {
-    "turns": 9,
-    "api_calls": 171,
-    "tool_calls": 172,
+    "turns": 11,
+    "api_calls": 210,
+    "tool_calls": 212,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 309640,
+    "peak_context_tokens": 361405,
     "usage": {
-      "input_tokens": 360,
-      "output_tokens": 98108,
-      "cache_read_input_tokens": 33815424,
-      "cache_creation_input_tokens": 276500
+      "input_tokens": 442,
+      "output_tokens": 122280,
+      "cache_read_input_tokens": 46717876,
+      "cache_creation_input_tokens": 324395
     }
   },
   "tools": {
-    "Bash": 156,
+    "Bash": 196,
     "AskUserQuestion": 11,
     "Edit": 3,
     "ToolSearch": 1,
@@ -44,31 +44,31 @@
     {
       "index": 0,
       "started": "2026-11-06T10:48:34.990Z",
-      "ended": "2026-11-06T12:23:54.673Z",
-      "turns": 9,
-      "api_calls": 171,
+      "ended": "2026-11-06T12:37:47.592Z",
+      "turns": 11,
+      "api_calls": 210,
       "usage": {
-        "input_tokens": 360,
-        "output_tokens": 98108,
-        "cache_read_input_tokens": 33815424,
-        "cache_creation_input_tokens": 276500
+        "input_tokens": 442,
+        "output_tokens": 122280,
+        "cache_read_input_tokens": 46717876,
+        "cache_creation_input_tokens": 324395
       },
-      "peak_context_tokens": 309640
+      "peak_context_tokens": 361405
     }
   ],
   "log": {
-    "sha256": "f673c85e220b9626ee408ad6b2e49d10d0ec0aaae4f749529334082d4871797b",
-    "bytes": 3583196,
-    "lines": 1502,
-    "gzip_bytes": 573694,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/f673c85e220b9626ee408ad6b2e49d10d0ec0aaae4f749529334082d4871797b.jsonl.gz"
+    "sha256": "a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b",
+    "bytes": 4221252,
+    "lines": 1858,
+    "gzip_bytes": 657474,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
     {
       "change_id": "mpknnxqntolpmtlkkvlkrvpkltoopwxk",
       "commit_id": "85f56439125f4c0ca9b1e50733420b6553133e1b",
-      "immutable": false,
+      "immutable": true,
       "summary": "Allow list: maintainer approved 08d01372, 16a9205e, 4802395b, 874bad78, 8eb0af9c, ddc847c6",
       "body": "maintainer approved 6 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n08d01372  long-token  pro…ct (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n16a9205e  long-token  pro…me (44 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n4802395b  long-token  pro…ct (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n874bad78  long-token  pro…me (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n8eb0af9c  long-token  pro…me (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\nddc847c6  public-ip  5.…2: JVMS section number 5.4.3.2 cited in prose, not an IP address",
       "log_sha256": "f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914"
@@ -76,7 +76,7 @@
     {
       "change_id": "kzlzspskoxwntrssvzmxmltsuulxwzpz",
       "commit_id": "c54e8b87437bcb8b7f25121f820f15404cffc4d3",
-      "immutable": false,
+      "immutable": true,
       "summary": "One Langfuse command for several sessions, and a session with nothing to send stops being reported",
       "body": "sync.py check now gives one warning for all sessions whose end-of-turn hook did not finish a Langfuse send, with a single 'sync.py langfuse SID SID ...' command, instead of one warning and one command per session. sync.py langfuse already took several sessions; it now sends a session named twice once, and when it stops at a failure it prints the command for the sessions it had not reached.",
       "log_sha256": "f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914"
@@ -84,7 +84,7 @@
     {
       "change_id": "ozupovnmpzuvskuyooknnmrwwotzolxw",
       "commit_id": "cef84b443a05d890e45e991bd7ab7062f08974a9",
-      "immutable": false,
+      "immutable": true,
       "summary": "Verification queue priorities: move committed jobs up or down later, and run only the top of the queue",
       "body": "Job files are committed with the change they verify and not edited after, so a job's own priority was fixed at submit time and no job set one. verification/priorities.json now holds priorities by job id, each with a reason, set with 'pipeline.py prioritize ID... --priority N --reason TEXT' (--clear, no ids lists them). It overrides the job's own priority and is read at the same commit as the jobs. 'run --min-priority N' runs only the jobs at N or above and leaves the rest pending; 'status' lists pending jobs in start order with their priorities and says when priorities.json has uncommitted changes.",
       "log_sha256": "60bc21576206b799b4edbd15f0fa480d7f61fc75f0212509984e0a24793f61f8"
@@ -92,7 +92,7 @@
     {
       "change_id": "msrkmomynlsvonkxqokwlrqpqtrmlxvw",
       "commit_id": "6ad9879284c1ad243fae330b827f49ee67c6139b",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record the user's decisions on the sound-verdicts brief's open items, and queue the job one of them waits on",
       "body": "Recorded under the brief's open questions (2026-11-06): the recorded examples' gap mode is decided once job 20261106-082917 is back (they stay in assume until then); a vacuous Verified keeps exit code 0; CI accepts proved and tested contracts for now, with the accepted evidence level to become configurable per project; the user reviews the benchmark's group 2 properties, the rest is accepted, and a CVE kernel is future work before any public claim; the landing page needs no update; the JBMC fork is decided from job -102624's ranking; the relative --jbmc path and the console report are fixed next, and fix-confined and --confirm with contracts get an analysis first.\n\nJob 20261106-082917 is set to priority 10 in verification/priorities.json, so 'pipeline.py run --min-priority 10' now runs it with -073804 and -102624.",
       "log_sha256": "d06740baf9e9f0c1352393b47abed3247ce14b6d942b056013904cdbd99c1405"
@@ -100,7 +100,7 @@
     {
       "change_id": "lrrtprqsttxkrzxosmkwqzrxmlsxzluz",
       "commit_id": "2f95abbd4ca29fa83bc37dd62aa45fbf30e2e5d5",
-      "immutable": false,
+      "immutable": true,
       "summary": "A relative --jbmc path is found, and --details prints the statement and the time under a verdict",
       "body": "A --jbmc path given relative to the current directory (bin/jbmc) passed the availability check, which runs where the command is started, then failed as 'JBMC produced no verdict: no output', since JBMC runs in the work directory. jbmc::executable makes such a path absolute where both drivers build their JBMC runs; a bare name is still looked up on PATH. Reproduced first with the previous binary on a one-line class, then fixed; unit test a_relative_jbmc_path_is_made_absolute_and_a_bare_name_is_left_to_path and CLI test a_relative_jbmc_path_is_found_from_the_current_directory on the real JBMC.\n\n--details on prove and equivalence (lib/src/details.rs) prints, under the verdict, what --json holds as stated and search: the statement (domain, each assumption with its basis, what is observed, bounds, models, checker with solver and gap mode, confirmation, vacuity) and where the time went (the check's total, the driver's steps, and each checker run with its purpose, stage, ending, phase shares and formula size). The default report is unchanged. CLI test details_print_the_statement_and_where_the_time_went; lib/README.md documents both.\n\nAll Rust tests pass: 148 unit, 6 conformance, 62 integration. In the full run, on a loaded machine (635 s), the_tools_own_checker_agrees_with_jbmc_on_integer_proofs failed at its first assertion (the Pricing native regression proof, time-dependent, as recorded before); it passed alone in 16 s.",
       "log_sha256": "3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0"
@@ -108,7 +108,7 @@
     {
       "change_id": "xlpuxzwnnrpvsukrmlxmrotnloyqluxx",
       "commit_id": "2af9ce8038344149365710fd0f6e37c50942a4c4",
-      "immutable": false,
+      "immutable": true,
       "summary": "Benchmark group 2 reviewed by the user: the midpoint regression's scope tightened, the checksum property's note corrected",
       "body": "The user reviewed the 13 group 2 cases (lib/benchmark/corpus.json) against their sources and code, case by case; this closes the benchmark's departure 'no person reviewed group 2's properties' (5a). Eleven were accepted as they were.\n\nreal/midpoint/fix-confined: the scope was 'low < 0 || high < low || low + high < 0', wider than the claim needs; for any two ints whose wrapped sum is not negative, (low + high) / 2 == (low + high) >>> 1, so it is now 'low + high < 0', a stronger claim with the same expected verdict, in corpus.json and Reference.java, with its 'why' corrected. real/checksum/broken-property: its 'why' now says the throws clause catches the bug and that the assertion only covers the empty range.\n\nVerified inline on the own checker under strict (run.py --groups 2, 20 s deadline): midpoint/fix-confined verified in 0.11 s and held on the JVM over 121,136 random inputs; all checksum and midpoint cases correct; test_run.py 17 pass. Job 20261106-102624 runs at its own commit, so its table has the previous scope.",
       "log_sha256": "045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32"
@@ -116,7 +116,7 @@
     {
       "change_id": "lrswmqvktrmyovxxxzxpqylunqqmvqmv",
       "commit_id": "6213df4c793efb8db87c1bcd5a64f1af649232db",
-      "immutable": false,
+      "immutable": true,
       "summary": "The own checker makes a division or product of equal operands one value: a functional-consistency lemma before any circuit is built",
       "body": "The own checker leaves divisions and multiplications to the solver as fresh bits under facts, and shares one only when its operand terms are identical. Two operations on equal values written differently (Math.abs(hash) % n and (hash & 0x7fffffff) % n, for a hash that is not negative) were separate unknowns, so the solver answered them differently, each model was refined, both 32-bit dividers were built, and the solver was left proving two dividers equivalent: benchmark case real/bucket/fix-confined ran out of time (over 100 s; 20 s deadline: 2 of 2 divisions built, 53,649 clauses).\n\nNow, when a model gives two operations of one kind and width equal operands (a product's in either order) but different results, bits.rs adds the lemma (a1 == a2 && b1 == b2) -> (q1 == q2 && r1 == r2) and solves again, before refining any operation (Blaster::inconsistent_pair, add_congruence; the engine's solve loop). The lemma holds of every real operation, so it rules out no real execution; for a division by zero, whose bits nothing reads, it only picks equal values.",
       "log_sha256": "f67e8c835e0a9e3fd91473191d986f0eef13e83a52620ff2b8a981fb5cf29d11"
@@ -124,7 +124,7 @@
     {
       "change_id": "knonkrpprokyyupzkozrswroxwymotyu",
       "commit_id": "c792ec25564f07fc5f91c54302ccbd7502feb262",
-      "immutable": false,
+      "immutable": true,
       "summary": "Confirming a proof that rests on contracts: under --confirm, JBMC applies the own checker's contracts at the same calls and proves it again",
       "body": "Under --engine auto --confirm, a proof of the own checker that rests on contracts for gaps (--gaps advised) was not sent to JBMC: the confirmation was not-asked, with the reason 'JBMC cannot apply' a contract, untrue since JBMC applies contracts by rewriting call sites (step 4c, part two). equivalence::confirm now takes the contracts (ConfirmContracts: the gap setting, the directories whose call sites are rewritten, the class path, a directory): it reads JBMC's goto program, applies the same contracts with jbmc_contracts::apply, runs JBMC on the rewritten class path, holds its proof to what it still approximates under the own checker's gap mode, and settles the contract records. A confirmed proof says it rests on the same contracts, by id. Gaps assumed under --gaps assume stay not-asked; a gap JBMC has that no contract closes gives no verdict.\n\nA confirmation checks the reasoning given the contracts, not the contracts, whose evidence (proved, tested, trusted) the verdict states. Both drivers pass the contracts; lib/README.md describes it, and the sound-verdicts brief records the user's decisions and the group 2 review as done.",
       "log_sha256": "261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8"
@@ -132,18 +132,26 @@
     {
       "change_id": "nmqotrttpvvurrrywkxrxtlmkkpwuxlt",
       "commit_id": "e8d2be6dd567ed165b84bf27e2cbf848680b7adf",
-      "immutable": false,
+      "immutable": true,
       "summary": "The end-of-turn hook leaves a session that wrote no transcript unmarked, so check stops warning about it",
       "body": "Claude Code can fire the Stop or SessionEnd hook with a transcript_path for a session that never wrote a transcript (one opened and closed with no message, say). The hook marked the session as having turns not yet sent to Langfuse before reading anything, then failed on the missing file, so the mark stayed and check warned about it until 'sync.py langfuse' cleared it by hand: four such sessions on 2026-11-05/06 (28b02734, 87db5b5f, d10805f9, cdc1176b), none with a transcript in any project folder. The hook now returns before marking when the transcript does not exist, and logs one line.",
       "log_sha256": "4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f"
     },
     {
       "change_id": "rwtnuqrmuwppuupvwmkryomuqprowtoz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "042e35d7b827bd909264c6d9f3998df3d4c39c7c",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "f673c85e220b9626ee408ad6b2e49d10d0ec0aaae4f749529334082d4871797b"
+    },
+    {
+      "change_id": "pnxnynvpmrkqtxwovutrxwlqypyqvlwl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Pipeline jobs apply git-format patches: git in a job no longer takes this repository for the job's, and a skipped file fails the patch stage",
+      "body": "A pipeline job's export and build.py's patched copies live under verification/.state/work, inside this repository's tree. There, git apply reads a git-format patch's paths (diff --git) from this repository's top level, skips every file outside the copy and still exits 0. Since change myrqmxqq (2026-11-05 18:54), which keeps each attempt's copy in the job's work directory, every pipeline run of an example with a git-format patch ran on the unpatched code: 25 examples (110-119, 128-139, 147-149). Job 20261106-073804 found it: examples 128-131 and 134 gave no verdict ('class not found: net.terminalvalue.crosscut.kafka.Batch', a class the patch adds). An example expected to verify would have compared the unpatched code with itself and matched its expectation. No collected result is affected: nothing was collected after that change.\n\nThe runner now sets GIT_CEILING_DIRECTORIES to the work directory's parent in every step's environment, which also covers the jobs queued at older commits, whose build.py has no guard. build.py's new apply_patch (both apply sites) sets the same, runs git apply --verbose, and fails the stage on any 'Skipped patch' line.",
+      "log_sha256": "a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b"
     }
   ],
   "logs": {
@@ -176,6 +184,12 @@
       "lines": 427,
       "gzip_bytes": 242475,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/60bc21576206b799b4edbd15f0fa480d7f61fc75f0212509984e0a24793f61f8.jsonl.gz"
+    },
+    "a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b": {
+      "bytes": 4221252,
+      "lines": 1858,
+      "gzip_bytes": 657474,
+      "url": null
     },
     "d06740baf9e9f0c1352393b47abed3247ce14b6d942b056013904cdbd99c1405": {
       "bytes": 1519555,

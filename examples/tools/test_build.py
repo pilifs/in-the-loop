@@ -1845,6 +1845,28 @@ class StagesTest(unittest.TestCase):
                           ("the verifier", "running"), ("the verifier", "exited")])
         self.assertEqual((attempt / "logs/02-the-verifier.stdout").read_text(), "half a proof\n")
 
+    def test_a_git_format_patch_applies_to_a_copy_inside_a_repository(self):
+        # A pipeline job's copy is inside this repository's tree. There, git apply took a git-format patch's paths
+        # from the repository's top level, skipped every file and exited 0 (examples 128-131 and 134, job -073804).
+        repo = self.dir / "outer"
+        copy = repo / "deep" / "copy"
+        (copy / "app").mkdir(parents=True)
+        subprocess.run(["git", "init", "-q", str(repo)], check=True)
+        (copy / "app/Old.java").write_text("class Old {}\n")
+        patch = ("diff --git a/app/New.java b/app/New.java\nnew file mode 100644\nindex 0000000..1111111\n"
+                 "--- /dev/null\n+++ b/app/New.java\n@@ -0,0 +1 @@\n+class New {}\n"
+                 "diff --git a/app/Old.java b/app/Old.java\nindex 2222222..3333333 100644\n"
+                 "--- a/app/Old.java\n+++ b/app/Old.java\n@@ -1 +1 @@\n-class Old {}\n+class Old { int x; }\n")
+        build.apply_patch(patch, copy)
+        self.assertEqual((copy / "app/New.java").read_text(), "class New {}\n")
+        self.assertEqual((copy / "app/Old.java").read_text(), "class Old { int x; }\n")
+
+    def test_a_patch_git_skips_fails_its_stage(self):
+        skipped = subprocess.CompletedProcess(["git"], 0, "", "Skipped patch 'app/New.java'.\n")
+        with mock.patch.object(build, "stage", return_value=skipped):
+            with self.assertRaisesRegex(RuntimeError, "the patch was not applied"):
+                build.apply_patch("diff --git ...", self.dir)
+
     def test_a_pipeline_attempt_records_its_stages_and_workspace(self):
         work = self.dir / "work"
         work.mkdir()

@@ -892,6 +892,11 @@ class Runner:
         env.update({"VERIFY_JOB_ID": job["id"], "VERIFY_CPUS": f"{result['limits']['cpus']:g}",
                     "VERIFY_MEMORY_LIMIT_MB": str(limit_mb), "VERIFY_WORKDIR": str(work),
                     "VERIFY_SOURCE_COMMIT": result["sourceCommit"]})
+        # The export is a plain tree inside this repository's own (under .state/work): git run in a job must not take
+        # this repository for the job's. Inside it, `git apply` takes a git-format patch's paths from its top level
+        # and skips every file, exiting 0, so an example's patch went unapplied in every job of build.py at a commit
+        # before its own guard.
+        env["GIT_CEILING_DIRECTORIES"] = str(Path(work).resolve().parent)
         env.update({k: str(v) for k, v in (job.get("env") or {}).items()})
         return env
 

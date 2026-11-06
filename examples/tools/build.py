@@ -127,6 +127,20 @@ def stage_log(record):
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
+def apply_patch(patch, cwd):
+    """Applies an example's patch to the copy at `cwd`, as the stage "apply the patch". Git is kept from looking for a
+    repository above the copy (GIT_CEILING_DIRECTORIES): inside one, as a pipeline job's work directory is inside this
+    repository's tree, `git apply` takes a git-format patch's paths (`diff --git`) from that repository's top level,
+    skips every file outside the copy and still exits 0, so the example would run on the unpatched code. A file the
+    patch names that git skips anyway fails the stage."""
+    env = dict(os.environ, GIT_CEILING_DIRECTORIES=str(Path(cwd).resolve().parent))
+    proc = stage("apply the patch", ["git", "apply", "-p1", "--verbose", "-"], input=patch, cwd=cwd, env=env, check=True)
+    skipped = [line for line in (proc.stderr or "").splitlines() if line.startswith("Skipped patch")]
+    if skipped:
+        raise RuntimeError(f"the patch was not applied to {cwd}: {'; '.join(skipped)}")
+    return proc
+
+
 def stage(name, command, *, cwd=None, input=None, timeout=None, env=None, check=False):
     """Runs one command of the run as the stage `name` and returns its CompletedProcess, with stdout and stderr as
     text. `timeout` raises TimeoutExpired with the output so far, and `check` CalledProcessError, as subprocess.run."""
@@ -602,9 +616,7 @@ def run(folder, example, out):
         try:
             for part in p["build"]["copies"]:
                 shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
-            # Inside a repository's tree too, git apply takes the patch's paths relative to the copy (it prefixes them
-            # with the directory it runs in), so a copy kept in a work directory is patched like one in /tmp.
-            stage("apply the patch", ["git", "apply", "-p1", "-"], input=patch, cwd=tmp, check=True)
+            apply_patch(patch, tmp)
             claim = claim_record(example, p, patch, REPO, tmp, contracts_digest(folder, example))
             (out / "claim.json").write_text(json.dumps(claim, indent=2, ensure_ascii=False) + "\n")
             started = datetime.datetime.now(datetime.timezone.utc)
@@ -1916,7 +1928,7 @@ def scan_gaps(folder, example):
     part = TOOL_APPS[app]["root"]
     shutil.copytree(REPO / part, root / part, ignore=IGNORE)
     patch = (folder / example["change"]["patch"]).read_text()
-    stage("apply the patch", ["git", "apply", "-p1", "-"], input=patch, cwd=root, check=True)
+    apply_patch(patch, root)
     after = tool_compile(app, root, tests=False)[0]
     versions = {"after": (after, example["subject"]["symbol"])}
     if example["approach"]["id"] == "B9":
