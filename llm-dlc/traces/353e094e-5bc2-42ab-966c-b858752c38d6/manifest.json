@@ -12,52 +12,53 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T16:53:18.349Z",
-  "ended": "2026-11-06T17:04:49.066Z",
-  "duration_seconds": 691,
+  "ended": "2026-11-06T17:12:34.887Z",
+  "duration_seconds": 1157,
   "stats": {
-    "turns": 3,
-    "api_calls": 42,
-    "tool_calls": 42,
-    "tool_errors": 2,
+    "turns": 4,
+    "api_calls": 71,
+    "tool_calls": 71,
+    "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 93659,
+    "peak_context_tokens": 118977,
     "usage": {
-      "input_tokens": 90,
-      "output_tokens": 20810,
-      "cache_read_input_tokens": 2769143,
-      "cache_creation_input_tokens": 64462
+      "input_tokens": 150,
+      "output_tokens": 36661,
+      "cache_read_input_tokens": 5894120,
+      "cache_creation_input_tokens": 87724
     }
   },
   "tools": {
-    "Bash": 39,
-    "Edit": 2,
+    "Bash": 67,
+    "Edit": 3,
     "Skill": 1
   },
   "files_touched": [
-    "verification/README.md"
+    "verification/README.md",
+    "verification/test_pipeline.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-06T16:53:18.349Z",
-      "ended": "2026-11-06T17:04:49.066Z",
-      "turns": 3,
-      "api_calls": 42,
+      "ended": "2026-11-06T17:12:34.887Z",
+      "turns": 4,
+      "api_calls": 71,
       "usage": {
-        "input_tokens": 90,
-        "output_tokens": 20810,
-        "cache_read_input_tokens": 2769143,
-        "cache_creation_input_tokens": 64462
+        "input_tokens": 150,
+        "output_tokens": 36661,
+        "cache_read_input_tokens": 5894120,
+        "cache_creation_input_tokens": 87724
       },
-      "peak_context_tokens": 93659
+      "peak_context_tokens": 118977
     }
   ],
   "log": {
-    "sha256": "dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f",
-    "bytes": 928078,
-    "lines": 346,
-    "gzip_bytes": 173623,
-    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f.jsonl.gz"
+    "sha256": "747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864",
+    "bytes": 1360806,
+    "lines": 550,
+    "gzip_bytes": 233654,
+    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -82,8 +83,16 @@
       "commit_id": null,
       "immutable": false,
       "summary": "Verification report names the machine of every result and calibrates estimates per machine",
-      "body": "Results already recorded their host and environment, but the Markdown report showed neither and pooled every machine into one calibration table. Until now every result came from one 8-core aarch64 WSL2 laptop (FilSurface); the queue is now running on claude-vm, a 28-vCPU x86_64 VM, so durations from the two would mix. report now labels each result with its machine (host, architecture, WSL, CPUs), the JSON report gains a machine field per result and a calibrationByHost table (calibration keeps its old pooled shape), and the Markdown report prints one calibration table per machine. verification/README.md records which machine ran which results and no longer calls the WSL laptop 'this machine'. Verified with the pipeline's unit tests (22 pass, one extended to check the label and the per-host table) and by rendering the report over the 88 collected results.",
+      "body": "Results already recorded their host and environment, but the Markdown report showed neither and pooled every machine into one calibration table. Until now every result came from one 8-core aarch64 WSL2 laptop; the queue is now running on a 28-vCPU x86_64 VM, so durations from the two would mix. report now labels each result with its machine (host, architecture, WSL, CPUs), the JSON report gains a machine field per result and a calibrationByHost table (calibration keeps its old pooled shape), and the Markdown report prints one calibration table per machine. verification/README.md records which machine ran which results and no longer calls the WSL laptop 'this machine'. Verified with the pipeline's unit tests (22 pass, one extended to check the label and the per-host table) and by rendering the report over the 88 collected results.",
       "log_sha256": "dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f"
+    },
+    {
+      "change_id": "rsuyrwymwqysqtnlxsztrnznyoryxttr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Results record the runner's machine name, and the installer provides jsonschema",
+      "body": "A new runner setting, machine_name (verification/pipeline.toml, empty by default; set per machine in pipeline.local.toml), is what a result records as runner.host and environment.host, and what the note in a truncated log names, in place of the hostname. This lets machines be aliased as more VMs or cloud runners are added, without publishing hostnames, which the trace redactor already treats as personal. Claims in the runner's local state keep the real hostname, which they need to recognise their own stale claims. The VM now running the queue is named vm-1 in its local config; results from the WSL laptop keep its hostname, FilSurface, as before.\n\nThe first run on the VM failed 26 of its first 50 jobs within a second, all because the Python module jsonschema was missing: build.py publishes no example result it cannot validate. The Ubuntu installer now installs python3-jsonschema and doctor.sh checks it. Verified: the pipeline's unit tests pass (23, with a new test that a configured machine name is recorded in both host fields and the truncated-log note, and the hostname nowhere in the result); doctor.sh reports jsonschema 4.19.2 on the VM.",
+      "log_sha256": "747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864"
     }
   ],
   "logs": {
@@ -98,6 +107,12 @@
       "lines": 90,
       "gzip_bytes": 104190,
       "url": "https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/584c77f06146c3e893761af0bedfc3c6c7abc1b6642bb2538f8281b9a0dbed78.jsonl.gz"
+    },
+    "747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864": {
+      "bytes": 1360806,
+      "lines": 550,
+      "gzip_bytes": 233654,
+      "url": null
     },
     "dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f": {
       "bytes": 928078,

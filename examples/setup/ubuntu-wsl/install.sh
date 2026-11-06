@@ -81,7 +81,7 @@ install_system() {
   # shellcheck disable=SC2086  # $dotnet and $qemu are package lists
   sudo apt-get install -y \
     build-essential ca-certificates curl gnupg git jq zip unzip pkg-config zlib1g-dev \
-    python3-venv python3-yaml tmux \
+    python3-venv python3-yaml python3-jsonschema tmux \
     z3 libz3-java graphviz \
     $dotnet \
     opam bubblewrap libgmp-dev \

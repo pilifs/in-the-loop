@@ -98,6 +98,18 @@ class PipelineTest(unittest.TestCase):
         self.assertFalse((self.repo.dir / "verification/.state/results" / job_id).exists())
         self.assertIn("not committed", self.repo.pipeline("status", "--rev", "HEAD").stdout)
 
+    def test_a_result_records_the_runners_machine_name_in_place_of_the_hostname(self):
+        # A machine named in pipeline.local.toml is recorded under that name, and its hostname nowhere in the result.
+        (self.repo.dir / "verification/pipeline.local.toml").write_text('[runner]\nmachine_name = "test-box"\nlog_max_bytes = "1K"\n')
+        job_id = self.repo.submit("Name the machine", "--step", "long", "seq 1 2000")
+        self.repo.commit("job (verification pending)")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        r = self.repo.result(job_id, collected=False)
+        self.assertEqual((r["runner"]["host"], r["environment"]["host"]), ("test-box", "test-box"))
+        self.assertIn("kept on test-box at", (self.repo.dir / "verification/.state/results" / job_id / "logs/1-long.log").read_text())
+        self.assertNotIn(socket.gethostname(), (self.repo.dir / "verification/.state/results" / job_id / "result.json").read_text())
+        self.assertTrue(pipeline.machine_label(r).startswith("test-box ("))
+
     def test_a_passing_job_brings_its_outputs_back_with_its_verdicts(self):
         (self.repo.dir / "out").mkdir()
         (self.repo.dir / "out/result.txt").write_text("old\n")

@@ -28,6 +28,7 @@ echo "Dev tools"
 check required jj       "jj --version"
 check required gh       "gh --version"
 check required cargo    "cargo --version"
+check required jsonschema "python3 -c 'import importlib.metadata as m, jsonschema; print(\"jsonschema\", m.version(\"jsonschema\"))'"  # build.py publishes no result it cannot validate
 check optional langfuse "curl -fsS http://localhost:3000/api/public/health"
 echo "Containers / Kubernetes"
 check required docker   "docker version --format 'client {{.Client.Version}}, server {{.Server.Version}}'"

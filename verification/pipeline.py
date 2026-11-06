@@ -53,6 +53,7 @@ ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[a-z0-9][a-z0-9-]{0,60}$")
 DEFAULTS = {
     "runner": {
         "backend": "local",
+        "machine_name": "",           # the name results record for this machine; empty: its hostname
         "isolation": "auto",          # systemd: a scope per step with hard caps; none: timeouts only; auto: systemd if it works
         "workers": 2,                 # jobs at once
         "cpus": 6,                    # CPUs shared out among running jobs
@@ -201,6 +202,7 @@ def load_config(args=None):
     runner["max_timeout"] = parse_seconds(runner["max_timeout"])
     runner["cpus"] = float(runner["cpus"])
     runner["workers"] = int(runner["workers"])
+    runner["machine_name"] = str(runner.get("machine_name") or "").strip() or socket.gethostname()
     state = Path(runner["state_dir"])
     runner["state_dir"] = state if state.is_absolute() else ROOT / state
     if runner["backend"] != "local":
@@ -404,7 +406,8 @@ def tlc_version(jar):
         return None
 
 
-def environment():
+def environment(host):
+    """The machine a job ran on, recorded under `host`: the runner's machine_name, else the hostname."""
     global _ENVIRONMENT
     if _ENVIRONMENT is None:
         cpu = next((l.split(":", 1)[1].strip() for l in Path("/proc/cpuinfo").read_text().splitlines()
@@ -414,7 +417,7 @@ def environment():
         jar = tla2tools()
         cargo = shutil.which("cargo") or str(Path.home() / ".cargo/bin/cargo")
         _ENVIRONMENT = {
-            "host": socket.gethostname(),
+            "host": host,
             "os": platform.platform(),
             "machine": platform.machine(),
             "cpuModel": cpu,
@@ -476,7 +479,7 @@ def tail(log_path, n=40):
     return [l[:300] for l in data.splitlines()[-n:]]
 
 
-def keep_log(full, dest, max_bytes):
+def keep_log(full, dest, max_bytes, host):
     """Copies the log into the result: whole if it is short, else its head and tail around a note of what is left out."""
     data = full.read_bytes()
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -489,7 +492,7 @@ def keep_log(full, dest, max_bytes):
         rest = rest[rest.find(b"\n") + 1:] or rest
         left = len(data) - len(head) - len(rest)
         note = (f"\n[... {left} bytes ({data.count(b'\n') - head.count(b'\n') - rest.count(b'\n')} lines) left out; "
-                f"the whole log is {len(data)} bytes, sha256 {info['sha256']}, kept on {socket.gethostname()} at "
+                f"the whole log is {len(data)} bytes, sha256 {info['sha256']}, kept on {host} at "
                 f"{full} ...]\n\n").encode()
         dest.write_bytes(head + note + rest)
         info["truncated"] = True
@@ -761,7 +764,7 @@ class Runner:
             "startedAt": iso(started),
             "finishedAt": None,
             "wallSeconds": None,
-            "runner": {"backend": self.runner["backend"], "isolation": self.isolation, "host": socket.gethostname(),
+            "runner": {"backend": self.runner["backend"], "isolation": self.isolation, "host": self.runner["machine_name"],
                        "pid": os.getpid(), "workers": self.runner["workers"], "cpus": self.runner["cpus"],
                        "memoryBudgetBytes": self.runner["memory"]},
             "limits": {"cpus": job_plan["cpus"], "memoryLimitBytes": job_plan["memoryLimit"],
@@ -770,7 +773,7 @@ class Runner:
                          "durationSeconds": job_plan["durationEstimate"],
                          "notes": (job.get("resources") or {}).get("notes")},
             "usage": None,
-            "environment": environment(),
+            "environment": environment(self.runner["machine_name"]),
             "steps": [],
             "outputs": [],
             "collected": None,
@@ -794,7 +797,8 @@ class Runner:
         out.mkdir(parents=True)
         for s in result["steps"]:
             if s.get("log"):
-                s["log"].update(keep_log(run_dir / s["log"]["path"], out / s["log"]["path"], self.runner["log_max_bytes"]))
+                s["log"].update(keep_log(run_dir / s["log"]["path"], out / s["log"]["path"], self.runner["log_max_bytes"],
+                                            self.runner["machine_name"]))
         if (run_dir / "outputs").exists():
             shutil.copytree(run_dir / "outputs", out / "outputs")
         if (run_dir / "changes.diff").exists():

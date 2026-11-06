@@ -163,9 +163,11 @@ proof, as everywhere in this repo: an exit of 0 with `jbmc:no-verdict` is not on
 
 The environment (host, CPU, memory, Java, JBMC, TLC, cargo and rustc versions), the commit, the limits, and the
 jvmcontract build (by the tree id of `lib/`) are recorded, so a result can be compared with one from another machine.
-`report` names the machine of every result (host, architecture, WSL, CPUs) and gives its calibration table per
-machine, since a duration measured on one says little about another. Every result collected before 2026-11-06 ran on
-an 8-core aarch64 WSL2 laptop; later ones on a 28-vCPU x86_64 VM, unless they say otherwise.
+A result records its machine under the runner's `machine_name` (`pipeline.local.toml`; the hostname when it is
+empty). `report` names the machine of every result (that name, architecture, WSL, CPUs) and gives its calibration
+table per machine, since a duration measured on one says little about another. Every result collected before
+2026-11-06 ran on `FilSurface`, an 8-core aarch64 WSL2 laptop, recorded by its hostname; later ones on `vm-1`, a
+28-vCPU x86_64 VM, unless they say otherwise.
 
 ## Running: resources, isolation, configuration
 

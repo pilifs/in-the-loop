@@ -4,6 +4,9 @@
 
 [runner]
 backend = "local"
+# The name results record for this machine (runner.host, environment.host). Empty: its hostname. Give each runner a
+# name of its own in pipeline.local.toml, so a result says which machine ran it without publishing the hostname.
+machine_name = ""
 # systemd: each step in a systemd user scope with a hard memory cap (no swap) and a CPU quota, measured by its cgroup.
 # none: no caps, only timeouts (a container that is itself capped). auto: systemd when it works.
 isolation = "auto"
