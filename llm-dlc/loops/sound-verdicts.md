@@ -282,7 +282,8 @@ Decided by the user on 2026-11-06, after the loop's run (the numbers above are u
   from that ranking.
 - **The text reader (4b):** `-073804` read 78 JBMC runs both ways with 0 disagreements but could not run 128-131 and 134
   (their patches went unapplied in the pipeline, since fixed); `20261106-123940` read those five, 10 runs, 0
-  disagreements. Every recorded JBMC example has been read both ways, so the text reader can be removed.
+  disagreements. Every recorded JBMC example has been read both ways, so the text reader was removed on 2026-11-06
+  (`parse_output`, `JVMCONTRACT_JBMC_READ`, the differential record).
 - **Leftovers:** the relative `--jbmc` path and the console report's statement and phases (`--details`) are done.
   From an analysis, the user chose to do the other two, and both are done: `real/bucket/fix-confined` timed out
   because two divisions of equal values written differently were separate unknowns (now a functional-consistency

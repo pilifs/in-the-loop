@@ -6,9 +6,8 @@
 //! JBMC is read through `--json-ui` ([`parse_json`]): one JSON array of its messages, the property results with the
 //! trace of each failed one, and the overall `cProverStatus`, as CBMC 6.11.0 writes them (`report_util.cpp`,
 //! `json_goto_trace.cpp`, `json_expr.cpp`). A trace's values are read from their bits, not from how Java would print
-//! them. The text parser ([`parse_output`]) is kept, as `JVMCONTRACT_JBMC_READ=text`, until a differential test over
-//! every recorded JBMC example shows the two agree: `JVMCONTRACT_JBMC_READ=both` runs JBMC both ways, decides by the
-//! JSON, and writes what each reading made of the run next to the log ([`Differential`]).
+//! them. The console text was read too until 2026-11-06, when a differential test over every recorded JBMC example
+//! (pipeline jobs 20261106-073804 and 20261106-123940: 88 runs read both ways, no disagreement) showed the two agree.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -46,31 +45,6 @@ pub struct JbmcRun {
     /// Where to write the log.
     pub log: PathBuf,
     pub extra_args: Vec<String>,
-    /// How JBMC's output is read: [`Reading::from_env`] in the proof drivers.
-    pub read: Reading,
-}
-
-/// How JBMC's output is read: through `--json-ui` (the default), as text, or both ways for a differential test.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "kebab-case")]
-pub enum Reading {
-    Json,
-    Text,
-    /// JBMC run twice, with `--json-ui` and without, the JSON deciding; what each reading made of the run is
-    /// written to `<log>.differential.json`, and appended to the file `JVMCONTRACT_JBMC_DIFFERENTIAL` names. The
-    /// second run gets a budget of its own, so a check takes up to twice its deadline: a test mode.
-    Both,
-}
-
-impl Reading {
-    /// `JVMCONTRACT_JBMC_READ`: `json` (the default), `text` or `both`.
-    pub fn from_env() -> Reading {
-        match std::env::var("JVMCONTRACT_JBMC_READ").ok().as_deref().map(str::trim) {
-            Some("text") => Reading::Text,
-            Some("both") => Reading::Both,
-            _ => Reading::Json,
-        }
-    }
 }
 
 /// How a run ended, before anything else is made of it: the kinds of no verdict stay apart, since each calls for
@@ -236,10 +210,8 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
         run.unwind.to_string(),
         "--unwinding-assertions".into(),
     ];
-    if run.read == Reading::Json {
-        // The time of each message, which the phases of the run are read from ([`crate::phases::of_jbmc`]).
-        cmd.extend(["--json-ui".into(), "--timestamp".into(), "monotonic".into()]);
-    }
+    // The time of each message, which the phases of the run are read from ([`crate::phases::of_jbmc`]).
+    cmd.extend(["--json-ui".into(), "--timestamp".into(), "monotonic".into()]);
     if let Some(stage) = &run.stage {
         cmd.extend(["--java-assume-inputs-interval".into(), stage.clone()]);
     }
@@ -286,137 +258,8 @@ fn abnormal_end(output: &str, memory_mb: Option<u64>) -> Option<(Ending, String)
     None
 }
 
-/// Runs JBMC and reads its output as `run.read` says.
+/// Runs JBMC and reads its output through `--json-ui`.
 pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
-    if run.read != Reading::Both {
-        return run_once(run);
-    }
-    let json = run_once(&JbmcRun { read: Reading::Json, ..run.clone() })?;
-    let text = run_once(&JbmcRun { read: Reading::Text, log: sibling(&run.log, "text.log"), ..run.clone() })?;
-    let d = Differential::of(run, &json, &text);
-    let record = serde_json::to_string(&d).map_err(|e| Error::new(e.to_string()))?;
-    std::fs::write(sibling(&run.log, "differential.json"), format!("{record}\n"))?;
-    if let Some(file) = std::env::var_os("JVMCONTRACT_JBMC_DIFFERENTIAL").filter(|f| !f.is_empty()) {
-        use std::io::Write;
-        let mut f = std::fs::OpenOptions::new().create(true).append(true).open(file)?;
-        writeln!(f, "{record}")?;
-    }
-    Ok(json)
-}
-
-/// `jbmc.log` with its extension replaced by `ext`: `jbmc.text.log`, `jbmc.differential.json`.
-fn sibling(log: &Path, ext: &str) -> PathBuf {
-    let stem = log.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "jbmc".into());
-    log.with_file_name(format!("{stem}.{ext}"))
-}
-
-/// What one reading made of a run: its account of it, for [`Differential`].
-#[derive(Debug, Clone, Serialize, PartialEq)]
-pub struct Account {
-    pub verdict: Verdict,
-    pub ending: Ending,
-    pub properties: u32,
-    /// The counterexample's inputs by slot, each value in one canonical form ([`canonical`]), arrays as lists.
-    pub inputs: BTreeMap<u32, String>,
-    pub problem: Option<String>,
-}
-
-/// What the JSON and the text reading made of one run of JBMC each, and whether they agree: the same verdict,
-/// the same counterexample, and the same ending, except that the text may not tell an unreadable output from one
-/// the JSON names (an error before any result, as JBMC refusing the program).
-#[derive(Debug, Clone, Serialize)]
-pub struct Differential {
-    pub class: String,
-    pub function: String,
-    pub stage: Option<String>,
-    pub log: PathBuf,
-    pub json: Account,
-    pub text: Account,
-    pub agree: bool,
-    pub differences: Vec<String>,
-}
-
-impl Differential {
-    pub fn of(run: &JbmcRun, json: &JbmcResult, text: &JbmcResult) -> Differential {
-        let read = |r: &JbmcResult| Account {
-            verdict: r.verdict,
-            ending: r.ending,
-            properties: r.properties,
-            inputs: canonical_inputs(r),
-            problem: r.problem.clone(),
-        };
-        let (j, t) = (read(json), read(text));
-        let mut differences = Vec::new();
-        if j.verdict != t.verdict {
-            differences.push(format!("verdict: {:?} from the JSON, {:?} from the text", j.verdict, t.verdict));
-        }
-        let finer = t.ending == Ending::Unreadable && j.verdict == Verdict::Unverifiable && t.verdict == Verdict::Unverifiable;
-        if j.ending != t.ending && !finer {
-            differences.push(format!("ending: {:?} from the JSON, {:?} from the text", j.ending, t.ending));
-        }
-        if j.verdict == Verdict::Violation && j.inputs != t.inputs {
-            differences.push(format!("counterexample: {:?} from the JSON, {:?} from the text", j.inputs, t.inputs));
-        }
-        if j.properties != t.properties && j.ending != Ending::UnsupportedInput {
-            differences.push(format!("properties: {} from the JSON, {} from the text", j.properties, t.properties));
-        }
-        Differential {
-            class: run.class.clone(),
-            function: run.function.clone(),
-            stage: run.stage.clone(),
-            log: run.log.clone(),
-            agree: differences.is_empty(),
-            json: j,
-            text: t,
-            differences,
-        }
-    }
-}
-
-fn canonical_inputs(r: &JbmcResult) -> BTreeMap<u32, String> {
-    let mut out: BTreeMap<u32, String> = r.raw_inputs.iter().filter(|(slot, _)| !r.raw_arrays.contains_key(slot)).map(|(slot, v)| (*slot, canonical(v))).collect();
-    for (slot, array) in &r.raw_arrays {
-        out.insert(*slot, match array {
-            Some(values) => format!("[{}]", values.iter().map(|v| canonical(v)).collect::<Vec<_>>().join(", ")),
-            None => "null".into(),
-        });
-    }
-    out
-}
-
-/// A value as either reading gives it, in one form: `17l`, `(byte)-128`, `'a'` and `true` as the numbers they are
-/// (`17`, `-128`, `97`, `1`), a floating-point value as Rust prints the `f64` it is, and a special one by name.
-pub fn canonical(raw: &str) -> String {
-    let raw = raw.trim();
-    let raw = match raw.strip_prefix('(').and_then(|r| r.split_once(')')) {
-        Some(("byte" | "short" | "char" | "int" | "long" | "float" | "double" | "boolean", rest)) => rest.trim_start(),
-        _ => raw,
-    };
-    if let Some(literal) = raw.strip_prefix('\'').and_then(|r| r.strip_suffix('\'')) {
-        if let Some(c) = parse_char_literal(literal) {
-            return c.to_string();
-        }
-    }
-    match raw {
-        "true" => return "1".into(),
-        "false" => return "0".into(),
-        _ => {}
-    }
-    if let Some(f) = parse_special(raw) {
-        return if f.is_nan() { "NaN".into() } else { format!("{f}") };
-    }
-    let s = raw.trim_end_matches(['L', 'l', 'F', 'f', 'D', 'd']);
-    if let Ok(i) = s.parse::<i128>() {
-        return i.to_string();
-    }
-    if let Ok(f) = s.parse::<f64>() {
-        return format!("{f:?}");
-    }
-    raw.to_string()
-}
-
-/// Runs JBMC once and reads its output.
-fn run_once(run: &JbmcRun) -> Result<JbmcResult, Error> {
     let memory_mb = memory_limit_mb();
     let cmd = limited(command(run), memory_mb);
     if !available(&run.executable) {
@@ -450,15 +293,10 @@ fn run_once(run: &JbmcRun) -> Result<JbmcResult, Error> {
     }
     let seconds = started.elapsed().as_secs_f64();
     std::fs::write(&run.log, &output)?;
-    let mut result = match run.read {
-        Reading::Text => parse_output(&output, &run.class, &run.function, run.unwind, run.stage.clone()),
-        _ => parse_json(&output, &run.class, &run.function, run.unwind, run.stage.clone()),
-    };
+    let mut result = parse_json(&output, &run.class, &run.function, run.unwind, run.stage.clone());
     result.log = run.log.clone();
     result.seconds = seconds;
-    if run.read != Reading::Text {
-        result.profile = crate::phases::of_jbmc(&json_items(&output), seconds);
-    }
+    result.profile = crate::phases::of_jbmc(&json_items(&output), seconds);
     if output.contains("did not finish within") {
         result.verdict = Verdict::Unverifiable;
         result.ending = Ending::Timeout;
@@ -580,7 +418,7 @@ fn json_items(output: &str) -> Vec<serde_json::Value> {
 
 /// The inputs of a counterexample's trace: each `input` step names a harness parameter (`arg0i`, by slot), and an
 /// array parameter's value is an object whose `length`, `data` and elements the assignments before it set, as in
-/// the text ([`parse_arrays`]).
+/// JBMC's console text gave them.
 fn trace_inputs(steps: &[serde_json::Value]) -> (BTreeMap<u32, String>, BTreeMap<u32, Option<Vec<String>>>) {
     let input_id = Regex::new(r"^arg(\d+)[a-z]$").unwrap();
     let field = Regex::new(r"^([A-Za-z0-9_$]+)\.(length|data)$").unwrap();
@@ -700,92 +538,6 @@ fn scalar(value: &serde_json::Value) -> Option<String> {
     }
 }
 
-/// Parses JBMC's console output.
-pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stage: Option<String>) -> JbmcResult {
-    let version = Regex::new(r"(?m)^JBMC version (\S+)").unwrap().captures(output).map(|c| format!("JBMC {}", &c[1])).unwrap_or_else(|| "JBMC".into());
-    let base = |ending: Ending, verdict: Verdict, properties: u32, problem: Option<String>| blank(&version, stage.clone(), ending, verdict, properties, problem);
-    // A class path entry JBMC could not read makes every method in it a stub with an arbitrary result, and the
-    // harness assertion then fails for no reason; that is no verdict.
-    if let Some(c) = Regex::new(r"(?m)^Warning: failed to access directory '([^']*)'").unwrap().captures(output) {
-        return base(Ending::UnsupportedInput, Verdict::Unverifiable, 0, Some(format!("JBMC could not read the class path entry {}", &c[1])));
-    }
-    let Some(failed) = Regex::new(r"\*\* (\d+) of (\d+) failed").unwrap().captures(output) else {
-        let tail = output.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("no output");
-        return base(Ending::Unreadable, Verdict::Unverifiable, 0, Some(format!("JBMC produced no verdict: {tail}")));
-    };
-    let properties: u32 = failed[2].parse().unwrap_or(0);
-    if failed[1].parse::<u32>().unwrap_or(1) == 0 {
-        // "0 failed" is not a proof. A solver that gives up leaves every property as ERROR, none of them failed, and
-        // JBMC ends with VERIFICATION ERROR; a run that stops after the count leaves no last line at all.
-        if Regex::new(r"(?m)^VERIFICATION SUCCESSFUL\s*$").unwrap().is_match(output) {
-            return base(Ending::Verified, Verdict::Verified, properties, None);
-        }
-        let tail = output.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("no output");
-        return base(Ending::SolverFailure, Verdict::Unverifiable, properties, Some(format!("JBMC produced no verdict: {tail}")));
-    }
-    let failures: Vec<String> = Regex::new(r"(?m)^\[([^\]]+)\] .*: FAILURE$").unwrap().captures_iter(output).map(|c| c[1].to_string()).collect();
-    if let Some(unwound) = failures.iter().find(|f| f.contains(".unwind.")) {
-        return base(Ending::UnwindingFailure, Verdict::Unverifiable, properties, Some(format!("a loop was not fully unwound with --unwind {unwind} ({unwound})")));
-    }
-    let marker = format!("{class}.{function}");
-    if !failures.iter().any(|f| f.contains(&marker) && f.contains("assertion")) {
-        return base(Ending::OtherFailure, Verdict::Unverifiable, properties, Some(format!("an unexpected property failed: {}", failures.join(", "))));
-    }
-    let mut result = base(Ending::Counterexample, Verdict::Violation, properties, None);
-    for c in Regex::new(r"(?m)^\s*INPUT arg(\d+)[a-z]: (\S+)").unwrap().captures_iter(output) {
-        if let Ok(slot) = c[1].parse::<u32>() {
-            result.raw_inputs.insert(slot, c[2].to_string());
-        }
-    }
-    result.raw_arrays = parse_arrays(output);
-    result
-}
-
-/// The array inputs of a trace. JBMC prints an array argument as `INPUT arg0a: &dynamic_object` after assigning
-/// the object's `length` and `data` fields, and the data array's elements, both whole (`dynamic_object$0={ 1, 2 }`)
-/// and one by one (`dynamic_object$0[1L]=2`); the assignments before the `INPUT` line are the input.
-fn parse_arrays(output: &str) -> BTreeMap<u32, Option<Vec<String>>> {
-    let length = Regex::new(r"^\s*([A-Za-z0-9_$]+)\.length=(\d+)").unwrap();
-    let data = Regex::new(r"^\s*([A-Za-z0-9_$]+)\.data=&?([A-Za-z0-9_$]+)").unwrap();
-    let whole = Regex::new(r"^\s*([A-Za-z0-9_$]+)=\{ ?([^{}.]*?) ?\}").unwrap();
-    let element = Regex::new(r"^\s*([A-Za-z0-9_$]+)\[(\d+)L?\]=(.+?) \(").unwrap();
-    let input = Regex::new(r"^\s*INPUT arg(\d+)[a-z]: (?:&([A-Za-z0-9_$]+)|(null))").unwrap();
-    let mut lengths: BTreeMap<String, usize> = BTreeMap::new();
-    let mut datas: BTreeMap<String, String> = BTreeMap::new();
-    let mut elements: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    let mut arrays = BTreeMap::new();
-    for line in output.lines() {
-        if let Some(c) = input.captures(line) {
-            let Ok(slot) = c[1].parse::<u32>() else { continue };
-            if c.get(3).is_some() {
-                arrays.insert(slot, None);
-                continue;
-            }
-            let object = &c[2];
-            let len = lengths.get(object).copied().unwrap_or(0);
-            let mut values = datas.get(object).and_then(|d| elements.get(d)).cloned().unwrap_or_default();
-            values.resize(len, "0".into());
-            arrays.insert(slot, Some(values));
-        } else if let Some(c) = length.captures(line) {
-            lengths.insert(c[1].to_string(), c[2].parse().unwrap_or(0));
-        } else if let Some(c) = data.captures(line) {
-            datas.insert(c[1].to_string(), c[2].to_string());
-        } else if let Some(c) = whole.captures(line) {
-            let values: Vec<String> = if c[2].trim().is_empty() { Vec::new() } else { c[2].split(", ").map(str::to_string).collect() };
-            elements.insert(c[1].to_string(), values);
-        } else if let Some(c) = element.captures(line) {
-            let Ok(index) = c[2].parse::<usize>() else { continue };
-            let values = elements.entry(c[1].to_string()).or_default();
-            if values.len() <= index {
-                values.resize(index + 1, "0".into());
-            }
-            values[index] = c[3].to_string();
-        }
-    }
-    arrays
-}
-
-/// Parses a primitive value as JBMC prints it in a trace (`17`, `-3l`, `'a'`, `'\u0000'`, `true`, `1.5f`,
 /// `Float.NaN`, `-Double.POSITIVE_INFINITY`, and an array element's `(byte)-128`).
 pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
     // An array element carries its type as a cast: `(byte)-128`, `(short)7`.
@@ -864,45 +616,6 @@ mod tests {
         assert_eq!(executable("/usr/bin/jbmc"), "/usr/bin/jbmc");
         assert_eq!(PathBuf::from(executable("bin/jbmc")), here.join("bin/jbmc"));
         assert_eq!(PathBuf::from(executable("./jbmc")), here.join("./jbmc"));
-    }
-
-    #[test]
-    fn parses_verdicts() {
-        let proved = "JBMC version 6.11.0 (cbmc-6.11.0)\n** 0 of 37 failed (1 iterations)\nVERIFICATION SUCCESSFUL\n";
-        let r = parse_output(proved, "EquivalenceHarness", "check", 16, None);
-        assert_eq!(r.verdict, Verdict::Verified);
-        assert_eq!(r.properties, 37);
-        assert_eq!(r.version, "JBMC 6.11.0");
-
-        // JBMC names the inputs by local-variable slot: a long in slot 0 puts the int in slot 2.
-        let refuted = "JBMC version 6.11.0\n[EquivalenceHarness.check:(JI)V.assertion.1] line 1 assertion at file EquivalenceHarness.java line 1 function java::EquivalenceHarness.check:(JI)V bytecode-index 60: FAILURE\n  INPUT arg0a: 17l\n  INPUT arg2a: 6\n** 1 of 37 failed (2 iterations)\nVERIFICATION FAILED\n";
-        let r = parse_output(refuted, "EquivalenceHarness", "check", 16, Some("[0:20]".into()));
-        assert_eq!(r.verdict, Verdict::Violation);
-        assert_eq!(r.inputs(&[Type::Long, Type::Int]).unwrap(), vec![Value::Long(17), Value::Int(6)]);
-
-        // What JBMC prints when its solver runs out of memory: nothing failed, and nothing was proved.
-        let gave_up = "JBMC version 6.11.0\nSolver ran out of memory during propositional reduction.\n[EquivalenceHarness.check:(JI)V.assertion.1] assertion: ERROR\n** 0 of 4 failed (1 iterations)\nVERIFICATION ERROR\n";
-        let r = parse_output(gave_up, "EquivalenceHarness", "check", 16, None);
-        assert_eq!(r.verdict, Verdict::Unverifiable);
-        assert_eq!(r.problem.as_deref(), Some("JBMC produced no verdict: VERIFICATION ERROR"));
-
-        // A count with no last line is no proof either.
-        let cut_off = parse_output("** 0 of 4 failed (1 iterations)\n", "EquivalenceHarness", "check", 16, None);
-        assert_eq!(cut_off.verdict, Verdict::Unverifiable);
-
-        let unwound = "[java::EquivalenceHarness.check:(JI)V.unwind.0] unwinding assertion loop 0: FAILURE\n** 1 of 37 failed\n";
-        let r = parse_output(unwound, "EquivalenceHarness", "check", 16, None);
-        assert_eq!(r.verdict, Verdict::Unverifiable);
-        assert!(r.problem.unwrap().contains("not fully unwound"));
-
-        let r = parse_output("JBMC version 6.11.0\nsomething went wrong\n", "EquivalenceHarness", "check", 16, None);
-        assert_eq!(r.verdict, Verdict::Unverifiable);
-
-        // A missing class path entry would otherwise look like a counterexample.
-        let unreadable = "JBMC version 6.11.0\nParsing ...\nWarning: failed to access directory 'build/main'\n[PropertyHarness.check:(I)V.assertion.1] assertion: FAILURE\n  INPUT arg0a: 1\n** 1 of 2 failed\n";
-        let r = parse_output(unreadable, "PropertyHarness", "check", 16, None);
-        assert_eq!(r.verdict, Verdict::Unverifiable);
-        assert_eq!(r.problem.as_deref(), Some("JBMC could not read the class path entry build/main"));
     }
 
     /// What JBMC 6.11.0 prints under `--json-ui`, in the shape `report_util.cpp` and `json_goto_trace.cpp` give it:
@@ -1036,77 +749,6 @@ mod tests {
     }
 
     #[test]
-    fn a_value_has_one_canonical_form_whichever_reading_gave_it() {
-        for (raw, canonical_form) in [("17l", "17"), ("17", "17"), ("(byte)-128", "-128"), ("'a'", "97"), ("97", "97"), ("'\\u0000'", "0"), ("true", "1"), ("1.5f", "1.5"), ("1.5", "1.5"), ("Float.NaN", "NaN"), ("NaN", "NaN"), ("-Double.POSITIVE_INFINITY", "-inf"), ("-Infinity", "-inf"), ("-0.0", "-0.0")] {
-            assert_eq!(canonical(raw), canonical_form, "{raw}");
-        }
-    }
-
-    #[cfg(unix)]
-    #[test]
-    fn both_readings_of_one_run_are_compared() {
-        let dir = tempfile::tempdir().unwrap();
-        let id = "java::PropertyHarness.check:(I)V.assertion.1";
-        let json = json_run(&property(id, "FAILURE", Some(&input("arg0i", &int(32, "int", 5)))), Some("failure"));
-        std::fs::write(dir.path().join("answer.json"), &json).unwrap();
-        let text = "JBMC version 6.11.0 (cbmc-6.11.0)\n[PropertyHarness.check:(I)V.assertion.1] assertion: FAILURE\n  INPUT arg0i: 5\n** 1 of 1 failed (2 iterations)\nVERIFICATION FAILED\n";
-        std::fs::write(dir.path().join("answer.txt"), text).unwrap();
-        std::fs::write(dir.path().join("other.txt"), text.replace("arg0i: 5", "arg0i: 6")).unwrap();
-        let body = |txt: &str| format!("d=$(dirname \"$0\"); case \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/{txt}\";; esac");
-
-        let r = stand_in_reading(dir.path(), "agreeing", &body("answer.txt"), Reading::Both);
-        assert_eq!((r.verdict, r.ending), (Verdict::Violation, Ending::Counterexample));
-        let d: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.path().join("agreeing.differential.json")).unwrap()).unwrap();
-        assert_eq!(d["agree"], true, "{d}");
-        assert_eq!(d["json"]["inputs"]["0"], "5");
-        assert!(dir.path().join("agreeing.text.log").exists());
-
-        let r = stand_in_reading(dir.path(), "disagreeing", &body("other.txt"), Reading::Both);
-        assert_eq!(r.verdict, Verdict::Violation, "the JSON decides");
-        let d: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.path().join("disagreeing.differential.json")).unwrap()).unwrap();
-        assert_eq!(d["agree"], false, "{d}");
-        assert!(d["differences"][0].as_str().unwrap().starts_with("counterexample:"), "{d}");
-
-        // The JSON reading asks for it; the text reading does not.
-        let args = stand_in_reading(dir.path(), "json", "echo \"$@\"", Reading::Json);
-        assert!(std::fs::read_to_string(&args.log).unwrap().contains("--json-ui"));
-        let args = stand_in_reading(dir.path(), "text", "echo \"$@\"", Reading::Text);
-        assert!(!std::fs::read_to_string(&args.log).unwrap().contains("--json-ui"));
-        assert_eq!(args.ending, Ending::Unreadable);
-        // A JBMC that is not there is an ending of its own.
-        let mut gone = JbmcRun { executable: dir.path().join("absent").display().to_string(), class: "H".into(), function: "check".into(), classpath: Vec::new(), unwind: 1, timeout: Duration::from_secs(1), stage: None, refine_strings: false, sat_solver: None, log: dir.path().join("absent.log"), extra_args: Vec::new(), read: Reading::Json };
-        assert_eq!(run(&gone).unwrap().ending, Ending::Unavailable);
-        gone.read = Reading::Text;
-        assert_eq!(run(&gone).unwrap().ending, Ending::Unavailable);
-    }
-
-    #[test]
-    fn parses_array_inputs() {
-        let trace = "JBMC version 6.11.0\n[PropertyHarness.check:([II)V.assertion.1] assertion: FAILURE\n\
-            Trace for java::PropertyHarness.check:([II)V.assertion.1:\n\
-            State 17 file PropertyHarness.java function __CPROVER__start line 12 thread 0\n\
-              dynamic_object={ .@java.lang.Object={ .@class_identifier=\"java::java.lang.Class\" },\n    .length=0, .data=null } ({ { ? }, 0, 0 })\n\
-              dynamic_object.length=0 (00000000)\n  dynamic_object.data=null (00000000)\n  arg0a=&dynamic_object (00000000)\n\
-              dynamic_object.length=3 (00000000 00000000 00000000 00000011)\n  dynamic_object.data=dynamic_array (00000000)\n\
-              dynamic_array={ 0, 0, 0 } ({ 0, 0, 0 })\n  dynamic_object$0={ 0, 0, 0 } ({ 0, 0, 0 })\n  dynamic_object$0[0L]=0 (0)\n\
-              dynamic_object$0={ -2147483646, 2, 19 } ({ 1, 1, 1 })\n  dynamic_object$0[0L]=-2147483646 (10000000)\n  dynamic_object$0[1L]=2 (00000010)\n  dynamic_object$0[2L]=19 (00010011)\n\
-              dynamic_object.data=dynamic_object$0 (00000100)\n  INPUT arg0a: &dynamic_object (00000010)\n  arg1i=19 (00010011)\n  INPUT arg1i: 19 (00010011)\n\
-              dynamic_object$0[1L]=7 (00000111)\n** 1 of 5 failed (2 iterations)\nVERIFICATION FAILED\n";
-        let r = parse_output(trace, "PropertyHarness", "check", 16, None);
-        assert_eq!(r.verdict, Verdict::Violation);
-        let args = r.arguments(&[Type::Array(Box::new(Type::Int)), Type::Int]).unwrap();
-        assert_eq!(args, vec![Argument::Array(vec![Value::Int(-2147483646), Value::Int(2), Value::Int(19)]), Argument::Scalar(Value::Int(19))], "the elements before INPUT, not the store after it");
-
-        let null = "[PropertyHarness.check:([II)V.assertion.1] assertion: FAILURE\n  INPUT arg0a: null (00000000)\n  INPUT arg1i: 5 (00000101)\n** 1 of 2 failed\n";
-        let r = parse_output(null, "PropertyHarness", "check", 16, None);
-        assert_eq!(r.arguments(&[Type::Array(Box::new(Type::Int)), Type::Int]).unwrap(), vec![Argument::Null, Argument::Scalar(Value::Int(5))]);
-
-        let empty = "[PropertyHarness.check:([II)V.assertion.1] assertion: FAILURE\n  dynamic_object.length=0 (0)\n  dynamic_object.data=null (0)\n  INPUT arg0a: &dynamic_object (0)\n  INPUT arg1i: 5 (00000101)\n** 1 of 2 failed\n";
-        let r = parse_output(empty, "PropertyHarness", "check", 16, None);
-        assert_eq!(r.arguments(&[Type::Array(Box::new(Type::Int)), Type::Int]).unwrap(), vec![Argument::Array(Vec::new()), Argument::Scalar(Value::Int(5))]);
-    }
-
-    #[test]
     fn parses_the_values_jbmc_prints() {
         assert_eq!(parse_value(&Type::Char, "'a'").unwrap(), Value::Int(97));
         assert_eq!(parse_value(&Type::Char, "'\\u0000'").unwrap(), Value::Int(0));
@@ -1139,7 +781,6 @@ mod tests {
             sat_solver: Some("cadical".into()),
             log: PathBuf::from("/tmp/work/jbmc.log"),
             extra_args: Vec::new(),
-            read: Reading::Text,
         };
         let cmd = command(&run);
         let classpath = &cmd[cmd.iter().position(|a| a == "--classpath").unwrap() + 1];
@@ -1155,17 +796,15 @@ mod tests {
         assert!(!command(&plain).contains(&"--sat-solver".to_string()));
     }
 
-    /// A run of a stand-in for JBMC, whose body follows the answer to `--version`.
+    /// A run of a stand-in for JBMC, whose body follows the answer to `--version`. `$PROVED` in the body prints what
+    /// JBMC prints under `--json-ui` for a proof of three properties.
     #[cfg(unix)]
     fn stand_in(dir: &Path, name: &str, body: &str) -> JbmcResult {
-        stand_in_reading(dir, name, body, Reading::Text)
-    }
-
-    /// [`stand_in`], read as `read` says.
-    #[cfg(unix)]
-    fn stand_in_reading(dir: &Path, name: &str, body: &str, read: Reading) -> JbmcResult {
         use std::os::unix::fs::PermissionsExt;
+        let ok = (1..=3).map(|n| property(&format!("java::PropertyHarness.check:(I)V.assertion.{n}"), "SUCCESS", None)).collect::<Vec<_>>().join(", ");
+        std::fs::write(dir.join("proved.json"), json_run(&ok, Some("success"))).unwrap();
         let executable = dir.join(name);
+        let body = body.replace("$PROVED", &format!("cat '{}'", dir.join("proved.json").display()));
         std::fs::write(&executable, format!("#!/bin/sh\n[ \"$1\" = --version ] && exit 0\n{body}\n")).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o755)).unwrap();
         run(&JbmcRun {
@@ -1180,7 +819,6 @@ mod tests {
             sat_solver: Some("cadical".into()),
             log: dir.join(format!("{name}.log")),
             extra_args: Vec::new(),
-            read,
         })
         .unwrap()
     }
@@ -1189,7 +827,7 @@ mod tests {
     #[test]
     fn a_run_that_dies_gives_no_verdict_whatever_it_printed() {
         let dir = tempfile::tempdir().unwrap();
-        let proved = "echo '** 0 of 3 failed (1 iterations)'; echo 'VERIFICATION SUCCESSFUL'";
+        let proved = "$PROVED";
 
         let r = stand_in(dir.path(), "fine", proved);
         assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
@@ -1202,7 +840,7 @@ mod tests {
         assert_eq!(r.verdict, Verdict::Unverifiable);
         assert!(r.problem.unwrap().contains("ran out of memory"));
 
-        let solver = "echo 'SAT checker ran out of memory'; echo '** 0 of 3 failed (1 iterations)'; echo 'VERIFICATION ERROR'; exit 6";
+        let solver = "echo 'SAT checker ran out of memory'; $PROVED; exit 6";
         let r = stand_in(dir.path(), "solver", solver);
         assert_eq!(r.verdict, Verdict::Unverifiable);
         assert!(r.problem.unwrap().contains("ran out of memory"));
@@ -1212,7 +850,7 @@ mod tests {
     #[test]
     fn a_run_is_limited_and_goes_first_when_memory_runs_out() {
         let dir = tempfile::tempdir().unwrap();
-        let r = stand_in(dir.path(), "probe", "ulimit -v; cat /proc/self/oom_score_adj; echo '** 0 of 1 failed'; echo 'VERIFICATION SUCCESSFUL'");
+        let r = stand_in(dir.path(), "probe", "ulimit -v; cat /proc/self/oom_score_adj; $PROVED");
         assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
         let log = std::fs::read_to_string(&r.log).unwrap();
         assert!(log.lines().next().unwrap().parse::<u64>().unwrap() < u64::MAX / 1024, "{log}");
@@ -1223,7 +861,7 @@ mod tests {
     #[test]
     fn a_jbmc_without_the_solver_asked_for_is_run_again_with_its_own() {
         let dir = tempfile::tempdir().unwrap();
-        let body = "for a in \"$@\"; do [ \"$a\" = --sat-solver ] && { echo \"unknown solver 'cadical'\"; exit 1; }; done; echo '** 0 of 3 failed (1 iterations)'; echo 'VERIFICATION SUCCESSFUL'";
+        let body = "for a in \"$@\"; do [ \"$a\" = --sat-solver ] && { echo \"unknown solver 'cadical'\"; exit 1; }; done; $PROVED";
         let r = stand_in(dir.path(), "minisat-only", body);
         assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
         let log = std::fs::read_to_string(&r.log).unwrap();

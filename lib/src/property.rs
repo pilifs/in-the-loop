@@ -428,7 +428,6 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         sat_solver: options.sat_solver.clone(),
         log: work.join("jbmc.log"),
         extra_args: extra_args.clone(),
-        read: jbmc::Reading::from_env(),
     };
     // What JBMC approximates on the way (its stubs, the call sites it does not link), from its goto program.
     let mut preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&base, deadline.share(crate::deadline::STAGE_SHARE))?) };

@@ -12,30 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T13:14:51.196Z",
-  "duration_seconds": 8776,
+  "ended": "2026-11-06T13:25:46.042Z",
+  "duration_seconds": 9431,
   "stats": {
-    "turns": 16,
-    "api_calls": 249,
-    "tool_calls": 249,
+    "turns": 17,
+    "api_calls": 280,
+    "tool_calls": 280,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 400702,
+    "peak_context_tokens": 447620,
     "usage": {
-      "input_tokens": 526,
-      "output_tokens": 145280,
-      "cache_read_input_tokens": 61527300,
-      "cache_creation_input_tokens": 362782
+      "input_tokens": 590,
+      "output_tokens": 164560,
+      "cache_read_input_tokens": 74855603,
+      "cache_creation_input_tokens": 409700
     }
   },
   "tools": {
-    "Bash": 233,
+    "Bash": 262,
     "AskUserQuestion": 11,
     "Edit": 3,
-    "ToolSearch": 1,
-    "Write": 1
+    "Write": 3,
+    "ToolSearch": 1
   },
   "files_touched": [
+    "examples/tools/gap_table.py",
+    "examples/tools/test_gap_table.py",
     "lib/src/details.rs",
     "llm-dlc/tools/test_performance.py",
     "verification/test_pipeline.py"
@@ -44,24 +46,24 @@
     {
       "index": 0,
       "started": "2026-11-06T10:48:34.990Z",
-      "ended": "2026-11-06T13:14:51.196Z",
-      "turns": 16,
-      "api_calls": 249,
+      "ended": "2026-11-06T13:25:46.042Z",
+      "turns": 17,
+      "api_calls": 280,
       "usage": {
-        "input_tokens": 526,
-        "output_tokens": 145280,
-        "cache_read_input_tokens": 61527300,
-        "cache_creation_input_tokens": 362782
+        "input_tokens": 590,
+        "output_tokens": 164560,
+        "cache_read_input_tokens": 74855603,
+        "cache_creation_input_tokens": 409700
       },
-      "peak_context_tokens": 400702
+      "peak_context_tokens": 447620
     }
   ],
   "log": {
-    "sha256": "e4adea3a3248293e49da1afbac32eea3cb21f9277bdce8614e81abc77f5a9139",
-    "bytes": 5194404,
-    "lines": 2213,
-    "gzip_bytes": 810548,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/e4adea3a3248293e49da1afbac32eea3cb21f9277bdce8614e81abc77f5a9139.jsonl.gz"
+    "sha256": "3c0f19cb3814b6826d526e0fa5c13169e3145c126a50c63ca3cb935b8a19f99b",
+    "bytes": 5770788,
+    "lines": 2509,
+    "gzip_bytes": 889856,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/3c0f19cb3814b6826d526e0fa5c13169e3145c126a50c63ca3cb935b8a19f99b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -200,6 +202,14 @@
       "summary": "The recorded examples run in strict, the library's default: the user's decision on open question 3",
       "body": "build.py ran a recorded B9 or B11 example that names no approach.gaps in assume (RECORDED_GAP_MODE), so that the library's strict default did not move recorded verdicts before the user decided how they move. The user decided on 2026-11-06, from both checkers' gap scans: the own checker's (1a: only 013 and 071 meet gaps, and the own checker refuses both examples anyway) and JBMC's (job 20261106-082917: the same two, at Enum.<init>(String, int), List.copyOf and List.of). Strict moves no example's verdict; on its next run, 071's first two property proofs become no verdict. RECORDED_GAP_MODE is now strict; the schema, examples/README.md and the brief say so.\n\nNo example is re-run only to move: each takes strict when it next runs. Verified: build.py's tests updated for the new default (161 pass); every page re-rendered with build.py --render-only, and none changed.",
       "log_sha256": "e4adea3a3248293e49da1afbac32eea3cb21f9277bdce8614e81abc77f5a9139"
+    },
+    {
+      "change_id": "vlwoplzuqkwstltsqkuqvorlwzzrxkkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC is read through --json-ui alone: the text reader is removed, both readings having agreed on every recorded JBMC example",
+      "body": "Step 4b of the sound-verdicts brief kept the text reader (parse_output, JVMCONTRACT_JBMC_READ=text|both, the differential record and JVMCONTRACT_JBMC_DIFFERENTIAL) until a differential test over every recorded JBMC example showed the two readings agree. Jobs 20261106-073804 (78 runs) and 20261106-123940 (the five examples the first could not run, 10 runs) read 88 runs both ways with no disagreement. Removed: the Reading modes and JbmcRun.read, the second run, Differential and Account, canonical, parse_output and parse_arrays; parse_value stays, since the JSON reader's witnesses go through it.",
+      "log_sha256": "3c0f19cb3814b6826d526e0fa5c13169e3145c126a50c63ca3cb935b8a19f99b"
     }
   ],
   "logs": {
@@ -220,6 +230,12 @@
       "lines": 1922,
       "gzip_bytes": 718612,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/296530b337d14cead695758cdf0a26e8bca1ade2ffe2158292dd2a2b7b730357.jsonl.gz"
+    },
+    "3c0f19cb3814b6826d526e0fa5c13169e3145c126a50c63ca3cb935b8a19f99b": {
+      "bytes": 5770788,
+      "lines": 2509,
+      "gzip_bytes": 889856,
+      "url": null
     },
     "3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0": {
       "bytes": 2306623,

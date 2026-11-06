@@ -1314,27 +1314,25 @@ fn prove_engine(target: &str, assume: Option<&str>, assert: Option<&str>, throws
     property::run(&options).unwrap()
 }
 
-/// Step 4b of `llm-dlc/loops/sound-verdicts.md`: JBMC run both ways, through `--json-ui` and as text, on a proof,
-/// a counterexample over an array, a counterexample over a `long`, and a loop not fully unwound, and each pair of
-/// readings agrees. The command line runs in a process of its own, so its environment is its own.
+/// Step 4b of `llm-dlc/loops/sound-verdicts.md`: JBMC read through `--json-ui`, on a proof, a counterexample over an
+/// array, a counterexample over a `long`, and a loop not fully unwound, each with its ending. (The console text was
+/// read too, and held to this reading, until every recorded JBMC example had been read both ways alike.)
 #[test]
-fn the_json_and_the_text_reading_of_jbmc_agree() {
+fn the_json_reading_of_jbmc_gives_each_verdict_and_ending() {
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return;
     }
     let Some(classes) = fixtures() else { return };
-    let differential = target_tmp().join("jbmc-differential.jsonl");
-    let _ = std::fs::remove_file(&differential);
     let correct = "(result == -1 && (\\forall int i; 0 <= i && i < sorted.length; sorted[i] != key)) || (result >= 0 && result < sorted.length && sorted[result] == key)";
-    let cases: &[(&str, &str, &[&str], &str)] = &[
-        ("verified", "fixtures.Laws#maxOf", &["--assert", "result >= a && result >= b && (result == a || result == b)"], "verified"),
-        ("array", "fixtures.Search#find", &["--assert", correct], "violation"),
-        ("long", "fixtures.Laws#majority", &["--assert", "2L * result > n"], "violation"),
-        ("unwound", "fixtures.Search#find", &["--assert", correct, "--unwind", "1"], "unverifiable"),
+    let cases: &[(&str, &str, &[&str], &str, &str)] = &[
+        ("verified", "fixtures.Laws#maxOf", &["--assert", "result >= a && result >= b && (result == a || result == b)"], "verified", "verified"),
+        ("array", "fixtures.Search#find", &["--assert", correct], "violation", "counterexample"),
+        ("long", "fixtures.Laws#majority", &["--assert", "2L * result > n"], "violation", "counterexample"),
+        ("unwound", "fixtures.Search#find", &["--assert", correct, "--unwind", "1"], "unverifiable", "unwinding-failure"),
     ];
-    for (name, target, args, verdict) in cases {
-        let work = target_tmp().join(format!("differential-{name}"));
+    for (name, target, args, verdict, ending) in cases {
+        let work = target_tmp().join(format!("json-reading-{name}"));
         let _ = std::fs::remove_dir_all(&work);
         let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
             .args(["prove", "--classes"])
@@ -1343,24 +1341,17 @@ fn the_json_and_the_text_reading_of_jbmc_agree() {
             .args(*args)
             .args(["--engine", "jbmc", "--json", "--work"])
             .arg(&work)
-            .env("JVMCONTRACT_JBMC_READ", "both")
-            .env("JVMCONTRACT_JBMC_DIFFERENTIAL", &differential)
             .output()
             .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap_or_else(|e| panic!("{name}: {e}: {}", String::from_utf8_lossy(&out.stderr)));
         let outcome = if json.is_array() { &json[0] } else { &json };
         assert_eq!(outcome["verdict"], *verdict, "{name}: {}", outcome["output"]);
-        assert!(work.join("jbmc.text.log").exists() || std::fs::read_dir(&work).unwrap().any(|e| e.unwrap().file_name().to_string_lossy().ends_with(".text.log")), "{name}");
+        let runs = outcome["search"]["runs"].as_array().expect("runs");
+        assert_eq!(runs.last().unwrap()["ending"], *ending, "{name}: {runs:?}");
+        if *name == "array" {
+            assert!(outcome["counterexample"]["inputs"].as_array().is_some_and(|i| i.iter().any(|v| v["type"] == "int[]")), "an array input: {}", outcome["counterexample"]);
+        }
     }
-    let lines: Vec<serde_json::Value> = std::fs::read_to_string(&differential).unwrap().lines().map(|l| serde_json::from_str(l).unwrap()).collect();
-    for d in &lines {
-        assert_eq!(d["agree"], true, "the readings differ: {d}");
-    }
-    let endings: std::collections::BTreeSet<String> = lines.iter().map(|d| d["json"]["ending"].as_str().unwrap().to_string()).collect();
-    for ending in ["verified", "counterexample", "unwinding-failure"] {
-        assert!(endings.contains(ending), "{ending} among {endings:?}");
-    }
-    assert!(lines.iter().any(|d| d["json"]["inputs"].as_object().is_some_and(|i| i.values().any(|v| v.as_str().is_some_and(|v| v.starts_with('['))))), "an array input: {lines:?}");
 }
 
 #[test]
