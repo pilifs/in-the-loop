@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T05:38:45.984Z",
-  "duration_seconds": 21857,
+  "ended": "2026-11-06T06:15:07.628Z",
+  "duration_seconds": 24038,
   "stats": {
-    "turns": 75,
-    "api_calls": 1017,
-    "tool_calls": 1026,
-    "tool_errors": 4,
-    "compactions": 13,
+    "turns": 80,
+    "api_calls": 1110,
+    "tool_calls": 1121,
+    "tool_errors": 6,
+    "compactions": 14,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 2060,
-      "output_tokens": 1013058,
-      "cache_read_input_tokens": 181216437,
-      "cache_creation_input_tokens": 3408227
+      "input_tokens": 2246,
+      "output_tokens": 1108625,
+      "cache_read_input_tokens": 198587018,
+      "cache_creation_input_tokens": 3677576
     }
   },
   "tools": {
-    "Bash": 920,
-    "Read": 72,
-    "Write": 17,
-    "Edit": 13,
+    "Bash": 1005,
+    "Read": 79,
+    "Write": 18,
+    "Edit": 15,
     "ToolSearch": 2,
     "WebFetch": 2
   },
@@ -42,6 +42,7 @@
     "lib/src/advice.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
+    "lib/src/contract_library.rs",
     "lib/src/contract_proving.rs",
     "lib/src/contract_testing.rs",
     "lib/src/digest.rs",
@@ -242,24 +243,38 @@
     {
       "index": 13,
       "started": "2026-11-06T05:25:41.189Z",
-      "ended": "2026-11-06T05:38:45.984Z",
-      "turns": 5,
-      "api_calls": 69,
+      "ended": "2026-11-06T05:39:16.444Z",
+      "turns": 6,
+      "api_calls": 72,
       "usage": {
-        "input_tokens": 140,
-        "output_tokens": 47918,
-        "cache_read_input_tokens": 10353800,
-        "cache_creation_input_tokens": 194629
+        "input_tokens": 146,
+        "output_tokens": 49357,
+        "cache_read_input_tokens": 10982674,
+        "cache_creation_input_tokens": 208720
       },
-      "peak_context_tokens": 207709
+      "peak_context_tokens": 221800
+    },
+    {
+      "index": 14,
+      "started": "2026-11-06T05:39:50.947Z",
+      "ended": "2026-11-06T06:15:07.628Z",
+      "turns": 4,
+      "api_calls": 90,
+      "usage": {
+        "input_tokens": 180,
+        "output_tokens": 94128,
+        "cache_read_input_tokens": 16741707,
+        "cache_creation_input_tokens": 255258
+      },
+      "peak_context_tokens": 268338
     }
   ],
   "log": {
-    "sha256": "df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739",
-    "bytes": 31876307,
-    "lines": 10724,
-    "gzip_bytes": 5922062,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739.jsonl.gz"
+    "sha256": "a55f270188983de71e140e81a8c92e2d1a8749f76541d67d2dcf9801f714fc17",
+    "bytes": 34533823,
+    "lines": 11684,
+    "gzip_bytes": 6389870,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/a55f270188983de71e140e81a8c92e2d1a8749f76541d67d2dcf9801f714fc17.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -422,6 +437,14 @@
       "summary": "The advised mode recorded end to end: two Crosscut examples, an agent's contract the JVM refutes going back to it, and a proof that closes on one contract proved against the JDK's bytecode and two tested (verification pending)",
       "body": "Examples 147 and 148 (B11, --engine native --gaps advised, new technique tag advised-contracts) are the recorded example steps 3c and 3e of llm-dlc/loops/sound-verdicts.md ask for. Crosscut gains retry.Jitter#fullJitterMillis, full jitter: new Random(requestId * 31 + attempt).nextInt(ceiling), the ceiling the base shifted by the attempt with the shift stopped at Integer.numberOfLeadingZeros(base) - 1, then capped; its property says the wait is in [0, cap) and an invalid policy throws IllegalArgumentException, and four tests come with it. The proof reaches three gaps of the tool's own checker and closes only through contracts, which this session wrote as an agent from the template and the JDK's documentation (gaps.contracts in each folder, marked written-by an agent). In 147 the contract for nextInt leaves out the exception: the JVM refutes it at bound=0, it is refused, and the run stops before solving with the counterexamples in the advice. In 148 it has the throws clause: Verified, relying on 3 contracts, 1 proved (numberOfLeadingZeros, against java.lang.Integer's bytecode from the JDK image) and 2 tested (the Random constructor and nextInt, on the JVM).\n\nThis departs from the brief, which asks for one example: a run with a refuted contract stops with its gap open, so one recorded run cannot show both the refutation and the proof, and the pair is the protocol's two runs. 148's notes record what the example found: a real off-by-one in this kernel (no - 1) gives no verdict, since its witness goes through the Random contracts and the interpreter cannot run new Random; running such a witness on a JVM is the most useful thing the advised mode still lacks.\n\nbuild.py fix: the contracts file was not part of the claim, so a changed contract left a recorded result current. contracts_digest() now puts its SHA-256 among the claim's inputs under --gaps advised, and claim_changes reports it; no recorded result had contracts, so no claim moved. The --contracts help now says contracts are proved too, and lib/README.md points at the tag.\n\nVerified inline: the patched module compiles and its 52 tests pass; the library's own run on it gives both verdicts in about 0.2 s each; cargo test --release passes (128 unit, 4 conformance, 55 integration); 153 Python tests pass, one new (test_changed_contracts_for_the_gaps_make_the_result_stale). The recorded results are pipeline jobs 20261106-053555-example-147-b11-advised-contracts-a-cont and 20261106-053555-example-148-b11-advised-contracts-full-j. The brief's Progress records this and names 3d next.",
       "log_sha256": "df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739"
+    },
+    {
+      "change_id": "oyusnmlkryzprwwnvorzkspxrwqpxmtv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The contract library: contracts for gaps of the tool's own checker, checked once against the JDK's bytecode or on a real JVM and recorded, which a run under --gaps advised applies without checking them again, and --max-trust to refuse trusted ones (verification pending)",
+      "body": "Step 3d of llm-dlc/loops/sound-verdicts.md. lib/models/contracts/ is built into the binary, as the models are. It holds a .contracts file per JDK class, in the --contracts format, and checked.json, a record of each check: the contract's digest over its gap and keys, the JDK it ran on, the jvmcontract that ran it, and the evidence with its proof and JVM test (lib/src/contract_library.rs, gap_contracts::Record). It starts with ten contracts this session wrote from the JDK's documentation. Three are proved against the JDK's bytecode: Integer.numberOfLeadingZeros, Integer.numberOfTrailingZeros and Long.numberOfLeadingZeros. Seven are tested on the JVM: the capacity constructors of ArrayList, HashMap, HashSet and StringBuilder, and Random(long), nextInt(int) and nextBytes(byte[]).\n\nUnder --gaps advised the drivers now scan the harness before reading contracts. A gap the agent's --contracts file has no contract for takes the library's. The agent's contract comes first even when it is refused, so a wrong one goes back to the agent rather than being replaced, and example 147 is unchanged. A library contract whose record holds (the same contract, the same JDK, and for a proof the same class file in the JDK image) is applied with the record's evidence, and no proof or JVM test of it runs. Its contract line says it was checked once and recorded, and the JSON has a recorded field, which the result schema and build.py's page now have too. Without a record that holds, as after a JDK upgrade, the run checks the contract itself and says so in a note; one written for another JDK is checked under the run's JDK's id. --no-contract-library turns the library off. The new command 'jvmcontract gap-contracts [--dir DIR] [--record]' checks a library on this JDK and exits 1 when a contract is refused or not recorded; --record writes the records. --max-trust N refuses every trusted contract for the gaps reached when there are more than N, before solving, so their gaps go back to the agent with the reason (open question 7: CI passes 0). build.py passes it from approach.maxTrust, which is in the example schema.\n\nNew example 149: 148's full-jitter kernel with no contracts file and approach.maxTrust 0. The library closes all three gaps on its records, 1 proved and 2 tested, and the property is proved. Checked inline on the patched module, 0.08 s with no contract checks; the recorded run is pipeline job 20261106-061323-example-149-b11-contract-library-full-ji.\n\nVerified inline. A new integration test covers the library on native and auto, for property and regression proofs: the review's ArrayList reproducer with no contracts file, Random and Integer contracts, the agent's refuted contract kept, --max-trust 0 refusing a trusted contract with nothing solved and 1 accepting it, the library off, and the built-in library checking clean on JDK 25.0.4.1 through the CLI. The conformance corpus has a fifth column, the library alone. It decides the same five claims as the corpus's own contracts, as the JVM does, with no JVM test run. Unit tests cover the file list, digests, record validity and the JDK-upgrade move. All Rust tests pass (130 unit; 4 conformance, 2 ignored; 56 integration), as do 154 Python tests. Re-rendering every page changed none. The protocol tests of 3a-3c and the corpus's protocol columns now turn the library off.\n\nThe brief: 3e's acceptance example, a proof closing only through agent-written contracts with one proved and one tested, already exists as 148, so 3e is now the skill alone. Progress records what 3d leaves undone: a project's own library is checked by gap-contracts but not applied in runs; the built-in library is not among a claim's inputs, as lib/models is not; --max-trust is not in the statement; and a record is not invalidated when the checker's code changes, since the version stays 0.1.0.",
+      "log_sha256": "a55f270188983de71e140e81a8c92e2d1a8749f76541d67d2dcf9801f714fc17"
     }
   ],
   "logs": {
@@ -501,6 +524,12 @@
       "bytes": 20056807,
       "lines": 6891,
       "gzip_bytes": 3663096,
+      "url": null
+    },
+    "a55f270188983de71e140e81a8c92e2d1a8749f76541d67d2dcf9801f714fc17": {
+      "bytes": 34533823,
+      "lines": 11684,
+      "gzip_bytes": 6389870,
       "url": null
     },
     "b99c8a55cee254ea157b73fe7f3714a48dc219b4ea727256346ef47385a3b6d8": {

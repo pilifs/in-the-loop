@@ -1,0 +1,105 @@
+diff --git a/examples/apps/crosscut/src/contract/properties.contract b/examples/apps/crosscut/src/contract/properties.contract
+index 7357e29..360ef14 100644
+--- a/examples/apps/crosscut/src/contract/properties.contract
++++ b/examples/apps/crosscut/src/contract/properties.contract
+@@ -15,6 +15,12 @@ net.terminalvalue.crosscut.kafka.Partitioner#partitionFor
+ net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry
+   assert: (!result || attempt < maxAttempts) && (!result || idempotent || status == 429 || status == 503) && (!result || status != 501)
+ 
++# A jittered wait is never negative and always shorter than the cap, so a retry never waits longer than the
++# policy allows, and a policy with no positive base, a cap below it or a negative attempt is refused.
++net.terminalvalue.crosscut.retry.Jitter#fullJitterMillis
++  throws: IllegalArgumentException when baseMillis <= 0 || capMillis < baseMillis || attempt < 0
++  assert: result >= 0 && result < capMillis
++
+ # Skew only widens acceptance: a token valid with no tolerance is valid with any, and a token is valid at every
+ # instant between its not-before and its expiry.
+ net.terminalvalue.crosscut.security.JwtTimestamps#valid
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java
+new file mode 100644
+index 0000000..d7d5164
+--- /dev/null
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java
+@@ -0,0 +1,29 @@
++package net.terminalvalue.crosscut.retry;
++
++import java.util.Random;
++
++/**
++ * Full jitter: a retry waits a time drawn uniformly from nothing up to the exponential backoff's delay, so that the
++ * clients one failure released together do not come back together (Brooker, "Exponential Backoff And Jitter",
++ * 2015; Resilience4j's {@code IntervalFunction.ofExponentialRandomBackoff}). The draw is seeded by the request and
++ * the attempt, so that a test, or a replay of a request log, sees the waits the service saw.
++ */
++public final class Jitter {
++
++    private Jitter() {}
++
++    /**
++     * The wait before the given attempt of a request, in milliseconds: at least zero and less than the ceiling, the
++     * base doubled {@code attempt} times and stopping at the cap. The doubling is a shift, and it stops one short of
++     * the base's sign bit, the base's leading zeros less one, so that the ceiling stays positive however many
++     * attempts there were; the cap is reached long before that for any policy in use.
++     */
++    public static int fullJitterMillis(int baseMillis, int capMillis, int attempt, long requestId) {
++        if (baseMillis <= 0 || capMillis < baseMillis || attempt < 0) {
++            throw new IllegalArgumentException("the base must be positive, the cap at least the base, the attempt not negative");
++        }
++        int shift = Math.min(attempt, Integer.numberOfLeadingZeros(baseMillis) - 1);
++        int ceiling = Math.min(capMillis, baseMillis << shift);
++        return new Random(requestId * 31 + attempt).nextInt(ceiling);
++    }
++}
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java
+index 0692ec1..c202595 100644
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java
+@@ -19,6 +19,7 @@ public final class Tests {
+             net.terminalvalue.crosscut.resilience.CircuitBreakerTest.class,
+             net.terminalvalue.crosscut.retry.RetryPolicyTest.class,
+             net.terminalvalue.crosscut.retry.BackoffTest.class,
++            net.terminalvalue.crosscut.retry.JitterTest.class,
+             net.terminalvalue.crosscut.ratelimit.TokenBucketTest.class,
+             net.terminalvalue.crosscut.ratelimit.RetryAfterTest.class,
+             net.terminalvalue.crosscut.ratelimit.WindowTest.class,
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/JitterTest.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/JitterTest.java
+new file mode 100644
+index 0000000..0d7298a
+--- /dev/null
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/JitterTest.java
+@@ -0,0 +1,35 @@
++package net.terminalvalue.crosscut.retry;
++
++import static net.terminalvalue.crosscut.Tests.check;
++import static net.terminalvalue.crosscut.Tests.throwsIllegalArgument;
++
++public final class JitterTest {
++
++    private JitterTest() {}
++
++    public static void staysBelowTheBackoff() {
++        for (int attempt = 0; attempt < 40; attempt++) {
++            int ceiling = attempt < 10 ? 100 << attempt : 60_000;
++            int wait = Jitter.fullJitterMillis(100, 60_000, attempt, 42L);
++            check(wait >= 0 && wait < Math.min(ceiling, 60_000), "attempt " + attempt + " waited " + wait);
++        }
++    }
++
++    public static void theSameRequestWaitsTheSame() {
++        check(Jitter.fullJitterMillis(100, 60_000, 3, 7L) == Jitter.fullJitterMillis(100, 60_000, 3, 7L), "seeded by the request and the attempt");
++    }
++
++    public static void spreadsTheClientsOfOneFailure() {
++        java.util.Set<Integer> waits = new java.util.HashSet<>();
++        for (long request = 0; request < 100; request++) {
++            waits.add(Jitter.fullJitterMillis(100, 60_000, 5, request));
++        }
++        check(waits.size() > 50, "a hundred clients retry at " + waits.size() + " different times");
++    }
++
++    public static void rejectsAnEmptyPolicy() {
++        throwsIllegalArgument(() -> Jitter.fullJitterMillis(0, 1_000, 1, 1L));
++        throwsIllegalArgument(() -> Jitter.fullJitterMillis(100, 99, 1, 1L));
++        throwsIllegalArgument(() -> Jitter.fullJitterMillis(100, 1_000, -1, 1L));
++    }
++}

@@ -95,6 +95,11 @@ pub struct Options {
     pub gaps: crate::bmc::gaps::GapMode,
     /// Under advised, the contracts for the gaps (`--contracts`, [`crate::gap_contracts`]).
     pub contracts: Option<PathBuf>,
+    /// Under advised, whether the contract library closes a gap `contracts` has none for
+    /// ([`crate::contract_library`]); on by default (`--no-contract-library`).
+    pub contract_library: bool,
+    /// Under advised, the most trusted contracts the proof may rest on (`--max-trust`); none means any number.
+    pub max_trust: Option<usize>,
     /// Under `--engine auto`, whether a proof of the tool's own checker is checked by JBMC too
     /// ([`crate::equivalence::Confirmation`]); off by default, since JBMC takes ten to a hundred times longer.
     pub confirm: bool,
@@ -137,6 +142,8 @@ impl Options {
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
             contracts: None,
+            contract_library: true,
+            max_trust: None,
             confirm: false,
             shared_callees: true,
             before_target: None,
@@ -405,9 +412,13 @@ pub(crate) fn evidence_words(c: &crate::bmc::gaps::ContractUse) -> String {
         (None, Some(why)) => format!("trusted: no JVM test, since {why}"),
         (None, None) => "trusted: checked against neither the JDK's bytecode nor a JVM".into(),
     };
-    match &c.proof {
+    let words = match &c.proof {
         Some(p) => format!("{}; {tested}", p.words()),
         None => tested,
+    };
+    match &c.recorded {
+        Some(r) => format!("{words}; {r}"),
+        None => words,
     }
 }
 
@@ -859,13 +870,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
-        let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, options.contracts.as_deref(), &entries, options.models, &work)?;
+        // Under advised, what the harness may reach first: the contract library closes only gaps it reaches.
+        let scanned = if options.gaps == crate::bmc::gaps::GapMode::Advised { Some(crate::advice::scan_harness(&entries, options.models, harness::CLASS, harness::METHOD)?) } else { None };
+        let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
+        let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, &contract_options, scanned.as_ref().map(|(_, s)| s), &entries, options.models, &work)?;
         gap_setting = setting;
         out.push_str(&notes);
         // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
             let claim = crate::advice::Claim { kind: "regression".into(), target: options.target.clone(), text: format!("{relation}{restriction}"), harness: statement.clone() };
-            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::CLASS, harness::METHOD, claim, &work, loaded.as_ref())? {
+            let (cp, scan) = scanned.as_ref().expect("scanned under advised");
+            if let Some(advice) = crate::advice::preflight(cp, scan, claim, &work, loaded.as_ref())? {
                 let p = advice.problem();
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");

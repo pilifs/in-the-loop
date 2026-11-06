@@ -410,7 +410,8 @@ def stage_contracts(folder, example, build):
 
 def proof_options(example, approach=None):
     """The flags jvmcontract's proof is given for an example: the engine for B9 and B11 and, when the tool's own
-    checker decides, its gap mode (gap_mode()), and the unwinding and array bounds for B9. Its runners pass exactly
+    checker decides, its gap mode (gap_mode()), under advised the contracts and the most trusted contracts allowed,
+    and the unwinding and array bounds for B9. Its runners pass exactly
     these, so the plan names what runs."""
     approach = approach or example["approach"]["id"]
     if approach not in ("B9", "B11"):
@@ -421,6 +422,8 @@ def proof_options(example, approach=None):
         flags += ["--gaps", gap_mode(example)]
     if gap_mode(example) == "advised" and a.get("contracts"):
         flags += ["--contracts", f"{GAP_CONTRACTS_DIR}/{a['contracts']}"]
+    if gap_mode(example) == "advised" and a.get("maxTrust") is not None:
+        flags += ["--max-trust", str(a["maxTrust"])]
     if approach == "B9":
         if a.get("unwind"):
             flags += ["--unwind", str(a["unwind"])]
@@ -1738,9 +1741,22 @@ def assumed_gaps(result, treatment="assumed"):
     return list(seen.values())
 
 
+LIBRARY = "lib/models/contracts/"  # how the tool names a contract of its contract library (lib/src/contract_library.rs)
+
+
 def evidence_words(c):
     """What backs a contract for a gap, in words (lib/src/gap_contracts.rs, Evidence, Proof and Testing): the proof
-    against the JDK's bytecode, what a JVM test of it found, or why it is trusted."""
+    against the JDK's bytecode, what a JVM test of it found, or why it is trusted; and for the contract library's,
+    that the evidence is its record of a check the run did not repeat."""
+    words = level_words(c)
+    if c.get("recorded"):
+        words += (f"; the contract library's record of that check ({c['recorded'].split(', and recorded')[0]}), "
+                  "which this run applied without checking the contract again")
+    return words
+
+
+def level_words(c):
+    """What backs a contract, at its level, in words."""
     t = c.get("testing")
     p = c.get("proof")
     if c["evidence"] == "proved" and p:
@@ -1768,13 +1784,16 @@ def contract_lines(res):
     if not relied:
         return []
     n = len(relied)
+    library = " and the tool's contract library" if any(g["contract"]["file"].startswith(LIBRARY) for g in relied) else ""
     lines = [f"**The proof rests on {n} contract{'s' if n != 1 else ''} for gaps of the tool's own checker** (`--gaps advised "
-             "--contracts`): at each call below the checker applied what the contract states in place of the call, which it "
+             f"--contracts`{library}): at each call below the checker applied what the contract states in place of the call, which it "
              "does not implement.", ""]
     for g in relied:
         c = g["contract"]
+        where = (f"the contract library's `{c['file'][len(LIBRARY):]}`" if c["file"].startswith(LIBRARY)
+                 else f"`{c['file'].rsplit('/', 1)[-1]}`")
         lines.append(f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: {c['summary']}. Written by {c['writtenBy']} "
-                     f"(`{c['file'].rsplit('/', 1)[-1]}`, line {c['line']}); {evidence_words(c)}.")
+                     f"({where}, line {c['line']}); {evidence_words(c)}.")
     return lines + [""]
 
 

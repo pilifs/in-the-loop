@@ -1,0 +1,9 @@
+# Part of the contract library of jvmcontract's own checker (lib/models/contracts/README.md): contracts for its gaps,
+# checked once and recorded in checked.json, which runs under --gaps advised apply without checking them again.
+kind: gap-contracts
+
+jdk-constructor:java.util.HashSet.<init>(I)V@jdk-25.0.4.1
+  call: java.util.HashSet.<init>(int initialCapacity)
+  throws: IllegalArgumentException when initialCapacity < 0
+  modifies: nothing
+  written-by: an agent (Claude Opus 5.5), from the documentation of HashSet(int): IllegalArgumentException for a negative capacity

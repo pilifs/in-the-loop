@@ -50,6 +50,24 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Check the contract library on this JDK (exit 1 when a contract is refused, or has no record that holds):
+    /// each contract for a gap of the tool's own checker is proved against the JDK's bytecode where it can be and
+    /// tested on a real JVM, as a run under `--gaps advised` checks the agent's. With `--record`, the evidence is
+    /// written to the library's checked.json, so runs apply each contract without checking it again.
+    GapContracts {
+        /// The library's directory: `lib/models/contracts`, or a project's own. Without it, the library built in.
+        #[arg(long)]
+        dir: Option<PathBuf>,
+        /// Write the evidence of each accepted contract to DIR/checked.json, keeping the records on other JDKs.
+        #[arg(long)]
+        record: bool,
+        /// The work directory for the proofs and the JVM test.
+        #[arg(long)]
+        work: Option<PathBuf>,
+        /// Print JSON instead of the report.
+        #[arg(long)]
+        json: bool,
+    },
     /// Prove a property of a method on every input with JBMC, or show an input that violates it.
     Prove(ProveArgs),
     /// Print the capability contract of a module (directories or jars), without touching any file.
@@ -316,9 +334,18 @@ struct EquivalenceArgs {
     /// can be, and every contract is tested on a real JVM (the JDK's call on boundary and seeded random inputs, and
     /// on any input the proof refutes it on). One the JVM refutes is refused with its counterexamples; the others
     /// are proved, tested, or, where the JVM cannot test one, trusted. The verdict counts the contracts it rests on
-    /// at each level.
+    /// at each level. A gap the file has no contract for takes the contract library's, if it has one
+    /// (`lib/models/contracts`, built in): checked once and recorded, so it is not checked again.
     #[arg(long)]
     contracts: Option<PathBuf>,
+    /// Under `--gaps advised`, close gaps with the agent's `--contracts` only, not with the contract library's.
+    #[arg(long)]
+    no_contract_library: bool,
+    /// Under `--gaps advised`, the most trusted contracts (ones neither proved nor tested) the proof may rest on.
+    /// When more of the contracts for the gaps it reaches are trusted, each of those is refused, and its gap goes
+    /// back to the agent: `--max-trust 0` accepts proved and tested contracts only.
+    #[arg(long)]
+    max_trust: Option<usize>,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
     /// JBMC agreeing is a second implementation of the JVM's semantics agreeing; JBMC refuting it is neither
     /// verdict (unverifiable, with JBMC's witness); JBMC giving none leaves the proof unconfirmed. The result says
@@ -412,9 +439,18 @@ struct ProveArgs {
     /// can be, and every contract is tested on a real JVM (the JDK's call on boundary and seeded random inputs, and
     /// on any input the proof refutes it on). One the JVM refutes is refused with its counterexamples; the others
     /// are proved, tested, or, where the JVM cannot test one, trusted. The verdict counts the contracts it rests on
-    /// at each level.
+    /// at each level. A gap the file has no contract for takes the contract library's, if it has one
+    /// (`lib/models/contracts`, built in): checked once and recorded, so it is not checked again.
     #[arg(long)]
     contracts: Option<PathBuf>,
+    /// Under `--gaps advised`, close gaps with the agent's `--contracts` only, not with the contract library's.
+    #[arg(long)]
+    no_contract_library: bool,
+    /// Under `--gaps advised`, the most trusted contracts (ones neither proved nor tested) the proof may rest on.
+    /// When more of the contracts for the gaps it reaches are trusted, each of those is refused, and its gap goes
+    /// back to the agent: `--max-trust 0` accepts proved and tested contracts only.
+    #[arg(long)]
+    max_trust: Option<usize>,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
     /// JBMC agreeing is a second implementation of the JVM's semantics agreeing; JBMC refuting it is neither
     /// verdict (unverifiable, with JBMC's witness); JBMC giving none leaves the proof unconfirmed. The result says
@@ -497,6 +533,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.engine = args.engine.parse()?;
             options.gaps = args.gaps.parse()?;
             options.contracts = args.contracts;
+            options.contract_library = !args.no_contract_library;
+            options.max_trust = args.max_trust;
             options.confirm = confirm_option(args.confirm, options.engine)?;
             options.shared_callees = !args.no_shared_callees;
             options.before_target = args.before_target;
@@ -549,6 +587,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.engine = args.engine.parse()?;
                 options.gaps = args.gaps.parse()?;
                 options.contracts = args.contracts.clone();
+                options.contract_library = !args.no_contract_library;
+                options.max_trust = args.max_trust;
                 options.confirm = confirm_option(args.confirm, options.engine)?;
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
@@ -679,6 +719,16 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 print!("{}", scan.report(&targets));
             }
             Ok(0)
+        }
+        Command::GapContracts { dir, record, work, json } => {
+            let work = work.unwrap_or_else(|| std::env::temp_dir().join(format!("jvmcontract-gap-contracts-{}", std::process::id())));
+            let checked = jvmcontract::contract_library::check(dir.as_deref(), &work, record)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&checked).map_err(|e| Error::new(e.to_string()))?);
+            } else {
+                print!("{}", checked.report());
+            }
+            Ok(if checked.ok() { 0 } else { 1 })
         }
         Command::Inspect { class_file, code } => {
             let bytes = std::fs::read(&class_file)?;

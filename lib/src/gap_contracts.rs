@@ -40,7 +40,10 @@
 //! `trusted`, with the reason. Before the test, a contract for a static JDK method of primitives is proved against
 //! the JDK's own bytecode where the method is in the checker's fragment ([`crate::contract_proving`]): such a
 //! contract the JVM does not refute either is `proved`, the strongest level, and the witness of a proof that
-//! refutes one is among the JVM's inputs. The verdict says which contracts it rests on, at which level.
+//! refutes one is among the JVM's inputs. The verdict says which contracts it rests on, at which level. A gap the
+//! file has no contract for takes the contract library's ([`crate::contract_library`], step 3d), applied on the
+//! record of its check ([`Record`]) rather than checked again, and `--max-trust N` refuses the trusted contracts
+//! when there are more than N.
 //!
 //! The engine applies a contract by calling a method of a class generated here, [`CLASS`], with the call's
 //! arguments (and its receiver, for a method that may return it): a branch per throws clause that throws, a
@@ -53,7 +56,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::bmc::gaps::{self, Closing, Closure, ContractUse, Gap, GapKind, JdkCall};
 use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
@@ -69,7 +72,7 @@ pub const CLASS: &str = "GapContracts";
 pub const INTRINSICS: &str = "jvmcontract/GapIntrinsics";
 
 /// How a contract is backed: what checked it, strongest first.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Evidence {
     /// The tool's own checker proved it against the JDK's bytecode, on every input inside `assume:`
@@ -93,7 +96,7 @@ impl Evidence {
 }
 
 /// What a test of a contract on a real JVM found ([`crate::contract_testing`]).
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Testing {
     /// The inputs inside `assume:` on which the JVM ran the call to its end, which the contract is checked on.
     pub inputs: usize,
@@ -110,13 +113,13 @@ pub struct Testing {
     /// The JDK whose `java` ran the test.
     pub jdk: String,
     /// The object an instance method was called on, built afresh for each input: `new java.util.Random()`.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub receiver: Option<String>,
     /// Every input on which the JVM did what the contract does not say, at most [`crate::contract_testing::KEPT`].
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub counterexamples: Vec<Counterexample>,
     /// How many counterexamples there were in all.
-    #[serde(skip_serializing_if = "is_zero")]
+    #[serde(default, skip_serializing_if = "is_zero")]
     pub refuting: usize,
 }
 
@@ -142,7 +145,7 @@ impl Testing {
 }
 
 /// What a proof of a contract against the JDK's bytecode was ([`crate::contract_proving`]).
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Proof {
     /// The class whose bytecode was run: `java.lang.Integer`.
     pub class: String,
@@ -166,7 +169,7 @@ impl Proof {
 }
 
 /// An input on which the JVM did what a contract does not say.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Counterexample {
     /// The input, by the `call:` line's names: `capacity = -1`.
     pub input: String,
@@ -283,6 +286,9 @@ pub fn parse(text: &str, origin: &str) -> Result<Vec<Block>, Error> {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Accepted {
     pub id: String,
+    /// Where it was written: the `--contracts` file, or the contract library's file
+    /// ([`crate::contract_library`]), and the line of its id.
+    pub file: String,
     pub line: usize,
     /// What it states, in a line: `throws java.lang.IllegalArgumentException when capacity < 0; modifies nothing`.
     pub summary: String,
@@ -299,12 +305,18 @@ pub struct Accepted {
     /// Why it is not proved: the call is not one a proof is about, or the checker gave no proof.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unproved: Option<String>,
+    /// When its evidence is the contract library's record, not this run's check: `checked once, on JDK
+    /// 25.0.4.1 by jvmcontract 0.1.0, and recorded in the contract library (checked.json)`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recorded: Option<String>,
 }
 
 /// A contract the engine cannot apply, or a JVM refutes, and why: its gap stays open.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Refused {
     pub id: String,
+    /// Where it was written, as for [`Accepted::file`].
+    pub file: String,
     pub line: usize,
     pub reason: String,
     /// The inputs on which the JVM refutes it, when it was tested.
@@ -315,7 +327,6 @@ pub struct Refused {
 /// A contracts file, read and checked against the class path the proof runs on.
 #[derive(Debug, Clone, Default)]
 pub struct Loaded {
-    pub file: PathBuf,
     pub accepted: Vec<Accepted>,
     pub refused: Vec<Refused>,
     /// By gap, how the engine applies its contract.
@@ -346,32 +357,146 @@ pub fn gap_of(id: &str) -> Option<(Gap, Option<String>)> {
     Some((Gap { kind, owner: owner.replace('.', "/"), name: name.to_string(), descriptor: descriptor.to_string() }, version))
 }
 
-/// Reads the contracts in `file` and checks each against the class path `cp` the proof runs on, under the JDK
-/// `jdk`: each is accepted, with how the engine applies it, or refused with the reason. Each accepted contract is
-/// then tested on a real JVM ([`crate::contract_testing`], in `work`, with `entries` on its class path): one the JVM
-/// refutes is refused, with the inputs that refute it, and one it cannot test is trusted, with the reason.
+/// A contract to check and apply: its block, where it was written, and the record of an earlier check of it, from
+/// the contract library ([`crate::contract_library`]).
+#[derive(Debug, Clone)]
+pub struct Source {
+    pub block: Block,
+    pub file: String,
+    pub record: Option<Record>,
+    /// The id as written, when it named another JDK than the proof's and was moved to the proof's: the library's
+    /// contract is checked again on this JDK.
+    pub written_for: Option<String>,
+}
+
+/// What a check of a contract found, recorded so that a later run applies it with that evidence rather than
+/// checking it again (the contract library's `checked.json`, [`crate::contract_library`]). It is about the
+/// contract's text ([`digest`]) on one JDK, and a proof is about one class file of it.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Record {
+    /// The contract's id as written, for a reader.
+    pub id: String,
+    /// The [`digest`] of the contract the check was about.
+    pub contract: String,
+    /// The JDK it was checked on.
+    pub jdk: String,
+    /// The jvmcontract that checked it.
+    pub by: String,
+    pub evidence: Evidence,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub testing: Option<Testing>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub untested: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub proof: Option<Proof>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unproved: Option<String>,
+}
+
+impl Record {
+    /// The record of a contract the check accepted, on the JDK `jdk`.
+    pub fn of(accepted: &Accepted, block: &Block, jdk: &str) -> Record {
+        Record {
+            id: block.id.clone(),
+            contract: digest(block),
+            jdk: jdk.to_string(),
+            by: format!("jvmcontract {}", env!("CARGO_PKG_VERSION")),
+            evidence: accepted.evidence,
+            testing: accepted.testing.clone(),
+            untested: accepted.untested.clone(),
+            proof: accepted.proof.clone(),
+            unproved: accepted.unproved.clone(),
+        }
+    }
+
+    /// Whether this records a check of `block` on the JDK `jdk` that still holds: the same contract, the same
+    /// JDK, and for a proof the same class file in the JDK image of `cp`. Why not, otherwise.
+    pub fn holds_for(&self, block: &Block, jdk: Option<&str>, cp: &ClassPath) -> Result<(), String> {
+        if self.contract != digest(block) {
+            return Err("the contract changed since its record was made".into());
+        }
+        if Some(self.jdk.as_str()) != jdk {
+            return Err(format!("its record is for JDK {}, and the proof runs on {}", self.jdk, jdk.unwrap_or("an unknown JDK")));
+        }
+        if let Some(p) = &self.proof {
+            let owner = p.class.replace('.', "/");
+            let bytes = cp.jdk().and_then(|j| j.read_class(&owner).ok().flatten());
+            if bytes.map(|b| format!("sha256:{}", crate::digest::sha256_hex(&b))).as_deref() != Some(p.digest.as_str()) {
+                return Err(format!("the bytecode of {} it was proved against is not this JDK image's", p.class));
+            }
+        }
+        Ok(())
+    }
+
+    /// In words, for the verdict: `checked once, on JDK 25.0.4.1 by jvmcontract 0.1.0, and recorded in the contract
+    /// library`.
+    pub fn words(&self) -> String {
+        format!("checked once, on JDK {} by {}, and recorded in the contract library, not checked again by this run", self.jdk, self.by)
+    }
+}
+
+/// A contract's digest, `sha256:...`, over its gap (the id without its JDK, which a record names apart) and its
+/// keys in order: comments, blank lines and indentation don't change it.
+pub fn digest(block: &Block) -> String {
+    let gap = block.id.rsplit_once("@jdk-").map_or(block.id.as_str(), |(g, _)| g);
+    let mut text = format!("{gap}\n");
+    for (k, v, _) in &block.keys {
+        text.push_str(&format!("{k}: {v}\n"));
+    }
+    format!("sha256:{}", crate::digest::sha256_hex(text.as_bytes()))
+}
+
+/// Reads the contracts in `file` and checks each, as [`load_sources`] does.
 pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf], work: &Path) -> Result<Loaded, Error> {
+    Ok(load_sources(read(file)?, cp, jdk, entries, work))
+}
+
+/// The contracts in `file`, as sources with no record.
+pub fn read(file: &Path) -> Result<Vec<Source>, Error> {
     let text = std::fs::read_to_string(file).map_err(|e| Error::new(format!("cannot read the contracts in {}: {e}", file.display())))?;
-    let blocks = parse(&text, &file.display().to_string())?;
-    let mut loaded = Loaded { file: file.to_path_buf(), ..Loaded::default() };
+    let origin = file.display().to_string();
+    Ok(parse(&text, &origin)?.into_iter().map(|block| Source { block, file: origin.clone(), record: None, written_for: None }).collect())
+}
+
+/// Checks each contract against the class path `cp` the proof runs on, under the JDK `jdk`: each is accepted, with
+/// how the engine applies it, or refused with the reason. Each accepted contract is then checked, strongest first:
+/// proved against the JDK's bytecode where it can be ([`crate::contract_proving`]), and tested on a real JVM
+/// ([`crate::contract_testing`], in `work`, with `entries` on its class path). One the JVM refutes is refused, with
+/// the inputs that refute it, and one it cannot test is trusted, with the reason. A contract whose source carries a
+/// record that still holds ([`Record::holds_for`]) is not checked again: it has the record's evidence.
+pub fn load_sources(sources: Vec<Source>, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf], work: &Path) -> Loaded {
+    let mut loaded = Loaded::default();
     let mut writer = ClassWriter::new(CLASS);
-    writer.source_file = Some(file.file_name().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default());
+    writer.source_file = sources.first().and_then(|s| Path::new(&s.file).file_name()).map(|f| f.to_string_lossy().into_owned());
+    // The contracts to check in this run, and those whose record stands, with it.
     let mut shapes = Vec::new();
-    for block in &blocks {
-        let index = loaded.accepted.len();
+    let mut checking = Vec::new();
+    let mut recorded = Vec::new();
+    let mut index = 0;
+    for source in &sources {
+        let block = &source.block;
         match accept(block, cp, jdk, index, &mut writer) {
             Ok((gap, closing, summary, shape)) => {
+                // Its method is written, so the next one is named apart even when this one is refused.
+                let this = index;
+                index += 1;
                 if loaded.closed.contains_key(&gap) {
-                    loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason: "a second contract for the gap: the first one stands".into(), testing: None });
+                    loaded.refused.push(Refused { id: block.id.clone(), file: source.file.clone(), line: block.line, reason: "a second contract for the gap: the first one stands".into(), testing: None });
                     continue;
                 }
                 let written_by = block.value("written-by").unwrap_or_default().to_string();
-                let contract = ContractUse { summary: summary.clone(), written_by: written_by.clone(), evidence: Evidence::Trusted, testing: None, untested: None, proof: None, unproved: None, file: file.display().to_string(), line: block.line, index };
+                let contract = ContractUse { summary: summary.clone(), written_by: written_by.clone(), evidence: Evidence::Trusted, testing: None, untested: None, proof: None, unproved: None, recorded: None, file: source.file.clone(), line: block.line, index: this };
                 loaded.closed.insert(gap, Closure { how: closing, contract });
-                loaded.accepted.push(Accepted { id: block.id.clone(), line: block.line, summary, written_by, evidence: Evidence::Trusted, testing: None, untested: None, proof: None, unproved: None });
-                shapes.push(shape);
+                let accepted = Accepted { id: block.id.clone(), file: source.file.clone(), line: block.line, summary, written_by, evidence: Evidence::Trusted, testing: None, untested: None, proof: None, unproved: None, recorded: None };
+                match source.record.as_ref().filter(|r| r.holds_for(block, jdk, cp).is_ok()) {
+                    Some(r) => recorded.push((accepted, r.clone())),
+                    None => {
+                        checking.push(accepted);
+                        shapes.push(shape);
+                    }
+                }
             }
-            Err(reason) => loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason, testing: None }),
+            Err(reason) => loaded.refused.push(Refused { id: block.id.clone(), file: source.file.clone(), line: block.line, reason, testing: None }),
         }
     }
     if !writer.methods.is_empty() {
@@ -380,11 +505,16 @@ pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf],
 
     // Each accepted contract proved against the JDK's bytecode where it can be, then on a real JVM, with the
     // witness of a proof that refutes it among the JVM's inputs: only the JVM's run makes it a counterexample.
-    let proofs = crate::contract_proving::prove(&shapes, cp, &work.join("contract-proofs"));
-    let extra: Vec<Vec<Vec<crate::contract_testing::Value>>> = proofs.iter().map(|p| if let Proving::Refuted { input, .. } = p { vec![input.clone()] } else { Vec::new() }).collect();
-    let tested = crate::contract_testing::test(&shapes, cp, entries, &work.join("contract-tests"), &extra);
+    let (proofs, tested) = if shapes.is_empty() {
+        (Vec::new(), Vec::new())
+    } else {
+        let proofs = crate::contract_proving::prove(&shapes, cp, &work.join("contract-proofs"));
+        let extra: Vec<Vec<Vec<crate::contract_testing::Value>>> = proofs.iter().map(|p| if let Proving::Refuted { input, .. } = p { vec![input.clone()] } else { Vec::new() }).collect();
+        let tested = crate::contract_testing::test(&shapes, cp, entries, &work.join("contract-tests"), &extra);
+        (proofs, tested)
+    };
     let mut kept = Vec::new();
-    for ((accepted, result), proving) in std::mem::take(&mut loaded.accepted).into_iter().zip(tested).zip(proofs) {
+    for ((accepted, result), proving) in checking.into_iter().zip(tested).zip(proofs) {
         let gap = gap_of(&accepted.id).map(|(g, _)| g).expect("an accepted contract's id is a gap's");
         let refused = match (&result, &proving) {
             (Ok(testing), _) if testing.refuting > 0 => {
@@ -396,7 +526,7 @@ pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf],
         };
         if let Some(reason) = refused {
             loaded.closed.remove(&gap);
-            loaded.refused.push(Refused { id: accepted.id, line: accepted.line, reason, testing: result.ok() });
+            loaded.refused.push(Refused { id: accepted.id, file: accepted.file, line: accepted.line, reason, testing: result.ok() });
             continue;
         }
         let (evidence, proof, unproved) = match proving {
@@ -408,33 +538,92 @@ pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf],
             Ok(t) => (Some(t), None),
             Err(why) => (None, Some(why)),
         };
-        let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
-        closure.contract.evidence = evidence;
-        closure.contract.testing = testing.clone();
-        closure.contract.untested = untested.clone();
-        closure.contract.proof = proof.clone();
-        closure.contract.unproved = unproved.clone();
         kept.push(Accepted { evidence, testing, untested, proof, unproved, ..accepted });
     }
+    for (accepted, r) in recorded {
+        kept.push(Accepted { evidence: r.evidence, testing: r.testing.clone(), untested: r.untested.clone(), proof: r.proof.clone(), unproved: r.unproved.clone(), recorded: Some(r.words()), ..accepted });
+    }
+    for accepted in &kept {
+        let gap = gap_of(&accepted.id).map(|(g, _)| g).expect("an accepted contract's id is a gap's");
+        let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
+        closure.contract.evidence = accepted.evidence;
+        closure.contract.testing = accepted.testing.clone();
+        closure.contract.untested = accepted.untested.clone();
+        closure.contract.proof = accepted.proof.clone();
+        closure.contract.unproved = accepted.unproved.clone();
+        closure.contract.recorded = accepted.recorded.clone();
+    }
+    kept.sort_by(|a, b| (&a.file, a.line).cmp(&(&b.file, b.line)));
     loaded.accepted = kept;
-    loaded.refused.sort_by_key(|r| r.line);
-    Ok(loaded)
+    loaded.refused.sort_by(|a, b| (&a.file, a.line).cmp(&(&b.file, b.line)));
+    loaded
 }
 
 /// Why `--contracts` is refused under a gap mode other than advised.
 pub const CONTRACTS_NEED_ADVISED: &str = "--contracts needs --gaps advised: under strict a gap is refused whatever its contract, and under assume it is approximated";
 
-/// The gap setting a proof driver runs the tool's own checker with: the mode, and under advised the contracts in
-/// `file`, read against the class path `entries` (with the tool's models when `models`), with the class that
-/// applies them written into `work/contracts`. Returns the contracts as read, and a note line for each refused.
-pub fn setting(mode: gaps::GapMode, file: Option<&Path>, entries: &[PathBuf], models: bool, work: &Path) -> Result<(gaps::GapSetting, Option<Loaded>, String), Error> {
+/// Where a proof driver takes the contracts for its gaps from, under `--gaps advised`.
+#[derive(Debug, Clone)]
+pub struct ContractOptions {
+    /// The agent's file (`--contracts`), whose contract for a gap comes first, even when it is refused.
+    pub file: Option<PathBuf>,
+    /// Whether the contract library closes the gaps the file has no contract for (no `--no-contract-library`).
+    pub library: bool,
+    /// The most trusted contracts the proof may rest on (`--max-trust`); none means any number.
+    pub max_trust: Option<usize>,
+}
+
+impl Default for ContractOptions {
+    fn default() -> Self {
+        ContractOptions { file: None, library: true, max_trust: None }
+    }
+}
+
+/// The gap setting a proof driver runs the tool's own checker with: the mode, and under advised the contracts for
+/// the gaps `scan` reached: the agent's, in `options.file`, then the contract library's for the gaps the file has
+/// none for ([`crate::contract_library`]), read against the class path `entries` (with the tool's models when
+/// `models`), with the class that applies them written into `work/contracts`. Under `--max-trust N`, when more than
+/// N of the contracts for the gaps reached are trusted, every one of those is refused, so its gap goes back to the
+/// agent. Returns the contracts as read, and a note line for each refused, and for each of the library's that this
+/// run checks again.
+pub fn setting(mode: gaps::GapMode, options: &ContractOptions, scan: Option<&gaps::Scan>, entries: &[PathBuf], models: bool, work: &Path) -> Result<(gaps::GapSetting, Option<Loaded>, String), Error> {
     let mut setting = gaps::GapSetting::from(mode);
-    let Some(file) = file else { return Ok((setting, None, String::new())) };
-    if mode != gaps::GapMode::Advised {
+    if options.file.is_some() && mode != gaps::GapMode::Advised {
         return Err(Error::new(CONTRACTS_NEED_ADVISED));
     }
+    if mode != gaps::GapMode::Advised {
+        return Ok((setting, None, String::new()));
+    }
+    let jdk = gaps::jdk_release();
+    let mut sources = match &options.file {
+        Some(f) => read(f)?,
+        None => Vec::new(),
+    };
+    if let (true, Some(scan)) = (options.library, scan) {
+        let given: std::collections::BTreeSet<Gap> = sources.iter().filter_map(|s| gap_of(&s.block.id).map(|(g, _)| g)).collect();
+        let reached: Vec<&Gap> = scan.gaps.keys().filter(|g| !given.contains(g)).collect();
+        sources.extend(crate::contract_library::Library::embedded()?.sources(&reached, jdk.as_deref())?);
+    }
+    if sources.is_empty() {
+        return Ok((setting, None, String::new()));
+    }
     let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path))?.with_models(models);
-    let loaded = load(file, &cp, gaps::jdk_release().as_deref(), entries, work)?;
+    let mut notes = String::new();
+    for s in sources.iter().filter(|s| s.file.starts_with(crate::contract_library::ORIGIN)) {
+        let why = match &s.record {
+            None => "it has no record of a check on this JDK".to_string(),
+            Some(r) => match r.holds_for(&s.block, jdk.as_deref(), &cp) {
+                Ok(()) => continue,
+                Err(why) => why,
+            },
+        };
+        let written = s.written_for.as_ref().map(|w| format!(", written as {w}")).unwrap_or_default();
+        notes.push_str(&format!("note: the contract library's contract for {} ({}:{}{written}) is checked by this run, since {why}: `jvmcontract gap-contracts --record` keeps its evidence\n", s.block.id, s.file, s.block.line));
+    }
+    let mut loaded = load_sources(sources, &cp, jdk.as_deref(), entries, work);
+    if let Some(n) = options.max_trust {
+        limit_trust(&mut loaded, n, scan);
+    }
     if let Some(bytes) = &loaded.class {
         let dir = work.join("contracts");
         std::fs::create_dir_all(&dir)?;
@@ -442,11 +631,33 @@ pub fn setting(mode: gaps::GapMode, file: Option<&Path>, entries: &[PathBuf], mo
         setting.class_dir = Some(dir);
     }
     setting.contracts = std::sync::Arc::new(loaded.closed.clone());
-    let mut notes = String::new();
     for r in &loaded.refused {
-        notes.push_str(&format!("note: the contract for {} ({}:{}) is refused, and its gap stays open: {}\n", r.id, file.display(), r.line, r.reason));
+        notes.push_str(&format!("note: the contract for {} ({}:{}) is refused, and its gap stays open: {}\n", r.id, r.file, r.line, r.reason));
     }
     Ok((setting, Some(loaded), notes))
+}
+
+/// Refuses every trusted contract for a gap `scan` reached (every gap, without one) when there are more than `n`:
+/// a run under `--max-trust n` rests on at most `n` contracts nothing has checked, and their gaps go back to the
+/// agent, who can give a contract the JVM can test.
+fn limit_trust(loaded: &mut Loaded, n: usize, scan: Option<&gaps::Scan>) {
+    let reached = |id: &str| gap_of(id).is_some_and(|(g, _)| scan.is_none_or(|s| s.gaps.contains_key(&g)));
+    let trusted: Vec<usize> = loaded.accepted.iter().enumerate().filter(|(_, a)| a.evidence == Evidence::Trusted && reached(&a.id)).map(|(i, _)| i).collect();
+    if trusted.len() <= n {
+        return;
+    }
+    let allows = if n == 0 { "none".to_string() } else { format!("at most {n}") };
+    let count = trusted.len();
+    for i in trusted.into_iter().rev() {
+        let a = loaded.accepted.remove(i);
+        if let Some((gap, _)) = gap_of(&a.id) {
+            loaded.closed.remove(&gap);
+        }
+        let why = a.untested.as_deref().map(|w| format!(", since {w}")).unwrap_or_default();
+        let reason = format!("it is trusted: nothing has checked it{why}; the proof would rest on {count} trusted contract{}, and --max-trust {n} allows {allows}", if count == 1 { "" } else { "s" });
+        loaded.refused.push(Refused { id: a.id, file: a.file, line: a.line, reason, testing: None });
+    }
+    loaded.refused.sort_by(|a, b| (&a.file, a.line).cmp(&(&b.file, b.line)));
 }
 
 /// The words for a reference result's forms, in a refusal.

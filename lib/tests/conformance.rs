@@ -296,13 +296,24 @@ struct Run {
     engine: Engine,
     gaps: GapMode,
     confirm: bool,
-    contracts: bool,
+    contracts: Contracts,
     outcome: property::Outcome,
 }
 
-/// An engine, a gap mode, whether a proof of the own checker's is confirmed by JBMC (`--confirm`), and whether the
-/// corpus's contracts are given (`--contracts`, under advised).
-type Mode = (Engine, GapMode, bool, bool);
+/// Where a run under advised takes contracts for its gaps from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Contracts {
+    /// Nowhere: advised is strict given no contracts (`--no-contract-library`).
+    None,
+    /// The corpus's file (`--contracts`), and not the library.
+    File,
+    /// The contract library alone, whose records the run applies without checking them again (step 3d).
+    Library,
+}
+
+/// An engine, a gap mode, whether a proof of the own checker's is confirmed by JBMC (`--confirm`), and where the
+/// contracts come from under advised.
+type Mode = (Engine, GapMode, bool, Contracts);
 
 /// Contracts for the corpus's gaps, each stating what the JDK's call does as the corpus's calls show it on the JVM
 /// (step 3b of the sound-verdicts brief), written by an agent: the session that wrote the step. The initializers
@@ -375,8 +386,9 @@ fn prove(case: &Case, claim: &Claim, index: usize, (engine, gaps, confirm, contr
     options.engine = engine;
     options.gaps = gaps;
     options.confirm = confirm;
-    options.contracts = contracts.then(corpus_contracts);
-    let work = target_tmp().join(format!("conformance-{engine:?}-{gaps:?}{}{}", if confirm { "-confirm" } else { "" }, if contracts { "-contracts" } else { "" })).join(format!("{}-{index}", case.method));
+    options.contracts = (contracts == Contracts::File).then(corpus_contracts);
+    options.contract_library = contracts == Contracts::Library;
+    let work = target_tmp().join(format!("conformance-{engine:?}-{gaps:?}{}{}", if confirm { "-confirm" } else { "" }, match contracts { Contracts::None => "", Contracts::File => "-contracts", Contracts::Library => "-library" })).join(format!("{}-{index}", case.method));
     let _ = std::fs::remove_dir_all(&work);
     options.work = Some(work);
     property::run(&options).unwrap()
@@ -502,7 +514,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
         let label = format!("{} [{}]", case.method, claim_text(claim));
         let verdict = run.outcome.verdict;
         let confirmation = run.outcome.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status);
-        let _ = writeln!(table, "{:<16} {:?}/{:?}{}{} {:<12} {}", case.method, run.engine, run.gaps, if run.contracts { "+contracts" } else { "" }, confirmation.map(|c| format!(" {c:?}")).unwrap_or_default(), format!("{verdict:?}"), claim_text(claim));
+        let _ = writeln!(table, "{:<16} {:?}/{:?}{}{} {:<12} {}", case.method, run.engine, run.gaps, match run.contracts { Contracts::None => "", Contracts::File => "+contracts", Contracts::Library => "+library" }, confirmation.map(|c| format!(" {c:?}")).unwrap_or_default(), format!("{verdict:?}"), claim_text(claim));
         if refuted != claim.refuted {
             failures.push(format!("{label}: the corpus says it is {}, the JVM {}", if claim.refuted { "refuted" } else { "not refuted" }, if refuted { "refutes it" } else { "does not on any of its calls" }));
         }
@@ -540,7 +552,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
         }
         // Advised is strict given no contracts: with no gap in what the harness reaches it goes on as strict does,
         // and otherwise it stops before solving, with advice.
-        if recorded && run.engine == Engine::Native && run.gaps == GapMode::Advised && !run.contracts {
+        if recorded && run.engine == Engine::Native && run.gaps == GapMode::Advised && run.contracts == Contracts::None {
             match &run.outcome.advice {
                 None if verdict != claim.native => failures.push(format!("{label}: with no gap in the harness, --gaps advised says {verdict:?} where strict says {:?}", claim.native)),
                 Some(_) if verdict != Verdict::Unverifiable || run.outcome.search.is_some() => failures.push(format!("{label}: --gaps advised gave advice and solved anyway: {}", run.outcome.output)),
@@ -552,7 +564,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
         }
         // With contracts that state what the JVM does, a gap they close is decided as the JVM decides it: no
         // `Verified` it refutes, a violation it reproduces (step 3 above), and a claim with no gap as strict.
-        if run.contracts {
+        if run.contracts != Contracts::None {
             let closed = run.outcome.search.as_ref().map(|s| s.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).count()).unwrap_or(0);
             if refuted && verdict == Verdict::Verified {
                 failures.push(format!("{label}: Verified with the corpus's contracts, and the JVM refutes it: {}", run.outcome.output));
@@ -561,13 +573,21 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
                 failures.push(format!("{label}: with no contract applied, --contracts says {verdict:?} where strict says {:?}", claim.native));
             }
             if closed > 0 {
-                contracted.push(format!("{} {verdict:?} (strict: {:?})", case.method, claim.native));
+                contracted.push(format!("{} {:?} {verdict:?} (strict: {:?})", case.method, run.contracts, claim.native));
             }
             // They state what the JVM does, so a JVM test refutes none of them, and each is tested (step 3c).
             for g in run.outcome.search.iter().flat_map(|s| &s.gaps).filter(|g| g.treatment == Some(GapTreatment::Contract)) {
                 let evidence = g.contract.as_ref().map(|c| c.evidence);
                 if evidence != Some(jvmcontract::gap_contracts::Evidence::Tested) {
                     failures.push(format!("{label}: the corpus's contract for {} is {evidence:?}, not tested: {}", g.id, run.outcome.output));
+                }
+                // The library's are applied on their records, which the run does not check again (step 3d).
+                let on_record = g.contract.as_ref().is_some_and(|c| c.recorded.is_some() && c.file.starts_with(jvmcontract::contract_library::ORIGIN));
+                if (run.contracts == Contracts::Library) != on_record {
+                    failures.push(format!("{label}: the contract for {} is {}the library's, on its record: {}", g.id, if on_record { "" } else { "not " }, run.outcome.output));
+                }
+                if run.contracts == Contracts::Library && run.outcome.work.join("contract-tests").exists() {
+                    failures.push(format!("{label}: the library's contracts were tested again on the JVM, where their records hold"));
                 }
             }
             if let Some(refused) = run.outcome.advice.iter().flat_map(|a| &a.gaps).find_map(|g| g.refused_contract.as_ref().filter(|r| r.starts_with("a JVM refutes it"))) {
@@ -583,7 +603,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
         eprintln!("--gaps advised asks for contracts on {} claims: {}", advised.len(), advised.join("; "));
     }
     if !contracted.is_empty() {
-        eprintln!("the corpus's contracts close the gaps of {} claims: {}", contracted.len(), contracted.join("; "));
+        eprintln!("contracts close the gaps of {} claims (the corpus's, then the library's): {}", contracted.len(), contracted.join("; "));
     }
     Some(failures)
 }
@@ -592,7 +612,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
 /// JVM reproduces; under assume it gives `Verified` for a refuted claim only when it names the gap it assumed.
 #[test]
 fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
-    let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false, false), (Engine::Native, GapMode::Assume, false, false), (Engine::Native, GapMode::Advised, false, false), (Engine::Native, GapMode::Advised, false, true)], true) else { return };
+    let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false, Contracts::None), (Engine::Native, GapMode::Assume, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::File), (Engine::Native, GapMode::Advised, false, Contracts::Library)], true) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 
@@ -604,7 +624,7 @@ fn the_corpus_agrees_with_the_jvm_under_jbmc_and_auto() {
     if !has("jbmc") {
         return;
     }
-    let Some(failures) = conformance(&[(Engine::Jbmc, GapMode::Strict, false, false), (Engine::Auto, GapMode::Strict, false, false)], false) else { return };
+    let Some(failures) = conformance(&[(Engine::Jbmc, GapMode::Strict, false, Contracts::None), (Engine::Auto, GapMode::Strict, false, Contracts::None)], false) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 
@@ -618,7 +638,7 @@ fn the_corpus_agrees_with_the_jvm_under_auto_confirm() {
     if !has("jbmc") {
         return;
     }
-    let Some(failures) = conformance(&[(Engine::Auto, GapMode::Strict, true, false), (Engine::Auto, GapMode::Assume, true, false)], false) else { return };
+    let Some(failures) = conformance(&[(Engine::Auto, GapMode::Strict, true, Contracts::None), (Engine::Auto, GapMode::Assume, true, Contracts::None)], false) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 

@@ -2260,6 +2260,9 @@ class ContractsTest(unittest.TestCase):
     def test_the_contracts_go_to_the_tool_under_advised_only(self):
         self.assertEqual(build.proof_options(self.example()), ["--engine", "native", "--gaps", "advised", "--contracts", "build/gap-contracts/gaps.contracts"])
         self.assertNotIn("--contracts", build.proof_options(self.example("strict")))
+        policy = self.example()
+        policy["approach"] = {**policy["approach"], "maxTrust": 0}
+        self.assertEqual(build.proof_options(policy)[-2:], ["--max-trust", "0"])
         folder, module = (Path(tempfile.mkdtemp(prefix="build-test-")) for _ in range(2))
         self.addCleanup(shutil.rmtree, folder)
         self.addCleanup(shutil.rmtree, module)
@@ -2269,6 +2272,7 @@ class ContractsTest(unittest.TestCase):
         import jsonschema
         schema = json.loads((build.EXAMPLES / "schema/example.schema.json").read_text())
         self.assertIn("contracts", schema["properties"]["approach"]["properties"])
+        self.assertIn("maxTrust", schema["properties"]["approach"]["properties"])
 
     def test_a_verdict_that_rests_on_a_contract_says_so(self):
         root = Path(tempfile.mkdtemp(prefix="build-test-"))
@@ -2326,6 +2330,27 @@ class ContractsTest(unittest.TestCase):
         self.assertIn("trusted: the JVM could not test it, since parameter s is a java.lang.String, which the test makes no "
                       "values of, so the verdict rests on whoever wrote it.", text)
         self.assertIn("tested", build.BASIS_WORDS)
+
+    def test_a_contract_of_the_library_says_its_evidence_is_the_library_s_record(self):
+        testing = {"inputs": 128, "returned": 45, "thrown": [83], "outside": 0, "exhausted": 38, "seed": 1, "jdk": "25.0.4.1"}
+        library = {**self.GAP, "contract": {**self.GAP["contract"], "evidence": "tested", "testing": testing,
+                                            "file": "lib/models/contracts/java.util.ArrayList.contracts", "line": 5,
+                                            "recorded": "checked once, on JDK 25.0.4.1 by jvmcontract 0.1.0, and recorded in "
+                                                        "the contract library, not checked again by this run"}}
+        result = {"verdict": "verified", "search": {"gapMode": "advised", "gaps": [build.camel(library)]}}
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        contract_schema = schema["properties"]["search"]["properties"]["gaps"]["items"]["properties"]["contract"]
+        jsonschema.validate(build.camel(library["contract"]), contract_schema)
+        text = "\n".join(build.contract_lines(result))
+        self.assertIn("(`--gaps advised --contracts` and the tool's contract library)", text)
+        self.assertIn("(the contract library's `java.util.ArrayList.contracts`, line 5); tested: a JVM ran", text)
+        self.assertIn("evidence, not a proof; the contract library's record of that check (checked once, on JDK 25.0.4.1 by "
+                      "jvmcontract 0.1.0), which this run applied without checking the contract again.", text)
+        # The agent's own contract says neither.
+        agent = {**self.GAP, "contract": {**self.GAP["contract"], "evidence": "tested", "testing": testing}}
+        text = "\n".join(build.contract_lines({**result, "search": {"gapMode": "advised", "gaps": [build.camel(agent)]}}))
+        self.assertNotIn("library", text)
 
     def test_a_proved_contract_says_what_bytecode_it_was_proved_against(self):
         root = Path(tempfile.mkdtemp(prefix="build-test-"))

@@ -1,0 +1,20 @@
+# Part of the contract library of jvmcontract's own checker (lib/models/contracts/README.md): contracts for its gaps,
+# checked once and recorded in checked.json, which runs under --gaps advised apply without checking them again.
+kind: gap-contracts
+
+jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1
+  call: java.util.Random.<init>(long seed)
+  modifies: nothing
+  written-by: an agent (Claude Opus 5.5), from the documentation of Random(long): it sets the seed, and throws nothing
+
+jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1
+  call: java.util.Random.nextInt(int bound) -> int
+  throws: IllegalArgumentException when bound <= 0
+  assert: 0 <= result && result < bound
+  modifies: this
+  written-by: an agent (Claude Opus 5.5), from the documentation of Random.nextInt(int): a value at least zero and below the bound
+
+jdk-void-method:java.util.Random.nextBytes([B)V@jdk-25.0.4.1
+  call: java.util.Random.nextBytes(byte[] bytes)
+  modifies: this, bytes
+  written-by: an agent (Claude Opus 5.5), from the documentation of Random.nextBytes(byte[]): it fills the array with random bytes

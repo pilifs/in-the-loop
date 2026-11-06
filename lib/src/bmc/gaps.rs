@@ -300,7 +300,11 @@ pub struct ContractUse {
     /// Why it is not proved: the call is not one a proof is about, or the checker gave no proof.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unproved: Option<String>,
-    /// The contracts file, and the line of the contract's id.
+    /// When its evidence is the contract library's record of a check, not this run's ([`crate::contract_library`]):
+    /// `checked once, on JDK 25.0.4.1 by jvmcontract 0.1.0, and recorded in the contract library, ...`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recorded: Option<String>,
+    /// The contracts file (the agent's, or the library's), and the line of the contract's id.
     pub file: String,
     pub line: usize,
     /// Its number among the file's accepted contracts, which the generated method is named by.

@@ -50,6 +50,13 @@ Do not put real JDK classes (`java.lang.Character` and its `CharacterData` table
 interpreter would run their static initializers and stop at the first native they need, and JBMC's reading of the
 tables is not reliable either.
 
+## The contract library
+
+[`contracts/`](contracts/README.md) is not a model of any class. It holds contracts for calls the tool's own checker
+does not implement (its gaps), each checked once against the JDK's bytecode or on a real JVM and recorded, which a run
+under `--gaps advised` applies at the call. A model replaces a class's bytecode for every engine; a contract only
+states what a call does, for the own checker, and says at which level that is known.
+
 ## Adding a model
 
 1. Write the class under `java/`, in its real package, with the behaviour programs observe and none of the

@@ -31,6 +31,7 @@ pub mod classfile;
 pub mod classpath;
 pub mod config;
 pub mod failures;
+pub mod contract_library;
 pub mod contract_proving;
 pub mod contract_testing;
 pub mod gap_contracts;

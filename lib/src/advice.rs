@@ -143,14 +143,18 @@ pub enum Part {
 }
 
 /// Scans what the tool's own checker would run of the harness `class.method`, on the class path `entries` (the
-/// engine's, with the tool's models when `models`), and returns the advice when it reaches a gap that none of
-/// `contracts` closes; none when the proof can go on. The template, of the gaps still open, is written to
-/// `work/contracts.template`.
-pub fn preflight(entries: &[PathBuf], models: bool, class: &str, method: &str, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>) -> Result<Option<Advice>, Error> {
+/// engine's, with the tool's models when `models`): the class path, and every gap it may reach.
+pub fn scan_harness(entries: &[PathBuf], models: bool, class: &str, method: &str) -> Result<(ClassPath, gaps::Scan), Error> {
     let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path))?.with_models(models);
     let harness = cp.application(class)?.ok_or_else(|| Error::new(format!("the harness class {class} is not on the class path")))?;
     let check = harness.methods.iter().find(|m| m.name == method).ok_or_else(|| Error::new(format!("the harness has no method {method}")))?;
     let scan = gaps::scan(&cp, &[MemberRef::new(class, method, &check.descriptor)])?;
+    Ok((cp, scan))
+}
+
+/// The advice when the harness's `scan` ([`scan_harness`]) reaches a gap that none of `contracts` closes; none when
+/// the proof can go on. The template, of the gaps still open, is written to `work/contracts.template`.
+pub fn preflight(cp: &ClassPath, scan: &gaps::Scan, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>) -> Result<Option<Advice>, Error> {
     let jdk = scan.jdk.clone();
     let is_closed = |g: &Gap| contracts.is_some_and(|c| c.closed.contains_key(g));
     let closed: Vec<String> = scan.gaps.keys().filter(|g| is_closed(g)).map(|g| g.id(jdk.as_deref())).collect();
@@ -161,9 +165,9 @@ pub fn preflight(entries: &[PathBuf], models: bool, class: &str, method: &str, c
     let advised: Vec<GapAdvice> = open
         .into_iter()
         .map(|(gap, sites)| {
-            let mut a = advise(&cp, gap, sites.iter().map(gaps::Site::display).collect(), jdk.as_deref());
-            if let Some((r, c)) = contracts.and_then(|c| c.refusal(&a.id).map(|r| (r, c))) {
-                a.refused_contract = Some(format!("{} ({}:{})", r.reason, c.file.display(), r.line));
+            let mut a = advise(cp, gap, sites.iter().map(gaps::Site::display).collect(), jdk.as_deref());
+            if let Some(r) = contracts.and_then(|c| c.refusal(&a.id)) {
+                a.refused_contract = Some(format!("{} ({}:{})", r.reason, r.file, r.line));
                 a.counterexamples = r.testing.as_ref().map(|t| t.counterexamples.clone()).unwrap_or_default();
             }
             a

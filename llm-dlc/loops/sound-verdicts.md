@@ -865,6 +865,82 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - `--max-trust N` fails a run that rests on more trusted contracts than N.
     - Then 3e, the skill's loop. Running a witness found through contracts on a JVM, so that 148's off-by-one
       becomes a violation, is a candidate after them.
+- **3d, the contract library and `--max-trust` (2026-11-06).**
+  - **The library** ([`lib/src/contract_library.rs`](../../lib/src/contract_library.rs),
+    [`lib/models/contracts/`](../../lib/models/contracts/README.md)) is built into the binary, as the models are. It
+    has two parts:
+    - a `.contracts` file per JDK class, in the `--contracts` format, each block under its gap's id, which names
+      the JDK it was written for;
+    - `checked.json`, a `Record` of each check: the contract's digest (over the gap and the keys, so comments and
+      the JDK named don't change it), the JDK, the jvmcontract, and the evidence with its proof and JVM test.
+  - **What it holds.** Ten contracts, written by this session from the JDK's documentation:
+    - proved: `Integer.numberOfLeadingZeros`, `Integer.numberOfTrailingZeros`, `Long.numberOfLeadingZeros`;
+    - tested: the capacity constructors of `ArrayList`, `HashMap`, `HashSet` and `StringBuilder`, and
+      `Random(long)`, `nextInt(int)` and `nextBytes(byte[])`.
+  - **How a run uses it.** Under `--gaps advised`, the driver scans the harness first. A gap it reaches that the
+    agent's `--contracts` has no contract for takes the library's.
+    - The agent's contract comes first, even when refused, so a wrong one goes back to the agent rather than being
+      replaced (147 is unchanged).
+    - A library contract whose record holds (the same digest, the same JDK, and for a proof the same class file in
+      the JDK image) is applied with the record's evidence. No proof or JVM test runs for it, and its `contract:`
+      line ends `checked once, on JDK 25.0.4.1 by jvmcontract 0.1.0, and recorded in the contract library, not
+      checked again by this run` (`recorded` in the JSON).
+    - A contract with no record that holds, as after a JDK upgrade, is checked by the run, with a `note:`. One
+      written for another JDK is checked under the run's id. That is how a JDK upgrade re-checks it.
+    - `--no-contract-library` turns it off.
+  - **`jvmcontract gap-contracts [--dir DIR] [--record] [--json]`** checks every contract of a library on this
+    JDK, either the built-in one or a directory's. It exits 1 when a contract is refused or has no record that holds.
+    `--record` writes `DIR/checked.json`, keeping the records of other JDKs for contracts still in the library. That
+    is the "checked once": the records in the commit come from it.
+  - **`--max-trust N`.** When more than N of the contracts for the gaps reached are trusted, each of them is
+    refused before solving, and its gap goes back to the agent through the advice: `it is trusted: nothing has
+    checked it, since ...; the proof would rest on 1 trusted contract, and --max-trust 0 allows none`. Refusing
+    them, rather than failing the run in some other way, reuses the protocol, so the agent sees which contracts are
+    trusted and why. `build.py` passes it from `approach.maxTrust`, which is in the schema. Like the gap mode, it is
+    an attempt option, not part of the claim.
+  - Acceptance, inline:
+    - `the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts` (integration.rs),
+      on native and auto:
+      - the review's `capacity`: a violation `capacity(n=-1)` with no contracts file, then Verified with the throws
+        clause, with no `contract-tests` or `contract-proofs` directory;
+      - `roll` on two library contracts, and `bits` proved;
+      - the agent's refuted `nextInt` contract going back to the agent while the library closes the constructor;
+      - `--max-trust 0` refusing the trusted `append(String)` contract with nothing solved, and `--max-trust 1`
+        accepting it;
+      - a regression proof on the library;
+      - the library off;
+      - `contract_library::check` and the CLI on the built-in library: nothing refused, and every record holds on
+        JDK 25.0.4.1.
+    - The conformance corpus has a fifth column, advised with the library alone. It decides the same five claims as
+      the corpus's own contracts (the four capacity constructors are violations the JVM reproduces, and `firstByte`
+      is no verdict), on records, with no JVM test. The test fails if a library contract is checked again. The
+      protocol columns now pass `contract_library = false`, as do 3a–3c's integration tests.
+    - Unit tests: the built-in `FILES` list is every file in the directory, each contract is in its class's file and
+      names its JDK; a digest ignores comments and the JDK; a record fails on a changed contract, another JDK, or
+      another class file; a library contract moves to an upgraded JDK's id with no record.
+    - `ContractsTest` (test_build.py) covers the page's words for a library contract and the schema's `recorded`.
+      `--max-trust` is in `proof_options`. 154 Python tests in all.
+  - **The recorded example: 149**, 148's kernel with no contracts file, `approach.maxTrust: 0`. It is expected
+    `verified`, `relying on 3 contracts ..., 1 proved, 2 tested`, all three the library's on their records. Checked
+    inline on the patched module (0.08 s, against about 0.2 s for 148, which checks its contracts). The job is
+    `20261106-061323-example-149-b11-contract-library-full-ji`.
+  - Re-rendering every page changed none: no recorded result has contracts yet.
+  - **3e's acceptance example already exists.** "An example whose proof closes only through agent-written contracts,
+    one proved and one tested" is 148 (pending), so 3e is the skill alone.
+  - Not done:
+    - A run uses only the built-in library. `gap-contracts --dir` checks a project's own, but nothing applies it in
+      a proof (no `--contract-library DIR`).
+    - The library is part of the tool, like `lib/models`, so it is not among an example's claim inputs. A changed
+      library contract changes a verdict without the claim going stale.
+    - `--max-trust` is not in the statement, so the page doesn't say the policy a verdict was held to.
+    - A record names `jvmcontract 0.1.0`, which a change to the checker or the JVM test does not bump. A record is
+      not invalidated when the code that made it changes; `gap-contracts` in CI would catch a different result only
+      as a refusal.
+    - The upgrade path is unit-tested only. No other JDK is installed here.
+  - Next: 3e, the skill's loop. The `verify-bytecode` skill passes `--gaps advised --max-trust 0`, reads the
+    advice, writes contracts, runs again, reports the evidence levels, and offers a contract worth keeping to the
+    library (`gap-contracts --record`). After it, the candidate: run a witness found through contracts on a JVM, so
+    that 148's off-by-one becomes a violation.
 
 ## Loop settings
 

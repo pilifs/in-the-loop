@@ -1,0 +1,9 @@
+# Part of the contract library of jvmcontract's own checker (lib/models/contracts/README.md): contracts for its gaps,
+# checked once and recorded in checked.json, which runs under --gaps advised apply without checking them again.
+kind: gap-contracts
+
+jdk-constructor:java.lang.StringBuilder.<init>(I)V@jdk-25.0.4.1
+  call: java.lang.StringBuilder.<init>(int capacity)
+  throws: NegativeArraySizeException when capacity < 0
+  modifies: nothing
+  written-by: an agent (Claude Opus 5.5), from the documentation of StringBuilder(int): NegativeArraySizeException for a negative capacity
