@@ -9,11 +9,14 @@
 # that runs away is killed alone and cannot exhaust the machine.
 #
 # Usage: [FEATURE_LOOP_MEMORY_MAX=3.5G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
+#
+# Each loop runs in a systemd scope of its own name, feature-loop-PROMPT.scope.
 #   features  add features and examples to jvmcontract
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
 #   relational  make relational verification more efficient and accurate, with examples
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
+#   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
 #   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
 #   CYCLES    how many cycles to run at most; without it there is no limit
 #   UNTIL     instructions the session weighs after each commit to decide whether
@@ -33,9 +36,12 @@
 # brief is done.
 #
 # A brief may also set the session, model and effort in a "## Loop settings"
-# section of "- session: ID", "- model: ID" and "- effort: LEVEL" lines.
-# FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL and FEATURE_LOOP_EFFORT override
-# both the brief and the defaults. FEATURE_LOOP_SESSION=new starts a fresh
+# section of "- session: ID", "- model: ID" and "- effort: LEVEL" lines, the
+# memory cap with "- memory: SIZE", and with "- workspace: NAME" the jj workspace
+# it must run in, so loops run in parallel each on their own branch (see
+# llm-dlc/README.md). FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL,
+# FEATURE_LOOP_EFFORT and FEATURE_LOOP_MEMORY_MAX override both the brief and
+# the defaults. FEATURE_LOOP_SESSION=new starts a fresh
 # session that the run's cycles share, and a session id with no transcript yet
 # (one opened but never sent a message) is created by the first turn.
 #
@@ -61,11 +67,11 @@ set -uo pipefail
 SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
-MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-3.5G}
-SCOPE=feature-loop
+MEMORY_MAX=3.5G
+WORKSPACE=
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|engines|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -86,6 +92,7 @@ BRIEF=
 # Names for briefs: the brief's own Loop settings (session, model, effort) and Loop until apply.
 case "$PROMPT" in
   engines) PROMPT=llm-dlc/loops/engine-priorities.md ;;
+  engines-*) PROMPT=llm-dlc/loops/engine-priorities-${PROMPT#engines-}.md ;;
 esac
 case "$PROMPT" in
   *.md)
@@ -115,6 +122,8 @@ case "$PROMPT" in
     v=$(setting session); [[ -n "$v" ]] && SESSION_ID=$v
     v=$(setting model); [[ -n "$v" ]] && MODEL=$v
     v=$(setting effort); [[ -n "$v" ]] && EFFORT=$v
+    v=$(setting memory); [[ -n "$v" ]] && MEMORY_MAX=$v
+    WORKSPACE=$(setting workspace)
     [[ "$BRIEF" == "$ROOT"/* ]] && BRIEF=${BRIEF#"$ROOT"/}
     set -- "$BRIEF" "${@:2}"
     PROMPT=$(basename "$BRIEF" .md)
@@ -140,6 +149,8 @@ esac
 SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
+MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
+SCOPE=feature-loop-$PROMPT
 [[ "$SESSION_ID" == new || "$SESSION_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || {
   echo "feature-loop.sh: not a session id: $SESSION_ID" >&2
   exit 2
@@ -151,6 +162,21 @@ cd "$ROOT" || exit 1
 
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
+
+# A brief for a stream of parallel work names its jj workspace: run anywhere else,
+# its commits would land on another stream's branch. The script runs from the
+# workspace it is in, so this is the copy under that workspace's directory.
+if [[ -n "$WORKSPACE" ]]; then
+  wanted=$(jj workspace root --ignore-working-copy --name "$WORKSPACE" 2>/dev/null)
+  if [[ -z "$wanted" ]]; then
+    log "the brief $BRIEF runs in jj workspace $WORKSPACE, which doesn't exist; see llm-dlc/README.md for adding it"
+    exit 2
+  elif [[ "$(realpath "$wanted")" != "$ROOT" ]]; then
+    log "the brief $BRIEF runs in jj workspace $WORKSPACE, not in $ROOT"
+    log "run it as: $wanted/llm-dlc/tools/feature-loop.sh $1"
+    exit 2
+  fi
+fi
 
 # Shells on WSL sit in init.scope, where an out-of-memory kill can take the whole
 # instance down, so the loop moves to a scope of its own. Everything it starts

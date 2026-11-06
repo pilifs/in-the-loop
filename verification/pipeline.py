@@ -250,6 +250,19 @@ def default_rev():
     return git("rev-parse", "HEAD").stdout.strip()
 
 
+def queue_revs():
+    """The commits whose jobs make up the queue: the latest commit here (default_rev), then jj's @- in every other
+    workspace of the repository, so a job committed on a branch that another workspace works on (one stream of a
+    feature loop run in parallel, say) runs too, at its own commit. Outside jj, just HEAD."""
+    revs = [default_rev()]
+    if (ROOT / ".jj").exists() and shutil.which("jj"):
+        proc = run_quiet(["jj", "log", "--no-graph", "--ignore-working-copy", "-r", "parents(working_copies())",
+                          "-T", 'commit_id ++ "\\n"'], cwd=ROOT)
+        if proc.returncode == 0:
+            revs += [rev for rev in proc.stdout.split() if rev not in revs]
+    return revs
+
+
 def resolve(rev):
     return git("rev-parse", "--verify", f"{rev}^{{commit}}").stdout.strip()
 
@@ -273,6 +286,18 @@ def committed_jobs(rev):
             continue
         source = job.get("revision") or git("log", "-1", "--format=%H", rev, "--", path).stdout.strip()
         jobs.append((job, path, resolve(source)))
+    return jobs
+
+
+def queued_jobs(revs):
+    """committed_jobs over several commits, each job once, as the first commit that has it holds it."""
+    seen, jobs = set(), []
+    for rev in revs:
+        for job, path, source in committed_jobs(rev):
+            job_id = job.get("id") or Path(path).stem
+            if job_id not in seen:
+                seen.add(job_id)
+                jobs.append((job, path, source))
     return jobs
 
 
@@ -746,11 +771,12 @@ class Runner:
             done |= {p.name for p in tree.iterdir() if (p / "result.json").exists()}
         return done
 
-    def pending(self, rev, wanted=None, min_priority=None):
+    def pending(self, revs, wanted=None, min_priority=None):
+        """The jobs to run from these commits (queue_revs), in priority order; the priorities are the first commit's."""
         done, claimed = self.done_ids(), {p.name for p in (self.state / "claims").iterdir()}
-        priorities = load_priorities(rev)
+        priorities = load_priorities(revs[0])
         out = []
-        for job, path, source in committed_jobs(rev):
+        for job, path, source in queued_jobs(revs):
             job_id = job.get("id") or Path(path).stem
             if job_id in done or job_id in claimed or job_id in self.running:
                 continue
@@ -1148,9 +1174,9 @@ def cmd_run(args):
     last_scan, queue, blocked = None, [], None
     while not runner.stopping:
         if last_scan is None or (args.watch and time.monotonic() - last_scan > r["poll_seconds"]):
-            rev = resolve(args.rev) if args.rev else default_rev()
+            revs = [resolve(args.rev)] if args.rev else queue_revs()
             with runner.lock:
-                queue = runner.pending(rev, wanted, args.min_priority)
+                queue = runner.pending(revs, wanted, args.min_priority)
             last_scan = time.monotonic()
         for job, path, source in list(queue):
             job_plan = plan(job, config)
@@ -1198,7 +1224,8 @@ def cmd_run(args):
 def cmd_status(args):
     config = load_config(args)
     state = config["runner"]["state_dir"]
-    rev = resolve(args.rev) if args.rev else default_rev()
+    revs = [resolve(args.rev)] if args.rev else queue_revs()
+    rev = revs[0]
     claims = {p.name: json.loads(p.read_text() or "{}") for p in (state / "claims").iterdir()} if (state / "claims").exists() else {}
     finished = sorted(p.name for p in (state / "results").iterdir() if (p / "result.json").exists()
                       and json.loads((p / "result.json").read_text()).get("status") != "cancelled") if (state / "results").exists() else []
@@ -1206,7 +1233,7 @@ def cmd_status(args):
     rows = {"pending": [], "running": [], "finished, not collected": [], "collected": []}
     seen = set()
     priorities = load_priorities(rev)
-    for job, path, source in sorted(committed_jobs(rev), key=queue_order(priorities)):
+    for job, path, source in sorted(queued_jobs(revs), key=queue_order(priorities)):
         job_id = job.get("id")
         seen.add(job_id)
         p = plan(job, config)
@@ -1674,7 +1701,7 @@ def main(argv=None):
 
     p = sub.add_parser("run", help="run pending jobs")
     budget(p)
-    p.add_argument("--rev", help="the commit whose jobs to run (default: jj's @-, else HEAD)")
+    p.add_argument("--rev", help="the commit whose jobs to run (default: jj's @- here and in every other workspace, else HEAD)")
     p.add_argument("--watch", action="store_true", help="keep polling for newly committed jobs")
     p.add_argument("--min-priority", type=int, help="only jobs at this priority or above (verification/priorities.json, else the job's own)")
     p.add_argument("ids", nargs="*", help="only these jobs")

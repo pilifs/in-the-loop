@@ -47,7 +47,10 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 
 A job is *pending* while it is committed and has no result, *running* while a runner holds its claim, *finished* when
 its result is in `.state/results/`, and *collected* once its result is in `results/`. A job file that is not
-committed yet is not run: the runner reads jobs from the latest commit (jj's `@-`), never from the working copy.
+committed yet is not run: the runner reads jobs from the latest commit (jj's `@-`), never from the working copy. It
+also reads them from `@-` in every other jj workspace of the repository, so a job committed on a branch that another
+workspace works on (a stream of a feature loop run in parallel) runs at its own commit without being merged first. Its
+result is collected here, in the runner's workspace, and reaches that branch when the branches are merged.
 
 ## For agents making changes: submitting a job
 

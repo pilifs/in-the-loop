@@ -296,6 +296,33 @@ class PipelineTest(unittest.TestCase):
         self.repo.pipeline("prioritize", b, "--clear")
         self.assertNotIn(b, self.repo.pipeline("prioritize").stdout)
 
+    @unittest.skipUnless(shutil.which("jj"), "needs jj")
+    def test_a_job_committed_in_another_jj_workspace_is_queued_and_run_at_its_commit(self):
+        # A feature loop's streams each work in their own workspace on their own branch; the runner, in the
+        # default one, runs their jobs too, without anything being merged.
+        config = self.repo.dir.parent / f"{self.repo.dir.name}-jj.toml"
+        config.write_text('[user]\nname = "t"\nemail = "t@example.invalid"\n')
+        self.addCleanup(config.unlink)
+        env = dict(os.environ, JJ_CONFIG=str(config))
+        jj = lambda cwd, *args: subprocess.run(["jj", *args], cwd=cwd, env=env, check=True, capture_output=True, text=True)
+        jj(self.repo.dir, "git", "init", "--colocate")
+        jj(self.repo.dir, "new", "main")
+        other = Path(tempfile.mkdtemp(prefix="pipeline-test-ws-")) / "stream"
+        self.addCleanup(shutil.rmtree, other.parent, ignore_errors=True)
+        jj(self.repo.dir, "workspace", "add", "--name", "stream", "-r", "main", str(other))
+        submitted = subprocess.run(
+            [sys.executable, "verification/pipeline.py", "submit", "--title", "From the stream", "--description",
+             "A stub job, for testing the pipeline itself.", "--capability", "test", "--run", "true"],
+            cwd=other, env=dict(env, VERIFY_REPO=str(other)), check=True, capture_output=True, text=True).stdout
+        job_id = submitted.split("verification/jobs/")[1].split(".json")[0]
+        jj(other, "commit", "-m", "job (verification pending)")
+        source = jj(other, "log", "--no-graph", "-r", "@-", "-T", "commit_id").stdout
+        self.assertFalse((self.repo.dir / f"verification/jobs/{job_id}.json").exists(), "nothing was merged")
+        self.assertIn(job_id, self.repo.pipeline("status").stdout.split("running:")[0])
+        self.assertNotIn(job_id, self.repo.pipeline("status", "--rev", "HEAD").stdout)
+        self.repo.pipeline("run")
+        self.assertEqual(self.repo.result(job_id, collected=False)["sourceCommit"], source)
+
     def test_a_jobs_steps_do_not_see_the_repository_its_export_is_inside(self):
         # The export lives under .state/work, inside the repository; git there took it for the job's own, and
         # `git apply` skipped every file of a git-format patch (job 20261106-073804).

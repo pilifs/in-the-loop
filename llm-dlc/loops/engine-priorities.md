@@ -3,10 +3,11 @@
 **Approved by the user on 2026-11-06**, with the decisions recorded [below](#decisions). It replaces the "downstream JBMC patch queue" draft, since the evidence below moved the work away from a fork.
 That draft is in the history if needed.
 
-A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh):
-`llm-dlc/tools/feature-loop.sh engines` (or `llm-dlc/tools/feature-loop.sh llm-dlc/loops/engine-priorities.md`), in the session and with the model set under
-[Loop settings](#loop-settings). The loop runs until the session judges, by [Loop until](#loop-until), that the rest is
-not worth another cycle.
+A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). Its plan is worked in [two streams run in
+parallel](#streams), each a loop of its own with a short brief that names its phases. This brief is the instruction for
+both. Its own loop, `llm-dlc/tools/feature-loop.sh engines` in the default workspace, reconciles them once both have
+stopped, and then does what is left. It runs in the session and with the model set under [Loop settings](#loop-settings),
+until the session judges, by [Loop until](#loop-until), that the rest is not worth another cycle.
 
 **Input:** [`engine-priorities-review.md`](engine-priorities-review.md), an outside review of the repository at `6cea609e`
 that reads the raw benchmark results and the JBMC jobs' outputs. **Read it in full before the first piece of work of
@@ -123,6 +124,64 @@ In addition:
 - **Nothing outward-facing.** Upstream reports to CBMC/JBMC are drafted for the user, never filed. A network fetch is
   done only inside a pipeline job that says so in its description. If the pipeline has no network, record it as
   needing the user and go on with what doesn't.
+
+## Streams
+
+The plan's phases are split by the line between the two engines, so the streams touch different code:
+
+| Loop | Brief | jj workspace | Phases |
+|---|---|---|---|
+| `engines-jbmc` | [`engine-priorities-jbmc.md`](engine-priorities-jbmc.md) | `jbmc` | 1a, 1b, 2, 3, 4a: the JBMC adapter and the measurements |
+| `engines-native` | [`engine-priorities-native.md`](engine-priorities-native.md) | `native` | 1c, 4b, 5, 6: the own checker, its models and the solver |
+| `engines` | this brief | `default` | the merge, then 4c, the examples' notes from jobs, the docs, and what the streams left |
+
+Each stream commits on its own branch, the `@-` line of its workspace, and nothing is merged until both have stopped.
+The verification runner, in the default workspace, also runs the jobs committed in the streams' workspaces, at their
+own commits, and collects their results there. The stream briefs say which files each owns and how the shared ones are
+changed. The phase order above still holds within each stream.
+
+**Starting them** (the user, from the default workspace):
+
+```bash
+jj workspace add --name jbmc -r @- ../java-formal-verification-jbmc
+jj workspace add --name native -r @- ../java-formal-verification-native
+../java-formal-verification-jbmc/llm-dlc/tools/feature-loop.sh engines-jbmc       # in one terminal
+../java-formal-verification-native/llm-dlc/tools/feature-loop.sh engines-native   # in another
+```
+
+Each stream has a 2.5 GB cap. While both run, the runner gets what is left: `pipeline.py run --memory 3G --workers 1`,
+with the Langfuse services stopped. A stream that stops is continued by running its command again.
+
+**Reconciling** is this loop's first piece of work, once both streams have stopped for good: each one's Progress says
+its phases are done, or deferred for the user, and not waiting on a job. Until then, a cycle of this loop does nothing
+and makes no commit, which stops the loop. In order:
+
+1. **Check the streams have stopped.** `systemctl --user is-active feature-loop-engine-priorities-jbmc.scope` and
+   `feature-loop-engine-priorities-native.scope` must both say inactive.
+2. **Record their last turns.** In each stream's workspace (`jj workspace root --name jbmc`, then `native`), run
+   `python3 llm-dlc/tools/sync.py commit -m "Record session traces" -m "..."` from that directory. This puts the
+   conversation after the stream's last commit on its branch.
+3. **Copy their logs here.** Logs are not in git. Copy each file under the stream workspace's
+   `llm-dlc/traces/*/logs/` that isn't here yet into the same path in this workspace (`cp -n`). A push uploads them
+   from here.
+4. **Merge.** `jj new @- jbmc@- native@-`. Do this only while this working copy holds no other session's files; if it
+   does, wait for that session to commit them (the runner commits each collection) rather than moving them.
+   - The trace files that every commit regenerates may conflict: `llm-dlc/index.json`, `llm-dlc/traces/README.md`,
+     `llm-dlc/traces/metrics.json`, and the session table in `llm-dlc/README.md`. Take either side: the commit rewrites
+     them from the manifests, which don't conflict.
+   - Resolve code and docs using the streams' Progress notes on the shared files.
+   - Where a result the runner collected for a stream's job conflicts with that stream's own edits, the stream's code
+     wins and the result stands as recorded.
+   - After the merge, the Rust suite and the Python suites must pass, as on each branch.
+5. **Commit the merge** with `sync.py commit`. Its check must report 0 errors.
+6. **Fold the streams' Progress into this brief's,** a line per phase with its commits and job ids. Read each
+   stream's run records in its workspace's `llm-dlc/loop-summaries/` for what they deferred.
+7. **Forget the workspaces:** `jj workspace forget jbmc native`. Their directories stay for the user to delete; each
+   holds a build of about 3 GB.
+
+After the merge, this loop takes 4c, updates 071's and 013's `notes` from the Phase 5 job, regenerates what the merged
+jobs feed (`lib/benchmark/RESULTS.md`), and fits Bitwuzla's version into 1b's record. Then it finishes whatever the
+streams left that needs no input from the user, and lists for the user the decisions that do.
 
 ## The plan
 
@@ -293,7 +352,8 @@ Settled by the user on 2026-11-06:
 
 ## Progress
 
-- Nothing yet.
+- The streams `engines-jbmc` and `engines-native` work the plan in parallel ([Streams](#streams)); the reconcile
+  comes next, once both have stopped.
 
 ## Loop settings
 
@@ -303,7 +363,9 @@ Settled by the user on 2026-11-06:
 
 ## Loop until
 
-Go on while a cycle can still realize a substantial part of the reasonably attainable value of this brief. The user
+The reconcile comes first; don't stop before the merge is committed unless a stream is still running or the merge
+needs the user. After it, go on while a cycle can still realize a substantial part of the reasonably attainable value
+of this brief. The user
 prefers the loop to run as long as possible, so when in doubt, continue. Phases 1, 2 and 5 are the brief's core: don't
 stop before they're done unless they are blocked on the user or on a job. Stop when most of the rest has been
 realized: the remaining steps are small or speculative next to what is done, or what is left needs the user's input (a
