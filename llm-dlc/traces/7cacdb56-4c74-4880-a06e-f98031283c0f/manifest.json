@@ -12,32 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T03:17:37.494Z",
-  "duration_seconds": 13388,
+  "ended": "2026-11-06T03:37:16.884Z",
+  "duration_seconds": 14568,
   "stats": {
-    "turns": 44,
-    "api_calls": 588,
-    "tool_calls": 594,
+    "turns": 49,
+    "api_calls": 655,
+    "tool_calls": 661,
     "tool_errors": 2,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 1196,
-      "output_tokens": 563033,
-      "cache_read_input_tokens": 98699441,
-      "cache_creation_input_tokens": 1806183
+      "input_tokens": 1330,
+      "output_tokens": 631015,
+      "cache_read_input_tokens": 110449666,
+      "cache_creation_input_tokens": 2059898
     }
   },
   "tools": {
-    "Bash": 540,
-    "Read": 29,
-    "Write": 13,
+    "Bash": 602,
+    "Read": 33,
+    "Write": 14,
     "Edit": 9,
     "WebFetch": 2,
     "ToolSearch": 1
   },
   "files_touched": [
     "examples/tools/result_format.py",
+    "lib/src/advice.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
     "lib/src/digest.rs",
@@ -153,24 +154,38 @@
     {
       "index": 7,
       "started": "2026-11-06T03:05:53.115Z",
-      "ended": "2026-11-06T03:17:37.494Z",
-      "turns": 4,
-      "api_calls": 41,
+      "ended": "2026-11-06T03:18:01.953Z",
+      "turns": 5,
+      "api_calls": 43,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 40096,
-        "cache_read_input_tokens": 5332987,
-        "cache_creation_input_tokens": 156785
+        "input_tokens": 86,
+        "output_tokens": 41387,
+        "cache_read_input_tokens": 5675984,
+        "cache_creation_input_tokens": 171020
       },
-      "peak_context_tokens": 169865
+      "peak_context_tokens": 184100
+    },
+    {
+      "index": 8,
+      "started": "2026-11-06T03:18:42.643Z",
+      "ended": "2026-11-06T03:37:16.884Z",
+      "turns": 4,
+      "api_calls": 65,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 66691,
+        "cache_read_input_tokens": 11407228,
+        "cache_creation_input_tokens": 239480
+      },
+      "peak_context_tokens": 252560
     }
   ],
   "log": {
-    "sha256": "eb6472045d38f5a3ac90025a4a057308d559c11636ef76f23e6cdaaf073e091c",
-    "bytes": 17857770,
-    "lines": 6161,
-    "gzip_bytes": 3263823,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/eb6472045d38f5a3ac90025a4a057308d559c11636ef76f23e6cdaaf073e091c.jsonl.gz"
+    "sha256": "6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324",
+    "bytes": 20056807,
+    "lines": 6891,
+    "gzip_bytes": 3663096,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -285,6 +300,14 @@
       "summary": "Vacuity as a status: a verified regression or property proof says whether it is about any input, non-vacuous (with the probe's witness), vacuous or unknown, and a proof over records says the constructors' agreement is another obligation (verification pending)",
       "body": "Step 2b of llm-dlc/loops/sound-verdicts.md. Every Verified statement now carries stated.vacuity (lib/src/statement.rs, Vacuity): a status of non-vacuous, vacuous or unknown, the basis it is known on, a sentence, and an input that reaches the calls when one was found. Nothing skipping an input before the calls is non-vacuous by the harness. A scope, a precondition, a record built through its constructor or --before-arguments is probed as before (the harness with the calls replaced by a failure, run by the tool's own checker): its violation is now kept as the witness ('not vacuous: span(this=Range[lo=20, hi=20]) reaches the calls'), its proof is vacuous, and no verdict is unknown ('vacuity unknown: ...', where a note nobody read used to be). Identical bytecode is non-vacuous by being identical. Only a Verified has a status, and the exit code stays 0 for a vacuous or unknown one (open question 1). Outcome.vacuous keeps its reason for its existing readers.\n\nThe record-constructor caveat the ecosystem review asks for is stated wherever it applies: a 'constructors: ...' line under the verdict, the constructible assumption of the statement, and the page's paragraph, saying that the proof is about the records both versions' constructors accept and whether they accept the same inputs is not part of it. Identical bytecode drops it, since the constructors are among what is identical. build.py ends the page's 'What the verdict is about' paragraph with the vacuity sentence, and a verified label gains ', non-vacuity unknown' (or 'for k of n' properties) where the probe gave no verdict; whether a result matches its example is unchanged, so unknown is not called vacuous. The schema has $defs/statement/vacuity, and lib/README.md and the verify-bytecode skill's reference say how to read it.\n\nVerified inline: the new conformance test vacuity_is_a_status_of_a_verified_statement gets every status and basis from real runs of the own checker (a precondition some input meets, one none does, none at all, a violation with no status, a record method with its caveat, a scope every record meets, identical bytecode), and the unknown status from JBMC (a stand-in script, as in the --confirm test) proving a method of a record whose constructor meets a JDK-constructor gap the probe refuses under strict; two records were added to the corpus class for it. cargo test --release: 122 unit, 4 conformance (2 ignored), 53 integration; clippy clean on the changed files; test_build.py 144 tests including the new VacuityTest; --render-only of every example changed no page, since no recorded result has a status yet. Job 20261106-031642-example-127-b9-re-run-its-statement-says re-runs example 127 (records, proved by JBMC), whose page should show the probe's witness and the caveat. The pending 2a re-runs of 144/145 run at the earlier commit and will not show a status. Phase 2 of the brief is complete; next is 3a, the gap protocol. The brief needs no correction.",
       "log_sha256": "eb6472045d38f5a3ac90025a4a057308d559c11636ef76f23e6cdaaf073e091c"
+    },
+    {
+      "change_id": "lowunqqsslxznpupkqtzuyptoptytsuo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The gap protocol: under --gaps advised a proof that reaches a gap of the tool's own checker with no contract stops before solving, and returns each gap with what a contract for it must state and a template",
+      "body": "Step 3a of llm-dlc/loops/sound-verdicts.md. With --gaps advised (property and regression proofs, --engine native or auto), the driver builds its harness, then scans the harness and every method it may reach on the engine's class path, with no solver (lib/src/advice.rs). A gap with no contract makes the verdict unverifiable, with the finding gaps-need-contracts and no search. The outcome's advice (--json) holds the claim in words, the JDK version, and for each gap: its stable id, the call with owner, name, descriptor, parameters, result type and sites, what --gaps assume would take it to do, and must_state, the parts a contract must state for its kind (result, exceptions, receiver, arguments, an initializer's static state, purity), each with a question. It also holds what the engine refuses whatever the contracts say, and the gap's block of a template, which is written to contracts.template in the work directory and printed under the verdict. The template is the draft of step 3b's format: a block per gap id with prove's keys call:, assume:, throws: X when c, assert:, modifies:, written-by:. With no gap, advised is strict, so a gap the scan missed is still refused. Under --engine jbmc, advised is an error, since JBMC's stubs are step 4c's gaps. Unlike strict, which ends a path at its first gap, the scan names every gap the harness reaches.\n\nbuild.py passes approach.gaps advised (in the example schema's enum), and keeps advice in the result (schema $defs/advice) with the template copied to contracts.template in the example's folder. It labels the verdict 'Unverifiable: N gaps need a contract (--gaps advised)', and the page lists each gap, what its contract must state, and the template. Verified inline: cargo test --release (123 unit, 4 conformance with 2 ignored, 54 integration) covers the new test advised_stops_before_solving_with_each_gap_and_what_its_contract_states (native and auto, property and regression, no bmc.log written, the error under jbmc). The conformance corpus now also runs under advised: it asks for contracts on exactly the 9 claims strict refuses for a gap and decides the other 84 as strict does, which the test enforces. The 146 build.py tests pass (new AdviceTest). Clippy is clean on the changed files. --render-only of every example changed no page. No job is needed.\n\nThis departs from the brief, which asks each Phase 3 step to end with a recorded example. 3a has none: a 'contracts needed' page would record only the protocol's output, which the corpus and the integration test already pin, and no verdict about code. The example is 3c's, an app kernel pre-sizing an ArrayList by a sum that can overflow, whose page will show the advice, the wrong contract rejected by the JVM, and the verdict once a tested contract closes the gap. Recorded under Progress, with what comes next: 3b, the contract format read with --contracts FILE and applied at the call.",
+      "log_sha256": "6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324"
     }
   ],
   "logs": {
@@ -341,6 +364,12 @@
       "lines": 1373,
       "gzip_bytes": 645940,
       "url": "https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz"
+    },
+    "6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324": {
+      "bytes": 20056807,
+      "lines": 6891,
+      "gzip_bytes": 3663096,
+      "url": null
     },
     "b99c8a55cee254ea157b73fe7f3714a48dc219b4ea727256346ef47385a3b6d8": {
       "bytes": 1304272,

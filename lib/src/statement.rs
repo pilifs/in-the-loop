@@ -395,6 +395,11 @@ pub fn checker(search: Option<&Search>, sat_solver: Option<&str>) -> Checker {
     }
 }
 
+/// The checker of a run under `--gaps advised` that stopped at the gap scan: nothing was solved.
+pub fn scan_checker() -> Checker {
+    Checker { engine: "none".into(), name: "gap scan: nothing was solved (--gaps advised)".into(), solver: None, fallback: None }
+}
+
 /// The bounds of a run of a checker.
 pub fn bounds(unwind: Option<u32>, domain: &Domain, max_array_length: u32, complete: bool) -> Bounds {
     Bounds { unwind, max_array_length: domain.has_arrays().then_some(max_array_length), complete }

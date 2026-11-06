@@ -303,7 +303,9 @@ struct EquivalenceArgs {
     /// What the tool's own checker does at a gap, a construct it does not implement as the JVM does (a JDK
     /// constructor or method it has no model of, say): `strict` (the default) refuses it by name, so that the run
     /// has no verdict unless another path is a violation, and `--engine auto` does not ask JBMC; `assume` takes the
-    /// approximation the gap states and names it in the verdict. No effect on JBMC.
+    /// approximation the gap states and names it in the verdict; `advised` scans the harness before solving and,
+    /// when it reaches a gap with no contract, stops with each gap, what a contract for it must state and a
+    /// template (`advice` in `--json`), and is otherwise strict. No effect on JBMC, and advised needs the own checker.
     #[arg(long, default_value = "strict")]
     gaps: String,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
@@ -386,7 +388,9 @@ struct ProveArgs {
     /// What the tool's own checker does at a gap, a construct it does not implement as the JVM does (a JDK
     /// constructor or method it has no model of, say): `strict` (the default) refuses it by name, so that the run
     /// has no verdict unless another path is a violation, and `--engine auto` does not ask JBMC; `assume` takes the
-    /// approximation the gap states and names it in the verdict. No effect on JBMC.
+    /// approximation the gap states and names it in the verdict; `advised` scans the harness before solving and,
+    /// when it reaches a gap with no contract, stops with each gap, what a contract for it must state and a
+    /// template (`advice` in `--json`), and is otherwise strict. No effect on JBMC, and advised needs the own checker.
     #[arg(long, default_value = "strict")]
     gaps: String,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.

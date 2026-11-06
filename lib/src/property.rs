@@ -171,6 +171,10 @@ pub struct Outcome {
     /// before its harness was built.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stated: Option<crate::statement::Statement>,
+    /// Under `--gaps advised`, the gaps the proof reaches with no contract, and what a contract for each must state
+    /// ([`crate::advice`]): the run stopped before solving.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub advice: Option<crate::advice::Advice>,
 }
 
 /// Runs the property proof.
@@ -209,8 +213,13 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             search: None,
             replay: None,
             stated: None,
+            advice: None,
         })
     };
+
+    if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc {
+        return Err(Error::new(ADVISED_NEEDS_OWN_CHECKER));
+    }
 
     // 1. The method.
     let mut cp = ClassPath::new();
@@ -278,20 +287,20 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let assertion = harness.assertion_text.clone();
     let stated_domain = crate::statement::plain_domain(&params, options.max_array_length);
     let observations = crate::statement::property_observations(&assertion, &throws_checked);
-    let stated = |last: &crate::jbmc::JbmcResult, search: Option<&crate::equivalence::Search>, complete: bool| crate::statement::Statement {
+    let stated = |last: Option<&crate::jbmc::JbmcResult>, search: Option<&crate::equivalence::Search>, complete: bool| crate::statement::Statement {
         kind: "property".into(),
         domain: stated_domain.clone(),
         assumptions: options
             .assume
             .iter()
             .map(|a| crate::statement::Assumption { kind: crate::statement::AssumptionKind::Precondition, text: a.clone(), basis: crate::statement::Basis::Stated, id: None })
-            .chain(crate::statement::checker_assumptions(Some(last)))
+            .chain(crate::statement::checker_assumptions(last))
             .collect(),
         observations: observations.clone(),
         bounds: crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete),
         models: crate::statement::models(options.models),
         checker: crate::statement::checker(search, options.sat_solver.as_deref()),
-        gap_mode: last.gap_mode,
+        gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
         vacuity: None,
     };
@@ -327,6 +336,25 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut fallback = None;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+        // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
+        if options.gaps == crate::bmc::gaps::GapMode::Advised {
+            let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
+            let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on every input{where_}"), harness: statement.clone() };
+            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, claim, &work)? {
+                let p = advice.problem();
+                let message = format!("{} cannot be verified: {p}", options.target);
+                let _ = writeln!(out, "✗ {message}");
+                out.push_str(&advice.lines());
+                let findings = vec![Finding::new("gaps-need-contracts", message, uri.clone(), line)];
+                if let Some(report) = &options.report {
+                    sarif::write(&report.join("property.sarif"), &findings)?;
+                }
+                let mut s = stated(None, None, false);
+                s.checker = crate::statement::scan_checker();
+                s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
+                return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
+            }
+        }
         let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work)?;
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
@@ -447,7 +475,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         let call = witness::typed_call(&target, &harness::Layout::plain(&names, &descriptor.params), &found, false, &[]);
         let counterexample = Some(Counterexample { input: rendered, outcome, expected: None, values, found: None, shrink_runs: 0, inputs: witness::typed_inputs(&params, &found), found_inputs: None, call });
         let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(&last, search.as_ref(), false)), search, replay });
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -555,7 +583,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
                 let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(&last, search.as_ref(), false)), search, replay });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -619,7 +647,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.{}", if signals.is_empty() { " If the method throws there by design, declare it with --throws." } else { "" });
     }
-    let mut stated = stated(&last, search.as_ref(), verdict == Verdict::Verified);
+    let mut stated = stated(Some(&last), search.as_ref(), verdict == Verdict::Verified);
     stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
     let stated = Some(stated);
     Ok(Outcome {
@@ -641,8 +669,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         search,
         replay,
         stated,
+        advice: None,
     })
 }
+
+/// Why `--gaps advised` is refused with `--engine jbmc`.
+pub(crate) const ADVISED_NEEDS_OWN_CHECKER: &str = "--gaps advised needs --engine native or auto: its gaps are those of the tool's own checker, and JBMC's own approximations (its stubs) are not yet named as gaps";
 
 /// What the interpreter made of a witness of JBMC's that refutes a proof of the own checker's, which shares its
 /// models: evidence for a person, not a verdict.

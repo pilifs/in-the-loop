@@ -89,14 +89,17 @@ impl GapKind {
 }
 
 /// How the tool's own checker treats a gap: refuses it (`strict`, the default: the path ends there and the run
-/// has no verdict unless another path is a violation), or takes the approximation of
-/// [`GapKind::approximation`] and names it in the verdict (`assume`).
+/// has no verdict unless another path is a violation), takes the approximation of [`GapKind::approximation`] and
+/// names it in the verdict (`assume`), or hands it to the agent driving the tool before anything is solved
+/// (`advised`, [`crate::advice`]): a run that reaches a gap with no contract stops with what a contract for each
+/// must state, and otherwise goes on as under strict, which is the advised mode given no contracts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum GapMode {
     #[default]
     Strict,
     Assume,
+    Advised,
 }
 
 impl GapMode {
@@ -104,7 +107,14 @@ impl GapMode {
         match self {
             GapMode::Strict => "strict",
             GapMode::Assume => "assume",
+            GapMode::Advised => "advised",
         }
+    }
+
+    /// Whether a path that reaches a gap ends there: under strict, and under advised, where a gap with no contract
+    /// is refused as under strict.
+    pub fn refuses(self) -> bool {
+        self != GapMode::Assume
     }
 }
 
@@ -115,7 +125,8 @@ impl std::str::FromStr for GapMode {
         match s {
             "strict" => Ok(GapMode::Strict),
             "assume" => Ok(GapMode::Assume),
-            other => Err(Error::new(format!("unknown gap mode {other:?}: strict or assume"))),
+            "advised" => Ok(GapMode::Advised),
+            other => Err(Error::new(format!("unknown gap mode {other:?}: strict, assume or advised"))),
         }
     }
 }

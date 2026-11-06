@@ -427,6 +427,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
 
     // 4. The verdicts against the JVM.
     let mut table = String::new();
+    let mut advised = Vec::new();
     for run in &runs {
         let case = &corpus[run.case];
         let claim = &case.claims[run.claim];
@@ -470,11 +471,26 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
         if recorded && run.engine == Engine::Native && run.gaps == GapMode::Assume && gaps == 0 && claim.native != Verdict::Unverifiable && verdict != claim.native {
             failures.push(format!("{label}: with no gap met, --gaps assume says {verdict:?} where strict says {:?}", claim.native));
         }
+        // Advised is strict given no contracts: with no gap in what the harness reaches it goes on as strict does,
+        // and otherwise it stops before solving, with advice.
+        if recorded && run.engine == Engine::Native && run.gaps == GapMode::Advised {
+            match &run.outcome.advice {
+                None if verdict != claim.native => failures.push(format!("{label}: with no gap in the harness, --gaps advised says {verdict:?} where strict says {:?}", claim.native)),
+                Some(_) if verdict != Verdict::Unverifiable || run.outcome.search.is_some() => failures.push(format!("{label}: --gaps advised gave advice and solved anyway: {}", run.outcome.output)),
+                // The scan may see a gap on a path no input takes; on this corpus it sees none strict does not meet.
+                Some(_) if claim.native != Verdict::Unverifiable => failures.push(format!("{label}: --gaps advised asks for contracts where strict decides the claim ({:?}): {}", claim.native, run.outcome.output)),
+                Some(a) => advised.push(format!("{} ({}; strict: {:?})", case.method, a.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>().join(", "), claim.native)),
+                None => {}
+            }
+        }
     }
     eprintln!("{table}");
     let claims: usize = corpus.iter().map(|c| c.claims.len()).sum();
     let refuted = corpus.iter().flat_map(|c| &c.claims).filter(|c| c.refuted).count();
     eprintln!("{} cases, {claims} claims ({refuted} refuted on the JVM), {} runs; the interpreter refuses {}", corpus.len(), runs.len(), refused.join(", "));
+    if !advised.is_empty() {
+        eprintln!("--gaps advised asks for contracts on {} claims: {}", advised.len(), advised.join("; "));
+    }
     Some(failures)
 }
 
@@ -482,7 +498,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
 /// JVM reproduces; under assume it gives `Verified` for a refuted claim only when it names the gap it assumed.
 #[test]
 fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
-    let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false), (Engine::Native, GapMode::Assume, false)], true) else { return };
+    let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false), (Engine::Native, GapMode::Assume, false), (Engine::Native, GapMode::Advised, false)], true) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 

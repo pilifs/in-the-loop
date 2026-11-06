@@ -208,6 +208,10 @@ pub struct Outcome {
     /// refused before a statement was built.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stated: Option<crate::statement::Statement>,
+    /// Under `--gaps advised`, the gaps the proof reaches with no contract, and what a contract for each must state
+    /// ([`crate::advice`]): the run stopped before solving.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub advice: Option<crate::advice::Advice>,
 }
 
 /// The checker run a verdict comes from, with the settings it ran under: what a report needs to say how the verdict
@@ -316,7 +320,7 @@ pub(crate) fn confirmation_line(c: &Confirmation) -> String {
 /// does not ask JBMC, which gives a call it has no bytecode for an approximation of its own and does not name it
 /// (step 4c of the sound-verdicts brief). A class initializer, which JBMC runs, is asked of it.
 pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
-    result.gap_mode == Some(crate::bmc::gaps::GapMode::Strict) && result.gaps.iter().any(|g| !g.kind.jbmc_implements())
+    result.gap_mode.is_some_and(crate::bmc::gaps::GapMode::refuses) && result.gaps.iter().any(|g| !g.kind.jbmc_implements())
 }
 
 /// The note `--engine auto` writes when the own checker refused a gap and JBMC is not asked.
@@ -451,8 +455,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: None })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: None, advice: None })
     };
+
+    if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc {
+        return Err(Error::new(crate::property::ADVISED_NEEDS_OWN_CHECKER));
+    }
 
     // 1. Both versions in one program: the old one relocated into the package "before".
     let before_dir = work.join("before-classes");
@@ -716,7 +724,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         let mut identical = stated(None, None, true);
         identical.assumptions.retain(|a| a.kind != crate::statement::AssumptionKind::Constructible);
         identical.vacuity = Some(Vacuity::identical());
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: Some(identical) });
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: Some(identical), advice: None });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -761,6 +769,24 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut fallback = None;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+        // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
+        if options.gaps == crate::bmc::gaps::GapMode::Advised {
+            let claim = crate::advice::Claim { kind: "regression".into(), target: options.target.clone(), text: format!("{relation}{restriction}"), harness: statement.clone() };
+            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::CLASS, harness::METHOD, claim, &work)? {
+                let p = advice.problem();
+                let message = format!("{} cannot be verified: {p}", options.target);
+                let _ = writeln!(out, "✗ {message}");
+                out.push_str(&advice.lines());
+                let findings = vec![Finding::new("gaps-need-contracts", message, uri.clone(), line)];
+                if let Some(report) = &options.report {
+                    sarif::write(&report.join("equivalence.sarif"), &findings)?;
+                }
+                let mut s = stated(None, None, false);
+                s.checker = crate::statement::scan_checker();
+                s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
+                return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
+            }
+        }
         let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work)?;
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
@@ -1013,7 +1039,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call });
         let replay = Some(Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
         let stated = Some(stated(Some(&last), search.as_ref(), false));
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated });
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -1074,7 +1100,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
                 let stated = Some(stated(Some(&last), search.as_ref(), false));
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -1147,7 +1173,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut stated = stated(Some(&last), search.as_ref(), verdict == Verdict::Verified);
     stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
     let stated = Some(stated);
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay, stated })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay, stated, advice: None })
 }
 
 /// Both versions replayed on one input.

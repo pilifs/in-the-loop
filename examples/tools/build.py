@@ -1462,6 +1462,10 @@ def finish_symbolic(folder, result, statement, fields, verdict_labels):
     elif result["verdict"] == "verified" and fields.get("vacuityUnknown"):
         # Neither vacuous nor shown not to be: the label says so, and the statement's paragraph says why.
         result["verdictLabel"] += ", non-vacuity unknown"
+    if result["verdict"] == "unverifiable" and fields.get("advice"):
+        # Under --gaps advised the run stopped before solving, at gaps an agent is to write contracts for.
+        n = len(fields["advice"]["gaps"])
+        result["verdictLabel"] = f"{VERDICT_LABEL['unverifiable']}: {n} gap{'s' if n != 1 else ''} need{'' if n != 1 else 's'} a contract (--gaps advised)"
     label_assumptions(result)
 
 
@@ -1649,6 +1653,32 @@ def statement_lines(res):
     return [f"**What the verdict is about.** {statement_paragraph(s)}", ""] if s else []
 
 
+PART_WORDS = {"result": "its result", "exceptions": "its exceptions and when", "receiver": "its effect on the receiver",
+              "arguments": "its effect on its arguments", "state": "the static state it sets", "purity": "any other effect"}
+
+
+def advice_lines(folder, res):
+    """The page's account of a run under --gaps advised that stopped at gaps with no contract: each gap, what its
+    contract must state, what is outside the fragment whatever the contracts, and the template."""
+    advices = [(None, res["advice"])] if res.get("advice") and len(res.get("properties") or []) <= 1 else [
+        (n, r["advice"]) for n, r in enumerate(res.get("properties") or [], 1) if r.get("advice")]
+    lines = []
+    for n, a in advices:
+        k = len(a["gaps"])
+        lines += [f"**{'Property ' + str(n) + ': t' if n else 'T'}he proof reaches {k} gap{'s' if k != 1 else ''} of the tool's own "
+                  f"checker with no contract, and stopped before solving** (`--gaps advised`): a construct the checker "
+                  f"does not implement as the JVM does, which a contract written for it would close. Nothing was proved "
+                  f"or refuted. For each, what a contract must state:", ""]
+        lines += [f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: "
+                  + ", ".join(PART_WORDS[o["part"]] for o in g["mustState"])
+                  + f". Under `--gaps assume` the checker would take it that it {g['assumed']}." for g in a["gaps"]] + [""]
+        for why, r in sorted((a.get("outside") or {}).items()):
+            lines += [f"Outside the checker's fragment whatever the contracts: {why}, {r['first']} at {r['at']}.", ""]
+        if (folder / a["templateFile"]).exists():
+            lines += details(f"The contract template (`{a['templateFile']}`)", "text", (folder / a["templateFile"]).read_text())
+    return lines
+
+
 def assumed_gaps(result):
     """The gaps the tool's own checker assumed for a verdict (`--gaps assume`), from the result's search and each
     property's, each once, in order."""
@@ -1659,6 +1689,26 @@ def assumed_gaps(result):
             if g["treatment"] == "assumed":
                 seen.setdefault(g["id"], g)
     return list(seen.values())
+
+
+def advice_record(outcome, folder, name):
+    """What a run under --gaps advised returned when it stopped at gaps with no contract (step 3a of
+    llm-dlc/loops/sound-verdicts.md), from the outcome's `advice`: each gap with what a contract for it must state
+    and its template, whose whole file is copied to `name` in the example's folder. None when there is none."""
+    a = (outcome or {}).get("advice")
+    if not a:
+        return None
+    (folder / name).write_text(a["template"])
+    record = camel({k: v for k, v in a.items() if k not in ("template", "template_file")})
+    record["claim"].pop("harness", None)  # the work directory's; the page's harness is statement.java
+    record["templateFile"] = name
+    return record
+
+
+def remove_stale_templates(folder):
+    """An earlier run's contract templates are not this run's."""
+    for stale in folder.glob("contracts*.template"):
+        stale.unlink()
 
 
 def run_tool_equivalence(folder, example, root, module, result):
@@ -1689,11 +1739,16 @@ def run_tool_equivalence(folder, example, root, module, result):
     completed = result["verdict"] is not None
     result["search"] = search_record(outcome) if completed else None
     result["stated"] = stated_record(outcome) if completed else None
+    remove_stale_templates(folder)
+    result.pop("advice", None)
+    if completed and (outcome or {}).get("advice"):
+        result["advice"] = advice_record(outcome, folder, "contracts.template")
     replay = (outcome or {}).get("replay")
     result["replay"] = {"by": replay["by"], "reproduced": replay["reproduced"]} if completed and replay else None
     statement = outcome.get("statement") if outcome else None
     fields = {k: (outcome or {}).get(k) for k in ("domain", "proof", "problem", "vacuous")}
     fields["vacuityUnknown"] = vacuity_unknown(result["stated"])
+    fields["advice"] = result.get("advice")
     finish_symbolic(folder, result, root / statement if statement else None, fields, {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: equivalent on every input" + (" outside the declared change" if intended else ""),
@@ -1869,8 +1924,9 @@ def property_assertion(outcome):
     return None if outcome.get("assert") == "true" and throws else outcome.get("assert")
 
 
-def property_record(outcome, harness, statement, classes=None):
-    """One property's outcome as the result keeps it: what it states, its verdict, and its own evidence."""
+def property_record(outcome, harness, statement, classes=None, folder=None, template=None):
+    """One property's outcome as the result keeps it: what it states, its verdict, and its own evidence; under
+    --gaps advised, the advice of a proof that stopped at gaps, its template copied to `template` in `folder`."""
     throws = outcome.get("throws_checked") or outcome.get("throws") or []
     replay = outcome.get("replay")
     return {"harness": harness, "assert": property_assertion(outcome), "assume": outcome.get("assume"),
@@ -1878,7 +1934,8 @@ def property_record(outcome, harness, statement, classes=None):
             "proof": outcome.get("proof"), "problem": outcome.get("problem"), "vacuous": outcome.get("vacuous"),
             "counterexample": property_counterexample(outcome, classes), "statement": statement,
             "search": search_record(outcome), "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None,
-            **({"stated": stated_record(outcome)} if outcome.get("stated") else {})}
+            **({"stated": stated_record(outcome)} if outcome.get("stated") else {}),
+            **({"advice": advice_record(outcome, folder, template)} if outcome.get("advice") and folder else {})}
 
 
 def run_tool_property(folder, example, root, module, result):
@@ -1899,6 +1956,7 @@ def run_tool_property(folder, example, root, module, result):
     reported = write_evidence(folder, output, build / "build/reports/property.sarif", result)
     for stale in folder.glob("statement-*.java"):  # an earlier run's statements are not this run's
         stale.unlink()
+    remove_stale_templates(folder)
     headline = property_headline([o.get("verdict") for o in outcomes]) if outcomes is not None else None
     several = outcomes is not None and len(outcomes) > 1
     records = []
@@ -1908,7 +1966,8 @@ def run_tool_property(folder, example, root, module, result):
             if several and o.get("statement") and (root / o["statement"]).exists():
                 name = f"statement-{n}.java"
                 shutil.copy(root / o["statement"], folder / name)
-            records.append(property_record(o, f"property-{n}" if several else None, name, {"after": build / "build/main"}))
+            records.append(property_record(o, f"property-{n}" if several else None, name, {"after": build / "build/main"},
+                                           folder, f"contracts-{n}.template" if several else "contracts.template"))
         result["counterexamples"] = [r["counterexample"] for r in records if r["counterexample"]]
     # A violation needs every refuted property's witness.
     refuted = sum(r["verdict"] == "violation" for r in records)
@@ -1919,6 +1978,7 @@ def run_tool_property(folder, example, root, module, result):
         records = []
         for copied in folder.glob("statement-*.java"):
             copied.unlink()
+        remove_stale_templates(folder)
     result["properties"] = records or None
     lead = next((i for want in ("violation", "unverifiable", "verified") for i, r in enumerate(records) if r["verdict"] == want), None)
     head, record = (outcomes[lead], records[lead]) if lead is not None else (None, None)
@@ -1932,6 +1992,11 @@ def run_tool_property(folder, example, root, module, result):
     fields["vacuous"] = (vacuous[0][1] if not several else "; ".join(f"property {n}: {v}" for n, v in vacuous)) if vacuous else None
     unknown = [n for n, r in enumerate(records, 1) if vacuity_unknown(r.get("stated"))] if result["verdict"] == "verified" else []
     fields["vacuityUnknown"] = bool(unknown) and not several
+    result.pop("advice", None)
+    advised = [r["advice"] for r in records if r.get("advice")]
+    if advised:
+        result["advice"] = (record or {}).get("advice") or advised[0]
+    fields["advice"] = result.get("advice")
     total, unresolved = len(records), sum(r["verdict"] == "unverifiable" for r in records)
     finish_symbolic(folder, result, statement, fields, {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found"
@@ -3195,6 +3260,7 @@ def render_example(folder, ex, res, snap=None):
     if (res.get("coverage") or {}).get("reason"):
         lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
                   "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]
+    lines += advice_lines(folder, res)
     assumed = assumed_gaps(res) if res.get("verdict") == "verified" else []
     if assumed:
         lines += [f"**The proof assumes {len(assumed)} behaviour{'s' if len(assumed) != 1 else ''} the tool's own checker does not "

@@ -2156,6 +2156,72 @@ class VacuityTest(unittest.TestCase):
         self.assertTrue(result["verdictLabel"].startswith("✓ Verified, vacuously"), result["verdictLabel"])
         self.assertIn("so the verdict is vacuous (below).", build.statement_lines(result)[0])
 
+class AdviceTest(unittest.TestCase):
+    """Step 3a of llm-dlc/loops/sound-verdicts.md: under --gaps advised a run that reaches a gap with no contract
+    stops before solving; the result keeps each gap with what its contract must state, the template goes into the
+    example's folder, and the label and page say that contracts are needed, not that anything was proved."""
+
+    TEMPLATE = ("# Contracts for the gaps of jvmcontract's own checker (--gaps advised), one block per gap, under its id.\n"
+                "kind: gap-contracts\n\njdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1\n"
+                "  call: java.util.ArrayList.<init>(int arg0)\n  assume: true\n  throws: TODO when TODO\n"
+                "  modifies: TODO (nothing, this, or a parameter)\n  written-by: TODO (an agent, or a person)\n")
+    ADVICE = {"status": "contracts-needed",
+              "claim": {"kind": "regression", "target": "a.B#m", "text": "behaves as before on every input", "harness": "/tmp/w/harness/EquivalenceHarness.java"},
+              "jdk": "25.0.4.1",
+              "gaps": [{"id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1", "kind": "jdk-constructor",
+                        "call": "java.util.ArrayList.<init>(int)", "owner": "java.util.ArrayList", "name": "<init>",
+                        "descriptor": "(I)V", "parameters": [{"name": "arg0", "type": "int"}], "returns": "void",
+                        "sites": ["a.B.m:13"],
+                        "assumed": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                        "must_state": [{"part": "exceptions", "question": "Which exceptions does it throw, and on which arguments?"},
+                                       {"part": "receiver", "question": "What does the new object keep of its arguments?"},
+                                       {"part": "purity", "question": "Has it any other effect?"}],
+                        "template": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1\n  throws: TODO when TODO\n"}],
+              "outside": {"floating point": {"first": "a floating-point constant", "at": "a.B.m:14", "sites": 2}},
+              "template": TEMPLATE, "template_file": "/tmp/w/contracts.template"}
+
+    def recorded(self, root, advice):
+        problem = ("the proof reaches 1 gap of the tool's own checker with no contract (--gaps advised), so nothing was "
+                   "solved: jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1 (java.util.ArrayList.<init>(int) at a.B.m:13)")
+        out = equivalence_json(root, "unverifiable", problem=problem, search=None, output=f"✗ a.B#m cannot be verified: {problem}\n",
+                               **({"advice": advice} if advice else {}))
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(1, out)):
+            result = empty_result()
+            build.run_tool_equivalence(root, example(verdict="unverifiable"), root, "crosscut", result)
+        return result
+
+    def test_the_advice_is_kept_with_its_template_and_validates(self):
+        import jsonschema
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        result = self.recorded(root, self.ADVICE)
+        a = result["advice"]
+        self.assertEqual(a["templateFile"], "contracts.template")
+        self.assertEqual((root / "contracts.template").read_text(), self.TEMPLATE)
+        self.assertNotIn("harness", a["claim"], "the work directory's path is not the example's")
+        self.assertEqual(a["gaps"][0]["mustState"][0]["part"], "exceptions")
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(a, {**schema["$defs"]["advice"], "$defs": schema["$defs"]})
+        self.assertEqual(result["verdictLabel"], f"{build.VERDICT_LABEL['unverifiable']}: 1 gap needs a contract (--gaps advised)")
+        self.assertEqual(build.expectation(result, example(verdict="unverifiable")["expected"]), "yes")
+
+        lines = build.advice_lines(root, result)
+        text = "\n".join(lines)
+        self.assertTrue(lines[0].startswith("**The proof reaches 1 gap of the tool's own checker with no contract, and stopped before solving**"), lines[0])
+        self.assertIn("- `jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1`, java.util.ArrayList.<init>(int) at a.B.m:13: "
+                      "its exceptions and when, its effect on the receiver, any other effect.", text)
+        self.assertIn("Outside the checker's fragment whatever the contracts: floating point, a floating-point constant at a.B.m:14.", text)
+        self.assertIn("<details><summary>The contract template (`contracts.template`)</summary>", text)
+
+        # A later run that needs no contract leaves no template and no advice behind.
+        rerun = self.recorded(root, None)
+        self.assertNotIn("advice", rerun)
+        self.assertFalse((root / "contracts.template").exists())
+        self.assertEqual(build.advice_lines(root, rerun), [])
+
+
 class GapScanTest(unittest.TestCase):
     """Step 1a of llm-dlc/loops/sound-verdicts.md: the gap scan's note says what strict mode would cost an example,
     and replaces an earlier note rather than adding another."""

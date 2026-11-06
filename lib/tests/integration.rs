@@ -2221,6 +2221,98 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
     }
 }
 
+/// Step 3a of llm-dlc/loops/sound-verdicts.md: under `--gaps advised` a proof that reaches a gap with no contract
+/// stops before anything is solved, and returns each gap the harness reaches (not only the first a path meets)
+/// with what a contract for it must state and a template; a proof that reaches none is strict.
+#[test]
+fn advised_stops_before_solving_with_each_gap_and_what_its_contract_states() {
+    use jvmcontract::advice::Part;
+    use jvmcontract::bmc::gaps::GapMode;
+    use jvmcontract::Engine;
+    let dir = target_tmp().join("gaps-advised-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Gaps.java"), GAPS).unwrap();
+    let Some(classes) = compile("gaps-advised", &[dir.join("Gaps.java")]) else { return };
+    let prove = |method: &str, assert: &str, engine: Engine| {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Gaps#{method}"));
+        options.assert = Some(assert.into());
+        options.engine = engine;
+        options.gaps = GapMode::Advised;
+        let work = target_tmp().join(format!("property-advised-{method}-{engine:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options)
+    };
+    let ids = |a: &jvmcontract::advice::Advice| -> Vec<String> { a.gaps.iter().map(|g| g.id.split('@').next().unwrap().to_string()).collect() };
+    for engine in [Engine::Native, Engine::Auto] {
+        let o = prove("capacity", "result == 1", engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.search.is_none(), "nothing was solved: {}", o.output);
+        assert!(!o.work.join("bmc.log").exists(), "the own checker did not run");
+        assert!(!o.output.contains("JBMC"), "nor JBMC: {}", o.output);
+        assert_eq!(o.findings[0].rule_id, "gaps-need-contracts");
+        let a = o.advice.as_ref().expect("advice");
+        assert_eq!(a.status, "contracts-needed");
+        assert_eq!(a.claim.kind, "property");
+        assert_eq!(a.claim.text, "satisfies `result == 1` on every input");
+        assert!(a.claim.harness.exists());
+        assert_eq!(ids(a), ["jdk-constructor:java.util.ArrayList.<init>(I)V"]);
+        let g = &a.gaps[0];
+        assert_eq!((g.owner.as_str(), g.name.as_str(), g.descriptor.as_str(), g.returns.as_str()), ("java.util.ArrayList", "<init>", "(I)V", "void"));
+        assert_eq!(g.parameters.iter().map(|p| p.ty.as_str()).collect::<Vec<_>>(), ["int"]);
+        assert!(g.sites[0].starts_with("fixtures.Gaps.capacity:"), "{:?}", g.sites);
+        assert_eq!(g.assumed, "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments");
+        assert!(g.must_state.iter().any(|o| o.part == Part::Exceptions));
+        assert_eq!(std::fs::read_to_string(&a.template_file).unwrap(), a.template);
+        assert!(a.template.contains(&format!("\n{}\n  # java.util.ArrayList.<init>(int) is a JDK constructor", g.id)), "{}", a.template);
+        assert!(o.problem.as_deref().unwrap().starts_with("the proof reaches 1 gap of the tool's own checker with no contract (--gaps advised), so nothing was solved: jdk-constructor:java.util.ArrayList.<init>(I)V@"), "{}", o.output);
+        assert!(o.output.contains("\n  gap jdk-constructor:java.util.ArrayList.<init>(I)V@") && o.output.contains("\nkind: gap-contracts\n"), "{}", o.output);
+        let stated = o.stated.as_ref().unwrap();
+        assert_eq!(stated.gap_mode, Some(GapMode::Advised));
+        assert_eq!(stated.checker.engine, "none");
+        let json = serde_json::to_value(&o).unwrap();
+        assert_eq!(json["advice"]["gaps"][0]["must_state"][0]["part"], "exceptions", "{json}");
+
+        // Every gap the harness reaches, where strict ends the path at the first.
+        let o = prove("firstByte", "out.length == 0 || result == \\old(out[0])", engine).unwrap();
+        let a = o.advice.as_ref().expect("advice");
+        assert_eq!(ids(a), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"]);
+        assert!(a.gaps[1].must_state.iter().any(|o| o.part == Part::Arguments), "nextBytes changes its array: {:?}", a.gaps[1].must_state);
+        assert!(o.problem.as_deref().unwrap().contains("reaches 2 gaps"), "{}", o.output);
+
+        // No gap: the run is strict's.
+        let o = prove("nullMonitor", "result == 1", engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert!(o.advice.is_none());
+        assert_eq!(o.search.as_ref().unwrap().gap_mode, Some(GapMode::Advised));
+    }
+    let e = prove("capacity", "result == 1", Engine::Jbmc).unwrap_err();
+    assert!(e.to_string().contains("--gaps advised needs --engine native or auto"), "{e}");
+
+    // A regression proof the same way.
+    let (Some(before), Some(after)) = (
+        compile_writers("advised-sized-before", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { return 1; } }"),
+        compile_writers("advised-sized-after", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; } }"),
+    ) else {
+        return;
+    };
+    let mut options = equivalence::Options::new(&before, &after, "fixtures.Sized#capacity");
+    options.engine = Engine::Native;
+    options.gaps = GapMode::Advised;
+    let work = target_tmp().join("equivalence-advised-sized");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let o = equivalence::run(&options).unwrap();
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.search.is_none(), "{}", o.output);
+    let a = o.advice.as_ref().expect("advice");
+    assert_eq!(a.claim.kind, "regression");
+    assert_eq!(a.claim.text, "behaves as before on every input");
+    assert_eq!(ids(a), ["jdk-constructor:java.util.ArrayList.<init>(I)V"]);
+    assert!(a.gaps[0].sites.iter().all(|s| s.starts_with("fixtures.Sized.capacity:")), "the new version's call, not the previous one's: {:?}", a.gaps[0].sites);
+}
+
 const IDENTITY: &str = r#"
 package fixtures;
 

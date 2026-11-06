@@ -506,6 +506,49 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     should show the probe's witness and the caveat. The pending 2a re-runs of 144/145 will not show a status.
   - Phase 2 is complete.
   - Next: 3a, the gap protocol (`--gaps advised`).
+- **3a, the gap protocol (2026-11-06).**
+  - `--gaps advised` ([`lib/src/advice.rs`](../../lib/src/advice.rs)), for property and regression proofs alike. The
+    driver builds its harness, then scans the harness and every method it may reach (`gaps::scan`, rooted at the
+    harness's `check`), on the class path the engine is given. No solver runs. A gap with no contract stops the run:
+    - The verdict is `Unverifiable`, with the finding `gaps-need-contracts`, and `search` is absent, since nothing
+      was solved. `stated` has the checker `none` ("gap scan: nothing was solved") and the gap mode `advised`.
+    - `advice` in `--json` holds the claim in words, the JDK's version, and each gap with its id, call, owner, name,
+      descriptor, parameters, result type and sites, plus what `--gaps assume` would take it to do. It also holds
+      `must_state`, the parts a contract must state per kind (result, exceptions, receiver, arguments, the static
+      state an initializer sets, purity), each with a question, and the gap's template block. `outside` lists what
+      the engine refuses whatever the contracts say.
+    - The template file is `contracts.template` in the work directory, and the console prints it after a `gap` line
+      per gap.
+  - **The template is the draft of 3b's format.** It is a block per gap, headed by its id, using `prove`'s keys:
+    `call:` (which names the parameters, since a JDK class file keeps no names, so `arg0`), `assume:`,
+    `throws: X when c`, `assert:` (over the arguments, `this`, `result` and `\old`), `modifies:` and
+    `written-by:`. 3b parses it and applies it.
+  - **With no gap, advised is strict.** `GapMode::refuses()` is true for both, so a gap the scan missed is still
+    refused. Advised needs `--engine native` or `auto` (an error under `jbmc`, whose stubs are 4c's).
+  - **The scan reaches every gap, not only the first a path meets.** `firstByte` gets both `Random.<init>` and
+    `nextBytes`, where strict ends the path at the first.
+  - Acceptance, inline:
+    - `advised_stops_before_solving_with_each_gap_and_what_its_contract_states` (integration.rs) covers native and
+      auto, property and regression: no `bmc.log`, the ids, sites, parameters, obligations, template file, JSON
+      and statement, and a gap-free claim decided as strict decides it.
+    - The conformance corpus now runs under advised too. It asks for contracts on exactly the 9 claims strict
+      refuses for a gap (the five capacity constructors, `Random`, the three initializers), and decides the other
+      84 as strict does. The test fails if advised asks where strict decides, or solves after advising.
+    - `AdviceTest` (test_build.py) covers the record, the template in the example's folder, the schema
+      (`$defs/advice`), the label `Unverifiable: 1 gap needs a contract (--gaps advised)`, the page's paragraph and
+      details, and a stale template being removed.
+  - `build.py` passes `approach.gaps: "advised"` through (now in the schema's enum). It keeps `advice` with the
+    template copied to `contracts.template` (`contracts-N.template` for property N of several).
+  - **This departs from the brief: 3a has no recorded example of its own.** A "contracts needed" page would record
+    the protocol's output, which the corpus and the integration test already pin, and no verdict about any code.
+    The example that shows the protocol is 3c's: the review's reproducer in an app kernel, a buffer pre-sized by a
+    sum that can overflow. Its page will show the advice first, then the verdict once a tested contract
+    (`IllegalArgumentException` when the capacity is negative) closes the gap, and the wrong contract rejected
+    with its counterexample. No page changed (`--render-only` of every example), and no job was needed.
+  - Not done: the scan may name a gap on a path no input takes (none on the corpus). A static JDK method the
+    engine does not model is still refused outright, not a gap, so the protocol does not reach it. 3b could make
+    it a gap kind.
+  - Next: 3b, the contract format, read with `--contracts FILE` and applied by the engine at the call.
 
 ## Loop settings
 

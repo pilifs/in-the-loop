@@ -54,7 +54,9 @@
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
 //! one has no verdict unless another path is a violation, which stands. Under [`gaps::GapMode::Assume`] the engine
 //! goes on with the approximation [`gaps::GapKind::approximation`] states, and the outcome names every gap it
-//! assumed ([`Outcome::gaps`]).
+//! assumed ([`Outcome::gaps`]). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
+//! drivers stop before the engine runs when the gap scan finds one with no contract ([`crate::advice`]), so the
+//! engine meets one only where the scan did not see it.
 
 pub mod bits;
 pub mod gaps;
@@ -180,7 +182,7 @@ impl Outcome {
     pub fn summary(&self) -> String {
         let gaps = match self.gaps.len() {
             0 => String::new(),
-            n => format!(", {n} gap{} {} (--gaps {})", if n == 1 { "" } else { "s" }, if self.gap_mode == GapMode::Assume { "assumed" } else { "refused" }, self.gap_mode.name()),
+            n => format!(", {n} gap{} {} (--gaps {})", if n == 1 { "" } else { "s" }, if self.gap_mode.refuses() { "refused" } else { "assumed" }, self.gap_mode.name()),
         };
         format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
@@ -527,7 +529,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         refined_multiplications: engine.b.multiplications().1,
         seconds: started.elapsed().as_secs_f64(),
         solver: solver.clone(),
-        gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode == GapMode::Assume { GapTreatment::Assumed } else { GapTreatment::Refused })),
+        gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })),
         gap_mode: engine.gap_mode,
     };
 
@@ -641,22 +643,22 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     if best.is_some() {
         return Ok(violation(&engine, best));
     }
-    if engine.gap_mode == GapMode::Strict && !engine.met.is_empty() {
-        let problem = refused_gaps(&gaps::records(&engine.met, jdk.as_deref(), None));
+    if engine.gap_mode.refuses() && !engine.met.is_empty() {
+        let problem = refused_gaps(&gaps::records(&engine.met, jdk.as_deref(), None), engine.gap_mode);
         return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
     }
     Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
 }
 
 /// Why a run that refused gaps has no verdict: each gap by its id, with the call and where.
-pub fn refused_gaps(gaps: &[GapRecord]) -> String {
+pub fn refused_gaps(gaps: &[GapRecord], mode: GapMode) -> String {
     let n = gaps.len();
     let list = gaps.iter().map(|g| format!("{} ({} at {})", g.id, g.call, g.sites.join(", "))).collect::<Vec<_>>().join("; ");
     let instead = match gaps {
         [g] => format!("that {} {}", g.call, g.approximation),
         _ => "what each gap's approximation states".to_string(),
     };
-    format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps strict): {list}. With --gaps assume it assumes instead {instead}, and the verdict names the assumption", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" })
+    format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps {mode}): {list}. With --gaps assume it assumes instead {instead}, and the verdict names the assumption", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" }, mode = mode.name())
 }
 
 /// The SAT solver the engine is built with, by name and version: `CaDiCaL 1.9.5 (bundled)`.
@@ -1767,7 +1769,7 @@ impl<'a> Engine<'a> {
         let frame = path.frames.last().expect("a frame");
         let site = Site { class: frame.class.name.clone(), method: frame.method.clone(), line: frame.code.lines[frame.at] };
         self.met.entry(Gap { kind, owner: owner.to_string(), name: name.to_string(), descriptor: descriptor.to_string() }).or_default().insert(site);
-        (self.gap_mode == GapMode::Strict).then_some(End::Gap)
+        self.gap_mode.refuses().then_some(End::Gap)
     }
 
     /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `invokestatic`): each

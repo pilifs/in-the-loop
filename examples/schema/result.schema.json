@@ -20,6 +20,61 @@
   ],
   "additionalProperties": false,
   "$defs": {
+    "advice": {
+      "description": "What a run under --gaps advised returns when it reaches gaps with no contract (lib/src/advice.rs).",
+      "type": "object",
+      "required": ["status", "claim", "gaps", "templateFile"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "description": "`contracts-needed`: the run stopped before solving.", "enum": ["contracts-needed"] },
+        "claim": {
+          "type": "object", "required": ["kind", "target", "text"], "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["property", "regression"] },
+            "target": { "type": "string" },
+            "text": { "description": "The claim in words, as the verdict would state it.", "type": "string" }
+          }
+        },
+        "jdk": { "description": "The JDK the gaps of JDK members are about.", "type": "string" },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "call", "owner", "name", "descriptor", "parameters", "returns", "sites", "assumed", "mustState", "template"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "description": "The gap's stable id, which a contract is filed under.", "type": "string" },
+              "kind": { "type": "string" },
+              "call": { "type": "string" },
+              "owner": { "type": "string" },
+              "name": { "type": "string" },
+              "descriptor": { "type": "string" },
+              "parameters": { "type": "array", "items": { "type": "object", "required": ["name", "type"], "additionalProperties": false, "properties": { "name": { "type": "string" }, "type": { "type": "string" } } } },
+              "returns": { "type": "string" },
+              "sites": { "type": "array", "items": { "type": "string" } },
+              "assumed": { "description": "What --gaps assume would take the call to do: what a contract replaces.", "type": "string" },
+              "mustState": {
+                "type": "array",
+                "items": {
+                  "type": "object", "required": ["part", "question"], "additionalProperties": false,
+                  "properties": {
+                    "part": { "enum": ["result", "exceptions", "receiver", "arguments", "state", "purity"] },
+                    "question": { "type": "string" }
+                  }
+                }
+              },
+              "template": { "description": "The gap's block of the template.", "type": "string" }
+            }
+          }
+        },
+        "outside": {
+          "description": "What the engine refuses whatever the contracts say: each kind with its first member and site, and how many sites.",
+          "type": "object",
+          "additionalProperties": { "type": "object", "required": ["first", "at", "sites"], "additionalProperties": false, "properties": { "first": { "type": "string" }, "at": { "type": "string" }, "sites": { "type": "integer" } } }
+        },
+        "templateFile": { "description": "The file in the example's folder the whole template was copied to.", "type": "string" }
+      }
+    },
     "excerpt": {
       "type": "object",
       "required": [
@@ -334,10 +389,11 @@
           }
         },
         "gapMode": {
-          "description": "The gap mode of the checker the verdict comes from; null for JBMC.",
+          "description": "The gap mode of the checker the verdict comes from; null for JBMC. `advised` with the checker `none` is a run that stopped at the gap scan, before solving.",
           "enum": [
             "strict",
             "assume",
+            "advised",
             null
           ]
         },
@@ -614,7 +670,7 @@
         "stage": { "description": "The input range of the run the verdict comes from, as `[0:20]`; null for the whole range.", "type": ["string", "null"] },
         "sharedCallees": { "description": "The callees taken as one function in both versions, as `Class.method`.", "type": "array", "items": { "type": "string" } },
         "fallback": { "description": "Under `--engine auto`: why the own checker gave no verdict before JBMC was run.", "type": "string" },
-        "gapMode": { "description": "The gap mode the own checker ran under (`--gaps`), when the verdict is its: `strict` or `assume`. Absent in results written before 2026-11-05.", "enum": ["strict", "assume"] },
+        "gapMode": { "description": "The gap mode the own checker ran under (`--gaps`), when the verdict is its: `strict`, `assume` or `advised`. Absent in results written before 2026-11-05.", "enum": ["strict", "assume", "advised"] },
         "gaps": {
           "description": "The gaps the own checker met, constructs it does not implement as the JVM does (lib/src/bmc/gaps.rs): each `refused` (strict: the path that reached it ended there) or `assumed` (its approximation taken, which a verified verdict rests on).",
           "type": "array",
@@ -648,6 +704,10 @@
         "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: the Box Office Java verifier, on the JVM.", "enum": ["interpreter", "jvm"] },
         "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable. For a property, whether the interpreter's run showed the property failing: false too when the property calls the method under proof, which only the harness can evaluate, so that the violation is the checker's word.", "type": "boolean" }
       }
+    },
+    "advice": {
+      "description": "Under --gaps advised (approach.gaps), when the proof reached gaps of the tool's own checker with no contract and stopped before solving: each gap with what a contract for it must state, and a template (lib/src/advice.rs, step 3a of llm-dlc/loops/sound-verdicts.md). The template is copied to `templateFile` in the example's folder. Null otherwise; absent in results written before 2026-11-06.",
+      "anyOf": [{ "$ref": "#/$defs/advice" }, { "type": "null" }]
     },
     "stated": {
       "description": "The statement the verdict is about, as data ($defs/statement). Null when the run built none or did not complete; absent in results written before 2026-11-06.",
@@ -837,7 +897,8 @@
           "statement": { "description": "The file the property's harness was copied to, `statement-N.java`, when the target has several; null for one, whose harness is `statement`.", "type": ["string", "null"] },
           "search": { "$ref": "#/properties/search" },
           "replay": { "$ref": "#/properties/replay" },
-          "stated": { "$ref": "#/$defs/statement", "description": "The property's statement, as data; absent in results written before 2026-11-06." }
+          "stated": { "$ref": "#/$defs/statement", "description": "The property's statement, as data; absent in results written before 2026-11-06." },
+          "advice": { "$ref": "#/$defs/advice", "description": "The property's advice under --gaps advised, when its proof stopped at gaps with no contract." }
         }
       }
     },
