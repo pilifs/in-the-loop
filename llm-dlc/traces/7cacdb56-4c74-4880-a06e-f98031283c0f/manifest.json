@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T07:01:05.779Z",
-  "duration_seconds": 26796,
+  "ended": "2026-11-06T07:17:22.756Z",
+  "duration_seconds": 27773,
   "stats": {
-    "turns": 90,
-    "api_calls": 1244,
-    "tool_calls": 1255,
-    "tool_errors": 13,
-    "compactions": 16,
+    "turns": 96,
+    "api_calls": 1310,
+    "tool_calls": 1323,
+    "tool_errors": 14,
+    "compactions": 17,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 2518,
-      "output_tokens": 1209003,
-      "cache_read_input_tokens": 221310110,
-      "cache_creation_input_tokens": 4121938
+      "input_tokens": 2656,
+      "output_tokens": 1262429,
+      "cache_read_input_tokens": 232254206,
+      "cache_creation_input_tokens": 4344050
     }
   },
   "tools": {
-    "Bash": 1122,
-    "Read": 91,
-    "Write": 20,
-    "Edit": 17,
-    "ToolSearch": 3,
+    "Bash": 1181,
+    "Read": 97,
+    "Write": 21,
+    "Edit": 18,
+    "ToolSearch": 4,
     "WebFetch": 2
   },
   "files_touched": [
@@ -45,6 +45,7 @@
     "lib/src/contract_library.rs",
     "lib/src/contract_proving.rs",
     "lib/src/contract_testing.rs",
+    "lib/src/deadline.rs",
     "lib/src/digest.rs",
     "lib/src/equivalence.rs",
     "lib/src/gap_contracts.rs",
@@ -287,24 +288,38 @@
     {
       "index": 16,
       "started": "2026-11-06T06:27:03.771Z",
-      "ended": "2026-11-06T07:01:05.779Z",
-      "turns": 4,
-      "api_calls": 84,
+      "ended": "2026-11-06T07:01:42.422Z",
+      "turns": 5,
+      "api_calls": 87,
       "usage": {
-        "input_tokens": 170,
-        "output_tokens": 64155,
-        "cache_read_input_tokens": 15446316,
-        "cache_creation_input_tokens": 241907
+        "input_tokens": 178,
+        "output_tokens": 65549,
+        "cache_read_input_tokens": 16216717,
+        "cache_creation_input_tokens": 255496
       },
-      "peak_context_tokens": 254987
+      "peak_context_tokens": 268578
+    },
+    {
+      "index": 17,
+      "started": "2026-11-06T07:02:19.575Z",
+      "ended": "2026-11-06T07:17:22.756Z",
+      "turns": 5,
+      "api_calls": 63,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 52032,
+        "cache_read_input_tokens": 10173695,
+        "cache_creation_input_tokens": 208523
+      },
+      "peak_context_tokens": 221603
     }
   ],
   "log": {
-    "sha256": "09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454",
-    "bytes": 38730027,
-    "lines": 13041,
-    "gzip_bytes": 7233136,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454.jsonl.gz"
+    "sha256": "3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039",
+    "bytes": 40765995,
+    "lines": 13725,
+    "gzip_bytes": 7638045,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -491,6 +506,14 @@
       "summary": "A witness found through contracts is run on a real JVM: the harness the checker proved, with the JDK's own calls where the contracts stood, makes it a violation when it fails there and no verdict when it holds",
       "body": "Under --gaps advised, a counterexample the tool's own checker finds through a contract for a JDK call is one the contracts admit, not necessarily one the JDK gives; until now, when the interpreter could not run it (new java.util.Random(seed) is outside it), the run gave no verdict, so a real defect such as example 148's off-by-one was never reported. lib/src/jvm_witness.rs generates WitnessRun, which a JVM of the JDK the gap ids name runs: it calls the proved harness's check on the witness, then the method alone (each version alone, for a regression proof of static methods) for the outcome to report. An AssertionError makes the witness a violation, its proof line saying 'run on a JVM (JDK ...) with the JDK's own calls where the contracts stood', replay.by 'jvm', not shrunk (the interpreter is the shrinker's oracle); a harness that returns makes it no verdict, '... does not reproduce on a JVM', with what the method did there. Both the property and the regression drivers do this.\n\nFound on the way, recorded in the brief's Progress: in a regression proof each version's call takes its own value under a range contract, so two calls the versions make alike can differ in the proof, and such a witness is almost never real; the message says so, and treating a contracted JDK call as one function in both versions is left for later.\n\nVerified inline: the new integration test a_witness_through_contracts_is_run_on_a_jvm (jitter(shift=31) a violation with the JVM's IllegalArgumentException, roll(sides=10) no verdict since Random(7) gives 6, firstByte a violation leaving out=[115], a regression violation with both versions run alone, and two versions calling nextInt alike no verdict), on native and auto; the conformance corpus's contract columns now decide firstByte as a violation, which its own JVM runner reproduces; 148's kernel with the off-by-one is a violation in 0.2 s and the correct kernel still verified. All Rust tests and the 154 Python tests pass. Example 148's notes, lib/README.md, the result schema's replay.by text and the verify-bytecode skill are updated. No recorded result changes (147-149 are pending) and no job was needed. Next in the brief: Phase 4, 4a.",
       "log_sha256": "09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454"
+    },
+    {
+      "change_id": "vrnmyzoqnkrqowllykxtnxnnvxmpvkrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC's interval stages run only where they bound an input, and a check has one deadline: a harness over arrays alone, as example 142's, runs JBMC once, and every run gets a budget out of --timeout (verification pending)",
+      "body": "Step 4a of llm-dlc/loops/sound-verdicts.md. --java-assume-inputs-interval bounds the primitive inputs of the harness's entry method, not array elements, so a preliminary stage ([0:20], [-100000:100000]) is kept only where its interval leaves out a value of some primitive parameter (lib/src/deadline.rs, stages_for, read from the harness class's check descriptor). A harness over arrays alone runs once, one over bytes, chars or shorts skips the second stage, one over booleans runs once. Both the property and the regression driver use it.\n\nThe whole check now has one deadline, --timeout, where the own checker, each JBMC stage, JBMC's fallback under auto, the shared-callee and as-written runs and the vacuity probe each used to get all of it. A preliminary stage gets at most an eighth of the check, the own checker under --engine auto all but a quarter kept for JBMC's fallback, and the last stage and the probe what is left. JBMC's rerun with its default solver takes what is left of its run's budget. A preliminary stage out of time now hands on to the next (before, the first stage to time out ended the check with no verdict, though only the last stage is the proof). --confirm stays a second check with a deadline of its own: the brief does not say, and giving it the remainder would leave it nothing. The outcome records search.deadline_seconds and search.runs (checker, purpose, interval, budget, seconds, how it ended), which build.py keeps as search.deadlineSeconds/runs (in the schema). Docs: --timeout help, lib/README.md step 4 and search text, the verify-bytecode skill's budget line.\n\nVerified inline: jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline (lib/tests/conformance.rs), with a stand-in JBMC that logs its runs and can hang, shows one run for length(int[]) as property and regression, [0:20] then the proof for byteSum(byte, byte), three runs with budgets of 75/75/rest of 600 s for increment(int), hanging stages handed on and verified in under 8 s of a 16 s check, every run hanging ending a 4 s check in under 6 s with budgets adding up to 4 s, and the own checker's 75 of 100 s under auto with its probe recorded. Unit tests in deadline.rs, DeadlineTest in test_build.py; all Rust tests and the 155 Python tests pass. No recorded result changes and no page changed.\n\nPipeline job 20261106-071536-example-142-s-regression-harness-under-j compiles Mica before and after 142's patch and runs equivalence --engine jbmc --timeout 300 on the real JBMC, checking for one JBMC run over every input within the deadline; its steps were dry-run with a stand-in JBMC. The brief's at-HEAD note that every run walks all three stages is now out of date, as this step intended. Not done: a stage that the scope fixes (x == 3) still runs; out_of_time reads the problem text until 4b's structured outcome.",
+      "log_sha256": "3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039"
     }
   ],
   "logs": {
@@ -534,6 +557,12 @@
       "bytes": 27677771,
       "lines": 9340,
       "gzip_bytes": 5114540,
+      "url": null
+    },
+    "3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039": {
+      "bytes": 40765995,
+      "lines": 13725,
+      "gzip_bytes": 7638045,
       "url": null
     },
     "3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e": {

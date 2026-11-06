@@ -1049,6 +1049,70 @@ Each run counts only its own commits, so work done in earlier runs is listed her
       `<not run alone on the JVM, ...>`.
   - Next: Phase 4, starting with 4a. Run JBMC's interval stages only where they can change the domain, and give
     every check one deadline. Acceptance: 142's harness runs once.
+- **4a, stages only where they change the domain, and one deadline (2026-11-06).**
+  - **Stages** ([`lib/src/deadline.rs`](../../lib/src/deadline.rs)). `stages_for` reads the parameters of the
+    harness's entry method from its class file. It keeps a preliminary stage (`[0:20]`, `[-100000:100000]`) only
+    where the stage's interval leaves out some value of a primitive parameter. `--java-assume-inputs-interval` does
+    not bound array elements, so:
+    - a harness over arrays alone runs once, as 142's `(char[] chars, byte[] out)` now does;
+    - one over bytes, chars or shorts skips the second stage;
+    - one over booleans alone runs once;
+    - one with an `int`, a `long` or a floating-point input runs all three.
+
+    Both drivers use it. `equivalence::STAGES` is now a re-export.
+  - **One deadline per check.** The check is the own checker's run, JBMC's stages, JBMC's fallback under auto, the
+    runs with shared callees and as written, and the vacuity probe. It gets `--timeout` once, as a `Deadline`, where
+    each of those runs used to get all of it. The budgets:
+    - each preliminary stage gets at most an eighth of the check (`STAGE_SHARE`);
+    - the own checker under `--engine auto` gets all but a quarter, which is kept for JBMC's fallback
+      (`FALLBACK_SHARE`);
+    - under `native`, the own checker gets everything that is left, and so do JBMC's last stage and the probe.
+
+    JBMC's rerun with its default solver, when the solver asked for is missing, now takes what is left of the run's
+    budget, not a second one.
+  - **A preliminary stage that runs out of its budget hands on to the next.** Before, the first stage to time out
+    ended the check with no verdict, though only the last stage is the proof. Any other no-verdict still ends the
+    search. `JbmcResult::out_of_time` tells the two apart. It reads the problem text, which 4b's structured outcome
+    should replace.
+  - **`--confirm` is a second check, by a second checker, with a deadline of its own.** The brief does not say
+    either way. Giving it what was left would leave it nothing after most own-checker proofs.
+  - **The result shows where the time went.** `search.deadline_seconds` holds the deadline. `search.runs` lists
+    every run in order, each with:
+    - the checker;
+    - its purpose (`proof`, `fallback`, `shared`, `as-written` or `probe`);
+    - its interval;
+    - its budget and seconds;
+    - how it ended (`verified`, `violation`, `no-verdict` or `out-of-time`).
+
+    `build.py` keeps them as `search.deadlineSeconds` and `search.runs`, which are in the schema. The `--timeout`
+    help, the README's step 4 and `search` text, and the skill's budget line say the deadline is per check.
+  - Acceptance, inline:
+    - `jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline` (conformance.rs) uses a stand-in JBMC
+      that logs each run, and can hang on the interval stages or on every run. It checks:
+      - `length(int[])` runs once, as a property and as a regression;
+      - `byteSum(byte, byte)` runs `[0:20]`, then the proof;
+      - `increment(int)` runs all three, with budgets of at most 75 s, 75 s and the rest of 600;
+      - with the stages hanging, a 16 s check hands on twice and is verified in under 8 s (before, it ended with no
+        verdict at 16 s);
+      - with every run hanging, a 4 s check ends in under 6 s with three `out-of-time` runs whose budgets add up to
+        4 s;
+      - under auto, the own checker's budget is 75 of 100 s, and its probe is recorded.
+    - Unit tests in `deadline.rs` cover the stage rule and the budgets. `DeadlineTest` (test_build.py) covers the
+      record and the schema. All Rust tests and the 155 Python tests pass.
+  - **142 on the real JBMC is a pipeline job**, `20261106-071536-example-142-s-regression-harness-under-j`. It
+    compiles Mica before and after 142's patch and runs `equivalence --engine jbmc --timeout 300`. It checks for one
+    JBMC run over every input that ends within the deadline. Its steps were dry-run here with a stand-in JBMC. 142's
+    recorded result is the own checker's and does not change, and no page changed.
+  - Not done:
+    - A stage the scope fixes, such as `x == 3`, is still run. Only the parameter types decide.
+    - The own checker's internal witness search ([`bmc::STAGES`](../../lib/src/bmc/mod.rs)) is within its single
+      run, so it was left as it was.
+    - The JVM witness run, shrinking, and contract proofs and tests keep their own limits (60 s, the interpreter's
+      steps, 30 s per contract). Contract checking happens inside the deadline's time, since the check starts
+      before the contracts are applied.
+  - Next: 4b, reading JBMC through `--json-ui`, with the text parser kept until a differential test over the
+    recorded JBMC examples shows the two agree. Unsupported input, unwinding failure, timeout, memory exhaustion,
+    solver failure and counterexample stay distinct, which also replaces `out_of_time`'s text match.
 
 ## Loop settings
 

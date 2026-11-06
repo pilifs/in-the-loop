@@ -1601,6 +1601,9 @@ def search_record(outcome):
         record["sharedCallees"] = outcome["shared"]
     if s.get("fallback"):
         record["fallback"] = s["fallback"]
+    if s.get("runs"):
+        record["deadlineSeconds"] = s["deadline_seconds"]
+        record["runs"] = camel(s["runs"])
     if s.get("native"):
         record["native"] = {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): v for k, v in s["native"].items()}
     if s.get("gap_mode"):

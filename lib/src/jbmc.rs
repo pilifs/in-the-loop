@@ -71,6 +71,13 @@ pub enum Argument {
 }
 
 impl JbmcResult {
+    /// Whether the run gave no verdict for want of time: JBMC killed at its budget, or the own checker or its
+    /// solver past the deadline. A preliminary stage that ran out of time hands on to the next
+    /// ([`crate::deadline`]); any other no-verdict ends the search.
+    pub fn out_of_time(&self) -> bool {
+        self.verdict == Verdict::Unverifiable && self.problem.as_deref().is_some_and(|p| p.contains("did not finish within"))
+    }
+
     /// The counterexample's arguments, in parameter order, arrays included.
     pub fn arguments(&self, params: &[Type]) -> Result<Vec<Argument>, Error> {
         let mut out = Vec::new();
@@ -206,7 +213,9 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
         // This JBMC was built without the solver asked for: its own default will do.
         let fallback = JbmcRun { sat_solver: None, ..run.clone() };
         let note = format!("note: {}; running again with JBMC's default solver\n", output.lines().find(|l| l.contains("unknown solver")).unwrap_or_default().trim());
-        output = note + &crate::tla::run_with_timeout(&limited(command(&fallback), memory_mb), &cwd, run.timeout)?;
+        // Within what is left of the run's budget, not a budget of its own.
+        let left = run.timeout.saturating_sub(started.elapsed());
+        output = note + &crate::tla::run_with_timeout(&limited(command(&fallback), memory_mb), &cwd, left)?;
     }
     let seconds = started.elapsed().as_secs_f64();
     std::fs::write(&run.log, &output)?;
@@ -215,7 +224,7 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
     result.seconds = seconds;
     if output.contains("did not finish within") {
         result.verdict = Verdict::Unverifiable;
-        result.problem = Some(format!("JBMC did not finish within {} s", run.timeout.as_secs()));
+        result.problem = Some(format!("JBMC did not finish within {} s", crate::deadline::seconds(run.timeout)));
     } else if let Some(problem) = abnormal_end(&output, memory_mb) {
         result.verdict = Verdict::Unverifiable;
         result.problem = Some(problem);

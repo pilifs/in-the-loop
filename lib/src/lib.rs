@@ -38,6 +38,7 @@ pub mod gap_contracts;
 pub mod activation;
 pub mod validation;
 pub mod contract;
+pub mod deadline;
 pub mod digest;
 pub mod domain;
 pub mod equivalence;

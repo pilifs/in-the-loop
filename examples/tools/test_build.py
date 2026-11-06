@@ -2013,6 +2013,29 @@ class GapModeTest(unittest.TestCase):
         self.assertEqual(build.assumed_gaps({"search": build.search_record({"search": refused})}), [])
 
 
+class DeadlineTest(unittest.TestCase):
+    """Step 4a of llm-dlc/loops/sound-verdicts.md: the check's deadline and its runs, each with its budget."""
+
+    def test_the_search_record_keeps_the_deadline_and_every_run(self):
+        runs = [{"checker": "jbmc", "purpose": "proof", "stage": "[0:20]", "budget_seconds": 75.0, "seconds": 75.0, "ended": "out-of-time"},
+                {"checker": "jbmc", "purpose": "proof", "stage": None, "budget_seconds": 525.0, "seconds": 3.2, "ended": "verified"}]
+        search = {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 78.2, "properties": 5, "unwind": 16,
+                  "max_array_length": 8, "stage": None, "deadline_seconds": 600.0, "runs": runs}
+        record = build.search_record({"search": search})
+        self.assertEqual(record["deadlineSeconds"], 600.0)
+        self.assertEqual(record["runs"][0], {"checker": "jbmc", "purpose": "proof", "stage": "[0:20]", "budgetSeconds": 75.0,
+                                             "seconds": 75.0, "ended": "out-of-time"})
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(record, schema["properties"]["search"])
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate({**record, "runs": [{**record["runs"][0], "ended": "timeout"}]}, schema["properties"]["search"])
+        # A result written before the runs were recorded has neither.
+        old = build.search_record({"search": {k: v for k, v in search.items() if k not in ("deadline_seconds", "runs")}})
+        self.assertNotIn("runs", old)
+        self.assertNotIn("deadlineSeconds", old)
+
+
 class StatementTest(unittest.TestCase):
     """Step 2a of llm-dlc/loops/sound-verdicts.md: the result records the statement a verdict is about as data, and
     the page states it in one paragraph, so that two results that differ only in the domain, the observations, the

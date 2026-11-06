@@ -45,6 +45,7 @@ use serde::Serialize;
 use crate::bmc::gaps::GapTreatment;
 use crate::classfile::{MemberRef, Type};
 use crate::classpath::ClassPath;
+use crate::deadline::{Deadline, Run};
 use crate::harness::{self, CallArg};
 use crate::interp::Value;
 use crate::jbmc::{self, Argument, JbmcResult, JbmcRun};
@@ -55,8 +56,7 @@ use crate::{shared, witness, Error, Verdict};
 /// JDK classes whose real bytecode JBMC analyses, instead of the small models it ships.
 pub const JDK_CLASSES: &[&str] = &["java/lang/Math", "java/lang/StrictMath", "java/lang/Integer", "java/lang/Long", "java/lang/Short", "java/lang/Byte"];
 
-/// Searched first, so that a counterexample is small enough to read; the last stage is the proof over all inputs.
-pub const STAGES: &[Option<&str>] = &[Some("[0:20]"), Some("[-100000:100000]"), None];
+pub use crate::deadline::STAGES;
 
 #[derive(Debug, Clone)]
 pub struct Options {
@@ -76,6 +76,7 @@ pub struct Options {
     pub max_array_length: u32,
     /// Whether to shrink a counterexample in the interpreter before reporting it.
     pub shrink: bool,
+    /// The check's one deadline ([`crate::deadline`]); `--confirm` gets one of its own.
     pub timeout_seconds: u64,
     pub jbmc: String,
     /// The JDK to take `java.lang.Math` from; found through `JAVA_HOME`/`PATH` when `None`.
@@ -258,6 +259,16 @@ pub struct Search {
     /// or when the verdict is no proof of the own checker's.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub confirmation: Option<Confirmation>,
+    /// The check's one deadline, `--timeout` ([`crate::deadline`]).
+    pub deadline_seconds: f64,
+    /// Every checker run of the check, in order, each with its budget out of the deadline; the confirmation's
+    /// run is its own check.
+    pub runs: Vec<Run>,
+}
+
+/// The own checker's budget: under `auto` the check but the part kept for JBMC's fallback, otherwise all of it.
+pub(crate) fn own_budget(deadline: &Deadline, engine: crate::Engine) -> Duration {
+    if engine == crate::Engine::Auto { deadline.all_but(crate::deadline::FALLBACK_SHARE) } else { deadline.left() }
 }
 
 /// JBMC's check of a statement the tool's own checker proved (`--engine auto --confirm`): the one expensive check
@@ -480,13 +491,16 @@ pub struct Replay {
 /// status with how it is known (non-vacuous with the probe's witness, vacuous, or unknown when the probe gave no
 /// verdict), each with its line under `✓`.
 #[allow(clippy::too_many_arguments)] // the settings of the proof it probes
-pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &crate::bmc::gaps::GapSetting, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>) -> Result<(Option<String>, Vacuity), Error> {
+pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &crate::bmc::gaps::GapSetting, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>, search: &mut Option<Search>) -> Result<(Option<String>, Vacuity), Error> {
     let probe_dir = work.join("probe");
     std::fs::create_dir_all(&probe_dir)?;
     std::fs::write(probe_dir.join(format!("{class}.class")), probe)?;
     let mut probe_entries = vec![probe_dir.clone()];
     probe_entries.extend(entries.iter().cloned());
     let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, gaps, &probe_dir)?;
+    if let Some(s) = search {
+        s.runs.push(Run::of(&result, "probe", timeout));
+    }
     Ok(match result.verdict {
         Verdict::Verified => {
             let reason = format!("no input in the domain reaches the calls, every one {skipped_by}; the proof covers no input and says nothing");
@@ -889,10 +903,13 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         shared_classpath = Some(cp);
     }
     let started = std::time::Instant::now();
+    // One deadline for the whole check, each run a budget out of it ([`crate::deadline`]).
+    let deadline = Deadline::starting_now(Duration::from_secs(options.timeout_seconds));
+    let mut runs = Vec::new();
     let mut last = None;
     // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
-    // `auto`), or that is the answer (under `native`).
-    let mut stages: &[Option<&str>] = STAGES;
+    // `auto`), or that is the answer (under `native`). JBMC's interval stages run only where they bound an input.
+    let mut stages = crate::deadline::stages_for(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     if options.engine != crate::Engine::Jbmc {
@@ -922,12 +939,14 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
             }
         }
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &gap_setting, &work)?;
+        let budget = own_budget(&deadline, options.engine);
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &work)?;
+        runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
                 let _ = writeln!(out, "{}", NOT_JBMC);
             }
-            stages = &[];
+            stages.clear();
             last = Some(result);
         } else {
             let _ = writeln!(out, "note: the tool's own checker gave no verdict ({}); JBMC", result.problem.as_deref().unwrap_or("no reason"));
@@ -941,16 +960,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     } else {
         Vec::new()
     };
-    let run_stages = |classpath: &[PathBuf], tag: &str| -> Result<Option<JbmcResult>, Error> {
+    let run_stages = |classpath: &[PathBuf], tag: &str, purpose: &str, runs: &mut Vec<Run>| -> Result<Option<JbmcResult>, Error> {
         let mut last = None;
-        for stage in stages {
+        for stage in &stages {
+            let budget = deadline.for_stage(*stage);
             let run = JbmcRun {
                 executable: options.jbmc.clone(),
                 class: harness::CLASS.into(),
                 function: harness::METHOD.into(),
                 classpath: classpath.to_vec(),
                 unwind: options.unwind,
-                timeout: Duration::from_secs(options.timeout_seconds),
+                timeout: budget,
                 stage: stage.map(str::to_string),
                 refine_strings: options.refine_strings,
                 sat_solver: options.sat_solver.clone(),
@@ -958,7 +978,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 extra_args: extra_args.clone(),
             };
             let result = jbmc::run(&run)?;
-            let stop = result.verdict != Verdict::Verified;
+            runs.push(Run::of(&result, purpose, budget));
+            // A preliminary stage out of its budget hands on: only the last stage is the proof.
+            let stop = result.verdict != Verdict::Verified && !(stage.is_some() && result.out_of_time());
             last = Some(result);
             if stop {
                 break;
@@ -1064,7 +1086,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut shared_used = Vec::new();
     if last.is_none() {
         if let Some(cp) = &shared_classpath {
-            if let Some(result) = run_stages(cp, "-shared")? {
+            if let Some(result) = run_stages(cp, "-shared", "shared", &mut runs)? {
                 let keep = match result.verdict {
                     Verdict::Violation => !replay_both(&result.arguments(&flat_types)?).agree,
                     _ => true,
@@ -1078,13 +1100,15 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             }
         }
         if last.is_none() {
-            last = run_stages(&classpath, "")?;
+            let purpose = if runs.iter().any(|r| r.purpose == "shared") { "as-written" } else if fallback.is_some() { "fallback" } else { "proof" };
+            last = run_stages(&classpath, "", purpose, &mut runs)?;
         }
     }
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
     // Under `--confirm`, the own checker's proof is JBMC's to prove again, over every input in one run, on the
-    // class path the own checker proved it on (the callees as written).
+    // class path the own checker proved it on (the callees as written). It is a second check, by a second checker,
+    // with a deadline of its own.
     let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
         let run = JbmcRun {
             executable: options.jbmc.clone(),
@@ -1104,7 +1128,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     } else {
         (None, None)
     };
-    let search = Some(Search {
+    let mut search = Some(Search {
         engine: if last.native.is_some() { "native" } else { "jbmc" }.into(),
         checker: last.version.clone(),
         seconds,
@@ -1117,6 +1141,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         gap_mode: last.gap_mode,
         gaps: last.gaps.clone(),
         confirmation,
+        deadline_seconds: deadline.total().as_secs_f64(),
+        runs,
     });
     let mut replay = None;
     let sharing = match shared_used.len() {
@@ -1204,7 +1230,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
-                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &gap_setting, &work, &ways.join(" or "), &render)?;
+                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &work, &ways.join(" or "), &render, &mut search)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
             } else {

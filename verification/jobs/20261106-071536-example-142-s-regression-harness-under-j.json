@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-071536-example-142-s-regression-harness-under-j",
+  "title": "Example 142's regression harness under JBMC runs once, within one deadline (step 4a of the sound-verdicts brief)",
+  "description": "Step 4a of llm-dlc/loops/sound-verdicts.md: JBMC's interval stages ([0:20], [-100000:100000]) now run only where their interval leaves out a value of a primitive input of the harness, since --java-assume-inputs-interval does not bound array elements, and the whole check has one deadline (--timeout), each run a budget out of it (lib/src/deadline.rs). Example 142's harness, Mica's ModifiedUtf8#encodeInto(char[] chars, byte[] out) before and after its ASCII fast path, takes arrays alone, so it used to run JBMC three times over the same domain, each with the full timeout. This job compiles Mica before and after 142's patch, runs jvmcontract equivalence --engine jbmc --timeout 300 on it with the real JBMC, and checks search.runs in the JSON: one JBMC run, over every input, ending within the deadline. The recorded result is the own checker's (engine native) and does not change; JBMC ran out of memory at 2.8 GB on this harness before, so no verdict from JBMC is expected, only the shape of the run.",
+  "kind": "library",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "142"
+    ],
+    "paths": [
+      "lib/src/deadline.rs",
+      "lib/src/equivalence.rs",
+      "llm-dlc/loops/sound-verdicts.md"
+    ]
+  },
+  "expected": "exits 0, printing 'ok: one JBMC run over every input, within the deadline'. The verdict is most likely unverifiable (JBMC out of memory under its 3 GiB limit, or out-of-time at 300 s), which is fine: the check is that JBMC ran once with no --java-assume-inputs-interval and that the run's seconds are within the 300 s deadline. A failure listing more than one run, or a run past the deadline, is a bug in step 4a.",
+  "submitted": {
+    "at": "2026-11-06T07:15:36+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "3.5G",
+    "duration": "8m",
+    "timeout": "30m",
+    "notes": "one JBMC run capped at 3 GiB and 300 s, plus compiling Mica twice and building the crate"
+  },
+  "steps": [
+    {
+      "name": "142's harness under JBMC, once",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-142; rm -rf \"$W\"; mkdir -p \"$W/repo/examples/apps\"\ncp -r examples/apps/mica \"$W/repo/examples/apps/\"; rm -rf \"$W/repo/examples/apps/mica/build\"\npatch -s -p1 -d \"$W/repo\" < examples/142-*/change.patch\njavac -g -parameters -d \"$W/before\" $(find examples/apps/mica/src/main/java -name '*.java')\njavac -g -parameters -d \"$W/after\" $(find \"$W/repo/examples/apps/mica/src/main/java\" -name '*.java')\n(cd lib && cargo build --release -q)\nlib/target/release/jvmcontract equivalence --before \"$W/before\" --after \"$W/after\" --target 'net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto' --engine jbmc --jbmc \"${JBMC:-jbmc}\" --timeout 300 --work \"$W/work\" --json > \"$W/outcome.json\" || true\npython3 -c '\nimport json, sys\no = json.load(open(sys.argv[1])); o = o[0] if isinstance(o, list) else o\ns = o[\"search\"]; runs = s[\"runs\"]\nprint(o[\"verdict\"], o.get(\"problem\"), \"deadline\", s[\"deadline_seconds\"], \"runs\", runs)\nassert len(runs) == 1 and runs[0][\"stage\"] is None and runs[0][\"checker\"] == \"jbmc\", runs\nassert runs[0][\"seconds\"] <= s[\"deadline_seconds\"] + 5, runs\nprint(\"ok: one JBMC run over every input, within the deadline\")\n' \"$W/outcome.json\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/jobs/4a-142/outcome.json"
+  ]
+}

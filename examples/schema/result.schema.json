@@ -677,6 +677,24 @@
         "stage": { "description": "The input range of the run the verdict comes from, as `[0:20]`; null for the whole range.", "type": ["string", "null"] },
         "sharedCallees": { "description": "The callees taken as one function in both versions, as `Class.method`.", "type": "array", "items": { "type": "string" } },
         "fallback": { "description": "Under `--engine auto`: why the own checker gave no verdict before JBMC was run.", "type": "string" },
+        "deadlineSeconds": { "description": "The check's one deadline (`--timeout`), which every run in `runs` had a budget out of (lib/src/deadline.rs, step 4a of llm-dlc/loops/sound-verdicts.md). Absent in results written before 2026-11-06.", "type": "number" },
+        "runs": {
+          "description": "Every checker run of the check, in order, each with its budget out of the deadline. JBMC's interval stages run only where they bound a primitive input of the harness, so a harness over arrays alone has one. `--confirm`'s run is a second check, not among them. Absent in results written before 2026-11-06.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["checker", "purpose", "stage", "budgetSeconds", "seconds", "ended"],
+            "additionalProperties": false,
+            "properties": {
+              "checker": { "description": "`native` for the tool's own checker, `jbmc` for JBMC.", "enum": ["native", "jbmc"] },
+              "purpose": { "description": "`proof`; `fallback`, JBMC after the own checker gave no verdict; `shared`, with the shared callees as one function; `as-written`, again without them; or `probe`, the vacuity probe.", "enum": ["proof", "fallback", "shared", "as-written", "probe"] },
+              "stage": { "description": "The input interval of a preliminary JBMC stage, as `[0:20]`; null for every input.", "type": ["string", "null"] },
+              "budgetSeconds": { "description": "The time the run was given.", "type": "number" },
+              "seconds": { "description": "The time it took.", "type": "number" },
+              "ended": { "description": "`verified`, `violation`, `no-verdict`, or `out-of-time` when its budget ran out; a preliminary stage out of time hands on to the next.", "enum": ["verified", "violation", "no-verdict", "out-of-time"] }
+            }
+          }
+        },
         "gapMode": { "description": "The gap mode the own checker ran under (`--gaps`), when the verdict is its: `strict`, `assume` or `advised`. Absent in results written before 2026-11-05.", "enum": ["strict", "assume", "advised"] },
         "gaps": {
           "description": "The gaps the own checker met, constructs it does not implement as the JVM does (lib/src/bmc/gaps.rs): each `refused` (strict: the path that reached it ended there) or `assumed` (its approximation taken, which a verified verdict rests on).",

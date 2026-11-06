@@ -751,6 +751,126 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     assert!(String::from_utf8_lossy(&cli.stderr).contains("--confirm needs --engine auto"), "{}", String::from_utf8_lossy(&cli.stderr));
 }
 
+/// Step 4a of the brief: JBMC's interval stages run only where they bound an input, and a check has one deadline,
+/// each run a budget out of it. JBMC is a stand-in script that logs every run it is given, and can be made to hang
+/// on the interval stages, or on every run.
+#[test]
+fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
+    let Some(compiled) = compile() else { return };
+    let dir = target_tmp().join("fake-jbmc-stages");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let jbmc = dir.join("jbmc");
+    std::fs::write(&jbmc, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" >> \"$d/runs.txt\"\ncase \"$*\" in *--java-assume-inputs-interval*) [ -e \"$d/hang-stages\" ] && exec sleep 30;; esac\n[ -e \"$d/hang\" ] && exec sleep 30\ncat \"$d/answer.txt\"\n").unwrap();
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(&jbmc, std::fs::Permissions::from_mode(0o755)).unwrap();
+    std::fs::write(dir.join("answer.txt"), PROVED).unwrap();
+    let set = |hang_stages: bool, hang: bool| {
+        let _ = std::fs::remove_file(dir.join("runs.txt"));
+        for (name, on) in [("hang-stages", hang_stages), ("hang", hang)] {
+            if on { std::fs::write(dir.join(name), "").unwrap() } else { let _ = std::fs::remove_file(dir.join(name)); }
+        }
+    };
+    let stages_run = || -> Vec<Option<String>> {
+        std::fs::read_to_string(dir.join("runs.txt")).unwrap_or_default().lines().map(|l| l.split_once("--java-assume-inputs-interval ").map(|(_, r)| r.split(' ').next().unwrap().to_string())).collect()
+    };
+    let prove = |method: &str, assert: &str, timeout: u64, name: &str| {
+        let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#{method}"));
+        options.assert = Some(assert.to_string());
+        options.engine = Engine::Jbmc;
+        options.timeout_seconds = timeout;
+        options.jbmc = jbmc.display().to_string();
+        let work = target_tmp().join(format!("stages-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let started = std::time::Instant::now();
+        let outcome = property::run(&options).unwrap();
+        (outcome, started.elapsed())
+    };
+    let s = |x: &str| Some(x.to_string());
+
+    // Arrays alone, as 142's harness (chars, out): an interval bounds no element, so JBMC runs once.
+    set(false, false);
+    let (arrays, _) = prove("length", "result >= 0", 600, "arrays");
+    assert_eq!(arrays.verdict, Verdict::Verified, "{}", arrays.output);
+    assert_eq!(stages_run(), vec![None], "one run over every input");
+    let search = arrays.search.as_ref().unwrap();
+    assert_eq!(search.deadline_seconds, 600.0);
+    assert_eq!(search.runs.len(), 1);
+    assert_eq!((search.runs[0].checker.as_str(), search.runs[0].purpose.as_str(), search.runs[0].stage.as_deref(), search.runs[0].ended.as_str()), ("jbmc", "proof", None, "verified"));
+    let json = serde_json::to_value(&arrays).unwrap();
+    assert_eq!(json["search"]["runs"][0]["purpose"], "proof");
+    assert!(json["search"]["runs"][0]["budget_seconds"].as_f64().unwrap() > 599.0);
+
+    // Two bytes: [-100000:100000] holds every byte, so only [0:20] goes before the proof.
+    set(false, false);
+    let (bytes, _) = prove("byteSum", "result == a + b", 600, "bytes");
+    assert_eq!(bytes.verdict, Verdict::Verified, "{}", bytes.output);
+    assert_eq!(stages_run(), vec![s("[0:20]"), None]);
+    // An int: all three.
+    set(false, false);
+    let (int, _) = prove("increment", "result == x + 1", 600, "int");
+    assert_eq!(int.verdict, Verdict::Verified, "{}", int.output);
+    assert_eq!(stages_run(), vec![s("[0:20]"), s("[-100000:100000]"), None]);
+    let budgets: Vec<f64> = int.search.as_ref().unwrap().runs.iter().map(|r| r.budget_seconds).collect();
+    assert!(budgets[0] <= 75.0 && budgets[1] <= 75.0 && budgets[2] > 449.0, "an eighth of the check for each preliminary stage, the rest for the proof: {budgets:?}");
+
+    // Preliminary stages that hang run out of their budgets, an eighth of the check each, and hand on to the
+    // proof: the check is decided in a quarter of its time, where each stage used to have all of it and the first
+    // to hang ended the check with no verdict.
+    set(true, false);
+    let (handed_on, elapsed) = prove("increment", "result == x + 1", 16, "hang-stages");
+    assert_eq!(handed_on.verdict, Verdict::Verified, "{}", handed_on.output);
+    assert_eq!(stages_run(), vec![s("[0:20]"), s("[-100000:100000]"), None]);
+    let ended: Vec<&str> = handed_on.search.as_ref().unwrap().runs.iter().map(|r| r.ended.as_str()).collect();
+    assert_eq!(ended, vec!["out-of-time", "out-of-time", "verified"]);
+    assert!(elapsed < std::time::Duration::from_secs(8), "{elapsed:?}");
+
+    // Every run hangs: the check ends at its deadline, not three timeouts later.
+    set(false, true);
+    let (hung, elapsed) = prove("increment", "result == x + 1", 4, "hang");
+    assert_eq!(hung.verdict, Verdict::Unverifiable, "{}", hung.output);
+    assert!(elapsed < std::time::Duration::from_secs(6), "past the 4 s deadline: {elapsed:?}");
+    let runs = &hung.search.as_ref().unwrap().runs;
+    assert_eq!(runs.iter().map(|r| r.ended.as_str()).collect::<Vec<_>>(), vec!["out-of-time"; 3]);
+    let budget: f64 = runs.iter().map(|r| r.budget_seconds).sum();
+    assert!(budget <= 4.0 + 0.01, "the budgets add up to the deadline: {runs:?}");
+    assert!(hung.output.contains("JBMC did not finish within"), "{}", hung.output);
+
+    // A regression proof over arrays alone runs once too.
+    set(false, false);
+    let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#length"));
+    options.engine = Engine::Jbmc;
+    options.shared_callees = false;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("stages-equivalence");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let equivalence = jvmcontract::equivalence::run(&options).unwrap();
+    assert_eq!(equivalence.verdict, Verdict::Verified, "{}", equivalence.output);
+    assert_eq!(stages_run(), vec![None]);
+    assert_eq!(equivalence.search.as_ref().unwrap().runs.len(), 1);
+
+    // The own checker's runs are recorded too, with its probe: under auto it has the check but the quarter kept for
+    // JBMC's fallback.
+    set(false, false);
+    let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#increment"));
+    options.assert = Some("result == x + 1".into());
+    options.assume = Some("x > 0".into());
+    options.engine = Engine::Auto;
+    options.timeout_seconds = 100;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("stages-auto");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let auto = property::run(&options).unwrap();
+    assert_eq!(auto.verdict, Verdict::Verified, "{}", auto.output);
+    let runs = &auto.search.as_ref().unwrap().runs;
+    assert_eq!(runs.iter().map(|r| (r.checker.as_str(), r.purpose.as_str())).collect::<Vec<_>>(), vec![("native", "proof"), ("native", "probe")], "{runs:?}");
+    assert!(runs[0].budget_seconds <= 75.0 && runs[0].budget_seconds > 74.0, "{runs:?}");
+    assert!(stages_run().is_empty(), "JBMC was not asked");
+}
+
 /// Step 2a of the brief: the statement a verdict is about is data, and two verdicts that differ only in their
 /// domain, observations, assumptions or models say so in that part and no other.
 #[test]

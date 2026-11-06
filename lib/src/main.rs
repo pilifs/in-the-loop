@@ -294,7 +294,8 @@ struct EquivalenceArgs {
     /// Report the counterexample as JBMC found it, without shrinking it in the interpreter.
     #[arg(long)]
     no_shrink: bool,
-    /// Seconds before each JBMC run is given up.
+    /// Seconds the whole check may take: the own checker, JBMC's search stages and its fallback, and the vacuity
+    /// probe, each within a budget out of them (`--confirm` gets as long again).
     #[arg(long, default_value_t = 600)]
     timeout: u64,
     /// The `jbmc` executable.
@@ -399,7 +400,8 @@ struct ProveArgs {
     /// Report the counterexample as JBMC found it, without shrinking it in the interpreter.
     #[arg(long)]
     no_shrink: bool,
-    /// Seconds before each JBMC run is given up.
+    /// Seconds the whole check may take: the own checker, JBMC's search stages and its fallback, and the vacuity
+    /// probe, each within a budget out of them (`--confirm` gets as long again).
     #[arg(long, default_value_t = 600)]
     timeout: u64,
     /// The `jbmc` executable.
