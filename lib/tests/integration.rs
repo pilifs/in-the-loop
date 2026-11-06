@@ -2611,10 +2611,11 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
 
         // An array the call modifies takes any values: what the harness read before the call is gone. The witness
         // is one of the values the contract admits, not necessarily the one Random(1) writes, and the interpreter
-        // cannot run Random to tell, so it is no verdict.
+        // cannot run Random to tell; a JVM runs it, and Random(1) writes 115 there, which is not what was in the array.
         let o = prove("firstByte", "firstByte", "out.length == 0 || result == \\old(out[0])", &[], &[&random, &fill], engine).unwrap();
-        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-        assert!(o.problem.as_deref().unwrap().contains("the witness is one the contracts admit"), "{}", o.output);
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert!(o.counterexample.as_ref().unwrap().outcome.starts_with("115, leaving out=[115"), "{}", o.output);
+        assert_eq!(o.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", o.output);
         assert_eq!(contracts(&o), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"], "{}", o.output);
         let o = prove("filled", "filled", "result == out.length", &[], &[&random, &fill], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -2716,11 +2717,12 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         }
         assert!(o.output.contains("throws java.lang.IllegalArgumentException when bound <= 0; then 0 <= result && result < bound; modifies this (written by the test; tested on ") && o.output.contains(", each called on new java.util.Random(), none refuting it)"), "{}", o.output);
         // A witness through the contract is one the contract admits: the interpreter cannot run Random to show
-        // the JVM's, so there is no verdict.
+        // the JVM's, so a JVM runs it. The property fails only where nextInt(sides) is sides - 1, which the
+        // contract admits on every bound and Random(7) gives on few: a violation only if the JVM shows it.
         let o = prove("roll-violated", "roll", "result >= 1 && result < sides", &["IllegalArgumentException when sides <= 0"], &[&random7, &next("0 <= result && result < bound")], engine).unwrap();
-        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-        assert!(o.problem.as_deref().unwrap().contains("goes through the contracts for jdk-constructor:java.util.Random.<init>(J)V") && o.problem.as_deref().unwrap().contains("the interpreter cannot run the method on it to confirm it"), "{}", o.output);
-        assert!(!o.replay.as_ref().unwrap().reproduced, "{}", o.output);
+        assert_ne!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert_eq!(o.replay.as_ref().unwrap().by, "jvm", "{}", o.output);
+        assert_eq!(o.replay.as_ref().unwrap().reproduced, o.verdict == Verdict::Violation, "{}", o.output);
         let o = prove("roll-wrong", "roll", "result >= 1 && result <= sides", &["IllegalArgumentException when sides <= 0"], &[&random7, &next("0 < result && result < bound")], engine).unwrap();
         let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
         assert!(refused.starts_with("a JVM refutes it: on bound=1 the JVM's call returns 0, where the contract says it returns with `assert: 0 < result && result < bound` holding"), "{}", o.output);
@@ -2754,6 +2756,102 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
             assert!(o.output.contains("relying on 1 contract"), "{}", o.output);
         }
     }
+}
+
+const ON_THE_JVM: &str = r#"
+package fixtures;
+
+public class OnTheJvm {
+    public static int jitter(int shift) { return new java.util.Random(7).nextInt(1 << shift); }
+    public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
+    public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
+}
+"#;
+
+/// After step 3e of llm-dlc/loops/sound-verdicts.md: a witness the tool's own checker finds through contracts, which
+/// the interpreter cannot run (`new java.util.Random(seed)` is outside it), is run on a JVM, with the JDK's real
+/// calls where the contracts stood. The harness the checker proved fails there, and the witness is a violation;
+/// or it holds, and the witness is one the contracts admit and the JDK's calls do not give, which is no verdict.
+/// The contracts are the library's.
+#[test]
+fn a_witness_through_contracts_is_run_on_a_jvm() {
+    use jvmcontract::bmc::gaps::GapMode;
+    use jvmcontract::Engine;
+    let dir = target_tmp().join("on-the-jvm-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("OnTheJvm.java"), ON_THE_JVM).unwrap();
+    let Some(classes) = compile("on-the-jvm", &[dir.join("OnTheJvm.java")]) else { return };
+    let prove = |name: &str, method: &str, assume: Option<&str>, assert: &str, engine: Engine| {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.OnTheJvm#{method}"));
+        options.assume = assume.map(str::to_string);
+        options.assert = Some(assert.into());
+        options.engine = engine;
+        options.gaps = GapMode::Advised;
+        let work = target_tmp().join(format!("property-on-the-jvm-{name}-{engine:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let by = |r: &Option<jvmcontract::equivalence::Replay>| r.as_ref().map(|r| (r.by.clone(), r.reproduced));
+    for engine in [Engine::Native, Engine::Auto] {
+        // 148's off-by-one in small: a shift to the sign bit makes the bound negative, which the contract for
+        // nextInt says throws, and the JVM throws it.
+        let o = prove("jitter", "jitter", Some("0 <= shift && shift < 32"), "result >= 0", engine);
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        let c = o.counterexample.as_ref().unwrap();
+        assert_eq!(c.input, "jitter(shift=31)", "{}", o.output);
+        assert_eq!(c.outcome, "throws IllegalArgumentException(\"bound must be positive\")", "{}", o.output);
+        assert_eq!(by(&o.replay), Some(("jvm".into(), true)), "{}", o.output);
+        assert!(o.proof.as_deref().unwrap().contains(", run on a JVM (JDK ") && o.proof.as_deref().unwrap().contains("with the JDK's own calls where the contracts stood"), "{}", o.output);
+        assert!(o.work.join("jvm-witness").join("WitnessRun.class").exists());
+
+        // A property that fails only where nextInt(10) is 2, which the contract admits and Random(7) does not
+        // give: it gives 6, so roll(10) is 7.
+        let o = prove("roll", "roll", Some("sides > 0"), "sides != 10 || result != 3", engine);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        let p = o.problem.as_deref().unwrap();
+        assert!(p.contains("roll(sides=10) goes through the contracts for jdk-constructor:java.util.Random.<init>(J)V"), "{p}");
+        assert!(p.contains("and does not reproduce on a JVM (JDK ") && p.contains("the method returns 7 there and the property holds on it"), "{p}");
+        assert_eq!(by(&o.replay), Some(("jvm".into(), false)), "{}", o.output);
+
+        // An array the JDK's call writes: the JVM's Random(1) writes 115, and what it leaves is the outcome.
+        let o = prove("firstByte", "firstByte", None, "out.length == 0 || result == \\old(out[0])", engine);
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert!(o.counterexample.as_ref().unwrap().outcome.starts_with("115, leaving out=[115"), "{}", o.output);
+    }
+
+    // A regression proof the same way: the previous version alone is what the interpreter runs, the new one calls
+    // Random, and both are called alone on the JVM for what each does.
+    let (Some(before), Some(after), Some(alike)) = (
+        compile_writers("on-the-jvm-before", "Shifted", "package fixtures; public class Shifted { public static int wait(int shift) { return 0; } public static int roll(int sides) { if (sides <= 0) return 0; return new java.util.Random(7).nextInt(sides); } }"),
+        compile_writers("on-the-jvm-after", "Shifted", "package fixtures; public class Shifted { public static int wait(int shift) { new java.util.Random(7).nextInt(1 << shift); return 0; } public static int roll(int sides) { if (sides <= 0) return 0; return new java.util.Random(7).nextInt(sides); } }"),
+        compile_writers("on-the-jvm-alike", "Shifted", "package fixtures; public class Shifted { public static int wait(int shift) { return 0; } public static int roll(int sides) { if (sides <= 0) return 0; return new java.util.Random(7).nextInt(sides) % sides; } }"),
+    ) else {
+        return;
+    };
+    let regression = |name: &str, after: &std::path::Path, method: &str| {
+        let mut options = equivalence::Options::new(&before, after, &format!("fixtures.Shifted#{method}"));
+        options.engine = Engine::Native;
+        options.gaps = GapMode::Advised;
+        let work = target_tmp().join(format!("equivalence-on-the-jvm-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        equivalence::run(&options).unwrap()
+    };
+    let o = regression("wait", &after, "wait");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert_eq!(c.before, "0", "{}", o.output);
+    assert_eq!(c.after, "throws IllegalArgumentException(\"bound must be positive\")", "{}", o.output);
+    assert_eq!(by(&o.replay), Some(("jvm".into(), true)), "{}", o.output);
+    // Each version's nextInt takes a value of its own under the contract, so two calls made alike differ in the
+    // proof; on the JVM they do not.
+    let o = regression("roll", &alike, "roll");
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    let p = o.problem.as_deref().unwrap();
+    assert!(p.contains("does not reproduce on a JVM (JDK ") && p.contains("which the harness holds to agree") && p.contains("each version's call takes a value of its own under a contract"), "{p}");
+    assert_eq!(by(&o.replay), Some(("jvm".into(), false)), "{}", o.output);
 }
 
 const IDENTITY: &str = r#"

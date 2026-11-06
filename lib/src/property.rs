@@ -525,7 +525,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
             let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?.with_models(options.models);
-            let replayed = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
+            let mut replayed = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
+            // The JDK the witness was run on, when the interpreter could not run it and a JVM did.
+            let mut on_jvm: Option<String> = None;
+            let mut jvm_ran = false;
             // The throws clause that applies to an input: the first whose condition holds; `None` when none does
             // or a condition cannot be evaluated outside the harness (it calls the method).
             let applying = |arguments: &[Argument]| -> Option<usize> {
@@ -586,7 +589,37 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 }
                 harness::expr::eval_with(&harness.assertion, &locals, &arrays)
             };
-            if let Some(p) = Some(&replayed).filter(|r| r.could_not_replay()).and_then(|r| crate::equivalence::unconfirmed_through_contracts(&last, &witness::call(&method_name, &params, &found).0, &r.outcome)) {
+            // A witness through a contract that the interpreter cannot run (a JDK call outside it) is run on a JVM:
+            // the harness on the witness, with the JDK's real calls where the contracts stood. It is a
+            // counterexample when the property fails there, and none when the JVM's calls do not take the method
+            // where the contracts let the checker suppose.
+            let mut unconfirmed = Some(&replayed).filter(|r| r.could_not_replay()).and_then(|r| crate::equivalence::unconfirmed_through_contracts(&last, &witness::call(&method_name, &params, &found).0, &r.outcome));
+            if let Some(p) = &unconfirmed {
+                let mut entries = vec![harness_dir.clone()];
+                entries.extend(options.classes.iter().cloned());
+                entries.extend(options.classpath.iter().cloned());
+                let call = crate::jvm_witness::DirectCall { owner: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), ret: descriptor.ret.clone() };
+                let slots: Vec<u16> = params.iter().map(|p| p.slot).collect();
+                let rendered = witness::call(&method_name, &params, &found).0;
+                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &descriptor.params, &slots, &found, &[call], &entries) {
+                    Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
+                        replayed = run.calls.into_iter().next().expect("one call");
+                        on_jvm = Some(run.jdk);
+                        unconfirmed = None;
+                    }
+                    Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
+                        jvm_ran = true;
+                        let did = run.calls.first().map(|r| if r.thrown.is_some() || r.outcome == "void" { r.with_leftovers(&params, &found) } else { format!("returns {}", r.with_leftovers(&params, &found)) }).unwrap_or_default();
+                        unconfirmed = Some(crate::equivalence::not_reproduced_on_jvm(&last, &rendered, &run.jdk, &format!("the method {did} there and the property holds on it"), false));
+                    }
+                    Ok(run) => {
+                        jvm_ran = true;
+                        unconfirmed = Some(format!("{p}; run on a JVM, the harness threw {}", match run.check { crate::jvm_witness::Check::Threw(c) => c, _ => unreachable!() }));
+                    }
+                    Err(e) => unconfirmed = Some(format!("{p}; it could not be run on a JVM either: {e}")),
+                }
+            }
+            if let Some(p) = unconfirmed {
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
                 findings.push(Finding::new("unverifiable", message, uri.clone(), line));
@@ -595,7 +628,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
-                let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
+                let by = if jvm_ran { "jvm" } else { "interpreter" };
+                let replay = Some(crate::equivalence::Replay { by: by.into(), reproduced: false });
                 return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
             }
             let evaluable = !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
@@ -623,7 +657,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
             let mut arguments = found.clone();
-            if options.shrink {
+            // The interpreter is the shrinker's oracle, and it cannot run a witness only a JVM could.
+            if options.shrink && on_jvm.is_none() {
                 let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
                 let shrunk = witness::shrink_in_harness(&harness_cp, harness::PROPERTY_CLASS, &descriptor.params, found.clone());
                 shrink_runs = shrunk.runs;
@@ -656,11 +691,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             } else {
                 String::new()
             };
-            let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, replayed in the interpreter; domain {domain}", last.version);
+            let replayed_by = match &on_jvm {
+                Some(jdk) => crate::equivalence::run_on_jvm_words(jdk),
+                None => "replayed in the interpreter".into(),
+            };
+            let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, {replayed_by}; domain {domain}", last.version);
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
-            replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: evaluable });
+            replay = Some(match &on_jvm {
+                Some(_) => crate::equivalence::Replay { by: "jvm".into(), reproduced: true },
+                None => crate::equivalence::Replay { by: "interpreter".into(), reproduced: evaluable },
+            });
             let target = witness::Target { class_internal: &class_internal, method: &method_name, descriptor: &method.descriptor, is_static: method.is_static(), classes: "after" };
             let names: Vec<String> = params.iter().map(|p| p.name.clone()).collect();
             let call = witness::typed_call(&target, &harness::Layout::plain(&names, &descriptor.params), &arguments, false, &[]);

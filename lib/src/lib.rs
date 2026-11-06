@@ -46,6 +46,7 @@ pub mod interp;
 pub mod jbmc;
 pub mod jdk_facts;
 pub mod jimage;
+pub mod jvm_witness;
 pub mod models;
 pub mod property;
 pub mod purity;

@@ -998,6 +998,57 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     `nextInt` given a negative ceiling) would then become a violation when the JVM reproduces it, and stays no
     verdict when it doesn't. That is the advised mode's last open hole. Then Phase 4, starting with 4a's stages and
     deadline.
+- **After 3e: a witness through contracts is run on a JVM (2026-11-06).**
+  - **When it applies.** The own checker found a witness through a contract, and the interpreter cannot run it
+    (for example `new Random(seed)`). Both drivers then run it on a real JVM, the JDK the gap ids name
+    ([`lib/src/jvm_witness.rs`](../../lib/src/jvm_witness.rs)).
+  - **How it runs.** A generated class, `WitnessRun`, calls the proved harness's `check` on the witness, with the
+    JDK's real calls where the contracts stood. Then it calls the method alone on fresh copies of the arguments,
+    to get the outcome to report. For a regression proof it calls each version alone, when both are static methods
+    of the harness's parameters. The harness runs first, so it sees the classes uninitialized.
+  - **The harness fails there.** The witness is a violation. Its proof line reads `run on a JVM (JDK 25.0.4.1)
+    with the JDK's own calls where the contracts stood`, and `replay.by` is `jvm`. The witness is not shrunk,
+    since the interpreter is the shrinker's oracle.
+  - **The harness holds.** The witness is no verdict: `... does not reproduce on a JVM (JDK ...): the method
+    returns 7 there and the property holds on it`. If no JVM can run it, the earlier reason stands, with why.
+  - **148's off-by-one is now a violation** (checked inline, 0.2 s):
+    `fullJitterMillis(baseMillis=99492, capMillis=100000, attempt=100000, requestId=100000)` throws
+    `IllegalArgumentException("bound must be positive")` on the JVM. 148's weaker `numberOfLeadingZeros`
+    contract stays no verdict, since the JVM returns 18 there and the property holds. 148's notes say both.
+  - **Found on the way: under a range contract, a regression proof's witness is almost never real.** Each
+    version's call takes its own value under a contract, so two calls the versions make alike can differ in the
+    proof. Two identical `new Random(7).nextInt(sides)` give `roll(sides=20)` as a witness, and the JVM gives both
+    16. The message says so.
+    - A guard moved from `> 30` to `> 31` gave the spurious `shift=20`, not the real `shift=31`, so the JVM run
+      reports no verdict.
+    - The fix would treat a JDK call with a contract as one function in both versions, as shared callees do. For
+      a receiver like `Random` that is only sound with its state taken into account, so it is left for later.
+  - Acceptance, inline:
+    - `a_witness_through_contracts_is_run_on_a_jvm` (integration.rs), on the library's contracts, on native and
+      auto:
+      - `jitter(shift=31)` is a violation with the JVM's exception;
+      - `roll(sides=10)` (the property fails only where `nextInt(10)` is 2; Random(7) gives 6) is no verdict;
+      - `firstByte` is a violation, leaving `out=[115]`;
+      - a regression whose new version calls `nextInt(1 << shift)` is a violation, before `0` and after the
+        exception, both versions run alone on the JVM;
+      - two versions that call `nextInt` alike are no verdict, with the regression hint.
+    - `a_contract_closes_its_gap_and_the_verdict_rests_on_it` changes with it: `firstByte` is a violation, and
+      `roll-violated` has `replay.by` `jvm`.
+    - **The conformance corpus's two contract columns now decide `firstByte` as a violation.** 3b–3d gave it no
+      verdict. Its own JVM runner reproduces the witness, independently of the tool's.
+    - All Rust tests and the 154 Python tests pass.
+  - `build.py` and the schema already had `replay.by: "jvm"` (from the Box Office verifier). The schema's text now
+    names this use. The skill reports such a witness as the code's, and one the JVM does not reproduce as open.
+    No recorded result changes, since none ran under `--gaps advised` yet (147–149 are pending). No job was
+    needed.
+  - Not done:
+    - The witness of a disagreement under `--confirm` (1e) is still left for a person to run on a JVM. The same
+      runner could settle it.
+    - A witness the JVM does not reproduce is not followed by a search for another one.
+    - An instance-method or record regression's versions are not run alone, so their outcomes read
+      `<not run alone on the JVM, ...>`.
+  - Next: Phase 4, starting with 4a. Run JBMC's interval stages only where they can change the domain, and give
+    every check one deadline. Acceptance: 142's harness runs once.
 
 ## Loop settings
 

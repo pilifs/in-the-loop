@@ -101,7 +101,7 @@ fn java_number_layout(scientific: &str, magnitude: f64) -> String {
     }
 }
 
-fn quote(s: &str) -> String {
+pub(crate) fn quote(s: &str) -> String {
     format!("\"{}\"", s.replace('\\', "\\\\").replace('"', "\\\"").replace('\n', "\\n"))
 }
 

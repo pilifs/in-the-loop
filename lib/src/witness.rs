@@ -171,7 +171,8 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
     }
 }
 
-/// The method's behaviour on a counterexample, replayed in the interpreter.
+/// The method's behaviour on a counterexample, replayed in the interpreter (or run on a JVM, [`crate::jvm_witness`]).
+#[derive(Debug, Clone)]
 pub struct Replayed {
     /// The outcome as text: the result, or the exception thrown.
     pub outcome: String,

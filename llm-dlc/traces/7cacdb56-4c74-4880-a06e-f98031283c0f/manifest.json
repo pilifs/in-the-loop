@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T06:25:57.016Z",
-  "duration_seconds": 24688,
+  "ended": "2026-11-06T07:01:05.779Z",
+  "duration_seconds": 26796,
   "stats": {
-    "turns": 85,
-    "api_calls": 1157,
-    "tool_calls": 1168,
-    "tool_errors": 8,
-    "compactions": 15,
+    "turns": 90,
+    "api_calls": 1244,
+    "tool_calls": 1255,
+    "tool_errors": 13,
+    "compactions": 16,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 2340,
-      "output_tokens": 1143356,
-      "cache_read_input_tokens": 205298328,
-      "cache_creation_input_tokens": 3866584
+      "input_tokens": 2518,
+      "output_tokens": 1209003,
+      "cache_read_input_tokens": 221310110,
+      "cache_creation_input_tokens": 4121938
     }
   },
   "tools": {
-    "Bash": 1043,
-    "Read": 86,
-    "Write": 19,
-    "Edit": 16,
-    "ToolSearch": 2,
+    "Bash": 1122,
+    "Read": 91,
+    "Write": 20,
+    "Edit": 17,
+    "ToolSearch": 3,
     "WebFetch": 2
   },
   "files_touched": [
@@ -48,6 +48,7 @@
     "lib/src/digest.rs",
     "lib/src/equivalence.rs",
     "lib/src/gap_contracts.rs",
+    "lib/src/jvm_witness.rs",
     "lib/src/property.rs",
     "lib/src/statement.rs",
     "lib/tests/conformance.rs",
@@ -272,24 +273,38 @@
     {
       "index": 15,
       "started": "2026-11-06T06:16:33.517Z",
-      "ended": "2026-11-06T06:25:57.016Z",
-      "turns": 4,
-      "api_calls": 44,
+      "ended": "2026-11-06T06:26:27.382Z",
+      "turns": 5,
+      "api_calls": 47,
       "usage": {
-        "input_tokens": 88,
-        "output_tokens": 33020,
-        "cache_read_input_tokens": 5898870,
-        "cache_creation_input_tokens": 173689
+        "input_tokens": 96,
+        "output_tokens": 34512,
+        "cache_read_input_tokens": 6464336,
+        "cache_creation_input_tokens": 187136
       },
-      "peak_context_tokens": 186769
+      "peak_context_tokens": 200218
+    },
+    {
+      "index": 16,
+      "started": "2026-11-06T06:27:03.771Z",
+      "ended": "2026-11-06T07:01:05.779Z",
+      "turns": 4,
+      "api_calls": 84,
+      "usage": {
+        "input_tokens": 170,
+        "output_tokens": 64155,
+        "cache_read_input_tokens": 15446316,
+        "cache_creation_input_tokens": 241907
+      },
+      "peak_context_tokens": 254987
     }
   ],
   "log": {
-    "sha256": "ea51983fa900419eeec900e88ed5da2fc8af80412ee470badfee96818cafe0a9",
-    "bytes": 36332447,
-    "lines": 12197,
-    "gzip_bytes": 6773736,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/ea51983fa900419eeec900e88ed5da2fc8af80412ee470badfee96818cafe0a9.jsonl.gz"
+    "sha256": "09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454",
+    "bytes": 38730027,
+    "lines": 13041,
+    "gzip_bytes": 7233136,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -468,6 +483,14 @@
       "summary": "The verify-bytecode skill closes gaps with contracts: its proofs run under --gaps advised --max-trust 0, it writes a contract for each JDK call the tool's own checker does not implement, corrects one the JVM refutes, reports each contract's evidence level, and offers the ones that held for the contract library",
       "body": "Step 3e of llm-dlc/loops/sound-verdicts.md, the agent's side of the advised mode. The skill in plugins/jvmcontract (now 0.3.0) runs every regression and property proof with --engine auto --gaps advised --max-trust 0 (the brief's open questions 6 and 7). A new step, 4a, takes a proof that stops with gaps-need-contracts through the loop: the agent copies the template into one contracts file for the pull request, fills it in from the JDK's documentation (every exception of the call, never what would make the proof pass), and runs again. It corrects a contract the JVM refutes from the counterexamples rather than weakening the property, and stops after three rounds or on a trusted contract. The report template gains a section listing each contract with its level (proved, tested or trusted), the contracts refuted on the way, and the gaps left open. Contracts the agent wrote that held are checked with gap-contracts --dir --record and offered for lib/models/contracts/. reference.md gains --max-trust, --no-contract-library, gap-contracts and the library's contents. The plugin README describes the loop, with JBMC now needed only for what the own checker hands on.\n\nVerified by running the loop as the skill writes it, on example 148's kernel (Crosscut Jitter#fullJitterMillis, compiled alone). First the run asks for three contracts, with nothing solved. Then a nextInt contract with no exception is refused at bound=0, with its counterexamples. Corrected, the proof is verified relying on 3 contracts, 1 proved and 2 tested, in 0.2 s. The built-in library alone gives the same verdict on its records. A project directory's BitSet(int) contract is checked and then recorded by gap-contracts --dir. A new test, lib/tests/skill.rs, checks that every jvmcontract command and option the skill's files name in code is one the CLI accepts (57 options, including $GAPS on both proof commands). Misspelling an option made it fail. All Rust tests pass (130 unit, 4 conformance, 56 integration, 1 skill). 148, already pending, is the step's acceptance example, so no job was needed. The landing page at terminalvalue.net still describes the JBMC-only skill; deploying it is the user's call.",
       "log_sha256": "ea51983fa900419eeec900e88ed5da2fc8af80412ee470badfee96818cafe0a9"
+    },
+    {
+      "change_id": "vxqlmsszmpxrusvmmylsrsuwnotpzmym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A witness found through contracts is run on a real JVM: the harness the checker proved, with the JDK's own calls where the contracts stood, makes it a violation when it fails there and no verdict when it holds",
+      "body": "Under --gaps advised, a counterexample the tool's own checker finds through a contract for a JDK call is one the contracts admit, not necessarily one the JDK gives; until now, when the interpreter could not run it (new java.util.Random(seed) is outside it), the run gave no verdict, so a real defect such as example 148's off-by-one was never reported. lib/src/jvm_witness.rs generates WitnessRun, which a JVM of the JDK the gap ids name runs: it calls the proved harness's check on the witness, then the method alone (each version alone, for a regression proof of static methods) for the outcome to report. An AssertionError makes the witness a violation, its proof line saying 'run on a JVM (JDK ...) with the JDK's own calls where the contracts stood', replay.by 'jvm', not shrunk (the interpreter is the shrinker's oracle); a harness that returns makes it no verdict, '... does not reproduce on a JVM', with what the method did there. Both the property and the regression drivers do this.\n\nFound on the way, recorded in the brief's Progress: in a regression proof each version's call takes its own value under a range contract, so two calls the versions make alike can differ in the proof, and such a witness is almost never real; the message says so, and treating a contracted JDK call as one function in both versions is left for later.\n\nVerified inline: the new integration test a_witness_through_contracts_is_run_on_a_jvm (jitter(shift=31) a violation with the JVM's IllegalArgumentException, roll(sides=10) no verdict since Random(7) gives 6, firstByte a violation leaving out=[115], a regression violation with both versions run alone, and two versions calling nextInt alike no verdict), on native and auto; the conformance corpus's contract columns now decide firstByte as a violation, which its own JVM runner reproduces; 148's kernel with the off-by-one is a violation in 0.2 s and the correct kernel still verified. All Rust tests and the 154 Python tests pass. Example 148's notes, lib/README.md, the result schema's replay.by text and the verify-bytecode skill are updated. No recorded result changes (147-149 are pending) and no job was needed. Next in the brief: Phase 4, 4a.",
+      "log_sha256": "09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454"
     }
   ],
   "logs": {
@@ -475,6 +498,12 @@
       "bytes": 8285915,
       "lines": 2931,
       "gzip_bytes": 1431771,
+      "url": null
+    },
+    "09f8e86f61181ad9ed75a2e9c8b24840bcb3012f63c7861f48d97545ff01e454": {
+      "bytes": 38730027,
+      "lines": 13041,
+      "gzip_bytes": 7233136,
       "url": null
     },
     "115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f": {

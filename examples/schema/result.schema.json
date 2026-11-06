@@ -757,7 +757,7 @@
       "required": ["by", "reproduced"],
       "additionalProperties": false,
       "properties": {
-        "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: the Box Office Java verifier, on the JVM.", "enum": ["interpreter", "jvm"] },
+        "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: a real JVM: the Box Office Java verifier, or jvmcontract running the harness on a witness found through contracts for gaps (`--gaps advised`), which the interpreter cannot run, with the JDK's own calls where the contracts stood.", "enum": ["interpreter", "jvm"] },
         "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable. For a property, whether the interpreter's run showed the property failing: false too when the property calls the method under proof, which only the harness can evaluate, so that the violation is the checker's word.", "type": "boolean" }
       }
     },
