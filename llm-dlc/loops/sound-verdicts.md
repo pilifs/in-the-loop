@@ -822,6 +822,49 @@ Each run counts only its own commits, so work done in earlier runs is listed her
 
     It runs through the pipeline (`approach.gaps: advised`, `approach.contracts`), and its page shows both levels.
     Tag: `advised-contracts`. Then 3d (the contract library and `--max-trust`) and 3e (the skill's loop).
+- **The recorded example of 3c and 3e: 147 and 148 (2026-11-06).**
+  - **The kernel.** Crosscut gains `retry.Jitter#fullJitterMillis`, full jitter: `new Random(requestId * 31 +
+    attempt).nextInt(ceiling)`, where the ceiling is the base shifted by the attempt, the shift stopped at
+    `Integer.numberOfLeadingZeros(base) - 1`, then capped. The module's properties file gains: the result is in [0,
+    cap), and an invalid policy throws `IllegalArgumentException`. It comes with four tests, which pass.
+  - The proof reaches three gaps, and closes only through contracts: `jdk-static-method` for `numberOfLeadingZeros`,
+    and `jdk-constructor` and `jdk-primitive-method` for `Random`. The contracts are in each example's
+    `gaps.contracts`, written by this session (an agent) from the template and the JDK's documentation, and marked so.
+  - **Two examples, both B11, both `--engine native --gaps advised`.**
+    - **147, expected `unverifiable`:** the agent's first contract for `nextInt` leaves out the exception, which is
+      true at this call site. The JVM refutes it at `bound=0` (84 of 166 inputs). It is refused, its gap stays open,
+      and the run stops before solving, with the counterexamples in the advice. The other two contracts are
+      accepted.
+    - **148, expected `verified`:** the contract with `throws: IllegalArgumentException when bound <= 0` added.
+      `relying on 3 contracts ..., 1 proved, 2 tested`. The `numberOfLeadingZeros` contract states where the highest
+      one bit is, and is proved against `java.lang.Integer`'s bytecode (18 paths). The two `Random` contracts are
+      tested.
+  - Checked inline on the patched module with the library's own run (0.2 s each). The recorded results are pipeline
+    jobs `20261106-053555-example-147-b11-advised-contracts-a-cont` and
+    `20261106-053555-example-148-b11-advised-contracts-full-j`.
+  - **A fix in `build.py`:** the contracts file was not part of the claim, so changing a contract left a recorded
+    result current. `contracts_digest()` puts its SHA-256 among the claim's inputs under `--gaps advised`, and
+    `claim_changes` reports `the contracts for the gaps changed`. No recorded result has contracts, so no claim
+    moved. A new test, `test_changed_contracts_for_the_gaps_make_the_result_stale`, covers it (153 Python tests).
+  - `--contracts`'s help now says contracts are proved too. `lib/README.md` points at the tag. New technique tag
+    `advised-contracts`.
+  - **This departs from the brief: two examples, not one.** A run with a refuted contract stops with the gap open, so
+    one recorded run cannot show both the refutation and the proof. The pair is the protocol's two runs: refuted
+    then corrected.
+  - **What the examples found, recorded in 148's notes:**
+    - **A weaker `numberOfLeadingZeros` contract** (`0 <= result && result <= 32`) is proved just as well, but the
+      property does not follow from it. Its witness goes through the contracts, and the interpreter cannot run
+      `new Random`, so the run gives no verdict.
+    - **The off-by-one kernel** (no `- 1`) gives no verdict for the same reason. The witness is
+      `fullJitterMillis(baseMillis=99492, capMillis=100000, attempt=100000, requestId=100000)`: a negative ceiling,
+      and `nextInt` throws. A real defect is no verdict, because a witness through a contract is not run on a JVM.
+      That is the most useful thing still missing from the advised mode.
+  - Next: 3d, the contract library and `--max-trust`.
+    - An accepted contract is stored under its gap's id in `lib/models/contracts/`, with its evidence, and checked
+      once rather than on every run. A different JDK version is a different id, so an upgrade re-checks it.
+    - `--max-trust N` fails a run that rests on more trusted contracts than N.
+    - Then 3e, the skill's loop. Running a witness found through contracts on a JVM, so that 148's off-by-one
+      becomes a violation, is a candidate after them.
 
 ## Loop settings
 

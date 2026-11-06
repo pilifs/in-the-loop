@@ -1,0 +1,65 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "147",
+  "title": "A contract that says Random.nextInt never throws is refuted on the JVM before the proof relies on it",
+  "summary": "Crosscut's retry filter gains full jitter: a wait drawn by `Random.nextInt` below a ceiling the base doubled by a shift kept short of the sign bit with `Integer.numberOfLeadingZeros`. The tool's own checker implements none of the three JDK calls, so under `--gaps advised` the agent driving it writes a contract for each. Its contract for `nextInt` says the call returns a value in [0, bound) and nothing else, which is true wherever this kernel calls it. The tool tests every contract on a real JVM before it relies on one: the JDK's `nextInt` throws `IllegalArgumentException` at `bound=0`, the contract is refused with the JVM's counterexamples, its gap stays open, and the proof stops there, with the other two contracts accepted.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "exceptions",
+    "own-checker",
+    "advised-contracts"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java",
+    "symbol": "net.terminalvalue.crosscut.retry.Jitter#fullJitterMillis"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "advised",
+    "contracts": "gaps.contracts"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add `Jitter#fullJitterMillis`, full jitter for the retry filter: a wait drawn uniformly from zero up to the exponential backoff's ceiling, so that the clients one failure released together do not retry together. The ceiling is the base shifted left by the attempt, the shift stopped at the base's leading zeros less one (`Integer.numberOfLeadingZeros`) so that it never reaches the sign bit, then capped; the draw is `new Random(requestId * 31 + attempt).nextInt(ceiling)`, seeded so that a test or a replayed request log sees the same waits. The module's properties file gains the property that a wait is never negative and always below the cap, and that an invalid policy is refused with `IllegalArgumentException`. Four tests come with it, and pass.",
+    "patch": "change.patch"
+  },
+  "risk": "A contract is about the call, not the call site. This kernel never calls `nextInt` with a bound below one, so a contract that leaves out the exception gives the right verdict here, and an agent that checks it against the call site would accept it. But a contract closes a gap by its id, the JDK method and its descriptor, wherever the call occurs, and it is the only account the checker has of the call: where its assertion `0 <= result && result < bound` cannot hold, at a bound of zero or below, it does not say the call throws, it says no execution gets there, and the checker drops those inputs. Relied on at a call site whose bound can be zero, say a ceiling that overflows to a negative number, it would turn the `IllegalArgumentException` the JVM throws into a `Verified`.",
+  "expected": {
+    "verdict": "unverifiable"
+  },
+  "explanation": "Under `--gaps advised` with `--contracts gaps.contracts`, the tool checks each contract before the proof: a contract for a static JDK method of primitives is proved by the tool's own checker against the JDK's own bytecode, and every contract is run on a real JVM, the JDK's own call on every combination of its parameters' boundary values and on 256 random inputs drawn with a recorded seed. The contract for `numberOfLeadingZeros` is proved over every input against the bytecode of `java.lang.Integer` in JDK 25.0.4.1, and the constructor's is tested. The contract for `nextInt(int)` is refuted: on `bound=0` the JVM's call throws `java.lang.IllegalArgumentException: bound must be positive`, where the contract says it returns normally, and 84 of its 166 inputs refute it, every bound of zero or below. The tool refuses it and keeps its gap open, and with a gap open and no contract for it the run stops before solving: `Unverifiable`, the gap needing a contract, nothing proved about the kernel. The advice the result records names the gap, what a contract for it must state (its result, its exceptions and when, its effect on the receiver) and the JVM's counterexamples, and the template it writes covers that one gap. That is what goes back to the agent.",
+  "resolution": "State what the JDK's call does on every input it may be given, not on those this caller gives it: `throws: IllegalArgumentException when bound <= 0`, which is what the documentation of `nextInt(int)` says, or `assume: bound > 0`, which makes the contract about positive bounds alone and leaves the gap open at a call that may pass another. Example 148 is the same change with the throws clause added: the proof then closes on all three contracts, and the property holds on every input.",
+  "notes": [
+    "The proof reaches three calls the tool's own checker does not implement, each a gap with an id that names the JDK it is about: `jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1`, `jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1` and `jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1`. Under `--gaps strict` or `assume` the run would end with no verdict: the two methods return a value the proof reads, which has no assume form. Under `--gaps advised` with no contracts the tool stops before solving with the three gaps, what a contract for each must state, and a template, which is where an agent starts (step 3a of `llm-dlc/loops/sound-verdicts.md`).",
+    "The contracts in `gaps.contracts` were written by an agent, the session that made this example (Claude Opus 5.5), from the template and the JDK's documentation of each call, and are marked so in their `written-by:` lines. Nothing in the library or the runner calls a model: the agent is whoever drives the tool, and the file is committed like any other.",
+    "The JVM test is the one that refutes it. The proof against the JDK's bytecode applies only to a static JDK method of primitive parameters, so it covers `numberOfLeadingZeros` and not the two `Random` calls, whose receiver's state it cannot see; those are tested and, at best, `tested`. The test calls `nextInt` on `new java.util.Random()`, the receiver its class's constructor of no arguments builds, since the JDK's `nextInt` throws on its argument alone.",
+    "Each of the 84 refuting inputs is a bound of zero or below; the advice keeps the first, `bound=0`, and four more as examples (`-1`, `-2`, `-2147483648`, `-2147483647`). The other 82 inputs return a value in [0, bound), as the contract says.",
+    "A contract the JVM refutes is refused even where it would give the right verdict, as here, because the tool cannot know where else it will be applied: example 148's proof, on the corrected contract, is the one that is about this kernel.",
+    "Checked inline when the example was written, on the patched module (the library's own run, not the recorded one): the three contracts were checked in about 0.2 s, and no solver ran. The recorded result is the pipeline's."
+  ],
+  "provenance": "Constructed on Crosscut's retry package for step 3c and 3e of `llm-dlc/loops/sound-verdicts.md` (the advised mode), to show a wrong contract an agent wrote going back to it with the JVM's counterexample, rather than into a verdict.",
+  "references": [
+    {
+      "title": "Brooker, Exponential Backoff And Jitter (AWS Architecture Blog, 2015): full jitter, a wait uniform in [0, min(cap, base * 2^attempt))",
+      "url": "https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/"
+    },
+    {
+      "title": "java.util.Random.nextInt(int) (Java SE 25): throws IllegalArgumentException if the bound is not positive",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Random.html#nextInt(int)"
+    },
+    {
+      "title": "java.lang.Integer.numberOfLeadingZeros(int) (Java SE 25)",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html#numberOfLeadingZeros(int)"
+    }
+  ]
+}

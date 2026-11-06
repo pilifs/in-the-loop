@@ -6019,6 +6019,96 @@
         "Under the earlier runner this example's model would have been generated from the committed contract, so TLC would have checked the code before the patch. It was added with the runner change, and its first result comes from the verification pipeline."
       ],
       "source": null
+    },
+    {
+      "id": "147",
+      "path": "examples/147-a-contract-that-says-random-nextint-never-throws-is-refuted-on-the-jvm-before-the-proof-relies-on-it",
+      "title": "A contract that says Random.nextInt never throws is refuted on the JVM before the proof relies on it",
+      "summary": "Crosscut's retry filter gains full jitter: a wait drawn by `Random.nextInt` below a ceiling the base doubled by a shift kept short of the sign bit with `Integer.numberOfLeadingZeros`. The tool's own checker implements none of the three JDK calls, so under `--gaps advised` the agent driving it writes a contract for each. Its contract for `nextInt` says the call returns a value in [0, bound) and nothing else, which is true wherever this kernel calls it. The tool tests every contract on a real JVM before it relies on one: the JDK's `nextInt` throws `IllegalArgumentException` at `bound=0`, the contract is refused with the JVM's counterexamples, its gap stays open, and the proof stops there, with the other two contracts accepted.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.Jitter#fullJitterMillis",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "own-checker",
+          "advised-contracts"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The proof reaches three calls the tool's own checker does not implement, each a gap with an id that names the JDK it is about: `jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1`, `jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1` and `jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1`. Under `--gaps strict` or `assume` the run would end with no verdict: the two methods return a value the proof reads, which has no assume form. Under `--gaps advised` with no contracts the tool stops before solving with the three gaps, what a contract for each must state, and a template, which is where an agent starts (step 3a of `llm-dlc/loops/sound-verdicts.md`).",
+        "The contracts in `gaps.contracts` were written by an agent, the session that made this example (Claude Opus 5.5), from the template and the JDK's documentation of each call, and are marked so in their `written-by:` lines. Nothing in the library or the runner calls a model: the agent is whoever drives the tool, and the file is committed like any other.",
+        "The JVM test is the one that refutes it. The proof against the JDK's bytecode applies only to a static JDK method of primitive parameters, so it covers `numberOfLeadingZeros` and not the two `Random` calls, whose receiver's state it cannot see; those are tested and, at best, `tested`. The test calls `nextInt` on `new java.util.Random()`, the receiver its class's constructor of no arguments builds, since the JDK's `nextInt` throws on its argument alone.",
+        "Each of the 84 refuting inputs is a bound of zero or below; the advice keeps the first, `bound=0`, and four more as examples (`-1`, `-2`, `-2147483648`, `-2147483647`). The other 82 inputs return a value in [0, bound), as the contract says.",
+        "A contract the JVM refutes is refused even where it would give the right verdict, as here, because the tool cannot know where else it will be applied: example 148's proof, on the corrected contract, is the one that is about this kernel.",
+        "Checked inline when the example was written, on the patched module (the library's own run, not the recorded one): the three contracts were checked in about 0.2 s, and no solver ran. The recorded result is the pipeline's."
+      ],
+      "source": null
+    },
+    {
+      "id": "148",
+      "path": "examples/148-full-jitter-proved-below-the-cap-on-an-agent-s-contracts-one-proved-against-the-jdk-and-two-tested",
+      "title": "Full jitter proved below the cap on an agent's contracts, one proved against the JDK and two tested",
+      "summary": "The jitter of example 147, with the agent's contract for `Random.nextInt` corrected to say that it throws `IllegalArgumentException` when the bound is not positive. The proof by the tool's own checker reaches three JDK calls it does not implement and closes on the agent's contracts for them alone: the one for `Integer.numberOfLeadingZeros` is proved against the JDK's own bytecode of `java.lang.Integer`, the two for `java.util.Random` are tested on a real JVM. On those, a wait is never negative and always below the cap, on every input, and an invalid policy is refused, and the verdict says which contracts it rests on and how each was checked.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.Jitter#fullJitterMillis",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "own-checker",
+          "advised-contracts"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The proof reaches three calls the tool's own checker does not implement, each a gap with an id that names the JDK it is about: `jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1`, `jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1` and `jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1`. Under `--gaps strict` or `assume` the run would end with no verdict: the two methods return a value the proof reads, which has no assume form. Under `--gaps advised` with no contracts the tool stops before solving with the three gaps, what a contract for each must state, and a template, which is where an agent starts (step 3a of `llm-dlc/loops/sound-verdicts.md`).",
+        "The contracts in `gaps.contracts` were written by an agent, the session that made this example (Claude Opus 5.5), from the template and the JDK's documentation of each call, and are marked so in their `written-by:` lines. Nothing in the library or the runner calls a model: the agent is whoever drives the tool, and the file is committed like any other.",
+        "Example 147 is the same change with the agent's first contract for `nextInt`, which leaves out the exception: the JVM refutes it at `bound=0`, and the run stops with the gap open. This example is the run after the agent corrected it, the loop the advised mode is for: run, read the gaps, write contracts, run again.",
+        "Only the contract for `numberOfLeadingZeros` can be proved: a static JDK method whose parameters and result are primitives, in the checker's fragment, its class copied from the JDK image onto the proof's class path so that the checker runs its bytecode (18 paths, loops unwound 16 times). The `Random` calls have a receiver whose state the proof cannot see, so their contracts are tested, and the verdict counts them apart.",
+        "The contract for `numberOfLeadingZeros` has to say where the highest one bit is. A weaker one, `0 <= result && result <= 32`, is proved against the JDK's bytecode just as well, but the property does not follow from it: the checker then finds `fullJitterMillis(baseMillis=16, capMillis=20, attempt=14, requestId=20)`, on a result the weak contract admits and the JDK never returns for that base. Since that witness goes through the contracts and the interpreter cannot run `new Random` to confirm it, the run gives no verdict rather than a violation: a witness through a contract is one the contracts admit, not yet the JVM's.",
+        "The off-by-one, `Integer.numberOfLeadingZeros(baseMillis)` without the `- 1`, gives no verdict on these contracts for the same reason. The checker's witness `fullJitterMillis(baseMillis=99492, capMillis=100000, attempt=100000, requestId=100000)` shifts a 17-bit base by 15, to a negative ceiling, and `nextInt` throws; only a run on a JVM could confirm it, which the tool does not yet do for a witness through a contract. For base 100 the tests would catch it, at the 25th attempt, but not for a policy they do not try. That is why the defect is a note rather than an example of its own.",
+        "Checked inline when the example was written, on the patched module (the library's own run, not the recorded one): the contracts were checked and the property proved in about 0.2 s. The recorded result is the pipeline's."
+      ],
+      "source": null
     }
   ]
 }

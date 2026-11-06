@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "148",
+  "title": "Full jitter proved below the cap on an agent's contracts, one proved against the JDK and two tested",
+  "summary": "The jitter of example 147, with the agent's contract for `Random.nextInt` corrected to say that it throws `IllegalArgumentException` when the bound is not positive. The proof by the tool's own checker reaches three JDK calls it does not implement and closes on the agent's contracts for them alone: the one for `Integer.numberOfLeadingZeros` is proved against the JDK's own bytecode of `java.lang.Integer`, the two for `java.util.Random` are tested on a real JVM. On those, a wait is never negative and always below the cap, on every input, and an invalid policy is refused, and the verdict says which contracts it rests on and how each was checked.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "integer-overflow",
+    "own-checker",
+    "advised-contracts"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java",
+    "symbol": "net.terminalvalue.crosscut.retry.Jitter#fullJitterMillis"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "advised",
+    "contracts": "gaps.contracts"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add `Jitter#fullJitterMillis`, full jitter for the retry filter: a wait drawn uniformly from zero up to the exponential backoff's ceiling, so that the clients one failure released together do not retry together. The ceiling is the base shifted left by the attempt, the shift stopped at the base's leading zeros less one (`Integer.numberOfLeadingZeros`) so that it never reaches the sign bit, then capped; the draw is `new Random(requestId * 31 + attempt).nextInt(ceiling)`, seeded so that a test or a replayed request log sees the same waits. The module's properties file gains the property that a wait is never negative and always below the cap, and that an invalid policy is refused with `IllegalArgumentException`. Four tests come with it, and pass.",
+    "patch": "change.patch"
+  },
+  "risk": "The wait is a shift, `baseMillis << shift`, which an `int` holds only while the base's highest one bit stays below the sign bit. Past it the ceiling wraps to a negative number or zero, `Math.min` keeps it since it is below the cap, and `nextInt` throws `IllegalArgumentException` on the retry path, which is the one path a retry filter must not fail on. The guard, the base's leading zeros less one, is easy to get one wrong. The tests try forty attempts of one policy, base 100; the property is about every base, cap and attempt, and a proof of it rests, for the three calls the checker does not implement, on what it is told of them.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The tool checks the three contracts first. The one for `numberOfLeadingZeros`, `(i == 0 && result == 32) || (i != 0 && 0 <= result && result < 32 && (i >>> (31 - result)) == 1)`, is proved over every input by the tool's own checker running the bytecode of `java.lang.Integer` from the JDK 25.0.4.1 image, which is recorded with its `sha256:` digest; it is also tested on the JVM. The constructor's (it throws nothing) and `nextInt`'s (`IllegalArgumentException` when `bound <= 0`, else a result in [0, bound)) are tested on the JVM, on boundary and seeded random inputs, none refuting them. The checker then applies each contract at its call in place of the gap and proves the property over every `int` base, cap and attempt and every `long` request id: with the highest one bit of a positive base at `31 - nlz`, a shift of at most `nlz - 1` keeps the ceiling positive and at least the base, so the cap, at least the base, leaves a positive bound, and `nextInt` returns below it. The verdict reads `relying on 3 contracts for gaps of the tool's own checker, 1 proved, 2 tested`, with a line for each saying what it states, who wrote it, and how it was checked.",
+  "resolution": "None needed. The verdict rests on the three contracts, and says so: on the JDK's bytecode of `Integer` for the first, which HotSpot may run as an intrinsic of the same meaning, and on what a JVM did on the inputs tried for the other two. The two tested contracts are as strong as those inputs; neither says anything about the receiver's state, which the tool does not yet observe.",
+  "notes": [
+    "The proof reaches three calls the tool's own checker does not implement, each a gap with an id that names the JDK it is about: `jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1`, `jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1` and `jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1`. Under `--gaps strict` or `assume` the run would end with no verdict: the two methods return a value the proof reads, which has no assume form. Under `--gaps advised` with no contracts the tool stops before solving with the three gaps, what a contract for each must state, and a template, which is where an agent starts (step 3a of `llm-dlc/loops/sound-verdicts.md`).",
+    "The contracts in `gaps.contracts` were written by an agent, the session that made this example (Claude Opus 5.5), from the template and the JDK's documentation of each call, and are marked so in their `written-by:` lines. Nothing in the library or the runner calls a model: the agent is whoever drives the tool, and the file is committed like any other.",
+    "Example 147 is the same change with the agent's first contract for `nextInt`, which leaves out the exception: the JVM refutes it at `bound=0`, and the run stops with the gap open. This example is the run after the agent corrected it, the loop the advised mode is for: run, read the gaps, write contracts, run again.",
+    "Only the contract for `numberOfLeadingZeros` can be proved: a static JDK method whose parameters and result are primitives, in the checker's fragment, its class copied from the JDK image onto the proof's class path so that the checker runs its bytecode (18 paths, loops unwound 16 times). The `Random` calls have a receiver whose state the proof cannot see, so their contracts are tested, and the verdict counts them apart.",
+    "The contract for `numberOfLeadingZeros` has to say where the highest one bit is. A weaker one, `0 <= result && result <= 32`, is proved against the JDK's bytecode just as well, but the property does not follow from it: the checker then finds `fullJitterMillis(baseMillis=16, capMillis=20, attempt=14, requestId=20)`, on a result the weak contract admits and the JDK never returns for that base. Since that witness goes through the contracts and the interpreter cannot run `new Random` to confirm it, the run gives no verdict rather than a violation: a witness through a contract is one the contracts admit, not yet the JVM's.",
+    "The off-by-one, `Integer.numberOfLeadingZeros(baseMillis)` without the `- 1`, gives no verdict on these contracts for the same reason. The checker's witness `fullJitterMillis(baseMillis=99492, capMillis=100000, attempt=100000, requestId=100000)` shifts a 17-bit base by 15, to a negative ceiling, and `nextInt` throws; only a run on a JVM could confirm it, which the tool does not yet do for a witness through a contract. For base 100 the tests would catch it, at the 25th attempt, but not for a policy they do not try. That is why the defect is a note rather than an example of its own.",
+    "Checked inline when the example was written, on the patched module (the library's own run, not the recorded one): the contracts were checked and the property proved in about 0.2 s. The recorded result is the pipeline's."
+  ],
+  "provenance": "Constructed on Crosscut's retry package for steps 3c and 3e of `llm-dlc/loops/sound-verdicts.md` (the advised mode): a proof that closes only through agent-written contracts, one proved against the JDK's bytecode and the others tested on a JVM, with the page showing both levels.",
+  "references": [
+    {
+      "title": "Brooker, Exponential Backoff And Jitter (AWS Architecture Blog, 2015): full jitter, a wait uniform in [0, min(cap, base * 2^attempt))",
+      "url": "https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/"
+    },
+    {
+      "title": "java.util.Random.nextInt(int) (Java SE 25): throws IllegalArgumentException if the bound is not positive",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Random.html#nextInt(int)"
+    },
+    {
+      "title": "java.lang.Integer.numberOfLeadingZeros(int) (Java SE 25)",
+      "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html#numberOfLeadingZeros(int)"
+    }
+  ]
+}

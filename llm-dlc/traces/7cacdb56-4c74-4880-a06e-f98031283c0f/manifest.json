@@ -12,32 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T05:24:29.796Z",
-  "duration_seconds": 21000,
+  "ended": "2026-11-06T05:38:45.984Z",
+  "duration_seconds": 21857,
   "stats": {
-    "turns": 69,
-    "api_calls": 945,
-    "tool_calls": 954,
-    "tool_errors": 3,
-    "compactions": 12,
+    "turns": 75,
+    "api_calls": 1017,
+    "tool_calls": 1026,
+    "tool_errors": 4,
+    "compactions": 13,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 1912,
-      "output_tokens": 962767,
-      "cache_read_input_tokens": 170163137,
-      "cache_creation_input_tokens": 3198764
+      "input_tokens": 2060,
+      "output_tokens": 1013058,
+      "cache_read_input_tokens": 181216437,
+      "cache_creation_input_tokens": 3408227
     }
   },
   "tools": {
-    "Bash": 855,
-    "Read": 68,
+    "Bash": 920,
+    "Read": 72,
     "Write": 17,
-    "Edit": 11,
-    "WebFetch": 2,
-    "ToolSearch": 1
+    "Edit": 13,
+    "ToolSearch": 2,
+    "WebFetch": 2
   },
   "files_touched": [
     "examples/tools/result_format.py",
+    "examples/tools/test_build.py",
     "lib/src/advice.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
@@ -227,24 +228,38 @@
     {
       "index": 12,
       "started": "2026-11-06T05:06:40.223Z",
-      "ended": "2026-11-06T05:24:29.796Z",
-      "turns": 4,
-      "api_calls": 57,
+      "ended": "2026-11-06T05:24:59.571Z",
+      "turns": 5,
+      "api_calls": 60,
       "usage": {
-        "input_tokens": 114,
-        "output_tokens": 53944,
-        "cache_read_input_tokens": 9010139,
-        "cache_creation_input_tokens": 218193
+        "input_tokens": 122,
+        "output_tokens": 56317,
+        "cache_read_input_tokens": 9709639,
+        "cache_creation_input_tokens": 233027
       },
-      "peak_context_tokens": 231273
+      "peak_context_tokens": 246109
+    },
+    {
+      "index": 13,
+      "started": "2026-11-06T05:25:41.189Z",
+      "ended": "2026-11-06T05:38:45.984Z",
+      "turns": 5,
+      "api_calls": 69,
+      "usage": {
+        "input_tokens": 140,
+        "output_tokens": 47918,
+        "cache_read_input_tokens": 10353800,
+        "cache_creation_input_tokens": 194629
+      },
+      "peak_context_tokens": 207709
     }
   ],
   "log": {
-    "sha256": "6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4",
-    "bytes": 29659865,
-    "lines": 9999,
-    "gzip_bytes": 5494878,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4.jsonl.gz"
+    "sha256": "df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739",
+    "bytes": 31876307,
+    "lines": 10724,
+    "gzip_bytes": 5922062,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -399,6 +414,14 @@
       "summary": "Contracts proved against the JDK's bytecode: a contract for a static JDK method of primitives is proved by the tool's own checker running the JDK's own class, the strongest evidence level, and a proof that refutes one hands its input to the JVM test",
       "body": "Step 3c's last part of llm-dlc/loops/sound-verdicts.md. Before a contract for a gap is tested on a JVM, lib/src/contract_proving.rs proves it where it can. A generated class, GapContractProofs, has one method per contract, which calls the JDK method and checks the contract as the JVM test does: inside assume:, the first throws clause that holds decides, and the class thrown must be exactly that one (a new engine intrinsic, sameClass, compares classes); otherwise the method returns with assert: holding of its result. The method's class is copied from the JDK image onto the class path as a directory's, so the tool's own checker runs its bytecode (the JDK's classes are still taken as initialized). The run is under --gaps strict, with loops unwound 16 times and 30 s per contract. A contract that is proved, and that the JVM does not refute either, gets evidence 'proved' (ranked above 'tested', statement basis 'proved'), with a proof record of the class, JDK, class file sha256, checker, unwinding and paths. The verdict counts it ('1 proved'), and its contract line says what it was proved against. A proof that refutes a contract adds its witness to the JVM's inputs, so only the JVM's run makes it a counterexample. A witness the JVM does not reproduce leaves the contract tested and says so, and with no JVM the refuted contract is refused. Every contract that is not proved says why in 'unproved'. build.py, the result schema, lib/README.md and the skill's reference describe the level.\n\nVerified: the integration test now proves the bits fixture's contract for Integer.numberOfLeadingZeros, on native and auto. A contract that is wrong only at i=777777, an input neither the boundary values nor the random ones reach, is found by the proof and refuted by the JVM there ('returns 12'); before this change it was 'tested'. Random's contracts stay tested, each with the reason it is not proved. A new unit test proves Integer.divideUnsigned with ArithmeticException when b == 0, and refutes the same contract with RuntimeException, since a superclass is not the exact class thrown. It also refutes result != 7 for numberOfLeadingZeros on an i in [2^24, 2^25). A new test_build.py test covers the label '(1 proved, 1 tested)', the page's words and the schema. All Rust tests (unit, conformance, integration) and the 152 Python tests pass, and re-rendering every page changed none, so no job was needed.\n\nWhere the brief is out of date: it names Arrays.fill as a method to prove, but a proof covers arrays only up to its bound, while the call it is applied at may get a longer array, so contracts over arrays stay tested. The brief also says each Phase 3 step ends with a recorded example; 3c's is deferred a fifth time, on purpose, because 3e's acceptance asks for exactly the same example (one proved and one tested contract). The Progress entry says why, and names that example as next.",
       "log_sha256": "6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4"
+    },
+    {
+      "change_id": "qvtlozysomwvwlqkoxupymollxpvlvlp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The advised mode recorded end to end: two Crosscut examples, an agent's contract the JVM refutes going back to it, and a proof that closes on one contract proved against the JDK's bytecode and two tested (verification pending)",
+      "body": "Examples 147 and 148 (B11, --engine native --gaps advised, new technique tag advised-contracts) are the recorded example steps 3c and 3e of llm-dlc/loops/sound-verdicts.md ask for. Crosscut gains retry.Jitter#fullJitterMillis, full jitter: new Random(requestId * 31 + attempt).nextInt(ceiling), the ceiling the base shifted by the attempt with the shift stopped at Integer.numberOfLeadingZeros(base) - 1, then capped; its property says the wait is in [0, cap) and an invalid policy throws IllegalArgumentException, and four tests come with it. The proof reaches three gaps of the tool's own checker and closes only through contracts, which this session wrote as an agent from the template and the JDK's documentation (gaps.contracts in each folder, marked written-by an agent). In 147 the contract for nextInt leaves out the exception: the JVM refutes it at bound=0, it is refused, and the run stops before solving with the counterexamples in the advice. In 148 it has the throws clause: Verified, relying on 3 contracts, 1 proved (numberOfLeadingZeros, against java.lang.Integer's bytecode from the JDK image) and 2 tested (the Random constructor and nextInt, on the JVM).\n\nThis departs from the brief, which asks for one example: a run with a refuted contract stops with its gap open, so one recorded run cannot show both the refutation and the proof, and the pair is the protocol's two runs. 148's notes record what the example found: a real off-by-one in this kernel (no - 1) gives no verdict, since its witness goes through the Random contracts and the interpreter cannot run new Random; running such a witness on a JVM is the most useful thing the advised mode still lacks.\n\nbuild.py fix: the contracts file was not part of the claim, so a changed contract left a recorded result current. contracts_digest() now puts its SHA-256 among the claim's inputs under --gaps advised, and claim_changes reports it; no recorded result had contracts, so no claim moved. The --contracts help now says contracts are proved too, and lib/README.md points at the tag.\n\nVerified inline: the patched module compiles and its 52 tests pass; the library's own run on it gives both verdicts in about 0.2 s each; cargo test --release passes (128 unit, 4 conformance, 55 integration); 153 Python tests pass, one new (test_changed_contracts_for_the_gaps_make_the_result_stale). The recorded results are pipeline jobs 20261106-053555-example-147-b11-advised-contracts-a-cont and 20261106-053555-example-148-b11-advised-contracts-full-j. The brief's Progress records this and names 3d next.",
+      "log_sha256": "df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739"
     }
   ],
   "logs": {
@@ -490,6 +513,12 @@
       "bytes": 22779112,
       "lines": 7796,
       "gzip_bytes": 4162557,
+      "url": null
+    },
+    "df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739": {
+      "bytes": 31876307,
+      "lines": 10724,
+      "gzip_bytes": 5922062,
       "url": null
     },
     "e970a900beb3a9a033aa8ba055118573acb9b3c26f118dd7445b129249c63787": {

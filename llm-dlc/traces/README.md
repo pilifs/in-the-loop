@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 24, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 05:24 UTC |
-| Prompts | 715 |
-| Model calls | 6,641 |
-| Tool calls | 7,497 (168 failed) |
-| Compactions | 96 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 05:38 UTC |
+| Prompts | 721 |
+| Model calls | 6,713 |
+| Tool calls | 7,569 (169 failed) |
+| Compactions | 97 |
 | Subagents | 3 |
-| Tokens written | 10,023,123 |
-| Tokens read | 1,089,502,502 (97.6% from cache) |
-| Commits with a trace | 194 |
-| Log snapshots | 254 (850.5 MB gzipped, 242 uploaded) |
+| Tokens written | 10,073,414 |
+| Tokens read | 1,100,765,413 (97.6% from cache) |
+| Commits with a trace | 195 |
+| Log snapshots | 255 (856.4 MB gzipped, 242 uploaded) |
 
 ## Sessions
 
@@ -50,7 +50,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
-| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 5 h 50 min | `claude-opus-5-5` | 69 | 945 | 954 | 3 | 12 | 340,299 | 19 |
+| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 6 h 4 min | `claude-opus-5-5` | 75 | 1,017 | 1,026 | 4 | 13 | 340,299 | 20 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -83,17 +83,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 962,767 | 1,912 | 3,198,764 | 170,163,137 | 98.2% | 180 |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,013,058 | 2,060 | 3,408,227 | 181,216,437 | 98.2% | 182 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 6,438 | 85.9% | 24 |
-| `Edit` | 389 | 5.2% | 12 |
+| `Bash` | 6,503 | 85.9% | 24 |
+| `Edit` | 391 | 5.2% | 12 |
 | `Write` | 285 | 3.8% | 11 |
-| `Read` | 248 | 3.3% | 15 |
-| `ToolSearch` | 53 | 0.7% | 13 |
+| `Read` | 252 | 3.3% | 15 |
+| `ToolSearch` | 54 | 0.7% | 13 |
 | `Monitor` | 31 | 0.4% | 5 |
 | `WebFetch` | 20 | 0.3% | 4 |
 | `TaskStop` | 12 | 0.2% | 3 |
@@ -304,6 +304,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 192 | change `mvrqpwnr` | Contracts tested on a real JVM: each contract for a gap is run against the JDK's own call on boundary and seeded random inputs before the tool's own checker applies it; one the JVM refutes goes back to the agent with its counterexamples, and the verdict counts its contracts as tested or trusted | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260.jsonl.gz)) |
 | 193 | change `kwlppvsu` | Calls whose value a proof reads are gaps: a JDK method returning a primitive and a static JDK method the tool's own checker does not model are named gaps with no assume form, which a contract closes by stating the result, tested on a real JVM | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a.jsonl.gz)) |
 | 194 | change `usrpuywy` | Contracts proved against the JDK's bytecode: a contract for a static JDK method of primitives is proved by the tool's own checker running the JDK's own class, the strongest evidence level, and a proof that refutes one hands its input to the JVM test | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4.jsonl.gz)) |
+| 195 | change `qvtlozys` | The advised mode recorded end to end: two Crosscut examples, an agent's contract the JVM refutes going back to it, and a proof that closes on one contract proved against the JDK's bytecode and two tested (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/df30f06ee0573c26c123f523a4bca10501f34a6ced7016d11ecde9c5f22dc739.jsonl.gz)) |
 
 ## Logs
 
@@ -334,7 +335,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 19 | 7 | 41.1 MB | `6dbc259c73f7`, not uploaded |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 20 | 7 | 47.0 MB | `df30f06ee057`, not uploaded |
 
 ## Session notes
 

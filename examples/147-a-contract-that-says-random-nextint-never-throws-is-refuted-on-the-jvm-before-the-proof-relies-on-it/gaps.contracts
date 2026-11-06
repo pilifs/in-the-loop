@@ -1,0 +1,22 @@
+# Contracts for the gaps of jvmcontract's own checker that Crosscut's Jitter#fullJitterMillis reaches (--gaps advised),
+# written by an agent (Claude Opus 5.5) from the template the tool gave and the JDK's documentation of each call, not
+# from its source. The tool checks each before it relies on it: proved against the JDK's own bytecode where the call
+# is in its checker's fragment, tested on a real JVM on boundary and seeded random inputs, or else trusted.
+kind: gap-contracts
+
+jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1
+  call: java.util.Random.<init>(long seed)
+  modifies: nothing
+  written-by: an agent (Claude Opus 5.5), from the documentation of Random(long): it sets the seed, and throws nothing
+
+jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1
+  call: java.util.Random.nextInt(int bound) -> int
+  assert: 0 <= result && result < bound
+  modifies: this
+  written-by: an agent (Claude Opus 5.5), from the documentation of Random.nextInt(int): a value at least zero and below the bound
+
+jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1
+  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int
+  assert: (i == 0 && result == 32) || (i != 0 && 0 <= result && result < 32 && (i >>> (31 - result)) == 1)
+  modifies: nothing
+  written-by: an agent (Claude Opus 5.5), from the documentation of Integer.numberOfLeadingZeros(int): 32 for zero, else the zeros above the highest one bit

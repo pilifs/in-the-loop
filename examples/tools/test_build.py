@@ -1677,6 +1677,23 @@ class SnapshotTest(unittest.TestCase):
         old = {**self.result["claim"], "format": 0}
         self.assertIn("the claim is in format 0", build.claim_changes(self.folder, self.example, old)[0])
 
+    def test_changed_contracts_for_the_gaps_make_the_result_stale(self):
+        advised = {**self.example, "approach": {**self.example["approach"], "engine": "native", "gaps": "advised",
+                                                "contracts": "gaps.contracts"}}
+        (self.folder / "gaps.contracts").write_text("kind: gap-contracts\n")
+        digest = build.contracts_digest(self.folder, advised)
+        self.assertEqual(len(digest), 64)
+        patch = (self.folder / "change.patch").read_text()
+        claim = build.claim_record(advised, build.plan(advised), patch, build.REPO, build.REPO, digest)
+        self.assertEqual(claim["inputs"]["contracts"], digest)
+        self.assertNotEqual(claim["id"], build.claim_record(advised, build.plan(advised), patch, build.REPO, build.REPO)["id"])
+        self.assertEqual(build.claim_changes(self.folder, advised, claim), [])
+        (self.folder / "gaps.contracts").write_text("kind: gap-contracts\n# another contract\n")
+        self.assertEqual(build.claim_changes(self.folder, advised, claim), ["the contracts for the gaps changed (`gaps.contracts`)"])
+        # Contracts the proof is not given (another gap mode) are not an input of the claim.
+        self.assertIsNone(build.contracts_digest(self.folder, {**advised, "approach": {**advised["approach"], "gaps": "strict"}}))
+        self.assertEqual(build.claim_changes(self.folder, self.example, self.result["claim"]), [])
+
     def test_changed_sources_make_the_result_stale(self):
         part = build.plan(self.example)["build"]["copies"][0]
         before = self.dir / "before"

@@ -311,9 +311,12 @@ struct EquivalenceArgs {
     gaps: String,
     /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes
     /// (`kind: gap-contracts`, a block per gap under its id): the tool's own checker applies each at its call in
-    /// place of the gap, and refuses one it cannot apply, with the reason. Each is first tested on a real JVM (the
-    /// JDK's call on boundary and seeded random inputs): one the JVM refutes is refused with its counterexamples,
-    /// one it cannot test is trusted. The verdict counts the contracts it rests on at each level.
+    /// place of the gap, and refuses one it cannot apply, with the reason. Each is checked first: a contract for a
+    /// static JDK method of primitives is proved against the JDK's own bytecode by the tool's own checker where it
+    /// can be, and every contract is tested on a real JVM (the JDK's call on boundary and seeded random inputs, and
+    /// on any input the proof refutes it on). One the JVM refutes is refused with its counterexamples; the others
+    /// are proved, tested, or, where the JVM cannot test one, trusted. The verdict counts the contracts it rests on
+    /// at each level.
     #[arg(long)]
     contracts: Option<PathBuf>,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
@@ -404,9 +407,12 @@ struct ProveArgs {
     gaps: String,
     /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes
     /// (`kind: gap-contracts`, a block per gap under its id): the tool's own checker applies each at its call in
-    /// place of the gap, and refuses one it cannot apply, with the reason. Each is first tested on a real JVM (the
-    /// JDK's call on boundary and seeded random inputs): one the JVM refutes is refused with its counterexamples,
-    /// one it cannot test is trusted. The verdict counts the contracts it rests on at each level.
+    /// place of the gap, and refuses one it cannot apply, with the reason. Each is checked first: a contract for a
+    /// static JDK method of primitives is proved against the JDK's own bytecode by the tool's own checker where it
+    /// can be, and every contract is tested on a real JVM (the JDK's call on boundary and seeded random inputs, and
+    /// on any input the proof refutes it on). One the JVM refutes is refused with its counterexamples; the others
+    /// are proved, tested, or, where the JVM cannot test one, trusted. The verdict counts the contracts it rests on
+    /// at each level.
     #[arg(long)]
     contracts: Option<PathBuf>,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.

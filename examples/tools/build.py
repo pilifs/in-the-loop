@@ -391,6 +391,13 @@ def gap_mode(example):
 GAP_CONTRACTS_DIR = "build/gap-contracts"
 
 
+def contracts_digest(folder, example):
+    """The SHA-256 of the example's contracts for the gaps (`approach.contracts`) when the proof is given them, else
+    None: they are what the verdict rests on for each gap they close, so another contract is another claim."""
+    name = example["approach"].get("contracts")
+    return file_digest(folder / name) if name and gap_mode(example) == "advised" else None
+
+
 def stage_contracts(folder, example, build):
     """Copies the example's contracts for the gaps (`approach.contracts`, a file in its folder) into the module it
     builds, where proof_options() points jvmcontract at them."""
@@ -594,7 +601,7 @@ def run(folder, example, out):
             # Inside a repository's tree too, git apply takes the patch's paths relative to the copy (it prefixes them
             # with the directory it runs in), so a copy kept in a work directory is patched like one in /tmp.
             stage("apply the patch", ["git", "apply", "-p1", "-"], input=patch, cwd=tmp, check=True)
-            claim = claim_record(example, p, patch, REPO, tmp)
+            claim = claim_record(example, p, patch, REPO, tmp, contracts_digest(folder, example))
             (out / "claim.json").write_text(json.dumps(claim, indent=2, ensure_ascii=False) + "\n")
             started = datetime.datetime.now(datetime.timezone.utc)
             clock = time.monotonic()
@@ -706,17 +713,20 @@ def tree_digest(base, parts, ignore=IGNORE):
     return {"sha256": canonical_digest(sorted(files)), "files": len(files)}
 
 
-def claim_record(example, p, patch, before, after):
+def claim_record(example, p, patch, before, after, contracts=None):
     """The claim a run checks, frozen before it runs: the plan's statement of what is checked, its scope (the array
     bound and assumptions a proof is over), and the fingerprints of its inputs: the patch, the sources before and
-    after it (the app and what the build copies, models, contracts and build files among them), and for D1 the
-    model's files. Its id is the digest of all of it, so another input or scope is another claim."""
+    after it (the app and what the build copies, models, contracts and build files among them), for D1 the
+    model's files, and under --gaps advised the example's contracts for the gaps (`contracts`, contracts_digest()).
+    Its id is the digest of all of it, so another input or scope is another claim."""
     scope = claim_scope(example, p)
     inputs = {"patch": hashlib.sha256(patch.encode()).hexdigest(),
               "before": tree_digest(before, p["build"]["copies"]), "after": tree_digest(after, p["build"]["copies"]),
               # Gradle resolves Box Office's libraries by the versions its build files (fingerprinted with the sources)
               # declare; the artifacts themselves are not fingerprinted. The javac apps depend on the JDK alone.
               "dependencies": "declared in the build files" if p["build"]["adapter"] == "gradle" else "the JDK"}
+    if contracts:
+        inputs["contracts"] = contracts
     if p["model"]:
         inputs["model"] = {f: file_digest(Path(after) / f)
                            for f in [p["model"]["spec"], *(c["cfg"] for c in p["model"]["configurations"])]}
@@ -761,6 +771,8 @@ def claim_changes(folder, example, claim, base=None):
     patch = (folder / example["change"]["patch"]).read_text()
     if inputs.get("patch") != hashlib.sha256(patch.encode()).hexdigest():
         reasons.append("the patch changed")
+    if inputs.get("contracts") != contracts_digest(folder, example):
+        reasons.append(f"the contracts for the gaps changed (`{example['approach'].get('contracts')}`)")
     parts = tuple(p["build"]["copies"])
     if base is None:
         if parts not in SOURCES:
