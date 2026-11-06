@@ -101,6 +101,7 @@ Merge. The `\sum` is the specification's formula and stays as the property; the 
 ## Notes
 
 - With its first-frame special case removed, the stack map offset loop still places every frame: a safe change.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

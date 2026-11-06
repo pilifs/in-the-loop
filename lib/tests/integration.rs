@@ -2043,3 +2043,78 @@ fn a_record_whose_constructor_changed_is_not_identical() {
     assert_eq!(unchanged.verdict, Verdict::Verified, "{}", unchanged.output);
     assert!(unchanged.output.contains("nothing to prove"), "{}", unchanged.output);
 }
+
+const GAPS: &str = r#"
+package fixtures;
+
+public class Gaps {
+    static class A { int x; }
+    static class B extends A { int x; }
+    static class Table {
+        static final int[] PRIMES = { 2, 3, 5 };
+        static int first() { return 7; }
+    }
+    record Point(int x, int y) {}
+
+    public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; }
+    public static int nullMonitor(int n) { synchronized ((Object) null) { return 1; } }
+    public static int randomBytes(byte[] out) { new java.util.Random(1).nextBytes(out); return out.length; }
+    public static int hiding(int n) { B b = new B(); b.x = n; ((A) b).x = 2; return b.x; }
+    public static boolean sameLiteral(int n) { String s = "a"; String t = "a"; return s == t; }
+    public static int initialised(int n) { return Table.first() + n; }
+    public static String described(Point p) { return "at " + p; }
+    public static int exact(int n) {
+        if (n < 0) throw new IllegalArgumentException("negative: " + n);
+        return new Point(n, n).x() + Math.addExact(n, 1);
+    }
+}
+"#;
+
+/// The gap scan (step 1a of llm-dlc/loops/sound-verdicts.md) names each construct the tool's own checker
+/// approximates: both review reproducers, a `void` JDK mutator of an argument array, a hidden field, a literal
+/// compared by reference and a class initializer; and it counts the JDK calls the
+/// engine reproduces exactly (an exception's constructor, `Record.<init>`, `Math.addExact`) as no gap.
+#[test]
+fn the_gap_scan_names_what_the_own_checker_approximates() {
+    let dir = target_tmp().join("gaps-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Gaps.java"), GAPS).unwrap();
+    let Some(classes) = compile("gaps", &[dir.join("Gaps.java")]) else { return };
+    let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap().with_models(true);
+    let scan = |method: &str| {
+        let targets = vec![format!("fixtures.Gaps#{method}")];
+        let roots = jvmcontract::bmc::gaps::roots(&cp, &targets).unwrap();
+        let s = jvmcontract::bmc::gaps::scan(&cp, &roots).unwrap();
+        let ids: Vec<String> = s.records().into_iter().map(|g| g.id.split('@').next().unwrap().to_string()).collect();
+        (ids, s)
+    };
+    let (ids, _) = scan("capacity");
+    assert_eq!(ids, ["jdk-constructor:java.util.ArrayList.<init>(I)V"]);
+    let (ids, s) = scan("nullMonitor");
+    assert_eq!(ids, ["monitor:fixtures.Gaps"]);
+    assert_eq!(s.records()[0].sites, ["fixtures.Gaps.nullMonitor:14"]);
+    let (ids, _) = scan("randomBytes");
+    assert_eq!(ids, ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"]);
+    let (ids, _) = scan("hiding");
+    assert_eq!(ids, ["hidden-field:fixtures.Gaps$A.x:I", "hidden-field:fixtures.Gaps$B.x:I"]);
+    let (ids, _) = scan("sameLiteral");
+    assert_eq!(ids, ["literal-identity:java.lang.String"]);
+    let (ids, s) = scan("initialised");
+    assert_eq!(ids, ["class-initializer:fixtures.Gaps$Table.<clinit>()V"]);
+    assert!(s.refused.is_empty(), "{:?}", s.refused);
+    // javac from JDK 19 on converts the object with `String.valueOf` before the concatenation, which the engine
+    // refuses; the bytecode of JDK 9 to 18 passes the object itself, a `string-conversion` gap.
+    let (ids, s) = scan("described");
+    assert!(ids.is_empty(), "{ids:?}");
+    assert_eq!(s.refused["a static JDK method it does not model"].first, "java.lang.String.valueOf(java.lang.Object)");
+    let (ids, s) = scan("exact");
+    assert!(ids.is_empty(), "{ids:?}");
+    let exact: Vec<&String> = s.exact.keys().collect();
+    assert_eq!(exact, ["java.lang.IllegalArgumentException.<init>(Ljava/lang/String;)V", "java.lang.Math.addExact", "java.lang.Record.<init>()V"]);
+    // A gap of the JDK names the JDK's version, so that a contract for it says what it was checked against.
+    let (_, s) = scan("capacity");
+    if let Some(jdk) = &s.jdk {
+        assert_eq!(s.records()[0].id, format!("jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-{jdk}"));
+    }
+}

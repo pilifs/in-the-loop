@@ -134,6 +134,7 @@ Merge. The property is the review: a rewrite of a search is accepted because the
 ## Notes
 
 - The rewritten binary search still finds every key in every sorted table: a safe change, proved with quantifiers over the table.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 2 methods the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

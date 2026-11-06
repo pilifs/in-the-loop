@@ -36,7 +36,8 @@
   "explanation": "The property is the same as in example 017. JBMC searches small inputs first and finds a wall clock at 0, a last timestamp of 0 and a message with physical part 0 and a counter ahead of the clock's; the new code returns a timestamp whose counter is one more than the clock's, which is not later than the message's. The tool replays the input on the method to show the value. The unit test that covers equal physical parts also fails, so here the proof and a well-chosen test agree; the difference is that the proof would also have caught the variants that the test's two data points miss, such as an off-by-one in only the message's branch.",
   "resolution": "Keep the `max` of the two counters when the physical parts are equal, as example 017's version does. The properties file is unchanged by either refactor.",
   "notes": [
-    "With one branch folded away, the clock hands out a timestamp older than the message it just received."
+    "With one branch folded away, the clock hands out a timestamp older than the message it just received.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 4 methods the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's."
   ],
   "provenance": "Constructed from the receive rule of Kulkarni et al., by dropping the case the paper's algorithm spells out separately.",
   "references": [

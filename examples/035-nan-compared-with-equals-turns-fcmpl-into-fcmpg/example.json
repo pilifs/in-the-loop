@@ -37,7 +37,8 @@
   "explanation": "The regression proof compiles both versions of `fcmp` into one program and asks JBMC for an input on which they differ. Floats are bit-vectors to the solver, NaN among them, and it finds one in the first stage: a NaN operand with the `fcmpl` rule, on which the old code returns -1 and the new code 1, because `a == Float.NaN` is false even when `a` is NaN and the three-way comparison that follows has no case for an unordered pair. The tool replays the input in its interpreter and shows both outcomes. The point of the proof is that it covers every float, NaN and the signed zeros included, where a test covers the values its author thought of.",
   "resolution": "Revert, or write the check as `Float.isNaN(a) || Float.isNaN(b)` (which is `a != a`), and add the `fcmpl` NaN test the regression proof shows was missing. Better: keep the fall-through form, with a comment that the fourth branch is the unordered case, since it is the form in which the specification states the instruction.",
   "notes": [
-    "`== Float.NaN` is never true, so the NaN check never fires and `fcmpl` quietly becomes `fcmpg`."
+    "`== Float.NaN` is never true, so the NaN check never fires and `fcmpl` quietly becomes `fcmpg`.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change; the checker refuses part of it in any mode (floating point (floating-point arithmetic, and 7 more)). JBMC's own approximations are step 4c's."
   ],
   "provenance": "Constructed from JVMS §6.5 (`fcmpg` and `fcmpl`) and the classic `x == Float.NaN` mistake.",
   "references": [

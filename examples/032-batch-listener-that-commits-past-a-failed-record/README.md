@@ -97,6 +97,10 @@ The property is the one sentence of Kafka's commit semantics: the committed offs
 
 Revert, and fix the poison-batch loop where Spring Kafka fixes it: a `DefaultErrorHandler` with a bounded back-off and a `DeadLetterPublishingRecoverer`, which retries the failed record and then publishes it to a dead-letter topic, after which the commit moves past it legitimately. The property stays in the file: a later change to this line is checked against every batch shape, including the ones no test enumerates.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain batchStart: long × batchSize: int × failedIndex: int.

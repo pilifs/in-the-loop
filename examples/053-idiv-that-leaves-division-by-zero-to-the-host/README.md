@@ -124,6 +124,7 @@ Merge. The throws clause stays as the kernel's specification of its exceptional 
 
 - The throws clause of the property brings the exceptional path under the proof.
 - Leaving division by zero to the host throws exactly where the removed check did. Compare 034, the unsafe change on the same method.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

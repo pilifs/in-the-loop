@@ -149,6 +149,7 @@ Keep the guard: `return low < matches.length && matches[low] == key ? low : -1`,
 - The tool's own checker took arrays of primitives into its fragment for this example: an array parameter has every length up to `--max-array-length` (eight) and symbolic cells, a read at a symbolic index is a choice among the cells, a write a conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a division by zero is. The violating path is the one where the loop's last step leaves `low` at the length and the final read's out-of-bounds side is feasible: 4 paths, 28 solver calls, 0.16 s.
 - The tests pass: the test table is `{-1000, -7, 0, 3, 4, 100, 65535, Integer.MAX_VALUE}`, every key of it is found, the absent keys tried are 5 and `Integer.MIN_VALUE`, and the empty table is answered by the new first line. No key is above `Integer.MAX_VALUE`, so the unguarded read is never reached by a test.
 - JBMC, given the same harness, finds the same violation in 23 s using 2 GB, the symbolic array and its copying and comparing loops in one formula; the checker's path-by-path search over the cells takes a fraction of a second. The witness is shrunk in the interpreter as JBMC's would be, to a one-match table and the key above it.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 2 methods the proof reaches in either version, so strict mode does not move this verdict.
 
 ## Evidence
 

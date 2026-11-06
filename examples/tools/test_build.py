@@ -1939,6 +1939,62 @@ class StoredFormatTest(unittest.TestCase):
                                               {"state": "current", "reasons": [], "evidence": []}), page)
 
 
+class GapScanTest(unittest.TestCase):
+    """Step 1a of llm-dlc/loops/sound-verdicts.md: the gap scan's note says what strict mode would cost an example,
+    and replaces an earlier note rather than adding another."""
+
+    def scan(self, gaps=(), refused=None, methods=3):
+        return {"roots": ["a.B#m"], "methods": methods, "jdk": "25.0.4.1", "gaps": list(gaps), "exact": {},
+                "refused": refused or {}}
+
+    def example(self, approach="B9", engine=None):
+        return {"id": "200", "origin": "constructed", "subject": {"file": "examples/apps/crosscut/src/main/java/a/B.java"},
+                "approach": {"id": approach, **({"engine": engine} if engine else {})}}
+
+    def test_which_examples_are_scanned(self):
+        self.assertIsNone(build.gap_scan_problem(self.example()))
+        self.assertIsNone(build.gap_scan_problem(self.example("B11")))
+        self.assertIn("not a proof over bytecode", build.gap_scan_problem(self.example("D1")))
+        boxoffice = {**self.example(), "subject": {"file": build.BUILD_ROOT + "/x/A.java"}}
+        self.assertIn("Gradle", build.gap_scan_problem(boxoffice))
+        self.assertIn("real-world", build.gap_scan_problem({**self.example(), "origin": "real-world"}))
+
+    def test_no_gap_means_the_verdict_does_not_move(self):
+        note = build.gap_note(self.example(engine="native"), {"after": self.scan(), "before": self.scan()},
+                              today=build.datetime.date(2026, 11, 5))
+        self.assertTrue(note.startswith("Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, "
+                                        "JDK 25.0.4.1"), note)
+        self.assertIn("meets no gap in the 3 methods the proof reaches in either version, so strict mode does not "
+                      "move this verdict.", note)
+        self.assertNotIn("JBMC", note)
+
+    def test_gaps_are_named_by_id_with_the_versions_that_meet_them(self):
+        gap = {"id": "monitor:a.B", "kind": "monitor", "call": "a.B", "sites": ["a.B.m:7", "a.B.m:9"]}
+        other = {"id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1", "kind": "jdk-constructor",
+                 "call": "java.util.ArrayList.<init>(int)", "sites": ["a.B.m:3"]}
+        refused = {"floating point": {"first": "floating-point arithmetic", "at": "a.B.m:4", "sites": 3}}
+        scans = {"after": self.scan([gap, other], refused), "before": self.scan([gap])}
+        gaps, why = build.gap_summary(scans)
+        self.assertEqual([(g["id"], g["versions"]) for g in gaps],
+                         [("monitor:a.B", ["after", "before"]), (other["id"], ["after"])])
+        self.assertEqual(why, ["floating point (floating-point arithmetic, and 2 more)"])
+        note = build.gap_note(self.example(), scans)
+        self.assertIn("meets 2 gaps in what the proof reaches: `monitor:a.B` (both versions, first at a.B.m:7); "
+                      f"`{other['id']}` (the after version only, first at a.B.m:3). Under strict mode each is "
+                      "refused by name", note)
+        self.assertIn("runs in `assume` until the user decides", note)
+        self.assertIn("The recorded proof is JBMC's", note)
+        self.assertIn("refuses part of it in any mode (floating point (floating-point arithmetic, and 2 more))", note)
+
+    def test_the_note_replaces_an_earlier_one(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder = Path(d)
+            (folder / "example.json").write_text(json.dumps({"id": "200", "notes": ["kept", "Gap scan (old)"]}))
+            build.record_gap_note(folder, "Gap scan (new)")
+            build.record_gap_note(folder, "Gap scan (newer)")
+            self.assertEqual(json.loads((folder / "example.json").read_text())["notes"], ["kept", "Gap scan (newer)"])
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema

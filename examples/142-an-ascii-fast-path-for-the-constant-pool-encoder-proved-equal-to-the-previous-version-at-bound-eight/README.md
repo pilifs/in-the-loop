@@ -98,6 +98,7 @@ None needed. The example is a proof of a refactoring that holds: the fast path's
 - The bound applies to `chars` and `out` alike, so an input whose encoding needs more bytes than `out` holds overflows the buffer in both versions and is compared up to that exception; eight three-byte characters need 24 bytes and are never encoded to the end. A difference that only shows past the eighth byte written would not be seen. Example 143's difference shows in the first byte.
 - The fast path's test `(char) (chars[i] - 1) < 0x7f` is one comparison for the two the general loop makes (`c >= 0x0001 && c <= 0x007f`): the subtraction wraps U+0000 to U+FFFF, which fails the test, as it should, since U+0000 takes the two-byte form. The proof covers the wrap, since `chars` has every value in its cells.
 - The encoder's properties in `properties.contract` (examples 044, 048 and 055) hold of both versions; they say how many bytes are written and what the first byte of each character is, not that the new version writes what the old one wrote. The regression proof is a different statement, which the properties do not imply either way: example 143 is a fast path the properties allow and the regression proof refutes.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict.
 
 ## Evidence
 

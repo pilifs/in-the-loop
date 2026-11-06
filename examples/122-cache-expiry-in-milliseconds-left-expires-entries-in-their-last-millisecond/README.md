@@ -196,6 +196,7 @@ Keep the time left in nanoseconds (example 123) and convert where it is reported
 - The library's test of the same shape finds `remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)` with JBMC in about a second, before `false` and after `0`, under the line `the results are not related by previous == (result <= 0)`; the measurement on this kernel is the pipeline's.
 - The tool's own checker (`--engine native`) finds the same difference in 0.1 s, but on a large input: it has no staged search of small values, and the shrinker's 4000 interpreter runs do not bring three 64-bit values down, so the witness it reports is the raw one. The example runs JBMC.
 - The scope excludes the inputs outside the module's precondition (a clock reading from before the write, a non-positive time to live, a write before the clock's zero), as in example 123; the counterexample is well inside it, and is found at the first stage of the search, which tries values up to 20.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

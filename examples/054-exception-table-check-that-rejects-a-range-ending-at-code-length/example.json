@@ -40,7 +40,8 @@
   "resolution": "Revert, and keep the comment that says why `end_pc` is compared differently: the range is half-open, so `end_pc` may equal `code_length`, as HotSpot's own check (`end_pc > code_length` is the error) has it. The throws clause is the regression test, and the shrunk witness is the unit test to add: a handler that covers the last instruction.",
   "notes": [
     "The throws clause of the property brings the exceptional path under the proof.",
-    "Rejects every handler that covers the last instruction of a method, since `end_pc == code_length` is allowed."
+    "Rejects every handler that covers the last instruction of a method, since `end_pc == code_length` is allowed.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's."
   ],
   "provenance": "Constructed from the exception table checks of JVMS §4.7.3, by making the three offset checks uniform.",
   "references": [

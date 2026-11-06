@@ -93,6 +93,10 @@ The regression proof puts both versions of `tableSizeFor` in one program and ask
 
 Merge. The proof is the review: the JDK's rewrite was correct in the JDK and it is correct here, and the next change to this method gets the same check against this version.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change; the checker refuses part of it in any mode (a static JDK method it does not model (java.lang.Integer.numberOfLeadingZeros(int))). JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over cap: int in 0.3 s; loops unwound 16 times with unwinding assertions.

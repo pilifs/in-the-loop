@@ -292,7 +292,30 @@ Kept as context, so the phases above leave room for them:
 
 Each run counts only its own commits, so work done in earlier runs is listed here.
 
-- Nothing yet.
+- **1a, the gap scan (2026-11-05).**
+  - `jvmcontract gaps --classes DIR --target C#m [--json]` ([`lib/src/bmc/gaps.rs`](../../lib/src/bmc/gaps.rs)) walks
+    what a proof's roots may reach, as the engine resolves calls. It lists each gap by a stable id: the kind and the
+    member, plus `@jdk-<version>` for a call into the JDK, as in `jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1`.
+    It also lists the JDK calls the engine reproduces exactly and relies on, and what the engine refuses outright.
+  - The kinds: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method`, `monitor`, `hidden-field`,
+    `literal-identity`, `class-initializer`, `string-conversion`.
+  - `bmc::models_jdk_static` lists the arms of `call_jdk_static`, so the scan and the engine agree on what is modelled.
+  - `build.py --scan-gaps` scanned the 56 B9/B11 examples on the javac apps (both versions for B9) and left a
+    `Gap scan (...)` note in each.
+  - **Result: strict mode moves no recorded verdict.** 54 examples have no gap. 013 and 071 (Quorum's vote rule, proved
+    by JBMC) each meet four enum class initializers and one literal compared by reference. The native engine already
+    refuses both examples, since enum constants are static fields that aren't compile-time constants.
+  - Not scanned:
+    - Box Office B9 006–008 run on the Gradle verifier.
+    - The real-world 105–109 have no classes in the repository.
+    - B8, B10, B12 and D1 are not proofs over bytecode.
+  - **For 1b, the allow-list must be wider than this brief says.** It needs `Record.<init>()` (14 examples) and the JDK
+    exceptions' `()`, `(String)` and `(String, Throwable)` constructors (25 examples), on top of `Object.<init>` and
+    `lib/models`. Without them, strict would refuse almost half the corpus. `gaps::exact_jdk_call` is that list.
+  - `string-conversion` can only come from javac 9–18 bytecode. From JDK 19, javac calls `String.valueOf` before
+    concatenating, and the engine refuses that call.
+  - The scan doesn't walk the harness, or the property and relation expressions compiled into it.
+  - Next: 1b, gaps as data in the engine, with `--gaps strict|assume`.
 
 ## Loop settings
 

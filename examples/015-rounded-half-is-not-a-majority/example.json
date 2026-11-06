@@ -37,7 +37,8 @@
   "explanation": "The module's properties file states what `majority` guarantees: on every `n > 0`, `2L * result > n && result <= n`. The tool generates a harness that calls the method on a symbolic `n`, assumes the precondition and asserts the property, and JBMC searches for an `n` that violates it, over the whole 32-bit range after a pass over small values. It finds n = 2, for which the new code returns 1, and the tool replays the input on the method to show the result. The old code was proved to satisfy the property in the same way, over all 2^31 positive sizes; a property-based test would have sampled a few hundred of them. The property is written in `long` arithmetic on purpose: the first draft, `2 * result > n`, was itself refuted by the prover at n near 2^31, where the multiplication overflows.",
   "resolution": "Keep `n / 2 + 1`. The property stays in the properties file next to the code, and every later rewrite of this line, however obvious, is checked against it for every cluster size.",
   "notes": [
-    "`(n + 1) / 2` is not a majority: two quorums of an even cluster can miss each other."
+    "`(n + 1) / 2` is not a majority: two quorums of an even cluster can miss each other.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's."
   ],
   "provenance": "Constructed from a textbook simplification that is correct for every odd cluster size and wrong for every even one.",
   "references": [

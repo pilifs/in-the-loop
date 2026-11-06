@@ -90,6 +90,10 @@ The property reads: for every `attempt >= 0`, `baseMillis > 0` and `capMillis >=
 
 Keep the guard, or write the cap test as the old code did (`base > cap >> attempt`), which cannot overflow. The property stays in the file: a later "simplification" is checked against it for every attempt number, which no test suite enumerates.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [-100000:100000] as delayMillis(attempt=99951, baseMillis=65536, capMillis=65536), shrunk to the input above in 58 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long.

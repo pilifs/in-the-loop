@@ -140,6 +140,7 @@ Merge. The expression after `previousArguments` is what a reviewer approves: tha
 - Without `previousArguments`, the tool refuses: `the previous version takes (long, int, long, int) and the new one (long, long, int, int); give the previous version's arguments as expressions over the new parameters with --before-arguments`. A method renamed or moved is named with `previousSymbol` (`--before-target`) as well.
 - An input for which an argument expression throws, a division by zero say, is outside the relation and skipped, as an input in the declared scope is; the expressions here cannot throw.
 - A rewrite that returned the first write only on a strictly positive order is found by the same proof: the library's test shows the counterexample as `winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`, before 0 and after 1.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

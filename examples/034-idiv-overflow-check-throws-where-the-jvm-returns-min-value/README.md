@@ -113,6 +113,7 @@ Revert, and keep the comment that says why: `idiv` and `ldiv` overflow silently 
 ## Notes
 
 - Throws where the JVM specification says to return `Integer.MIN_VALUE`. Compare 053, the safe change on the same method.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

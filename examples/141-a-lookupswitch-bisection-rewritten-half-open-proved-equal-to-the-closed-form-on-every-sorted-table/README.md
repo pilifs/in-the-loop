@@ -139,6 +139,7 @@ Merge. The proof is the review: the rewrite is accepted because it agrees with t
 - The tool's own checker proves it in 2.3 s: 88 paths, 1044 solver calls, 59 MB. The paths are the lengths of the table (nine, the harness's copying loop) times the steps of the two searches; the out-of-bounds side of each read is refuted by the solver under the loop's bounds, so no exception path is explored. Arrays of primitives entered its fragment with this example and 140: a cell per index up to `--max-array-length`, a read a choice among the cells and a write a conditional update of each.
 - JBMC, given the same harness, proves the same statement in 101 s and 2 GB with its default solver, the symbolic table, the quantifier's loop and the two searches in one formula; without the scope it finds the unsorted-table witness in 14 s where the checker takes 0.1 s.
 - Example 046 proves the same rewrite against the search's specification with quantifiers, that every key of a sorted table is found and an absent one gives -1; this proof relates it to the previous code instead, with no specification but the previous version, which is the review question when the rewrite is meant to change nothing.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 2 methods the proof reaches in either version, so strict mode does not move this verdict.
 
 ## Evidence
 

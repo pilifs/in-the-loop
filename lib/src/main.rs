@@ -38,6 +38,18 @@ enum Command {
     },
     /// Prove two compiled versions of a method equivalent with JBMC, or show an input on which they differ.
     Equivalence(EquivalenceArgs),
+    /// List the gaps of the tool's own checker a method reaches: JDK calls, monitors, hidden fields, literal
+    /// identity and class initializers it approximates rather than implements, found statically.
+    Gaps {
+        /// `pkg.Class#method` (repeatable), or `pkg.Class#method(int, long[])` to name one of several overloads.
+        #[arg(long = "target", required = true)]
+        targets: Vec<String>,
+        #[command(flatten)]
+        classes: ClassesArgs,
+        /// Print JSON instead of the report.
+        #[arg(long)]
+        json: bool,
+    },
     /// Prove a property of a method on every input with JBMC, or show an input that violates it.
     Prove(ProveArgs),
     /// Print the capability contract of a module (directories or jars), without touching any file.
@@ -596,6 +608,19 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 if let Some(dir) = &write {
                     println!("written under {}", dir.display());
                 }
+            }
+            Ok(0)
+        }
+        Command::Gaps { targets, classes, json } => {
+            let mut entries = classes.classes.clone();
+            entries.extend(classes.classpath_entries());
+            let cp = jvmcontract::witness::classpath(entries.iter().map(PathBuf::as_path))?.with_models(true);
+            let roots = jvmcontract::bmc::gaps::roots(&cp, &targets)?;
+            let scan = jvmcontract::bmc::gaps::scan(&cp, &roots)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&scan.record(&targets)).map_err(|e| Error::new(e.to_string()))?);
+            } else {
+                print!("{}", scan.report(&targets));
             }
             Ok(0)
         }

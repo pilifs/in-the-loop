@@ -36,7 +36,8 @@
   "explanation": "The property reads: for every `numPartitions > 0`, the result is in `[0, numPartitions)`. JBMC searches small values first and finds nothing, because the bug needs one specific hash out of 2^32. The next pass covers the whole domain and finds it: `hash = -2147483648`. The tool replays the method on that input and reports a negative partition number. A test could have included this value, but only if its author knew the one fact the cleanup forgot; the property states what every partitioner must do, and the prover checks it against every hash.",
   "resolution": "Keep the mask, or use `Math.floorMod(hash, numPartitions)`, which is defined for negative dividends. The property stays in the file, so the next rewrite of this line is checked against every `int` again.",
   "notes": [
-    "`Math.abs(Integer.MIN_VALUE)` is negative: one key in two billion goes to a negative partition."
+    "`Math.abs(Integer.MIN_VALUE)` is negative: one key in two billion goes to a negative partition.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's."
   ],
   "provenance": "Constructed from the `Math.abs(x) % n` partitioning bug, which recurs in custom Kafka partitioners and in hash-based sharding generally; Kafka's `Utils.toPositive` exists because of it.",
   "references": [

@@ -217,6 +217,10 @@ The property committed for `firstByte` states the invariant the format is built 
 
 Revert, including the test. If a reader with a standard UTF-8 decoder is the problem, the reader is wrong for class files: it has to decode modified UTF-8, as `DataInputStream.readUTF` does, and so has the class-file API of the JDK. The property stays as the regression test for the next person who takes the two-byte NUL for a bug.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain c: char.

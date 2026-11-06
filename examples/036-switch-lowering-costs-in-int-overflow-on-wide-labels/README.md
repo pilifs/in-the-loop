@@ -95,6 +95,10 @@ The regression proof compiles both versions into one program and asks JBMC for a
 
 Revert. The cast is the point: `hi - lo` is a difference of two ints and needs a long, as javac's own `Gen.visitSwitch` has it. If the casts clutter the formula, name the span (`long span = (long) hi - lo + 1`) and compute the costs from it.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.3 s as useTable(lo=-402653181, hi=1749010303, labels=4866), shrunk to the input above in 562 interpreter runs, replayed in the interpreter; domain lo: int × hi: int × labels: int.

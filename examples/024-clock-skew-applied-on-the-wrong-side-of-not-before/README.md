@@ -82,6 +82,10 @@ The property is two laws over the method itself. First, skew only widens accepta
 
 Revert. What the review asked for is a policy decision about the size of the tolerance, not its side: set `clockSkew` to a few seconds if a minute is too generous. The laws stay in the file, so the next change to this line is checked for every instant and every tolerance.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as valid(nowSeconds=5, notBefore=0, expiresAt=7, skewSeconds=16), shrunk to the input above in 20 interpreter runs, replayed in the interpreter; domain nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long.

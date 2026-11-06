@@ -12,31 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T00:46:49.520Z",
-  "duration_seconds": 4340,
+  "ended": "2026-11-06T01:14:15.370Z",
+  "duration_seconds": 5986,
   "stats": {
-    "turns": 9,
-    "api_calls": 146,
-    "tool_calls": 143,
+    "turns": 14,
+    "api_calls": 205,
+    "tool_calls": 203,
     "tool_errors": 1,
-    "compactions": 0,
-    "peak_context_tokens": 339436,
+    "compactions": 1,
+    "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 310,
-      "output_tokens": 148899,
-      "cache_read_input_tokens": 27678155,
-      "cache_creation_input_tokens": 301835
+      "input_tokens": 428,
+      "output_tokens": 207262,
+      "cache_read_input_tokens": 36962811,
+      "cache_creation_input_tokens": 507322
     }
   },
   "tools": {
-    "Bash": 133,
-    "Write": 4,
-    "Read": 3,
+    "Bash": 187,
+    "Read": 7,
+    "Write": 5,
     "WebFetch": 2,
+    "Edit": 1,
     "ToolSearch": 1
   },
   "files_touched": [
     "examples/tools/result_format.py",
+    "lib/src/bmc/gaps.rs",
     "llm-dlc/loops/jbmc-patch-queue.md",
     "llm-dlc/loops/sound-verdicts.md"
   ],
@@ -44,24 +46,38 @@
     {
       "index": 0,
       "started": "2026-11-05T23:34:29.367Z",
-      "ended": "2026-11-06T00:46:49.520Z",
-      "turns": 9,
-      "api_calls": 146,
+      "ended": "2026-11-06T00:48:19.775Z",
+      "turns": 10,
+      "api_calls": 147,
       "usage": {
-        "input_tokens": 310,
-        "output_tokens": 148899,
-        "cache_read_input_tokens": 27678155,
-        "cache_creation_input_tokens": 301835
+        "input_tokens": 312,
+        "output_tokens": 149228,
+        "cache_read_input_tokens": 28017589,
+        "cache_creation_input_tokens": 302698
       },
-      "peak_context_tokens": 339436
+      "peak_context_tokens": 340299
+    },
+    {
+      "index": 1,
+      "started": "2026-11-06T00:49:04.041Z",
+      "ended": "2026-11-06T01:14:15.370Z",
+      "turns": 4,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 116,
+        "output_tokens": 58034,
+        "cache_read_input_tokens": 8945222,
+        "cache_creation_input_tokens": 204624
+      },
+      "peak_context_tokens": 215893
     }
   ],
   "log": {
-    "sha256": "5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989",
-    "bytes": 3804824,
-    "lines": 1373,
-    "gzip_bytes": 645940,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz"
+    "sha256": "3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e",
+    "bytes": 5704475,
+    "lines": 1999,
+    "gzip_bytes": 997146,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -116,10 +132,18 @@
     {
       "change_id": "xkwwowvvvryornmvvklrmmnmxlyrmxvt",
       "commit_id": "cea40b6bccf482ab5374304e1061c1aabbfe9430",
-      "immutable": false,
+      "immutable": true,
       "summary": "Remove the retired java-models-library clone's .gitignore entry",
       "body": "libs/java-models-library was an untracked clone of the CProver models fork that an earlier version of the tool used; its models have lived in lib/models since 2026-11-03. The clone had no local changes and was deleted from the working tree at the user's request, so the .gitignore entry that kept it untracked is removed. Nothing in the repository reads libs/ (the one mention, in verification/README.md, is historical).",
       "log_sha256": "5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989"
+    },
+    {
+      "change_id": "ympzqxkvvswonmwswxuxnlxolxqqvpwx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Gap scan: jvmcontract gaps names what the tool's own checker approximates, and every B9/B11 example records what strict mode would cost it",
+      "body": "Step 1a of llm-dlc/loops/sound-verdicts.md. lib/src/bmc/gaps.rs walks the bytecode a proof's roots may reach, resolving calls as the engine does, and names each construct the engine approximates rather than implements as a gap with a stable id (kind and member, @jdk-<version> for a JDK call): a skipped JDK constructor, a void or reference-returning JDK instance method, a monitor (no null check), a field hidden by a subclass, a literal compared by reference, a class initializer the engine never runs, an object converted inside a string concatenation. It also lists the JDK calls the engine reproduces exactly and relies on, and what it already refuses. The new command is `jvmcontract gaps --classes DIR --target C#m [--json]`. bmc::models_jdk_static gives the scan the engine's list of modelled static JDK methods. `build.py --scan-gaps` compiles each B9/B11 example on a javac app, scans both versions of a regression proof, and replaces the example's 'Gap scan (...)' note.\n\nResult over the 56 examples scanned: strict mode moves no recorded verdict. 54 meet no gap. 013 and 071 (Quorum's vote rule, proved by JBMC) meet four enum class initializers and a literal compared by reference, but the native engine already refuses both, since enum constants are static fields that aren't compile-time constants. Not scanned: Box Office's 006-008 (its Gradle verifier), the real-world 105-109 (no classes in the repository), and the approaches that are not proofs over bytecode.\n\nCorrection to the brief: step 1b's allow-list of exact JDK calls ('Object.<init>, and calls already covered by lib/models') is too narrow. The scan shows 14 examples relying on Record.<init>() and 25 on the JDK exceptions' (), (String) and (String, Throwable) constructors. These change nothing a proof observes and throw nothing, so they belong on the list; gaps::exact_jdk_call is that list. Also, the string-conversion gap only arises in bytecode from javac 9-18: from JDK 19, javac calls String.valueOf first, which the engine refuses.\n\nVerified with a new integration test (both review reproducers, a void JDK mutator of an argument array via Random.nextBytes, field hiding, literal identity, a class initializer and the exact calls, each by id) and GapScanTest in test_build.py (133 tests). The full lib suite passes (118 unit, 51 integration tests). `build.py --render-only` reports no page stale; the notes are not part of any claim.",
+      "log_sha256": "3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e"
     }
   ],
   "logs": {
@@ -134,6 +158,12 @@
       "lines": 757,
       "gzip_bytes": 333224,
       "url": "https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/1e8891d9d9b719d600577bff2449b20f9905075aabfe1f88fde402e21b77bc65.jsonl.gz"
+    },
+    "3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e": {
+      "bytes": 5704475,
+      "lines": 1999,
+      "gzip_bytes": 997146,
+      "url": null
     },
     "3c38885bed4b89bcde64351a6f126257556e8f93413cfb4bf6dfaf18d570e60a": {
       "bytes": 3566798,

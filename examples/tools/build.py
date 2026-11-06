@@ -183,12 +183,12 @@ def stages(out):
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
-    mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"], ["--plan"]) else None
+    mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"], ["--plan"], ["--scan-gaps"]) else None
     ids = argv[1:] if mode else argv
     problem = selection_problem(mode, ids, folders)
     if problem:
         print(f"build.py: {problem}", file=sys.stderr)
-        print("usage: build.py [ID ...] | --render-only [ID ...] | --plan [ID ...] | --index-only", file=sys.stderr)
+        print("usage: build.py [ID ...] | --render-only [ID ...] | --plan [ID ...] | --scan-gaps [ID ...] | --index-only", file=sys.stderr)
         return 2  # nothing has run
     wanted = set(ids)
     if mode == "--plan":
@@ -197,6 +197,8 @@ def main(argv):
         print(json.dumps([q for q in plans if wanted or q["executable"] or "real-world" not in (q["notExecuted"] or "")],
                          indent=2, ensure_ascii=False))
         return 0
+    if mode == "--scan-gaps":
+        return scan_examples(folders, wanted)  # step 1a of llm-dlc/loops/sound-verdicts.md: nothing is proved
     if mode == "--index-only":
         render_index(folders)  # after the verification pipeline has brought results back (verification/README.md)
         return 0
@@ -1565,6 +1567,142 @@ def run_tool_equivalence(folder, example, root, module, result):
         "verified": f"{VERDICT_LABEL['verified']}: equivalent on every input" + (" outside the declared change" if intended else ""),
         "unverifiable": VERDICT_LABEL["unverifiable"],
     })
+
+
+# The gap scan (step 1a of llm-dlc/loops/sound-verdicts.md): what the tool's own checker approximates rather than
+# implements in the bytecode an example's proof reaches, found by `jvmcontract gaps` from the classes alone, nothing
+# proved. It is recorded in the example's notes, so that how strict mode would move the recorded examples is known
+# before it is the default.
+
+GAP_NOTE = "Gap scan ("
+
+
+def gap_scan_problem(example):
+    """Why the gap scan does not apply to an example, or None: it is about proofs over bytecode (B9, B11) that
+    jvmcontract runs on a javac app, whose classes build.py can compile here."""
+    if example["origin"] != "constructed":
+        return "a real-world example: its classes are not in the repository"
+    if example["approach"]["id"] not in ("B9", "B11"):
+        return f"approach {example['approach']['id']} is not a proof over bytecode"
+    if app_of(example) not in TOOL_APPS:
+        return "its proof is Box Office's Gradle verifier, not jvmcontract"
+    return None
+
+
+def scan_gaps(folder, example):
+    """The gap scan of an example's proof: the patched classes, and for a regression proof the unpatched ones too,
+    each scanned from the method the proof calls. Returns {version: scan}, the scan as `jvmcontract gaps --json`."""
+    app = app_of(example)
+    root = scratch() / f"gaps-{example['id']}"
+    part = TOOL_APPS[app]["root"]
+    shutil.copytree(REPO / part, root / part, ignore=IGNORE)
+    patch = (folder / example["change"]["patch"]).read_text()
+    stage("apply the patch", ["git", "apply", "-p1", "-"], input=patch, cwd=root, check=True)
+    after = tool_compile(app, root, tests=False)[0]
+    versions = {"after": (after, example["subject"]["symbol"])}
+    if example["approach"]["id"] == "B9":
+        versions["before"] = (tool_before_classes(app), example["change"].get("previousSymbol") or example["subject"]["symbol"])
+    scans = {}
+    for version, (classes, target) in versions.items():
+        proc = stage(f"jvmcontract gaps {version}", [jvmcontract(), "gaps", "--classes", str(classes), "--target", target, "--json"])
+        if proc.returncode != 0:
+            sys.exit(f"jvmcontract gaps failed on {example['id']} ({version}):\n{proc.stderr}")
+        scans[version] = json.loads(proc.stdout)
+    shutil.rmtree(root, ignore_errors=True)
+    return scans
+
+
+def gap_summary(scans):
+    """The gaps of a scan's versions merged by id, each with the versions that meet it and its first site, and the
+    refusals of any version."""
+    gaps = {}
+    for version, scan in scans.items():
+        for g in scan["gaps"]:
+            entry = gaps.setdefault(g["id"], {"id": g["id"], "kind": g["kind"], "call": g["call"], "versions": [], "site": g["sites"][0]})
+            entry["versions"].append(version)
+    refused = {}
+    for scan in scans.values():
+        for why, r in scan["refused"].items():
+            more = f", and {r['sites'] - 1} more" if r["sites"] > 1 else ""
+            refused.setdefault(why, f"{why} ({r['first']}{more})")
+    return list(gaps.values()), [refused[k] for k in sorted(refused)]
+
+
+def gap_note(example, scans, today=None):
+    """The note the gap scan leaves in an example: its gaps by id, or that it has none, and what that means for
+    its verdict under strict mode."""
+    gaps, refused = gap_summary(scans)
+    jdk = next((s["jdk"] for s in scans.values() if s.get("jdk")), None)
+    day = (today or datetime.date.today()).strftime("%-d %B %Y")
+    head = (f"{GAP_NOTE}step 1a of `llm-dlc/loops/sound-verdicts.md`, {day}{f', JDK {jdk}' if jdk else ''}, from the "
+            f"bytecode, nothing proved): ")
+    methods = max(s["methods"] for s in scans.values())
+    both = len(scans) > 1
+    native = example["approach"].get("engine") in ("native", "auto")
+    if not gaps:
+        text = (f"the tool's own checker meets no gap in the {methods} method{'s' if methods != 1 else ''} the proof "
+                f"reaches{' in either version' if both else ''}, so strict mode does not move this verdict.")
+    else:
+        def where(g):
+            versions = "both versions" if len(g["versions"]) > 1 else f"the {g['versions'][0]} version only" if both else None
+            return f"`{g['id']}` ({', '.join(x for x in (versions, 'first at ' + g['site']) if x)})"
+        text = (f"the tool's own checker meets {len(gaps)} gap{'s' if len(gaps) != 1 else ''} in what the proof "
+                f"reaches: {'; '.join(where(g) for g in gaps)}. Under strict mode each is refused by name, and "
+                + ("the proof by the tool's own checker would end with no verdict"
+                   if native else "a run by the tool's own checker would end with no verdict")
+                + "; the example runs in `assume` until the user decides how the recorded examples move.")
+    if not native:
+        text += (" The recorded proof is JBMC's, which strict mode of the tool's own checker does not change"
+                 + (f"; the checker refuses part of it in any mode ({'; '.join(refused)})" if refused else "")
+                 + ". JBMC's own approximations are step 4c's.")
+    elif refused:
+        text += f" The checker refuses part of it in any mode: {'; '.join(refused)}."
+    return head + text
+
+
+def record_gap_note(folder, note):
+    """Puts the gap scan's note in the example's notes, in place of an earlier one."""
+    path = folder / "example.json"
+    example = json.loads(path.read_text())
+    notes = [n for n in example.get("notes", []) if not n.startswith(GAP_NOTE)]
+    example["notes"] = notes + [note]
+    path.write_text(json.dumps(example, indent=2, ensure_ascii=False) + "\n")
+
+
+def scan_examples(folders, wanted):
+    """`--scan-gaps`: scans each example the gap scan applies to, records its note, and prints one line each and
+    the totals by kind."""
+    totals, exact, lines = {}, {}, []
+    for folder in folders:
+        if wanted and folder.name[:3] not in wanted:
+            continue
+        example = load_example(folder)
+        problem = gap_scan_problem(example)
+        if problem:
+            if wanted:
+                print(f"{folder.name}: not scanned ({problem})")
+            continue
+        scans = scan_gaps(folder, example)
+        gaps, refused = gap_summary(scans)
+        record_gap_note(folder, gap_note(example, scans))
+        for g in gaps:
+            totals.setdefault(g["kind"], set()).add(example["id"])
+        for scan in scans.values():
+            for call in scan["exact"]:
+                exact.setdefault(call, set()).add(example["id"])
+        engine = example["approach"].get("engine") or "jbmc"
+        line = (f"{example['id']} {example['approach']['id']} {engine:6} {len(gaps)} gap(s)"
+                + (f": {', '.join(g['id'] for g in gaps)}" if gaps else "")
+                + (f" | refused: {'; '.join(refused)}" if refused else ""))
+        lines.append(line)
+        print(line, flush=True)
+    print(f"{len(lines)} example(s) scanned, {sum(1 for l in lines if ' 0 gap(s)' not in l)} with gaps")
+    for kind, ids in sorted(totals.items()):
+        print(f"  {kind}: {len(ids)} example(s) ({', '.join(sorted(ids))})")
+    print("JDK calls reproduced exactly, by how many examples reach each:")
+    for call, ids in sorted(exact.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        print(f"  {call}: {len(ids)}")
+    return 0
 
 
 def property_headline(verdicts):

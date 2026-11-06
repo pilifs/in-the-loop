@@ -108,6 +108,7 @@ Revert, or keep the mask only where the window is a power of two with the remain
 - The tool's own checker leaves a division to the solver under what holds of every division, and one of those facts is that a power of two divides a non-negative dividend with the remainder `dividend & (divisor - 1)`, so the scoped proof is bit-level reasoning about a mask and a subtraction, no divider circuit needed; the unscoped violation needs the real remainder of the values the solver chose, and the log (`bmc.log` in the work directory) records the one division built in full. Example 137 is the same rewrite with the remainder kept for the other windows.
 - The tests pass because they were changed with the code: `WINDOW` became `1L << 30`, about 1.07 s, with a comment that windows are powers of two. A test with the filter's actual window of a second (`1_000_000_000L`, which is not a power of two) fails on the first request after the epoch.
 - The consequence is the opposite of 134's: there a quiet client was never refused because its window lagged the clock; here no client is ever refused, since every request is the first of its own window. Both are counts that never reach the limit, and both pass tests that poll windows of the tests' own length.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 2 methods the proof reaches in either version, so strict mode does not move this verdict.
 
 ## Evidence
 

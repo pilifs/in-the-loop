@@ -30,6 +30,7 @@
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
 
 pub mod bits;
+pub mod gaps;
 
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
@@ -1850,7 +1851,7 @@ impl<'a> Engine<'a> {
     }
 
     /// The JDK's static methods the engine models: the exact and floor arithmetic of `Math`, and the comparisons
-    /// of the integer wrappers.
+    /// of the integer wrappers. [`models_jdk_static`] lists the same arms, for the gap scan.
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
@@ -1982,6 +1983,18 @@ impl<'a> Engine<'a> {
         self.advance(path);
         Ok(None)
     }
+}
+
+/// Whether [`Engine::call_jdk_static`] models `owner.name`: the arms of its match, for [`gaps::scan`], which counts
+/// such a call as reproduced exactly rather than a gap.
+pub fn models_jdk_static(owner: &str, name: &str) -> bool {
+    matches!(
+        (owner, name),
+        ("java/lang/Math" | "java/lang/StrictMath", "addExact" | "subtractExact" | "multiplyExact" | "negateExact" | "incrementExact" | "decrementExact" | "toIntExact" | "absExact" | "abs" | "max" | "min" | "floorDiv" | "floorMod")
+            | ("java/lang/Integer" | "java/lang/Long", "max" | "min" | "sum" | "compare" | "signum")
+            | ("java/lang/Integer", "toUnsignedLong")
+            | ("java/lang/Boolean", "logicalAnd" | "logicalOr" | "logicalXor")
+    )
 }
 
 impl Blaster {

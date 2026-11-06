@@ -81,6 +81,10 @@ The property committed for `midpoint` is that the result lies between `low` and 
 
 Merge, with the assumption of the property as the review record: the midpoint is safe because the format bounds the table, and the property is where that reasoning lives. If the method is ever reused for a table the format does not bound (the constant pool has up to 65535 entries; an array can have two billion), the assumption is what has to change, and the proof will fail until it does.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over low: int × high: int in 0.2 s; loops unwound 16 times with unwinding assertions.

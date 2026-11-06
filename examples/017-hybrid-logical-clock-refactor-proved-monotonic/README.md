@@ -112,6 +112,10 @@ The properties file states, for `receive`: on every input with a valid wall-cloc
 
 Merge. The properties did not change, so the pull request contains code only, and the proof is re-run on every build.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 4 methods the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.8 s; loops unwound 16 times with unwinding assertions.

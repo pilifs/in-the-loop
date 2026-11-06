@@ -421,7 +421,13 @@ python3 examples/tools/build.py                  # run every constructed example
 python3 examples/tools/build.py --render-only    # rewrite every page and the router from the results there, running nothing; says which are stale
 python3 examples/tools/build.py --index-only     # rewrite only the router
 python3 examples/tools/build.py --plan 124       # what a run would take, as JSON, running nothing
+python3 examples/tools/build.py --scan-gaps      # compile each B9/B11 example on a javac app and note the gaps of the tool's own checker its proof reaches, proving nothing
 ```
+
+`--scan-gaps` runs `jvmcontract gaps` on the patched classes (and the unpatched ones for a regression proof), from the
+method the proof calls, and replaces the example's `Gap scan (...)` note with what it found: each gap by its id and the
+version that meets it, or that there is none, so strict mode doesn't move the verdict
+([`sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md), step 1a). It takes a minute for all of them.
 
 `--plan` prints the run's plan, which `plan()` in `build.py` resolves from `example.json` alone, without building or
 running anything. The plan names the app and its build (Gradle or javac), the runner, the claim, and the engine with the

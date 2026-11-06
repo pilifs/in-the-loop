@@ -179,6 +179,7 @@ Revert, including the test. The encoder of a constant pool is not an encoder of 
 
 - A regression proof of `ModifiedUtf8#encodeInto` against an ASCII fast path waited from 1 to 4 November 2026 for a machine with more memory, JBMC running out of it at the default bound of 8; the tool's own checker, with its paths merged where they meet, proves it in seconds (example 142) and refutes the fast path off by one (example 143).
 - Supplementary characters written in four bytes, as in standard UTF-8, produce a class no JVM will load.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

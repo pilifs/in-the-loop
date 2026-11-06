@@ -95,6 +95,10 @@ The property reads: for every refill, the credited time never runs behind the la
 
 Keep the remainder, or keep the credited time as a count of whole periods. The test that caught this was written by someone who knew the bug; the property states what any refill must do, and holds the next rewrite of this line to it for every clock reading.
 
+## Notes
+
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+
 ## Evidence
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as lastAfter(tokens=8, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8), shrunk to the input above in 109 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
