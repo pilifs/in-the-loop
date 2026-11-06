@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T19:46:40.896Z",
-  "duration_seconds": 1897,
+  "ended": "2026-11-06T19:47:33.664Z",
+  "duration_seconds": 1950,
   "stats": {
     "turns": 13,
-    "api_calls": 114,
-    "tool_calls": 113,
+    "api_calls": 121,
+    "tool_calls": 120,
     "tool_errors": 1,
     "compactions": 2,
-    "peak_context_tokens": 154625,
+    "peak_context_tokens": 157707,
     "usage": {
-      "input_tokens": 226,
-      "output_tokens": 93777,
-      "cache_read_input_tokens": 11790109,
-      "cache_creation_input_tokens": 299249
+      "input_tokens": 240,
+      "output_tokens": 97131,
+      "cache_read_input_tokens": 12865452,
+      "cache_creation_input_tokens": 307249
     }
   },
   "tools": {
-    "Bash": 107,
+    "Bash": 114,
     "Edit": 5,
     "Write": 1
   },
@@ -71,24 +71,24 @@
     {
       "index": 2,
       "started": "2026-11-06T19:31:49.517Z",
-      "ended": "2026-11-06T19:46:40.896Z",
+      "ended": "2026-11-06T19:47:33.664Z",
       "turns": 4,
-      "api_calls": 54,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 44240,
-        "cache_read_input_tokens": 5648558,
-        "cache_creation_input_tokens": 136628
+        "input_tokens": 122,
+        "output_tokens": 47594,
+        "cache_read_input_tokens": 6723901,
+        "cache_creation_input_tokens": 144628
       },
-      "peak_context_tokens": 149707
+      "peak_context_tokens": 157707
     }
   ],
   "log": {
-    "sha256": "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99",
-    "bytes": 2749341,
-    "lines": 1141,
-    "gzip_bytes": 496025,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99.jsonl.gz"
+    "sha256": "5a885317df6c535c722601d9c9204901c7b271796b1076c9917629a27fe0086a",
+    "bytes": 2872028,
+    "lines": 1207,
+    "gzip_bytes": 514032,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/5a885317df6c535c722601d9c9204901c7b271796b1076c9917629a27fe0086a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -107,9 +107,23 @@
       "summary": "Every result names its SAT solver, version and configuration, on both engines",
       "body": "Phase 1b of llm-dlc/loops/engine-priorities.md (the engines-jbmc stream). The JSON's stated.checker now carries sat: the solver, its version, its source and its configuration (Sat in lib/src/statement.rs). The own checker's is CaDiCaL 1.9.5 as the cadical crate 0.1.16 bundles it (the crate's version read from Cargo.lock), with default options, incremental, and the deadline through the terminate callback. JBMC's is the solver the adapter asks for, with the options every JBMC run passes (jbmc::standing_options, which now also builds the command line) and the version of the CaDiCaL linked into the executable, read from its signature without running JBMC: cadical-3.0.0 in JBMC 6.11.0. An executable with no CaDiCaL is recorded with JBMC's default solver, which the unknown-solver retry falls back to. lib/benchmark/run.py keeps each run's sat and lists each engine's solvers in results.json's environment.sat; RESULTS.md names them, and the recorded job -102624 renders as before.",
       "log_sha256": "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99"
+    },
+    {
+      "change_id": "xzrpqnvrlvpmyynvostntsksvysxmotz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose this session's mangled C++ symbol names for the allow list; note the resubmitted CBMC source job",
+      "body": "Phase 1b read the CaDiCaL version from the strings in /usr/bin/jbmc, and the listing put seven mangled C++ symbol names (MiniSat and CaDiCaL classes) into this session's log, where the redaction flags them as long tokens. They are proposed for the allow list with sync.py allow propose and stay warnings until the user approves them. The engines-jbmc Progress also records that job 20261106-192959 failed on its own display grep (VF-004) and that the runner resubmitted it as 20261106-194328.",
+      "log_sha256": "5a885317df6c535c722601d9c9204901c7b271796b1076c9917629a27fe0086a"
     }
   ],
   "logs": {
+    "5a885317df6c535c722601d9c9204901c7b271796b1076c9917629a27fe0086a": {
+      "bytes": 2872028,
+      "lines": 1207,
+      "gzip_bytes": 514032,
+      "url": null
+    },
     "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99": {
       "bytes": 2749341,
       "lines": 1141,

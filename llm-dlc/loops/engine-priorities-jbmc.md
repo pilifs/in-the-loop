@@ -71,8 +71,9 @@ Progress, so the reconcile loop knows where to look.
   - Fixtures are real JBMC 6.11.0 runs on cvm (x86_64), in `lib/tests/fixtures/jbmc-phases/`: `held/prefix-sums`
     proved (Post-process 0.175 s inside Solver 2.955 s), the same cut off at 1.9 s, `held/reverse` out of memory at
     700 MiB, and two solver calls in one run.
-  - The nesting shows in the message times. Job `20261106-192959` (network) checks it against CBMC's source at
-    `cbmc-6.11.0`. Nothing waits on it.
+  - The nesting shows in the message times. Job `20261106-192959` (network) was to check it against CBMC's source at
+    `cbmc-6.11.0`. It failed on its own display grep, which matched nothing under `pipefail` before any check ran
+    (finding VF-004). The runner resubmitted it from the default workspace as `20261106-194328`. Nothing waits on it.
   - Shared files changed (added to, nothing reorganized):
     - `lib/README.md`: one clause on `phases_excess` in `--json`'s description;
     - `lib/src/jbmc.rs`: `json_items` is `pub(crate)`, for the tests.
