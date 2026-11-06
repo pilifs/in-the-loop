@@ -92,8 +92,9 @@ its goto program), `contracts`, `replay` (the interpreter, shrinking), `jvm` (a 
 
 `RESULTS.md` has a table per workload and engine, under strict, over every run, decided or not: the share of each
 phase, the phase that dominates, and the largest formula. Group 4 has a table of its own, since one of its runs
-outweighs a whole workload of the corpus. The table is what [`jbmc-patch-queue.md`](../../llm-dlc/loops/jbmc-patch-queue.md)
-ranks its candidates from.
+outweighs a whole workload of the corpus. Its JBMC shares overcount until
+[`engine-priorities.md`](../../llm-dlc/loops/engine-priorities.md) step 1a: `Runtime Post-process` is timed inside
+`Runtime Solver` and counted in both `encoding` and `solving`.
 
 ## Running it
 

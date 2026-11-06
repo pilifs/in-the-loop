@@ -2,7 +2,7 @@
 
 **Approved by the user on 2026-11-05**, with the open questions settled as recorded [below](#open-questions). It runs
 before the proof experiments `build-orchestration.md` defers. The JBMC patch queue that an earlier draft planned as its
-last phase is a separate working draft, [`jbmc-patch-queue.md`](jbmc-patch-queue.md), which is not part of this loop.
+last phase is a separate working draft, [`engine-priorities.md`](engine-priorities.md) (the patch-queue draft, since rewritten: no fork), which is not part of this loop.
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh):
 `llm-dlc/tools/feature-loop.sh llm-dlc/loops/sound-verdicts.md`, in the session and with the model set under
@@ -64,7 +64,7 @@ Strict is the advised mode given no contracts.
 
 The order: **gaps named and refused (Phase 1), results that state their assumptions as data (Phase 2), the advised mode
 on top of both (Phase 3)**, then the JBMC adapter (Phase 4) and measurement (Phase 5). Patching JBMC itself is left to
-[`jbmc-patch-queue.md`](jbmc-patch-queue.md), which Phase 5's measurements inform. Nothing here makes a verdict weaker.
+[`engine-priorities.md`](engine-priorities.md) (the patch-queue draft, since rewritten: no fork), which Phase 5's measurements inform. Nothing here makes a verdict weaker.
 A `Verified` that strict refuses is the fix working. Where that would move a recorded example, 1a's scan records it for
 the user's decision ([open question 3](#open-questions)).
 
@@ -235,7 +235,7 @@ recorded example.
 
   *Acceptance: for each workload class (scalar arithmetic, div/rem identities, binary search, UTF-8 encoding, bounded
   array mutation, records), a table says which phase dominates in each engine.* The JBMC review's patch candidates are
-  ranked from that table, not from source reading, and the table goes into [`jbmc-patch-queue.md`](jbmc-patch-queue.md)
+  ranked from that table, not from source reading, and the table goes into [`engine-priorities.md`](engine-priorities.md) (the patch-queue draft, since rewritten: no fork)
   as the evidence for deciding on it.
 
 ## Open questions
@@ -250,7 +250,7 @@ settles it.
 3. **The recorded examples:** the default gap mode is strict, but that doesn't mean every example is re-run in strict
    mode. How the existing examples move is decided later, from 1a's scan. Until then they run in `assume` when they
    run at all, and their `expected` verdicts stay as they are (see [How to work through it](#how-to-work-through-it)).
-4. **A JBMC fork** is out of this loop: [`jbmc-patch-queue.md`](jbmc-patch-queue.md) is a working draft to refine
+4. **A JBMC fork** is out of this loop: [`engine-priorities.md`](engine-priorities.md) (the patch-queue draft, since rewritten: no fork) is a working draft to refine
    over time, informed by Phase 5.
 5. **Order:** this brief runs before the proof experiments `build-orchestration.md` defers. Profiles reuse 2a's
    statement, and a diagnosis of "gap" points at Phase 3.
@@ -317,7 +317,7 @@ Kept as context, so the phases above leave room for them:
   conditions, where the agent proposes and the verifier establishes. That extension, and proof reuse with precise
   invalidation, come after this loop.
 - **Patching JBMC.** The patch queue and the engine work beyond it (array representations, persistent path prefixes
-  with incremental solving, a compiled-model cache behind a worker pool) are in [`jbmc-patch-queue.md`](jbmc-patch-queue.md).
+  with incremental solving, a compiled-model cache behind a worker pool) are in [`engine-priorities.md`](engine-priorities.md) (the patch-queue draft, since rewritten: no fork).
 - **Concurrency.** JPF territory, and outside the native engine's single-threaded model, which Phase 1 makes explicit.
 
 ## Progress
@@ -1451,7 +1451,7 @@ Each run counts only its own commits, so work done in earlier runs is listed her
       extracting the witness, shrinking, and checking contracts. JBMC's `--verbosity` timings and its program and
       formula sizes are read from its log.
     - `run.py` carries both into the results.
-    - A table per workload says which phase dominates on each engine, and goes into `jbmc-patch-queue.md`.
+    - A table per workload says which phase dominates on each engine, and goes into `engine-priorities.md`.
     - The text parser goes once `-073804` agrees.
 
 - **5b, per-phase measurements (2026-11-06).**
@@ -1495,7 +1495,7 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     45 s, 94% of it solving 3.28 million clauses; the own checker takes 3.1 s, 88% solving 240,000 clauses. On the
     small cases, JBMC's start and output are about a fifth of a check, and its preflight another fifth. That run
     reached 1.4 GB inline, past CLAUDE.md's 1 GB for inline work; nothing else on JBMC was run inline.
-  - **The table goes into [`jbmc-patch-queue.md`](jbmc-patch-queue.md)**, which gains a section "Evidence: where each
+  - **The table goes into [`engine-priorities.md`](engine-priorities.md) (the patch-queue draft, since rewritten: no fork)**, which gains a section "Evidence: where each
     engine's time goes". It maps each candidate patch to the phase it would shrink, and the workloads where that
     phase must dominate for the patch to pay. It also has the first inline figures. Those already point at the
     formula's size (the array-representation candidate) rather than arithmetic, for binary search.
@@ -1516,7 +1516,7 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - The driver's fixed cost of about 50 ms (reading the target and its class path, the statement, the report) is
       measured but not split further.
     - The `--confirm` run's phases are not in `search.runs`, since it is a second check.
-  - Next: once job `-102624` is back, rank the patch candidates in `jbmc-patch-queue.md` from its table. Remove the
+  - Next: once job `-102624` is back, rank the patch candidates in `engine-priorities.md` from its table. Remove the
     text parser once `-073804` agrees. Those, with the pending jobs, are what is left of the brief; every phase's
     plan step is done.
 
