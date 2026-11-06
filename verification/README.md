@@ -40,6 +40,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `results/ID/changes.diff` | the job's outputs against its commit | `collect` |
 | `results/ID/outputs/` | outputs that were not applied: the job did not pass, or the file changed since | `collect` |
 | `results/index.json` | one line per result, newest first | `collect` |
+| [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `pipeline.local.toml` (not committed) overrides them per machine | |
 | `.state/` (not committed) | the runner's claims, work directories, whole logs, results not yet collected, the jvmcontract cache | `run` |
@@ -134,7 +135,9 @@ machine. Say so in the description if you know.
 
 The procedure is in the [`/run-verification` skill](../.claude/skills/run-verification/SKILL.md). In short: `status`,
 then `run` (in the background, or `--watch`), then `collect`, `report`, triage what needs attention, and commit the
-results with `sync.py commit`, keeping out other sessions' files.
+results with `sync.py commit`, keeping out other sessions' files. Whatever needs a person (a verdict against a change,
+a submitter's error, a decision that changes what the results mean) goes into [`findings.md`](findings.md), which
+keeps it after the session ends; an entry is closed only by the check it names.
 
 To keep the queue empty unattended, run `llm-dlc/tools/verification-loop.sh`: it starts a fresh session on Sonnet running the skill whenever there is work this machine can do, and watches for new jobs in between (see [`llm-dlc/README.md`](../llm-dlc/README.md#unattended-loops)).
 

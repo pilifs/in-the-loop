@@ -13,9 +13,10 @@ job verifies: that belongs to whoever made the change, and your report is how th
 commands by hand to see: the runner is how they run, under limits.
 
 1. **Look first.** `jj st` and `jj log -r 'ancestors(@, 5)'`: another session may have uncommitted files, which a
-   commit of yours would sweep in (see step 5). Then `python3 verification/pipeline.py status`. Say what is pending,
+   commit of yours would sweep in (see step 6). Then `python3 verification/pipeline.py status`. Say what is pending,
    what is running (another runner holds those claims), what finished but was not collected, and what cannot run
-   here and why.
+   here and why. Read the open entries of `verification/findings.md`: a job in this run may be the one that closes
+   one.
 
 2. **Run.** `python3 verification/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
    until the queue is empty and a job can take an hour. Give it the budget the machine has now: check
@@ -45,10 +46,23 @@ commands by hand to see: the runner is how they run, under limits.
    - **A pass with attention**: an estimate far off is worth a line in your report and nothing else; JBMC with no
      verdict, or a process killed at the limit, in a pass is worth looking into.
 
-5. **Commit.** Follow `CLAUDE.md`: `python3 llm-dlc/tools/sync.py commit` with the message `collect` printed,
+5. **Record.** `verification/findings.md` is the durable list of what needs a person; the results stay in
+   `verification/results/`, and your report to the user does not outlive the session. Its header gives the format.
+   - **Add an entry** (`VF-NNN`, the next number, never reused) for each verdict that needs someone, each error that is
+     the submitter's to fix, and each decision you took that changes what the results mean or costs a rerun (results
+     set aside, jobs not resubmitted, a budget or setting changed for the run). Give the job ids, the commit and the
+     machine, what was found in enough detail to act on without the logs, what would settle it and who should act,
+     and the check that closes it. One entry may cover several jobs with one cause. Pipeline errors you fixed
+     yourself, estimates far off, and outputs you resubmitted for are not entries: the commit message says them.
+   - **Update** an open entry a run touches: a job that closes it passed (status `closed`, with the job id), or failed
+     again in a new way (add what changed). Never close an entry on a job that did not run the check it names.
+   - When a finding belongs to a brief or an example, record it there too (the brief's Progress, the example's
+     `notes`) and link the entry to it. This page is the index a person reads; it does not replace those.
+
+6. **Commit.** Follow `CLAUDE.md`: `python3 llm-dlc/tools/sync.py commit` with the message `collect` printed,
    reworded for a reader who did not see the run; it checks the result itself. The commit should hold only
    `verification/results/`, the outputs `collect` applied, the regenerated `examples/README.md` and
-   `examples/index.json`, and any jobs you resubmitted. If `jj st` shows other files, they are another
+   `examples/index.json`, `verification/findings.md`, and any jobs you resubmitted. If `jj st` shows other files, they are another
    session's: keep them out by moving them into a change of their own below yours, committing, and moving them back
    on top:
 
@@ -62,6 +76,7 @@ commands by hand to see: the runner is how they run, under limits.
 
    The files on disk don't change, so the other session is not disturbed. Push only if the user asks.
 
-6. **Report.** Tell the user, in this order: verdicts that need someone (with the job ids and what was found), jobs
-   that need a bigger machine or a rerun, errors, then a count of clean passes and how long the run took. Note any
-   capability whose estimates are far off in the calibration table, so submitters can correct them.
+7. **Report.** Tell the user, in this order: verdicts that need someone (with the job ids and what was found, and the
+   `VF-` entry each is in), jobs that need a bigger machine or a rerun, errors, then a count of clean passes and how
+   long the run took. Say which entries you added, updated or closed. Note any capability whose estimates are far off
+   in the calibration table, so submitters can correct them.

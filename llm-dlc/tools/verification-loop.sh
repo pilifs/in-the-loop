@@ -4,7 +4,7 @@
 # While jobs are queued that this machine can run, or results wait to be
 # collected, it starts a fresh Claude Code session on Sonnet that runs the
 # run-verification skill until the queue is clear: run, collect, triage,
-# resubmit, commit. Each run gets a new session, since the work is mechanical
+# resubmit, record what needs a person in verification/findings.md, commit. Each run gets a new session, since the work is mechanical
 # and needs no memory of the last one. When nothing is left it polls the queue
 # (verification/pipeline.py status, jobs committed at @-) and starts again
 # when new jobs arrive.
@@ -34,7 +34,7 @@ RUNS=${VERIFICATION_LOOP_RUNS:-4}
   exit 2
 }
 
-INSTRUCTION="/run-verification This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh session: nobody can answer a question, so decide as the skill says and carry on. Work through every step until python3 verification/pipeline.py status shows nothing pending that can run here and nothing finished but not collected: run (in the background, waiting for it to finish), collect, triage, resubmit what needs it, and commit. Don't push. End with the report of step 6."
+INSTRUCTION="/run-verification This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh session: nobody can answer a question, so decide as the skill says and carry on. Work through every step until python3 verification/pipeline.py status shows nothing pending that can run here and nothing finished but not collected: run (in the background, waiting for it to finish), collect, triage, resubmit what needs it, record in verification/findings.md whatever needs a person (nobody reads this session's report as it happens, so that file is how they hear of it), and commit. Don't push. End with the report of step 7."
 
 # Run in the root of the repo, where the sessions are filed and the skill is.
 cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 1
