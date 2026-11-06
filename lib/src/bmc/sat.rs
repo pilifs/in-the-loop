@@ -13,6 +13,10 @@
 //! encoding, or behind a transcript's replay, without the engine changing. [`Cadical`] is the one the engine uses;
 //! [`super::bitwuzla::Bitwuzla`], given the same clauses, is the one the solver comparison puts beside it, chosen by
 //! the environment variable [`ENV`].
+//!
+//! A solver may also take the formula as terms ([`Terms`]), the word-level prototype of Phase 6c: the encoding then
+//! defines each gate and each word-level operation's bits to it instead of bit-blasting them into clauses, and the
+//! scheduling is unchanged. Only `bitwuzla-words` does ([`super::bitwuzla`]).
 
 use super::bits::Lit;
 
@@ -33,16 +37,87 @@ pub trait Sat {
     fn value(&self, lit: Lit) -> Option<bool>;
     /// The largest variable used so far.
     fn variables(&self) -> i32;
+    /// The solver's terms, when it takes the formula as terms rather than as clauses: the encoding then defines
+    /// every gate and word-level operation to it ([`Terms`]), and adds clauses only for what is asserted outright.
+    /// `None` for a SAT solver, which is given clauses alone.
+    fn terms(&mut self) -> Option<&mut dyn Terms> {
+        None
+    }
 }
 
-/// The environment variable choosing the solver for checks whose options don't: `cadical` (the default), or
-/// `bitwuzla` ([`super::bitwuzla`]) with Bitwuzla's options after a colon if any (`bitwuzla:preprocess=0`). Like the
+/// A gate over literals, as a solver that takes terms is given it: the output variable is that function of the
+/// inputs, with no clause.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Gate {
+    And(Lit, Lit),
+    Xor(Lit, Lit),
+    /// `if c then a else b`.
+    Ite(Lit, Lit, Lit),
+}
+
+/// A word-level operation on machine integers, as the JVM does it (the shifts' amounts already masked to the width,
+/// and given at the width of the value shifted). A division or remainder by zero, which the JVM throws on before its
+/// value matters, is SMT-LIB's: the quotient is all ones for a dividend that isn't negative and one otherwise, and the
+/// remainder the dividend.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum WordOp {
+    Add,
+    Sub,
+    Mul,
+    /// Signed division, truncating toward zero (`idiv`, `ldiv`).
+    Div,
+    /// Signed remainder, of the dividend's sign (`irem`, `lrem`).
+    Rem,
+    Shl,
+    /// Arithmetic shift right (`ishr`).
+    Shr,
+    /// Logical shift right (`iushr`).
+    Ushr,
+    And,
+    Or,
+    Xor,
+    /// `if c then a else b`, with `c` a single bit, the first operand.
+    Ite,
+    /// Unsigned `a < b`, one bit.
+    Ult,
+    /// Signed `a < b`, one bit.
+    Slt,
+    /// `a == b`, one bit.
+    Eq,
+}
+
+impl WordOp {
+    /// Whether the operands may be swapped.
+    pub fn commutes(self) -> bool {
+        matches!(self, WordOp::Add | WordOp::Mul | WordOp::And | WordOp::Or | WordOp::Xor | WordOp::Eq)
+    }
+
+    /// Whether the result is a single bit.
+    pub fn compares(self) -> bool {
+        matches!(self, WordOp::Ult | WordOp::Slt | WordOp::Eq)
+    }
+}
+
+/// A solver given the formula as terms: each variable that is not an input is defined, once and before it is used, as
+/// a gate over earlier literals or as a bit of a word-level operation over earlier bits. Literals are the ones of
+/// [`Sat`].
+pub trait Terms {
+    /// Defines `out` as `gate`.
+    fn gate(&mut self, out: Lit, gate: Gate);
+    /// Defines `outs`, least significant first, as the bits of `op` over `operands` (each as bits, least
+    /// significant first; [`WordOp::Ite`]'s condition as one bit). A comparison has one output.
+    fn word(&mut self, outs: &[Lit], op: WordOp, operands: &[&[Lit]]);
+}
+
+/// The environment variable choosing the solver for checks whose options don't: `cadical` (the default), `bitwuzla`
+/// ([`super::bitwuzla`]), given the engine's clauses, or `bitwuzla-words`, given its terms ([`Terms`]), each with
+/// Bitwuzla's options after a colon if any (`bitwuzla:preprocess=0`). Like the
 /// transcripts' variable, it reaches the checks that the proof drivers, the benchmark or a job run, and the results
 /// name the solver it chose, with those options ([`super::solver_signature`]).
 pub const ENV: &str = "JVMCONTRACT_SOLVER";
 
 /// The solvers by the names [`ENV`] and `jvmcontract transcript --solver` take.
-pub const NAMES: &[&str] = &["cadical", "bitwuzla"];
+pub const NAMES: &[&str] = &["cadical", "bitwuzla", "bitwuzla-words"];
 
 /// What makes a new, empty solver of one kind and configuration.
 pub type Maker = std::sync::Arc<dyn Fn() -> Box<dyn Sat> + Send + Sync>;
@@ -58,10 +133,11 @@ pub fn named(name: &str) -> Result<Maker, crate::Error> {
     match base {
         "cadical" if options.is_none() => Ok(std::sync::Arc::new(cadical)),
         "cadical" => Err(crate::Error::new(format!("{ENV}: the bundled CaDiCaL takes no options here ({name:?})"))),
-        "bitwuzla" => {
+        "bitwuzla" | "bitwuzla-words" => {
+            let words = base == "bitwuzla-words";
             let settings = super::bitwuzla::settings(options.unwrap_or(""))?;
-            super::bitwuzla::Bitwuzla::with(&settings)?;
-            Ok(std::sync::Arc::new(move || super::bitwuzla::boxed_with(&settings)))
+            super::bitwuzla::Bitwuzla::configured(&settings, words)?;
+            Ok(std::sync::Arc::new(move || super::bitwuzla::boxed_configured(&settings, words)))
         }
         _ => Err(crate::Error::new(format!("{ENV}: no solver called {name:?} (the solvers are {})", NAMES.join(", ")))),
     }
@@ -252,5 +328,10 @@ mod tests {
         let make = named("bitwuzla:preprocess=0").unwrap();
         assert!(make().signature().contains("produce-models, preprocess=0, otherwise defaults"), "{}", make().signature());
         assert!(named("bitwuzla:preprocess=7").err().unwrap().0.contains("from 0 to 1"));
+        let mut words = named("bitwuzla-words:preprocess=0").unwrap()();
+        assert!(words.signature().contains("the engine's terms") && words.signature().contains("preprocess=0"), "{}", words.signature());
+        assert!(words.terms().is_some());
+        assert!(named("bitwuzla").unwrap()().terms().is_none());
+        assert!(cadical().terms().is_none());
     }
 }

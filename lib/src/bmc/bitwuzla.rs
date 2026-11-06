@@ -1,10 +1,17 @@
 //! [Bitwuzla](https://bitwuzla.github.io) behind the engine's [`Sat`] interface, for Phase 6 of the engine
 //! priorities: the same checks and transcripts run on another solver, to tell the solver apart from the encoding.
 //!
-//! Here Bitwuzla is given the engine's own bit-blasted clauses, nothing word-level: a variable is a Boolean
+//! As `bitwuzla`, Bitwuzla is given the engine's own bit-blasted clauses, nothing word-level: a variable is a Boolean
 //! constant, a clause the `or` of its literals, asserted, and a call `check_sat_assuming` the call's literals. So
 //! the formula is the one CaDiCaL is given, and what differs is the solver: Bitwuzla's rewriting and preprocessing
 //! of it, and the CaDiCaL inside Bitwuzla (2.1.2 in Bitwuzla 0.8.2) where the engine links 1.9.5.
+//!
+//! As `bitwuzla-words`, the word-level prototype, it takes the engine's terms ([`Terms`]): an input is a Boolean
+//! constant as before, a gate the Boolean term of its function, and a word-level operation one bit-vector term
+//! (`bvadd`, `bvsdiv`, `ite`, `bvult`, ...) over its operands, whose bits are `extract`s of it. Operand bits that are
+//! a run of one such term's bits are that term or an `extract` of it, so the arithmetic of a method reaches Bitwuzla
+//! as a word-level term over its inputs, and Bitwuzla bit-blasts what it has not rewritten away. Arrays stay the
+//! engine's bounded cells, read and written through `ite`s over the index: no array theory.
 //!
 //! Nothing in `jvmcontract` links Bitwuzla. Its C API is loaded at run time from a build of it
 //! (`lib/solvers/bitwuzla/build.sh`), which is found by the environment variable [`LIBRARY_ENV`], or else in
@@ -17,7 +24,7 @@ use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
 use super::bits::Lit;
-use super::sat::Sat;
+use super::sat::{Gate, Sat, Terms, WordOp};
 use crate::Error;
 
 /// The environment variable naming Bitwuzla's library (`libbitwuzla.so`), or the directory it was installed in.
@@ -30,8 +37,27 @@ pub const VERSION: &str = "0.8.2";
 // `BITWUZLA_API_USE_C_ENUMS`), printed by a C program compiled against the installed headers.
 const RESULT_SAT: c_int = 10;
 const RESULT_UNSAT: c_int = 20;
+const KIND_AND: c_int = 4;
+const KIND_EQUAL: c_int = 6;
 const KIND_NOT: c_int = 9;
 const KIND_OR: c_int = 10;
+const KIND_XOR: c_int = 11;
+const KIND_ITE: c_int = 12;
+const KIND_BV_ADD: c_int = 19;
+const KIND_BV_AND: c_int = 20;
+const KIND_BV_ASHR: c_int = 21;
+const KIND_BV_CONCAT: c_int = 23;
+const KIND_BV_MUL: c_int = 26;
+const KIND_BV_OR: c_int = 32;
+const KIND_BV_SDIV: c_int = 40;
+const KIND_BV_SHL: c_int = 43;
+const KIND_BV_SHR: c_int = 44;
+const KIND_BV_SLT: c_int = 46;
+const KIND_BV_SREM: c_int = 49;
+const KIND_BV_SUB: c_int = 51;
+const KIND_BV_ULT: c_int = 57;
+const KIND_BV_XOR: c_int = 62;
+const KIND_BV_EXTRACT: c_int = 63;
 const OPT_PRODUCE_MODELS: c_int = 1;
 const OPT_SAT_SOLVER: c_int = 11;
 const NUM_OPTS: c_int = 54;
@@ -101,6 +127,11 @@ struct Api {
     mk_const: unsafe extern "C" fn(*mut Tm, Sort, *const c_char) -> Term,
     mk_term1: unsafe extern "C" fn(*mut Tm, c_int, Term) -> Term,
     mk_term: unsafe extern "C" fn(*mut Tm, c_int, u32, *const Term) -> Term,
+    mk_term2: unsafe extern "C" fn(*mut Tm, c_int, Term, Term) -> Term,
+    mk_term3: unsafe extern "C" fn(*mut Tm, c_int, Term, Term, Term) -> Term,
+    mk_term1_indexed2: unsafe extern "C" fn(*mut Tm, c_int, Term, u64, u64) -> Term,
+    mk_bv_sort: unsafe extern "C" fn(*mut Tm, u64) -> Sort,
+    mk_bv_value_uint64: unsafe extern "C" fn(*mut Tm, Sort, u64) -> Term,
     assert: unsafe extern "C" fn(*mut Bzla, Term),
     check_sat_assuming: unsafe extern "C" fn(*mut Bzla, u32, *const Term) -> c_int,
     get_value: unsafe extern "C" fn(*mut Bzla, Term) -> Term,
@@ -200,6 +231,11 @@ fn load() -> Result<Api, Error> {
             mk_const: sym!("bitwuzla_mk_const"),
             mk_term1: sym!("bitwuzla_mk_term1"),
             mk_term: sym!("bitwuzla_mk_term"),
+            mk_term2: sym!("bitwuzla_mk_term2"),
+            mk_term3: sym!("bitwuzla_mk_term3"),
+            mk_term1_indexed2: sym!("bitwuzla_mk_term1_indexed2"),
+            mk_bv_sort: sym!("bitwuzla_mk_bv_sort"),
+            mk_bv_value_uint64: sym!("bitwuzla_mk_bv_value_uint64"),
             assert: sym!("bitwuzla_assert"),
             check_sat_assuming: sym!("bitwuzla_check_sat_assuming"),
             get_value: sym!("bitwuzla_get_value"),
@@ -271,15 +307,26 @@ unsafe extern "C" fn past_deadline(state: *mut c_void) -> i32 {
     deadline.at.is_some_and(|at| Instant::now() >= at) as i32
 }
 
-/// One Bitwuzla instance, given the engine's clauses as Boolean terms (SAT only), with a time limit per call.
+/// One Bitwuzla instance, given the engine's clauses as Boolean terms (SAT only), or its terms as well ([`Terms`]),
+/// with a time limit per call.
 pub struct Bitwuzla {
     api: &'static Api,
     tm: *mut Tm,
     options: *mut Opts,
     solver: *mut Bzla,
     boolean: Sort,
-    /// The Boolean constant of each variable, by number less one; made when the variable is first used.
+    /// The Boolean term of each variable, by number less one: a constant made when an input is first used, or the
+    /// term a gate or a word-level operation's bit is defined as.
     variables: Vec<Term>,
+    /// Whether it takes the engine's terms (`bitwuzla-words`), not only its clauses.
+    words: bool,
+    /// For a variable that is bit `k` of a word-level term, the term and `k`, so that a run of its bits is read back
+    /// as the term.
+    bit_of: std::collections::HashMap<i32, (Term, u32, u32)>,
+    /// The bit-vector term each operand was read as, by its bits.
+    read: std::collections::HashMap<Vec<Lit>, Term>,
+    /// The bit-vector sorts, by width.
+    sorts: std::collections::HashMap<u64, Sort>,
     limit: Option<Duration>,
     deadline: Box<Deadline>,
     /// Whether the last call was satisfiable, so that a model may be read.
@@ -305,6 +352,12 @@ impl Bitwuzla {
     /// Bitwuzla's, numeric or a mode, not one the binding sets itself ([`OWN`]), and its value in range or one of
     /// its modes: the C API aborts the process on a value it refuses, so the binding checks first.
     pub fn with(settings: &[Setting]) -> Result<Bitwuzla, Error> {
+        Bitwuzla::configured(settings, false)
+    }
+
+    /// A new, empty instance with these settings, as [`Bitwuzla::with`] makes one, that takes the engine's terms as
+    /// well when `words` is set (`bitwuzla-words`).
+    pub fn configured(settings: &[Setting], words: bool) -> Result<Bitwuzla, Error> {
         let api = api()?;
         // SAFETY: the C API is used as `bitwuzla.h` documents: options made and set before the instance, which is
         // made over a term manager that outlives it (both are deleted in `drop`, the instance first). An option's
@@ -324,7 +377,7 @@ impl Bitwuzla {
             let mut deadline = Box::new(Deadline { at: None });
             (api.set_termination_callback)(solver, Some(past_deadline), (&mut *deadline as *mut Deadline).cast());
             let boolean = (api.mk_bool_sort)(tm);
-            Ok(Bitwuzla { api, tm, options, solver, boolean, variables: Vec::new(), limit: None, deadline, model: false, settings: settings.to_vec() })
+            Ok(Bitwuzla { api, tm, options, solver, boolean, variables: Vec::new(), words, bit_of: Default::default(), read: Default::default(), sorts: Default::default(), limit: None, deadline, model: false, settings: settings.to_vec() })
         }
     }
 
@@ -348,6 +401,135 @@ impl Bitwuzla {
         // SAFETY: the negation of a Boolean term of this term manager.
         if lit < 0 { unsafe { (self.api.mk_term1)(self.tm, KIND_NOT, t) } } else { t }
     }
+
+    /// Defines variable `var`, which no term has used yet, as the Boolean term `t`.
+    fn define(&mut self, var: Lit, t: Term) {
+        let index = var as usize - 1;
+        assert!(index >= self.variables.len(), "variable {var} is defined after it was used");
+        if index > 0 {
+            self.variable(var - 1);
+        }
+        self.variables.push(t);
+    }
+
+    fn sort(&mut self, width: u64) -> Sort {
+        let (api, tm) = (self.api, self.tm);
+        // SAFETY: a bit-vector sort of a positive width.
+        *self.sorts.entry(width).or_insert_with(|| unsafe { (api.mk_bv_sort)(tm, width) })
+    }
+
+    fn value_of(&mut self, value: u64, width: u64) -> Term {
+        let sort = self.sort(width);
+        // SAFETY: a value of the sort's width (at most 64 bits, the value masked to it).
+        unsafe { (self.api.mk_bv_value_uint64)(self.tm, sort, if width >= 64 { value } else { value & ((1 << width) - 1) }) }
+    }
+
+    /// `bits` as one bit-vector term, most significant piece first: a run of a word-level term's bits is that term or
+    /// an `extract` of it, a run of constants a value, and any other bit its literal as one bit.
+    fn word_of(&mut self, bits: &[Lit]) -> Term {
+        if let Some(&t) = self.read.get(bits) {
+            return t;
+        }
+        let (api, tm) = (self.api, self.tm);
+        let mut pieces: Vec<Term> = Vec::new();
+        let mut i = 0;
+        while i < bits.len() {
+            let l = bits[i];
+            if l == super::bits::TRUE || l == super::bits::FALSE {
+                let mut j = i;
+                let mut value = 0u64;
+                while j < bits.len() && (bits[j] == super::bits::TRUE || bits[j] == super::bits::FALSE) {
+                    if bits[j] == super::bits::TRUE {
+                        value |= 1 << (j - i);
+                    }
+                    j += 1;
+                }
+                pieces.push(self.value_of(value, (j - i) as u64));
+                i = j;
+                continue;
+            }
+            if let Some(&(t, k, width)) = self.bit_of.get(&l) {
+                let mut j = i + 1;
+                while j < bits.len() && self.bit_of.get(&bits[j]).is_some_and(|&(u, m, _)| u == t && m == k + (j - i) as u32) {
+                    j += 1;
+                }
+                let hi = k + (j - i) as u32 - 1;
+                // SAFETY: an extract within the term's width.
+                pieces.push(if k == 0 && hi + 1 == width { t } else { unsafe { (api.mk_term1_indexed2)(tm, KIND_BV_EXTRACT, t, u64::from(hi), u64::from(k)) } });
+                i = j;
+                continue;
+            }
+            let b = self.literal(l);
+            let (one, zero) = (self.value_of(1, 1), self.value_of(0, 1));
+            // SAFETY: an `ite` over a Boolean term with two bit-vector values of one sort.
+            pieces.push(unsafe { (api.mk_term3)(tm, KIND_ITE, b, one, zero) });
+            i += 1;
+        }
+        pieces.reverse();
+        // SAFETY: a concatenation of two or more bit-vector terms.
+        let t = if pieces.len() == 1 { pieces[0] } else { unsafe { (api.mk_term)(tm, KIND_BV_CONCAT, pieces.len() as u32, pieces.as_ptr()) } };
+        self.read.insert(bits.to_vec(), t);
+        t
+    }
+}
+
+impl Terms for Bitwuzla {
+    fn gate(&mut self, out: Lit, gate: Gate) {
+        let (api, tm) = (self.api, self.tm);
+        // SAFETY: Boolean operations over Boolean terms of this term manager.
+        let t = unsafe {
+            match gate {
+                Gate::And(a, b) => (api.mk_term2)(tm, KIND_AND, self.literal(a), self.literal(b)),
+                Gate::Xor(a, b) => (api.mk_term2)(tm, KIND_XOR, self.literal(a), self.literal(b)),
+                Gate::Ite(c, a, b) => (api.mk_term3)(tm, KIND_ITE, self.literal(c), self.literal(a), self.literal(b)),
+            }
+        };
+        self.define(out, t);
+    }
+
+    fn word(&mut self, outs: &[Lit], op: WordOp, operands: &[&[Lit]]) {
+        let (api, tm) = (self.api, self.tm);
+        let kind = match op {
+            WordOp::Add => KIND_BV_ADD,
+            WordOp::Sub => KIND_BV_SUB,
+            WordOp::Mul => KIND_BV_MUL,
+            WordOp::Div => KIND_BV_SDIV,
+            WordOp::Rem => KIND_BV_SREM,
+            WordOp::Shl => KIND_BV_SHL,
+            WordOp::Shr => KIND_BV_ASHR,
+            WordOp::Ushr => KIND_BV_SHR,
+            WordOp::And => KIND_BV_AND,
+            WordOp::Or => KIND_BV_OR,
+            WordOp::Xor => KIND_BV_XOR,
+            WordOp::Ite => KIND_ITE,
+            WordOp::Ult => KIND_BV_ULT,
+            WordOp::Slt => KIND_BV_SLT,
+            WordOp::Eq => KIND_EQUAL,
+        };
+        let result = if op == WordOp::Ite {
+            let c = self.literal(operands[0][0]);
+            let (a, b) = (self.word_of(operands[1]), self.word_of(operands[2]));
+            // SAFETY: an `ite` over a Boolean term and two bit-vector terms of one width.
+            unsafe { (api.mk_term3)(tm, KIND_ITE, c, a, b) }
+        } else {
+            let (a, b) = (self.word_of(operands[0]), self.word_of(operands[1]));
+            // SAFETY: a binary bit-vector operation over two terms of one width.
+            unsafe { (api.mk_term2)(tm, kind, a, b) }
+        };
+        if op.compares() {
+            self.define(outs[0], result);
+            return;
+        }
+        let width = outs.len() as u32;
+        let one = self.value_of(1, 1);
+        for (k, &out) in outs.iter().enumerate() {
+            // SAFETY: bit `k` of a bit-vector term of `width` bits, compared with the one-bit value one.
+            let bit = unsafe { (api.mk_term2)(tm, KIND_EQUAL, (api.mk_term1_indexed2)(tm, KIND_BV_EXTRACT, result, k as u64, k as u64), one) };
+            self.define(out, bit);
+            self.bit_of.insert(out, (result, k as u32, width));
+        }
+        self.read.insert(outs.to_vec(), result);
+    }
 }
 
 /// A new, empty [`Bitwuzla`] with Bitwuzla's defaults, as [`super::Options::solver`] makes one. The library must
@@ -356,9 +538,20 @@ pub fn boxed() -> Box<dyn Sat> {
     boxed_with(&[])
 }
 
+/// A new, empty [`Bitwuzla`] that takes the engine's terms (`bitwuzla-words`), with Bitwuzla's defaults.
+pub fn boxed_words() -> Box<dyn Sat> {
+    boxed_configured(&[], true)
+}
+
 /// A new, empty [`Bitwuzla`] with these settings, which [`Bitwuzla::with`] has already accepted once.
 pub fn boxed_with(settings: &[Setting]) -> Box<dyn Sat> {
-    match Bitwuzla::with(settings) {
+    boxed_configured(settings, false)
+}
+
+/// A new, empty [`Bitwuzla`] with these settings that takes the engine's terms when `words` is set, once
+/// [`Bitwuzla::configured`] has accepted them.
+pub fn boxed_configured(settings: &[Setting], words: bool) -> Box<dyn Sat> {
+    match Bitwuzla::configured(settings, words) {
         Ok(b) => Box::new(b),
         Err(e) => panic!("{}", e.0),
     }
@@ -380,7 +573,12 @@ impl Sat for Bitwuzla {
         // SAFETY: the version is a static NUL-terminated string.
         let version = unsafe { CStr::from_ptr((self.api.version)()) }.to_string_lossy().into_owned();
         let set: String = self.settings.iter().map(|s| format!(", {}={}", s.name, s.value)).collect();
-        format!("Bitwuzla {version} (the engine's clauses as Boolean terms; sat-solver cadical, produce-models{set}, otherwise defaults)")
+        let given = if self.words { "the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms" } else { "the engine's clauses as Boolean terms" };
+        format!("Bitwuzla {version} ({given}; sat-solver cadical, produce-models{set}, otherwise defaults)")
+    }
+
+    fn terms(&mut self) -> Option<&mut dyn Terms> {
+        if self.words { Some(self) } else { None }
     }
 
     fn add_clause(&mut self, lits: &[Lit]) {

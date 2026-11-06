@@ -158,6 +158,9 @@ pub struct Outcome {
     pub refined: u64,
     pub multiplications: u64,
     pub refined_multiplications: u64,
+    /// How many word-level operations the solver was given as terms, when it takes terms ([`sat::Terms`]); zero
+    /// when it is given clauses.
+    pub word_operations: u64,
     pub seconds: f64,
     /// The phases the solving and evaluating above are not: reading and parsing class files, decoding methods,
     /// building circuits (the encoding, as the paths are explored), and reading a witness out of a model; the
@@ -220,6 +223,7 @@ impl Outcome {
             divisions_built: self.refined,
             multiplications: self.multiplications,
             multiplications_built: self.refined_multiplications,
+            word_operations: self.word_operations,
             variables: self.variables,
             clauses: self.clauses,
             seconds: self.seconds,
@@ -244,7 +248,7 @@ impl Outcome {
                 format!(", {n} gap{} {what} (--gaps {})", if n == 1 { "" } else { "s" }, self.gap_mode.name())
             }
         };
-        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {}{} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, if self.word_operations > 0 { format!("{} word-level operations given as terms, ", self.word_operations) } else { String::new() }, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
             + &self.transcript.as_ref().map(|t| format!("; solver calls written to {}", t.display())).unwrap_or_default()
     }
 }
@@ -252,6 +256,10 @@ impl Outcome {
 /// What the engine's search took, as [`Outcome::summary`] prints it: the paths it explored and merged, the solver's
 /// calls and time, the gates evaluated in path models instead, the divisions and multiplications left to the solver
 /// and those whose circuit had to be built, and the size of the last formula.
+fn is_zero(n: &u64) -> bool {
+    *n == 0
+}
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct Stats {
     pub paths: u64,
@@ -264,6 +272,9 @@ pub struct Stats {
     pub divisions_built: u64,
     pub multiplications: u64,
     pub multiplications_built: u64,
+    /// Absent for a solver given clauses.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub word_operations: u64,
     pub variables: i32,
     pub clauses: u64,
     pub seconds: f64,
@@ -622,9 +633,12 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     let m = harness.method_by_name(method).ok_or_else(|| Error::new(format!("no method {method} in {class}")))?.clone();
     let descriptor = MethodDescriptor::parse(&m.descriptor)?;
     sat::configuration()?;
-    let solver = (options.solver)();
+    let mut solver = (options.solver)();
     let transcript = match transcript::destination(options.transcript.as_deref()) {
         None => None,
+        Some(path) if solver.terms().is_some() => {
+            return Err(Error::new(format!("cannot write the transcript {}: it records clauses, and {} is given the engine's terms", path.display(), solver.signature())));
+        }
         Some(path) => {
             let header = [
                 format!("jvmcontract {}: the own checker's solver calls, in order ({})", env!("CARGO_PKG_VERSION"), "lib/src/bmc/transcript.rs"),
@@ -683,6 +697,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         refined: engine.b.divisions().1,
         multiplications: engine.b.multiplications().0,
         refined_multiplications: engine.b.multiplications().1,
+        word_operations: engine.b.word_operations() as u64,
         seconds: started.elapsed().as_secs_f64(),
         loading: (cp.loading() - loading_before).as_secs_f64(),
         decoding: engine.decoding.as_secs_f64(),
@@ -3363,8 +3378,9 @@ mod tests {
 
     #[test]
     fn a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls() {
-        // Bitwuzla given the engine's clauses (Phase 6c's SAT-only comparison), when it is installed here. Its
-        // models may differ from CaDiCaL's, and so the lemmas and the input found, but not the verdicts.
+        // Bitwuzla given the engine's clauses (Phase 6c's SAT-only comparison), and given its terms (the word-level
+        // prototype), when it is installed here. Its models may differ from CaDiCaL's, and so the lemmas and the
+        // input found, but not the verdicts.
         if let Err(e) = bitwuzla::available() {
             eprintln!("skipped: {}", e.0);
             return;
@@ -3417,6 +3433,18 @@ mod tests {
             assert_eq!(replay.clauses, on_cadical.clauses);
             assert_eq!(replay.contradictions, 0, "{name}: {}", replay.summary());
             assert!(replay.solver.starts_with("Bitwuzla 0.8.2 "), "{}", replay.solver);
+            // Given terms: the same verdict, a real input, the operations as terms and no lemma, and no transcript,
+            // since there are no clauses to record.
+            let on_terms = check(cp, "Check", "check", &Options { solver: bitwuzla::boxed_words, ..Options::default() }).unwrap();
+            assert_eq!(on_terms.verdict, expected, "{name}: {}", on_terms.summary());
+            assert_eq!(on_terms.clauses, 1, "{name}: only the constant's unit clause");
+            assert_eq!((on_terms.divisions, on_terms.multiplications), (0, 0), "{name}: {}", on_terms.summary());
+            if expected == Verdict::Violation {
+                let (x, y): (i32, i32) = (on_terms.raw_inputs[&0].parse().unwrap(), on_terms.raw_inputs[&1].parse().unwrap());
+                assert!(x >= 0 && y != 0 && x.wrapping_div(y) == 3, "{x} / {y}");
+            }
+            let refused = check(cp, "Check", "check", &Options { solver: bitwuzla::boxed_words, transcript: Some(dir.path().join("terms.icnf")), ..Options::default() }).unwrap_err();
+            assert!(refused.0.contains("it records clauses"), "{}", refused.0);
         }
     }
     #[test]

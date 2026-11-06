@@ -530,8 +530,71 @@ are yours, but say under Progress which JBMC results they may change.
   - **Also changed (mine):** `lib/src/bmc/bitwuzla.rs`, `sat.rs`, `lib/solvers/compare.py` and `test_compare.py`
     (new), and `lib/solvers/bitwuzla/README.md`.
   - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
-- **Next:** the word-level prototype for the five workloads (6c, part 2), and its job, while `-224616` runs. Then 6d.
-- Status: working
+- **6c, part 2: the word-level prototype, and its job queued** (inline; Bitwuzla 0.8.2, CaDiCaL 1.9.5 bundled).
+  - **The interface.** `sat.rs` gains `Terms`, which a solver may offer through `Sat::terms`. It has two methods:
+    - `gate` defines a variable as an `and`, `xor` or `ite` of literals;
+    - `word` defines a run of variables as the bits of a word-level operation (`WordOp`) over operand bits.
+  - **The encoding** (`bits.rs`). Over a solver with terms, the blaster builds no circuits:
+    - Each gate is defined to the solver instead of getting Tseitin clauses.
+    - These are one word-level operation each: addition, subtraction, multiplication, signed division and
+      remainder, the comparisons, a shift by a symbolic amount, a bitwise operation of two non-constant values, and
+      an `ite` of two values.
+    - Constants fold as before, and so do a few identities (`x + 0`, `x * 1`, `x == x`). The same operation on the
+      same operands is one operation.
+    - Nothing goes to the lazy division and multiplication: the solver is given the operation itself, so there is
+      no refinement.
+    - A path's model is evaluated as before, a word-level operation by its real result on the operands' values. A
+      division by zero follows SMT-LIB's rule, as Bitwuzla does.
+    - The scheduling (`Engine`) is unchanged.
+  - **Bitwuzla's side** (`bitwuzla.rs`, `JVMCONTRACT_SOLVER=bitwuzla-words[:options]`):
+    - a gate is a Boolean term, and an operation one bit-vector term (`bvadd`, `bvsdiv`, `bvult`, `ite`, ...);
+    - its result bits are `extract`s of that term;
+    - operand bits that are a run of one term's bits are read back as the term, or an `extract` of it, so a
+      method's arithmetic reaches Bitwuzla as terms over its inputs;
+    - the kind numbers were printed by a C program against the installed headers.
+  - **What it leaves out:**
+    - **No array theory.** Arrays stay the engine's bounded cells, read and written through `ite`s over the index.
+      Using arrays would change the engine's state, not only the encoding, so it is left for the recommendation
+      to weigh.
+    - **No transcripts.** A check that asks for one on this solver fails, saying why, since there are no clauses
+      to record.
+  - **Results** report the count as `word_operations` in the outcome and in `--json`'s stats. The field is left
+    out when it is zero, so output under CaDiCaL is unchanged.
+  - **Checked.**
+    - The blaster's arithmetic tests run on `bitwuzla-words` too (`word_level_operations_on_bitwuzla_are_the_jvms`):
+      every int and long operation over edge values, plus bitwise operations and `ite`. Each result is read from
+      Bitwuzla's model and also evaluated from the inputs alone, and the test checks that the two agree. Constant
+      folding and building an operation once are tested as well.
+    - The engine test `a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls` now checks
+      `bitwuzla-words` too: the same verdicts and a real violating input, one clause, no lazy operation, and the
+      refused transcript.
+    - **The engine's 51 unit tests with `JVMCONTRACT_SOLVER=bitwuzla-words`:** 46 pass. Four fail by design: two
+      pin the lazy refinement, and two the transcripts or the clauses the solver is given. A fifth,
+      `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed`, failed once in that run and passed
+      alone under either solver. It doesn't go near the solver.
+    - **Inline, one run each** (indicative only):
+
+      | Case | CaDiCaL | `bitwuzla-words` | Calls (CaDiCaL / words) |
+      |---|---:|---:|---:|
+      | `held/reverse` | 0.18 s | 0.12 s | 115 / 125 |
+      | `held/prefix-sums` | 0.05 s | 0.06 s | 18 / 19 |
+      | `example/141` | – | 2.35 s | – / 1,124 |
+
+      - All verified.
+      - Bit-blasted Bitwuzla took 3.9 s on reverse.
+      - `bitwuzla-words` has more calls, since it folds less than the circuits do.
+    - **The suites:** unit (162), integration (64) and skill pass. Conformance fails only its two known tests: the 12
+      library-record claims, and the benchmark file.
+  - **Queued:** job `20261106-230455-the-own-checker-on-cadical-and-on-bitwuz`, `compare.py --words`. It runs the
+    five workloads' full checks three times each on `cadical`, `bitwuzla-words` and `bitwuzla-words:preprocess=0`,
+    and writes `word-level.json` and `.md`. It fails on a wrong or disagreeing decisive verdict.
+  - **Shared files changed:** `lib/README.md` (the solver-interface paragraph).
+  - **Also changed (mine):** `lib/src/bmc/sat.rs`, `bits.rs`, `bitwuzla.rs` and `mod.rs` (the transcript refusal,
+    the field, the test), `lib/solvers/compare.py` (`--words`), and `lib/solvers/bitwuzla/README.md`.
+  - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
+- **Next:** 6d, the written recommendation, once jobs `-224616` (bit-blasted) and `-230455` (word-level) are back.
+  Nothing else in my phases needs only my own work.
+- Status: waiting on jobs 20261106-224616-the-own-checker-on-cadical-and-on-bitwuz 20261106-230455-the-own-checker-on-cadical-and-on-bitwuz
 
 ## Loop settings
 

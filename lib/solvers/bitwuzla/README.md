@@ -19,6 +19,14 @@ with `preprocess=0`, three times each. It reuses `lib/benchmark/run.py`'s cases 
 them, and writes `bit-blasted.json` and `bit-blasted.md` to its `--out`. It runs as a pipeline job; its tests
 (`python3 -m unittest lib/solvers/test_compare.py`) run nothing.
 
+`JVMCONTRACT_SOLVER=bitwuzla-words` (with options as above) is the word-level prototype: the engine gives Bitwuzla
+its gates as Boolean terms and each arithmetic operation, comparison, shift by a symbolic amount and `ite` of two
+values as one bit-vector term (`Terms` in [`src/bmc/sat.rs`](../../src/bmc/sat.rs)), instead of bit-blasting them,
+and Bitwuzla bit-blasts what its rewriting leaves. Arrays stay the engine's bounded cells, read and written through
+`ite`s over the index, with no array theory. Such a check keeps no transcript, since there are no clauses to record.
+`compare.py --words` runs the same full checks on CaDiCaL and on it, with and without `preprocess`, and writes
+`word-level.json` and `word-level.md`.
+
 [`build.sh`](build.sh) builds a pinned release from source as a verification pipeline job, since it fetches from the
 network and takes minutes:
 

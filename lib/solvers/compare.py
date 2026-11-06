@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The solver comparison of Phase 6c (llm-dlc/loops/engine-priorities.md), on the engine's bit-blasted clauses.
+"""The solver comparison of Phase 6c (llm-dlc/loops/engine-priorities.md), on the engine's bit-blasted clauses, or
+on its word-level terms (`--words`).
 
 The own checker's full checks over the five workloads where the formula's size dominates (binary search, examples
 141 and 142, reverse and prefix sums), each on the bundled CaDiCaL and on Bitwuzla in two configurations, given
@@ -23,6 +24,13 @@ verdict or any decisive verdict is not the expected one, if the solvers' decisiv
 contradicts its recording. A check that runs out of time on Bitwuzla is a measurement, listed as not decided. Times are medians
 of the repeats, with the range beside them; the whole replay's time (reading, adding clauses, calls) is the one to
 compare, since Bitwuzla does some of its work on the clauses inside its calls.
+
+With `--words`, the word-level prototype: the same full checks on CaDiCaL and on `bitwuzla-words` in two
+configurations, where the engine gives Bitwuzla its gates and word-level operations as terms (lib/src/bmc/sat.rs's
+`Terms`) instead of bit-blasting them. There are no transcripts to record or replay then: the solver isn't given
+clauses. It writes `word-level.json` and `word-level.md`, and fails as above on the checks.
+
+    python3 lib/solvers/compare.py --words --out lib/solvers/comparison
 """
 
 import argparse
@@ -47,6 +55,7 @@ REPO = LIB.parent
 # reverse, prefix sums.
 CASES = ("real/midpoint/search-within-bound", "example/141", "example/142", "held/reverse", "held/prefix-sums")
 SOLVERS = ("cadical", "bitwuzla", "bitwuzla:preprocess=0")
+WORD_SOLVERS = ("cadical", "bitwuzla-words", "bitwuzla-words:preprocess=0")
 MODE = "strict"
 
 
@@ -116,6 +125,7 @@ def check(run_module, case, solver, classes, work, transcripts, options):
     record = {k: measured[k] for k in ("exit", "seconds", "cpuSeconds", "peakMB")}
     record.update(run_module.classify(case, data, measured))
     record["stats"] = run_module.stats_of(data)
+    record["wordOperations"] = (((data or {}).get("search") or {}).get("native") or {}).get("word_operations")
     record["phases"] = run_module.phases_of(data, measured["seconds"])
     stated = ((data or {}).get("stated") or {}).get("checker") or {}
     record["signature"] = stated.get("solver")
@@ -181,7 +191,7 @@ def run(options):
         for solver in solvers:
             for n in range(options.repeat):
                 work = build / "work" / slug(case["id"]) / slug(solver)
-                into = build / "transcripts" / slug(case["id"]) / slug(solver) if n == 0 else None
+                into = build / "transcripts" / slug(case["id"]) / slug(solver) if n == 0 and not options.words else None
                 if into is not None and into.exists():
                     shutil.rmtree(into)
                 record = {"case": case["id"], "solver": solver, "run": n + 1, **check(run_module, case, solver, classes, work, into, options)}
@@ -200,8 +210,11 @@ def run(options):
                     replays.append(record)
                     if not options.quiet:
                         print(f"replay {case['id']:<36} {transcript.name:<16} {solver:<24} #{n + 1} {record.get('calls', '-'):>6} calls {record.get('seconds', 0):>8.3f} s whole {record.get('solving', 0):>8.3f} s solving, {record.get('contradictions', '-')} contradictions", flush=True)
+    about = ("the own checker's full checks on CaDiCaL and on Bitwuzla given the engine's word-level terms" if options.words
+             else "the own checker's checks and CaDiCaL's transcripts of them on each solver, on the engine's bit-blasted clauses")
     return {
-        "about": "Results of lib/solvers/compare.py: the own checker's checks and CaDiCaL's transcripts of them on each solver, on the engine's bit-blasted clauses (Phase 6c of llm-dlc/loops/engine-priorities.md).",
+        "about": f"Results of lib/solvers/compare.py: {about} (Phase 6c of llm-dlc/loops/engine-priorities.md).",
+        "kind": "word-level" if options.words else "bit-blasted",
         "environment": environment(run_module, options),
         "settings": {"mode": MODE, "unwind": run_module.UNWIND, "maxArrayLength": run_module.MAX_ARRAY_LENGTH, "timeout": options.timeout, "repeat": options.repeat, "solvers": solvers, "cases": ids},
         "cases": [{k: c[k] for k in ("id", "group", "workload", "kind", "expected")} for c in cases],
@@ -258,7 +271,8 @@ def fmt(s):
 def render(results):
     solvers = results["settings"]["solvers"]
     env = results["environment"]
-    lines = ["# The solver comparison, bit-blasted", "",
+    words = results.get("kind") == "word-level"
+    lines = [f"# The solver comparison, {results.get('kind', 'bit-blasted')}", "",
              f"`lib/solvers/compare.py` at `{(env.get('commit') or '?')[:12]}` on {env.get('host')} ({env.get('machine')}, {env.get('cpu')}, {env.get('cpus')} CPUs), {env.get('date')}: "
              f"{env.get('jvmcontract')}, {env.get('java')}. Each case under {results['settings']['mode']}, unwind {results['settings']['unwind']}, arrays up to {results['settings']['maxArrayLength']}, "
              f"{results['settings']['repeat']} runs of each check and replay; seconds are the median, with the range in brackets.", ""]
@@ -267,7 +281,11 @@ def render(results):
     library = env.get("bitwuzla") or {}
     if library.get("path"):
         lines += [f"Bitwuzla's library: `{library['path']}`, sha256 `{library['sha256'][:16]}…`.", ""]
-    lines += ["## Full checks", "", "| Case | Solver | Verdict | Seconds | Solver calls | Clauses | Solving (engine) | Peak MB |", "|---|---|---|---:|---:|---:|---:|---:|"]
+    if words:
+        lines += ["CaDiCaL is given the engine's clauses; `bitwuzla-words` its gates as Boolean terms and its word-level operations as bit-vector terms, "
+                  "so its clause count is only the constant's unit clause, and *Word ops* counts the operations it was given as terms.", ""]
+    extra = " Word ops |" if words else ""
+    lines += ["## Full checks", "", f"| Case | Solver | Verdict | Seconds | Solver calls | Clauses |{extra} Solving (engine) | Peak MB |", "|---|---|---|---:|---:|---:|" + ("---:|" if words else "") + "---:|---:|"]
     for case in results["settings"]["cases"]:
         for solver in solvers:
             runs = [r for r in results["checks"] if r["case"] == case and r["solver"] == solver]
@@ -276,8 +294,19 @@ def render(results):
             verdicts = sorted({r["verdict"] for r in runs})
             first = runs[0]["stats"]
             solving = spread([r["stats"].get("solving_seconds") for r in runs])
-            lines.append(f"| {case} | {solver} | {', '.join(verdicts)} | {fmt(spread([r['seconds'] for r in runs]))} | {first.get('solver_calls', '–')} | {first.get('clauses', '–')} | {fmt(solving)} | {max(r['peakMB'] for r in runs):.0f} |")
-    lines += ["", "## CaDiCaL's transcripts replayed", "",
+            ops = f" {runs[0].get('wordOperations') or '–'} |" if words else ""
+            lines.append(f"| {case} | {solver} | {', '.join(verdicts)} | {fmt(spread([r['seconds'] for r in runs]))} | {first.get('solver_calls', '–')} | {first.get('clauses', '–')} |{ops} {fmt(solving)} | {max(r['peakMB'] for r in runs):.0f} |")
+    if not words:
+        lines += replay_table(results, solvers)
+    found = problems(results)
+    lines += ["", "## Problems", ""] + ([f"- {p}" for p in found] if found else ["None: every decisive verdict is the expected one, CaDiCaL's on every case" + ("." if words else ", and every replay agrees with its recording.")])
+    left = undecided(results)
+    lines += ["", "## Not decided", ""] + ([f"- {p}" for p in left] if left else ["Nothing: every check gave a verdict" + ("." if words else ", and every replayed call an answer.")])
+    return "\n".join(lines) + "\n"
+
+
+def replay_table(results, solvers):
+    lines = ["", "## CaDiCaL's transcripts replayed", "",
               "The same calls on every solver. *Whole* is the replay's own time: reading the transcript, adding the clauses and every call; *solving* is the time inside the calls.", "",
               "| Case | Transcript | Calls | Clauses | Solver | Whole s | Solving s | Contradictions |", "|---|---|---:|---:|---|---:|---:|---:|"]
     keys = []
@@ -293,25 +322,24 @@ def render(results):
             first = runs[0]
             contradictions = sum(r.get("contradictions") or 0 for r in runs) if all("contradictions" in r for r in runs) else "failed"
             lines.append(f"| {case} | {transcript} | {first.get('calls', '–')} | {first.get('clauses', '–')} | {solver} | {fmt(spread([r.get('seconds') for r in runs]))} | {fmt(spread([r.get('solving') for r in runs]))} | {contradictions} |")
-    found = problems(results)
-    lines += ["", "## Problems", ""] + ([f"- {p}" for p in found] if found else ["None: every decisive verdict is the expected one, CaDiCaL's on every case, and every replay agrees with its recording."])
-    left = undecided(results)
-    lines += ["", "## Not decided", ""] + ([f"- {p}" for p in left] if left else ["Nothing: every check gave a verdict, and every replayed call an answer."])
-    return "\n".join(lines) + "\n"
+    return lines
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cases", default=",".join(CASES))
-    parser.add_argument("--solvers", default=",".join(SOLVERS), help="names as JVMCONTRACT_SOLVER takes them")
+    parser.add_argument("--solvers", help="names as JVMCONTRACT_SOLVER takes them (default: " + ",".join(SOLVERS) + ", or with --words " + ",".join(WORD_SOLVERS) + ")")
+    parser.add_argument("--words", action="store_true", help="the word-level prototype: Bitwuzla given the engine's terms, full checks only")
     parser.add_argument("--repeat", type=int, default=3)
     parser.add_argument("--timeout", type=int, default=600, help="seconds each check may take")
     parser.add_argument("--jvmcontract", default=os.environ.get("JVMCONTRACT") or str(LIB / "target/release/jvmcontract"))
     parser.add_argument("--build", default=str(LIB / "target/solver-comparison"))
-    parser.add_argument("--out", help="write bit-blasted.json and bit-blasted.md into this directory")
+    parser.add_argument("--out", help="write bit-blasted.json and bit-blasted.md (word-level.* with --words) into this directory")
     parser.add_argument("--render", help="only render the tables of a results file")
     parser.add_argument("--quiet", action="store_true")
     options = parser.parse_args(argv)
+    if options.solvers is None:
+        options.solvers = ",".join(WORD_SOLVERS if options.words else SOLVERS)
     if options.render:
         results = json.loads(Path(options.render).read_text())
     else:
@@ -320,8 +348,9 @@ def main(argv=None):
     if options.out and not options.render:
         out = Path(options.out)
         out.mkdir(parents=True, exist_ok=True)
-        (out / "bit-blasted.json").write_text(json.dumps(results, indent=1) + "\n")
-        (out / "bit-blasted.md").write_text(table)
+        name = results.get("kind", "bit-blasted")
+        (out / f"{name}.json").write_text(json.dumps(results, indent=1) + "\n")
+        (out / f"{name}.md").write_text(table)
     print(table)
     return 1 if problems(results) else 0
 
