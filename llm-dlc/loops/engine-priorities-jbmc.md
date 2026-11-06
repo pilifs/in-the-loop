@@ -61,7 +61,28 @@ Progress, so the reconcile loop knows where to look.
 
 ## Progress
 
-- Nothing yet.
+- **1a, exclusive JBMC phases: done.**
+  - `lib/src/phases.rs` reads JBMC's timers per solver call. `Runtime Solver` covers the whole call, so the
+    `Runtime Post-process` inside it counts under `encoding` only. A call that printed neither that line nor CaDiCaL's
+    `N variables, M clauses` never reached the SAT solver, so all of it is `encoding`.
+  - `Phases::excess` flags a run whose named phases add up past its seconds by more than 1% plus 5 ms. The JSON
+    carries the excess as `phases_excess` on `deadline::Run`; nothing is scaled. `lib/benchmark/run.py` records it per
+    case as `phasesExcess` and leaves such runs out of the phase tables, naming them below.
+  - Fixtures are real JBMC 6.11.0 runs on cvm (x86_64), in `lib/tests/fixtures/jbmc-phases/`: `held/prefix-sums`
+    proved (Post-process 0.175 s inside Solver 2.955 s), the same cut off at 1.9 s, `held/reverse` out of memory at
+    700 MiB, and two solver calls in one run.
+  - The nesting shows in the message times. Job `20261106-192959` (network) checks it against CBMC's source at
+    `cbmc-6.11.0`. Nothing waits on it.
+  - Shared files changed (added to, nothing reorganized):
+    - `lib/README.md`: one clause on `phases_excess` in `--json`'s description;
+    - `lib/src/jbmc.rs`: `json_items` is `pub(crate)`, for the tests.
+  - **For the reconcile loop:** on cvm, `conformance.rs`'s
+    `the_corpus_agrees_with_the_jvm_on_the_tools_own_checker` fails with 12 disagreements. Not rerun at the base; the
+    messages point away from this change.
+    - The cause: the JDK is 25.0.5, but the contract library's records (`lib/models/contracts/`, the native stream's)
+      were written for 25.0.4.1, so advised runs print "is not the library's, on its record".
+    - It may also touch 2b's advised runs.
+- **Next:** 1b, the SAT backend in `results.json`'s environment and in each result's evidence.
 - Status: working
 
 ## Loop settings

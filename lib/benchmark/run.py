@@ -35,6 +35,10 @@ RECORDED = {"141": "binary-search", "142": "utf8"}
 # The phases of a run (lib/src/phases.rs), the checker's own and the driver's around it: the record's `phases`.
 RUN_PHASES = ("loading", "lowering", "symbolic", "encoding", "solving", "trace")
 PHASES = RUN_PHASES + ("checker-other", "gaps", "contracts", "replay", "jvm", "harness", "setup", "driver")
+# How far a run's phases may add up past its seconds before it is flagged: a share of them, and seconds besides
+# (lib/src/phases.rs's TOLERANCE_SHARE and TOLERANCE_SECONDS). A flagged run is left out of the phase tables, never
+# scaled to fit.
+PHASE_TOLERANCE = (0.01, 0.005)
 # The configuration both engines are given: the same harness, bounds, models and deadline.
 UNWIND = 16
 MAX_ARRAY_LENGTH = 8
@@ -227,6 +231,9 @@ def stats_of(data):
     runs = search.get("runs") or []
     if runs:
         keep["runs"] = [{k: r.get(k) for k in ("checker", "purpose", "stage", "seconds", "ending", "phases", "formula")} for r in runs]
+        for kept, r in zip(keep["runs"], runs):
+            if r.get("phases_excess"):
+                kept["phasesExcess"] = r["phases_excess"]
     return keep
 
 
@@ -249,6 +256,18 @@ def phases_of(data, seconds):
         out[k] += check.get(k, 0.0)
     out["driver"] = max(seconds - sum(out.values()), 0.0)
     return {k: round(v, 3) for k, v in out.items()}
+
+
+def phases_excess(data, phases, seconds):
+    """The seconds by which a run's phases add up past its time, beyond PHASE_TOLERANCE: its checker runs' own
+    excess (`phases_excess`, flagged by lib/src/phases.rs), or its phases short of `driver` past the process's
+    seconds. None when they fit."""
+    runs = sum(r.get("phases_excess") or 0.0 for r in ((data or {}).get("search") or {}).get("runs") or [])
+    over = sum(v for k, v in phases.items() if k != "driver") - seconds
+    if over <= PHASE_TOLERANCE[0] * seconds + PHASE_TOLERANCE[1]:
+        over = 0.0
+    worst = max(runs, over)
+    return round(worst, 3) if worst > 0 else None
 
 
 def formula_of(data):
@@ -402,6 +421,9 @@ def run(options):
                 record["witness"] = witness_arguments(data) if record["verdict"] == "violation" else None
                 record["solver"] = stats_of(data)
                 record["phases"] = phases_of(data, measured["seconds"])
+                excess = phases_excess(data, record["phases"], measured["seconds"])
+                if excess:
+                    record["phasesExcess"] = excess
                 record["formula"] = formula_of(data)
                 runs.append(record)
                 if not options.quiet:
@@ -485,7 +507,7 @@ def by_phase(results, mode="strict", groups=(1, 2, 3), key="workload"):
     for name in sorted({c[key] if key in c else c["id"] for c in results["cases"] if c["group"] in groups}):
         for engine in results["settings"]["engines"]:
             rs = [r for r in results["runs"] if cases[r["case"]]["group"] in groups and (cases[r["case"]].get(key) or cases[r["case"]]["id"]) == name
-                  and r["engine"] == engine and r["mode"] == mode and r.get("phases")]
+                  and r["engine"] == engine and r["mode"] == mode and r.get("phases") and not r.get("phasesExcess")]
             if not rs:
                 continue
             total = sum(r["seconds"] for r in rs)
@@ -558,6 +580,11 @@ def render(results):
         if recorded:
             out += ["", "### The recorded examples", ""]
             out += phase_table(recorded, "id")
+        flagged = [r for r in results["runs"] if r["mode"] == "strict" and r.get("phasesExcess")]
+        if flagged:
+            out += ["", f"Left out of these tables, because their phases add up to more than their time (beyond "
+                        f"{round(100 * PHASE_TOLERANCE[0])}% and {round(1000 * PHASE_TOLERANCE[1])} ms): "
+                        + ", ".join(f"`{r['case']}` on {r['engine']} (by {r['phasesExcess']} s)" for r in flagged) + "."]
     runs = {(r["case"], r["engine"], r["mode"]): r for r in results["runs"]}
     columns = [(e, m) for e in s["engines"] for m in s["modes"]]
     header = "| case | expected | the JVM | " + " | ".join(f"{e} {m}" for e, m in columns) + " |"

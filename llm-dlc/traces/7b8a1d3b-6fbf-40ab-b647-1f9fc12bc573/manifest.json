@@ -1,0 +1,98 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+  "status": "open",
+  "title": "Feature loop run review actions",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>As",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-06T19:15:04.048Z",
+  "ended": "2026-11-06T19:30:26.199Z",
+  "duration_seconds": 922,
+  "stats": {
+    "turns": 8,
+    "api_calls": 57,
+    "tool_calls": 56,
+    "tool_errors": 1,
+    "compactions": 1,
+    "peak_context_tokens": 150324,
+    "usage": {
+      "input_tokens": 112,
+      "output_tokens": 47388,
+      "cache_read_input_tokens": 5687358,
+      "cache_creation_input_tokens": 158320
+    }
+  },
+  "tools": {
+    "Bash": 54,
+    "Edit": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "lib/tests/fixtures/jbmc-phases/README.md",
+    "llm-dlc/loops/engine-priorities-jbmc.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T19:15:04.048Z",
+      "ended": "2026-11-06T19:15:04.050Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-06T19:15:02.173Z",
+      "ended": "2026-11-06T19:30:26.199Z",
+      "turns": 8,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 112,
+        "output_tokens": 47388,
+        "cache_read_input_tokens": 5687358,
+        "cache_creation_input_tokens": 158320
+      },
+      "peak_context_tokens": 150324
+    }
+  ],
+  "log": {
+    "sha256": "fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9",
+    "bytes": 1313989,
+    "lines": 559,
+    "gzip_bytes": 233050,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "snprkxtxpqkttkpulqpoxklyytqqvssp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC's phases are exclusive: post-processing counted once, overcounts flagged (verification pending)",
+      "body": "Phase 1a of engine-priorities.md, in the jbmc stream. CBMC 6.11.0's 'Runtime Solver' times a whole solver call, including the 'Runtime Post-process' reported from inside it. lib/src/phases.rs counted both, so JBMC's phases added up past the run, for example 22.0 s of phases in 15.9 s on held/reverse in job 20261106-102624. It now reads the timers per solver call. Post-processing counts as encoding, and the rest of the call as solving. A call that never reached the SAT solver (out of memory while post-processing) counts entirely as encoding. A run cut off mid-call still gives the rest of its time to the phase it was in.\n\nPhases::excess flags a run whose named phases add up past its seconds by more than 1% plus 5 ms. The excess is recorded as phases_excess on each checker run, never scaled to fit. lib/benchmark/run.py carries it as phasesExcess and leaves such runs out of the 'Where the time goes' tables, naming them below. The recorded RESULTS.md (job -102624) stands as written, and its README now says its JBMC shares overcount.\n\nVerified against real JBMC 6.11.0 output captured on cvm, kept as fixtures in lib/tests/fixtures/jbmc-phases/ (README says how each was made): held/prefix-sums proved, the same cut off by a 1.9 s budget, held/reverse out of memory at 700 MiB, and a run with two solver calls. The tests check each phase against JBMC's own Runtime figures, that the phases add up to the run, and that the old double count is flagged. The Rust lib (150), integration (63) and skill tests pass, as do lib/benchmark/test_run.py's 19. conformance.rs's the_corpus_agrees_with_the_jvm_on_the_tools_own_checker fails on cvm with 12 disagreements. Its messages point to the contract library's records being for JDK 25.0.4.1 while cvm has 25.0.5, not to this change; this is recorded under Progress for the reconcile loop.\n\nJob 20261106-192959 fetches CBMC's source at the cbmc-6.11.0 tag (a network fetch, inside the job) and checks that the timers nest as the fixtures show.",
+      "log_sha256": "fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9"
+    }
+  ],
+  "logs": {
+    "fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9": {
+      "bytes": 1313989,
+      "lines": 559,
+      "gzip_bytes": 233050,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

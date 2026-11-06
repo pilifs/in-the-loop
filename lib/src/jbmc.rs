@@ -392,7 +392,7 @@ pub fn parse_json(output: &str, class: &str, function: &str, unwind: u32, stage:
 
 /// The elements of the JSON array JBMC prints, up to the first that does not parse (a run cut off, or text from
 /// standard error in between).
-fn json_items(output: &str) -> Vec<serde_json::Value> {
+pub(crate) fn json_items(output: &str) -> Vec<serde_json::Value> {
     let Some(start) = output.lines().scan(0, |at, line| { let here = *at; *at += line.len() + 1; Some((here, line)) }).find(|(_, l)| l.trim_start().starts_with('[')).map(|(at, l)| at + l.find('[').unwrap_or(0)) else {
         return Vec::new();
     };

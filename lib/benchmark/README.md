@@ -80,21 +80,28 @@ and the size of the formula it solved:
 | `lowering` | decoding methods | the GOTO program and its passes, to `Starting Bounded Model Checking` |
 | `symbolic` | exploring the paths, gates evaluated in path models included | `Runtime Symex` and `Runtime Postprocess Equation` |
 | `encoding` | building circuits, as the paths are explored; one operation in 64 is timed, since a clock read costs about 0.3 µs on WSL2 | `Runtime Convert SSA` and `Runtime Post-process` |
-| `solving` | CaDiCaL's calls | `Runtime Solver` |
+| `solving` | CaDiCaL's calls | `Runtime Solver`, less the `Runtime Post-process` timed inside it |
 | `trace` | reading the witness out of a model | `Building error trace` to the next message |
 | `checker-other` | nothing | the rest of the run: starting, printing |
 
-JBMC's times come from its own `Runtime` lines and from the times of its messages (`--timestamp monotonic`). A run
-cut off by its deadline or its memory gives the rest of its time to the phase it was in, so a timeout says where it
-was spent. Around the runs, the driver's steps are timed too: `gaps` (the gap scan under advised, JBMC's preflight of
+JBMC's times come from its own `Runtime` lines and from the times of its messages (`--timestamp monotonic`), read
+per solver call: `Runtime Solver` times the whole call, post-processing included, so that is counted under
+`encoding` alone, and a call that ran out of memory before CaDiCaL started is all `encoding`. A run cut off by its
+deadline or its memory gives the rest of its time to the phase it was in, so a timeout says where it was spent.
+The phases are exclusive: a checker run's named phases may add up past its seconds by 1% and 5 ms at most (rounding,
+and two clocks), and a run past that carries `phases_excess` instead of being scaled to fit. Real JBMC 6.11.0 runs in
+[`../tests/fixtures/jbmc-phases/`](../tests/fixtures/jbmc-phases/README.md) show each case. Around the runs, the driver's steps are timed too: `gaps` (the gap scan under advised, JBMC's preflight of
 its goto program), `contracts`, `replay` (the interpreter, shrinking), `jvm` (a witness run on a JVM), `harness`,
 `setup` (the JDK's classes and the models written to the work directory), and `driver`, the rest of the process.
 
 `RESULTS.md` has a table per workload and engine, under strict, over every run, decided or not: the share of each
 phase, the phase that dominates, and the largest formula. Group 4 has a table of its own, since one of its runs
-outweighs a whole workload of the corpus. Its JBMC shares overcount until
-[`engine-priorities.md`](../../llm-dlc/loops/engine-priorities.md) step 1a: `Runtime Post-process` is timed inside
-`Runtime Solver` and counted in both `encoding` and `solving`.
+outweighs a whole workload of the corpus. A run whose phases add up past its time (`phasesExcess`: a checker run's
+`phases_excess`, or the run's phases past the process's seconds by more than the same tolerance) is left out of
+these tables and named under them. The JBMC shares in the current `RESULTS.md`, job `20261106-102624`'s, overcount:
+they were recorded before [`engine-priorities.md`](../../llm-dlc/loops/engine-priorities.md) step 1a, when
+`Runtime Post-process` was counted in both `encoding` and `solving`. They stand as recorded until the next benchmark
+job regenerates the page.
 
 ## Running it
 

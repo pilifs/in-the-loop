@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-192959-cbmc-6-11-0-s-source-times-runtime-post",
+  "title": "CBMC 6.11.0's source times Runtime Post-process inside Runtime Solver",
+  "description": "Network fetch: downloads two source files of CBMC at the tag cbmc-6.11.0 from raw.githubusercontent.com (goto-checker/bmc_util.cpp and solvers/prop/prop_conv_solver.cpp) and prints the code that times JBMC's solver calls. Phase 1a of llm-dlc/loops/engine-priorities.md reads JBMC's phases per solver call, on the claim that run_property_decider's 'Runtime Solver' times the whole call, and that prop_conv_solvert::dec_solve, inside it, runs finish_eager_conversion and reports it as 'Runtime Post-process'. lib/src/phases.rs now counts the post-processing under encoding alone and the rest of the call under solving. Real JBMC 6.11.0 runs (lib/tests/fixtures/jbmc-phases/) already show the nesting from their message times; the brief asks for the source to be checked too, and agents fetch from the network only inside a job.",
+  "kind": "other",
+  "capabilities": [
+    "jbmc"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/phases.rs",
+      "lib/tests/fixtures/jbmc-phases/README.md"
+    ]
+  },
+  "expected": "Both files download; bmc_util.cpp's run_property_decider takes the time around property_decider.solve() and prints it as 'Runtime Solver'; prop_conv_solver.cpp's dec_solve calls finish_eager_conversion() and prints its time as 'Runtime Post-process' before calling the SAT solver. The step exits 0 when all three strings are found.",
+  "submitted": {
+    "at": "2026-11-06T19:29:59+00:00",
+    "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+    "by": "claude"
+  },
+  "requires": [
+    "curl"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "100M",
+    "duration": "1m",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "fetch and show CBMC 6.11.0's solver timers",
+      "run": "set -euo pipefail; base=https://raw.githubusercontent.com/diffblue/cbmc/cbmc-6.11.0/src; d=$(mktemp -d); curl -fsSL \"$base/goto-checker/bmc_util.cpp\" -o \"$d/bmc_util.cpp\"; curl -fsSL \"$base/solvers/prop/prop_conv_solver.cpp\" -o \"$d/prop_conv_solver.cpp\"; sha256sum \"$d\"/*.cpp; echo \"== bmc_util.cpp: run_property_decider\"; grep -n -A45 \"^decision_proceduret::resultt run_property_decider\" \"$d/bmc_util.cpp\" | head -70; echo \"== prop_conv_solver.cpp: dec_solve\"; grep -n -A40 \"prop_conv_solvert::dec_solve\" \"$d/prop_conv_solver.cpp\" | head -60; grep -q \"Runtime Solver\" \"$d/bmc_util.cpp\"; grep -q \"Runtime Post-process\" \"$d/prop_conv_solver.cpp\"; grep -q \"finish_eager_conversion\" \"$d/prop_conv_solver.cpp\"; rm -rf \"$d\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

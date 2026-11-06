@@ -137,6 +137,10 @@ pub struct Run {
     /// Where its time went, phase by phase, and its formula's size: `phases` and `formula` ([`crate::phases`]).
     #[serde(flatten)]
     pub profile: crate::phases::Profile,
+    /// The seconds by which the run's phases add up past `seconds`, beyond the tolerance ([`crate::phases::Phases::excess`]):
+    /// a run whose phases cannot be trusted, flagged rather than scaled to fit. Absent when they fit.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phases_excess: Option<f64>,
 }
 
 impl Run {
@@ -156,6 +160,7 @@ impl Run {
             ended: ended.into(),
             ending: result.ending,
             profile: result.profile.clone(),
+            phases_excess: result.profile.phases.as_ref().and_then(|p| p.excess(result.seconds)),
         }
     }
 }

@@ -165,6 +165,15 @@ class PhasesTest(unittest.TestCase):
         self.assertEqual(run.formula_of(self.data), {"steps": 116, "conditions": 1, "variables": 1804, "clauses": 9000})
         nothing = run.phases_of(None, 2.0)
         self.assertEqual((nothing["driver"], nothing["solving"]), (2.0, 0.0))
+        self.assertIsNone(run.phases_excess(self.data, p, 1.0))
+
+    def test_phases_past_their_time_are_flagged_not_scaled(self):
+        flagged = {"search": {"runs": [{**self.data["search"]["runs"][0], "phases_excess": 0.4}]}}
+        self.assertEqual(run.phases_excess(flagged, run.phases_of(flagged, 1.0), 1.0), 0.4, "a checker run's own flag")
+        self.assertEqual(run.stats_of(flagged)["runs"][0]["phasesExcess"], 0.4)
+        p = run.phases_of(self.data, 0.3)
+        self.assertEqual(run.phases_excess(self.data, p, 0.3), 0.08, "0.38 s of phases in a 0.3 s run")
+        self.assertIsNone(run.phases_excess(self.data, p, 0.375), "within 1% and 5 ms")
 
     def test_the_table_names_the_dominant_phase_per_workload_and_engine(self):
         results = results_with_phases()
@@ -179,6 +188,16 @@ class PhasesTest(unittest.TestCase):
         self.assertIn("**solving** 90%", page)
         self.assertIn("### The recorded examples", page)
         self.assertIn("| example/142 | native | 1 | 7.0 |", page)
+        self.assertNotIn("Left out of these tables", page)
+
+    def test_a_run_whose_phases_add_up_past_its_time_is_left_out_of_the_table_and_named(self):
+        results = results_with_phases()
+        by = {(x["case"], x["engine"], x["mode"]): x for x in results["runs"]}
+        by[("real/b", "jbmc", "strict")]["phasesExcess"] = 6.1
+        rows = {(r["workload"], r["engine"]): r for r in run.by_phase(results)}
+        self.assertNotIn(("div-rem", "jbmc"), rows)
+        self.assertIn("Left out of these tables, because their phases add up to more than their time (beyond 1% and 5 ms): "
+                      "`real/b` on jbmc (by 6.1 s).", run.render(results))
 
 
 def results_with_phases():
