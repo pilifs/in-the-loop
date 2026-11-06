@@ -31,7 +31,7 @@ It copies the two skills into `~/.claude/skills/`, builds and installs `jvmcontr
 | Tool | For | Without it |
 |---|---|---|
 | a JDK (`javac`) | compiling the pull request | nothing works |
-| [JBMC](https://github.com/diffblue/cbmc) (`jbmc`) | regression and property proofs | behavioural contracts and the module-level diffs still run |
+| [JBMC](https://github.com/diffblue/cbmc) (`jbmc`) | the regression and property proofs jvmcontract's own checker hands on (floating point, say) | the own checker's proofs, behavioural contracts and the module-level diffs still run |
 | [`gh`](https://cli.github.com), logged in | reading the pull request | nothing works |
 | `mvn` or `gradle` | projects without a wrapper | projects with `mvnw`/`gradlew` build anyway |
 | `jq` | reading the pull request's metadata | the fetch script fails |
@@ -62,7 +62,7 @@ What happens, in order (the skill says so as it goes):
 1. **Fetch**: `gh` reads the pull request; the commit the branch left the base at and the head commit are checked out side by side.
 2. **Scope**: the changed `.java` files under main source sets, their module, and every method whose body or signature changed, was added or removed.
 3. **Build** both versions with the project's Maven or Gradle build, same JDK. This runs the pull request's build scripts, as you would when checking out the branch; Claude Code asks for permission first. If the module does not build, the changed files are compiled alone when they depend only on the JDK, and the report says so.
-4. **Prove** each changed method with the proof its shape allows (next section), one at a time, within a memory and time budget.
+4. **Prove** each changed method with the proof its shape allows (next section), one at a time, within a memory and time budget. A proof that reaches a JDK call the tool's own checker does not implement (`new Random(seed).nextInt(bound)`, `Integer.numberOfLeadingZeros`) stops before solving and asks what the call does. The skill writes a contract for it from the JDK's documentation, the tool proves it against the JDK's bytecode or tests it on a real JVM, and a contract the JVM refutes comes back with the inputs it fails on for the skill to correct. The verdict then says what it rests on, `relying on 3 contracts ..., 1 proved, 2 tested`, and nothing rests on a contract nobody checked (`--max-trust 0`). Contracts it wrote that held are offered for the tool's built-in library.
 5. **Diff** the module's capability contract (what its bytecode can reach: clock, network, reflection, class loading, ...) and its public API contract, before and after. A new capability is the headline of the report whatever the pull request says it is about.
 6. **Report**: a verdict table, each finding with its witness and the exact command, what was not covered and why, and how to reproduce it. The working directory with every harness and JBMC log is left in place.
 

@@ -941,6 +941,63 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     advice, writes contracts, runs again, reports the evidence levels, and offers a contract worth keeping to the
     library (`gap-contracts --record`). After it, the candidate: run a witness found through contracts on a JVM, so
     that 148's off-by-one becomes a violation.
+- **3e, the agent's side: the skill's loop (2026-11-06).**
+  - The `verify-bytecode` skill ([`SKILL.md`](../../plugins/jvmcontract/skills/verify-bytecode/SKILL.md)) runs
+    every regression and property proof with `$GAPS`, which is `--engine auto --gaps advised --max-trust 0`
+    (open questions 6 and 7).
+  - **A new step, 4a, "Close the gaps with contracts".** A proof that ends `gaps-need-contracts` has decided
+    nothing. The agent:
+    - copies the template's blocks into one `$WORK/gaps.contracts` for the whole pull request (checked: a block for
+      a gap that a proof does not reach is ignored);
+    - fills each block in from the JDK's Javadoc, and `javap -c` when the Javadoc is silent. It states every
+      exception of the call, not only the ones this call site reaches, and never writes a contract to make a proof
+      pass;
+    - runs again with `--contracts`. It corrects a contract the JVM refutes from the counterexamples, and never
+      weakens the property;
+    - stops after three rounds on one gap, or at once on a trusted contract under `--max-trust 0`, and reports the
+      gap as open.
+  - A violation that goes through contracts and that the tool could not replay is reported as unconfirmed.
+  - **The report** ([`report-template.md`](../../plugins/jvmcontract/skills/verify-bytecode/report-template.md))
+    gains a section, "Contracts for JDK calls". It gives each contract with its level (proved, tested or trusted),
+    the contracts refuted on the way and how they were corrected, and the gaps left open. A table row shows
+    `relying on 3 contracts for JDK calls: 1 proved, 2 tested`.
+  - **Offering contracts to the library.** A contract the agent wrote that was proved or tested, and that the
+    library lacks, goes into `$WORK/library/<class>.contracts`. It is checked with `gap-contracts --dir ... --record`,
+    and the report offers it for `lib/models/contracts/` by a pull request, which the skill never opens itself.
+  - [`reference.md`](../../plugins/jvmcontract/skills/verify-bytecode/reference.md) gains:
+    - `--max-trust`, `--no-contract-library` and `gap-contracts`;
+    - the library's contents, and the precedence of the agent's contracts;
+    - that `prove --json` is a list.
+  - The plugin README's step 4 describes the loop. JBMC is now needed only for what the own checker hands on. The
+    plugin and marketplace versions go to 0.3.0.
+  - **Checked by running the loop as the skill writes it**, on 148's kernel (`Jitter#fullJitterMillis`, compiled
+    alone), with the skill's commands:
+    - Under `$GAPS --no-contract-library` the run asks for three contracts, with nothing solved.
+    - An agent's `nextInt` contract with no exception is refused at `bound=0` (84 of 166 inputs), and its gap goes
+      back with the counterexamples in the advice.
+    - Corrected, the proof is `relying on 3 contracts ..., 1 proved, 2 tested` (0.2 s).
+    - With the library on and no file, it gives the same verdict on records.
+    - A `BitSet(int)` contract offered in a project directory: `gap-contracts --dir` exits 1 with no record, 0
+      after `--record`, and 0 again on its record.
+    - With no JBMC, a floating-point proof under auto ends `jbmc is not installed`, as the preflight now says.
+  - **A new test, [`lib/tests/skill.rs`](../../lib/tests/skill.rs).** Every `jvmcontract` command that the skill's
+    files name in code, and every option on it, including `$GAPS` on both proof commands, must be one the CLI's
+    `--help` lists. It checks 57 options. A misspelt `--max-trust` in `$GAPS`, or `--work`, fails it. All Rust tests
+    pass.
+  - 3e's acceptance example is 148 (pending job `20261106-053555-example-148-...`), as 3d recorded. No page changed,
+    and no job was needed.
+  - **Phase 3 meets its Done-when criterion**, once the 147–149 jobs come back:
+    - an agent closes a gap with a contract the tool proves or tests;
+    - a wrong contract is rejected with a counterexample;
+    - accepted contracts are reused from the library;
+    - 147–149 show it end to end.
+  - Not done:
+    - The skill cannot keep a project's own library across pull requests: there is still no `--contract-library DIR`.
+    - The landing page at terminalvalue.net still describes the JBMC-only skill. Deploying it is the user's call.
+  - Next: run a witness found through contracts on a JVM. An input the interpreter cannot replay (148's off-by-one,
+    `nextInt` given a negative ceiling) would then become a violation when the JVM reproduces it, and stays no
+    verdict when it doesn't. That is the advised mode's last open hole. Then Phase 4, starting with 4a's stages and
+    deadline.
 
 ## Loop settings
 
