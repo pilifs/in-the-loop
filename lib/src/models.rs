@@ -30,13 +30,22 @@ pub struct Model {
     pub source: &'static str,
     /// What the model is for, in a sentence.
     pub note: &'static str,
+    /// Only on JBMC's class path: the interpreter and the tool's own checker keep their own handling of the class
+    /// ([`ClassPath::model`](crate::classpath::ClassPath::model) does not give it). The interpreter's natives for
+    /// these behave as the model does, which the conformance corpus checks against a JVM; they are kept because
+    /// the state they stand for (an enum's name and ordinal, an immutable list's elements) is part of every object
+    /// the interpreter allocates.
+    pub jbmc_only: bool,
     #[serde(skip)]
     pub bytes: &'static [u8],
 }
 
 macro_rules! model {
     ($name:literal, $source:literal, $class:literal, $note:literal) => {
-        Model { name: $name, source: $source, note: $note, bytes: include_bytes!(concat!("../models/classes/", $class)) }
+        Model { name: $name, source: $source, note: $note, jbmc_only: false, bytes: include_bytes!(concat!("../models/classes/", $class)) }
+    };
+    (jbmc $name:literal, $source:literal, $class:literal, $note:literal) => {
+        Model { name: $name, source: $source, note: $note, jbmc_only: true, bytes: include_bytes!(concat!("../models/classes/", $class)) }
     };
 }
 
@@ -52,9 +61,16 @@ pub const MODELS: &[Model] = &[
     model!("java/nio/charset/StandardCharsets$Standard", "java/nio/charset/StandardCharsets.java", "java/nio/charset/StandardCharsets$Standard.class", "the class of the six standard charsets"),
     model!("java/nio/charset/IllegalCharsetNameException", "java/nio/charset/IllegalCharsetNameException.java", "java/nio/charset/IllegalCharsetNameException.class", "the exception Charset.forName throws for a null name"),
     model!("java/nio/charset/UnsupportedCharsetException", "java/nio/charset/UnsupportedCharsetException.java", "java/nio/charset/UnsupportedCharsetException.class", "the exception Charset.forName throws for a name that is none of the six"),
+    model!(jbmc "java/lang/Enum", "java/lang/Enum.java", "java/lang/Enum.class", "an enum constant's name and ordinal, set by Enum.<init>(String, int) and read by name, ordinal and toString; equals by identity; JBMC only"),
+    model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
+    model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
+    model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
+    model!(jbmc "java/util/ImmutableCollections$ListItr", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListItr.class", "the immutable lists' iterator: NoSuchElementException past the end, UnsupportedOperationException on remove; JBMC only"),
+    model!(jbmc "java/util/ImmutableCollections$List12", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$List12.class", "an immutable list of one or two elements, as the JDK's; JBMC only"),
+    model!(jbmc "java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$ListN.class", "an immutable list of none or three or more elements over an array of its own, as the JDK's; JBMC only"),
 ];
 
-/// The model of a class, by internal name.
+/// The model of a class, by internal name, whichever engines run it.
 pub fn find(name: &str) -> Option<&'static Model> {
     MODELS.iter().find(|m| m.name == name)
 }
@@ -129,7 +145,7 @@ mod tests {
         }
         let models = Path::new(env!("CARGO_MANIFEST_DIR")).join("models");
         let out = tempfile::tempdir().unwrap();
-        for package in ["lang", "nio/charset"] {
+        for package in ["lang", "nio/charset", "util"] {
             let sources: Vec<_> = std::fs::read_dir(models.join("java").join(package)).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
             let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g", "-d"]).arg(out.path()).args(&sources).status().unwrap();
             assert!(status.success(), "the models compile");

@@ -86,6 +86,8 @@ impl Case {
 
 const MIN: &str = "-2147483648";
 const IAE: &str = "throws java.lang.IllegalArgumentException";
+const NPE: &str = "throws java.lang.NullPointerException";
+const UOE: &str = "throws java.lang.UnsupportedOperationException";
 
 /// The corpus. A claim's native verdict is what the engine gives today; `U` on a claim the JVM refutes is a gap or
 /// a construct refused by name, which is the correct answer under strict.
@@ -119,6 +121,29 @@ fn corpus() -> Vec<Case> {
         Case::new("defaults", &[("3", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 34", &[], X),
         Case::new("fatal", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
+        // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): the calls lib/models models for
+        // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them.
+        Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], U).refuted(None, "result < 20", &[], U),
+        Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
+            .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], U)
+            .refuted(None, "result >= 10", &[], U),
+        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], U).refuted(None, "result == 5", &[], U),
+        Case::new("listChange", &[("0", "returns 1"), ("1", UOE), ("2", UOE), ("3", UOE), ("4", UOE), ("5", UOE), ("6", UOE), ("7", UOE), ("8", "returns 1"), ("10", "returns 3"), ("13", UOE), ("-1", "returns 1")])
+            .holds(Some("n == 0 || n == 8"), "result == 1", &[], U)
+            .refuted(None, "result >= 1", &[], U),
+        Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], U).refuted(None, "result == 1", &[], U),
+        Case::new("listCopyMutable", &[("0", "returns 1"), ("1", "returns 10"), ("2", NPE), ("9", NPE)])
+            .holds(Some("n <= 0"), "result == 1", &[], U)
+            .refuted(None, "result <= 10", &[], U),
+        Case::new("listGet", &[("0", "returns 1"), ("1", "throws java.lang.IndexOutOfBoundsException"), ("-1", "throws java.lang.IndexOutOfBoundsException"), ("10", "returns 2"), ("12", "returns 1"), ("13", "throws java.lang.ArrayIndexOutOfBoundsException"), ("20", "throws java.lang.ArrayIndexOutOfBoundsException")])
+            .holds(Some("n == 0 || n == 12"), "result == 1", &[], U)
+            .refuted(None, "result >= 1", &[], U),
+        Case::new("listSearch", &[("0", NPE), ("2", "returns -1089"), ("5", "returns 90"), ("7", "returns -1110")])
+            .holds(Some("n == 5"), "result == 90", &[], U)
+            .refuted(None, "result < 0", &[], U),
+        Case::new("listEquals", &[("2", "returns 11"), ("3", "returns 0")]).holds(Some("n != 2"), "result == 0", &[], U).refuted(None, "result == 0", &[], U),
+        Case::new("listIterate", &[("0", "returns 6"), ("1", "throws java.util.NoSuchElementException")]).holds(Some("n <= 0"), "result == 6", &[], U).refuted(None, "result == 6", &[], U),
+        Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], U).refuted(None, "result == 111", &[], U),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X),
@@ -623,6 +648,49 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
 fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
     let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false, Contracts::None), (Engine::Native, GapMode::Assume, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::File), (Engine::Native, GapMode::Advised, false, Contracts::Library)], true) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
+}
+
+/// The cases whose calls go through the models of `lib/models` that only JBMC runs (`Model::jbmc_only`:
+/// `java.lang.Enum`, the factories of `java.util.List` and the immutable lists they return).
+const ON_THE_MODELS: &[&str] = &["enumState", "listSizes", "listNull", "listChange", "listCopySame", "listCopyMutable", "listGet", "listSearch", "listEquals", "listIterate", "listOfArray"];
+
+/// The models only JBMC runs, run on a JVM. The interpreter keeps its own natives for these classes, so the corpus
+/// above checks those natives, and this test checks the models themselves: relocated out of `java.*` (a JVM loads
+/// no class of its own there), with the corpus's references to them following, the calls of [`ON_THE_MODELS`] give
+/// the outcomes they give on the JDK's own classes.
+#[test]
+fn the_models_only_jbmc_runs_agree_with_the_jvm() {
+    let Some(compiled) = compile() else { return };
+    let own: std::collections::BTreeSet<String> = jvmcontract::models::MODELS.iter().filter(|m| m.jbmc_only).map(|m| m.name.to_string()).collect();
+    assert!(own.contains("java/lang/Enum") && own.contains("java/util/List"), "{own:?}");
+    let relocated = target_tmp().join("conformance-on-the-models");
+    let _ = std::fs::remove_dir_all(&relocated);
+    let mut renamed = 0;
+    for entry in std::fs::read_dir(compiled.classes.join("conformance")).unwrap() {
+        let path = entry.unwrap().path();
+        let bytes = std::fs::read(&path).unwrap();
+        let out = jvmcontract::relocate::class_file(&bytes, &own, "model").unwrap();
+        renamed += usize::from(out != bytes);
+        let target = relocated.join("conformance").join(path.file_name().unwrap());
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        std::fs::write(target, out).unwrap();
+    }
+    assert!(renamed >= 2, "the corpus and its enum refer to the models");
+    for model in jvmcontract::models::MODELS.iter().filter(|m| m.jbmc_only) {
+        let target = relocated.join("model").join(format!("{}.class", model.name));
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        std::fs::write(target, jvmcontract::relocate::class_file(model.bytes, &own, "model").unwrap()).unwrap();
+    }
+    let corpus = corpus();
+    let mut lines = Vec::new();
+    for name in ON_THE_MODELS {
+        let case = corpus.iter().find(|c| c.method == *name).unwrap_or_else(|| panic!("{name} is not in the corpus"));
+        lines.extend(case.calls.iter().map(|(arguments, _)| format!("call\t{CLASS}#{name}\t{arguments}")));
+    }
+    let on_the_jdk = on_the_jvm(&compiled, &lines, "on-the-jdk");
+    let on_the_models = on_the_jvm(&Compiled { classes: relocated, runner: compiled.runner.clone() }, &lines, "on-the-models");
+    let differences: Vec<String> = lines.iter().zip(on_the_jdk.iter().zip(&on_the_models)).filter(|(_, (a, b))| a != b).map(|(line, (a, b))| format!("{}: the JDK's classes: {a}; the models: {b}", line.replace('\t', " "))).collect();
+    assert!(differences.is_empty(), "{} calls differ on the models:\n{}", differences.len(), differences.join("\n"));
 }
 
 /// The benchmark corpus of step 5a (`lib/benchmark/`) takes its first group from this corpus, as

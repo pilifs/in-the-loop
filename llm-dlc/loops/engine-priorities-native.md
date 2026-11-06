@@ -82,7 +82,10 @@ are yours, but say under Progress which JBMC results they may change.
   - **Resubmitted** as job `20261106-194049-bitwuzla-0-8-2-built-from-source-cadical`. It brings back
     `lib/solvers/bitwuzla/build.json`: the commit, the tarball digest, the CaDiCaL it links, smoke answers and the C
     API version. It fetches from the network, and says so. The runner is x86_64, not the ARM64 the brief names.
-    Phase 6c waits on this job.
+  - **Passed** (job `-194049`, 24.7 s, peak 1.9 GiB). Bitwuzla 0.8.2, commit `61bdc637`, tarball sha256 `637ed0b8…`,
+    installed in `~/tools/bitwuzla/bitwuzla-0.8.2`. The C API reports 0.8.2. It links CaDiCaL 2.1.2 static (and
+    SymFPU), with GMP 6.3.0 from the system, built by GCC 15.2.0 with meson 1.12.1 and ninja 1.13.2. The smoke answers
+    are sat, unsat, unsat. The record reaches this branch at the merge, with the job's outputs. Phase 6c can use it.
 - **4b, counted** (static, inline, JDK 25.0.5).
   - **The tool.** `jvmcontract gaps` now gives each `class-initializer` gap's `<clinit>` a shape (`initializer_shape` in
     `lib/src/bmc/gaps.rs`), read from the initializer's bytecode and the application methods it calls. The shapes are
@@ -176,9 +179,85 @@ are yours, but say under Progress which JBMC results they may change.
     `JVMCONTRACT_BLESS=1 cargo test --test conformance the_benchmark_takes_its_first_group_from_this_corpus`: 16
     new claims, and `nativeStrict` for boom, inherited and quiet. All other tests pass: unit (145), integration (64),
     skill.
-- **Next: Phase 5, step 2**: the `Enum.<init>(String, int)`, `List.of` and `List.copyOf` models in `lib/models`, with
-  conformance cases checked on the JVM. Then queue the strict rerun of 071 and 013, together with the library's
-  `gap-contracts --record` on 25.0.5. After that, enums in the own checker: arrays of references for `$VALUES`.
+- **5, step 2: the `Enum.<init>`, `List.of` and `List.copyOf` models** (inline; JVM 25.0.5; JBMC's side queued).
+  - **The models**, in `lib/models`, for JBMC's class path only:
+    - `java/lang/Enum.java`: the `name` and `ordinal` fields, set exactly by `Enum(String, int)`; `name()`,
+      `ordinal()`, `toString()` and `equals` (identity). `compareTo`, `hashCode`, `getDeclaringClass` and
+      `valueOf(Class, String)` are left out, so they stay JBMC's stubs and are named as gaps.
+    - `java/util/List.java`: `of` (every arity, and varargs) and `copyOf`, as the JDK 25 source does them, plus the
+      list methods the model lists define, declared abstract.
+    - `java/util/ImmutableCollections.java`: the JDK's `List12` (one or two elements), `ListN` (none, or three or
+      more, over an array of its own) and the one `EMPTY_LIST`. As in the JDK:
+      - a `null` element throws NPE when the list is made, and so does a search for `null`;
+      - every change throws UOE, the iterator's `remove` included;
+      - `get` out of range throws IOOBE from a `List12` and AIOOBE from a `ListN`;
+      - `copyOf` of one of them returns the list itself.
+
+      The model calls no JDK method, not even `Objects.requireNonNull`, and builds no exception message (JDK messages
+      are concatenations, and JBMC stubs `StringBuilder`).
+    - The two `java.util` files carry the OpenJDK header (GPL v2 with the Classpath exception), since they follow
+      OpenJDK's code.
+  - **Why JBMC only.** `Model::jbmc_only` is new: `ClassPath::model` doesn't give such a model to the interpreter or
+    to the own checker. The interpreter's natives already implement these classes, and an enum's state and a list's
+    elements are part of every object it allocates. The own checker still refuses what it refused: enums through
+    `$VALUES` (an array of references) and the varargs array of `List.of`. Using the `Enum` model in the own checker
+    belongs to the next step, enums.
+  - **Conformance, checked on the JVM.** 11 new cases and 22 claims: `enumState`, `listSizes`, `listNull`,
+    `listChange`, `listCopySame`, `listCopyMutable`, `listGet`, `listSearch`, `listEquals`, `listIterate` and
+    `listOfArray`. Their 47 calls all give the outcome recorded for them.
+    - **The interpreter** disagreed with the JVM on 11 of those calls before the fixes, and agrees on all of them
+      now. It still refuses one, `listChange(7)` (`Iterator.remove`), which is a refusal, not a disagreement.
+    - **The own checker** gives `Unverifiable` on all 22 claims in every native mode, at the named gaps.
+    - **The models themselves** are checked by a new test, `the_models_only_jbmc_runs_agree_with_the_jvm`. It moves
+      the models out of `java.*` with `relocate::class_file`, along with the corpus's references to them, and the
+      cases' calls must give the outcomes the JDK's own classes give. They do. A mutated model (`List12.get` throwing
+      AIOOBE) fails it on two calls.
+  - **Interpreter fixes** (`lib/src/interp/`), each a disagreement with the JVM that a case above showed:
+    - `Base::Enum` gains `text`, the string the constructor was given, which `name()` and `toString()` now return,
+      so that `name() == name()`.
+    - The `Machine` keeps the JDK class (`List12` or `ListN`) of each list `List.of` and `copyOf` make
+      (`immutable_list`, `immutable_list_kind`), and one empty list, which is global, as interned literals are.
+      `end_case` drops the entries of the objects it discards.
+    - `get` out of range throws as the JDK class would. `contains`, `indexOf` and `lastIndexOf` of `null` throw NPE.
+    - `copyOf` hands back only a list `List.of` or `copyOf` made. Before, it also handed back a `subList` view
+      unchanged, where the JDK copies it.
+  - **JBMC results the models may change:**
+    - The models are on the class path of every JBMC proof (`equivalence`, `prove`), so the models digest in every
+      statement changes.
+    - A verdict changes only where a proof reaches `java.lang.Enum` or `java.util.List`. Among the recorded examples
+      that is 013 and 071: job `-082917` found that no other recorded JBMC example reaches a JBMC stub.
+    - Beyond those, the conformance corpus's JBMC runs and the benchmark's JBMC cases over the corpus.
+    - A JBMC proof that makes a list some other way (an `ArrayList`, say) still reaches that class's stubs, and under
+      strict that is no verdict, as before.
+    - **Two risks the job will show.** The preflight in `jbmc_gaps.rs` walks JBMC's call graph without following
+      paths. Through JBMC's virtual dispatch it may reach stubs that no path takes:
+      - `Collection.isEmpty` and `toArray`, which `listCopy` calls on a list that isn't one of the model's;
+      - the abstract `List.get`, through the model's own iterator and `equals`.
+      If it does, 071's first two proofs stay no verdict under strict, now on those stubs. The way out would be in
+      `jbmc_gaps.rs` (the JBMC stream's) or a different shape for the model.
+  - **Queued:** job `20261106-203501-examples-071-and-013-under-strict-with-t`. It runs:
+    1. 071 under strict: expected a violation, with obligations 1 and 2 verified with no gap and 3 a violation;
+    2. 013 under strict: expected a violation;
+    3. `gap-contracts --record` over the library on JDK 25.0.5;
+    4. the conformance corpus under JBMC and `--engine auto`, with the log kept.
+
+    The two examples' notes are the reconcile loop's to update, from the job's outputs.
+  - **Shared files changed:**
+    - `lib/src/interp/mod.rs`, `natives.rs` and `value.rs`, as above.
+    - `lib/tests/conformance.rs`: the cases, `NPE`/`UOE`, `ON_THE_MODELS` and the new test.
+    - `lib/tests/conformance/conformance/Conformance.java`: the methods, the `Shade` enum and four imports.
+    - `lib/src/classpath.rs`: `model` skips the JBMC-only models, and its test checks that.
+    - `lib/README.md`: two sentences.
+  - **Also changed:** `lib/src/models.rs` (the field, the macro arm, seven entries, the `util` package in the
+    source test), `lib/models/build.sh` and `lib/models/README.md` (the catalogue, where the models are used, how to
+    add one, and the licence).
+  - **For the reconcile loop:** `lib/benchmark/conformance.json` is now 22 more claims behind the corpus
+    (`JVMCONTRACT_BLESS=1`, as in step 1).
+  - **Tests:** unit (145), integration (64) and skill pass, and so does conformance, apart from its two known
+    failures: the 12 library-record claims, and the benchmark file.
+- **Next:** while the job runs, Phase 6a, transcripts of the own checker's incremental queries. Once it is back,
+  record its result here. After that, enums in the own checker: arrays of references for `$VALUES`, and the `Enum`
+  model run there.
 - Status: working
 
 ## Loop settings

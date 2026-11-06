@@ -504,16 +504,20 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
         _ => {}
     }
     match base {
-        Base::Enum { name: constant, ordinal } => match (name, descriptor) {
+        Base::Enum { name: constant, ordinal, text } => match (name, descriptor) {
             ("<init>", "(Ljava/lang/String;I)V") => {
                 let constant = m.str_of(args[0]).unwrap_or_default();
                 let ordinal = args[1].as_int();
                 if let Object::Instance { base, .. } = m.heap.get_mut(r) {
-                    *base = Base::Enum { name: constant, ordinal };
+                    *base = Base::Enum { name: constant, ordinal, text: args[0].as_ref() };
                 }
                 Ok(None)
             }
-            ("name", _) | ("toString", _) => Ok(Some(m.new_string(constant))),
+            // The very string the constructor was given, as on a JVM.
+            ("name", _) | ("toString", _) => Ok(Some(match text {
+                Some(t) => Value::Ref(t),
+                None => m.new_string(constant),
+            })),
             ("ordinal", _) => Ok(Some(Value::Int(ordinal))),
             // Enum.hashCode is identity-based on a JVM; here it is the name's hash, which is deterministic.
             ("hashCode", _) => Ok(Some(Value::Int(string_hash(&constant)))),
@@ -1047,7 +1051,12 @@ fn compare_values(a: Value, b: Value, t: &Type) -> i32 {
 
 fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool, name: &str, descriptor: &str, args: &[Value]) -> Exec<Option<Value>> {
     let len = elements.len();
+    let made = m.immutable_list_kind(r);
     let out_of_bounds = |m: &mut Machine, i: i32| m.throw("java/lang/IndexOutOfBoundsException", Some(&index_message(i.into(), len)));
+    // A list List.of or copyOf made holds no null, and its searches refuse one, as the JDK's do.
+    if made.is_some() && matches!(name, "contains" | "indexOf" | "lastIndexOf") && args.first() == Some(&Value::Null) {
+        return Err(m.npe());
+    }
     let write = |m: &mut Machine| -> Exec<()> {
         if !mutable {
             return Err(immutable(m));
@@ -1060,7 +1069,12 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
         ("get", _) => {
             let i = args[0].as_int();
             if i < 0 || i as usize >= len {
-                return Err(out_of_bounds(m, i));
+                // The JDK's List12 throws IndexOutOfBoundsException; its ListN indexes its array.
+                return Err(match made {
+                    Some(crate::interp::ImmutableList::List12) => m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("Index: {i} Size: {len}"))),
+                    Some(crate::interp::ImmutableList::ListN) => m.throw("java/lang/ArrayIndexOutOfBoundsException", Some(&index_message(i.into(), len))),
+                    None => out_of_bounds(m, i),
+                });
             }
             Some(elements[i as usize])
         }
@@ -1788,7 +1802,7 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
                 let elements = if descriptor.starts_with("([") { collection_elements(m, a[0])? } else { args.clone() };
                 require_non_null_elements(m, &elements)?;
                 if owner == "java/util/List" {
-                    new_list(m, elements, false)
+                    m.immutable_list(elements)
                 } else {
                     let mut unique = Vec::new();
                     for e in elements {
@@ -1805,12 +1819,11 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
                 let elements = collection_elements(m, a[0])?;
                 require_non_null_elements(m, &elements)?;
                 if owner == "java/util/List" {
-                    if let Some(r) = a[0].as_ref() {
-                        if matches!(m.heap.get(r), Object::Native(Native::List { mutable: false, .. })) {
-                            return Ok(Some(a[0]));
-                        }
+                    // The list itself when List.of or copyOf made it (not a view such as subList's), as the JDK's.
+                    if a[0].as_ref().is_some_and(|r| m.immutable_list_kind(r).is_some()) {
+                        return Ok(Some(a[0]));
                     }
-                    new_list(m, elements, false)
+                    m.immutable_list(elements)
                 } else {
                     let mut unique = Vec::new();
                     for e in elements {

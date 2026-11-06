@@ -1,5 +1,10 @@
 package conformance;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * The conformance corpus of step 1d of llm-dlc/loops/sound-verdicts.md: small methods whose behaviour the JVM
  * decides. lib/tests/conformance.rs states claims about them, runs each claim through the tool's engines, and runs
@@ -118,6 +123,102 @@ public class Conformance {
         int first = 0;
         try { Boom.value(n); } catch (ExceptionInInitializerError e) { first = 1; }
         try { return Boom.value(n); } catch (NoClassDefFoundError e) { return first + 1; }
+    }
+
+    // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): Enum.<init>(String, int),
+    // List.of and List.copyOf, which lib/models models for JBMC, as the JVM runs them.
+
+    enum Shade { DARK, LIGHT, PALE }
+
+    public static int enumState(int n) {
+        Shade s = n == 0 ? Shade.DARK : n == 1 ? Shade.LIGHT : Shade.PALE;
+        return s.ordinal() * 10 + (s.name() == s.name() ? 1 : 0) + (s.toString() == s.name() ? 2 : 0) + (s.equals(Shade.LIGHT) ? 4 : 0);
+    }
+
+    public static int listSizes(int n) {
+        Object a = new Object(), b = new Object(), c = new Object();
+        List<Object> l = n == 0 ? List.of() : n == 1 ? List.of(a) : n == 2 ? List.of(a, b) : List.of(a, b, c);
+        return l.size() * 10 + (l.isEmpty() ? 1 : 0);
+    }
+
+    public static int listNull(int n) {
+        Object a = n > 0 ? new Object() : null;
+        Object[] three = { new Object(), new Object(), n > 1 ? new Object() : null };
+        int size = List.of(new Object(), a).size();
+        return size + List.of(three).size();
+    }
+
+    public static int listChange(int n) {
+        List<Object> l = n < 10 ? List.of(new Object()) : List.of(new Object(), new Object(), new Object());
+        Object x = new Object();
+        switch (n % 10) {
+            case 1: l.add(x); break;
+            case 2: l.set(0, x); break;
+            case 3: l.remove(0); break;
+            case 4: l.remove(x); break;
+            case 5: l.clear(); break;
+            case 6: l.addAll(List.of(x)); break;
+            case 7: l.iterator().remove(); break;
+            default: break;
+        }
+        return l.size();
+    }
+
+    public static int listCopySame(int n) {
+        List<Object> l = n == 0 ? List.of() : n == 1 ? List.of(new Object()) : List.of(new Object(), new Object(), new Object());
+        return (List.copyOf(l) == l ? 1 : 0) + (List.of() == List.of(new Object[0]) ? 2 : 0);
+    }
+
+    public static int listCopyMutable(int n) {
+        if (n == 9) return List.copyOf((Collection<Object>) null).size();
+        ArrayList<Object> m = new ArrayList<>();
+        if (n > 0) m.add(new Object());
+        if (n > 1) m.add(null);
+        List<Object> c = List.copyOf(m);
+        return (c == List.of() ? 1 : 0) + c.size() * 10 + (c == (Object) m ? 100 : 0);
+    }
+
+    public static int listGet(int n) {
+        Object a = new Object(), c = new Object();
+        List<Object> one = List.of(a);
+        List<Object> three = List.of(new Object(), new Object(), c);
+        if (n < 10) return one.get(n) == a ? 1 : 0;
+        if (n < 20) return three.get(n - 10) == c ? 1 : 2;
+        return List.of().get(n - 20) == null ? 3 : 4;
+    }
+
+    public static int listSearch(int n) {
+        List<Integer> l = List.of(1, 2, 3);
+        List<Integer> two = List.of(5, 5);
+        Integer x = n == 0 ? null : Integer.valueOf(n);
+        return (l.contains(x) ? 1 : 0) + l.indexOf(x) * 10 + two.lastIndexOf(x) * 100 + two.indexOf(x) * 1000;
+    }
+
+    public static int listEquals(int n) {
+        List<Integer> a = List.of(1, 2);
+        List<Integer> b = List.of(1, n);
+        List<Integer> c = List.of(1, 2, n);
+        return (a.equals(b) ? 1 : 0) + (a.hashCode() == b.hashCode() ? 2 : 0) + (a.equals(c) ? 4 : 0) + (c.equals(List.of(1, 2, 2)) ? 8 : 0);
+    }
+
+    public static int listIterate(int n) {
+        int sum = 0;
+        for (Integer i : List.of(1, 2, 3)) sum += i;
+        Iterator<Object> it = List.of(new Object()).iterator();
+        it.next();
+        if (n > 0) it.next();
+        return sum + (it.hasNext() ? 100 : 0);
+    }
+
+    public static int listOfArray(int n) {
+        if (n == 9) return List.of((Object[]) null).size();
+        Integer[] three = { 1, 2, 3 };
+        Integer[] two = { 1, 2 };
+        List<Integer> a = List.of(three);
+        List<Integer> b = List.of(two);
+        three[0] = n;
+        two[0] = n;
+        return a.get(0) + b.get(0) * 10 + (List.of(new Object[0]) == List.of() ? 100 : 0);
     }
 
     // Exceptions: finally overriding a return, handlers, nested handlers, bounds, casts, throwing null, rethrowing.

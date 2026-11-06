@@ -272,9 +272,11 @@ impl ClassPath {
     }
 
     /// The tool's model of a JDK class, if it has one and models are on. This is the class to *execute* for the
-    /// name; for its shape, [`load`](Self::load) prefers the application and the JDK image.
+    /// name; for its shape, [`load`](Self::load) prefers the application and the JDK image. A model that is only
+    /// for JBMC's class path ([`Model::jbmc_only`](crate::models::Model::jbmc_only)) is not given: the interpreter
+    /// and the tool's own checker keep their own handling of the class.
     pub fn model(&self, name: &str) -> Option<Rc<ClassFile>> {
-        if !self.models {
+        if !self.models || crate::models::find(name).is_some_and(|m| m.jbmc_only) {
             return None;
         }
         let key = format!("model:{name}");
@@ -618,6 +620,11 @@ mod model_tests {
         assert_eq!(method.descriptor, "()Ljava/lang/String;");
         assert!(cp.bytecode_method("java/nio/charset/Charset", "hashCode", "()I").is_some());
         assert!(cp.bytecode_method("java/nio/charset/Charset", "getClass", "()Ljava/lang/Class;").is_none(), "inherited from Object: the natives' business");
+        // The models only for JBMC's class path are neither executed nor a shape here.
+        for name in ["java/lang/Enum", "java/util/List", "java/util/ImmutableCollections$ListN"] {
+            assert!(crate::models::find(name).is_some_and(|m| m.jbmc_only), "{name}");
+            assert!(cp.model(name).is_none() && !cp.has_bytecode(name), "{name}");
+        }
         let off = ClassPath::new().with_models(false);
         assert!(off.model("java/nio/charset/Charset").is_none());
         assert!(!off.has_bytecode("java/lang/Character"));

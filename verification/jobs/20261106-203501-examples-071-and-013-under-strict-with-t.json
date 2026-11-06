@@ -1,0 +1,86 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-203501-examples-071-and-013-under-strict-with-t",
+  "title": "Examples 071 and 013 under strict with the Enum and List models, the contract library recorded on JDK 25.0.5, and the conformance corpus under JBMC",
+  "description": "Phase 5 of llm-dlc/loops/engine-priorities.md (the native stream). lib/models now has models of java.lang.Enum (Enum.<init>(String,int) sets name and ordinal; name, ordinal, toString, equals) and of java.util.List's factories of and copyOf with the JDK's immutable lists (ImmutableCollections.List12, ListN, EMPTY_LIST), on JBMC's class path only: JBMC stubbed these, and job 20261106-082917 found that example 071's three property proofs and 013's equivalence reach exactly these three stubs, so under strict 071's first two proofs were no verdict (its recorded result.json shows them unverifiable on jdk-constructor:java.lang.Enum.<init>, jdk-static-method:java.util.List.copyOf and List.of). The interpreter keeps its natives for these classes (fixed in the same change where they differed from the JVM: an enum's name is the string its constructor was given, List.of() is one list, get out of range throws as List12 or ListN does, a search for null throws NPE), and the models themselves were run on a JVM, relocated out of java.*, against the JDK's classes. Steps: (1) 071 under strict, as recorded examples now run: expected a violation as before; (2) a check that 071's first two obligations are now verified with no gap and the third a violation; (3) 013 under strict: a violation whose witness replays; (4) jvmcontract gap-contracts --record over lib/models/contracts on this machine's JDK 25.0.5 (checked.json records 25.0.4.1, so the library's contracts are not applied here); (5) the conformance corpus under JBMC and --engine auto, strict (the ignored test), whose log lists every claim's verdict: the 22 new claims over enums and immutable lists should raise no disagreement with the JVM. A risk step 2 will show: JBMC's gap preflight walks the call graph without paths, so stubs reached only through dispatch inside the model (Collection.isEmpty/toArray in listCopy, the abstract List.get) may be named as gaps. Not network-dependent.",
+  "kind": "model",
+  "capabilities": [
+    "B11",
+    "B9",
+    "jvmcontract:prove",
+    "jvmcontract:gap-contracts"
+  ],
+  "links": {
+    "examples": [
+      "071",
+      "013"
+    ],
+    "paths": [
+      "lib/models/java/util/ImmutableCollections.java",
+      "lib/models/java/lang/Enum.java"
+    ],
+    "jobs": [
+      "20261106-082917"
+    ]
+  },
+  "expected": "071 and 013 give their expected verdicts (violation) under strict; 071's obligations 1 and 2 are verified with no gap and 3 is a violation whose witness replays; checked.json is rewritten for JDK 25.0.5 with every contract checked again; the conformance log shows no disagreement on enumState and the list* cases (other failures in that step, if any, are named in its log and judged apart)",
+  "submitted": {
+    "at": "2026-11-06T20:35:13+00:00",
+    "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+    "by": "claude (engines-native stream)"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "45m",
+    "memoryLimit": "4G",
+    "timeout": "120m",
+    "notes": "071's three JBMC proofs and 013's run took under a minute each in job 20261106-181101; the library record is proofs and JVM tests over 7 contract files, minutes; the JBMC conformance test took 18 min for 93 claims in job 20261106-021741 and has 142 now, with a preflight per run; the JBMC conformance job peaked at 1.0 GiB with JBMC capped at 2 GiB (JVMCONTRACT_JBMC_MEMORY_MB=2048)"
+  },
+  "steps": [
+    {
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": "."
+    },
+    {
+      "name": "example 071 (B11) under strict",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": "."
+    },
+    {
+      "name": "071: the first two proofs stand with no gap",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/071-*/result.json')[0])); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); assert got[0]==('verified',[]) and got[1]==('verified',[]) and got[2][0]=='violation', got\"",
+      "cwd": "."
+    },
+    {
+      "name": "example 013 (B9) under strict",
+      "run": "python3 examples/tools/build.py 013",
+      "cwd": "."
+    },
+    {
+      "name": "record the contract library on this JDK",
+      "run": "lib/target/release/jvmcontract gap-contracts --dir lib/models/contracts --record",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse",
+    "examples/013-longest-log-wins-breaks-election-safety",
+    "lib/models/contracts/checked.json",
+    "lib/target/conformance-jbmc.log"
+  ]
+}

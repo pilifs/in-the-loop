@@ -108,6 +108,19 @@ pub struct Machine<'a> {
     pub cost: Cost,
     /// Whether the effect monitor is on. Off for class initialisation and for the replay of counterexamples.
     pub monitor: bool,
+    /// The lists `List.of` and `List.copyOf` made, with the JDK class each is: its `get` out of range and its search
+    /// for `null` throw as that class does, and `copyOf` hands back only these.
+    immutable_lists: HashMap<Ref, ImmutableList>,
+    /// The one empty list `List.of()` returns, the JDK's `ImmutableCollections.EMPTY_LIST`.
+    empty_list: Option<Ref>,
+}
+
+/// The JDK class of a list `List.of` or `List.copyOf` made: `ImmutableCollections.List12` for one or two elements,
+/// `ListN` for any other number.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ImmutableList {
+    List12,
+    ListN,
 }
 
 impl<'a> Machine<'a> {
@@ -130,6 +143,8 @@ impl<'a> Machine<'a> {
             limits: Limits::default(),
             cost: Cost::default(),
             monitor: true,
+            immutable_lists: HashMap::new(),
+            empty_list: None,
         }
     }
 
@@ -147,7 +162,34 @@ impl<'a> Machine<'a> {
     pub fn end_case(&mut self, mark: usize) {
         if !self.pinned_in_case {
             self.heap.truncate(mark);
+            self.immutable_lists.retain(|r, _| (*r as usize) < mark);
         }
+    }
+
+    /// An immutable list as `List.of` makes it over `elements`, none of them `null`: the one empty list, else a new
+    /// `List12` or `ListN`.
+    pub(crate) fn immutable_list(&mut self, elements: Vec<Value>) -> Value {
+        if elements.is_empty() {
+            if let Some(r) = self.empty_list {
+                return Value::Ref(r);
+            }
+            let saved = self.clinit_depth;
+            self.clinit_depth += 1; // global state, as the JDK's constant is, not the case's own
+            let r = self.alloc_native(Native::List { elements, mutable: false });
+            self.clinit_depth = saved;
+            self.empty_list = Some(r);
+            self.immutable_lists.insert(r, ImmutableList::ListN);
+            return Value::Ref(r);
+        }
+        let kind = if elements.len() <= 2 { ImmutableList::List12 } else { ImmutableList::ListN };
+        let r = self.alloc_native(Native::List { elements, mutable: false });
+        self.immutable_lists.insert(r, kind);
+        Value::Ref(r)
+    }
+
+    /// The JDK class of a list `List.of` or `List.copyOf` made, if `r` is one.
+    pub(crate) fn immutable_list_kind(&self, r: Ref) -> Option<ImmutableList> {
+        self.immutable_lists.get(&r).copied()
     }
 
     pub(crate) fn alloc(&mut self, object: Object) -> Ref {
@@ -379,7 +421,7 @@ impl<'a> Machine<'a> {
                 }
                 None => {
                     if c == "java/lang/Enum" {
-                        base = Base::Enum { name: String::new(), ordinal: 0 };
+                        base = Base::Enum { name: String::new(), ordinal: 0, text: None };
                     } else if self.cp.is_subtype(&c, "java/lang/Throwable") {
                         base = Base::Throwable { message: None, cause: None };
                     } else if c != "java/lang/Object" && c != "java/lang/Record" {
