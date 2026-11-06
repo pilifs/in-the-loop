@@ -68,7 +68,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Remove the retired java-models-library clone's .gitignore entry
 
-change `xkwwowvvvryo` · [log `5a4ea0d0391b`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz)
+[`cea40b6bccf4`](https://github.com/pilifs/in-the-loop/commit/cea40b6bccf482ab5374304e1061c1aabbfe9430) · [log `5a4ea0d0391b`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz)
 
 libs/java-models-library was an untracked clone of the CProver models fork that an earlier version of the tool used; its models have lived in lib/models since 2026-11-03. The clone had no local changes and was deleted from the working tree at the user's request, so the .gitignore entry that kept it untracked is removed. Nothing in the repository reads libs/ (the one mention, in verification/README.md, is historical).
 

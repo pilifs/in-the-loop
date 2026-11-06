@@ -19,7 +19,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Tokens written | 9,209,255 |
 | Tokens read | 944,118,989 (97.6% from cache) |
 | Commits with a trace | 182 |
-| Log snapshots | 242 (812.4 MB gzipped, 241 uploaded) |
+| Log snapshots | 242 (812.4 MB gzipped, 242 uploaded) |
 
 ## Sessions
 
@@ -291,7 +291,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 179 | [`69bfde41`](https://github.com/pilifs/in-the-loop/commit/69bfde4188b171de6b45ff39b0ca35abc65d6423) | build.py: every command is a logged stage, and a pipeline job keeps each attempt's workspace (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/1e8891d9d9b719d600577bff2449b20f9905075aabfe1f88fde402e21b77bc65.jsonl.gz)) |
 | 180 | [`693bf277`](https://github.com/pilifs/in-the-loop/commit/693bf2776483e92b245de2c620820a33d5c7380f) | build.py: result.json is stored as format 2, each fact once, and read through one flat view (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/f1abcfec4d1b13f87e1d0b156acd045365a3b88ce4d42de4fe6ffa711d25f0ad.jsonl.gz)) |
 | 181 | [`b27ce222`](https://github.com/pilifs/in-the-loop/commit/b27ce222164602b85451c8605525371e5841272f) | Loop brief sound-verdicts.md: named gaps, results that state their assumptions, and agent-advised contracts | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/3c38885bed4b89bcde64351a6f126257556e8f93413cfb4bf6dfaf18d570e60a.jsonl.gz)) |
-| 182 | change `xkwwowvv` | Remove the retired java-models-library clone's .gitignore entry | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz)) |
+| 182 | [`cea40b6b`](https://github.com/pilifs/in-the-loop/commit/cea40b6bccf482ab5374304e1061c1aabbfe9430) | Remove the retired java-models-library clone's .gitignore entry | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz)) |
 
 ## Logs
 
@@ -322,7 +322,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 7 | 6 | 3.0 MB | `5a4ea0d0391b`, not uploaded |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 7 | 7 | 3.0 MB | [`5a4ea0d0391b`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz) |
 
 ## Session notes
 
