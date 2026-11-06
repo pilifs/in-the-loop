@@ -611,7 +611,11 @@ Take the next free number; constructed and real-world examples share the sequenc
    arguments as expressions over the new parameters, and `change.resultsAgreeWhen` relates a result that changed
    its type or meaning to the previous one (`previous == (result <= 0)`); for B11, the property is the one
    declared for the symbol in the app's `properties.contract`. For B9 and B11 on a javac app, `approach.engine: native`
-   runs the tool's own checker instead of JBMC, for a method over integers; for B9, `approach.unwind` raises the loop
+   runs the tool's own checker instead of JBMC, for a method over integers, and `approach.gaps` (`strict` or `assume`,
+   its `--gaps`) says what it does at a construct it does not implement as the JVM does: refuse it by name, or assume
+   its approximation and name it in the verdict. An example that names none runs in `assume`, so that a rerun of a
+   recorded example records its assumptions rather than changing its verdict; a new example names its mode. For B9,
+   `approach.unwind` raises the loop
    unwinding bound when a loop of the method needs more than the default sixteen turns. A B9 subject may be a method
    of a record whose components are primitive, or take or return one: the proof is on the components; a static
    method that became a record's method is related to its previous version by `change.previousArguments` over the

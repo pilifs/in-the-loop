@@ -300,6 +300,12 @@ struct EquivalenceArgs {
     /// JBMC elsewhere).
     #[arg(long, default_value = "jbmc")]
     engine: String,
+    /// What the tool's own checker does at a gap, a construct it does not implement as the JVM does (a JDK
+    /// constructor or method it has no model of, say): `strict` (the default) refuses it by name, so that the run
+    /// has no verdict unless another path is a violation, and `--engine auto` does not ask JBMC; `assume` takes the
+    /// approximation the gap states and names it in the verdict. No effect on JBMC.
+    #[arg(long, default_value = "strict")]
+    gaps: String,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -371,6 +377,12 @@ struct ProveArgs {
     /// JBMC elsewhere).
     #[arg(long, default_value = "jbmc")]
     engine: String,
+    /// What the tool's own checker does at a gap, a construct it does not implement as the JVM does (a JDK
+    /// constructor or method it has no model of, say): `strict` (the default) refuses it by name, so that the run
+    /// has no verdict unless another path is a violation, and `--engine auto` does not ask JBMC; `assume` takes the
+    /// approximation the gap states and names it in the verdict. No effect on JBMC.
+    #[arg(long, default_value = "strict")]
+    gaps: String,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -445,6 +457,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.refine_strings = args.refine_strings;
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
             options.engine = args.engine.parse()?;
+            options.gaps = args.gaps.parse()?;
             options.shared_callees = !args.no_shared_callees;
             options.before_target = args.before_target;
             options.before_arguments = args.before_arguments;
@@ -494,6 +507,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.refine_strings = args.refine_strings;
                 options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
                 options.engine = args.engine.parse()?;
+                options.gaps = args.gaps.parse()?;
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

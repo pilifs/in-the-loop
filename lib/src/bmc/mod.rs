@@ -25,9 +25,36 @@
 //! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
 //! as JBMC's nondeterministic arrays do, a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
-//! division by zero is. Floating point, arrays of references, fields with state and the rest of the JDK are refused
+//! division by zero is. Floating point, arrays of references, static state and the rest of the JDK are refused
 //! with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
+//!
+//! Every instruction, and every call it can make, is implemented as the JVM does it, modelled (by a model whose
+//! contract is written down), a named gap ([`gaps`]), or refused:
+//!
+//! | Instructions | Treatment |
+//! |---|---|
+//! | `nop`, `aconst_null`, `iconst`, `lconst`, `bipush`/`sipush`, `ldc` of an int or a long, `iload`/`lload`/`aload`, `istore`/`lstore`/`astore`, `pop`, `pop2`, `dup`, `dup_x1`, `dup_x2`, `dup2`, `dup2_x1`, `dup2_x2`, `swap`, `iinc` | implemented |
+//! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
+//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound |
+//! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
+//! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field is keyed by its name (gap `hidden-field`, not met yet: step 1c) |
+//! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass |
+//! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
+//! | `getstatic` of a compile-time constant (an application field with a `ConstantValue`, `Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`) | implemented |
+//! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
+//! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
+//! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
+//! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
+//! | `invokedynamic` string concatenation | implemented over strings and primitives (the result an opaque string); an object argument it would convert is a gap, `string-conversion` |
+//! | `ldc` of a string or a class | a new opaque object (gap `literal-identity`, not met yet: step 1c) |
+//! | class initialization | not run (gap `class-initializer`, not met yet: step 1c) |
+//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic`, any other `getstatic`, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, any other static JDK method, a JDK instance method returning a primitive or an array, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//!
+//! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
+//! one has no verdict unless another path is a violation, which stands. Under [`gaps::GapMode::Assume`] the engine
+//! goes on with the approximation [`gaps::GapKind::approximation`] states, and the outcome names every gap it
+//! assumed ([`Outcome::gaps`]).
 
 pub mod bits;
 pub mod gaps;
@@ -40,6 +67,7 @@ use crate::classfile::{ArithOp, ArrayKind, BootstrapArg, ClassFile, Cond, Except
 use crate::classpath::ClassPath;
 use crate::{Error, Verdict};
 use bits::{Bits, Blaster, Lit, Model, FALSE, TRUE};
+use gaps::{Gap, GapKind, GapMode, GapRecord, GapTreatment, JdkCall, Site};
 
 /// What the engine is allowed.
 #[derive(Debug, Clone)]
@@ -55,11 +83,13 @@ pub struct Options {
     /// small search is cheaper unmerged, every solver call being about one concrete path, and merging pays once
     /// the paths multiply. 0 merges from the start.
     pub merge_after: u64,
+    /// What a gap does to the path that reaches it ([`gaps::GapMode`]): ends it (strict) or is assumed.
+    pub gaps: GapMode,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512 }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict }
     }
 }
 
@@ -102,6 +132,9 @@ pub struct Outcome {
     pub seconds: f64,
     /// The solver, for the report.
     pub solver: String,
+    /// The gaps the run met, each refused (strict: a path ended there) or assumed, with where.
+    pub gaps: Vec<GapRecord>,
+    pub gap_mode: GapMode,
 }
 
 impl Outcome {
@@ -119,6 +152,8 @@ impl Outcome {
             log,
             seconds: self.seconds,
             native: Some(stats),
+            gaps: self.gaps,
+            gap_mode: Some(self.gap_mode),
         }
     }
 
@@ -143,7 +178,11 @@ impl Outcome {
 
     /// One line on what the run did, for the log.
     pub fn summary(&self) -> String {
-        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        let gaps = match self.gaps.len() {
+            0 => String::new(),
+            n => format!(", {n} gap{} {} (--gaps {})", if n == 1 { "" } else { "s" }, if self.gap_mode == GapMode::Assume { "assumed" } else { "refused" }, self.gap_mode.name()),
+        };
+        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
 }
 
@@ -240,6 +279,8 @@ struct Decoded {
     index: HashMap<u32, usize>,
     handlers: Vec<ExceptionHandler>,
     max_locals: usize,
+    /// Per instruction, its source line, when the class has line numbers: where a gap is met.
+    lines: Vec<Option<u16>>,
     /// Per instruction, whether control can reach it from more than one place (the instruction after an `if`'s
     /// scope, a loop header, a handler): where the paths that reach it are merged ([`Engine::merge`]).
     joins: Vec<bool>,
@@ -335,6 +376,8 @@ enum End {
     Violation(Vec<Lit>),
     /// A loop needed more iterations than the bound.
     Unwound(String),
+    /// The path reached a gap under `--gaps strict`, which refuses it: what lies beyond it is not known.
+    Gap,
     /// The path reached a join point and waits there for the paths that arrive after it.
     Parked,
 }
@@ -385,6 +428,9 @@ struct Engine<'a> {
     /// One literal per entry of [`STAGES`], true when every parameter is in the range; built at the first
     /// violation, so that a proof pays nothing for them.
     stage_lits: Vec<Option<Lit>>,
+    gap_mode: GapMode,
+    /// The gaps met so far, with where.
+    met: BTreeMap<Gap, std::collections::BTreeSet<Site>>,
 }
 
 fn unsupported<T>(what: impl Into<String>) -> Result<T, Stop> {
@@ -435,8 +481,11 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         arrays: Vec::new(),
         max_array_length: options.max_array_length,
         stage_lits: vec![None; STAGES.len()],
+        gap_mode: options.gaps,
+        met: BTreeMap::new(),
     };
     let solver = engine.b.signature();
+    let jdk = gaps::jdk_release();
     let outcome = |engine: &Engine, verdict: Verdict, input: Input, stage: Option<String>, problem: Option<String>| Outcome {
         verdict,
         raw_inputs: input.scalars,
@@ -457,6 +506,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         refined_multiplications: engine.b.multiplications().1,
         seconds: started.elapsed().as_secs_f64(),
         solver: solver.clone(),
+        gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode == GapMode::Assume { GapTreatment::Assumed } else { GapTreatment::Refused })),
+        gap_mode: engine.gap_mode,
     };
 
     // The inputs: fresh bits per parameter, in its range; an array parameter is an object of a fresh length up to
@@ -536,7 +587,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
             return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
         }
         match engine.run(path) {
-            Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) => {}
+            Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) => {}
             Ok(End::Violation(cond)) => {
                 let (stage, input) = match engine.staged_input(&cond) {
                     Ok(found) => found,
@@ -566,15 +617,34 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
             Err(Stop::Budget(what)) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(what)) }),
         }
     }
-    Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Verified, Input::default(), None, None) })
+    if best.is_some() {
+        return Ok(violation(&engine, best));
+    }
+    if engine.gap_mode == GapMode::Strict && !engine.met.is_empty() {
+        let problem = refused_gaps(&gaps::records(&engine.met, jdk.as_deref(), None));
+        return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
+    }
+    Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
+}
+
+/// Why a run that refused gaps has no verdict: each gap by its id, with the call and where.
+pub fn refused_gaps(gaps: &[GapRecord]) -> String {
+    let n = gaps.len();
+    let list = gaps.iter().map(|g| format!("{} ({} at {})", g.id, g.call, g.sites.join(", "))).collect::<Vec<_>>().join("; ");
+    let instead = match gaps {
+        [g] => format!("that the call {}", g.approximation),
+        _ => "what each gap's approximation states".to_string(),
+    };
+    format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps strict): {list}. With --gaps assume it assumes instead {instead}, and the verdict names the assumption", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" })
 }
 
 /// Runs the engine on a harness for the proof drivers: the class path is the harness, the application classes
 /// and their class path (not the JDK classes extracted for JBMC: a JDK method is modelled here, never run), with
 /// the tool's models; the result is in JBMC's shape, and a line goes to `work/bmc.log`.
-pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+#[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
+pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: GapMode, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps, ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -634,7 +704,8 @@ impl<'a> Engine<'a> {
             }
         }
         let joins = ways_in.iter().map(|&n| n >= 2).collect();
-        let compiled = Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, joins });
+        let lines = pcs.iter().map(|&pc| code.line_at(pc)).collect();
+        let compiled = Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins });
         self.codes.insert(key, compiled.clone());
         Ok(compiled)
     }
@@ -1566,19 +1637,21 @@ impl<'a> Engine<'a> {
                         return self.call(path, &cf.name, &member.name, &member.descriptor, full);
                     }
                 }
-                // A JDK method on an opaque object: a constructor does nothing the proof can see, a method that
-                // returns a reference returns another opaque object, and a primitive result is beyond the engine.
-                if member.name == "<init>" {
-                    self.advance(path);
-                    return Ok(None);
-                }
-                match &descriptor.ret {
-                    Type::Void => {}
-                    Type::Object(name) => {
-                        let r = self.alloc(path, name);
-                        self.push(path, Val::R(Some(r)));
+                // A JDK method on an opaque object: reproduced exactly (an exception's constructor), a gap, or, with
+                // a primitive result the engine could only make up, refused. Under assume, a constructor does
+                // nothing, a void method nothing, and a method that returns an object returns a new one.
+                match gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) {
+                    JdkCall::Exact => {}
+                    JdkCall::Gap(kind) => {
+                        if let Some(end) = self.meet(path, kind, &member.owner, &member.name, &member.descriptor) {
+                            return Ok(Some(end));
+                        }
+                        if let Type::Object(name) = &descriptor.ret {
+                            let r = self.alloc(path, name);
+                            self.push(path, Val::R(Some(r)));
+                        }
                     }
-                    _ => return unsupported(format!("{}.{} on an object the engine does not model", member.owner.replace('/', "."), member.name)),
+                    JdkCall::Refused => return unsupported(format!("{}.{} on an object the engine does not model", member.owner.replace('/', "."), member.name)),
                 }
             }
             Insn::InvokeDynamic(index) => {
@@ -1587,6 +1660,12 @@ impl<'a> Engine<'a> {
                 let _ = self.pop_args(path, descriptor.params.len())?;
                 match &descriptor.ret {
                     Type::Object(name) if name == "java/lang/String" => {
+                        // An object argument is converted by its toString, which the engine does not run.
+                        for class in gaps::converted_arguments(&descriptor) {
+                            if let Some(end) = self.meet(path, GapKind::StringConversion, &class, "toString", "()Ljava/lang/String;") {
+                                return Ok(Some(end));
+                            }
+                        }
                         let r = self.alloc(path, "java/lang/String");
                         self.push(path, Val::R(Some(r)));
                     }
@@ -1623,12 +1702,25 @@ impl<'a> Engine<'a> {
                 let c = self.b.constant(i64::from(is), 32);
                 self.push(path, Val::I(c));
             }
+            // In a run of one thread a monitor is always free and always held by it: only a null one does anything.
             Insn::MonitorEnter | Insn::MonitorExit => {
-                self.pop(path)?;
+                let r = self.pop_ref(path)?;
+                if let Err(step) = self.null_check(path, r) {
+                    return step;
+                }
             }
         }
         self.advance(path);
         Ok(None)
+    }
+
+    /// The path reaches a gap: it is recorded with where, and under strict the path ends there (`Some(End::Gap)`);
+    /// under assume the caller goes on with the approximation (`None`).
+    fn meet(&mut self, path: &Path, kind: GapKind, owner: &str, name: &str, descriptor: &str) -> Option<End> {
+        let frame = path.frames.last().expect("a frame");
+        let site = Site { class: frame.class.name.clone(), method: frame.method.clone(), line: frame.code.lines[frame.at] };
+        self.met.entry(Gap { kind, owner: owner.to_string(), name: name.to_string(), descriptor: descriptor.to_string() }).or_default().insert(site);
+        (self.gap_mode == GapMode::Strict).then_some(End::Gap)
     }
 
     fn default_value(&self, descriptor: &str) -> Result<Val, Stop> {
@@ -2018,6 +2110,97 @@ mod tests {
     use super::*;
     use crate::classfile::flags;
     use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+
+    /// The module's table says what the engine does with every instruction the decoder gives (each opcode decoded
+    /// on its own, its operands zero), and the gap table of [`gaps`] has a row for every kind of gap: a new
+    /// instruction or kind fails here until the tables say how it is treated.
+    #[test]
+    fn the_module_docs_say_what_the_engine_does_with_every_instruction() {
+        let docs = |source: &str| source.lines().take_while(|l| l.starts_with("//!")).collect::<Vec<_>>().join("\n");
+        let engine = docs(include_str!("mod.rs"));
+        let table = engine.split("| Instructions | Treatment |").nth(1).expect("the table of instructions");
+        let row = |insn: &Insn| -> &'static str {
+            let float = |k: &Kind| matches!(k, Kind::Float | Kind::Double);
+            match insn {
+                Insn::Nop => "`nop`",
+                Insn::AConstNull => "`aconst_null`",
+                Insn::IConst(_) => "`iconst`",
+                Insn::LConst(_) => "`lconst`",
+                Insn::FConst(_) => "`fconst`",
+                Insn::DConst(_) => "`dconst`",
+                Insn::Ldc(_) => "`ldc` of an int or a long",
+                Insn::Load(k, _) | Insn::Store(k, _) | Insn::Return(Some(k)) | Insn::Arith(_, k) if float(k) => "floating point",
+                Insn::Convert(k, n) if float(k) || matches!(n, Narrow::To(t) if float(t)) => "floating point",
+                Insn::Load(..) => "`iload`",
+                Insn::Store(..) => "`istore`",
+                Insn::ArrayLoad(ArrayKind::Ref) | Insn::ArrayStore(ArrayKind::Ref) => "`aaload`/`aastore`",
+                Insn::ArrayLoad(ArrayKind::Float | ArrayKind::Double) | Insn::ArrayStore(ArrayKind::Float | ArrayKind::Double) => "floating point",
+                Insn::ArrayLoad(_) => "`iaload` … `saload`",
+                Insn::ArrayStore(_) => "`iastore` … `sastore`",
+                Insn::Pop => "`pop`",
+                Insn::Pop2 => "`pop2`",
+                Insn::Dup => "`dup`",
+                Insn::DupX1 => "`dup_x1`",
+                Insn::DupX2 => "`dup_x2`",
+                Insn::Dup2 => "`dup2`",
+                Insn::Dup2X1 => "`dup2_x1`",
+                Insn::Dup2X2 => "`dup2_x2`",
+                Insn::Swap => "`swap`",
+                Insn::Arith(..) => "`iadd` … `lxor`",
+                Insn::IInc(..) => "`iinc`",
+                Insn::Convert(..) => "`i2l`",
+                Insn::Cmp(c) if c.kind == Kind::Long => "`lcmp`",
+                Insn::Cmp(_) => "`fcmpl`",
+                Insn::If(..) => "`ifeq`",
+                Insn::IfICmp(..) => "`if_icmpeq`",
+                Insn::IfACmp(..) => "`if_acmpeq`/`if_acmpne`",
+                Insn::IfNull(_) => "`ifnull`",
+                Insn::IfNonNull(_) => "`ifnonnull`",
+                Insn::Goto(_) => "`goto`",
+                Insn::Jsr(_) | Insn::Ret(_) => "`jsr`/`ret`",
+                Insn::TableSwitch { .. } => "`tableswitch`",
+                Insn::LookupSwitch { .. } => "`lookupswitch`",
+                Insn::Return(_) => "`ireturn` … `return`",
+                Insn::GetStatic(_) => "`getstatic` of a compile-time constant",
+                Insn::PutStatic(_) => "`putstatic`",
+                Insn::GetField(_) => "`getfield`",
+                Insn::PutField(_) => "`putfield`",
+                Insn::InvokeVirtual(_) => "`invokevirtual`",
+                Insn::InvokeSpecial(_) => "`invokespecial`",
+                Insn::InvokeStatic(_) => "`invokestatic`",
+                Insn::InvokeInterface(_) => "`invokeinterface`",
+                Insn::InvokeDynamic(_) => "`invokedynamic` string concatenation",
+                Insn::New(_) => "`new`",
+                Insn::NewArray(_) => "`newarray`",
+                Insn::ANewArray(_) => "`anewarray`",
+                Insn::ArrayLength => "`arraylength`",
+                Insn::AThrow => "`athrow`",
+                Insn::CheckCast(_) => "`checkcast`",
+                Insn::InstanceOf(_) => "`instanceof`",
+                Insn::MonitorEnter => "`monitorenter`",
+                Insn::MonitorExit => "`monitorexit`",
+                Insn::MultiANewArray(..) => "`multianewarray`",
+            }
+        };
+        let mut decoded = 0;
+        for op in 0u8..=255 {
+            let mut bytes = vec![op];
+            bytes.resize(32, 0);
+            let Ok(insns) = crate::classfile::bytecode::decode(&bytes) else { continue };
+            let insn = &insns[0].1;
+            decoded += 1;
+            assert!(table.contains(row(insn)), "opcode {op:#04x} ({insn:?}): the module's table has no row with {}", row(insn));
+        }
+        assert!(decoded >= 200, "every opcode of the JVM decodes, {decoded} did");
+        for row in ["implemented", "modelled", "gap", "refused"] {
+            assert!(table.contains(&format!("| {row}")), "a row of what is {row}");
+        }
+        let kinds = docs(include_str!("gaps.rs"));
+        for kind in [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::HiddenField, GapKind::LiteralIdentity, GapKind::ClassInitializer, GapKind::StringConversion] {
+            assert!(kinds.contains(&format!("| `{}` |", kind.name())), "the gap table has a row for {}", kind.name());
+            assert!(table.contains(&format!("`{}`", kind.name())), "the instruction table says where a {} gap is met", kind.name());
+        }
+    }
 
     /// A harness-shaped class: `static void check(int a, int b)` whose body `build` writes, failing by throwing an
     /// `AssertionError` at the label `fail`.

@@ -332,6 +332,24 @@
         "stage": { "description": "The input range of the run the verdict comes from, as `[0:20]`; null for the whole range.", "type": ["string", "null"] },
         "sharedCallees": { "description": "The callees taken as one function in both versions, as `Class.method`.", "type": "array", "items": { "type": "string" } },
         "fallback": { "description": "Under `--engine auto`: why the own checker gave no verdict before JBMC was run.", "type": "string" },
+        "gapMode": { "description": "The gap mode the own checker ran under (`--gaps`), when the verdict is its: `strict` or `assume`. Absent in results written before 2026-11-05.", "enum": ["strict", "assume"] },
+        "gaps": {
+          "description": "The gaps the own checker met, constructs it does not implement as the JVM does (lib/src/bmc/gaps.rs): each `refused` (strict: the path that reached it ended there) or `assumed` (its approximation taken, which a verified verdict rests on).",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "call", "sites", "approximation", "treatment"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "description": "The stable id: kind and member, with the JDK's version for a JDK call, as `jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1`.", "type": "string" },
+              "kind": { "enum": ["jdk-constructor", "jdk-void-method", "jdk-reference-method", "hidden-field", "literal-identity", "class-initializer", "string-conversion"] },
+              "call": { "description": "The member as Java writes it.", "type": "string" },
+              "sites": { "description": "Where the run met it, `pkg.Class.method:line`.", "type": "array", "items": { "type": "string" } },
+              "approximation": { "description": "What the own checker takes it to do under `--gaps assume`.", "type": "string" },
+              "treatment": { "enum": ["refused", "assumed"] }
+            }
+          }
+        },
         "native": {
           "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds).",
           "type": "object",

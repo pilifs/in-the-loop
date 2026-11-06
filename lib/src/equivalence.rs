@@ -88,6 +88,9 @@ pub struct Options {
     /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
     /// where the harness is within its fragment and JBMC elsewhere.
     pub engine: crate::Engine,
+    /// What the tool's own checker does at a gap ([`crate::bmc::gaps`]): refuses it (strict, the default) or
+    /// assumes its approximation and names it in the verdict. It has no effect on JBMC.
+    pub gaps: crate::bmc::gaps::GapMode,
     /// Whether callees unchanged in both versions are taken as one function in both ([`crate::shared`]), and a
     /// target identical in both versions is verified without a proof. On by default.
     pub shared_callees: bool,
@@ -125,6 +128,7 @@ impl Options {
             refine_strings: false,
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
+            gaps: crate::bmc::gaps::GapMode::Strict,
             shared_callees: true,
             before_target: None,
             before_arguments: None,
@@ -218,6 +222,34 @@ pub struct Search {
     /// The own checker's account of its search, when the verdict is its.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub native: Option<crate::bmc::Stats>,
+    /// The gap mode the own checker ran under, when the verdict is its.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gap_mode: Option<crate::bmc::gaps::GapMode>,
+    /// The gaps the own checker met, each refused or assumed ([`crate::bmc::gaps`]): under assume, what a verified
+    /// statement takes for granted besides its domain.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub gaps: Vec<crate::bmc::gaps::GapRecord>,
+}
+
+/// Whether the own checker's run refused a gap (strict): then `--engine auto` does not ask JBMC, which gives a call
+/// it has no bytecode for an approximation of its own and does not name it (step 4c of the sound-verdicts brief).
+pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
+    result.gap_mode == Some(crate::bmc::gaps::GapMode::Strict) && !result.gaps.is_empty()
+}
+
+/// The note `--engine auto` writes when the own checker refused a gap and JBMC is not asked.
+pub(crate) const NOT_JBMC: &str = "note: the tool's own checker refused a gap, so JBMC is not asked: it approximates a call it has no bytecode for too, without naming it";
+
+/// The verdict's words for the gaps a verified run assumed, `, assuming 2 behaviours the tool's own checker does not
+/// implement`, and a line for each; nothing when it assumed none.
+pub(crate) fn assumed_gaps(result: &JbmcResult) -> (String, String) {
+    if result.gap_mode != Some(crate::bmc::gaps::GapMode::Assume) || result.gaps.is_empty() {
+        return (String::new(), String::new());
+    }
+    let n = result.gaps.len();
+    let words = format!(", assuming {n} behaviour{} the tool's own checker does not implement (--gaps assume)", if n == 1 { "" } else { "s" });
+    let lines = result.gaps.iter().map(|g| format!("  assumed: {}\n", g.line())).collect();
+    (words, lines)
 }
 
 /// How a witness was replayed on both versions. The checker's input is run again on each version's bytecode, and
@@ -235,13 +267,14 @@ pub struct Replay {
 /// reaches the calls violates it, and a proof of it says no input in the domain does, whichever engine proved
 /// the statement: the statement's proof covers no input. `skipped_by` says how an input is skipped, for the
 /// reason returned. `None` when an input reaches the calls, or when the probe gave no verdict (a note says why).
-pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, work: &Path, skipped_by: &str) -> Result<Option<String>, Error> {
+#[allow(clippy::too_many_arguments)] // the settings of the proof it probes
+pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: crate::bmc::gaps::GapMode, work: &Path, skipped_by: &str) -> Result<Option<String>, Error> {
     let probe_dir = work.join("probe");
     std::fs::create_dir_all(&probe_dir)?;
     std::fs::write(probe_dir.join(format!("{class}.class")), probe)?;
     let mut probe_entries = vec![probe_dir.clone()];
     probe_entries.extend(entries.iter().cloned());
-    let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, &probe_dir)?;
+    let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, gaps, &probe_dir)?;
     Ok(match result.verdict {
         Verdict::Verified => Some(format!("no input in the domain reaches the calls, every one {skipped_by}; the proof covers no input and says nothing")),
         Verdict::Violation => None,
@@ -612,8 +645,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut fallback = None;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work)?;
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native {
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work)?;
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) {
+            if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
+                let _ = writeln!(out, "{}", NOT_JBMC);
+            }
             stages = &[];
             last = Some(result);
         } else {
@@ -780,6 +816,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         stage: last.stage.clone(),
         fallback,
         native: last.native.clone(),
+        gap_mode: last.gap_mode,
+        gaps: last.gaps.clone(),
     });
     let mut replay = None;
     let sharing = match shared_used.len() {
@@ -797,7 +835,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
-            let _ = writeln!(out, "✓ {} {relation}{restriction} ({how})", options.target);
+            let (assuming, assumed) = assumed_gaps(&last);
+            let _ = writeln!(out, "✓ {} {relation}{restriction}{assuming} ({how})", options.target);
+            out.push_str(&assumed);
             proof = Some(how);
             // A statement that skips inputs before the calls may skip every one in the domain: a scope every input
             // satisfies, a bound on the arrays below what the scope asks, a constructor that rejects every input.
@@ -814,7 +854,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 }
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
-                vacuous = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work, &ways.join(" or "))?;
+                vacuous = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, &ways.join(" or "))?;
                 if let Some(reason) = &vacuous {
                     let _ = writeln!(out, "  vacuously: {reason}");
                 }

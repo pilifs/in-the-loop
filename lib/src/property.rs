@@ -73,6 +73,9 @@ pub struct Options {
     /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
     /// where the harness is within its fragment and JBMC elsewhere.
     pub engine: crate::Engine,
+    /// What the tool's own checker does at a gap ([`crate::bmc::gaps`]): refuses it (strict, the default) or
+    /// assumes its approximation and names it in the verdict. It has no effect on JBMC.
+    pub gaps: crate::bmc::gaps::GapMode,
 }
 
 impl Options {
@@ -98,6 +101,7 @@ impl Options {
             refine_strings: false,
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
+            gaps: crate::bmc::gaps::GapMode::Strict,
         }
     }
 }
@@ -302,8 +306,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut fallback = None;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work)?;
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native {
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work)?;
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) {
+            if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
+                let _ = writeln!(out, "{}", crate::equivalence::NOT_JBMC);
+            }
             stages = &[];
             last = Some(result);
         } else {
@@ -351,6 +358,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         stage: last.stage.clone(),
         fallback,
         native: last.native.clone(),
+        gap_mode: last.gap_mode,
+        gaps: last.gaps.clone(),
     });
     let mut replay = None;
     let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
@@ -367,13 +376,15 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
-            let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws} ({how})", options.target);
+            let (assuming, assumed) = crate::equivalence::assumed_gaps(&last);
+            let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws}{assuming} ({how})", options.target);
+            out.push_str(&assumed);
             proof = Some(how);
             // An assumption may admit no input in the domain: the property is then checked on none.
             if !harness.probe.is_empty() {
                 let mut entries = options.classes.clone();
                 entries.extend(options.classpath.iter().cloned());
-                vacuous = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work, "failing the assumption (--assume)")?;
+                vacuous = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, "failing the assumption (--assume)")?;
                 if let Some(reason) = &vacuous {
                     let _ = writeln!(out, "  vacuously: {reason}");
                 }

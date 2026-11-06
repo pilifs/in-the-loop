@@ -370,14 +370,33 @@ def plan(example):
             "outputs": {"always": PLAN_OUTPUTS, "maybe": maybe}}
 
 
+# The gap mode of a recorded example that names none (`approach.gaps`): the tool's own checker keeps the
+# approximations it made before gaps were named and states each as an assumption, so that a rerun records what it
+# assumed rather than changing its verdict. The library's default is strict; how the recorded examples move to it
+# is the user's decision (open question 3 of llm-dlc/loops/sound-verdicts.md).
+RECORDED_GAP_MODE = "assume"
+
+
+def gap_mode(example):
+    """The gap mode the tool's own checker runs an example under: its `approach.gaps`, else RECORDED_GAP_MODE. None
+    when the own checker does not decide the verdict (B9 and B11 under JBMC, and everything else)."""
+    a = example["approach"]
+    if a["id"] not in ("B9", "B11") or a.get("engine") not in ("native", "auto"):
+        return None
+    return a.get("gaps") or RECORDED_GAP_MODE
+
+
 def proof_options(example, approach=None):
-    """The flags jvmcontract's proof is given for an example: the engine for B9 and B11, and the unwinding and array
-    bounds for B9. Its runners pass exactly these, so the plan names what runs."""
+    """The flags jvmcontract's proof is given for an example: the engine for B9 and B11 and, when the tool's own
+    checker decides, its gap mode (gap_mode()), and the unwinding and array bounds for B9. Its runners pass exactly
+    these, so the plan names what runs."""
     approach = approach or example["approach"]["id"]
     if approach not in ("B9", "B11"):
         return []
     a = example["approach"]
     flags = ["--engine", a["engine"]] if a.get("engine") else []
+    if gap_mode(example):
+        flags += ["--gaps", gap_mode(example)]
     if approach == "B9":
         if a.get("unwind"):
             flags += ["--unwind", str(a["unwind"])]
@@ -1440,6 +1459,14 @@ def finish_symbolic(folder, result, statement, fields, verdict_labels):
     if fields["vacuous"]:
         result["coverage"] = {"vacuous": True, "reason": fields["vacuous"]}
         result["verdictLabel"] = f"{VERDICT_LABEL[result['verdict']]}, vacuously: no input in the domain reaches the calls"
+    label_assumptions(result)
+
+
+def label_assumptions(result):
+    """A verified label that rests on gaps the tool's own checker assumed (`--gaps assume`) says how many."""
+    assumed = assumed_gaps(result) if result["verdict"] == "verified" else []
+    if assumed:
+        result["verdictLabel"] += f", assuming {len(assumed)} behaviour{'s' if len(assumed) != 1 else ''} the checker does not implement"
 
 
 def without_root(value, root):
@@ -1528,7 +1555,24 @@ def search_record(outcome):
         record["fallback"] = s["fallback"]
     if s.get("native"):
         record["native"] = {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): v for k, v in s["native"].items()}
+    if s.get("gap_mode"):
+        record["gapMode"] = s["gap_mode"]
+    if s.get("gaps"):
+        record["gaps"] = [{"id": g["id"], "kind": g["kind"], "call": g["call"], "sites": g["sites"],
+                           "approximation": g["approximation"], "treatment": g["treatment"]} for g in s["gaps"]]
     return record
+
+
+def assumed_gaps(result):
+    """The gaps the tool's own checker assumed for a verdict (`--gaps assume`), from the result's search and each
+    property's, each once, in order."""
+    searches = [result.get("search")] + [q.get("search") for q in result.get("properties") or []]
+    seen = {}
+    for s in searches:
+        for g in (s or {}).get("gaps") or []:
+            if g["treatment"] == "assumed":
+                seen.setdefault(g["id"], g)
+    return list(seen.values())
 
 
 def run_tool_equivalence(folder, example, root, module, result):
@@ -1811,6 +1855,7 @@ def run_tool_property(folder, example, root, module, result):
         if vacuous:
             result["verdictLabel"] = (f"{VERDICT_LABEL['verified']}, vacuously for {len(vacuous)} of {total} properties: "
                                       "no input in the domain reaches the calls")
+            label_assumptions(result)
 
 
 TWOPC = {
@@ -3054,6 +3099,12 @@ def render_example(folder, ex, res, snap=None):
     if (res.get("coverage") or {}).get("reason"):
         lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
                   "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]
+    assumed = assumed_gaps(res) if res.get("verdict") == "verified" else []
+    if assumed:
+        lines += [f"**The proof assumes {len(assumed)} behaviour{'s' if len(assumed) != 1 else ''} the tool's own checker does not "
+                  "implement** (`--gaps assume`): it holds of a JVM on which each of these does what is stated, which the JVM "
+                  "need not do.", ""]
+        lines += [f"- `{g['id']}`: {g['call']} {g['approximation']}, at {', '.join(g['sites'])}." for g in assumed] + [""]
     lines += snapshot_lines(ex, res, snap)
     lines += details("Verifier output", "text", (folder / res["output"]).read_text())
     if several:

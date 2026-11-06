@@ -2067,13 +2067,15 @@ public class Gaps {
         if (n < 0) throw new IllegalArgumentException("negative: " + n);
         return new Point(n, n).x() + Math.addExact(n, 1);
     }
+    public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
 }
 "#;
 
 /// The gap scan (step 1a of llm-dlc/loops/sound-verdicts.md) names each construct the tool's own checker
-/// approximates: both review reproducers, a `void` JDK mutator of an argument array, a hidden field, a literal
-/// compared by reference and a class initializer; and it counts the JDK calls the
-/// engine reproduces exactly (an exception's constructor, `Record.<init>`, `Math.addExact`) as no gap.
+/// approximates: a JDK constructor that may throw (a review's reproducer), a `void` JDK mutator of an argument
+/// array, a hidden field, a literal compared by reference and a class initializer; it counts the JDK calls the
+/// engine reproduces exactly (an exception's constructor, `Record.<init>`, `Math.addExact`) as no gap, and a
+/// monitor, which the engine implements (step 1b), as none either.
 #[test]
 fn the_gap_scan_names_what_the_own_checker_approximates() {
     let dir = target_tmp().join("gaps-src");
@@ -2089,11 +2091,11 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
         let ids: Vec<String> = s.records().into_iter().map(|g| g.id.split('@').next().unwrap().to_string()).collect();
         (ids, s)
     };
-    let (ids, _) = scan("capacity");
+    let (ids, s) = scan("capacity");
     assert_eq!(ids, ["jdk-constructor:java.util.ArrayList.<init>(I)V"]);
-    let (ids, s) = scan("nullMonitor");
-    assert_eq!(ids, ["monitor:fixtures.Gaps"]);
-    assert_eq!(s.records()[0].sites, ["fixtures.Gaps.nullMonitor:14"]);
+    assert_eq!(s.records()[0].sites, ["fixtures.Gaps.capacity:13"]);
+    let (ids, _) = scan("nullMonitor");
+    assert!(ids.is_empty(), "{ids:?}");
     let (ids, _) = scan("randomBytes");
     assert_eq!(ids, ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"]);
     let (ids, _) = scan("hiding");
@@ -2116,5 +2118,104 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     let (_, s) = scan("capacity");
     if let Some(jdk) = &s.jdk {
         assert_eq!(s.records()[0].id, format!("jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-{jdk}"));
+    }
+}
+
+/// Step 1b of llm-dlc/loops/sound-verdicts.md: the tool's own checker meets the gaps as it runs. Under `--gaps strict`
+/// (the default) a claim the JVM refutes through a JDK call the engine does not implement is never `Verified`: the
+/// constructor `new ArrayList<>(n)` (a review's reproducer, which throws for a negative `n`) and a `void` JDK mutator
+/// of an argument array (`Random.nextBytes`) are refused by name, on the native engine and under `--engine auto`,
+/// which does not hand them to JBMC; `synchronized (null)` (the other reproducer) is a violation, as on the JVM.
+/// Under `--gaps assume` the approximation is kept, and the verdict names each gap it assumed.
+#[test]
+fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume() {
+    use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
+    use jvmcontract::Engine;
+    let dir = target_tmp().join("gaps-engine-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Gaps.java"), GAPS).unwrap();
+    let Some(classes) = compile("gaps-engine", &[dir.join("Gaps.java")]) else { return };
+    // The JVM refutes each claim below: what a `Verified` would have hidden.
+    if has("java") {
+        let probe = "public class Probe { public static void main(String[] a) {\n"
+            .to_string()
+            + "try { System.out.println(fixtures.Gaps.capacity(-1)); } catch (Throwable t) { System.out.println(t.getClass().getName()); }\n"
+            + "try { System.out.println(fixtures.Gaps.nullMonitor(0)); } catch (Throwable t) { System.out.println(t.getClass().getName()); }\n"
+            + "System.out.println(fixtures.Gaps.firstByte(new byte[1])); } }\n";
+        std::fs::write(dir.join("Probe.java"), probe).unwrap();
+        let status = Command::new("javac").args(["-proc:none", "-cp"]).arg(&classes).arg("-d").arg(&classes).arg(dir.join("Probe.java")).status().expect("javac runs");
+        assert!(status.success());
+        let run = Command::new("java").arg("-cp").arg(&classes).arg("Probe").output().expect("java runs");
+        let lines = String::from_utf8_lossy(&run.stdout).lines().map(str::to_string).collect::<Vec<_>>();
+        assert_eq!(lines[..2], ["java.lang.IllegalArgumentException", "java.lang.NullPointerException"], "{lines:?}");
+        assert_ne!(lines[2], "0", "Random(1) fills the array, so its first byte is not the 0 it held");
+    }
+    let prove = |method: &str, assert: &str, engine: Engine, gaps: GapMode| {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Gaps#{method}"));
+        options.assert = Some(assert.into());
+        options.engine = engine;
+        options.gaps = gaps;
+        let work = target_tmp().join(format!("property-gaps-{method}-{engine:?}-{gaps:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let ids = |o: &property::Outcome, treatment: GapTreatment| -> Vec<String> {
+        let search = o.search.as_ref().expect("a checker ran");
+        assert_eq!(search.engine, "native", "{}", o.output);
+        assert!(search.gaps.iter().all(|g| g.treatment == Some(treatment)), "{:?}", search.gaps);
+        search.gaps.iter().map(|g| g.id.split('@').next().unwrap().to_string()).collect()
+    };
+    for engine in [Engine::Native, Engine::Auto] {
+        let o = prove("capacity", "result == 1", engine, GapMode::Strict);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Refused), ["jdk-constructor:java.util.ArrayList.<init>(I)V"]);
+        assert!(o.problem.as_deref().unwrap().contains("refused it (--gaps strict): jdk-constructor:java.util.ArrayList.<init>(I)V"), "{}", o.output);
+        assert!(o.search.as_ref().unwrap().fallback.is_none(), "JBMC is not asked: {}", o.output);
+        assert_eq!(o.output.contains("so JBMC is not asked"), engine == Engine::Auto, "{}", o.output);
+        // The path ends at the first gap it reaches, so the mutator after the constructor is never met.
+        let o = prove("firstByte", "out.length == 0 || result == \\old(out[0])", engine, GapMode::Strict);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Refused), ["jdk-constructor:java.util.Random.<init>(J)V"]);
+        let o = prove("nullMonitor", "result == 1", engine, GapMode::Strict);
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert_eq!(o.counterexample.as_ref().unwrap().outcome, "throws NullPointerException", "{}", o.output);
+
+        let o = prove("capacity", "result == 1", engine, GapMode::Assume);
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Assumed), ["jdk-constructor:java.util.ArrayList.<init>(I)V"]);
+        assert!(o.output.contains(" on every input, assuming 1 behaviour the tool's own checker does not implement (--gaps assume) ("), "{}", o.output);
+        assert!(o.output.contains("\n  assumed: jdk-constructor:java.util.ArrayList.<init>(I)V"), "{}", o.output);
+        assert!(o.output.contains("java.util.ArrayList.<init>(int) constructs the object and does nothing else"), "{}", o.output);
+        let o = prove("firstByte", "out.length == 0 || result == \\old(out[0])", engine, GapMode::Assume);
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Assumed), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"]);
+        assert!(o.output.contains("assuming 2 behaviours"), "{}", o.output);
+        let o = prove("nullMonitor", "result == 1", engine, GapMode::Assume);
+        assert_eq!(o.verdict, Verdict::Violation, "a monitor is no gap: {}", o.output);
+    }
+    // A regression proof meets them the same way: a JDK constructor added to a method that returns 1.
+    let (Some(before), Some(after)) = (
+        compile_writers("sized-before", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { return 1; } }"),
+        compile_writers("sized-after", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; } }"),
+    ) else {
+        return;
+    };
+    for (gaps, verdict) in [(GapMode::Strict, Verdict::Unverifiable), (GapMode::Assume, Verdict::Verified)] {
+        let mut options = equivalence::Options::new(&before, &after, "fixtures.Sized#capacity");
+        options.engine = Engine::Native;
+        options.gaps = gaps;
+        let work = target_tmp().join(format!("equivalence-sized-{gaps:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let o = equivalence::run(&options).unwrap();
+        assert_eq!(o.verdict, verdict, "{}", o.output);
+        let search = o.search.as_ref().expect("a checker ran");
+        assert_eq!(search.gap_mode, Some(gaps));
+        assert_eq!(search.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>(), ["jdk-constructor:java.util.ArrayList.<init>(I)V"], "{}", o.output);
+        if gaps == GapMode::Assume {
+            assert!(o.output.contains("assuming 1 behaviour the tool's own checker does not implement"), "{}", o.output);
+        }
     }
 }

@@ -316,6 +316,36 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     concatenating, and the engine refuses that call.
   - The scan doesn't walk the harness, or the property and relation expressions compiled into it.
   - Next: 1b, gaps as data in the engine, with `--gaps strict|assume`.
+- **1b, gaps as data, strict and assume (2026-11-05).**
+  - The engine meets four kinds as it runs, sharing `gaps::jdk_instance_call` with the scan, so the two agree:
+    `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` and `string-conversion`. Under `--gaps strict`, the
+    library's default, the path ends at the gap (`End::Gap`). A run that met one is `Unverifiable` unless another
+    path is a violation, and its reason lists every gap met, with sites. Under `--gaps assume` the old approximation
+    stays and is named: `Outcome.gaps` records each gap with its id, call, sites, approximation and treatment, which
+    reach `search.gaps` and `search.gap_mode` in `--json`, then `✓ ..., assuming N behaviours ...` with an
+    `assumed:` line per gap.
+  - Monitors are implemented, not gaps: NPE on null, otherwise nothing. The scan no longer reports them.
+  - `--engine auto` doesn't fall back to JBMC once the own checker has refused a gap, since JBMC would approximate the
+    same call without naming it (4c). That is how auto meets the acceptance.
+  - The engine's module docs have a table: implemented, modelled, gap or refused. A unit test decodes every opcode and
+    checks it has a row there, and that every gap kind has a row in `gaps.rs`.
+  - Acceptance, in the integration test `a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume`:
+    - `new ArrayList<>(n)`, and `Random.nextBytes` on an argument array, are refused by name under strict on native
+      and on auto, and `Verified, assuming ...` under assume.
+    - `synchronized (null)` is a violation in both modes, with an NPE that the interpreter replays.
+    - A real JVM run in the test confirms what the verdicts should be: `IllegalArgumentException`, NPE, and an
+      array changed.
+    - A regression proof with a JDK constructor added gives the same answers.
+  - `build.py` passes `--gaps` only where the own checker decides the verdict (engine `native` or `auto`): the
+    example's `approach.gaps` (in the schema), or `RECORDED_GAP_MODE = "assume"`.
+    - `result.search` keeps `gapMode` and `gaps`.
+    - A verified label and page name the assumed gaps.
+    - No recorded result has gaps (1a), so no page changed and no job was needed.
+  - For 2a: the gap mode is an attempt option, not part of the claim, so a recorded claim doesn't go stale over it. 2a's
+    statement should take it in.
+  - Still approximated silently in both modes, as the table says: hidden fields, literal identity and class
+    initializers. That is 1c.
+  - Next: 1c, identity and initialization.
 
 ## Loop settings
 

@@ -1201,7 +1201,7 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(build.plan(ex)["tools"], {"required": ["java", "javac", "jvmcontract", "jbmc"], "optional": []})
         ex["approach"]["engine"] = "native"
         q = build.plan(ex)
-        self.assertEqual((q["engine"], q["options"]), ("native", ["--engine", "native"]))
+        self.assertEqual((q["engine"], q["options"]), ("native", ["--engine", "native", "--gaps", "assume"]))
         self.assertEqual(q["tools"], {"required": ["java", "javac", "jvmcontract"], "optional": []})
         ex["approach"]["engine"] = "auto"
         self.assertEqual(build.plan(ex)["tools"], {"required": ["java", "javac", "jvmcontract"], "optional": ["jbmc"]})
@@ -1242,7 +1242,7 @@ class PlanTest(unittest.TestCase):
         ex = example(verdict="verified")
         ex["approach"].update({"engine": "native", "unwind": 32, "maxArrayLength": 12})
         options = build.plan(ex)["options"]
-        self.assertEqual(options, ["--engine", "native", "--unwind", "32", "--max-array-length", "12"])
+        self.assertEqual(options, ["--engine", "native", "--gaps", "assume", "--unwind", "32", "--max-array-length", "12"])
         root = Path(tempfile.mkdtemp(prefix="build-test-"))
         self.addCleanup(shutil.rmtree, root)
         commands = []
@@ -1937,6 +1937,63 @@ class StoredFormatTest(unittest.TestCase):
         self.assertEqual(stored["format"], 2)
         self.assertEqual(build.render_example(folder, ex, build.result_format.load(folder / "result.json"),
                                               {"state": "current", "reasons": [], "evidence": []}), page)
+
+
+class GapModeTest(unittest.TestCase):
+    """Step 1b of llm-dlc/loops/sound-verdicts.md: the tool's own checker runs an example in the gap mode its
+    `approach.gaps` names, a recorded example without one in assume, and a verdict that rests on an assumed gap says
+    so in its label, its search record and its page."""
+
+    GAP = {"id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1", "kind": "jdk-constructor",
+           "call": "java.util.ArrayList.<init>(int)", "sites": ["a.B.m:4"],
+           "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+           "treatment": "assumed"}
+
+    def test_the_mode_is_the_example_s_and_assume_for_a_recorded_one(self):
+        ex = example()
+        self.assertIsNone(build.gap_mode(ex), "JBMC decides: no gap mode")
+        self.assertNotIn("--gaps", build.plan(ex)["options"])
+        ex["approach"]["engine"] = "auto"
+        self.assertEqual(build.plan(ex)["options"], ["--engine", "auto", "--gaps", "assume"])
+        ex["approach"]["gaps"] = "strict"
+        self.assertEqual(build.plan(ex)["options"], ["--engine", "auto", "--gaps", "strict"])
+        prop = example(approach="B11")
+        prop["approach"]["engine"] = "native"
+        self.assertEqual(build.proof_options(prop), ["--engine", "native", "--gaps", "assume"])
+        self.assertEqual(build.proof_options(example(approach="B8")), [])
+
+    def test_every_recorded_example_of_the_own_checker_runs_in_assume_unless_it_says(self):
+        for folder, ex in PlanTest.recorded(None):
+            mode = build.gap_mode(ex)
+            if ex["approach"]["id"] in ("B9", "B11") and ex["approach"].get("engine") in ("native", "auto"):
+                self.assertEqual(mode, ex["approach"].get("gaps") or "assume", folder.name)
+            else:
+                self.assertIsNone(mode, folder.name)
+
+    def test_a_verdict_on_an_assumed_gap_says_so(self):
+        ex = example(verdict="verified")
+        ex["approach"]["engine"] = "native"
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        search = {"engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 0.1, "properties": 1,
+                  "unwind": 16, "max_array_length": 8, "stage": None, "gap_mode": "assume", "gaps": [self.GAP]}
+        out = equivalence_json(root, "verified", search=search)
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(0, out)):
+            result = empty_result()
+            build.run_tool_equivalence(root, ex, root, "crosscut", result)
+        self.assertEqual(result["verdict"], "verified")
+        self.assertEqual(result["search"]["gapMode"], "assume")
+        self.assertEqual(result["search"]["gaps"], [self.GAP])
+        self.assertTrue(result["verdictLabel"].endswith(", assuming 1 behaviour the checker does not implement"), result["verdictLabel"])
+        self.assertEqual(build.assumed_gaps(result), [self.GAP])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["search"], {**schema["properties"]["search"], "definitions": schema.get("definitions", {})})
+        # A refused gap is no assumption: the run had no verdict, and the label says nothing of it.
+        refused = {**search, "gap_mode": "strict", "gaps": [{**self.GAP, "treatment": "refused"}]}
+        self.assertEqual(build.assumed_gaps({"search": build.search_record({"search": refused})}), [])
 
 
 class GapScanTest(unittest.TestCase):
