@@ -67,7 +67,13 @@ are yours, but say under Progress which JBMC results they may change.
 
 ## Progress
 
-- Nothing yet.
+- **1c, queued.** Job `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` builds Bitwuzla 0.8.2 from source
+  with `lib/solvers/bitwuzla/build.sh`. It installs into `~/tools/bitwuzla/bitwuzla-0.8.2` and brings back
+  `lib/solvers/bitwuzla/build.json`: the commit, the tarball digest, the CaDiCaL it links, smoke answers and the C API
+  version. It fetches from the network, and says so. The runner is x86_64, not the ARM64 the brief names. If the tag
+  is missing, the job lists the latest tags and exits 3: resubmit pinned to one. Phase 6c's job waits on this one.
+- **Next: 4b**, `jvmcontract gaps` scans over the recorded examples and the apps, counting `class-initializer` gaps by
+  shape.
 - Status: working
 
 ## Loop settings
