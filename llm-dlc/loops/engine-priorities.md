@@ -141,15 +141,23 @@ The verification runner, in the default workspace, also runs the jobs committed 
 own commits, and collects their results there. The stream briefs say which files each owns and how the shared ones are
 changed. The phase order above still holds within each stream.
 
-**Starting them** (the user, from the default workspace): `llm-dlc/tools/run-streams.sh engines`.
+**Running it all** (the user, from the default workspace, in tmux): `llm-dlc/tools/run-streams.sh engines`. It runs
+the streams, then this brief's own loop, unattended, and the user is needed only once that loop is finished.
 - The first time, it compacts the planning session (`3761db96`, the conversation that planned the streams; the
   stream briefs' `- fork:`), and adds the
   workspaces next to the repo, `../REPO-jbmc` and `../REPO-native` (on cvm, `~/code/in-the-loop-jbmc` and `-native`), from
   the latest commit.
 - Each stream's session starts as a fork of that compacted conversation (`- fork:` in its Loop settings), so both
   begin with the same context.
-- Both loops print to the one terminal, each line prefixed with its stream, and Ctrl-C stops both.
-- Running it again continues them, and so does one stream's own `feature-loop.sh engines-STREAM` from its workspace.
+- It starts `verification-loop.sh` (unless one already runs), which runs, collects and commits the loops' jobs.
+- Every brief, this one included, ends its Progress with `- Status: working`, `waiting on jobs ID ...`, `done` or
+  `blocked: ...`. When a loop stops, the script reads it. Waiting on jobs, it waits until their results are collected
+  here and runs the loop again. Done or blocked, the loop is finished. A loop that stops twice in a row without a
+  status that says why counts as blocked.
+- Once both streams are finished, it runs this brief's own loop here, `feature-loop.sh engines`, in a fresh session,
+  then stops the verification loop.
+- Everything prints to the one terminal, each line prefixed with its loop, and Ctrl-C stops all of it. Running the
+  script again continues where it stopped; a loop whose status is done or blocked isn't run again.
 
 The runner's budget is the machine's memory less the loops' caps (3.5 GB each).
 
@@ -167,9 +175,10 @@ conversation or the streams, and nothing of theirs is in its context. It all is 
 | Their logs | `llm-dlc/traces/SESSION/logs/` in each workspace (step 3). |
 | Their jobs | Committed on their branches under `verification/jobs/`, run by the runner here and collected here under `verification/results/`. `python3 verification/pipeline.py status` lists them with every workspace's, and `report` reads the results. |
 
-**Reconciling** is this loop's first piece of work, once both streams have stopped for good: each one's Progress says
-its phases are done, or deferred for the user, and not waiting on a job. Until then, a cycle of this loop does nothing
-and makes no commit, which stops the loop. In order:
+**Reconciling** is this loop's first piece of work. `run-streams.sh` starts this loop once both streams are finished:
+each one's status says `done`, or `blocked` on something for the user. A blocked stream is merged with what it
+committed, and what it needs goes on the list for the user. Started by hand while a stream still runs, a cycle of this
+loop does nothing and makes no commit, which stops the loop. In order:
 
 1. **Check the streams have stopped.** `systemctl --user is-active feature-loop-engine-priorities-jbmc.scope` and
    `feature-loop-engine-priorities-native.scope` must both say inactive.
@@ -372,6 +381,7 @@ Settled by the user on 2026-11-06:
 
 - The streams `engines-jbmc` and `engines-native` work the plan in parallel ([Streams](#streams)); the reconcile
   comes next, once both have stopped.
+- Status: working
 
 ## Loop settings
 
@@ -382,7 +392,10 @@ Settled by the user on 2026-11-06:
 ## Loop until
 
 The reconcile comes first; don't stop before the merge is committed unless a stream is still running or the merge
-needs the user. After it, go on while a cycle can still realize a substantial part of the reasonably attainable value
+needs the user. Keep the last line of Progress a status, as the stream briefs describe: `working`,
+`waiting on jobs ID ...` (stop then: `run-streams.sh` runs this loop again once they are back), `done` when the brief
+is finished, or `blocked: ...` with what needs the user. Your last cycle's commit sets `done` or `blocked`, and the
+Progress above it is what the user reads first. After it, go on while a cycle can still realize a substantial part of the reasonably attainable value
 of this brief. The user
 prefers the loop to run as long as possible, so when in doubt, continue. Phases 1, 2 and 5 are the brief's core: don't
 stop before they're done unless they are blocked on the user or on a job. Stop when most of the rest has been

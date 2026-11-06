@@ -55,6 +55,10 @@ are yours, but say under Progress which JBMC results they may change.
   that workspace's `verification/results/`. Record what you take from a result under Progress with the job id. Its
   outputs (071's and 013's example pages, say) reach this branch only at the merge, so don't copy them in by hand; the
   reconcile loop updates the examples' `notes` from them.
+- **Status.** The last line of `## Progress` is a status, kept current in every commit and read by
+  `run-streams.sh`, which runs this loop unattended: `- Status: working` while there is work you can do,
+  `- Status: waiting on jobs ID ...` when everything left waits on those jobs (it runs the loop again once their results
+  are collected), `- Status: done` when your phases are finished, or `- Status: blocked: ...` with what needs the user.
 - **Another session is not your concern** beyond the loop's usual rule: the JBMC stream works in its own directory
   and never touches this working copy.
 - **Where you started.** Your session is a fork of the conversation that planned the streams (session `3761db96`,
@@ -64,6 +68,7 @@ are yours, but say under Progress which JBMC results they may change.
 ## Progress
 
 - Nothing yet.
+- Status: working
 
 ## Loop settings
 
@@ -76,7 +81,7 @@ are yours, but say under Progress which JBMC results they may change.
 ## Loop until
 
 Go on while one of your phases has a step that needs nothing but your own work. Phase 5 is the core of this stream:
-don't stop before it is done unless a step waits on a job or on the user. When everything left waits on a job, say so
-under Progress with the job ids and stop: the loop is continued by running the same command once the results are
-back. Stop when your phases are done, or what is left needs the user's input and is recorded under Progress as
-deferred. Don't go on to polish, and don't start work that belongs to the other stream or the reconcile loop.
+don't stop before it is done unless a step waits on a job or on the user. When everything left waits on jobs, set the status
+to `waiting on jobs ID ...` and stop: you are run again once their results are collected. Stop with `done` when your
+phases are finished, or with `blocked: ...` when what is left needs the user's input and is recorded under Progress
+as deferred. Don't go on to polish, and don't start work that belongs to the other stream or the reconcile loop.

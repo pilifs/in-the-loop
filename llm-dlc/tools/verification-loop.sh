@@ -19,6 +19,7 @@
 #
 # While it runs, type a command and Enter (see HELP below): stop ends it after
 # the run under way, or at once while it waits; now checks the queue at once.
+# SIGUSR1 is the same stop, for a script that runs it (run-streams.sh does).
 #
 # Exits 0 when stopped, 2 for a bad argument, and 130 if interrupted.
 
@@ -85,6 +86,8 @@ cleanup() {
 }
 trap cleanup EXIT
 trap 'exit 130' INT TERM
+# Bash runs a trap only once the command in the foreground is over, so a run under way finishes first.
+trap 'echo stop >"$REQUEST"; log "stop requested (SIGUSR1): the loop ends after the run under way, if any"' USR1
 
 stop_requested() { [[ "$(cat "$REQUEST" 2>/dev/null)" == stop ]]; }
 
