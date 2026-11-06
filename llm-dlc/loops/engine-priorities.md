@@ -81,7 +81,7 @@ and 16× on example 141.
 - **Witnesses that don't reproduce.** On `conformance/caught/1` and `nestedHandler/1`, JBMC's counterexample doesn't
   reproduce in the interpreter. The tool answers unverifiable instead of reporting a false alarm. The cause is not known:
   models, exception handling, translation, or reading the trace.
-- **Example 071.** Its first two property proofs reach `List.of` and `List.copyOf` (013 also reaches `Enum.<init>`).
+- **Example 071.** Its first two property proofs reach JBMC stubs for `Enum.<init>`, `List.of` and `List.copyOf` (013 reaches the same three).
   Strict turns them into no verdict, while the example's violation label stands. That was projected from job
   `-082917`'s recorded gaps, not from a strict rerun.
 
@@ -129,7 +129,7 @@ one's.
 default changes only on the job's evidence, and **only JBMC's** (decided 2026-11-06). The own checker keeps searching
 its stages per violating path. Those stages are cheap, and they keep its witnesses small.
 
-### Phase 3: application class initializers in the own checker
+### Phase 3: application class initializers, enums and immutable lists
 
 - **Count first.** Find how often `class-initializer` gaps occur, and of what shape, in the recorded examples and in
   the apps (Mica, Crosscut, Quorum, Box Office), from `--gaps` scans run inline where they are cheap. The recorded
@@ -141,6 +141,19 @@ its stages per violating path. Those stages are cheap, and they keep its witness
   `ExceptionInInitializerError` and the later `NoClassDefFoundError`.
 - **Check** against the JVM in the conformance corpus. `boom`, `inherited` and `quiet` become correct on the own
   checker.
+- **Model `Enum.<init>`, `List.of` and `List.copyOf` in `lib/models`** (decided 2026-11-06). They become bytecode on
+  JBMC's class path and in the interpreter, so they stop being gaps rather than being covered by contracts. Follow the
+  rules for adding a model in `lib/models/README.md`.
+  - `Enum.<init>(String, int)` sets `name` and `ordinal`, exactly.
+  - `List.of` and `List.copyOf` return a small immutable list. It throws `NullPointerException` on a `null` element and
+    `UnsupportedOperationException` on any change. `copyOf` hands back the same instance for a list that is already
+    immutable, since identity is observable.
+  - Add conformance cases for each behaviour, checked against a real JVM.
+  - **The check:** examples 071 and 013 rerun under strict. 071's first two property proofs, which strict turns into
+    no verdict today, come back as proved with no gap. 013's violation still replays.
+  - Every property proof over a Quorum kernel benefits, since they all return `Decision`, which calls these.
+  - The own checker needs `Enum.<init>` for enum initializers anyway. Whether it uses these models in its own fragment
+    (it refuses arrays of references, which `List.of`'s varargs creates) is part of the scope chosen after the count.
 - **Then a coverage inventory.** Match own checker against JBMC over every recorded example to pick the next semantic
   extension, floating point (035) being the known candidate. The inventory comes before choosing.
 
@@ -164,12 +177,6 @@ report for the user, never filed by an agent.
     in scope only where a quick estimate shows more than an incremental gain. A small percentage is deferred.
   - Record both the fixed transcripts and the full checks.
 
-### Phase 6, targeted: example 071's two property proofs
-
-If they're worth recovering, write contracts for `List.of` and `List.copyOf` through the advised protocol, proved or
-tested as the contract library requires. The contracts have to represent immutability and null rejection correctly. It
-is a small, model-level task, not engine work.
-
 ## Deferred: a JBMC fork
 
 No result makes a fork the best use of the time. These candidates are kept for reference only:
@@ -184,6 +191,15 @@ No result makes a fork the best use of the time. These candidates are kept for r
 
 Reconsider only if Phase 2 leaves JBMC's own solving as the cost on a workload that matters, and the own checker can't
 take that workload.
+
+## Deferred: verifying complex objects
+
+Contracts under `--gaps advised` for calls with object parameters (`List.of`, `List.copyOf`, `Enum.<init>`) can only be
+*trusted*: the contract language states conditions over primitive parameters alone, and the JVM test can't generate
+objects. Such a contract can also be false in general (`List.of` throws on a `null` element, and a contract can't say
+so). A proof that rests on one would look stronger than it is, so it isn't done here (decided 2026-11-06). Phase 3's
+models cover the known cases. Other ways of verifying calls over complex objects, and the entities themselves, are to
+be revisited in a later loop.
 
 These upstream reports could still be drafted for the user, never filed by an agent:
 - `forDigit` ignores its radix;
