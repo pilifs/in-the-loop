@@ -163,6 +163,9 @@ proof, as everywhere in this repo: an exit of 0 with `jbmc:no-verdict` is not on
 
 The environment (host, CPU, memory, Java, JBMC, TLC, cargo and rustc versions), the commit, the limits, and the
 jvmcontract build (by the tree id of `lib/`) are recorded, so a result can be compared with one from another machine.
+`report` names the machine of every result (host, architecture, WSL, CPUs) and gives its calibration table per
+machine, since a duration measured on one says little about another. Every result collected before 2026-11-06 ran on
+an 8-core aarch64 WSL2 laptop; later ones on a 28-vCPU x86_64 VM, unless they say otherwise.
 
 ## Running: resources, isolation, configuration
 
@@ -202,8 +205,9 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
 - `link`: paths outside git that jobs need, linked into every export (none by default; the JDK models that once
   lived in a fork under `libs/` now ship with `jvmcontract`).
 
-On this machine (8 cores, 9 GB, WSL) the defaults leave room for one development session in the feature loop's 4 GB
-scope. Without it, `--memory 7G` is safe.
+The committed defaults suit the WSL laptop (8 cores, 9 GB): they leave room for one development session in the
+feature loop's scope (3.5 GB by default). Without it, `--memory 7G` is safe there. A bigger machine sets its own budget
+in `pipeline.local.toml`, with a comment on what it leaves for the loop (`FEATURE_LOOP_MEMORY_MAX`) and the OS.
 
 ## Backends: other machines and the cloud
 

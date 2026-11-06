@@ -9,6 +9,7 @@ The systemd tests (hard memory cap, cgroup measurements) run only where `systemd
 import json
 import os
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -127,6 +128,12 @@ class PipelineTest(unittest.TestCase):
         report = json.loads(self.repo.pipeline("report", "--format", "json").stdout)
         self.assertEqual(report["results"][0]["status"], "passed")
         self.assertIn("test", report["calibration"])
+        machine = report["results"][0]["machine"]
+        self.assertTrue(machine.startswith(socket.gethostname() + " ("), machine)
+        self.assertEqual(list(report["calibrationByHost"]), [machine])
+        self.assertIn("test", report["calibrationByHost"][machine])
+        self.assertIn(f"on {machine})", self.repo.pipeline("report").stdout)
+        self.assertIn(f"## Estimates against use on {machine}", self.repo.pipeline("report").stdout)
         self.assertIn("## Passed", self.repo.pipeline("report").stdout)
         self.assertIn("collected: 1", self.repo.pipeline("status", "--rev", "HEAD").stdout)
 

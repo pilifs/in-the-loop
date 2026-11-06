@@ -1315,6 +1315,24 @@ def load_results(args):
     return results
 
 
+def machine_label(r):
+    """Which machine ran a result, for a reader: its host, architecture, WSL when it was, and CPUs. Estimates and
+    timings are only comparable within one machine (until 2026-11-06 every result came from one 8-core WSL laptop)."""
+    e = r.get("environment") or {}
+    host = (r.get("runner") or {}).get("host") or e.get("host") or "?"
+    wsl = " WSL2" if "microsoft" in (e.get("os") or "").lower() else ""
+    cpus = f", {e['cpuCount']} CPUs" if e.get("cpuCount") else ""
+    return f"{host} ({e.get('machine') or '?'}{wsl}{cpus})"
+
+
+def calibration_by_host(results):
+    """calibration() for each machine on its own: a ratio pooled over a laptop and a server says little of either."""
+    hosts = {}
+    for r in results:
+        hosts.setdefault(machine_label(r), []).append(r)
+    return {host: calibration(rs) for host, rs in sorted(hosts.items())}
+
+
 def calibration(results):
     groups = {}
     for r in results:
@@ -1336,7 +1354,7 @@ def cmd_report(args):
     if args.format == "json":
         print(json.dumps({"schema": "verification-report/v1", "results": [{
             "id": r["id"], "title": r.get("title"), "status": r["status"], "summary": r["summary"],
-            "attention": r["attention"], "capabilities": r["job"]["spec"].get("capabilities", []),
+            "machine": machine_label(r), "attention": r["attention"], "capabilities": r["job"]["spec"].get("capabilities", []),
             "links": r["job"]["spec"].get("links", {}), "description": r["job"]["spec"].get("description"),
             "expected": r["job"]["spec"].get("expected"), "sourceCommit": r["sourceCommit"],
             "finishedAt": r["finishedAt"], "usage": r.get("usage"), "estimate": r.get("estimate"),
@@ -1346,7 +1364,7 @@ def cmd_report(args):
                        "log": f"{RESULTS}/{r['id']}/{s['log']['path']}" if s.get("log") else None} for s in r["steps"]],
             "outputs": r["outputs"], "collected": r.get("collected"),
             "result": f"{RESULTS}/{r['id']}/result.json"} for r in results],
-            "calibration": calibration(results)}, indent=2, ensure_ascii=False))
+            "calibration": calibration(results), "calibrationByHost": calibration_by_host(results)}, indent=2, ensure_ascii=False))
         return 0
     counts = {}
     for r in results:
@@ -1359,7 +1377,7 @@ def cmd_report(args):
         for r in needs:
             spec = r["job"]["spec"]
             print(f"### {r['id']}: {r.get('title')}\n")
-            print(f"- **{r['status']}** at `{r['sourceCommit'][:12]}`, capabilities {', '.join(spec.get('capabilities', []))}")
+            print(f"- **{r['status']}** at `{r['sourceCommit'][:12]}`, capabilities {', '.join(spec.get('capabilities', []))}, on {machine_label(r)}")
             print(f"- {r['summary']}")
             for a in r["attention"]:
                 print(f"- attention: {a}")
@@ -1373,10 +1391,9 @@ def cmd_report(args):
     if clean:
         print("\n## Passed\n")
         for r in clean:
-            print(f"- `{r['id']}` {r.get('title')}: {r['summary']}")
-    cal = calibration(results)
-    if cal:
-        print("\n## Estimates against use (median ratio of used to estimated)\n")
+            print(f"- `{r['id']}` {r.get('title')}: {r['summary']} (on {machine_label(r)})")
+    for host, cal in calibration_by_host(results).items():
+        print(f"\n## Estimates against use on {host} (median ratio of used to estimated)\n")
         print("| capability | jobs | duration | memory |\n|---|---|---|---|")
         for cap, c in cal.items():
             print(f"| {cap} | {c['jobs']} | {c['medianDurationOfEstimate'] or '?'} | {c['medianMemoryOfEstimate'] or '?'} |")
