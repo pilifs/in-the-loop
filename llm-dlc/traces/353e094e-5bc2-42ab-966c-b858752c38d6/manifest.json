@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T16:53:18.349Z",
-  "ended": "2026-11-06T18:24:54.481Z",
-  "duration_seconds": 5496,
+  "ended": "2026-11-06T18:27:08.299Z",
+  "duration_seconds": 5630,
   "stats": {
-    "turns": 11,
-    "api_calls": 188,
-    "tool_calls": 184,
+    "turns": 12,
+    "api_calls": 191,
+    "tool_calls": 186,
     "tool_errors": 6,
     "compactions": 0,
-    "peak_context_tokens": 285942,
+    "peak_context_tokens": 288016,
     "usage": {
-      "input_tokens": 398,
-      "output_tokens": 121216,
-      "cache_read_input_tokens": 29407182,
-      "cache_creation_input_tokens": 249117
+      "input_tokens": 406,
+      "output_tokens": 122916,
+      "cache_read_input_tokens": 30267546,
+      "cache_creation_input_tokens": 250389
     }
   },
   "tools": {
-    "Bash": 177,
+    "Bash": 179,
     "Edit": 4,
     "Read": 1,
     "Skill": 1,
@@ -45,24 +45,24 @@
     {
       "index": 0,
       "started": "2026-11-06T16:53:18.349Z",
-      "ended": "2026-11-06T18:24:54.481Z",
-      "turns": 11,
-      "api_calls": 188,
+      "ended": "2026-11-06T18:27:08.299Z",
+      "turns": 12,
+      "api_calls": 191,
       "usage": {
-        "input_tokens": 398,
-        "output_tokens": 121216,
-        "cache_read_input_tokens": 29407182,
-        "cache_creation_input_tokens": 249117
+        "input_tokens": 406,
+        "output_tokens": 122916,
+        "cache_read_input_tokens": 30267546,
+        "cache_creation_input_tokens": 250389
       },
-      "peak_context_tokens": 285942
+      "peak_context_tokens": 288016
     }
   ],
   "log": {
-    "sha256": "ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c",
-    "bytes": 3588188,
-    "lines": 1398,
-    "gzip_bytes": 563186,
-    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c.jsonl.gz"
+    "sha256": "0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff",
+    "bytes": 3676838,
+    "lines": 1418,
+    "gzip_bytes": 582436,
+    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -156,14 +156,28 @@
     },
     {
       "change_id": "uqpqmzoxzroosktovokrlwkwwlppqxvu",
-      "commit_id": null,
+      "commit_id": "ffe65af7b226fcb533d5755980dbe22f1dc66298",
       "immutable": false,
       "summary": "Verification findings that need a person go into verification/findings.md, kept by the agent that runs the pipeline",
       "body": "A run's findings lived in its results, its commit message and the managing session's report, and the last two are easy to lose before anyone acts. verification/findings.md is now the durable list: each entry (VF-NNN) records a verdict against a change, an error a submitter must fix, or a decision that changes what the results mean, with its jobs, commit and machine, what was found, what would settle it and who should act, where else it is tracked, and the check that closes it. Open entries come first.\n\nIt starts with the two open findings from the first runs on vm-1: VF-001, the conformance corpus jobs where JBMC proves claims the JVM refutes, reports violations the JVM does not reproduce, and --engine auto passes JBMC's wrong Verified through (Phase 1 of the sound-verdicts brief is not done); and VF-002, examples 147-149, whose patches create their subject file, which build.py's excerpts() does not accept. The run-verification skill gains a Record step (add, update, close; never close on a job that did not run the named check), reads open entries before a run, commits the file with the results and names entries in its report. The unattended verification loop's instruction and the verification README say the same.",
       "log_sha256": "ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c"
+    },
+    {
+      "change_id": "kqnlkvuwowpvnmruzurzksmrtwzyurrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff"
     }
   ],
   "logs": {
+    "0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff": {
+      "bytes": 3676838,
+      "lines": 1418,
+      "gzip_bytes": 582436,
+      "url": "https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff.jsonl.gz"
+    },
     "2ae1e3413befcd540d0a5c0caa3dd9b9b90c95670a4991611566016c4d293ca0": {
       "bytes": 3394846,
       "lines": 1330,
@@ -228,7 +242,7 @@
       "bytes": 3588188,
       "lines": 1398,
       "gzip_bytes": 563186,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c.jsonl.gz"
     },
     "dc30323604ebe5941eb48b23aaf539bdb4599a7c90978fbdefff902f23e1e58f": {
       "bytes": 928078,
