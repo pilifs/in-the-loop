@@ -523,6 +523,26 @@ the example's folder. Evidence files from an earlier run that the bundle doesn't
 goes last. A file that no longer matches its bundle entry, or one the bundle doesn't list, is not this run's evidence.
 `bundle_problems()` in `build.py` says which. Results recorded before 2026-11-05 have none of these four blocks.
 
+**How `result.json` is stored.** A run stores **format 2** (`"format": 2`), in which each fact appears once. The
+blocks are `claim`, `attempt` (the only place the run's `execution` is kept), `conclusion`, `evidence` and `bundle`.
+- `conclusion` holds the verdict as `status`, with its `label`, `vacuous` and `expectation`.
+- Each obligation in `conclusion` carries its own `evidence`: a B11 property's record, a D1 configuration's, or a
+  generated operator's contract as built.
+- `evidence` holds everything else under the flat names: the excerpts, existing tests, counterexamples, trace,
+  coverage and files. It also holds B11's headline fields, a summary of its properties that a later format will
+  compute instead.
+
+Every result recorded before format 2 is **format 1**: the flat result, with no `format` field, read as it is.
+Everything reads results through one function, `result_format.load()` in
+[`tools/result_format.py`](tools/result_format.py). It gives the flat view the pages, the router and the checks use,
+for any stored format, so no page changed with the format. Before publishing, a run checks that storing its result as
+format 2 and reading it back gives the same result, and validates the stored document against
+[`schema/stored-result.schema.json`](schema/stored-result.schema.json). The flat view is validated against
+[`schema/result.schema.json`](schema/result.schema.json), which defines each field.
+`python3 examples/tools/result_format.py` counts the committed results of each format. The module's docstring says
+what moving to the next format takes: rendering from the stored document instead of the view, and retiring format 1
+once the pipeline has run every example again.
+
 Every command a run makes is a named **stage** (`stage()` in `build.py`). Its stdout and stderr stream into the attempt's
 `logs/NN-name.stdout` and `logs/NN-name.stderr` as it runs, and `logs/stages.jsonl` gets a line as each stage starts and
 another as it ends. A short progress line is printed for each (`  · jvmcontract equivalence: exited 1, 3.2 s`), so the

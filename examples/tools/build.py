@@ -5,7 +5,7 @@ Each example folder holds what a person writes: example.json (the change, its ri
 change.patch. This script applies the patch to a temporary copy of the repo, runs the real verifier named by the
 example's approach, and writes what it produced next to them:
 
-  result.json          verdict, counterexamples, before/after excerpts, contract diff (examples/schema/result.schema.json)
+  result.json          verdict, counterexamples, before/after excerpts, contract diff (stored as examples/schema/stored-result.schema.json, read through tools/result_format.py)
   result.sarif         the verifier's SARIF report, with repo-relative paths
   verifier-output.txt  the verifier's console output
   statement.java       for symbolic proofs: the generated statement the prover checked
@@ -61,6 +61,9 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # the pipeline imports build.py by its path
+import result_format  # noqa: E402  the stored result's format, and the flat view everything here reads
 
 REPO = Path(__file__).resolve().parents[2]
 EXAMPLES = REPO / "examples"
@@ -213,7 +216,7 @@ def main(argv):
                 if wanted:
                     unrendered.append(folder.name)
                 continue
-            res = json.loads((folder / "result.json").read_text())
+            res = result_format.load(folder / "result.json")
             snap = snapshot(folder, example, res)
             if snap["state"] == "stale":
                 print(f"{folder.name}: stale ({'; '.join(snap['reasons'])})")
@@ -635,7 +638,7 @@ def finish(result, example):
 # of llm-dlc/loops/build-orchestration.md: the flat result stays until the user decides to retire it).
 
 CLAIM_FORMAT = 1
-CONCLUSION = {"verified": "established", "violation": "refuted", "unverifiable": "unresolved"}
+CONCLUSION = result_format.CONCLUSION
 # Files a run leaves as its evidence, besides result.json; a published bundle replaces every one of them.
 EVIDENCE = re.compile(r"^(result\.sarif|verifier-output\.txt|statement(-\d+)?\.java)$")
 
@@ -813,23 +816,8 @@ def attempt_record(claim, p, started, seconds, result, after_classes, before_cla
 
 
 def conclusion_record(claim, attempt, result):
-    """What the attempt concluded about the claim: established, refuted or unresolved (None without a verdict), and
-    the same for each obligation it checked: each property of a B11 target, each configuration of a D1 model, and
-    each generated operator's contract as built."""
-    status = CONCLUSION.get(result["verdict"]) if result["verdict"] else None
-    obligations = []
-    for i, q in enumerate(result.get("properties") or [], 1):
-        obligations.append({"name": q.get("harness") or f"property-{i}", "statement": q["assert"],
-                            "status": CONCLUSION.get(q["verdict"])})
-    for c in result.get("configurations") or []:
-        obligations.append({"name": c["label"], "statement": c["cfg"],
-                            "status": CONCLUSION.get(c["verdict"]) if c.get("status") == "completed" else None})
-    for m in result.get("modelContracts") or []:
-        obligations.append({"name": m["symbol"], "statement": "the contract the operator is generated from, as built",
-                            "status": "established" if m["connection"] == "verified" or m.get("allowed") else "refuted"})
-    return {"claim": claim["id"], "attempt": attempt["id"], "status": status,
-            "vacuous": bool((result.get("coverage") or {}).get("vacuous")), "expectation": result["expectation"],
-            "obligations": obligations}
+    """What the attempt concluded about the claim, per obligation (result_format.conclusion_record)."""
+    return result_format.conclusion_record(claim, attempt, result)
 
 
 def referenced_files(result):
@@ -866,9 +854,14 @@ def bundle_problems(directory, result):
 
 
 def check_result(out, result):
-    """The whole result validated before anything is published: the schema, then the bundle against the attempt's
-    directory. Exits on the first problem, leaving the example's folder as it was."""
+    """The whole result validated before anything is published: the flat result against its schema, its round trip
+    through the stored format (result_format), the stored document against its own schema, then the bundle against
+    the attempt's directory. Exits on the first problem, leaving the example's folder as it was."""
     validate(result, "result.schema.json", Path(out) / "result.json")
+    problems = result_format.round_trip_problems(result)
+    if problems:
+        sys.exit(f"{out}: the result cannot be stored as format {result_format.FORMAT} without loss: " + "; ".join(problems))
+    validate(result_format.pack(result), "stored-result.schema.json", Path(out) / "result.json")
     problems = bundle_problems(out, result)
     if problems:
         sys.exit(f"{out}: the run's evidence is not its bundle: " + "; ".join(problems))
@@ -883,7 +876,8 @@ def attempt_directory(folder):
 
 def publish(folder, out, result):
     """Publishes a checked bundle into the example's folder: each listed file by an atomic rename, then every
-    evidence file of an earlier run that the bundle does not list is removed, and result.json goes last. A run
+    evidence file of an earlier run that the bundle does not list is removed, and result.json goes last, in the
+    stored format (result_format.pack()). A run
     interrupted on the way leaves a result.json whose bundle the files do not match, which bundle_problems() shows."""
     listed = [a["path"] for a in result["bundle"]["artifacts"]]
     for name in listed:
@@ -894,7 +888,7 @@ def publish(folder, out, result):
         if f.is_file() and EVIDENCE.match(f.name) and f.name not in listed:
             f.unlink()
     staged = folder / ".result.json.publishing"
-    staged.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+    staged.write_text(json.dumps(result_format.pack(result), indent=2, ensure_ascii=False) + "\n")
     staged.replace(folder / "result.json")
 
 
@@ -3550,7 +3544,7 @@ def render_index(folders):
     for folder in folders:
         ex = load_example(folder)
         result_file = folder / "result.json"
-        res = json.loads(result_file.read_text()) if ex["origin"] == "constructed" and result_file.exists() else None
+        res = result_format.load(result_file) if ex["origin"] == "constructed" and result_file.exists() else None
         examples.append((folder, ex, res))
     vocabulary = tag_vocabulary()
     rows, index = [], []

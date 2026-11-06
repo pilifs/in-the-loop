@@ -288,7 +288,8 @@ class PipelineTest(unittest.TestCase):
         """A constructed example in the stub repo, with build.py beside it to plan its run."""
         tools = self.repo.dir / "examples/tools"
         tools.mkdir(parents=True, exist_ok=True)
-        shutil.copy(HERE.parent / "examples/tools/build.py", tools / "build.py")
+        for module in ("build.py", "result_format.py"):  # build.py and the module it imports
+            shutil.copy(HERE.parent / "examples/tools" / module, tools / module)
         folder = self.repo.dir / f"examples/{example_id}-a-constructed-change"
         folder.mkdir(parents=True)
         (folder / "example.json").write_text(json.dumps({

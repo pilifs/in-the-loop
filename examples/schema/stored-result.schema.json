@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pilifs/in-the-loop/examples/schema/stored-result.schema.json",
+  "title": "An example's result.json as stored, format 2",
+  "description": "What build.py writes since format 2 (examples/tools/result_format.py): each fact once. This schema checks the document's structure. Each field's own definition is in result.schema.json, which validates the flat view of the document (result_format.view()), the shape the pages are rendered from. A result recorded before has format 1: the flat result itself, with no `format` field, validated by result.schema.json alone.",
+  "type": "object",
+  "required": [
+    "format",
+    "claim",
+    "attempt",
+    "conclusion",
+    "evidence",
+    "bundle"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": 2
+    },
+    "claim": {
+      "description": "What is checked, over which scope, against which inputs (result.schema.json#/properties/claim).",
+      "type": "object"
+    },
+    "attempt": {
+      "description": "The run as one attempt at the claim, with how it ended in `execution`, the only place format 2 keeps it (result.schema.json#/properties/attempt).",
+      "type": "object",
+      "required": [
+        "execution"
+      ]
+    },
+    "conclusion": {
+      "description": "What the attempt concluded: the verdict as `status`, its label, vacuity and the example's expectation, and each obligation with its own evidence.",
+      "type": "object",
+      "required": [
+        "claim",
+        "attempt",
+        "status",
+        "label",
+        "vacuous",
+        "expectation",
+        "obligationKeys",
+        "obligations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "type": "string"
+        },
+        "attempt": {
+          "type": "string"
+        },
+        "status": {
+          "description": "The verdict: verified is established, violation refuted, unverifiable unresolved; null without one.",
+          "enum": [
+            "established",
+            "refuted",
+            "unresolved",
+            null
+          ]
+        },
+        "label": {
+          "description": "The verdict as the page shows it (the flat `verdictLabel`).",
+          "type": "string"
+        },
+        "vacuous": {
+          "type": "boolean"
+        },
+        "expectation": {
+          "enum": [
+            "yes",
+            "no",
+            "not-evaluable"
+          ]
+        },
+        "obligationKeys": {
+          "description": "For each kind of obligation the run stored, the flat field its obligations are shown as, in order.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property": {
+              "const": "properties"
+            },
+            "configuration": {
+              "const": "configurations"
+            },
+            "operator-contract": {
+              "const": "modelContracts"
+            }
+          }
+        },
+        "obligations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "name",
+              "statement",
+              "status",
+              "evidence"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "property",
+                  "configuration",
+                  "operator-contract"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "statement": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "established",
+                  "refuted",
+                  "unresolved",
+                  null
+                ]
+              },
+              "evidence": {
+                "description": "The obligation's own record: an item of the flat `properties`, `configurations` or `modelContracts`.",
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "description": "Everything else the run found, under the flat names: the excerpts, existing tests, counterexamples, trace, coverage, files, and the approach's own fields. B11's headline fields (`property`, `domain`, `proof`, `problem`, `statement`) are a summary of its property obligations, kept until the format after this one computes them.",
+      "type": "object",
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "verdict"
+            ]
+          },
+          {
+            "required": [
+              "verdictLabel"
+            ]
+          },
+          {
+            "required": [
+              "execution"
+            ]
+          },
+          {
+            "required": [
+              "expectation"
+            ]
+          },
+          {
+            "required": [
+              "matchesExpected"
+            ]
+          },
+          {
+            "required": [
+              "claim"
+            ]
+          },
+          {
+            "required": [
+              "attempt"
+            ]
+          },
+          {
+            "required": [
+              "conclusion"
+            ]
+          },
+          {
+            "required": [
+              "bundle"
+            ]
+          }
+        ]
+      }
+    },
+    "bundle": {
+      "description": "The evidence files the run left, with their SHA-256 (result.schema.json#/properties/bundle).",
+      "type": "object"
+    }
+  }
+}

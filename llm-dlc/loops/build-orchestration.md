@@ -389,6 +389,33 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     thirty-nine earlier jobs had not run at the start of this cycle.
   - Phase 3 is done, and with it Phases 1-3 of the plan. What remains of [Done when](#done-when) is the pipeline jobs
     coming back with their expected verdicts, or their failures explained here.
+- **Open question 1 settled** (2026-11-05, by the user): Option B now, moving to Option C once the pipeline has run
+  the examples again. The user may hold off on C a little longer, since more schema or breaking changes are expected,
+  so the format is versioned and kept in one module.
+  - `result.json` is stored as format 2 (`examples/tools/result_format.py`, `examples/schema/stored-result.schema.json`),
+    with each fact stored once.
+    - The verdict is `conclusion.status` with its `label`, and the execution lives only in `attempt.execution`.
+    - Each obligation (a B11 property, a D1 configuration, a generated operator's contract) carries its own
+      `evidence` and a `kind`.
+    - Everything else stays under `evidence`, by its flat name. That includes B11's headline fields: the runner derives
+      them together with how the run ended, so recomputing them in the view would duplicate that logic. C computes them.
+  - Format 1 (no `format` field, every committed result) reads as it is. `result_format.load()` is the only way
+    results are read back, by the renderer, the router and `--render-only`. `view()` dispatches on `format` through
+    `VIEWS`, so the next format is another entry there.
+  - `check_result()` refuses a result whose round trip `view(pack(r)) == r` fails (`round_trip_problems()`), and
+    validates the stored document against its schema, before anything is published. The flat view is still validated
+    against `result.schema.json`, which keeps each field's definition. `build.py` puts its own directory on `sys.path`
+    because the pipeline imports it by path, and `test_pipeline.py`'s stub repo now copies the module too.
+  - The module's docstring lists what C takes: render from the stored document, compute B11's headline from the
+    obligations, retire `VIEWS[1]` when `python3 examples/tools/result_format.py` counts no format 1 result. It counts
+    140 today.
+  - No page moved under `--render-only`. Tests: `test_build.py` has 129 tests, `test_pipeline.py` 20.
+    - `StoredFormatTest` covers the round trip and stored schema of every committed result's shape (completed with the
+      blocks a run adds), each fact once on 072, null and empty obligation lists, refused round trips, format 1 read
+      as is, an unknown format refused, and a published result being format 2 with an identical page.
+    - Every runner fixture (`run_runner`, `run_tlc`) also checks its result stores whole and validates.
+  - Jobs `20261106-000906-example-{133-b9,071-b11,072-d1,110-b12}-…` must keep their verdicts and store format 2, with
+    obligations of the kinds each run has.
 
 ## Open questions
 

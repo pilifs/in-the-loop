@@ -202,13 +202,32 @@ class ExpectationTest(unittest.TestCase):
         self.assertGreater(checked, 100)
 
 
+def with_blocks(result, out):
+    """The claim, attempt, conclusion and bundle run() ends a result with, for a run the test made up."""
+    claim = {"id": "0123456789abcdef", "format": build.CLAIM_FORMAT, "example": "999", "statement": {}, "scope": {}, "inputs": {}}
+    attempt = {"id": "20261106T000000Z-00000000", "claim": claim["id"], "startedAt": "2026-11-06T00:00:00+00:00",
+               "seconds": 0.0, "engine": None, "options": [], "tools": {}, "bytecode": {"before": None, "after": None},
+               "pipeline": None, "execution": result["execution"]}
+    result.update({"claim": claim, "attempt": attempt, "conclusion": build.conclusion_record(claim, attempt, result),
+                   "bundle": build.bundle_record(out)})
+    return result
+
+
+def stores_whole(test, result, out):
+    """A runner's result stores as format 2 and reads back as itself, with the blocks run() would add."""
+    import copy
+    complete = with_blocks(copy.deepcopy(result), out)
+    test.assertEqual(build.result_format.round_trip_problems(complete), [])
+    build.validate(build.result_format.pack(complete), "stored-result.schema.json", out)
+    return result
+
+
 def left_evidence(result, out, output="the verifier's output\n"):
-    """What a runner leaves in the attempt's directory, and the bundle run() lists of it: its console output, no
+    """What a runner leaves in the attempt's directory, and the blocks run() lists of it: its console output, no
     report."""
     (Path(out) / "verifier-output.txt").write_text(output)
     result["sarif"] = None
-    result["bundle"] = build.bundle_record(out)
-    return result
+    return with_blocks(result, out)
 
 
 class RunnerCase(unittest.TestCase):
@@ -245,7 +264,7 @@ class RunnerCase(unittest.TestCase):
         with mock.patch.object(build.subprocess, "run", side_effect=fake):
             runner(self.folder, ex, self.root, "crosscut", result)
         build.finish(result, ex)
-        return result
+        return stores_whole(self, result, self.folder)
 
 
 class RunnerTest(RunnerCase):
@@ -668,7 +687,7 @@ class BreakerCase(unittest.TestCase):
         with mock.patch.object(build.subprocess, "run", side_effect=fake):
             build.run_tool_tlc(self.folder, ex, self.root, "crosscut", result)
         build.finish(result, ex)
-        return result
+        return stores_whole(self, result, self.folder)
 
 
 class ModelContractTest(BreakerCase):
@@ -1336,6 +1355,8 @@ class EvidenceTest(unittest.TestCase):
             (out / name).write_text(text)
         result = {"sarif": "result.sarif" if "result.sarif" in files else None, "output": "verifier-output.txt",
                   "statement": "statement.java" if "statement.java" in files else None, **result}
+        if "verdict" in result:
+            return out, with_blocks(result, out)
         result["bundle"] = build.bundle_record(out)
         return out, result
 
@@ -1361,12 +1382,14 @@ class EvidenceTest(unittest.TestCase):
     def test_publishing_replaces_every_earlier_evidence_file(self):
         folder = self.tree("example", {"example.json": "{}", "change.patch": "", "README.md": "page",
                                        "result.sarif": "old", "statement-3.java": "old", "verifier-output.txt": "old"})
-        out, result = self.bundle({"verifier-output.txt": "new", "statement.java": "class H {}"})
+        made = {**empty_result(), "execution": build.execution_status(0, "✓"), "verdict": "verified", "verdictLabel": "✓ Verified",
+                "expectation": "yes", "matchesExpected": True, "sarif": None, "statement": "statement.java"}
+        out, result = self.bundle({"verifier-output.txt": "new", "statement.java": "class H {}"}, **made)
         build.publish(folder, out, result)
         self.assertEqual(sorted(f.name for f in folder.iterdir()),
                          ["README.md", "change.patch", "example.json", "result.json", "statement.java", "verifier-output.txt"])
         self.assertEqual((folder / "verifier-output.txt").read_text(), "new")
-        self.assertEqual(build.bundle_problems(folder, json.loads((folder / "result.json").read_text())), [])
+        self.assertEqual(build.bundle_problems(folder, build.result_format.load(folder / "result.json")), [])
 
     def test_a_result_is_not_published_without_jsonschema(self):
         with mock.patch.dict(sys.modules, {"jsonschema": None}), self.assertRaises(SystemExit) as stop:
@@ -1419,7 +1442,7 @@ class EvidenceTest(unittest.TestCase):
         self.assertFalse((folder / "statement.java").exists())  # this run left none
         self.assertFalse((folder / "result.sarif").exists())
         self.assertEqual((folder / "verifier-output.txt").read_text(), "this run's output\n")
-        self.assertEqual(build.bundle_problems(folder, json.loads((folder / "result.json").read_text())), [])
+        self.assertEqual(build.bundle_problems(folder, build.result_format.load(folder / "result.json")), [])
 
     def test_a_run_freezes_its_claim_before_the_runner_and_records_the_attempt(self):
         """run() itself, on 126's real patch and Crosscut's real sources, with the tests and the runner mocked."""
@@ -1837,6 +1860,83 @@ class StagesTest(unittest.TestCase):
             build.tool_before_classes("crosscut")
             build.tool_compile("crosscut", self.dir / "before-crosscut")
         self.assertEqual(names, ["javac unpatched crosscut main", "javac patched crosscut main", "javac patched crosscut tests"])
+
+
+class StoredFormatTest(unittest.TestCase):
+    """Option B of the brief's open question 1: result.json stores format 2, each fact once, and everything reads it
+    through the flat view, so no page or check changes; format 1 results read as they are."""
+
+    def complete(self, folder):
+        """A committed result (format 1) as a run would end it now: with the blocks run() adds, and the execution and
+        expectation a result recorded before them did not have."""
+        r = json.loads((folder / "result.json").read_text())
+        if r.get("execution") is None:
+            r["execution"] = {"status": "completed", "exitCode": 1 if r["verdict"] == "violation" else 0, "reason": "made up"}
+        r.setdefault("expectation", "yes" if r["matchesExpected"] else "no")
+        return with_blocks(r, folder)
+
+    def test_every_committed_results_shape_stores_whole(self):
+        folders = sorted(f for f in build.EXAMPLES.glob("[0-9][0-9][0-9]-*") if (f / "result.json").exists())
+        self.assertGreater(len(folders), 100)
+        for folder in folders:
+            with self.subTest(folder.name):
+                r = self.complete(folder)
+                self.assertEqual(build.result_format.round_trip_problems(r), [])
+                build.validate(build.result_format.pack(r), "stored-result.schema.json", folder)
+
+    def test_format_two_stores_each_fact_once(self):
+        folder = next(build.EXAMPLES.glob("072-*"))  # D1: configurations, coverage, a vacuous verdict
+        r = self.complete(folder)
+        doc = build.result_format.pack(r)
+        self.assertEqual(list(doc), ["format", "claim", "attempt", "conclusion", "evidence", "bundle"])
+        for derived in ("verdict", "verdictLabel", "execution", "expectation", "matchesExpected", "configurations"):
+            self.assertNotIn(derived, doc["evidence"])
+        self.assertEqual(doc["conclusion"]["obligationKeys"], {"configuration": "configurations"})
+        self.assertEqual([o["evidence"] for o in doc["conclusion"]["obligations"]], r["configurations"])
+        self.assertEqual((doc["conclusion"]["status"], doc["conclusion"]["label"]), ("established", r["verdictLabel"]))
+        self.assertEqual(build.result_format.view(doc), r)
+
+    def test_a_null_or_empty_obligation_list_reads_back_as_it_was(self):
+        out = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, out)
+        for value in (None, []):
+            r = with_blocks({**empty_result(), "execution": {"status": "killed", "exitCode": -9, "reason": "signal 9"},
+                             "verdictLabel": "⚠ No verdict", "expectation": "not-evaluable", "matchesExpected": False,
+                             "properties": value}, out)
+            self.assertEqual(build.result_format.round_trip_problems(r), [])
+        r = with_blocks({**empty_result(), "execution": {"status": "killed", "exitCode": -9, "reason": "signal 9"},
+                         "verdictLabel": "⚠ No verdict", "expectation": "not-evaluable", "matchesExpected": False}, out)
+        self.assertNotIn("properties", build.result_format.view(build.result_format.pack(r)))
+
+    def test_a_result_that_would_not_store_whole_is_refused(self):
+        r = self.complete(next(build.EXAMPLES.glob("126-*")))
+        self.assertEqual(build.result_format.round_trip_problems({**r, "verdict": "verified"}),
+                         ["the result's verdict and its conclusion disagree"])
+        self.assertIn("without claim", build.result_format.round_trip_problems({**r, "claim": None})[0])
+        self.assertEqual(build.result_format.round_trip_problems({**r, "matchesExpected": not r["matchesExpected"]}),
+                         [f"`matchesExpected` would be stored as {json.dumps(r['matchesExpected'])} for {json.dumps(not r['matchesExpected'])}"])
+
+    def test_format_one_reads_as_it_is_and_an_unknown_format_is_refused(self):
+        folder = next(build.EXAMPLES.glob("126-*"))
+        self.assertEqual(build.result_format.load(folder / "result.json"), json.loads((folder / "result.json").read_text()))
+        with self.assertRaises(ValueError) as stop:
+            build.result_format.view({"format": 99})
+        self.assertIn("result format 99 is not one build.py reads (it reads 1, 2)", str(stop.exception))
+
+    def test_a_published_result_is_format_two_and_its_page_is_the_same(self):
+        source = next(build.EXAMPLES.glob("126-*"))
+        dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, dir)
+        folder = dir / source.name
+        shutil.copytree(source, folder)
+        ex = json.loads((folder / "example.json").read_text())
+        r = self.complete(folder)
+        page = build.render_example(folder, ex, r, {"state": "current", "reasons": [], "evidence": []})
+        build.publish(folder, folder, r)
+        stored = json.loads((folder / "result.json").read_text())
+        self.assertEqual(stored["format"], 2)
+        self.assertEqual(build.render_example(folder, ex, build.result_format.load(folder / "result.json"),
+                                              {"state": "current", "reasons": [], "evidence": []}), page)
 
 
 class SchemaTest(unittest.TestCase):

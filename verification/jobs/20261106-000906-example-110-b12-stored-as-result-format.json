@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-000906-example-110-b12-stored-as-result-format",
+  "title": "Example 110 (B12) stored as result format 2",
+  "description": "Option B of open question 1 in llm-dlc/loops/build-orchestration.md, settled by the user on 2026-11-05: result.json is now stored as format 2 (examples/tools/result_format.py, examples/schema/stored-result.schema.json). Each fact is stored once: the verdict as conclusion.status, the execution in attempt.execution, each obligation (B11 property, D1 configuration, generated operator's contract) with its own evidence, and everything else under evidence. Pages read it through the flat view, so they render as before. Before publishing, build.py checks that the result stored and read back is the same result; a run whose result would not store whole exits without publishing. The verdict must be as expected, the stored result must have format 2 with obligations of the expected kinds (none), and its flat view must carry the claim and attempt.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "examples": [
+      "110"
+    ]
+  },
+  "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; result.json has format 2 with obligations of kinds: none",
+  "submitted": {
+    "at": "2026-11-06T00:09:06+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "jvmcontract"
+  ],
+  "resources": {
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "Box Office Gradle build and boundary contracts"
+  },
+  "steps": [
+    {
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": "."
+    },
+    {
+      "name": "stored as format 2",
+      "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/110-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted(''.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/110-idempotency-key-header-drops-request-validation"
+  ]
+}
