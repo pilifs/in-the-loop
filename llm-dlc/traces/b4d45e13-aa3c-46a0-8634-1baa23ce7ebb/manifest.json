@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "b4d45e13-aa3c-46a0-8634-1baa23ce7ebb",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-06T19:41:52.761Z",
+  "ended": "2026-11-06T19:42:32.348Z",
+  "duration_seconds": 40,
+  "stats": {
+    "turns": 1,
+    "api_calls": 5,
+    "tool_calls": 7,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 31058,
+    "usage": {
+      "input_tokens": 10,
+      "output_tokens": 967,
+      "cache_read_input_tokens": 128965,
+      "cache_creation_input_tokens": 17939
+    }
+  },
+  "tools": {
+    "Bash": 6,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T19:41:52.761Z",
+      "ended": "2026-11-06T19:42:32.348Z",
+      "turns": 1,
+      "api_calls": 5,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 967,
+        "cache_read_input_tokens": 128965,
+        "cache_creation_input_tokens": 17939
+      },
+      "peak_context_tokens": 31058
+    }
+  ],
+  "log": {
+    "sha256": "a90e2296dc81450d560b1e1c74789c436858b23f430f218b1cec530c21367029",
+    "bytes": 276563,
+    "lines": 67,
+    "gzip_bytes": 69745,
+    "path": "llm-dlc/traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/logs/a90e2296dc81450d560b1e1c74789c436858b23f430f218b1cec530c21367029.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "pmpwplnrkoswtrnvzwkrxynsympksowl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Resubmit the CBMC 6.11.0 source-reading job with a grep that matches (verification pending)",
+      "body": "Job 20261106-192959-cbmc-6-11-0-s-source-times-runtime-post failed (VF-004) because its display grep '^decision_proceduret::resultt run_property_decider' matched nothing in CBMC 6.11.0's bmc_util.cpp, and under pipefail that ended the step before any check ran. The new job prints run_property_decider with 'grep -n -B2 -A45 \"run_property_decider(\"', and also the 'Runtime decision procedure' line and the post_processing_done guard. The display greps print '(no match)' rather than failing, so the step always reaches the three unchanged grep -q checks ('Runtime Solver', 'Runtime Post-process', 'finish_eager_conversion'). The job validates and the step passes bash -n; it was not run here, since it fetches from the network.\n\nVerification pending: job 20261106-194328-cbmc-6-11-0-s-source-times-runtime-post (verification/jobs/). VF-004 closes when it passes.",
+      "log_sha256": "a90e2296dc81450d560b1e1c74789c436858b23f430f218b1cec530c21367029"
+    }
+  ],
+  "logs": {
+    "a90e2296dc81450d560b1e1c74789c436858b23f430f218b1cec530c21367029": {
+      "bytes": 276563,
+      "lines": 67,
+      "gzip_bytes": 69745,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
