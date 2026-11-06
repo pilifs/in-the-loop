@@ -3341,3 +3341,46 @@ fn identity_and_initialization_agree_with_the_jvm() {
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     }
 }
+
+/// `--details` writes the statement and the time under the verdict, from the same data as `--json`.
+#[test]
+fn details_print_the_statement_and_where_the_time_went() {
+    let Some(classes) = fixtures() else { return };
+    let work = target_tmp().join("details");
+    let _ = std::fs::remove_dir_all(&work);
+    let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+        .args(["prove", "--classes"])
+        .arg(classes)
+        .args(["fixtures.Laws#maxOf", "--assert", "result >= a && result >= b && (result == a || result == b)", "--engine", "native", "--details", "--work"])
+        .arg(&work)
+        .output()
+        .unwrap();
+    let text = String::from_utf8_lossy(&out.stdout);
+    assert!(out.status.success(), "{text}{}", String::from_utf8_lossy(&out.stderr));
+    for line in ["✓ fixtures.Laws#maxOf", "  statement (property):", "    domain: a: long × b: long", "    checker: jvmcontract's own checker", "gaps strict", "    vacuity: non-vacuous (harness)", "  time: ", "    native proof: ", " clauses"] {
+        assert!(text.contains(line), "no {line:?} in:\n{text}");
+    }
+}
+
+/// A `--jbmc` path relative to the current directory is found, though JBMC runs in the work directory.
+#[test]
+fn a_relative_jbmc_path_is_found_from_the_current_directory() {
+    if !has("jbmc") {
+        return;
+    }
+    let Some(classes) = fixtures() else { return };
+    let jbmc = String::from_utf8(Command::new("sh").args(["-c", "command -v jbmc"]).output().unwrap().stdout).unwrap();
+    let here = target_tmp().join("relative-jbmc");
+    let _ = std::fs::remove_dir_all(&here);
+    std::fs::create_dir_all(here.join("bin")).unwrap();
+    std::os::unix::fs::symlink(jbmc.trim(), here.join("bin/jbmc")).unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+        .current_dir(&here)
+        .args(["prove", "--classes"])
+        .arg(classes)
+        .args(["fixtures.Laws#maxOf", "--assert", "result >= a && result >= b", "--engine", "jbmc", "--gaps", "assume", "--jbmc", "bin/jbmc", "--work", "work"])
+        .output()
+        .unwrap();
+    let text = String::from_utf8_lossy(&out.stdout);
+    assert!(out.status.success() && text.contains("✓"), "{text}{}", String::from_utf8_lossy(&out.stderr));
+}

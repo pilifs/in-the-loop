@@ -417,7 +417,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let purpose = if fallback.is_some() { "fallback" } else { "proof" };
     let base = JbmcRun {
-        executable: options.jbmc.clone(),
+        executable: crate::jbmc::executable(&options.jbmc),
         class: harness::PROPERTY_CLASS.into(),
         function: harness::METHOD.into(),
         classpath: classpath.clone(),

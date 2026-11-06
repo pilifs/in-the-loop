@@ -359,6 +359,11 @@ struct EquivalenceArgs {
     /// Print JSON.
     #[arg(long)]
     json: bool,
+    /// Under the verdict, print the statement it is about (domain, assumptions with their basis, what is observed,
+    /// bounds, models, checker, gap mode, confirmation, vacuity) and where its time went (the driver's steps, and
+    /// each checker run's phases and formula): what `--json` holds as `stated` and `search`.
+    #[arg(long)]
+    details: bool,
 }
 
 #[derive(Args)]
@@ -468,6 +473,11 @@ struct ProveArgs {
     /// Print JSON.
     #[arg(long)]
     json: bool,
+    /// Under the verdict, print the statement it is about (domain, assumptions with their basis, what is observed,
+    /// bounds, models, checker, gap mode, confirmation, vacuity) and where its time went (the driver's steps, and
+    /// each checker run's phases and formula): what `--json` holds as `stated` and `search`.
+    #[arg(long)]
+    details: bool,
 }
 
 fn main() -> ExitCode {
@@ -553,6 +563,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));
             } else {
                 print!("{}", outcome.output);
+                if args.details {
+                    print!("{}", jvmcontract::details::render(outcome.stated.as_ref(), outcome.search.as_ref()));
+                }
             }
             Ok(outcome.verdict.exit_code())
         }
@@ -602,6 +615,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
                     print!("{}", outcome.output);
+                    if args.details {
+                        print!("{}", jvmcontract::details::render(outcome.stated.as_ref(), outcome.search.as_ref()));
+                    }
                 }
                 findings.extend(outcome.findings.iter().cloned());
                 outcomes.push(outcome);

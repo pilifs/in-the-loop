@@ -209,6 +209,16 @@ pub fn absolute(path: &Path) -> PathBuf {
     std::fs::canonicalize(path).unwrap_or_else(|_| std::env::current_dir().map(|d| d.join(path)).unwrap_or_else(|_| path.to_path_buf()))
 }
 
+/// The JBMC executable as it will be run: a path given relative to the current directory (`bin/jbmc`) is made
+/// absolute, since JBMC runs in the work directory; a bare name (`jbmc`) is left to be found on `PATH`.
+pub fn executable(given: &str) -> String {
+    let path = Path::new(given);
+    if path.is_absolute() || path.components().count() < 2 {
+        return given.to_string();
+    }
+    absolute(path).to_string_lossy().into_owned()
+}
+
 /// The command line, for logs.
 pub fn command(run: &JbmcRun) -> Vec<String> {
     let entries: Vec<PathBuf> = run.classpath.iter().map(|p| absolute(p)).collect();
@@ -845,6 +855,16 @@ fn parse_special(raw: &str) -> Option<f32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_relative_jbmc_path_is_made_absolute_and_a_bare_name_is_left_to_path() {
+        // JBMC runs in the work directory, where `bin/jbmc` given from the current directory is not found.
+        let here = std::env::current_dir().unwrap();
+        assert_eq!(executable("jbmc"), "jbmc");
+        assert_eq!(executable("/usr/bin/jbmc"), "/usr/bin/jbmc");
+        assert_eq!(PathBuf::from(executable("bin/jbmc")), here.join("bin/jbmc"));
+        assert_eq!(PathBuf::from(executable("./jbmc")), here.join("./jbmc"));
+    }
 
     #[test]
     fn parses_verdicts() {

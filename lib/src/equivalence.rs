@@ -1004,7 +1004,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Vec::new()
     };
     let base = |classpath: &[PathBuf], tag: &str| JbmcRun {
-        executable: options.jbmc.clone(),
+        executable: crate::jbmc::executable(&options.jbmc),
         class: harness::CLASS.into(),
         function: harness::METHOD.into(),
         classpath: classpath.to_vec(),
