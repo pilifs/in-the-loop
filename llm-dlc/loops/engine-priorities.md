@@ -144,7 +144,8 @@ changed. The phase order above still holds within each stream.
 **Starting them** (the user, from the default workspace): `llm-dlc/tools/run-streams.sh engines`.
 - The first time, it compacts the planning session (`3761db96`, the conversation that planned the streams; the
   stream briefs' `- fork:`), and adds the
-  workspaces `../java-formal-verification-jbmc` and `-native` from the latest commit.
+  workspaces next to the repo, `../REPO-jbmc` and `../REPO-native` (on cvm, `~/code/in-the-loop-jbmc` and `-native`), from
+  the latest commit.
 - Each stream's session starts as a fork of that compacted conversation (`- fork:` in its Loop settings), so both
   begin with the same context.
 - Both loops print to the one terminal, each line prefixed with its stream, and Ctrl-C stops both.
@@ -158,7 +159,7 @@ conversation or the streams, and nothing of theirs is in its context. It all is 
 | What | Where |
 |---|---|
 | The planning | Session `3761db96-b870-47f7-aded-2ba264c165f4`. It planned this brief, the split and the tools, and was compacted once before the streams forked from it. Its published summary is `llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/summary.md`. |
-| How they ran | `llm-dlc/tools/run-streams.sh engines`, from this (default) workspace on cvm. Each stream was `feature-loop.sh engines-STREAM` in its own workspace, `jj workspace root --name STREAM` (`../java-formal-verification-jbmc`, `-native`), in the systemd scope `feature-loop-engine-priorities-STREAM.scope`, with the session in its brief's Loop settings, forked from the planning session. Each committed on its own branch, the `@-` line of its workspace, and never pushed or merged. |
+| How they ran | `llm-dlc/tools/run-streams.sh engines`, from this (default) workspace on cvm (the ssh host `claude-vm`, repo at `~/code/in-the-loop`). Each stream was `feature-loop.sh engines-STREAM` in its own workspace, `jj workspace root --name STREAM` (`../in-the-loop-jbmc`, `-native` on cvm), in the systemd scope `feature-loop-engine-priorities-STREAM.scope`, with the session in its brief's Loop settings, forked from the planning session. Each committed on its own branch, the `@-` line of its workspace, and never pushed or merged. |
 | Their commits | `jj log -r '::jbmc@- ~ ::default@-'`, and the same for `native`. The later paragraphs of each message say what changed and how it was verified. |
 | Their Progress | Each stream brief as its branch left it: `jj file show -r jbmc@- llm-dlc/loops/engine-priorities-jbmc.md` (the copy in this workspace is from before the streams started). It names the shared files each changed and what it deferred. |
 | Their run records | `$(jj workspace root --name STREAM)/llm-dlc/loop-summaries/*-engine-priorities-STREAM.md`, one per run: each commit as it landed, how the run ended (no commit, interrupted, or decided to stop), and the session's own summary with jobs pending, warnings and deferred items. Gitignored and only there, so read them before step 7. |
