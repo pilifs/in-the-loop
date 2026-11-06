@@ -162,7 +162,7 @@ Progress, so the reconcile loop knows where to look.
   - The job runs `native,jbmc,auto` under all three modes, about 2.5 h estimated. Advised runs may stop on the
     JDK 25.0.5 against the contract records' 25.0.4.1 (1a's note).
   - No shared file changed.
-- **3, the witnesses that don't reproduce: cause found, guarded, report drafted; job `20261106-203452` (pending).**
+- **3, the witnesses that don't reproduce: cause found, guarded, report drafted; job `20261106-203452` (failed, triaged below).**
   - **The cause:** not the models, the trace reading, or the harness. JBMC 6.11.0 lets a runtime exception past the
     handler that catches it on the JVM, so the exception escapes the method. There are two shapes, found by running
     JBMC (in milliseconds) on the cases and on variants of them (`lib/tests/fixtures/jbmc-defects/README.md`):
@@ -299,15 +299,49 @@ Progress, so the reconcile loop knows where to look.
   - Shared files changed: `lib/src/main.rs` (the two defaults), `property.rs` and `equivalence.rs` (the default in
     `Options::new` and its comment), `lib/tests/integration.rs` (three assertions), `lib/tests/conformance.rs` (one
     line in `jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline`), `lib/README.md`.
+- **3's job `20261106-203452`: triaged; `--confirm` fixed; rerun as `20261106-231317` (pending).**
+  - It failed two of three steps (44 m 36 s, peak 1.3 GiB). The corpus under `jbmc` and `auto` (strict) **passed**.
+  - **`auto --confirm`: 12 disagreements, all the defects of 3.** On `caught`, `caughtAsRuntime` and `nestedHandler`
+    under strict and assume, the own checker proves the claim, and JBMC's confirming run refutes it at `n = 0`
+    through `return-past-handler` or `stubbed-handler`, on a witness the interpreter does not reproduce. The tool
+    called that a disagreement, and the test counted each claim twice: a disagreement the JVM does not refute, and a
+    reported counterexample it does not reproduce.
+    - Fix: `equivalence::confirm` runs the preflight on a refutation too, and takes the caller's replay of the witness
+      in the harness. When the preflight names a defect and the witness does not reproduce, the refutation is the
+      defect's, as a JBMC proof through one is refused: the confirmation is `no-verdict`, and the own checker's proof
+      stands, unconfirmed, with the defects named in the line. A witness that reproduces is still a disagreement, as
+      is one with no defect in reach.
+    - Checked on the real JBMC (milliseconds) on all three methods. A new test,
+      `confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict`, uses a stand-in JBMC whose program reaches
+      `caught`, for `prove` and `equivalence`. It fails with the fix disabled (checked).
+  - **Integration: not JBMC.** `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` failed at the own checker's
+    (`Engine::Native`) regression proof of `fixtures.Pricing#total` (the rounding refactor): out of its 600 s, where
+    the JBMC parts of the test had passed. Earlier Next wrongly said JBMC timed out.
+    - Reproduced inline on cvm: of 8 identical runs at `--timeout 40`, 6 found the violation in about 4 s (13 solver
+      calls, 2 of 2 divisions built in full), and 2 ran out of time at the 8th solver call (0 of 2 built).
+    - The cause, as far as read: the own checker's branch probes (`bmc/mod.rs`, `probe`) are given as long as the
+      solver calls so far took, at least a second, so which side of a branch is left undecided, and so the path
+      order and the queries, depends on wall-clock time. One order leaves a query that doesn't finish.
+    - **For the native stream and the reconcile loop:** `lib/src/bmc/` is not this stream's, so nothing changed.
+      Reproducer: `jvmcontract equivalence --before B --after R --target 'fixtures.Pricing#total' --engine native
+      --timeout 40`, with B and R from the test's `PRICING_BEFORE` and its rounding refactor, run a few times. The test
+      in `integration.rs` stays as it is.
+    - Its `tee` failed too, since `lib/target` did not exist yet in the job's fresh checkout. The rerun creates it.
+  - **Job `20261106-231317`** reruns the three steps. Since `-203452`, the unmasked-shift guard and its two claims
+    and the `full-range` default have not been through the ignored corpus tests either.
+  - Shared files changed:
+    - `lib/tests/conformance.rs`: `fake_jbmc` answers the preflight from a `goto.txt` next to it where there is one;
+      the new test;
+    - `lib/src/equivalence.rs`: `confirm` takes a `reproduces` closure, and its one caller passes it;
+    - `lib/src/property.rs`: the same, at its one call;
+    - `lib/README.md`: a sentence in `--confirm`'s paragraph.
+  - Lib 157 tests pass, and the conformance tests other than the corpus pass. The corpus fails only on the
+    12 known disagreements from the contract records.
 - **Next:**
-  - Triage 3's job `-203452`, which failed two steps:
-    - integration: `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs`, where JBMC timed out on
-      `fixtures.Pricing#total` (it passes inline);
-    - the corpus under `auto --confirm`.
-    - The corpus under `jbmc` and `auto` passed.
   - 4a's job `-204220` failed in both engine steps on `build.py`'s result schema: `'sat' was unexpected`. That is
     1b's `stated.checker.sat`, which the examples' result schema doesn't allow yet. Fix it and resubmit; the
-    resubmission measures this guard too.
+    resubmission measures the defect guards too.
+  - Then the results of `-231317`.
 - Status: working
 
 ## Loop settings

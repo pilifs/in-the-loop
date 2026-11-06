@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T22:56:08.020Z",
-  "duration_seconds": 13264,
+  "ended": "2026-11-06T23:14:11.409Z",
+  "duration_seconds": 14347,
   "stats": {
-    "turns": 44,
-    "api_calls": 419,
-    "tool_calls": 417,
-    "tool_errors": 6,
-    "compactions": 8,
+    "turns": 49,
+    "api_calls": 480,
+    "tool_calls": 477,
+    "tool_errors": 7,
+    "compactions": 9,
     "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 836,
-      "output_tokens": 349215,
-      "cache_read_input_tokens": 47284921,
-      "cache_creation_input_tokens": 1198641
+      "input_tokens": 958,
+      "output_tokens": 390961,
+      "cache_read_input_tokens": 53898109,
+      "cache_creation_input_tokens": 1357120
     }
   },
   "tools": {
-    "Bash": 400,
+    "Bash": 457,
+    "Read": 10,
     "Edit": 8,
-    "Read": 7,
     "Write": 2
   },
   "files_touched": [
@@ -158,24 +158,38 @@
     {
       "index": 8,
       "started": "2026-11-06T22:48:29.963Z",
-      "ended": "2026-11-06T22:56:08.020Z",
-      "turns": 4,
-      "api_calls": 29,
+      "ended": "2026-11-06T22:56:33.475Z",
+      "turns": 5,
+      "api_calls": 32,
       "usage": {
-        "input_tokens": 58,
-        "output_tokens": 18123,
-        "cache_read_input_tokens": 2714474,
-        "cache_creation_input_tokens": 112126
+        "input_tokens": 64,
+        "output_tokens": 19907,
+        "cache_read_input_tokens": 3096816,
+        "cache_creation_input_tokens": 117736
       },
-      "peak_context_tokens": 125205
+      "peak_context_tokens": 130815
+    },
+    {
+      "index": 9,
+      "started": "2026-11-06T22:57:07.832Z",
+      "ended": "2026-11-06T23:14:11.409Z",
+      "turns": 4,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 116,
+        "output_tokens": 39962,
+        "cache_read_input_tokens": 6230846,
+        "cache_creation_input_tokens": 152869
+      },
+      "peak_context_tokens": 165948
     }
   ],
   "log": {
-    "sha256": "8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567",
-    "bytes": 11104483,
-    "lines": 4383,
-    "gzip_bytes": 1992167,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567.jsonl.gz"
+    "sha256": "925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b",
+    "bytes": 12528117,
+    "lines": 5004,
+    "gzip_bytes": 2229692,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -258,6 +272,14 @@
       "summary": "JBMC searches the full range alone by default, on benchmark job 20261106-201041's evidence",
       "body": "Step 2c of engine-priorities.md. Job 20261106-201041 ran the corpus under JBMC's three staging policies. Under strict, JBMC's proofs were the same 54 of 65 under each, in 654 s under staged, 575 s under full-range and 588 s under tight; the hard ones took half the time without the stages (bounded binary search 26 s against 56 s, example 141 31 s against 61 s). Counterexamples took 9 s against 27 s, no shrunk witness was larger, and no run under full-range was starved. Under auto the policies gave the same verdicts. The one case whose class changed, conformance/shiftRight/2, is JBMC's unmasked right shift (the previous commit), which staged's witness happened to miss; it is not a worse verdict of the policy, and is now the one case where --engine jbmc answers unverifiable where it gave a violation (the own checker and auto decide it).\n\nSo full-range is now the default of --jbmc-staging on prove and equivalence, of Options::new in property.rs and equivalence.rs, and of lib/benchmark/run.py. deadline.rs's module comment records the evidence. The own checker keeps its stages, as decided, and --confirm already ran the full range. lib/README.md and lib/benchmark/README.md describe the new default with the job's figures.",
       "log_sha256": "8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567"
+    },
+    {
+      "change_id": "xzvyuwxptsnyoxoyrrtspwswrrkrvomn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Under --confirm, a JBMC refutation through a named defect, whose witness does not reproduce, is no verdict; job 20261106-203452 triaged (verification pending)",
+      "body": "Job 20261106-203452 (step 3 of llm-dlc/loops/engine-priorities.md) failed two of its three steps. Its --confirm step had 12 disagreements, all on conformance/caught, caughtAsRuntime and nestedHandler under strict and assume: the own checker proves the claim, and JBMC's confirming run refutes it at n = 0 through return-past-handler or stubbed-handler, the defects step 3 found and guards against, on a witness the interpreter does not reproduce. The tool called that a disagreement. Now equivalence::confirm runs JBMC's preflight on a refutation too, and takes the caller's replay of the witness in the harness: when the preflight names a defect and the witness does not reproduce, the refutation is the defect's, as a JBMC proof through one is refused, so the confirmation is no-verdict and the own checker's proof stands, unconfirmed, the line naming the defects. A witness that reproduces is still a disagreement, as is one with no defect in reach.\n\nIts integration step failed at the own checker's regression proof of fixtures.Pricing#total in the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, not at JBMC as the brief's Progress had said. Inline on cvm, 2 of 8 identical runs ran out of 40 s where the others took 4 s: the own checker's branch probes are budgeted by wall-clock time, so its path order depends on timing. That is lib/src/bmc/, the native stream's, so it is recorded under Progress with a reproducer for the native stream and the reconcile loop, and nothing there changed. That step's tee also failed, since lib/target did not exist yet in the job's fresh checkout.\n\nVerified: on the real JBMC (milliseconds), caught, caughtAsRuntime and nestedHandler under auto --confirm are now verified, not confirmed, naming the defect. A new test, confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict, uses a stand-in JBMC whose program reaches caught, for prove and equivalence, and fails with the fix disabled. Lib 157 tests and the conformance tests pass, except the corpus's 12 known disagreements from the contract records (JDK 25.0.5 against 25.0.4.1). lib/README.md's --confirm paragraph says so. Shared files changed: lib/tests/conformance.rs (fake_jbmc reads an optional goto.txt; the test), equivalence.rs and property.rs (confirm's closure and its two calls), lib/README.md.\n\nJob 20261106-231317 reruns the three steps, with lib/target created first. The corpus under JBMC and auto also hasn't run since the unmasked-shift claims and the full-range default went in.",
+      "log_sha256": "925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b"
     }
   ],
   "logs": {
@@ -301,6 +323,12 @@
       "bytes": 11104483,
       "lines": 4383,
       "gzip_bytes": 1992167,
+      "url": null
+    },
+    "925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b": {
+      "bytes": 12528117,
+      "lines": 5004,
+      "gzip_bytes": 2229692,
       "url": null
     },
     "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351": {

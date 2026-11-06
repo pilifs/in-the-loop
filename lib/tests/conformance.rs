@@ -694,13 +694,14 @@ fn the_corpus_agrees_with_the_jvm_under_auto_confirm() {
 }
 
 /// A stand-in for JBMC that answers every run with `answer.txt` next to it and keeps the arguments it was given in
-/// `args.txt`: what `--confirm` does with each answer is then tested without running JBMC.
+/// `args.txt`: what `--confirm` does with each answer is then tested without running JBMC. Its program, for the
+/// preflight, is `goto.txt` next to it where there is one, and otherwise the harness's function alone.
 fn fake_jbmc(name: &str) -> PathBuf {
     let dir = target_tmp().join(format!("fake-jbmc-{name}"));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let script = dir.join("jbmc");
-    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) [ -f \"$d/goto.txt\" ] && { cat \"$d/goto.txt\"; exit 0; }; p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
     script
@@ -959,6 +960,55 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     let cli = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(["prove", "--classes"]).arg(&compiled.classes).args([&format!("{CLASS}#increment"), "--assert", "result == x + 1", "--engine", "native", "--confirm"]).output().unwrap();
     assert!(!cli.status.success());
     assert!(String::from_utf8_lossy(&cli.stderr).contains("--confirm needs --engine auto"), "{}", String::from_utf8_lossy(&cli.stderr));
+}
+
+/// `--confirm` where JBMC refutes the own checker's proof through a construct it runs otherwise than the JVM
+/// (`jbmc_gaps::Defect`, step 3 of `llm-dlc/loops/engine-priorities.md`), on a witness the interpreter does not
+/// reproduce: the refutation is the defect's, so JBMC gives no verdict and the proof stands, not confirmed. The
+/// stand-in JBMC answers `caught(0)` (javac's `return 10 / n` inside `try`), where the real one lets the
+/// division's exception past the handler; without the defect in its program, the same answer is a disagreement
+/// (`confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker`).
+#[test]
+fn confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict() {
+    let Some(compiled) = compile() else { return };
+    let jbmc = fake_jbmc("confirm-defect");
+    let dir = jbmc.parent().unwrap().to_path_buf();
+    let program = |harness: &str| format!("{harness}.check(int) /* java::{harness}.check:(I)V */\n        // 1 file {harness}.java line 1 function java::{harness}.check:(I)V bytecode-index 1\n     1: CALL java::{CLASS}.caught:(I)I(java::{harness}.check:(I)V::arg0i)\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n{CLASS}.caught(int) /* java::{CLASS}.caught:(I)I */\n        SKIP\n");
+    std::fs::write(dir.join("goto.txt"), program("PropertyHarness")).unwrap();
+    write_answer(&dir, &refuted_by_jbmc("PropertyHarness", "(I)V", 0));
+    let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#caught"));
+    options.assert = Some("n != 0 || result == -1".into());
+    options.engine = Engine::Auto;
+    options.confirm = true;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("confirm-defect-property");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let outcome = property::run(&options).unwrap();
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    let confirmation = outcome.search.as_ref().and_then(|s| s.confirmation.as_ref()).expect("a confirmation");
+    assert_eq!(confirmation.status, Confirmed::NoVerdict, "{}", outcome.output);
+    assert!(outcome.output.contains("  not confirmed: JBMC 6.11.0 gave no verdict"), "{}", outcome.output);
+    assert!(outcome.output.contains("its counterexample does not reproduce in the interpreter, and on the way it runs 1 construct otherwise than the JVM: return-past-handler at conformance.Conformance.caught:82"), "{}", outcome.output);
+    assert!(outcome.counterexample.is_none() && !outcome.output.contains("the engines disagree"), "{}", outcome.output);
+    let json = serde_json::to_value(&outcome).unwrap();
+    assert_eq!(json["search"]["confirmation"]["status"], "no-verdict");
+
+    // A regression proof of the method against itself, as written: the same.
+    std::fs::write(dir.join("goto.txt"), program("EquivalenceHarness")).unwrap();
+    write_answer(&dir, &refuted_by_jbmc("EquivalenceHarness", "(I)V", 0));
+    let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#caught"));
+    options.engine = Engine::Auto;
+    options.confirm = true;
+    options.shared_callees = false;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("confirm-defect-equivalence");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let equivalence = jvmcontract::equivalence::run(&options).unwrap();
+    assert_eq!(equivalence.verdict, Verdict::Verified, "{}", equivalence.output);
+    assert_eq!(equivalence.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status), Some(Confirmed::NoVerdict), "{}", equivalence.output);
+    assert!(equivalence.output.contains("return-past-handler at conformance.Conformance.caught:82"), "{}", equivalence.output);
 }
 
 /// Step 4a of the brief: JBMC's interval stages run only where they bound an input, and a check has one deadline,

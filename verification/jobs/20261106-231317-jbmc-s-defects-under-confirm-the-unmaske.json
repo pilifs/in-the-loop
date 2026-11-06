@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-231317-jbmc-s-defects-under-confirm-the-unmaske",
+  "title": "JBMC's defects under --confirm, the unmasked-shift claims and the full-range default: the corpus under JBMC, auto and --confirm, and the integration tests (rerun of 20261106-203452)",
+  "description": "Rerun of job 20261106-203452 (step 3 of llm-dlc/loops/engine-priorities.md), whose triage is under Progress in llm-dlc/loops/engine-priorities-jbmc.md. That job's --confirm step had 12 disagreements, all on conformance/caught, caughtAsRuntime and nestedHandler under strict and assume: the own checker proves 'n != 0 || result == -1', and JBMC's confirming run refutes it at n=0 through the defects the preflight names (return-past-handler, stubbed-handler: JBMC 6.11.0 lets the division's exception past the handler), on a witness the interpreter does not reproduce. The tool called that a disagreement (unverifiable, with JBMC's witness as the counterexample). Now equivalence::confirm runs the preflight on a refutation too: where it names a defect and the witness does not reproduce in the interpreter, the refutation is the defect's, as a JBMC proof through one is refused, so the confirmation is no-verdict and the own checker's proof stands, unconfirmed, the line naming the defect. A witness that reproduces is still a disagreement. Tested inline with a stand-in JBMC (conformance.rs, confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict) and checked by hand on the real JBMC on the three methods. Since -203452 ran, the unmasked-shift defect was guarded (conformance/shiftRight/3, shiftUnsigned/3 added) and JBMC's default staging became full-range (step 2c, from job 20261106-201041): neither has run through the ignored corpus tests yet. The integration step of -203452 failed in the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, on the own checker's (not JBMC's) regression proof of fixtures.Pricing#total (the rounding refactor), out of its 600 s: the own checker's branch probes have a wall-clock budget, so its path order depends on timing, and inline on cvm 2 of 8 identical runs did not finish in 40 s where the others took 4 s. That is lib/src/bmc/, the native stream's, recorded for it; this job may meet it again. Its tee also failed, since lib/target did not exist yet in the fresh checkout: the steps now create it.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/equivalence.rs",
+      "lib/src/jbmc_gaps.rs",
+      "lib/tests/conformance.rs",
+      "llm-dlc/loops/engine-priorities-jbmc.md"
+    ],
+    "jobs": [
+      "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref"
+    ]
+  },
+  "expected": "Steps 2 and 3 exit 0. Under --confirm, caught/1, caughtAsRuntime/1 and nestedHandler/1 are Verified with confirmation no-verdict naming the defect, and no disagreement is reported. Under --engine jbmc, shiftRight/3 and shiftUnsigned/3 are no verdict (the proof refused, naming unmasked-shift); under auto, violations. Step 1 exits 0, or fails only at the own checker's Pricing#total regression proof being out of time (the native stream's timing-dependent search, recorded under Progress); any other failure is a finding to triage, as is a claim JBMC says Verified that the JVM refutes.",
+  "submitted": {
+    "at": "2026-11-06T23:13:17+00:00",
+    "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "50m",
+    "memoryLimit": "3.5G",
+    "timeout": "2h",
+    "notes": "job -203452 took 44m36s with these steps (integration 13.5 min, --confirm corpus 20 min), peak 1.3 GiB; two claims more now"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test integration 2>&1 | tee target/integration-step3b.log",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-step3b.log",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-step3b.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/integration-step3b.log",
+    "lib/target/conformance-jbmc-step3b.log",
+    "lib/target/conformance-confirm-step3b.log"
+  ]
+}

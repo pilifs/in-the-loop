@@ -329,7 +329,13 @@ pub(crate) struct ConfirmContracts<'a> {
 /// JBMC applies the same ones at the same calls (`contracts`), so that both checkers prove the statement on the
 /// contracts' word: the confirmation checks the reasoning given the contracts, whose own evidence (proved, tested,
 /// trusted) is the verdict's. Returns the confirmation, and JBMC's result when it refutes the statement.
-pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<ConfirmContracts<'_>>) -> Result<(Confirmation, Option<JbmcResult>), Error> {
+///
+/// A refutation is a disagreement, unless JBMC's preflight finds a construct the harness reaches that JBMC runs
+/// otherwise than the JVM ([`crate::jbmc_gaps::Defect`]) and its witness does not reproduce in the interpreter
+/// (`reproduces`, the caller's replay of it in the harness): then the refutation is the defect's, as a proof
+/// through one is refused, and JBMC gives no verdict. The own checker's proof stands, not confirmed. A witness that
+/// reproduces is a disagreement whatever JBMC reaches.
+pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<ConfirmContracts<'_>>, reproduces: &dyn Fn(&JbmcResult) -> Result<Option<bool>, Error>) -> Result<(Confirmation, Option<JbmcResult>), Error> {
     let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.jbmc && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
     let (assumed, contracted) = (approximated(false), approximated(true));
     let not_asked = |reason: String| Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }, None));
@@ -376,6 +382,18 @@ pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<Conf
     match result.verdict {
         Verdict::Verified => Ok((confirmation, None)),
         Verdict::Violation => {
+            let pre = crate::jbmc_gaps::preflight(&run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
+            let defects = pre.found.as_ref().map(|f| f.defects.as_slice()).unwrap_or_default();
+            if !defects.is_empty() && reproduces(&result)? == Some(false) {
+                let n = defects.len();
+                confirmation.status = Confirmed::NoVerdict;
+                confirmation.reason = Some(format!(
+                    "its counterexample does not reproduce in the interpreter, and on the way it runs {n} construct{} otherwise than the JVM: {}",
+                    if n == 1 { "" } else { "s" },
+                    defects.iter().map(crate::jbmc_gaps::Defect::line).collect::<Vec<_>>().join("; ")
+                ));
+                return Ok((confirmation, None));
+            }
             confirmation.status = Confirmed::Disagreed;
             Ok((confirmation, Some(result)))
         }
@@ -1237,7 +1255,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base(&classpath, "") };
         let rewrite: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         let contracts = ConfirmContracts { setting: &gap_setting, rewrite, cp: &contract_cp, dir: work.join("jbmc-confirm-contracts") };
-        let (c, refuting) = confirm(&last, &run, Some(contracts))?;
+        let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+        let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &r.arguments(&flat_types)?)) };
+        let (c, refuting) = confirm(&last, &run, Some(contracts), &reproduces)?;
         (Some(c), refuting)
     } else {
         (None, None)
