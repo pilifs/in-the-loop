@@ -1445,6 +1445,13 @@ class HookCursor(unittest.TestCase):
         self.assertEqual(names, ["turn 1", "turn 2", "turn 3"])
         self.assertEqual(len(self.roots()), before)  # the retry resent turns 2-3 under the ids already sent
 
+    def test_a_session_that_wrote_no_transcript_is_not_marked(self):
+        missing = self.transcript.with_name(f"{uuid.UUID(int=25)}.jsonl")  # SessionEnd of a session with no message
+        with mock.patch.object(sync, "STATE", self.state_new):
+            self.run_hook(missing)
+            self.assertEqual(sync.hook_unsent(), [])
+        self.assertEqual(self.sent, [])
+
     def test_a_manual_send_of_a_running_session_keeps_its_last_turn(self):
         sid = str(uuid.UUID(int=8))
         transcript = self.transcript.with_name(f"{sid}.jsonl")

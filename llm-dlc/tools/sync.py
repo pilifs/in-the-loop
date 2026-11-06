@@ -2083,6 +2083,11 @@ def cmd_hook() -> None:
         if langfuse_config() is None:  # before reading and redacting the whole transcript
             return
         transcript = Path(payload["transcript_path"])
+        if not transcript.exists():
+            # A session that ended without writing a transcript (one opened and closed with no message, say)
+            # has nothing to send, now or later: marking it would leave a warning nothing can clear.
+            log(f"langfuse: no transcript at {transcript}, nothing to send")
+            return
         # Marked before anything is read, cleared once all was sent: a hook that fails, times out
         # or is killed leaves the mark, which `check` reports and `sync.py langfuse --all` acts on.
         mark_hook_unsent(transcript.stem, True)

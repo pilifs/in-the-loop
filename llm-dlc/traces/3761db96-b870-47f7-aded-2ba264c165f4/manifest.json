@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T12:22:55.087Z",
-  "duration_seconds": 5660,
+  "ended": "2026-11-06T12:23:15.547Z",
+  "duration_seconds": 5681,
   "stats": {
     "turns": 9,
-    "api_calls": 166,
-    "tool_calls": 167,
+    "api_calls": 168,
+    "tool_calls": 169,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 305586,
+    "peak_context_tokens": 307224,
     "usage": {
-      "input_tokens": 350,
-      "output_tokens": 95834,
-      "cache_read_input_tokens": 32279626,
-      "cache_creation_input_tokens": 272446
+      "input_tokens": 354,
+      "output_tokens": 97445,
+      "cache_read_input_tokens": 32891228,
+      "cache_creation_input_tokens": 274084
     }
   },
   "tools": {
-    "Bash": 151,
+    "Bash": 153,
     "AskUserQuestion": 11,
     "Edit": 3,
     "ToolSearch": 1,
@@ -44,24 +44,24 @@
     {
       "index": 0,
       "started": "2026-11-06T10:48:34.990Z",
-      "ended": "2026-11-06T12:22:55.087Z",
+      "ended": "2026-11-06T12:23:15.547Z",
       "turns": 9,
-      "api_calls": 166,
+      "api_calls": 168,
       "usage": {
-        "input_tokens": 350,
-        "output_tokens": 95834,
-        "cache_read_input_tokens": 32279626,
-        "cache_creation_input_tokens": 272446
+        "input_tokens": 354,
+        "output_tokens": 97445,
+        "cache_read_input_tokens": 32891228,
+        "cache_creation_input_tokens": 274084
       },
-      "peak_context_tokens": 305586
+      "peak_context_tokens": 307224
     }
   ],
   "log": {
-    "sha256": "261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8",
-    "bytes": 3449331,
-    "lines": 1462,
-    "gzip_bytes": 550807,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8.jsonl.gz"
+    "sha256": "4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f",
+    "bytes": 3538660,
+    "lines": 1477,
+    "gzip_bytes": 568184,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -128,6 +128,14 @@
       "summary": "Confirming a proof that rests on contracts: under --confirm, JBMC applies the own checker's contracts at the same calls and proves it again",
       "body": "Under --engine auto --confirm, a proof of the own checker that rests on contracts for gaps (--gaps advised) was not sent to JBMC: the confirmation was not-asked, with the reason 'JBMC cannot apply' a contract, untrue since JBMC applies contracts by rewriting call sites (step 4c, part two). equivalence::confirm now takes the contracts (ConfirmContracts: the gap setting, the directories whose call sites are rewritten, the class path, a directory): it reads JBMC's goto program, applies the same contracts with jbmc_contracts::apply, runs JBMC on the rewritten class path, holds its proof to what it still approximates under the own checker's gap mode, and settles the contract records. A confirmed proof says it rests on the same contracts, by id. Gaps assumed under --gaps assume stay not-asked; a gap JBMC has that no contract closes gives no verdict.\n\nA confirmation checks the reasoning given the contracts, not the contracts, whose evidence (proved, tested, trusted) the verdict states. Both drivers pass the contracts; lib/README.md describes it, and the sound-verdicts brief records the user's decisions and the group 2 review as done.",
       "log_sha256": "261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8"
+    },
+    {
+      "change_id": "nmqotrttpvvurrrywkxrxtlmkkpwuxlt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The end-of-turn hook leaves a session that wrote no transcript unmarked, so check stops warning about it",
+      "body": "Claude Code can fire the Stop or SessionEnd hook with a transcript_path for a session that never wrote a transcript (one opened and closed with no message, say). The hook marked the session as having turns not yet sent to Langfuse before reading anything, then failed on the missing file, so the mark stayed and check warned about it until 'sync.py langfuse' cleared it by hand: four such sessions on 2026-11-05/06 (28b02734, 87db5b5f, d10805f9, cdc1176b), none with a transcript in any project folder. The hook now returns before marking when the transcript does not exist, and logs one line.",
+      "log_sha256": "4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f"
     }
   ],
   "logs": {
@@ -147,6 +155,12 @@
       "bytes": 2306623,
       "lines": 898,
       "gzip_bytes": 400790,
+      "url": null
+    },
+    "4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f": {
+      "bytes": 3538660,
+      "lines": 1477,
+      "gzip_bytes": 568184,
       "url": null
     },
     "60bc21576206b799b4edbd15f0fa480d7f61fc75f0212509984e0a24793f61f8": {
