@@ -19,6 +19,10 @@
 #   UNTIL     instructions the session weighs after each commit to decide whether
 #             the loop goes on; a second argument that isn't a count is UNTIL
 #
+# A stopped loop is continued by running the same command again: the brief fixes
+# the session, its Progress section says what is done, and each cycle first
+# finishes any change an interrupted cycle left in the working copy.
+#
 # A brief is fixed for the run: each cycle tells the session to read it again in
 # full, so it outlives every compact, and a brief that changes while the loop
 # runs stops it. Its "## Progress" section is the exception: the session keeps it
@@ -205,7 +209,7 @@ brief_hash() {
 }
 if [[ -n "$BRIEF" ]]; then
   BRIEF_HASH=$(brief_hash) || exit 1
-  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. Take the next piece of work it calls for that this run's earlier commits (\`jj log -r '$START..@-'\`) have not done, finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next. If the rest of the brief is wrong or out of date, say so in the commit message."
+  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. First run \`jj status\`: a change left in the working copy is unfinished work from a cycle that was interrupted, possibly in an earlier run of this loop, so finish, verify and commit that before anything else, or, if it can't be finished, say why in the commit that sets it aside. Otherwise take the next piece of work the brief calls for that is not done yet, by its \`## Progress\` section if it has one (it carries over from earlier runs of this loop) and by the commits since (\`jj log -r '$START..@-'\` lists this run's), finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next. If the rest of the brief is wrong or out of date, say so in the commit message."
 fi
 {
   echo "# Feature loop: $PROMPT"

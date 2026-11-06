@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T14:54:38.333Z",
-  "duration_seconds": 14763,
+  "ended": "2026-11-06T15:33:40.499Z",
+  "duration_seconds": 17106,
   "stats": {
-    "turns": 29,
-    "api_calls": 344,
-    "tool_calls": 338,
+    "turns": 31,
+    "api_calls": 351,
+    "tool_calls": 343,
     "tool_errors": 2,
     "compactions": 1,
     "peak_context_tokens": 451666,
     "usage": {
-      "input_tokens": 732,
-      "output_tokens": 214558,
-      "cache_read_input_tokens": 84292599,
-      "cache_creation_input_tokens": 539972
+      "input_tokens": 750,
+      "output_tokens": 218831,
+      "cache_read_input_tokens": 85465797,
+      "cache_creation_input_tokens": 549066
     }
   },
   "tools": {
-    "Bash": 311,
+    "Bash": 316,
     "AskUserQuestion": 14,
     "Write": 4,
     "Edit": 3,
@@ -63,24 +63,24 @@
     {
       "index": 1,
       "started": "2026-11-06T14:10:30.753Z",
-      "ended": "2026-11-06T14:54:38.333Z",
-      "turns": 10,
-      "api_calls": 57,
+      "ended": "2026-11-06T15:33:40.499Z",
+      "turns": 12,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 126,
-        "output_tokens": 47424,
-        "cache_read_input_tokens": 6289200,
-        "cache_creation_input_tokens": 126599
+        "input_tokens": 144,
+        "output_tokens": 51697,
+        "cache_read_input_tokens": 7462398,
+        "cache_creation_input_tokens": 135693
       },
-      "peak_context_tokens": 163545
+      "peak_context_tokens": 174926
     }
   ],
   "log": {
-    "sha256": "32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da",
-    "bytes": 7834073,
-    "lines": 3110,
-    "gzip_bytes": 1312738,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da.jsonl.gz"
+    "sha256": "71958bec8e6298da2d91c6971e9dbc196b093012a5ff66799f49ca3ba6bb94f6",
+    "bytes": 7984377,
+    "lines": 3169,
+    "gzip_bytes": 1341320,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/71958bec8e6298da2d91c6971e9dbc196b093012a5ff66799f49ca3ba6bb94f6.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -283,6 +283,14 @@
       "summary": "The engine-priorities brief is approved, and feature-loop.sh runs it as the named loop engines",
       "body": "The user approved llm-dlc/loops/engine-priorities.md on 2026-11-06, and its first line now says so. feature-loop.sh gains the name engines, which maps to that brief before the brief is read, so the brief's Loop settings (session 3761db96-b870-47f7-aded-2ba264c165f4, claude-opus-5-5, high) and its Loop until apply as they would for the path. The usage line, the header comment and llm-dlc/README.md list the name. Verified with bash -n, and by running the script's own awk extraction on the brief: session, model, effort and the Loop until text come out as written. Ready to start: the session's transcript exists, feature-loop.scope is inactive, 5 GB is free against the 3.5 GB cap, the release build is current, no pipeline job is running, and the working copy is clean.",
       "log_sha256": "32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da"
+    },
+    {
+      "change_id": "tkoxlomrsnztpyxvrwvmqtmoyyklqtvm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A stopped feature loop continues by running the same command again",
+      "body": "feature-loop.sh's instruction for a brief used to send the session to the next piece of work that 'this run's earlier commits' had not done. A restart sets a new starting change, so after one that list is empty, and nothing made the session look at changes an interrupted cycle left in the working copy, which the next commit could then sweep into unrelated work. Each cycle now first runs jj status, and finishes, verifies and commits a change left there (or says in the commit why it sets it aside). It then takes the next piece of work by the brief's Progress section, which carries over between runs, as well as this run's commits. The header comment and llm-dlc/README.md say that the restart is the same command, and to leave no other work uncommitted when starting. Verified with bash -n and by expanding the instruction for engine-priorities.md and reading it.",
+      "log_sha256": "71958bec8e6298da2d91c6971e9dbc196b093012a5ff66799f49ca3ba6bb94f6"
     }
   ],
   "logs": {
@@ -351,6 +359,12 @@
       "lines": 427,
       "gzip_bytes": 242475,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/60bc21576206b799b4edbd15f0fa480d7f61fc75f0212509984e0a24793f61f8.jsonl.gz"
+    },
+    "71958bec8e6298da2d91c6971e9dbc196b093012a5ff66799f49ca3ba6bb94f6": {
+      "bytes": 7984377,
+      "lines": 3169,
+      "gzip_bytes": 1341320,
+      "url": null
     },
     "a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b": {
       "bytes": 4221252,
