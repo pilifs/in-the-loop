@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T20:02:12.548Z",
-  "duration_seconds": 2828,
+  "ended": "2026-11-06T20:10:59.601Z",
+  "duration_seconds": 3356,
   "stats": {
-    "turns": 18,
-    "api_calls": 163,
-    "tool_calls": 161,
-    "tool_errors": 1,
-    "compactions": 3,
+    "turns": 23,
+    "api_calls": 198,
+    "tool_calls": 196,
+    "tool_errors": 3,
+    "compactions": 4,
     "peak_context_tokens": 160967,
     "usage": {
-      "input_tokens": 324,
-      "output_tokens": 128287,
-      "cache_read_input_tokens": 16831449,
-      "cache_creation_input_tokens": 430046
+      "input_tokens": 394,
+      "output_tokens": 165566,
+      "cache_read_input_tokens": 20327996,
+      "cache_creation_input_tokens": 560801
     }
   },
   "tools": {
-    "Bash": 153,
+    "Bash": 187,
     "Edit": 5,
-    "Read": 2,
+    "Read": 3,
     "Write": 1
   },
   "files_touched": [
@@ -86,24 +86,38 @@
     {
       "index": 3,
       "started": "2026-11-06T19:48:43.658Z",
-      "ended": "2026-11-06T20:02:12.548Z",
-      "turns": 4,
-      "api_calls": 40,
+      "ended": "2026-11-06T20:02:39.050Z",
+      "turns": 5,
+      "api_calls": 43,
       "usage": {
-        "input_tokens": 80,
-        "output_tokens": 29814,
-        "cache_read_input_tokens": 3649412,
-        "cache_creation_input_tokens": 119537
+        "input_tokens": 86,
+        "output_tokens": 31247,
+        "cache_read_input_tokens": 4050771,
+        "cache_creation_input_tokens": 123479
       },
-      "peak_context_tokens": 132616
+      "peak_context_tokens": 136558
+    },
+    {
+      "index": 4,
+      "started": "2026-11-06T20:03:21.580Z",
+      "ended": "2026-11-06T20:10:59.601Z",
+      "turns": 4,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 64,
+        "output_tokens": 35846,
+        "cache_read_input_tokens": 3095188,
+        "cache_creation_input_tokens": 126813
+      },
+      "peak_context_tokens": 139892
     }
   ],
   "log": {
-    "sha256": "1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943",
-    "bytes": 4214800,
-    "lines": 1683,
-    "gzip_bytes": 771292,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943.jsonl.gz"
+    "sha256": "78efdcf926af3af5f3e82d6fb5d3fcd3f82259c3e9f8436d597867063d5dbb83",
+    "bytes": 5401139,
+    "lines": 2077,
+    "gzip_bytes": 1001508,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/78efdcf926af3af5f3e82d6fb5d3fcd3f82259c3e9f8436d597867063d5dbb83.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -146,6 +160,14 @@
       "summary": "Record that CBMC 6.11.0's source nests Runtime Post-process inside Runtime Solver, as phases.rs assumes",
       "body": "Job 20261106-194328, the resubmitted source check for step 1a of llm-dlc/loops/engine-priorities.md, passed in the default workspace. run_property_decider times property_decider.solve() as Runtime Solver (bmc_util.cpp:393-400). dec_solve, inside it, runs finish_eager_conversion once, guarded by post_processing_done, and prints Runtime Post-process (prop_conv_solver.cpp:449-461). That is the nesting lib/src/phases.rs counts once. Only the Progress note in the stream brief changes.",
       "log_sha256": "1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943"
+    },
+    {
+      "change_id": "xtkwolstzuytvtwwnkzquxsulwtptnyy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The benchmark runs JBMC under each staging policy and compares them, proofs and counterexamples apart (verification pending)",
+      "body": "Step 2b of llm-dlc/loops/engine-priorities.md. lib/benchmark/run.py takes --jbmc-staging, a list of JBMC's staging policies (staged, full-range, tight, from step 2a), and makes every jbmc run once per policy. An auto run is made under the first policy, and again under the others only where the own checker gave no verdict and JBMC's fallback ran. Each run records its policy, auto's fallback, and its witness's size after lib/src/shrink.rs and as the engine found it (array elements, largest magnitude). The corpus's tables, 'Where the time goes' among them, stay over the first policy. A new RESULTS.md section compares the others with it per engine and mode, proofs and counterexamples apart: verdicts, seconds, class changes, larger witnesses, and auto fallbacks whose full range got under a second. Results and the page name the pipeline job and commit they come from.\n\nVerified: test_run.py passes (26 tests, 5 new). Job 20261106-102624's results.json still renders to the committed RESULTS.md byte for byte. A smoke run of group 2 under strict on the own checker and auto, with a stub for JBMC, ran each auto case once, since none fell back. Job 20261106-201041 runs the whole corpus (groups 1-4) on native, jbmc and auto under strict, assume and advised, with all three policies; step 2c decides JBMC's default from it.\n\nThe brief's 2b asks for the JBMC cases under all three policies; this job also measures auto's fallback under them, since 2c's default covers the fallback too.",
+      "log_sha256": "78efdcf926af3af5f3e82d6fb5d3fcd3f82259c3e9f8436d597867063d5dbb83"
     }
   ],
   "logs": {
@@ -165,6 +187,12 @@
       "bytes": 2872028,
       "lines": 1207,
       "gzip_bytes": 514032,
+      "url": null
+    },
+    "78efdcf926af3af5f3e82d6fb5d3fcd3f82259c3e9f8436d597867063d5dbb83": {
+      "bytes": 5401139,
+      "lines": 2077,
+      "gzip_bytes": 1001508,
       "url": null
     },
     "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99": {

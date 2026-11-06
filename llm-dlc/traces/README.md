@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 29, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 20:02 UTC |
-| Prompts | 852 |
-| Model calls | 8,420 |
-| Tool calls | 9,264 (201 failed) |
-| Compactions | 112 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 20:10 UTC |
+| Prompts | 857 |
+| Model calls | 8,455 |
+| Tool calls | 9,299 (203 failed) |
+| Compactions | 113 |
 | Subagents | 3 |
-| Tokens written | 11,521,765 |
-| Tokens read | 1,436,103,702 (97.9% from cache) |
-| Commits with a trace | 266 |
-| Log snapshots | 327 (993.8 MB gzipped, 322 uploaded) |
+| Tokens written | 11,559,044 |
+| Tokens read | 1,439,731,074 (97.9% from cache) |
+| Commits with a trace | 267 |
+| Log snapshots | 328 (994.8 MB gzipped, 322 uploaded) |
 
 ## Sessions
 
@@ -55,7 +55,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-06 15:24 UTC | [setup-repo-on-ryzen-machine](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | open | 39 min | `claude-opus-5-5` | 3 | 34 | 36 | 5 | 0 | 103,564 | 2 |
 | 2026-11-06 16:53 UTC | [Commit and publish to remote](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | ended | 1 h 34 min | `claude-opus-5-5` | 12 | 193 | 187 | 6 | 0 | 289,035 | 14 |
 | 2026-11-06 19:07 UTC | [Agent session transfer warnings](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | open | 4 min | `claude-opus-5-5` | 2 | 13 | 12 | 1 | 0 | 53,617 | 2 |
-| 2026-11-06 19:15 UTC | [Feature loop run review actions](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | open | 47 min | `claude-opus-5-5` | 18 | 163 | 161 | 1 | 3 | 160,967 | 5 |
+| 2026-11-06 19:15 UTC | [Feature loop run review actions](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | open | 55 min | `claude-opus-5-5` | 23 | 198 | 196 | 3 | 4 | 160,967 | 6 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -93,15 +93,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 23,386 | 68 | 72,506 | 2,701,932 | 97.4% | 119 |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 123,882 | 410 | 251,410 | 30,843,927 | 99.2% | 251 |
 | [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 4,261 | 28 | 22,899 | 610,433 | 96.4% | 149 |
-| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 128,287 | 324 | 430,046 | 16,831,449 | 97.5% | 135 |
+| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 165,566 | 394 | 560,801 | 20,327,996 | 97.3% | 126 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 8,062 | 87.0% | 29 |
+| `Bash` | 8,096 | 87.1% | 29 |
 | `Edit` | 417 | 4.5% | 15 |
-| `Read` | 310 | 3.3% | 18 |
+| `Read` | 311 | 3.3% | 18 |
 | `Write` | 308 | 3.3% | 15 |
 | `ToolSearch` | 61 | 0.7% | 14 |
 | `Monitor` | 31 | 0.3% | 5 |
@@ -386,6 +386,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 264 | change `xzrpqnvr` | Propose this session's mangled C++ symbol names for the allow list; note the resubmitted CBMC source job | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/5a885317df6c535c722601d9c9204901c7b271796b1076c9917629a27fe0086a.jsonl.gz)) |
 | 265 | change `uykqwxvr` | JBMC's staging policy is an option: staged, full range alone, or one tight stage first | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/0d78378a22c84361d50834a255abd83c43adedf45f5e86b4a97c59c4130e94fd.jsonl.gz)) |
 | 266 | change `tvquoumw` | Record that CBMC 6.11.0's source nests Runtime Post-process inside Runtime Solver, as phases.rs assumes | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/1bfb9a7f45b8816c689bcb29e41908f41c650efa7e3b3278277b15d4dddb3943.jsonl.gz)) |
+| 267 | change `xtkwolst` | The benchmark runs JBMC under each staging policy and compares them, proofs and counterexamples apart (verification pending) | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/78efdcf926af3af5f3e82d6fb5d3fcd3f82259c3e9f8436d597867063d5dbb83.jsonl.gz)) |
 
 ## Logs
 
@@ -421,7 +422,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 2 | 2 | 0.4 MB | [`000c1283aae8`](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz) |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 14 | 14 | 5.4 MB | [`bea739fae396`](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz) |
 | [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 2 | 2 | 0.2 MB | [`3dcf14c608d7`](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/3dcf14c608d7609eb57c72f0ba7e862e5834061d8f8950d4b51a65d17c3befc7.jsonl.gz) |
-| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 5 | 0 | 2.8 MB | `1bfb9a7f45b8`, not uploaded |
+| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 6 | 0 | 3.8 MB | `78efdcf926af`, not uploaded |
 
 ## Session notes
 

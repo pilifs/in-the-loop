@@ -114,11 +114,37 @@ they were recorded before [`engine-priorities.md`](../../llm-dlc/loops/engine-pr
 `Runtime Post-process` was counted in both `encoding` and `solving`. They stand as recorded until the next benchmark
 job regenerates the page.
 
+## JBMC's staging policies (step 2b)
+
+A JBMC check searches interval stages before the full range (`[0:20]`, then `[-100000:100000]`, then every input),
+and `--jbmc-staging` picks which of them run ([`../src/deadline.rs`](../src/deadline.rs), step 2a of
+[`engine-priorities.md`](../../llm-dlc/loops/engine-priorities.md)): `staged` all of them, `full-range` the full
+range alone, `tight` the first restricting stage on a fortieth of the check and then the full range. The runner's
+`--jbmc-staging` takes a list of them, and makes every run of an engine that may call JBMC once per policy: `jbmc`,
+and `auto` (the own checker, then JBMC's fallback on what it leaves without a verdict). An `auto` run whose own
+checker decided under the first policy is not made again, since JBMC never ran. Each such run records its `staging`,
+and `auto`'s whether it fell back to JBMC (`fallback`).
+
+The tables of the corpus, the phase tables among them, are over the first policy. "JBMC's staging policies" in
+`RESULTS.md` compares the others with it, per engine and mode, with the proofs (cases expected `verified`) and the
+counterexamples (expected `violation`) apart: how many each decides correctly, leaves without a verdict, or gets
+wrong, their seconds, how many runs change class from the first policy's, how many witnesses are larger than its,
+and how many runs left without a verdict gave the full range under a second or none (*starved*: under `auto`, two
+`staged` stages out of time can take the whole fallback). Its case-by-case tables, under strict, give each policy's
+verdict and time and each witness.
+
+A witness is measured as reported, after [`../src/shrink.rs`](../src/shrink.rs) shrank it in the interpreter
+(`witnessSize`), and, when shrinking changed it, as the engine found it (`foundSize`, with `shrinkRuns`): the elements
+of its arrays and the largest magnitude among its values. A larger witness is one with more elements or a larger
+value.
+
 ## Running it
 
 ```bash
 python3 lib/benchmark/run.py --engines native --groups 2,3,4        # under a minute: the own checker only
 python3 lib/benchmark/run.py --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md   # both engines: a pipeline job
+python3 lib/benchmark/run.py --engines native,jbmc,auto --jbmc-staging staged,full-range,tight \
+    --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md                          # step 2b's job
 python3 lib/benchmark/run.py --render lib/benchmark/results.json    # the tables again from a results file
 python3 -m unittest lib/benchmark/test_run.py                       # the runner's tests; no proof runs
 ```
@@ -127,7 +153,9 @@ It compiles the version trees and the conformance class into `lib/target/benchma
 runs every case, checks the witnesses, and writes the results and the tables. It exits 1 on a false success or a
 false alarm, or when the JVM does not bear out an expected answer. A JBMC run is a proof, so the full run is a
 pipeline job (see [`verification/README.md`](../../verification/README.md)); [`RESULTS.md`](RESULTS.md) and
-[`results.json`](results.json) are what the last one wrote.
+[`results.json`](results.json) are what the last one wrote. Run as one, the results name the job and the commit it ran
+at (`environment.job` and `commit`, from the pipeline's `VERIFY_JOB_ID` and `VERIFY_SOURCE_COMMIT`), and so does the
+page's first line.
 
 ## Adding a case
 

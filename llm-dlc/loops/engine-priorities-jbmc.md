@@ -142,9 +142,28 @@ Progress, so the reconcile loop knows where to look.
     - `lib/src/statement.rs`: `staging: None` in a test's `Search`;
     - `lib/tests/conformance.rs`: the helper `staged_jbmc` and the test above;
     - `lib/README.md`: the option and `search.staging`.
-- **Next:** 2b, the benchmark job over groups 1–4 with all three policies. `lib/benchmark/run.py` needs to run the
-  JBMC cases once per policy, and its table needs per-policy time and verdict, proofs and counterexamples apart, and
-  the witness size after shrinking.
+- **2b, the benchmark job: submitted, `20261106-201041` (pending).**
+  - `lib/benchmark/run.py --jbmc-staging staged,full-range,tight` makes every run of `jbmc` once per policy, and of
+    `auto` once under the first, then again under the others only where its own checker gave no verdict and JBMC's
+    fallback ran. That gives 2c the `auto` fallback's evidence too, and the 2a note's question (a `staged`
+    fallback whose full range got under a second) is counted as *starved*.
+  - Each run records its `staging`, `auto`'s `fallback`, and its witness's size as reported (`witnessSize`, after
+    `shrink.rs`) and as found (`foundSize`, `shrinkRuns`): array elements and largest magnitude.
+  - The corpus's tables, "Where the time goes" among them, are over the first policy. A new section, "JBMC's staging
+    policies", compares the others with it per engine and mode, proofs and counterexamples apart: correct, no
+    verdict, wrong, seconds, class changes, larger witnesses, shrunk, starved. Under strict, case-by-case tables give
+    each policy's verdict, time and witness.
+  - The results name the job and its commit (`VERIFY_JOB_ID`, `VERIFY_SOURCE_COMMIT`), and so does the page's first
+    line, as the brief asks of new figures.
+  - Verified: `test_run.py` passes (26 tests, 5 new: the option passed through, witness sizes, `auto`'s skip rule
+    through `run()`, the tables over the first policy and the comparison, the empty section). Job `-102624`'s
+    `results.json` renders to the committed `RESULTS.md` byte for byte. A smoke run of group 2 under strict, own
+    checker and `auto`, with a stub for JBMC, ran each `auto` case once (none fell back).
+  - The job runs `native,jbmc,auto` under all three modes, about 2.5 h estimated. Advised runs may stop on the
+    JDK 25.0.5 against the contract records' 25.0.4.1 (1a's note).
+  - No shared file changed.
+- **Next:** 3, the two witnesses that don't reproduce (`conformance/caught/1`, `nestedHandler/1`), inline while
+  `-201041` runs; then 4a's job. 2c waits on `-201041`.
 - Status: working
 
 ## Loop settings

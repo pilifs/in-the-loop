@@ -242,6 +242,134 @@ def results_with_phases():
     return r
 
 
+class StagingTest(unittest.TestCase):
+    """Step 2b: JBMC's runs under each staging policy, compared with the first, proofs and counterexamples apart."""
+
+    class Options(CommandTest.Options):
+        pass
+
+    def test_a_policy_is_passed_to_jvmcontract_and_none_without_one(self):
+        case = {"kind": "regression", "before": "broken", "after": "fixed", "target": "p.C#m"}
+        cmd = run.command(case, "jbmc", "strict", CommandTest.classes, Path("/w"), self.Options, "tight")
+        self.assertEqual(cmd[cmd.index("--jbmc-staging") + 1], "tight")
+        self.assertNotIn("--jbmc-staging", run.command(case, "native", "strict", CommandTest.classes, Path("/w"), self.Options))
+
+    def test_a_witness_is_measured_as_reported_and_as_found(self):
+        self.assertEqual(run.witness_size([{"value": [3, -70000, 2]}, {"value": True}, {"value": "-9000000000"}, {"value": "NaN"}, {"value": None}]),
+                         {"elements": 3, "largest": 9000000000})
+        self.assertEqual(run.witness_size([{"name": "r", "components": [{"value": -5}, {"value": [0]}]}]), {"elements": 1, "largest": 5})
+        self.assertIsNone(run.witness_size(None))
+        data = {"verdict": "violation", "search": {"staging": "staged"},
+                "counterexample": {"inputs": [{"value": [99]}], "found_inputs": [{"value": [1000000, 7, 7]}], "shrink_runs": 12}}
+        record = run.record_of({"id": "y", "expected": "violation"}, "jbmc", "strict", "staged", data, measured(), Path("/w"))
+        self.assertEqual((record["staging"], record["witness"], record["witnessSize"], record["foundSize"], record["shrinkRuns"]),
+                         ("staged", "[99]", {"elements": 1, "largest": 99}, {"elements": 3, "largest": 1000000}, 12))
+        native = run.record_of({"id": "y", "expected": "violation"}, "native", "strict", None,
+                               {"verdict": "violation", "counterexample": {"inputs": [{"value": 1}]}}, measured(), Path("/w"))
+        self.assertNotIn("staging", native)
+        self.assertNotIn("foundSize", native, "a witness that was not shrunk has no found size")
+
+    def test_auto_runs_the_other_policies_only_where_it_fell_back(self):
+        calls = []
+        fell_back = {"x": True, "y": False}
+
+        def fake(case, engine, mode, staging, classes, build, options):
+            calls.append((case["id"], engine, staging))
+            record = {"case": case["id"], "engine": engine, "mode": mode, "verdict": "verified", "class": "correct", "seconds": 0.1, "peakMB": 1.0}
+            if engine == "auto":
+                record["fallback"] = fell_back[case["id"]]
+            return record
+
+        cases = [{"id": i, "group": 2, "workload": "w", "kind": "property", "expected": "verified"} for i in ("x", "y")]
+        original = (run.run_one, run.load_cases, run.compile_sources, run.compile_examples, run.reference, run.check_witnesses, run.environment)
+        try:
+            run.run_one = fake
+            run.load_cases = lambda groups, pattern=None: cases
+            run.compile_sources = lambda build: {}
+            run.compile_examples = lambda build, cases: {}
+            run.reference = lambda *a: {}
+            run.check_witnesses = lambda *a: None
+            run.environment = lambda options: {}
+            with tempfile.TemporaryDirectory() as build:
+                options = run.main.__globals__["argparse"].Namespace(groups="2", engines="native,jbmc,auto", modes="strict", cases=None,
+                                                                     jbmc_staging="staged,full-range,tight", build=build, search=1,
+                                                                     timeout=120, quiet=True)
+                results = run.run(options)
+        finally:
+            (run.run_one, run.load_cases, run.compile_sources, run.compile_examples, run.reference, run.check_witnesses, run.environment) = original
+        self.assertEqual(calls, [("x", "native", None), ("x", "jbmc", "staged"), ("x", "jbmc", "full-range"), ("x", "jbmc", "tight"),
+                                 ("x", "auto", "staged"), ("x", "auto", "full-range"), ("x", "auto", "tight"),
+                                 ("y", "native", None), ("y", "jbmc", "staged"), ("y", "jbmc", "full-range"), ("y", "jbmc", "tight"),
+                                 ("y", "auto", "staged")])
+        self.assertEqual(results["settings"]["jbmcStaging"], ["staged", "full-range", "tight"])
+        with self.assertRaises(SystemExit):
+            run.run(run.main.__globals__["argparse"].Namespace(**{**vars(options), "jbmc_staging": "staged,full"}))
+
+    def test_the_corpus_tables_are_over_the_first_policy_and_the_others_are_compared_with_it(self):
+        r = staged_results()
+        before = run.render(results())
+        page = run.render(r)
+        self.assertIn("The tables of the corpus are over `staged`", page)
+        self.assertIn("| 2 real regressions | jbmc | strict | 1 | 0 | 0 | 1 |", page, "the staged run alone, as before")
+        self.assertEqual(page.count("| 1 semantic conformance | jbmc | strict | 1 |"), 1)
+        rows = {(x["engine"], x["mode"], x["side"], x["staging"]): x for x in run.by_staging(r)}
+        proofs = rows[("jbmc", "strict", "proofs", "full-range")]
+        self.assertEqual((proofs["correct"], proofs["unsupported"], proofs["seconds"], proofs["changed"]), (1, 0, 30.0, 1))
+        self.assertEqual(rows[("jbmc", "strict", "proofs", "staged")]["starved"], 0, "out of time on its full range, not starved")
+        counter = rows[("jbmc", "strict", "counterexamples", "tight")]
+        self.assertEqual((counter["correct"], counter["largerWitnesses"], counter["shrunk"]), (1, 1, 0))
+        self.assertEqual(rows[("jbmc", "strict", "counterexamples", "full-range")]["largerWitnesses"], 0)
+        self.assertNotIn(("auto", "strict", "proofs", "staged"), rows, "auto's own checker decided real/b")
+        auto = rows[("auto", "strict", "counterexamples", "staged")]
+        self.assertEqual((auto["cases"], auto["unsupported"], auto["starved"]), (1, 1, 1))
+        self.assertEqual(rows[("auto", "strict", "counterexamples", "full-range")]["correct"], 1)
+        self.assertIn("## JBMC's staging policies", page)
+        self.assertIn("| jbmc | strict | proofs | `full-range` | 1 of 1 | 0 | 0 | 30.0 | 30.0 | 1 | · | · | 0 |  |", page)
+        self.assertIn("Cases whose class differs between the policies, jbmc under strict: `real/b`.", page)
+        self.assertIn("| `conformance/a/1` | ✓ violation 0.50 s, `[1]` (1 el., max 1) | ✓ violation 0.40 s, `[1]` (1 el., max 1; found 8 el., max 99999) | "
+                      "✓ violation 0.30 s, `[2,5]` (2 el., max 5) |", page)
+        self.assertIn("<summary>Counterexamples, auto under strict, 1 case: each case where JBMC's fallback ran, per policy</summary>", page)
+        self.assertIn("– out of time 30.0 s, full range starved", page)
+        self.assertNotIn("JBMC's staging policies", before)
+        decided = staged_results()
+        decided["runs"] = [x for x in decided["runs"] if x["engine"] != "jbmc" and x["case"] != "conformance/a/1"]
+        self.assertIn("No run of `jbmc` was made, and no run of `auto` fell back to JBMC.", run.render(decided))
+
+
+def staged_results():
+    """results() with each JBMC run under three policies, and auto: its own checker deciding one case, falling back
+    on the other, where staged's stages leave the full range nothing."""
+    r = results()
+    r["settings"]["engines"].append("auto")
+    r["settings"]["jbmcStaging"] = ["staged", "full-range", "tight"]
+    runs = []
+    for x in r["runs"]:
+        if x["engine"] == "jbmc":
+            x["staging"] = "staged"
+            x["witnessSize"] = {"elements": 1, "largest": 1} if x["verdict"] == "violation" else None
+            if x["verdict"] == "violation":
+                x["witness"] = "[1]"
+            x["solver"] = {"runs": [{"checker": "jbmc", "stage": None, "budget": 105.0, "ended": "out-of-time"}]} if x["class"] == "unsupported" else {}
+        runs.append(x)
+    def jbmc(case, mode, staging, verdict, cls, seconds, **kw):
+        return {"case": case, "engine": "jbmc", "mode": mode, "staging": staging, "verdict": verdict, "class": cls, "seconds": seconds, "peakMB": 30.0, "assumed": [], **kw}
+    for mode in ("strict", "assume"):
+        runs += [jbmc("conformance/a/1", mode, "full-range", "violation", "correct", 0.4, witness="[1]", witnessSize={"elements": 1, "largest": 1},
+                      foundSize={"elements": 8, "largest": 99999}, shrinkRuns=20),
+                 jbmc("conformance/a/1", mode, "tight", "violation", "correct", 0.3, witness="[2,5]", witnessSize={"elements": 2, "largest": 5}),
+                 jbmc("real/b", mode, "full-range", "verified", "correct", 30.0),
+                 jbmc("real/b", mode, "tight", "unverifiable", "unsupported", 120.0, reason="out of time")]
+    starving = {"runs": [{"checker": "native", "stage": None}, {"checker": "jbmc", "stage": "[0:20]", "budget": 15.0, "ended": "out-of-time"},
+                         {"checker": "jbmc", "stage": "[-100000:100000]", "budget": 15.0, "ended": "out-of-time"}]}
+    runs += [{"case": "real/b", "engine": "auto", "mode": "strict", "staging": "staged", "fallback": False, "verdict": "verified", "class": "correct", "seconds": 0.2, "peakMB": 30.0, "assumed": []},
+             {"case": "conformance/a/1", "engine": "auto", "mode": "strict", "staging": "staged", "fallback": True, "verdict": "unverifiable", "class": "unsupported",
+              "reason": "out of time", "seconds": 30.0, "peakMB": 30.0, "assumed": [], "solver": starving},
+             {"case": "conformance/a/1", "engine": "auto", "mode": "strict", "staging": "full-range", "fallback": True, "verdict": "violation", "class": "correct",
+              "seconds": 1.0, "peakMB": 30.0, "assumed": [], "witness": "[1]", "witnessSize": {"elements": 1, "largest": 1}}]
+    r["runs"] = runs
+    return r
+
+
 class CorpusTest(unittest.TestCase):
     def test_every_case_is_complete_and_names_classes_that_exist(self):
         corpus = json.loads((HERE / "corpus.json").read_text())
