@@ -2,6 +2,78 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261106-123940-jbmc-s-two-readings-on-the-five-recorded",
+      "title": "JBMC's two readings on the five recorded JBMC examples job -073804 could not run (128-131, 134), now with their patches applied",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 4m01s, peak 1.4 GiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence",
+        "jbmc:json-ui"
+      ],
+      "links": {
+        "jobs": [
+          "20261106-073804-jbmc-read-through-json-ui-agrees-with-th"
+        ],
+        "examples": [
+          "128",
+          "129",
+          "130",
+          "131",
+          "134"
+        ]
+      },
+      "sourceCommit": "b3c42f387d32b37aab9fc8e4ce66f94045d13231",
+      "finishedAt": "2026-11-06T12:56:06+00:00",
+      "wallSeconds": 241.1,
+      "peakMemoryBytes": 1476063232,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "the five took seconds each when recorded; 134 ran 1049 s in -073804 only because it ran unpatched; -073804 peaked at 1.4 GiB"
+      },
+      "host": "FilSurface",
+      "result": "20261106-123940-jbmc-s-two-readings-on-the-five-recorded/result.json"
+    },
+    {
+      "id": "20261106-082917-jbmc-s-own-approximations-as-gaps-every",
+      "title": "JBMC's own approximations as gaps: every recorded JBMC example keeps its verdict under --gaps assume, and the gaps strict would refuse are tabulated (step 4c of the sound-verdicts brief)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 8m10s, peak 1.4 GiB (estimated 25m00s, 3.5 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "declared output lib/target/jobs/4c-jbmc-gaps/gaps.json was not produced",
+        "step 1 (41 recorded JBMC examples under --gaps assume, with JBMC's gaps) exited 1, expected 0",
+        "step 1 (41 recorded JBMC examples under --gaps assume, with JBMC's gaps) was held back 5m01s by its 1-CPU quota in 8m10s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "llm-dlc/loops/sound-verdicts.md",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "0874cd9f915806ea6ef9144d214e0ad9660e8b78",
+      "finishedAt": "2026-11-06T12:52:03+00:00",
+      "wallSeconds": 490.6,
+      "peakMemoryBytes": 1450450944,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 3758096384,
+        "durationSeconds": 1500.0,
+        "notes": "the 41 examples' recorded JBMC proof lines add up to about 150 s, plus a goto listing per harness (well under a second on the inline cases); build.py compiles and tests the app for each example (some 20-30 s each); JBMC is capped at 3 GiB"
+      },
+      "host": "FilSurface",
+      "result": "20261106-082917-jbmc-s-own-approximations-as-gaps-every/result.json"
+    },
+    {
       "id": "20261106-102624-benchmark-corpus-with-per-phase-measurem",
       "title": "Benchmark corpus with per-phase measurements (step 5b): both engines, the three groups and examples 141 and 142, each run's time split into the same phases",
       "status": "passed",

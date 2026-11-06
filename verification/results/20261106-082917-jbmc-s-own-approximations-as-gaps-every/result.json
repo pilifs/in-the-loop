@@ -1,0 +1,194 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-082917-jbmc-s-own-approximations-as-gaps-every",
+  "title": "JBMC's own approximations as gaps: every recorded JBMC example keeps its verdict under --gaps assume, and the gaps strict would refuse are tabulated (step 4c of the sound-verdicts brief)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 8m10s, peak 1.4 GiB (estimated 25m00s, 3.5 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "declared output lib/target/jobs/4c-jbmc-gaps/gaps.json was not produced",
+    "step 1 (41 recorded JBMC examples under --gaps assume, with JBMC's gaps) exited 1, expected 0",
+    "step 1 (41 recorded JBMC examples under --gaps assume, with JBMC's gaps) was held back 5m01s by its 1-CPU quota in 8m10s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-082917-jbmc-s-own-approximations-as-gaps-every.json",
+    "sha256": "ee3121faced916e7e8afea05d9fafcbe30fac1019e0c579a8b3eeb4f1ca4260d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-082917-jbmc-s-own-approximations-as-gaps-every",
+      "title": "JBMC's own approximations as gaps: every recorded JBMC example keeps its verdict under --gaps assume, and the gaps strict would refuse are tabulated (step 4c of the sound-verdicts brief)",
+      "description": "Step 4c of llm-dlc/loops/sound-verdicts.md: before JBMC's proof, jvmcontract now lists JBMC's goto program on the harness (jbmc --show-goto-functions, which converts what the proof would and solves nothing; lib/src/jbmc_gaps.rs) and walks JBMC's own call graph from the harness. A method reached with no bytecode on JBMC's class path is JBMC's stub (returns any value, does nothing else), an invokedynamic JBMC links to no class of its own making takes the value zero or null (string concatenation, a record's equals/hashCode/toString, a lambda for an interface JBMC has no class file of), and a method that synchronizes is a 'monitor' gap since JBMC drops monitor instructions. Under --gaps strict (the library's default) a JBMC proof that reaches one is no verdict; under --gaps assume it stands and names each gap. build.py now passes the recorded gap mode (assume) to the examples JBMC proves too, so no recorded verdict should move. This job copies examples/ to a scratch directory and runs build.py there on the 41 recorded B9/B11 examples proved by JBMC on the javac apps (Quorum, Crosscut, Mica), then tabulates, per example, the JBMC gaps its result records (search.gaps with checker jbmc) and whether strict would refuse its proof: the coverage strictness costs on JBMC, as step 1a measured it for the own checker. Nothing in the repository's examples changes. The inline integration test jbmc_own_approximations_are_gaps_in_the_same_modes checks 1b's reproducers and two unlinked call sites on the real JBMC 6.11.0.",
+      "kind": "library",
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "llm-dlc/loops/sound-verdicts.md",
+          "examples/tools/build.py"
+        ]
+      },
+      "expected": "exits 0, printing 'ok: every recorded JBMC example keeps its verdict under --gaps assume, with JBMC's gaps recorded', after a line per example (its verdict and the JBMC gaps it reaches, with sites) and a total: how many reach a JBMC gap, by kind, and how many recorded proofs strict would refuse. gaps.json has the table. A build.py exit of 1 means a verdict moved under --gaps assume (a bug: assume should keep every verdict); build.txt names the example.",
+      "submitted": {
+        "at": "2026-11-06T08:29:17+00:00",
+        "session": "7cacdb56-4c74-4880-a06e-f98031283c0f",
+        "by": "claude (sound-verdicts loop)"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "3.5G",
+        "duration": "25m",
+        "timeout": "3h",
+        "notes": "the 41 examples' recorded JBMC proof lines add up to about 150 s, plus a goto listing per harness (well under a second on the inline cases); build.py compiles and tests the app for each example (some 20-30 s each); JBMC is capped at 3 GiB"
+      },
+      "steps": [
+        {
+          "name": "41 recorded JBMC examples under --gaps assume, with JBMC's gaps",
+          "run": "set -eo pipefail\nW=lib/target/jobs/4c-jbmc-gaps; rm -rf \"$W\"; mkdir -p \"$W/repo\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\nIDS=$(python3 examples/tools/build.py --plan | python3 -c 'import json, sys; print(\" \".join(p[\"example\"] for p in json.load(sys.stdin) if p[\"approach\"] in (\"B9\", \"B11\") and p.get(\"engine\") == \"jbmc\" and p.get(\"app\") in (\"quorum\", \"crosscut\", \"mica\") and p[\"executable\"]))')\necho \"examples: $IDS\"\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" $IDS > \"$W/build.txt\" 2>&1 || status=$?\ntail -5 \"$W/build.txt\"\npython3 - \"$W/repo/examples\" \"$status\" \"$W/gaps.json\" $IDS <<'PY'\nimport glob, json, sys\nroot, status, out, ids = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4:]\ntable, kinds, refused = [], {}, 0\nfor i in ids:\n    folder = glob.glob(f\"{root}/{i}-*\")[0]\n    res = json.load(open(f\"{folder}/result.json\"))\n    searches = [res.get(\"search\")] + [q.get(\"search\") for q in res.get(\"properties\") or []]\n    gaps = {}\n    for s in searches:\n        for g in (s or {}).get(\"gaps\") or []:\n            if g.get(\"checker\") == \"jbmc\":\n                gaps.setdefault(g[\"id\"], g)\n    for g in gaps.values():\n        kinds[g[\"kind\"]] = kinds.get(g[\"kind\"], 0) + 1\n    # Under strict, a verdict JBMC proved that reaches a gap would be no verdict; a violation would stand if replayed.\n    moves = res[\"verdict\"] == \"verified\" and bool(gaps)\n    refused += moves\n    table.append({\"example\": i, \"verdict\": res[\"verdict\"], \"gapMode\": [(s or {}).get(\"gapMode\") for s in searches if s],\n                  \"jbmcGaps\": [{\"id\": g[\"id\"], \"sites\": g[\"sites\"]} for g in gaps.values()], \"strictWouldRefuse\": moves})\n    print(f\"{i} {res['verdict']:13} {len(gaps)} JBMC gap(s){' (strict: no verdict)' if moves else ''}\" + \"\".join(f\"\\n    {g['id']} at {', '.join(g['sites'])}\" for g in gaps.values()))\njson.dump(table, open(out, \"w\"), indent=1)\nprint(f\"{len(ids)} examples; {sum(1 for t in table if t['jbmcGaps'])} reach a JBMC gap; kinds {kinds}; strict would refuse {refused} recorded proof(s)\")\nassert all(t[\"gapMode\"] and all(m == \"assume\" for m in t[\"gapMode\"]) for t in table), \"every run is under --gaps assume, the recorded mode\"\nassert status == \"0\", f\"build.py exited {status}: a verdict differs from its expected one under --gaps assume (see build.txt)\"\nprint(\"ok: every recorded JBMC example keeps its verdict under --gaps assume, with JBMC's gaps recorded\")\nPY",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/jobs/4c-jbmc-gaps/gaps.json",
+        "lib/target/jobs/4c-jbmc-gaps/build.txt"
+      ]
+    }
+  },
+  "sourceCommit": "0874cd9f915806ea6ef9144d214e0ad9660e8b78",
+  "startedAt": "2026-11-06T12:43:51+00:00",
+  "finishedAt": "2026-11-06T12:52:03+00:00",
+  "wallSeconds": 492.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2437466,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 3758096384,
+    "durationSeconds": 1500.0,
+    "notes": "the 41 examples' recorded JBMC proof lines add up to about 150 s, plus a goto listing per harness (well under a second on the inline cases); build.py compiles and tests the app for each example (some 20-30 s each); JBMC is capped at 3 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1450450944,
+    "wallSeconds": 490.6,
+    "cpuSeconds": 483.9,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.33
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410356736,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "41 recorded JBMC examples under --gaps assume, with JBMC's gaps",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4c-jbmc-gaps; rm -rf \"$W\"; mkdir -p \"$W/repo\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\nIDS=$(python3 examples/tools/build.py --plan | python3 -c 'import json, sys; print(\" \".join(p[\"example\"] for p in json.load(sys.stdin) if p[\"approach\"] in (\"B9\", \"B11\") and p.get(\"engine\") == \"jbmc\" and p.get(\"app\") in (\"quorum\", \"crosscut\", \"mica\") and p[\"executable\"]))')\necho \"examples: $IDS\"\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" $IDS > \"$W/build.txt\" 2>&1 || status=$?\ntail -5 \"$W/build.txt\"\npython3 - \"$W/repo/examples\" \"$status\" \"$W/gaps.json\" $IDS <<'PY'\nimport glob, json, sys\nroot, status, out, ids = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4:]\ntable, kinds, refused = [], {}, 0\nfor i in ids:\n    folder = glob.glob(f\"{root}/{i}-*\")[0]\n    res = json.load(open(f\"{folder}/result.json\"))\n    searches = [res.get(\"search\")] + [q.get(\"search\") for q in res.get(\"properties\") or []]\n    gaps = {}\n    for s in searches:\n        for g in (s or {}).get(\"gaps\") or []:\n            if g.get(\"checker\") == \"jbmc\":\n                gaps.setdefault(g[\"id\"], g)\n    for g in gaps.values():\n        kinds[g[\"kind\"]] = kinds.get(g[\"kind\"], 0) + 1\n    # Under strict, a verdict JBMC proved that reaches a gap would be no verdict; a violation would stand if replayed.\n    moves = res[\"verdict\"] == \"verified\" and bool(gaps)\n    refused += moves\n    table.append({\"example\": i, \"verdict\": res[\"verdict\"], \"gapMode\": [(s or {}).get(\"gapMode\") for s in searches if s],\n                  \"jbmcGaps\": [{\"id\": g[\"id\"], \"sites\": g[\"sites\"]} for g in gaps.values()], \"strictWouldRefuse\": moves})\n    print(f\"{i} {res['verdict']:13} {len(gaps)} JBMC gap(s){' (strict: no verdict)' if moves else ''}\" + \"\".join(f\"\\n    {g['id']} at {', '.join(g['sites'])}\" for g in gaps.values()))\njson.dump(table, open(out, \"w\"), indent=1)\nprint(f\"{len(ids)} examples; {sum(1 for t in table if t['jbmcGaps'])} reach a JBMC gap; kinds {kinds}; strict would refuse {refused} recorded proof(s)\")\nassert all(t[\"gapMode\"] and all(m == \"assume\" for m in t[\"gapMode\"]) for t in table), \"every run is under --gaps assume, the recorded mode\"\nassert status == \"0\", f\"build.py exited {status}: a verdict differs from its expected one under --gaps assume (see build.txt)\"\nprint(\"ok: every recorded JBMC example keeps its verdict under --gaps assume, with JBMC's gaps recorded\")\nPY",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 490.616,
+      "cpuSeconds": 483.941,
+      "cpuThrottledSeconds": 301.575,
+      "peakMemoryBytes": 1450450944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-41-recorded-jbmc-examples-unde.log",
+        "lines": 9,
+        "bytes": 521,
+        "sha256": "2d946f24e45b20d9cc737fb2b42f1b010625b09532a2d14221ec322965964173",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 6,
+          "text": "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+          "groups": [
+            "134",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "examples: 013 015 016 017 018 022 023 024 027 031 032 033 034 035 036 037 044 045 046 047 048 049 050 051 052 053 054 055 056 071 120 121 122 123 126 127 128 129 130 131 134",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.2 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.6 s",
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+        "Traceback (most recent call last):",
+        "  File \"<stdin>\", line 16, in <module>",
+        "KeyError: 'verdict'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/jobs/4c-jbmc-gaps/build.txt",
+      "change": "added",
+      "bytes": 21368,
+      "sha256": "840a3802b77c59f44819df3842396bd9a63be4d711dff83d0a7e8eb042fdf318",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T13:10:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "lib/target/jobs/4c-jbmc-gaps/build.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261106-082917-jbmc-s-own-approximations-as-gaps-every"
+}

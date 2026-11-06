@@ -1,0 +1,200 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-123940-jbmc-s-two-readings-on-the-five-recorded",
+  "title": "JBMC's two readings on the five recorded JBMC examples job -073804 could not run (128-131, 134), now with their patches applied",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m01s, peak 1.4 GiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-123940-jbmc-s-two-readings-on-the-five-recorded.json",
+    "sha256": "3242d771738fc0fd290cab97fb504653c4db5d115e00a91b329fff758b6d8fbc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-123940-jbmc-s-two-readings-on-the-five-recorded",
+      "title": "JBMC's two readings on the five recorded JBMC examples job -073804 could not run (128-131, 134), now with their patches applied",
+      "description": "Job 20261106-073804 read every JBMC run of the 41 recorded JBMC examples both through --json-ui and as text: 78 runs, 0 disagreements. Examples 128-131 and 134 gave no verdict there, because their git-format patches were never applied in the job's work directory (git apply inside this repository's tree skipped every file; fixed in commit 'Pipeline jobs apply git-format patches'). This job runs those five with JVMCONTRACT_JBMC_READ=both, on copies of examples/ so nothing recorded changes. A pass means both readings agree on every run and each example gives its recorded verdict, which completes the differential: the text reader can then be removed (step 4b of the sound-verdicts brief).",
+      "kind": "library",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence",
+        "jbmc:json-ui"
+      ],
+      "links": {
+        "jobs": [
+          "20261106-073804-jbmc-read-through-json-ui-agrees-with-th"
+        ],
+        "examples": [
+          "128",
+          "129",
+          "130",
+          "131",
+          "134"
+        ]
+      },
+      "expected": "exits 0; every JBMC run of 128-131 and 134 read alike both ways, and each example's verdict as recorded",
+      "submitted": {
+        "at": "2026-11-06T12:39:40+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "jbmc",
+        "javac",
+        "java",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "the five took seconds each when recorded; 134 ran 1049 s in -073804 only because it ran unpatched; -073804 peaked at 1.4 GiB"
+      },
+      "steps": [
+        {
+          "name": "5 recorded JBMC examples, read both ways",
+          "run": "set -eo pipefail\nW=lib/target/jobs/4b-differential-5; rm -rf \"$W\"; mkdir -p \"$W/repo\"\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\" JVMCONTRACT_JBMC_READ=both JVMCONTRACT_JBMC_DIFFERENTIAL=\"$PWD/$W/differential.jsonl\"\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 128 129 130 131 134 > \"$W/build.txt\" 2>&1 || status=$?\ntail -8 \"$W/build.txt\"\npython3 - \"$W/differential.jsonl\" \"$status\" <<'PY'\nimport json, sys\nlines = [json.loads(l) for l in open(sys.argv[1])]\nbad = [d for d in lines if not d[\"agree\"]]\nendings = {}\nfor d in lines:\n    endings[d[\"json\"][\"ending\"]] = endings.get(d[\"json\"][\"ending\"], 0) + 1\nprint(f\"{len(lines)} JBMC runs read both ways, {len(bad)} disagreeing; endings from the JSON: {endings}\")\nfor d in bad:\n    print(\"DISAGREE\", d[\"log\"], d[\"stage\"], d[\"differences\"])\nassert lines, \"no JBMC run was read both ways\"\nassert not bad, \"the readings disagree\"\nassert sys.argv[2] == \"0\", f\"build.py exited {sys.argv[2]}: a verdict differs from its expected one (see build.txt)\"\nprint(\"ok: the JSON and the text reading agree on every run of the five examples, and every verdict is as expected\")\nPY",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/jobs/4b-differential-5/build.txt",
+        "lib/target/jobs/4b-differential-5/differential.jsonl"
+      ]
+    }
+  },
+  "sourceCommit": "b3c42f387d32b37aab9fc8e4ce66f94045d13231",
+  "startedAt": "2026-11-06T12:52:04+00:00",
+  "finishedAt": "2026-11-06T12:56:06+00:00",
+  "wallSeconds": 242.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2437466,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "the five took seconds each when recorded; 134 ran 1049 s in -073804 only because it ran unpatched; -073804 peaked at 1.4 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1476063232,
+    "wallSeconds": 241.1,
+    "cpuSeconds": 237.7,
+    "memoryOfEstimate": 0.46,
+    "durationOfEstimate": 0.4
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410356736,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "5 recorded JBMC examples, read both ways",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4b-differential-5; rm -rf \"$W\"; mkdir -p \"$W/repo\"\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\" JVMCONTRACT_JBMC_READ=both JVMCONTRACT_JBMC_DIFFERENTIAL=\"$PWD/$W/differential.jsonl\"\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 128 129 130 131 134 > \"$W/build.txt\" 2>&1 || status=$?\ntail -8 \"$W/build.txt\"\npython3 - \"$W/differential.jsonl\" \"$status\" <<'PY'\nimport json, sys\nlines = [json.loads(l) for l in open(sys.argv[1])]\nbad = [d for d in lines if not d[\"agree\"]]\nendings = {}\nfor d in lines:\n    endings[d[\"json\"][\"ending\"]] = endings.get(d[\"json\"][\"ending\"], 0) + 1\nprint(f\"{len(lines)} JBMC runs read both ways, {len(bad)} disagreeing; endings from the JSON: {endings}\")\nfor d in bad:\n    print(\"DISAGREE\", d[\"log\"], d[\"stage\"], d[\"differences\"])\nassert lines, \"no JBMC run was read both ways\"\nassert not bad, \"the readings disagree\"\nassert sys.argv[2] == \"0\", f\"build.py exited {sys.argv[2]}: a verdict differs from its expected one (see build.txt)\"\nprint(\"ok: the JSON and the text reading agree on every run of the five examples, and every verdict is as expected\")\nPY",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 241.133,
+      "cpuSeconds": 237.657,
+      "cpuThrottledSeconds": 34.324,
+      "peakMemoryBytes": 1476063232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-5-recorded-jbmc-examples-read.log",
+        "lines": 10,
+        "bytes": 600,
+        "sha256": "37543ccbbac9b63a14732430fe8a823610b6df061d3eb5798c1ef8029c392a7e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 8,
+          "text": "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+          "groups": [
+            "134",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "  · javac patched crosscut main: exited 0, 2.2 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 2.2 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.2 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.7 s",
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+        "10 JBMC runs read both ways, 0 disagreeing; endings from the JSON: {'counterexample': 3, 'verified': 7}",
+        "ok: the JSON and the text reading agree on every run of the five examples, and every verdict is as expected"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/jobs/4b-differential-5/build.txt",
+      "change": "added",
+      "bytes": 3086,
+      "sha256": "9f1f06e87e952b6c06426c168dc496d7e9c873b641a7a725168f2192100da4f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4b-differential-5/differential.jsonl",
+      "change": "added",
+      "bytes": 5624,
+      "sha256": "001a1a2233ec83f2b213e00ca67003c674c590834d0567288207d5c1ba36e1a3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T13:10:03+00:00",
+    "applied": [
+      "lib/target/jobs/4b-differential-5/build.txt",
+      "lib/target/jobs/4b-differential-5/differential.jsonl"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

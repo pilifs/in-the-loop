@@ -263,6 +263,12 @@ Decided by the user on 2026-11-06, after the loop's run (the numbers above are u
 
 - **Question 3, the recorded examples:** decided once job `20261106-082917` (the JBMC gaps each recorded JBMC example
   reaches) is back, with its table in hand. Until then they stay in `assume`. The job is at priority 10.
+  The table is back (collected 2026-11-06; its own tabulation step failed on result format 2, and the table was
+  computed from the job's kept results): all 41 recorded JBMC examples keep their verdicts under `assume` (43 runs,
+  every one in `assume`). Only 013 and 071, the Quorum vote rule, reach JBMC gaps: `Enum.<init>(String, int)`,
+  `List.copyOf` and `List.of`, the calls the own checker's scan (1a) names too. Strict would move no example's
+  verdict; it would turn 071's first two properties, established, into no verdict. With the own checker's scan, that
+  is the whole cost of strict for the recorded examples. The decision is the user's.
 - **Question 1, a vacuous `Verified`:** the exit code stays 0, the status is the signal.
 - **Question 7, what CI accepts:** proved and tested (`--max-trust 0`) for now. The accepted evidence level is to become
   configurable, likely per project, especially as more runs use `assume`.
@@ -271,6 +277,9 @@ Decided by the user on 2026-11-06, after the loop's run (the numbers above are u
 - **The landing page at terminalvalue.net:** no update needed; the item is dropped.
 - **The JBMC fork (question 4):** ranked from job `20261106-102624`'s table when it is back; fork or not is decided
   from that ranking.
+- **The text reader (4b):** `-073804` read 78 JBMC runs both ways with 0 disagreements but could not run 128-131 and 134
+  (their patches went unapplied in the pipeline, since fixed); `20261106-123940` read those five, 10 runs, 0
+  disagreements. Every recorded JBMC example has been read both ways, so the text reader can be removed.
 - **Leftovers:** the relative `--jbmc` path and the console report's statement and phases (`--details`) are done.
   From an analysis, the user chose to do the other two, and both are done: `real/bucket/fix-confined` timed out
   because two divisions of equal values written differently were separate unknowns (now a functional-consistency

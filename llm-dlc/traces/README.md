@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 25, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 12:42 UTC |
-| Prompts | 786 |
-| Model calls | 7,703 |
-| Tool calls | 8,569 (182 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 13:10 UTC |
+| Prompts | 788 |
+| Model calls | 7,718 |
+| Tool calls | 8,584 (182 failed) |
 | Compactions | 107 |
 | Subagents | 3 |
-| Tokens written | 10,969,715 |
-| Tokens read | 1,310,549,992 (97.8% from cache) |
-| Commits with a trace | 218 |
-| Log snapshots | 278 (947.3 MB gzipped, 274 uploaded) |
+| Tokens written | 10,978,387 |
+| Tokens read | 1,316,227,828 (97.8% from cache) |
+| Commits with a trace | 219 |
+| Log snapshots | 279 (948.1 MB gzipped, 274 uploaded) |
 
 ## Sessions
 
@@ -51,7 +51,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
 | 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | ended | 10 h 56 min | `claude-opus-5-5` | 127 | 1,786 | 1,804 | 16 | 23 | 375,335 | 30 |
-| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 1 h 54 min | `claude-opus-5-5` | 13 | 221 | 222 | 1 | 0 | 371,773 | 14 |
+| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 2 h 22 min | `claude-opus-5-5` | 15 | 236 | 237 | 1 | 0 | 388,361 | 15 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -85,13 +85,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,780,300 | 3,618 | 5,965,079 | 337,354,372 | 98.3% | 193 |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 129,059 | 466 | 334,761 | 50,753,007 | 99.3% | 396 |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 137,731 | 498 | 351,351 | 56,414,221 | 99.4% | 412 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 7,407 | 86.4% | 25 |
+| `Bash` | 7,422 | 86.5% | 25 |
 | `Edit` | 405 | 4.7% | 13 |
 | `Read` | 302 | 3.5% | 15 |
 | `Write` | 297 | 3.5% | 12 |
@@ -330,6 +330,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 216 | change `wntwknpl` | Record verification results for 2 jobs: the benchmark's per-phase table, and the JBMC reader differential, which agreed but failed on unapplied patches | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4c552f7b7127cbcec318fb24f21fb2ebf395a84495df50c3e9fd3443631c63c0.jsonl.gz)) |
 | 217 | change `xnvwqtsk` | Queue the JBMC reader differential for the five examples whose patches went unapplied (verification pending) | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/296530b337d14cead695758cdf0a26e8bca1ade2ffe2158292dd2a2b7b730357.jsonl.gz)) |
 | 218 | change `pskkxxkw` | Allow list: maintainer approved 34bb8678 | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/a5ecd558f53b3b57d9fb1c9fbd3ffbce340e1b261e06d51d052714561a3409fe.jsonl.gz)) |
+| 219 | change `loulprwq` | Record verification results for 2 jobs: JBMC's two readings agree on every recorded JBMC example, and JBMC's own gaps reach only 013 and 071 | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/eed05f3817e80bf43b3350c599364c3a096e25bc23ce8d4f64d51af8e70908f2.jsonl.gz)) |
 
 ## Logs
 
@@ -361,7 +362,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 30 | 30 | 131.3 MB | [`77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz) |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 13 | 9 | 6.6 MB | `a5ecd558f53b`, not uploaded |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 14 | 9 | 7.3 MB | `eed05f3817e8`, not uploaded |
 
 ## Session notes
 
