@@ -218,9 +218,32 @@ Progress, so the reconcile loop knows where to look.
     - A `GapKind` for defects in `bmc/gaps.rs` could replace the separate `Defect` type, if gaps and defects should
       read alike in `--json`; today a defect shows only in the problem and the notes.
     - 4a's job will run with this guard: a recorded JBMC proof refused for a defect is a difference to report.
-- **Next:** 4a's job (strict, both engines, the 41 JBMC examples, `gap_table.py --json`). 2c waits on `-201041`;
-  3's job is `-203452`.
-- Status: working
+- **4a, the strict job on both engines: submitted, `20261106-204220` (pending).**
+  - The job runs `build.py` on the 41 recorded B9/B11 JBMC examples (Quorum, Crosscut, Mica), the same filter as
+    job `-082917`, in two scratch copies of `examples/`:
+    - as recorded (`--engine jbmc`, `--gaps strict`);
+    - with only `approach.engine` set to `native` in the copy.
+    It saves `gap_table.py --json` for each engine, every result's `result.json`, both build logs, and
+    `gap_table.py --compare` between the two tables. Nothing recorded is written. A verdict that differs from its
+    expected one is reported in the table's summary, not counted as a failure (`build.py`'s exit 1). The job fails
+    only if `build.py` stops early, a result is missing, or a run isn't the engine and gap mode named.
+  - `examples/tools/gap_table.py`:
+    - each row now names its `engine`, `checker`, the example's `expectation`, and, for an obligation with no verdict,
+      its `problem` and `jbmcDefect`: whether it is a JBMC proof refused at a construct JBMC runs otherwise than the
+      JVM (3's guard, which records the defect only in the problem);
+    - the summary counts the obligations left with no verdict at a gap (under strict a refused proof is already
+      `unresolved`, so "strict would refuse" only counts assume runs), those refused at a defect, and the examples
+      that differ from their expected verdict;
+    - `--compare A.json B.json` lists the obligations whose status differs between two tables. It is 4c's input.
+    - A new test in `test_gap_table.py` covers the fields and `--compare`; both tests pass. On the committed results,
+      `071#0` and `#1` show as no verdict at the three JDK stubs, as recorded.
+  - Inline checks: the example filter gives the 41, and in a scratch copy with the engine rewritten, `build.py --plan`
+    gives `--engine native --gaps strict` for all 41 (`--unwind 32` kept on the four Crosscut B9s).
+  - No shared file changed.
+- **Next:** read the three jobs once collected. From `-201041`, decide 2c (JBMC's default staging, for ordinary checks
+  and the `auto` fallback). From `-203452`, triage 3's JBMC tests. From `-204220`, report 4a's table and every
+  difference from an expected verdict.
+- Status: waiting on jobs 20261106-201041 20261106-203452 20261106-204220
 
 ## Loop settings
 

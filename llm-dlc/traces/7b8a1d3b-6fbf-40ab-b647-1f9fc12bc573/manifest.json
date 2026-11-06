@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T20:35:42.167Z",
-  "duration_seconds": 4838,
+  "ended": "2026-11-06T20:42:48.988Z",
+  "duration_seconds": 5265,
   "stats": {
-    "turns": 28,
-    "api_calls": 284,
-    "tool_calls": 283,
-    "tool_errors": 5,
-    "compactions": 5,
-    "peak_context_tokens": 224834,
+    "turns": 33,
+    "api_calls": 319,
+    "tool_calls": 317,
+    "tool_errors": 6,
+    "compactions": 6,
+    "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 566,
-      "output_tokens": 256281,
-      "cache_read_input_tokens": 32586987,
-      "cache_creation_input_tokens": 778066
+      "input_tokens": 636,
+      "output_tokens": 282459,
+      "cache_read_input_tokens": 36079523,
+      "cache_creation_input_tokens": 886617
     }
   },
   "tools": {
-    "Bash": 269,
+    "Bash": 303,
     "Edit": 8,
     "Read": 4,
     "Write": 2
@@ -116,24 +116,38 @@
     {
       "index": 5,
       "started": "2026-11-06T20:12:12.908Z",
-      "ended": "2026-11-06T20:35:42.167Z",
-      "turns": 4,
-      "api_calls": 83,
+      "ended": "2026-11-06T20:36:22.360Z",
+      "turns": 5,
+      "api_calls": 87,
       "usage": {
-        "input_tokens": 166,
-        "output_tokens": 89223,
-        "cache_read_input_tokens": 11832761,
-        "cache_creation_input_tokens": 211755
+        "input_tokens": 174,
+        "output_tokens": 91657,
+        "cache_read_input_tokens": 12741486,
+        "cache_creation_input_tokens": 218288
       },
-      "peak_context_tokens": 224834
+      "peak_context_tokens": 231367
+    },
+    {
+      "index": 6,
+      "started": "2026-11-06T20:37:18.009Z",
+      "ended": "2026-11-06T20:42:48.988Z",
+      "turns": 4,
+      "api_calls": 31,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 23744,
+        "cache_read_input_tokens": 2583811,
+        "cache_creation_input_tokens": 102018
+      },
+      "peak_context_tokens": 115097
     }
   ],
   "log": {
-    "sha256": "51b81ecca682bda21cc8c857d8ccf3d0fb69076f0b95e14c7eaa0f0cec4d4377",
-    "bytes": 7295556,
-    "lines": 2929,
-    "gzip_bytes": 1295275,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/51b81ecca682bda21cc8c857d8ccf3d0fb69076f0b95e14c7eaa0f0cec4d4377.jsonl.gz"
+    "sha256": "815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5",
+    "bytes": 8367595,
+    "lines": 3333,
+    "gzip_bytes": 1501372,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -192,6 +206,14 @@
       "summary": "JBMC lets a runtime exception past its handler in two shapes: the preflight names them and refuses a JBMC proof through one (verification pending)",
       "body": "Step 3 of llm-dlc/loops/engine-priorities.md. JBMC's counterexamples to conformance/caught/1 and nestedHandler/1 (n=0) did not reproduce because JBMC 6.11.0 lets a runtime exception past the handler that catches it on the JVM, so the exception escapes the method. It is not the models, the harness, or the trace reading. There are two shapes, found by running JBMC (milliseconds) on the cases and on variants of them, written up in lib/tests/fixtures/jbmc-defects/README.md. (1) A JBMC defect: for 'try { return 10 / n; } catch (ArithmeticException e)', javac ends the handler's range before ireturn, and JBMC emits the quotient, with the check --throw-runtime-exceptions adds, at the ireturn, after its pop_catch. The same holds for irem, ldiv, lrem, array elements, fields and arraylength. (2) This repository's class path: JBMC's stub of a JDK exception class has no superclass, so 'catch (RuntimeException e)' misses an ArithmeticException or IllegalArgumentException. Both shapes also gave false proofs under strict with --engine jbmc: caught, with --throws 'java.lang.ArithmeticException when n == 0', was proved, while the JVM returns -1.\n\nJBMC's preflight (lib/src/jbmc_gaps.rs) now finds both shapes in the bytecode JBMC reaches, as return-past-handler and stubbed-handler defects. A JBMC proof that reaches one is no verdict under every gap mode. A counterexample is still replayed, and prove's message names the defect when it doesn't reproduce. Tests: a unit test over 8 shapes in tests/fixtures/jbmc-defects/p/D.java (4 defects, 4 neighbours JBMC runs as the JVM does), which fails with the detection disabled, and one for hold. End to end on the real JBMC, both false proofs are now refused (under assume too), caught/1 and nestedHandler/1 are unverifiable naming the defect, and exactCatch is still a violation. The corpus gains caught/3 and caughtAsRuntime/1 and /2 (lib/benchmark/conformance.json regenerated); they agree with the JVM on the own checker, and the inline test fails only on its 12 known JDK 25.0.5 disagreements. The lib unit tests (157), the other conformance tests and test_run.py pass. A report for cause 1 is drafted in the fixture's README for the user, not filed. The fix for cause 2, models of the exception hierarchy, belongs in lib/models and is recorded for the reconcile loop.\n\nJob 20261106-203452 runs what needs JBMC: the integration tests, and the ignored conformance tests under jbmc, auto and auto --confirm.\n\nShared files changed, added to: lib/src/property.rs (the replay message asks the preflight first), lib/tests/conformance.rs and Conformance.java (three claims, one method), lib/README.md (a paragraph).",
       "log_sha256": "51b81ecca682bda21cc8c857d8ccf3d0fb69076f0b95e14c7eaa0f0cec4d4377"
+    },
+    {
+      "change_id": "xrrrwlrmqqputoknupzooswuqmtlrzyv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The 41 recorded JBMC examples run under strict on both engines, tabulated per obligation (verification pending)",
+      "body": "Step 4a of llm-dlc/loops/engine-priorities.md, in the engines-jbmc stream. Job 20261106-204220 runs build.py on the 41 recorded B9/B11 examples JBMC proves (Quorum, Crosscut, Mica) in two scratch copies of examples/: as recorded (--engine jbmc, --gaps strict), and with only approach.engine set to native. It saves examples/tools/gap_table.py --json for each engine, every result.json, both build logs, and a comparison of the two tables. This replaces job 20261106-082917's projection, made under assume and rebuilt by hand, with a measured table. Recorded verdicts don't change: a verdict that differs from its expected one is reported in the table, not counted as a failure, and nothing in examples/ is written.\n\ngap_table.py's rows now name their engine and checker, the example's expectation, and, for an obligation with no verdict, its problem and whether it is a JBMC proof refused at a construct JBMC runs otherwise than the JVM. That is step 3's guard, which records the defect only in the problem text. The summary counts the obligations with no verdict at a gap (under strict, a refused proof is already unresolved), those refused at a JBMC defect, and the examples that differ from their expected verdict. --compare lists the obligations whose status differs between two tables, the input to step 4c's coverage inventory.",
+      "log_sha256": "815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5"
     }
   ],
   "logs": {
@@ -223,6 +245,12 @@
       "bytes": 5401139,
       "lines": 2077,
       "gzip_bytes": 1001508,
+      "url": null
+    },
+    "815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5": {
+      "bytes": 8367595,
+      "lines": 3333,
+      "gzip_bytes": 1501372,
       "url": null
     },
     "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99": {
