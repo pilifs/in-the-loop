@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-123940-jbmc-s-two-readings-on-the-five-recorded",
+  "title": "JBMC's two readings on the five recorded JBMC examples job -073804 could not run (128-131, 134), now with their patches applied",
+  "description": "Job 20261106-073804 read every JBMC run of the 41 recorded JBMC examples both through --json-ui and as text: 78 runs, 0 disagreements. Examples 128-131 and 134 gave no verdict there, because their git-format patches were never applied in the job's work directory (git apply inside this repository's tree skipped every file; fixed in commit 'Pipeline jobs apply git-format patches'). This job runs those five with JVMCONTRACT_JBMC_READ=both, on copies of examples/ so nothing recorded changes. A pass means both readings agree on every run and each example gives its recorded verdict, which completes the differential: the text reader can then be removed (step 4b of the sound-verdicts brief).",
+  "kind": "library",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence",
+    "jbmc:json-ui"
+  ],
+  "links": {
+    "jobs": [
+      "20261106-073804-jbmc-read-through-json-ui-agrees-with-th"
+    ],
+    "examples": [
+      "128",
+      "129",
+      "130",
+      "131",
+      "134"
+    ]
+  },
+  "expected": "exits 0; every JBMC run of 128-131 and 134 read alike both ways, and each example's verdict as recorded",
+  "submitted": {
+    "at": "2026-11-06T12:39:40+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "jbmc",
+    "javac",
+    "java",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "the five took seconds each when recorded; 134 ran 1049 s in -073804 only because it ran unpatched; -073804 peaked at 1.4 GiB"
+  },
+  "steps": [
+    {
+      "name": "5 recorded JBMC examples, read both ways",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4b-differential-5; rm -rf \"$W\"; mkdir -p \"$W/repo\"\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\" JVMCONTRACT_JBMC_READ=both JVMCONTRACT_JBMC_DIFFERENTIAL=\"$PWD/$W/differential.jsonl\"\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 128 129 130 131 134 > \"$W/build.txt\" 2>&1 || status=$?\ntail -8 \"$W/build.txt\"\npython3 - \"$W/differential.jsonl\" \"$status\" <<'PY'\nimport json, sys\nlines = [json.loads(l) for l in open(sys.argv[1])]\nbad = [d for d in lines if not d[\"agree\"]]\nendings = {}\nfor d in lines:\n    endings[d[\"json\"][\"ending\"]] = endings.get(d[\"json\"][\"ending\"], 0) + 1\nprint(f\"{len(lines)} JBMC runs read both ways, {len(bad)} disagreeing; endings from the JSON: {endings}\")\nfor d in bad:\n    print(\"DISAGREE\", d[\"log\"], d[\"stage\"], d[\"differences\"])\nassert lines, \"no JBMC run was read both ways\"\nassert not bad, \"the readings disagree\"\nassert sys.argv[2] == \"0\", f\"build.py exited {sys.argv[2]}: a verdict differs from its expected one (see build.txt)\"\nprint(\"ok: the JSON and the text reading agree on every run of the five examples, and every verdict is as expected\")\nPY",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/jobs/4b-differential-5/build.txt",
+    "lib/target/jobs/4b-differential-5/differential.jsonl"
+  ]
+}
