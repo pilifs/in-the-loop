@@ -324,7 +324,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         observations: observations.clone(),
         bounds: crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete),
         models: crate::statement::models(options.models),
-        checker: crate::statement::checker(search, options.sat_solver.as_deref()),
+        checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
         vacuity: None,

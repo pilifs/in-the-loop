@@ -144,6 +144,34 @@ class TablesTest(unittest.TestCase):
         self.assertIn("Every expected answer of groups 2 and 3 is borne out on the JVM.", page)
 
 
+class SatTest(unittest.TestCase):
+    """Phase 1b: the SAT solver each run was solved on, from the result's evidence, gathered into the environment."""
+
+    native = {"solver": "CaDiCaL", "version": "1.9.5", "source": "bundled by the Rust crate cadical 0.1.16", "configuration": ["CaDiCaL's default options"]}
+    jbmc = {"solver": "CaDiCaL", "version": "3.0.0", "source": "linked into JBMC (/usr/bin/jbmc)", "configuration": ["--sat-solver", "cadical"]}
+
+    def test_a_run_names_the_solver_its_verdict_was_solved_on(self):
+        self.assertEqual(run.sat_of({"stated": {"checker": {"engine": "native", "sat": self.native}}}), self.native)
+        self.assertIsNone(run.sat_of({"stated": {"checker": {"engine": "none", "name": "gap scan"}}}))
+        self.assertIsNone(run.sat_of(None))
+
+    def test_the_environment_names_each_engines_solvers_once(self):
+        runs = [{"engine": "native", "sat": self.native}, {"engine": "native", "sat": dict(self.native)},
+                {"engine": "jbmc", "sat": self.jbmc}, {"engine": "jbmc", "sat": None}, {"engine": "jbmc", "sat": {**self.jbmc, "version": None}}]
+        self.assertEqual(run.sat_solvers(runs), {"native": [self.native], "jbmc": [self.jbmc, {**self.jbmc, "version": None}]})
+        self.assertEqual(run.sat_solvers([{"engine": "jbmc", "sat": None}]), {})
+
+    def test_the_page_names_the_solvers_and_an_older_job_without_them_reads_as_before(self):
+        before = run.render(results())
+        self.assertNotIn("SAT solvers", before)
+        r = results()
+        r["environment"]["sat"] = {"native": [self.native], "jbmc": [self.jbmc]}
+        page = run.render(r)
+        self.assertIn("SAT solvers: the own checker on CaDiCaL 1.9.5, bundled by the Rust crate cadical 0.1.16; "
+                      "JBMC on CaDiCaL 3.0.0, linked into JBMC (/usr/bin/jbmc).", page)
+        self.assertEqual(page.replace(page[page.index("\n\nSAT solvers"):page.index("`results.json`.") + len("`results.json`.")], ""), before)
+
+
 class PhasesTest(unittest.TestCase):
     """Step 5b: a run's seconds by phase, from the checker runs' phases and the driver's steps."""
 

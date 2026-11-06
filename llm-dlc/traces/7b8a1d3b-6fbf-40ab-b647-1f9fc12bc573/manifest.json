@@ -12,28 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T19:30:26.199Z",
-  "duration_seconds": 922,
+  "ended": "2026-11-06T19:46:40.896Z",
+  "duration_seconds": 1897,
   "stats": {
-    "turns": 8,
-    "api_calls": 57,
-    "tool_calls": 56,
+    "turns": 13,
+    "api_calls": 114,
+    "tool_calls": 113,
     "tool_errors": 1,
-    "compactions": 1,
-    "peak_context_tokens": 150324,
+    "compactions": 2,
+    "peak_context_tokens": 154625,
     "usage": {
-      "input_tokens": 112,
-      "output_tokens": 47388,
-      "cache_read_input_tokens": 5687358,
-      "cache_creation_input_tokens": 158320
+      "input_tokens": 226,
+      "output_tokens": 93777,
+      "cache_read_input_tokens": 11790109,
+      "cache_creation_input_tokens": 299249
     }
   },
   "tools": {
-    "Bash": 54,
-    "Edit": 1,
+    "Bash": 107,
+    "Edit": 5,
     "Write": 1
   },
   "files_touched": [
+    "lib/src/jbmc.rs",
+    "lib/src/statement.rs",
     "lib/tests/fixtures/jbmc-phases/README.md",
     "llm-dlc/loops/engine-priorities-jbmc.md"
   ],
@@ -55,24 +57,38 @@
     {
       "index": 1,
       "started": "2026-11-06T19:15:02.173Z",
-      "ended": "2026-11-06T19:30:26.199Z",
-      "turns": 8,
-      "api_calls": 57,
+      "ended": "2026-11-06T19:30:53.492Z",
+      "turns": 9,
+      "api_calls": 60,
       "usage": {
-        "input_tokens": 112,
-        "output_tokens": 47388,
-        "cache_read_input_tokens": 5687358,
-        "cache_creation_input_tokens": 158320
+        "input_tokens": 118,
+        "output_tokens": 49537,
+        "cache_read_input_tokens": 6141551,
+        "cache_creation_input_tokens": 162621
       },
-      "peak_context_tokens": 150324
+      "peak_context_tokens": 154625
+    },
+    {
+      "index": 2,
+      "started": "2026-11-06T19:31:49.517Z",
+      "ended": "2026-11-06T19:46:40.896Z",
+      "turns": 4,
+      "api_calls": 54,
+      "usage": {
+        "input_tokens": 108,
+        "output_tokens": 44240,
+        "cache_read_input_tokens": 5648558,
+        "cache_creation_input_tokens": 136628
+      },
+      "peak_context_tokens": 149707
     }
   ],
   "log": {
-    "sha256": "fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9",
-    "bytes": 1313989,
-    "lines": 559,
-    "gzip_bytes": 233050,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9.jsonl.gz"
+    "sha256": "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99",
+    "bytes": 2749341,
+    "lines": 1141,
+    "gzip_bytes": 496025,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -83,9 +99,23 @@
       "summary": "JBMC's phases are exclusive: post-processing counted once, overcounts flagged (verification pending)",
       "body": "Phase 1a of engine-priorities.md, in the jbmc stream. CBMC 6.11.0's 'Runtime Solver' times a whole solver call, including the 'Runtime Post-process' reported from inside it. lib/src/phases.rs counted both, so JBMC's phases added up past the run, for example 22.0 s of phases in 15.9 s on held/reverse in job 20261106-102624. It now reads the timers per solver call. Post-processing counts as encoding, and the rest of the call as solving. A call that never reached the SAT solver (out of memory while post-processing) counts entirely as encoding. A run cut off mid-call still gives the rest of its time to the phase it was in.\n\nPhases::excess flags a run whose named phases add up past its seconds by more than 1% plus 5 ms. The excess is recorded as phases_excess on each checker run, never scaled to fit. lib/benchmark/run.py carries it as phasesExcess and leaves such runs out of the 'Where the time goes' tables, naming them below. The recorded RESULTS.md (job -102624) stands as written, and its README now says its JBMC shares overcount.\n\nVerified against real JBMC 6.11.0 output captured on cvm, kept as fixtures in lib/tests/fixtures/jbmc-phases/ (README says how each was made): held/prefix-sums proved, the same cut off by a 1.9 s budget, held/reverse out of memory at 700 MiB, and a run with two solver calls. The tests check each phase against JBMC's own Runtime figures, that the phases add up to the run, and that the old double count is flagged. The Rust lib (150), integration (63) and skill tests pass, as do lib/benchmark/test_run.py's 19. conformance.rs's the_corpus_agrees_with_the_jvm_on_the_tools_own_checker fails on cvm with 12 disagreements. Its messages point to the contract library's records being for JDK 25.0.4.1 while cvm has 25.0.5, not to this change; this is recorded under Progress for the reconcile loop.\n\nJob 20261106-192959 fetches CBMC's source at the cbmc-6.11.0 tag (a network fetch, inside the job) and checks that the timers nest as the fixtures show.",
       "log_sha256": "fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9"
+    },
+    {
+      "change_id": "olttywttxplzszqyurvvuvzltyzyqxsw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Every result names its SAT solver, version and configuration, on both engines",
+      "body": "Phase 1b of llm-dlc/loops/engine-priorities.md (the engines-jbmc stream). The JSON's stated.checker now carries sat: the solver, its version, its source and its configuration (Sat in lib/src/statement.rs). The own checker's is CaDiCaL 1.9.5 as the cadical crate 0.1.16 bundles it (the crate's version read from Cargo.lock), with default options, incremental, and the deadline through the terminate callback. JBMC's is the solver the adapter asks for, with the options every JBMC run passes (jbmc::standing_options, which now also builds the command line) and the version of the CaDiCaL linked into the executable, read from its signature without running JBMC: cadical-3.0.0 in JBMC 6.11.0. An executable with no CaDiCaL is recorded with JBMC's default solver, which the unknown-solver retry falls back to. lib/benchmark/run.py keeps each run's sat and lists each engine's solvers in results.json's environment.sat; RESULTS.md names them, and the recorded job -102624 renders as before.",
+      "log_sha256": "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99"
     }
   ],
   "logs": {
+    "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99": {
+      "bytes": 2749341,
+      "lines": 1141,
+      "gzip_bytes": 496025,
+      "url": null
+    },
     "fa480164628072b09bc0f215aa3dbfec879e0e194e60e2baea7ea375b67f66a9": {
       "bytes": 1313989,
       "lines": 559,

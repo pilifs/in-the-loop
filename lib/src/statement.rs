@@ -255,6 +255,49 @@ pub struct Checker {
     pub solver: Option<String>,
     /// Why the own checker gave no verdict before JBMC was run, under `--engine auto`.
     pub fallback: Option<String>,
+    /// The SAT solver the verdict was solved on, with its version and configuration; none when no checker ran.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sat: Option<Sat>,
+}
+
+/// The SAT solver a checker ran on, as the evidence for a result names it: the own checker's bundled CaDiCaL
+/// ([`native_sat`]), or the one JBMC was asked for ([`crate::jbmc::sat`]). The benchmark gathers them into
+/// `results.json`'s environment.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct Sat {
+    /// `CaDiCaL`, or the solver JBMC used by default.
+    pub solver: String,
+    /// The solver's own version, as `1.9.5`; none when it could not be read.
+    pub version: Option<String>,
+    /// Where the solver comes from: the Rust crate that bundles it, or the JBMC executable it is linked into.
+    pub source: String,
+    /// How it was configured: its options, or the checker's that bear on it.
+    pub configuration: Vec<String>,
+}
+
+/// The own checker's solver: CaDiCaL as the `cadical` crate bundles it, with the crate's version from
+/// `Cargo.lock`, run incrementally with its default options.
+pub fn native_sat() -> Sat {
+    let signature = cadical::Solver::<cadical::Timeout>::new().signature().to_string();
+    let version = signature.strip_prefix("cadical-").map(str::to_string);
+    let source = match locked_version("cadical") {
+        Some(v) => format!("bundled by the Rust crate cadical {v}"),
+        None => "bundled by the Rust crate cadical".to_string(),
+    };
+    let configuration = [
+        "CaDiCaL's default options",
+        "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+        "the run's deadline through CaDiCaL's terminate callback",
+    ];
+    Sat { solver: "CaDiCaL".into(), version: version.or(Some(signature)), source, configuration: configuration.map(String::from).into() }
+}
+
+/// A dependency's version as `Cargo.lock` pins it.
+fn locked_version(name: &str) -> Option<String> {
+    const LOCK: &str = include_str!("../Cargo.lock");
+    let header = format!("name = \"{name}\"\n");
+    let at = LOCK.find(&header)? + header.len();
+    LOCK[at..].lines().next()?.strip_prefix("version = \"")?.strip_suffix('"').map(str::to_string)
 }
 
 /// The domain of a target laid out as `layout`.
@@ -403,22 +446,24 @@ pub fn models(used: bool) -> Models {
     Models { used, digest, classes: if used { crate::models::MODELS.len() } else { 0 }, jdk: crate::bmc::gaps::jdk_release() }
 }
 
-/// The checker the verdict comes from, from its search; `sat_solver` is the one JBMC was asked for.
-pub fn checker(search: Option<&Search>, sat_solver: Option<&str>) -> Checker {
+/// The checker the verdict comes from, from its search; `sat_solver` is the one JBMC was asked for, and
+/// `jbmc_sat` its record ([`crate::jbmc::sat`]), asked for only when JBMC gave the verdict.
+pub fn checker(search: Option<&Search>, sat_solver: Option<&str>, jbmc_sat: impl FnOnce() -> Sat) -> Checker {
     match search {
-        None => Checker { engine: "none".into(), name: "bytecode comparison: no checker ran".into(), solver: None, fallback: None },
+        None => Checker { engine: "none".into(), name: "bytecode comparison: no checker ran".into(), solver: None, fallback: None, sat: None },
         Some(s) => Checker {
             engine: s.engine.clone(),
             name: s.checker.clone(),
             solver: if s.engine == "native" { Some(crate::bmc::solver_signature()) } else { sat_solver.map(str::to_string) },
             fallback: s.fallback.clone(),
+            sat: Some(if s.engine == "native" { native_sat() } else { jbmc_sat() }),
         },
     }
 }
 
 /// The checker of a run under `--gaps advised` that stopped at the gap scan: nothing was solved.
 pub fn scan_checker() -> Checker {
-    Checker { engine: "none".into(), name: "gap scan: nothing was solved (--gaps advised)".into(), solver: None, fallback: None }
+    Checker { engine: "none".into(), name: "gap scan: nothing was solved (--gaps advised)".into(), solver: None, fallback: None, sat: None }
 }
 
 /// The bounds of a run of a checker.
@@ -438,6 +483,39 @@ mod tests {
         assert_eq!(models(true).digest, used.digest, "stable");
         let unused = models(false);
         assert_eq!((unused.digest, unused.classes), (None, 0));
+    }
+
+    #[test]
+    fn the_own_checkers_solver_is_the_bundled_cadical_with_the_crates_version() {
+        let sat = native_sat();
+        assert_eq!(sat.solver, "CaDiCaL");
+        assert_eq!(Some(format!("CaDiCaL {} (bundled)", sat.version.as_deref().unwrap())), Some(crate::bmc::solver_signature()), "as the proof line names it");
+        let crate_version = locked_version("cadical").expect("the cadical crate is in Cargo.lock");
+        assert!(crate_version.chars().next().is_some_and(|c| c.is_ascii_digit()), "{crate_version}");
+        assert_eq!(sat.source, format!("bundled by the Rust crate cadical {crate_version}"));
+        assert!(!sat.configuration.is_empty());
+        assert_eq!(locked_version("no-such-crate"), None);
+        let search = |engine: &str| Search {
+            engine: engine.into(),
+            checker: "c".into(),
+            seconds: 0.0,
+            properties: 1,
+            unwind: 16,
+            max_array_length: 8,
+            stage: None,
+            fallback: None,
+            native: None,
+            gap_mode: None,
+            gaps: Vec::new(),
+            confirmation: None,
+            deadline_seconds: 1.0,
+            runs: Vec::new(),
+            phases: None,
+        };
+        let jbmc_sat = || Sat { solver: "asked".into(), version: None, source: "here".into(), configuration: Vec::new() };
+        assert_eq!(checker(Some(&search("native")), Some("cadical"), || unreachable!("JBMC was not run")).sat, Some(sat));
+        assert_eq!(checker(Some(&search("jbmc")), Some("cadical"), jbmc_sat).sat.map(|s| s.solver), Some("asked".into()));
+        assert_eq!(checker(None, Some("cadical"), || unreachable!()).sat, None);
     }
 
     #[test]

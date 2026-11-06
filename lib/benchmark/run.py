@@ -237,6 +237,22 @@ def stats_of(data):
     return keep
 
 
+def sat_of(data):
+    """The SAT solver the verdict was solved on, as the result's evidence names it (`stated.checker.sat`, the shape of
+    `Sat` in lib/src/statement.rs): solver, version, source and configuration. None when no checker ran."""
+    return (((data or {}).get("stated") or {}).get("checker") or {}).get("sat")
+
+
+def sat_solvers(runs):
+    """Per engine, each SAT solver its runs were solved on, once: the environment's record of them."""
+    out = {}
+    for r in runs:
+        sat = r.get("sat")
+        if sat and sat not in out.setdefault(r["engine"], []):
+            out[r["engine"]].append(sat)
+    return {engine: sats for engine, sats in out.items() if sats}
+
+
 def phases_of(data, seconds):
     """A run's wall-clock seconds by phase: its checker runs' phases summed (lib/src/phases.rs), `checker-other`
     what those leave of them (JBMC starting and printing), the driver's steps (gaps, contracts, replay, the JVM,
@@ -420,6 +436,7 @@ def run(options):
                 record.update(classify(case, data, measured))
                 record["witness"] = witness_arguments(data) if record["verdict"] == "violation" else None
                 record["solver"] = stats_of(data)
+                record["sat"] = sat_of(data)
                 record["phases"] = phases_of(data, measured["seconds"])
                 excess = phases_excess(data, record["phases"], measured["seconds"])
                 if excess:
@@ -433,7 +450,7 @@ def run(options):
         r.pop("work", None)
     return {
         "about": "Results of lib/benchmark/run.py: see lib/benchmark/README.md.",
-        "environment": environment(options),
+        "environment": {**environment(options), "sat": sat_solvers(runs)},
         "settings": {"timeout": options.timeout, "unwind": UNWIND, "maxArrayLength": MAX_ARRAY_LENGTH, "referenceSearch": options.search,
                      "engines": engines, "modes": modes, "groups": sorted(groups)},
         "cases": [{k: c[k] for k in ("id", "group", "workload", "kind", "expected")} for c in cases],
@@ -552,6 +569,11 @@ def render(results):
            f"{env['jvmcontract']}, JBMC {env['jbmc']} and {env['java']}. Every run had a deadline of {s['timeout']} s, loops unwound "
            f"{s['unwind']} times and arrays of up to {s['maxArrayLength']} elements, on both engines. What the columns mean is in "
            "[README.md](README.md).", ""]
+    if env.get("sat"):
+        names = {"native": "the own checker", "jbmc": "JBMC"}
+        solved = "; ".join(f"{names.get(engine, engine)} on " + " and ".join(f"{sat['solver']} {sat.get('version') or '(version unknown)'}, {sat['source']}" for sat in sats)
+                           for engine, sats in env["sat"].items())
+        out[-1:-1] = ["", f"SAT solvers: {solved}. Their configuration is under `environment.sat` in `results.json`."]
     out += ["## Correctness and coverage", "",
             "| group | engine | mode | cases | correct | of them assuming a gap | unsupported | false success | false alarm | total s | median s | max s | peak MB |",
             "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]

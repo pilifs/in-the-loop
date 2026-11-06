@@ -82,7 +82,35 @@ Progress, so the reconcile loop knows where to look.
     - The cause: the JDK is 25.0.5, but the contract library's records (`lib/models/contracts/`, the native stream's)
       were written for 25.0.4.1, so advised runs print "is not the library's, on its record".
     - It may also touch 2b's advised runs.
-- **Next:** 1b, the SAT backend in `results.json`'s environment and in each result's evidence.
+- **1b, the SAT solver recorded: done.**
+  - Each result's evidence names its SAT solver: `stated.checker.sat`, with `solver`, `version`, `source` and
+    `configuration` (`Sat` in `lib/src/statement.rs`).
+  - The own checker's is CaDiCaL 1.9.5, from the signature of the `cadical` crate it is bundled by (0.1.16, read
+    from `Cargo.lock`). It runs with CaDiCaL's default options, incrementally (one solver per run, queries under
+    assumptions), with the deadline through its terminate callback.
+  - JBMC's is the solver asked for (`--sat-solver cadical`), with the configuration of the options every run passes
+    (`jbmc::standing_options`, which the command line uses too). The version is read from the CaDiCaL signature in the
+    executable, without running it: `cadical-3.0.0` in JBMC 6.11.0's.
+    - An executable without CaDiCaL is recorded with JBMC's default, which the adapter's "unknown solver" retry falls
+      back to.
+    - A script standing in for JBMC gets no version.
+  - `lib/benchmark/run.py` keeps each run's `sat` and lists each engine's solvers once in `environment.sat`.
+    `RESULTS.md` names them under its first line; job `-102624`'s page renders as before.
+  - **For the native stream and the reconcile loop:** Bitwuzla fits the same `Sat`. `statement::native_sat()` builds the
+    own checker's record next to `bmc::solver_signature()` (unchanged); once the solver interface (6b) exists, it should
+    supply the solver's name, version and configuration.
+  - Changed outside this stream's files, added to:
+    - `lib/src/statement.rs`: `Sat`, `native_sat`, and `Checker.sat`. `checker()` takes a closure for JBMC's record,
+      called only when JBMC gave the verdict;
+    - `lib/src/equivalence.rs` and `property.rs`: the one call of `checker()` each;
+    - `lib/README.md`: `sat` in `--json`'s description.
+  - **For the reconcile loop:**
+    - `examples/tools/test_build.py` has 35 errors on this branch, `KeyError: 'verdict'` in `build.py` reading
+      committed example results. None of its inputs changed here.
+    - The commit check's 4 errors, after 1a, were in other workspaces' commits: the default workspace's verification
+      results and the native stream's Bitwuzla job, both sessions without a manifest here. They should clear at the
+      merge.
+- **Next:** 2a, the staging-policy option for JBMC checks, with unit tests.
 - Status: working
 
 ## Loop settings

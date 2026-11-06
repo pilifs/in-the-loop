@@ -69,6 +69,17 @@ For each run the runner keeps the wall-clock and CPU seconds, the peak resident 
 process it waited for (JBMC, the JVM it tests contracts on), read from `wait4`, and what the solver side reports (the
 own checker's paths, solver calls, variables and clauses; JBMC's runs, each with its stage, seconds and ending).
 
+Each run also keeps the SAT solver its verdict was solved on, as the result's evidence names it (`sat`, from the
+JSON's `stated.checker.sat`, [`../src/statement.rs`](../src/statement.rs)): the `solver`, its `version`, its `source`
+and its `configuration`. For the own checker that is CaDiCaL as the Rust crate `cadical` bundles it, the version
+from CaDiCaL's signature and the crate's from `Cargo.lock`, run incrementally with its default options. For JBMC it
+is the solver the adapter asks for, `--sat-solver cadical`, with the version of the CaDiCaL linked into the JBMC
+executable, read from CaDiCaL's signature there (`cadical-3.0.0` in JBMC 6.11.0's), and the options every JBMC run
+passes; a JBMC that holds no CaDiCaL is recorded with its default solver, which the runs then fall back to.
+`results.json`'s `environment.sat` lists each engine's solvers once, and `RESULTS.md` names them under its first line.
+Job `20261106-102624`'s results predate this ([`engine-priorities.md`](../../llm-dlc/loops/engine-priorities.md) step
+1b) and name none.
+
 ## Where the time goes (step 5b)
 
 Each checker run reports its seconds in the same phases for both engines ([`../src/phases.rs`](../src/phases.rs)),
