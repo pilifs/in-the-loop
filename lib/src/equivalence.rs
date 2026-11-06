@@ -348,23 +348,43 @@ pub(crate) fn unreproduced_cause(result: &JbmcResult) -> String {
     "A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value".into()
 }
 
-/// The verdict's words for the contracts a verified run rests on (`--contracts`), `, relying on 1 contract for a
-/// gap of the tool's own checker, trusted (--gaps advised)`, and a line for each; nothing when it applied none.
+/// The verdict's words for the contracts a verified run rests on (`--contracts`), `, relying on 2 contracts for
+/// gaps of the tool's own checker, 1 tested, 1 trusted (--gaps advised)`, and a line for each; nothing when it
+/// applied none.
 pub(crate) fn relied_contracts(result: &JbmcResult) -> (String, String) {
     let used: Vec<&crate::bmc::gaps::GapRecord> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).collect();
     if used.is_empty() {
         return (String::new(), String::new());
     }
     let n = used.len();
-    let words = format!(", relying on {n} contract{} for gaps of the tool's own checker, {n} trusted (--gaps advised)", if n == 1 { "" } else { "s" });
+    let levels = contract_levels(used.iter().filter_map(|g| g.contract.as_ref().map(|c| c.evidence)));
+    let words = format!(", relying on {n} contract{} for gaps of the tool's own checker, {levels} (--gaps advised)", if n == 1 { "" } else { "s" });
     let lines = used
         .iter()
         .map(|g| match &g.contract {
-            Some(c) => format!("  contract: {} at {}: {} (written by {}; {}: checked against neither the JDK's bytecode nor a JVM)\n", g.id, g.sites.join(", "), c.summary, c.written_by, c.evidence.name()),
+            Some(c) => format!("  contract: {} at {}: {} (written by {}; {})\n", g.id, g.sites.join(", "), c.summary, c.written_by, evidence_words(c)),
             None => format!("  contract: {} at {}\n", g.id, g.sites.join(", ")),
         })
         .collect();
     (words, lines)
+}
+
+/// How many contracts are at each level, strongest first: `1 tested, 1 trusted`.
+pub(crate) fn contract_levels(levels: impl Iterator<Item = crate::gap_contracts::Evidence>) -> String {
+    let mut counts = std::collections::BTreeMap::new();
+    for e in levels {
+        *counts.entry(e).or_insert(0usize) += 1;
+    }
+    counts.iter().map(|(e, k)| format!("{k} {}", e.name())).collect::<Vec<_>>().join(", ")
+}
+
+/// What backs a contract, in words: what testing found, or why it is trusted.
+pub(crate) fn evidence_words(c: &crate::bmc::gaps::ContractUse) -> String {
+    match (&c.testing, &c.untested) {
+        (Some(t), _) => t.words(),
+        (None, Some(why)) => format!("trusted: no JVM test, since {why}"),
+        (None, None) => "trusted: checked against neither the JDK's bytecode nor a JVM".into(),
+    }
 }
 
 /// The verdict's words for the gaps a verified run assumed, `, assuming 2 behaviours the tool's own checker does not

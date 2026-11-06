@@ -2326,16 +2326,18 @@ public class Contracted {
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
     public static int filled(byte[] out) { new java.util.Random(1).nextBytes(out); return out.length; }
     public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append(n) == b; }
+    public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
     public static int initialised(int n) { return Table.first() + n; }
 }
 "#;
 
-/// Step 3b of llm-dlc/loops/sound-verdicts.md: under `--gaps advised` with `--contracts`, the tool's own checker
-/// applies each contract at its call in place of the gap: the exceptions it states are thrown where their
+/// Steps 3b and 3c of llm-dlc/loops/sound-verdicts.md: under `--gaps advised` with `--contracts`, the tool's own
+/// checker applies each contract at its call in place of the gap: the exceptions it states are thrown where their
 /// conditions hold, an array it modifies takes any values, a reference result is the object the contract names,
-/// and an initializer that throws nothing is taken to have run. A verdict says it rests on each contract, trusted
-/// (nothing checks one yet). A contract the engine cannot apply is refused with the reason and its gap stays open;
-/// an input outside a contract's `assume:` meets the gap.
+/// and an initializer that throws nothing is taken to have run. Each contract is first tested on a real JVM: one
+/// the JVM refutes is refused with its counterexamples, and its gap goes back to the agent; one it cannot test is
+/// trusted. A verdict says it rests on each contract, at its level. A contract the engine cannot apply is refused
+/// with the reason and its gap stays open; an input outside a contract's `assume:` meets the gap.
 #[test]
 fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
     use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
@@ -2385,19 +2387,48 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert!(o.advice.is_none() && o.search.as_ref().unwrap().fallback.is_none(), "{}", o.output);
         let o = prove("throwing-declared", "capacity", "result == 1", &["IllegalArgumentException when n < 0"], &[&throwing], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
-        assert!(o.output.contains(", relying on 1 contract for gaps of the tool's own checker, 1 trusted (--gaps advised) ("), "{}", o.output);
+        assert!(o.output.contains(", relying on 1 contract for gaps of the tool's own checker, 1 tested (--gaps advised) ("), "{}", o.output);
         assert!(o.output.contains(&format!("\n  contract: {capacity}{jdk} at fixtures.Contracted.capacity:")), "{}", o.output);
-        assert!(o.output.contains(": throws java.lang.IllegalArgumentException when capacity < 0; modifies nothing (written by the test; trusted: checked against neither the JDK's bytecode nor a JVM)"), "{}", o.output);
+        assert!(o.output.contains(": throws java.lang.IllegalArgumentException when capacity < 0; modifies nothing (written by the test; tested on "), "{}", o.output);
+        assert!(o.output.contains(" (seed 1), ") && o.output.contains(", none refuting it)"), "{}", o.output);
         assert_eq!(contracts(&o), [capacity]);
         let stated = o.stated.as_ref().unwrap();
         let a = stated.assumptions.iter().find(|a| a.kind == jvmcontract::statement::AssumptionKind::Contract).expect("the contract is an assumption");
-        assert_eq!(a.basis, jvmcontract::statement::Basis::Trusted);
+        assert_eq!(a.basis, jvmcontract::statement::Basis::Tested);
         assert_eq!(a.id.as_deref(), Some(format!("{capacity}{jdk}").as_str()));
         let json = serde_json::to_value(&o).unwrap();
-        assert_eq!(json["search"]["gaps"][0]["contract"]["evidence"], "trusted", "{json}");
+        let contract = &json["search"]["gaps"][0]["contract"];
+        assert_eq!(contract["evidence"], "tested", "{json}");
+        assert_eq!(contract["testing"]["seed"], 1, "{json}");
+        let testing = &contract["testing"];
+        assert!(testing["inputs"].as_u64().unwrap() >= 100, "{json}");
+        assert!(testing["thrown"][0].as_u64().unwrap() > 0 && testing["returned"].as_u64().unwrap() > 0, "both sides of the clause are tested: {json}");
+        assert!(testing.get("counterexamples").is_none(), "{json}");
+
+        // The acceptance of 3c: "`new ArrayList<>(n)` doesn't throw" is rejected by the JVM at n = -1, with its
+        // counterexamples, and the gap goes back to the agent; the corrected contract is tested, above, and gives
+        // the review's reproducer its verdict, the violation at the top.
         let o = prove("silent", "capacity", "result == 1", &[], &[&silent], engine).unwrap();
-        assert_eq!(o.verdict, Verdict::Verified, "a wrong contract trusted gives a wrong verdict, which says what it rests on: {}", o.output);
-        assert!(o.output.contains("throws nothing; modifies nothing"), "{}", o.output);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.search.is_none(), "nothing was solved: {}", o.output);
+        let a = o.advice.as_ref().unwrap();
+        let refused = a.gaps[0].refused_contract.as_deref().unwrap();
+        assert!(refused.starts_with("a JVM refutes it: on capacity=-1 the JVM's call throws java.lang.IllegalArgumentException: Illegal Capacity: -1, where the contract says it returns normally ("), "{refused}");
+        assert!(refused.contains(" inputs refute it, on JDK ") && refused.contains(", seed 1) ("), "{refused}");
+        assert!(a.gaps[0].counterexamples.len() > 1 && a.gaps[0].counterexamples.iter().all(|c| c.input.starts_with("capacity=-")), "{:?}", a.gaps[0].counterexamples);
+        assert!(o.output.contains("is refused, and its gap stays open: a JVM refutes it: on capacity=-1 "), "{}", o.output);
+        assert!(o.output.contains("\n      also on capacity=-"), "{}", o.output);
+        let json = serde_json::to_value(&o).unwrap();
+        assert_eq!(json["advice"]["gaps"][0]["counterexamples"][0]["observed"], "throws java.lang.IllegalArgumentException: Illegal Capacity: -1", "{json}");
+
+        // A contract the JVM cannot test, a parameter being a String it makes no values of, is trusted, and says
+        // why; the verdict counts both levels.
+        let named = block("jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;", "  call: java.lang.StringBuilder.append(java.lang.String s) -> java.lang.StringBuilder\n  assert: result == this\n  modifies: this\n");
+        let o = prove("named", "named", "result", &[], &[&builder, &named], engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert!(o.output.contains(", relying on 2 contracts for gaps of the tool's own checker, 1 tested, 1 trusted (--gaps advised) ("), "{}", o.output);
+        assert!(o.output.contains("(written by the test; trusted: no JVM test, since parameter s is a java.lang.String, which the test makes no values of)"), "{}", o.output);
+        assert!(o.output.contains("(written by the test; tested on 1 input on JDK "), "a constructor of no arguments has one input: {}", o.output);
 
         // Outside a contract's `assume:` the gap is open, and refused.
         let narrow = block(capacity, "  call: java.util.ArrayList.<init>(int capacity)\n  assume: capacity >= 0\n  modifies: nothing\n");
@@ -2412,17 +2443,28 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert_eq!(contracts(&o), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"], "{}", o.output);
         let o = prove("filled", "filled", "result == out.length", &[], &[&random, &fill], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
-        assert!(o.output.contains("relying on 2 contracts"), "{}", o.output);
+        assert!(o.output.contains("relying on 2 contracts for gaps of the tool's own checker, 2 tested"), "{}", o.output);
+        assert!(o.output.contains(", each called on new java.util.Random(), none refuting it)"), "{}", o.output);
+        // What the JVM shows of an array: a contract that leaves it out of `modifies:`, or asserts what the call
+        // does not leave in it, is refuted.
+        let unmodified = block("jdk-void-method:java.util.Random.nextBytes([B)V", "  call: java.util.Random.nextBytes(byte[] bytes)\n  modifies: this\n");
+        let o = prove("unmodified", "filled", "result == out.length", &[], &[&random, &unmodified], engine).unwrap();
+        let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
+        assert!(refused.contains("the JVM's call changes bytes, where the contract says it leaves bytes as it was, `modifies:` not naming it"), "{}", o.output);
+        let zeroes = block("jdk-void-method:java.util.Random.nextBytes([B)V", "  call: java.util.Random.nextBytes(byte[] bytes)\n  assert: (\\forall int i; 0 <= i && i < bytes.length; bytes[i] == 0)\n  modifies: this, bytes\n");
+        let o = prove("zeroes", "filled", "result == out.length", &[], &[&random, &zeroes], engine).unwrap();
+        let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
+        assert!(refused.contains("the JVM's call returns with it false, where the contract says it returns with `assert: (\\forall int i; 0 <= i && i < bytes.length; bytes[i] == 0)` holding"), "{}", o.output);
 
         // A reference result is the object the contract names.
         let o = prove("chained", "chained", "result", &[], &[&builder, &append("result == this")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
-        // A contract that says otherwise than the JDK's call: its witness does not reproduce in the interpreter,
-        // which runs the call, and the verdict says the contract is the likely cause.
+        // A contract that says otherwise than the JDK's call: 3b found it only because its witness did not
+        // reproduce in the interpreter; the JVM refutes it before any solving.
         let o = prove("chained-fresh", "chained", "result", &[], &[&builder, &append("\\fresh(result)")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-        assert!(o.problem.as_deref().unwrap().starts_with("The tool's own checker's counterexample chained(n="), "{}", o.output);
-        assert!(o.problem.as_deref().unwrap().contains("goes through the contracts for jdk-constructor:java.lang.StringBuilder.<init>()V"), "{}", o.output);
+        let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
+        assert!(refused.starts_with("a JVM refutes it: on i=0 the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
 
         // An initializer that throws nothing has run.
         let o = prove("table", "initialised", "result == n + 7", &[], &[&table], engine).unwrap();
@@ -2459,7 +2501,7 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
     ) else {
         return;
     };
-    for (name, verdict) in [("throwing", Verdict::Violation), ("silent", Verdict::Verified)] {
+    for (name, verdict) in [("throwing", Verdict::Violation), ("silent", Verdict::Unverifiable)] {
         let mut options = equivalence::Options::new(&before, &after, "fixtures.Sized#capacity");
         options.engine = Engine::Native;
         options.gaps = GapMode::Advised;

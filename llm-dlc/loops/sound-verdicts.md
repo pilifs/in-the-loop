@@ -625,6 +625,68 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - A trusted contract whose assertion constrains state the call does not change removes inputs, as any wrong
       contract can. 3c's test on the JVM is what catches it.
   - Next: 3c, checking each contract: proved against the JDK's bytecode, tested on a real JVM, or trusted.
+- **3c, first part: contracts tested on a real JVM (2026-11-06).**
+  - Each contract the engine can apply is tested before it is used
+    ([`lib/src/contract_testing.rs`](../../lib/src/contract_testing.rs)). A generated class, `GapContractTests`, is
+    run once by the `java` of the JDK the gap ids name, with a 128 MB heap. For each contract, it calls the JDK's own
+    method:
+    - on every combination of its parameters' boundary values (up to 512), then on 256 random inputs drawn with a
+      recorded seed (SplitMix64, seed 1), arrays of up to four elements;
+    - an instance method on an object built by its class's constructor of no arguments;
+    - an initializer by loading its class (`Class.forName`).
+
+    It checks the contract on each input with the bytecode the engine's method for it uses (`expr::emit`). Inside
+    `assume:`, the first throws clause that holds before the call decides, and the JVM must throw exactly that class.
+    Where none holds, it must return, with every array `modifies:` leaves out unchanged, the result the object named,
+    and `assert:` holding.
+  - **The levels.** `Evidence` is `tested` or `trusted`, ordered strongest first, and `ContractUse` carries `testing`
+    (inputs, returned, thrown per clause, outside, exhausted, seed, JDK, receiver, counterexamples) or `untested` (why
+    trusted). A contract the JVM refutes is refused, its gap stays open, and the advice for the gap carries the
+    counterexamples, each an input with what the contract expected and what the JVM observed. That is how the
+    counterexample goes back to the agent. A contract the JVM cannot test (a parameter of an object type, a receiver
+    it cannot build, a non-public call, no JVM) is trusted, with the reason.
+  - **The verdict counts them:** `relying on 2 contracts for gaps of the tool's own checker, 1 tested, 1 trusted`, and
+    each `contract:` line says `tested on 128 inputs on JDK 25.0.4.1 (seed 1), 38 more running out of the test's
+    memory, none refuting it`. The statement's basis is `tested` or `trusted`. `build.py` puts the levels in the label
+    (`(1 tested, 1 trusted)`) and the page, and lists other refuting inputs under the advice. The schema has
+    `testing`, `untested`, the advice's `counterexamples` and the basis `tested`.
+  - **A `VirtualMachineError` on the JVM is counted apart, not as a counterexample.** `new ArrayList<>(n)` runs out of
+    memory for most large positive `n`, and a proof is about a JVM with enough memory. This is a decision the brief
+    does not make, so it is recorded here.
+  - **A contract is now about arrays that are there.** The test makes no `null` arrays, and the expressions cannot
+    say `a == null`, so at a `null` array parameter the engine meets the gap rather than applying the contract.
+  - Acceptance, inline, in `a_contract_closes_its_gap_and_the_verdict_rests_on_it` (integration.rs), on native and
+    auto:
+    - "`new ArrayList<>(n)` doesn't throw" is refused: `a JVM refutes it: on capacity=-1 the JVM's call throws
+      java.lang.IllegalArgumentException: Illegal Capacity: -1, where the contract says it returns normally (83 of 128
+      inputs refute it, ...)`, with the counterexamples in the advice. The run stops with the gap open.
+    - The corrected contract (`throws: IllegalArgumentException when capacity < 0`) is tested, both of its sides
+      exercised. The review's reproducer is then the violation `capacity(n=-1)`, which the interpreter reproduces
+      with the JVM's message.
+    - The JVM also refutes these: a `modifies:` that leaves out the array `nextBytes` fills, an assertion it does not
+      keep, and `\fresh(result)` for `append`, which 3b caught only as a witness that didn't reproduce. A contract for
+      `append(String)` is trusted, with why.
+    - On the conformance corpus every contract is tested and none is refuted; the test fails otherwise.
+    - `ContractsTest` has two new tests (150 Python tests in all).
+  - Re-rendering every page changed none, and no job was needed.
+  - **This departs from the brief in two ways.**
+    - `proved` is not done. The JDK calls that are gaps today (constructors, `void` and reference-returning instance
+      methods) are almost never in the engine's fragment: `ArrayList(int)` needs a reference array, a JDK static field
+      and an `invokedynamic` string concatenation for its message. A static JDK method such as `Arrays.fill(int[],
+      int)` would be in the fragment, but the engine refuses a static JDK call outright rather than treating it as a
+      gap.
+    - **Still no recorded example**, the third step to defer it. A realistic kernel (an `ArrayList` pre-sized from a
+      count, then filled) needs `list.add`, a JDK method with a primitive result, which the engine also refuses
+      outright. Both refusals are what 3b's Progress called a candidate for 3c or 3d.
+  - Not done:
+    - A tested contract is re-tested on every run (about 0.3 s, all of a file's contracts in one JVM). The corpus's
+      contracts column takes about 30 s of the conformance test's 52 s. 3d's library checks a contract once.
+    - Receiver state is not observed, so `modifies: this` is not checked.
+    - Object parameters get no values, so such contracts stay trusted.
+  - Next: 3c's second part. Make a JDK method with a primitive result, and a static JDK method the engine doesn't
+    model, gap kinds with no assume form, so a contract can state a value (`size()`, `add` returning `true`). Prove
+    a contract against the JDK's bytecode where the method is in the fragment (`Arrays.fill`), giving `proved`
+    above `tested`. Then the recorded example.
 
 ## Loop settings
 

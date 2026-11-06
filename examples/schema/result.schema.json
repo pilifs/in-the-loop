@@ -64,7 +64,8 @@
                 }
               },
               "template": { "description": "The gap's block of the template.", "type": "string" },
-              "refusedContract": { "description": "Why the contract given for the gap (--contracts) was refused, with where it is.", "type": "string" }
+              "refusedContract": { "description": "Why the contract given for the gap (--contracts) was refused, with where it is.", "type": "string" },
+              "counterexamples": { "description": "The inputs on which a JVM refutes the contract given, when that is why it was refused (step 3c), at most 20.", "type": "array", "items": { "type": "object", "required": ["input", "expected", "observed"], "additionalProperties": false, "properties": { "input": { "description": "By the `call:` line's names: `capacity=-1`.", "type": "string" }, "expected": { "description": "What the contract says the call does there.", "type": "string" }, "observed": { "description": "What the JVM did.", "type": "string" } } } }
             }
           }
         },
@@ -255,12 +256,13 @@
                 "type": "string"
               },
               "basis": {
-                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that nothing has checked (`trusted`, under --gaps advised --contracts).",
+                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that a JVM `tested` or that nothing has checked (`trusted`), under --gaps advised --contracts.",
                 "enum": [
                   "stated",
                   "harness",
                   "engine",
                   "assumed",
+                  "tested",
                   "trusted"
                 ]
               },
@@ -690,14 +692,33 @@
               "approximation": { "description": "What the own checker takes it to do under `--gaps assume`.", "type": "string" },
               "treatment": { "description": "`refused` (the path ended there), `assumed` (its approximation taken), or closed by a `contract` (--contracts, applied at the call).", "enum": ["refused", "assumed", "contract"] },
               "contract": {
-                "description": "For a gap a contract closed: what it states, who wrote it, what backs it (only `trusted` before step 3c of llm-dlc/loops/sound-verdicts.md), and where it is.",
+                "description": "For a gap a contract closed: what it states, who wrote it, what backs it, and where it is. The evidence is `tested` when a JVM ran the JDK's call on boundary and seeded random inputs and none refutes it (step 3c of llm-dlc/loops/sound-verdicts.md), else `trusted`, with why the JVM could not test it.",
                 "type": "object",
                 "required": ["summary", "writtenBy", "evidence", "file", "line"],
                 "additionalProperties": false,
                 "properties": {
                   "summary": { "type": "string" },
                   "writtenBy": { "type": "string" },
-                  "evidence": { "enum": ["trusted"] },
+                  "evidence": { "enum": ["tested", "trusted"] },
+                  "testing": {
+                    "description": "What the JVM test found: the inputs inside `assume:` run to their end, how many returned and threw as each clause says, those outside `assume:`, those that ran out of the test's memory, the seed, the JDK, and the receiver an instance method was called on.",
+                    "type": "object",
+                    "required": ["inputs", "returned", "thrown", "outside", "exhausted", "seed", "jdk"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "inputs": { "type": "integer" },
+                      "returned": { "type": "integer" },
+                      "thrown": { "type": "array", "items": { "type": "integer" } },
+                      "outside": { "type": "integer" },
+                      "exhausted": { "type": "integer" },
+                      "seed": { "type": "integer" },
+                      "jdk": { "type": "string" },
+                      "receiver": { "type": "string" },
+                      "counterexamples": { "type": "array", "items": { "type": "object", "required": ["input", "expected", "observed"], "additionalProperties": false, "properties": { "input": { "description": "By the `call:` line's names: `capacity=-1`.", "type": "string" }, "expected": { "description": "What the contract says the call does there.", "type": "string" }, "observed": { "description": "What the JVM did.", "type": "string" } } } },
+                      "refuting": { "type": "integer" }
+                    }
+                  },
+                  "untested": { "description": "Why the JVM could not test it, for a trusted contract.", "type": "string" },
                   "file": { "description": "The contracts file, as the tool was given it.", "type": "string" },
                   "line": { "type": "integer" }
                 }

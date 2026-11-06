@@ -104,6 +104,9 @@ pub struct GapAdvice {
     /// Why the contract the agent gave for the gap was refused (`--contracts`), with where it is.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refused_contract: Option<String>,
+    /// The inputs on which a JVM refutes the contract given for the gap, when that is why it was refused.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub counterexamples: Vec<crate::gap_contracts::Counterexample>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -161,6 +164,7 @@ pub fn preflight(entries: &[PathBuf], models: bool, class: &str, method: &str, c
             let mut a = advise(&cp, gap, sites.iter().map(gaps::Site::display).collect(), jdk.as_deref());
             if let Some((r, c)) = contracts.and_then(|c| c.refusal(&a.id).map(|r| (r, c))) {
                 a.refused_contract = Some(format!("{} ({}:{})", r.reason, c.file.display(), r.line));
+                a.counterexamples = r.testing.as_ref().map(|t| t.counterexamples.clone()).unwrap_or_default();
             }
             a
         })
@@ -193,6 +197,7 @@ pub fn advise(cp: &ClassPath, gap: &Gap, sites: Vec<String>, jdk: Option<&str>) 
         must_state: obligations(gap.kind, &params),
         template: String::new(),
         refused_contract: None,
+        counterexamples: Vec::new(),
     };
     advice.template = block(&advice);
     advice
@@ -313,6 +318,9 @@ impl Advice {
             let _ = writeln!(out, "    a contract states: {}", g.must_state.iter().map(|o| part_name(o.part)).collect::<Vec<_>>().join(", "));
             if let Some(r) = &g.refused_contract {
                 let _ = writeln!(out, "    its contract is refused: {r}");
+            }
+            for c in g.counterexamples.iter().skip(1).take(4) {
+                let _ = writeln!(out, "      also {}", c.line());
             }
         }
         if !self.closed.is_empty() {

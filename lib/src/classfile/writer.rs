@@ -187,6 +187,11 @@ impl CodeBuilder {
         self.branch(0x9f + cond_index(cond), target);
     }
 
+    /// `if_acmpne`: the two references on the stack are not the same object.
+    pub fn if_acmpne(&mut self, target: Label) {
+        self.branch(0xa6, target);
+    }
+
     pub fn if_null(&mut self, target: Label) {
         self.branch(0xc6, target);
     }

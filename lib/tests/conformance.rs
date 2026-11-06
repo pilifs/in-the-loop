@@ -307,7 +307,8 @@ type Mode = (Engine, GapMode, bool, bool);
 /// Contracts for the corpus's gaps, each stating what the JDK's call does as the corpus's calls show it on the JVM
 /// (step 3b of the sound-verdicts brief), written by an agent: the session that wrote the step. The initializers
 /// that throw are given contracts that say so, which the own checker refuses (it applies an initializer's only
-/// when it throws nothing), so those claims stay without a verdict.
+/// when it throws nothing), so those claims stay without a verdict. Since 3c each is tested on the JVM before it is
+/// applied, and the test fails if one is refuted or left untested.
 const CORPUS_CONTRACTS: &str = "kind: gap-contracts
 
 jdk-constructor:java.util.ArrayList.<init>(I)V@{jdk}
@@ -561,6 +562,16 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
             }
             if closed > 0 {
                 contracted.push(format!("{} {verdict:?} (strict: {:?})", case.method, claim.native));
+            }
+            // They state what the JVM does, so a JVM test refutes none of them, and each is tested (step 3c).
+            for g in run.outcome.search.iter().flat_map(|s| &s.gaps).filter(|g| g.treatment == Some(GapTreatment::Contract)) {
+                let evidence = g.contract.as_ref().map(|c| c.evidence);
+                if evidence != Some(jvmcontract::gap_contracts::Evidence::Tested) {
+                    failures.push(format!("{label}: the corpus's contract for {} is {evidence:?}, not tested: {}", g.id, run.outcome.output));
+                }
+            }
+            if let Some(refused) = run.outcome.advice.iter().flat_map(|a| &a.gaps).find_map(|g| g.refused_contract.as_ref().filter(|r| r.starts_with("a JVM refutes it"))) {
+                failures.push(format!("{label}: a JVM refutes one of the corpus's contracts: {refused}"));
             }
         }
     }

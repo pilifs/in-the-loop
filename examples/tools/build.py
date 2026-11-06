@@ -1617,6 +1617,7 @@ def stated_record(outcome):
 # How each basis of an assumption reads on a page (lib/src/statement.rs, Basis).
 BASIS_WORDS = {"stated": "stated by the claim", "harness": "made by how the harness builds the statement",
                "engine": "the checker's own semantics", "assumed": "a gap assumed with nothing to show for it, under --gaps assume",
+               "tested": "a contract for a gap that a JVM tested, the JDK's call on boundary and seeded random inputs, under --gaps advised",
                "trusted": "a contract for a gap that nothing has checked, under --gaps advised"}
 CONFIRMATION_WORDS = {"confirmed": "JBMC proved it again over every input (--confirm)",
                       "disagreed": "JBMC refuted it, so neither checker's verdict stands (--confirm)",
@@ -1700,7 +1701,9 @@ def advice_lines(folder, res):
         lines += [f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: "
                   + ", ".join(PART_WORDS[o["part"]] for o in g["mustState"])
                   + f". Under `--gaps assume` the checker would take it that it {g['assumed']}."
-                  + (f" The contract given for it is refused: {g['refusedContract']}." if g.get("refusedContract") else "") for g in a["gaps"]] + [""]
+                  + (f" The contract given for it is refused: {g['refusedContract']}." if g.get("refusedContract") else "")
+                  + (" Other inputs on which the JVM refutes it: " + ", ".join(f"`{c['input']}`" for c in g["counterexamples"][1:6])
+                     + "." if len(g.get("counterexamples") or []) > 1 else "") for g in a["gaps"]] + [""]
         if a.get("closed"):
             lines += ["Closed by a contract given (`--contracts`): " + ", ".join(f"`{c}`" for c in a["closed"]) + ".", ""]
         for why, r in sorted((a.get("outside") or {}).items()):
@@ -1722,8 +1725,19 @@ def assumed_gaps(result, treatment="assumed"):
     return list(seen.values())
 
 
-# How each evidence level of a contract for a gap reads on a page (lib/src/gap_contracts.rs, Evidence).
-EVIDENCE_WORDS = {"trusted": "trusted: checked against neither the JDK's bytecode nor a JVM, so the verdict rests on whoever wrote it"}
+def evidence_words(c):
+    """What backs a contract for a gap, in words (lib/src/gap_contracts.rs, Evidence and Testing): what a JVM test
+    of it found, or why it is trusted."""
+    t = c.get("testing")
+    if c["evidence"] == "tested" and t:
+        n = t["inputs"]
+        return (f"tested: a JVM ran the JDK's call on {n} input{'s' if n != 1 else ''} (boundary values and random ones, seed "
+                f"{t['seed']}, JDK {t['jdk']}" + (f", each called on `{t['receiver']}`" if t.get("receiver") else "")
+                + (f"; {t['exhausted']} more ran out of the test's memory" if t.get("exhausted") else "")
+                + "), and none refutes the contract: evidence, not a proof")
+    if c.get("untested"):
+        return f"trusted: the JVM could not test it, since {c['untested']}, so the verdict rests on whoever wrote it"
+    return "trusted: checked against neither the JDK's bytecode nor a JVM, so the verdict rests on whoever wrote it"
 
 
 def contract_lines(res):
@@ -1739,7 +1753,7 @@ def contract_lines(res):
     for g in relied:
         c = g["contract"]
         lines.append(f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: {c['summary']}. Written by {c['writtenBy']} "
-                     f"(`{c['file'].rsplit('/', 1)[-1]}`, line {c['line']}); {EVIDENCE_WORDS.get(c['evidence'], c['evidence'])}.")
+                     f"(`{c['file'].rsplit('/', 1)[-1]}`, line {c['line']}); {evidence_words(c)}.")
     return lines + [""]
 
 

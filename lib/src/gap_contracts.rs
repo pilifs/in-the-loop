@@ -32,8 +32,12 @@
 //! call that does not match the id, a parameter of a type the expressions do not have, `this` in a condition (the
 //! engine keeps no state of a JDK object), a result of a form it cannot choose an object for, an initializer that
 //! throws or sets state, a contract for a JDK other than the one the proof runs on, or for a string conversion.
-//! Every contract the engine applies is `trusted` here: nothing checks it yet against the JDK's bytecode or a JVM
-//! (step 3c), and the verdict says that it rests on it.
+//! Every contract the engine accepts is then tested on a real JVM ([`crate::contract_testing`], step 3c): the JDK's
+//! own call runs on the boundary values of the parameters' types and on seeded random inputs, and the contract is
+//! checked on each. One the JVM refutes is refused, with the inputs that refute it, and its gap stays open, so the
+//! counterexample goes back to the agent with the advice. One no input refutes is `tested`, with the number of
+//! inputs; one the JVM cannot test (a parameter it cannot make values of, a receiver it cannot build, no JVM) is
+//! `trusted`, with the reason. The verdict says which contracts it rests on, at which level.
 //!
 //! The engine applies a contract by calling a method of a class generated here, [`CLASS`], with the call's
 //! arguments (and its receiver, for a method that may return it): a branch per throws clause that throws, a
@@ -59,11 +63,14 @@ pub const CLASS: &str = "GapContracts";
 /// The class of the engine's intrinsics the generated methods call; it exists on no class path.
 pub const INTRINSICS: &str = "jvmcontract/GapIntrinsics";
 
-/// How a contract is backed: what checked it. Only `trusted` for now: step 3c adds `proved` (against the JDK's
-/// bytecode) and `tested` (on a real JVM).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+/// How a contract is backed: what checked it, strongest first. `proved` (against the JDK's bytecode) is the
+/// next step of 3c.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Evidence {
+    /// A real JVM ran the JDK's call on the contract's boundary values and seeded random inputs, and none refutes
+    /// it ([`crate::contract_testing`]).
+    Tested,
     /// Nothing has checked it: the verdict rests on whoever wrote it.
     Trusted,
 }
@@ -71,8 +78,105 @@ pub enum Evidence {
 impl Evidence {
     pub fn name(self) -> &'static str {
         match self {
+            Evidence::Tested => "tested",
             Evidence::Trusted => "trusted",
         }
+    }
+}
+
+/// What a test of a contract on a real JVM found ([`crate::contract_testing`]).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct Testing {
+    /// The inputs inside `assume:` on which the JVM ran the call to its end, which the contract is checked on.
+    pub inputs: usize,
+    /// Of those, how many returned, and how many threw as each throws clause says, in order.
+    pub returned: usize,
+    pub thrown: Vec<usize>,
+    /// Inputs outside `assume:`, which say nothing about the contract.
+    pub outside: usize,
+    /// Inputs on which the JVM ran out of the test's memory or stack (a `VirtualMachineError`), which say nothing
+    /// either way: a proof is about a JVM with enough of both.
+    pub exhausted: usize,
+    /// The seed the random inputs were drawn with, so the test can be repeated.
+    pub seed: u64,
+    /// The JDK whose `java` ran the test.
+    pub jdk: String,
+    /// The object an instance method was called on, built afresh for each input: `new java.util.Random()`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub receiver: Option<String>,
+    /// Every input on which the JVM did what the contract does not say, at most [`crate::contract_testing::KEPT`].
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub counterexamples: Vec<Counterexample>,
+    /// How many counterexamples there were in all.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub refuting: usize,
+}
+
+fn is_zero(n: &usize) -> bool {
+    *n == 0
+}
+
+impl Testing {
+    /// In words: `tested on 312 inputs on JDK 25.0.4.1 (seed 1), none refuting it`.
+    pub fn words(&self) -> String {
+        let mut out = format!("tested on {} input{} on JDK {} (seed {})", self.inputs, if self.inputs == 1 { "" } else { "s" }, self.jdk, self.seed);
+        if let Some(r) = &self.receiver {
+            out.push_str(&format!(", each called on {r}"));
+        }
+        if self.exhausted > 0 {
+            out.push_str(&format!(", {} more running out of the test's memory", self.exhausted));
+        }
+        if self.refuting == 0 {
+            out.push_str(", none refuting it");
+        }
+        out
+    }
+}
+
+/// An input on which the JVM did what a contract does not say.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct Counterexample {
+    /// The input, by the `call:` line's names: `capacity = -1`.
+    pub input: String,
+    /// What the contract says the call does there.
+    pub expected: String,
+    /// What the JVM did.
+    pub observed: String,
+}
+
+impl Counterexample {
+    /// In a line: `on capacity = -1 the JVM's call throws ..., where the contract says it returns normally`.
+    pub fn line(&self) -> String {
+        format!("on {} the JVM's call {}, where the contract says it {}", if self.input.is_empty() { "no arguments".to_string() } else { self.input.clone() }, self.observed, self.expected)
+    }
+}
+
+/// What testing needs of a contract the engine accepted: the call, its parameters, and its conditions compiled.
+#[derive(Debug, Clone)]
+pub(crate) struct Shape {
+    pub gap: Gap,
+    pub descriptor: MethodDescriptor,
+    /// The `call:` line's names, one per parameter.
+    pub names: Vec<String>,
+    /// Whether the call has a receiver, in local 0 of the contract's methods.
+    pub receiver: bool,
+    pub assume: Option<expr::Expr>,
+    /// Each throws clause's exception and condition, and as written.
+    pub throws: Vec<(String, expr::Expr)>,
+    pub throws_text: Vec<String>,
+    pub modified: Vec<Param>,
+    pub after: Option<expr::Expr>,
+    pub assert: Option<String>,
+    pub result: Option<ResultForm>,
+    /// The first slot after the receiver and parameters, and the first no condition uses.
+    pub first_free: u16,
+    pub slots_used: u16,
+}
+
+impl Shape {
+    /// An initializer's contract: it throws nothing.
+    fn initializer(gap: &Gap) -> Shape {
+        Shape { gap: gap.clone(), descriptor: MethodDescriptor { params: Vec::new(), ret: Type::Void }, names: Vec::new(), receiver: false, assume: None, throws: Vec::new(), throws_text: Vec::new(), modified: Vec::new(), after: None, assert: None, result: None, first_free: 0, slots_used: 0 }
     }
 }
 
@@ -150,14 +254,22 @@ pub struct Accepted {
     pub summary: String,
     pub written_by: String,
     pub evidence: Evidence,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub testing: Option<Testing>,
+    /// Why it is trusted: what kept the JVM from testing it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub untested: Option<String>,
 }
 
-/// A contract the engine cannot apply, and why: its gap stays open.
+/// A contract the engine cannot apply, or a JVM refutes, and why: its gap stays open.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Refused {
     pub id: String,
     pub line: usize,
     pub reason: String,
+    /// The inputs on which the JVM refutes it, when it was tested.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub testing: Option<Testing>,
 }
 
 /// A contracts file, read and checked against the class path the proof runs on.
@@ -202,32 +314,64 @@ pub fn gap_of(id: &str) -> Option<(Gap, Option<String>)> {
 }
 
 /// Reads the contracts in `file` and checks each against the class path `cp` the proof runs on, under the JDK
-/// `jdk`: each is accepted, with how the engine applies it, or refused with the reason.
-pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>) -> Result<Loaded, Error> {
+/// `jdk`: each is accepted, with how the engine applies it, or refused with the reason. Each accepted contract is
+/// then tested on a real JVM ([`crate::contract_testing`], in `work`, with `entries` on its class path): one the JVM
+/// refutes is refused, with the inputs that refute it, and one it cannot test is trusted, with the reason.
+pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf], work: &Path) -> Result<Loaded, Error> {
     let text = std::fs::read_to_string(file).map_err(|e| Error::new(format!("cannot read the contracts in {}: {e}", file.display())))?;
     let blocks = parse(&text, &file.display().to_string())?;
     let mut loaded = Loaded { file: file.to_path_buf(), ..Loaded::default() };
     let mut writer = ClassWriter::new(CLASS);
     writer.source_file = Some(file.file_name().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default());
+    let mut shapes = Vec::new();
     for block in &blocks {
         let index = loaded.accepted.len();
         match accept(block, cp, jdk, index, &mut writer) {
-            Ok((gap, closing, summary)) => {
+            Ok((gap, closing, summary, shape)) => {
                 if loaded.closed.contains_key(&gap) {
-                    loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason: "a second contract for the gap: the first one stands".into() });
+                    loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason: "a second contract for the gap: the first one stands".into(), testing: None });
                     continue;
                 }
                 let written_by = block.value("written-by").unwrap_or_default().to_string();
-                let contract = ContractUse { summary: summary.clone(), written_by: written_by.clone(), evidence: Evidence::Trusted, file: file.display().to_string(), line: block.line, index };
+                let contract = ContractUse { summary: summary.clone(), written_by: written_by.clone(), evidence: Evidence::Trusted, testing: None, untested: None, file: file.display().to_string(), line: block.line, index };
                 loaded.closed.insert(gap, Closure { how: closing, contract });
-                loaded.accepted.push(Accepted { id: block.id.clone(), line: block.line, summary, written_by, evidence: Evidence::Trusted });
+                loaded.accepted.push(Accepted { id: block.id.clone(), line: block.line, summary, written_by, evidence: Evidence::Trusted, testing: None, untested: None });
+                shapes.push(shape);
             }
-            Err(reason) => loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason }),
+            Err(reason) => loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason, testing: None }),
         }
     }
     if !writer.methods.is_empty() {
         loaded.class = Some(writer.to_bytes());
     }
+
+    // Each accepted contract on a real JVM, strongest evidence first.
+    let tested = crate::contract_testing::test(&shapes, cp, entries, &work.join("contract-tests"));
+    let mut kept = Vec::new();
+    for (accepted, result) in std::mem::take(&mut loaded.accepted).into_iter().zip(tested) {
+        let gap = gap_of(&accepted.id).map(|(g, _)| g).expect("an accepted contract's id is a gap's");
+        match result {
+            Ok(testing) if testing.refuting > 0 => {
+                loaded.closed.remove(&gap);
+                let first = testing.counterexamples.first().map(Counterexample::line).unwrap_or_default();
+                let reason = format!("a JVM refutes it: {first} ({} of {} input{} refute it, on JDK {}, seed {})", testing.refuting, testing.inputs, if testing.inputs == 1 { "" } else { "s" }, testing.jdk, testing.seed);
+                loaded.refused.push(Refused { id: accepted.id, line: accepted.line, reason, testing: Some(testing) });
+            }
+            Ok(testing) => {
+                let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
+                closure.contract.evidence = Evidence::Tested;
+                closure.contract.testing = Some(testing.clone());
+                kept.push(Accepted { evidence: Evidence::Tested, testing: Some(testing), ..accepted });
+            }
+            Err(why) => {
+                let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
+                closure.contract.untested = Some(why.clone());
+                kept.push(Accepted { untested: Some(why), ..accepted });
+            }
+        }
+    }
+    loaded.accepted = kept;
+    loaded.refused.sort_by_key(|r| r.line);
     Ok(loaded)
 }
 
@@ -244,7 +388,7 @@ pub fn setting(mode: gaps::GapMode, file: Option<&Path>, entries: &[PathBuf], mo
         return Err(Error::new(CONTRACTS_NEED_ADVISED));
     }
     let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path))?.with_models(models);
-    let loaded = load(file, &cp, gaps::jdk_release().as_deref())?;
+    let loaded = load(file, &cp, gaps::jdk_release().as_deref(), entries, work)?;
     if let Some(bytes) = &loaded.class {
         let dir = work.join("contracts");
         std::fs::create_dir_all(&dir)?;
@@ -263,7 +407,7 @@ pub fn setting(mode: gaps::GapMode, file: Option<&Path>, entries: &[PathBuf], mo
 const RESULT_FORMS: &str = "`result == this`, `result == <parameter>`, `result == null`, or `\\fresh(result)` for a new object";
 
 /// Checks one block, and writes the method that applies it into `writer`; the reason it is refused otherwise.
-fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer: &mut ClassWriter) -> Result<(Gap, Closing, String), String> {
+fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer: &mut ClassWriter) -> Result<(Gap, Closing, String, Shape), String> {
     for (key, value, _) in &block.keys {
         if !KEYS.contains(&key.as_str()) {
             return Err(format!("unknown key `{key}:`; a contract has {}", KEYS.iter().map(|k| format!("`{k}:`")).collect::<Vec<_>>().join(", ")));
@@ -294,7 +438,11 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
     let names = call_names(call, &gap, &descriptor)?;
     match gap.kind {
         GapKind::StringConversion => return Err("the tool's own checker applies no contract inside a string concatenation yet".into()),
-        GapKind::ClassInitializer => return initializer(block, gap, modifies),
+        GapKind::ClassInitializer => {
+            let (gap, closing, summary) = initializer(block, gap, modifies)?;
+            let shape = Shape::initializer(&gap);
+            return Ok((gap, closing, summary, shape));
+        }
         _ => {}
     }
     match gaps::jdk_instance_call(cp, &gap.owner, &gap.name, &gap.descriptor) {
@@ -367,6 +515,17 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         None => code.return_(None),
     };
     let mut slots_used = first_free;
+    // A contract is about arrays that are there, which is what testing it gives it: a null array meets the gap.
+    for p in params.iter().filter(|p| matches!(p.ty, Type::Array(_))) {
+        let there = code.label();
+        code.load(Kind::Ref, p.slot);
+        code.if_nonnull(there);
+        code.iconst(index as i32);
+        let open = writer.pool.method_ref(INTRINSICS, "open", "(I)V");
+        code.op_u16(0xb8, open);
+        give_up(&mut code);
+        code.bind(there);
+    }
     if let Some(a) = &assume {
         let proceed = code.label();
         expr::emit(a, &mut code, &mut writer.pool);
@@ -441,7 +600,9 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         summary.push(format!("then {a}"));
     }
     summary.push(format!("modifies {modifies}"));
-    Ok((gap, Closing::Stub { method, descriptor: method_descriptor, receiver }, summary.join("; ")))
+    let throws_text = block.values("throws").into_iter().filter(|c| *c != "nothing").map(str::to_string).collect();
+    let shape = Shape { gap: gap.clone(), descriptor, names, receiver, assume, throws, throws_text, modified, after, assert: assert.map(str::to_string), result, first_free, slots_used };
+    Ok((gap, Closing::Stub { method, descriptor: method_descriptor, receiver }, summary.join("; "), shape))
 }
 
 /// What an initializer's contract may be: it throws nothing and sets nothing the proof reads, so the class is
@@ -534,7 +695,7 @@ fn modified(text: &str, names: &[String], types: &[Type], first: u16) -> Result<
 
 /// Which object a call that returns one returns.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ResultForm {
+pub(crate) enum ResultForm {
     This,
     /// The parameter in this slot of the contract's method.
     Parameter(u16),
@@ -628,7 +789,7 @@ mod tests {
         let ok = "  call: java.util.ArrayList.<init>(int n)\n  modifies: nothing\n  written-by: a test\n";
         let cp = ClassPath::new().with_default_jdk();
         let mut writer = ClassWriter::new(CLASS);
-        let (_, closing, summary) = accept(&block(&format!("{head}{ok}  throws: IllegalArgumentException when n < 0\n")), &cp, Some("25"), 0, &mut writer).unwrap();
+        let (_, closing, summary, _) = accept(&block(&format!("{head}{ok}  throws: IllegalArgumentException when n < 0\n")), &cp, Some("25"), 0, &mut writer).unwrap();
         assert_eq!(summary, "throws java.lang.IllegalArgumentException when n < 0; modifies nothing");
         assert!(matches!(closing, Closing::Stub { receiver: false, .. }));
 
@@ -651,7 +812,7 @@ mod tests {
         assert!(refusal(&format!("{append}  assert: result != null\n")).contains("does not say which object"));
         assert!(refusal(&format!("{append}  assert: result == i\n")).contains("i is a int, not an object"));
         let mut writer = ClassWriter::new(CLASS);
-        let (_, closing, _) = accept(&block(&format!("{append}  assert: result == this\n")), &cp, Some("25"), 3, &mut writer).unwrap();
+        let (_, closing, _, _) = accept(&block(&format!("{append}  assert: result == this\n")), &cp, Some("25"), 3, &mut writer).unwrap();
         assert!(matches!(&closing, Closing::Stub { method, descriptor, receiver: true } if method == "c3" && descriptor == "(Ljava/lang/Object;I)Ljava/lang/StringBuilder;"), "{closing:?}");
 
         let clinit = "class-initializer:p.Boom.<clinit>()V\n  call: p.Boom.<clinit>()\n  written-by: a test\n";

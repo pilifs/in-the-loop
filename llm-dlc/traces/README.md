@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 24, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 04:09 UTC |
-| Prompts | 700 |
-| Model calls | 6,434 |
-| Tool calls | 7,289 (167 failed) |
-| Compactions | 93 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 04:35 UTC |
+| Prompts | 705 |
+| Model calls | 6,498 |
+| Tool calls | 7,353 (168 failed) |
+| Compactions | 94 |
 | Subagents | 3 |
-| Tokens written | 9,797,330 |
-| Tokens read | 1,047,465,329 (97.6% from cache) |
-| Commits with a trace | 191 |
-| Log snapshots | 251 (835.3 MB gzipped, 242 uploaded) |
+| Tokens written | 9,892,654 |
+| Tokens read | 1,060,177,298 (97.6% from cache) |
+| Commits with a trace | 192 |
+| Log snapshots | 252 (839.9 MB gzipped, 242 uploaded) |
 
 ## Sessions
 
@@ -50,7 +50,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
-| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 4 h 34 min | `claude-opus-5-5` | 54 | 738 | 746 | 2 | 9 | 340,299 | 16 |
+| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 5 h 0 min | `claude-opus-5-5` | 59 | 802 | 810 | 3 | 10 | 340,299 | 17 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -83,16 +83,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 736,974 | 1,496 | 2,381,545 | 128,943,599 | 98.2% | 178 |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 832,298 | 1,624 | 2,653,831 | 141,383,154 | 98.2% | 173 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 6,259 | 85.9% | 24 |
+| `Bash` | 6,318 | 85.9% | 24 |
 | `Edit` | 388 | 5.3% | 12 |
-| `Write` | 283 | 3.9% | 11 |
-| `Read` | 222 | 3.0% | 15 |
+| `Write` | 284 | 3.9% | 11 |
+| `Read` | 226 | 3.1% | 15 |
 | `ToolSearch` | 53 | 0.7% | 13 |
 | `Monitor` | 31 | 0.4% | 5 |
 | `WebFetch` | 20 | 0.3% | 4 |
@@ -301,6 +301,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 189 | change `uprzqowv` | Vacuity as a status: a verified regression or property proof says whether it is about any input, non-vacuous (with the probe's witness), vacuous or unknown, and a proof over records says the constructors' agreement is another obligation (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/eb6472045d38f5a3ac90025a4a057308d559c11636ef76f23e6cdaaf073e091c.jsonl.gz)) |
 | 190 | change `lowunqqs` | The gap protocol: under --gaps advised a proof that reaches a gap of the tool's own checker with no contract stops before solving, and returns each gap with what a contract for it must state and a template | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324.jsonl.gz)) |
 | 191 | change `pqxowvyp` | Contracts for gaps: under --gaps advised, --contracts FILE gives the tool's own checker a contract per gap, which it applies at the call in place of the gap, refuses with the reason when it cannot, and names in the verdict as trusted | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/da337388aa819ff753807ac5b269b2a752487216d9babf99527680eed1a4f594.jsonl.gz)) |
+| 192 | change `mvrqpwnr` | Contracts tested on a real JVM: each contract for a gap is run against the JDK's own call on boundary and seeded random inputs before the tool's own checker applies it; one the JVM refutes goes back to the agent with its counterexamples, and the verdict counts its contracts as tested or trusted | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260.jsonl.gz)) |
 
 ## Logs
 
@@ -331,7 +332,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 16 | 7 | 25.9 MB | `da337388aa81`, not uploaded |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 17 | 7 | 30.5 MB | `5ad1375c5033`, not uploaded |
 
 ## Session notes
 

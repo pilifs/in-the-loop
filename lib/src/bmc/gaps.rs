@@ -253,6 +253,12 @@ pub struct ContractUse {
     pub summary: String,
     pub written_by: String,
     pub evidence: crate::gap_contracts::Evidence,
+    /// What testing it on a real JVM found, when the JVM could test it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub testing: Option<crate::gap_contracts::Testing>,
+    /// Why it is trusted: what kept the JVM from testing it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub untested: Option<String>,
     /// The contracts file, and the line of the contract's id.
     pub file: String,
     pub line: usize,

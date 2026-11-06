@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T04:09:07.664Z",
-  "duration_seconds": 16478,
+  "ended": "2026-11-06T04:35:23.768Z",
+  "duration_seconds": 18054,
   "stats": {
-    "turns": 54,
-    "api_calls": 738,
-    "tool_calls": 746,
-    "tool_errors": 2,
-    "compactions": 9,
+    "turns": 59,
+    "api_calls": 802,
+    "tool_calls": 810,
+    "tool_errors": 3,
+    "compactions": 10,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 1496,
-      "output_tokens": 736974,
-      "cache_read_input_tokens": 128943599,
-      "cache_creation_input_tokens": 2381545
+      "input_tokens": 1624,
+      "output_tokens": 832298,
+      "cache_read_input_tokens": 141383154,
+      "cache_creation_input_tokens": 2653831
     }
   },
   "tools": {
-    "Bash": 676,
-    "Read": 42,
-    "Write": 15,
+    "Bash": 735,
+    "Read": 46,
+    "Write": 16,
     "Edit": 10,
     "WebFetch": 2,
     "ToolSearch": 1
@@ -41,6 +41,7 @@
     "lib/src/advice.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
+    "lib/src/contract_testing.rs",
     "lib/src/digest.rs",
     "lib/src/equivalence.rs",
     "lib/src/gap_contracts.rs",
@@ -183,24 +184,38 @@
     {
       "index": 9,
       "started": "2026-11-06T03:38:29.561Z",
-      "ended": "2026-11-06T04:09:07.664Z",
-      "turns": 4,
-      "api_calls": 81,
+      "ended": "2026-11-06T04:09:37.793Z",
+      "turns": 5,
+      "api_calls": 83,
       "usage": {
-        "input_tokens": 162,
-        "output_tokens": 104715,
-        "cache_read_input_tokens": 17986516,
-        "cache_creation_input_tokens": 308347
+        "input_tokens": 166,
+        "output_tokens": 106248,
+        "cache_read_input_tokens": 18632307,
+        "cache_creation_input_tokens": 322562
       },
-      "peak_context_tokens": 321427
+      "peak_context_tokens": 335642
+    },
+    {
+      "index": 10,
+      "started": "2026-11-06T04:10:21.780Z",
+      "ended": "2026-11-06T04:35:23.768Z",
+      "turns": 4,
+      "api_calls": 62,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 93791,
+        "cache_read_input_tokens": 11793764,
+        "cache_creation_input_tokens": 258071
+      },
+      "peak_context_tokens": 271151
     }
   ],
   "log": {
-    "sha256": "da337388aa819ff753807ac5b269b2a752487216d9babf99527680eed1a4f594",
-    "bytes": 22779112,
-    "lines": 7796,
-    "gzip_bytes": 4162557,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/da337388aa819ff753807ac5b269b2a752487216d9babf99527680eed1a4f594.jsonl.gz"
+    "sha256": "5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260",
+    "bytes": 24974274,
+    "lines": 8499,
+    "gzip_bytes": 4594730,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -331,6 +346,14 @@
       "summary": "Contracts for gaps: under --gaps advised, --contracts FILE gives the tool's own checker a contract per gap, which it applies at the call in place of the gap, refuses with the reason when it cannot, and names in the verdict as trusted",
       "body": "Step 3b of llm-dlc/loops/sound-verdicts.md. The template step 3a hands the agent is now a format the tool reads (lib/src/gap_contracts.rs): kind: gap-contracts, then a block per gap under its id, with call: (naming the parameters), assume:, throws: X when c (repeatable, first match decides, as in a property), assert:, modifies: (nothing, this, or an array parameter) and written-by:, the conditions in prove's expression language. Each accepted contract becomes a static method of a generated class, GapContracts, which the engine calls in place of the JDK call: it throws where a throws clause holds, gives an array it modifies fresh elements (an intrinsic, havoc), ends a path its assertion excludes, meets the gap at the call on an input outside assume:, and returns the object a reference result names (result == this, == a parameter, == null, or \\fresh(result)). An initializer whose contract throws nothing and modifies nothing is taken to have run. A contract the engine cannot apply (a TODO left, a call that does not match the id, this or an object parameter in a condition, result != null alone, an initializer that throws or sets state, \\old, a string conversion, another JDK's version) is refused with the reason in a note line and in the gap's advice, and its gap stays open; the advice lists the gaps contracts closed, and its template only those still open.\n\nA verdict that rests on contracts says so: ', relying on 1 contract for gaps of the tool's own checker, 1 trusted (--gaps advised)', with a contract: line each. search.gaps records the treatment contract with the contract, and the statement has an assumption of kind contract with basis trusted, since nothing checks a contract until 3c. --engine auto does not hand JBMC a run that applied a contract, and --confirm does not ask it. A witness found through a contract that the interpreter (which runs the JDK's real call) does not reproduce is no verdict, and names the contracts as the likely cause. build.py passes approach.contracts (a file in the example's folder, copied to build/gap-contracts/ so the recorded path is machine-independent), records the contract per gap, labels ', relying on N contracts for gaps (N trusted)' and adds a paragraph to the page; both schemas have the new fields.\n\nVerified inline. cargo test --release passes: 125 unit, including the format's parse and refusal tests; 4 conformance; 55 integration. The new integration test a_contract_closes_its_gap_and_the_verdict_rests_on_it runs on native and auto. new ArrayList<>(n) with the contract the JVM's behaviour has is a violation on capacity(n=-1), which the interpreter reproduces with the JVM's own message. A contract that throws nothing gives a Verified naming that trusted contract, the case 3c rejects. Outside assume: the gap is refused at the call. Random.nextBytes with modifies: bytes, StringBuilder.append with result == this (Verified) and with \\fresh(result) (witness not reproduced, so no verdict), an initializer's contract, a TODO contract going back to the agent, and the regression driver are covered too. The conformance corpus gains a column under advised with contracts that an agent (this session) wrote from the JVM's behaviour on its calls. They decide 6 of the 9 claims strict refuses for a gap as the JVM does (5 violations the JVM reproduces, 1 Verified the JVM agrees with); the test fails on any Verified the JVM refutes. test_build.py passes 148, with the new ContractsTest. --render-only of every example changed no page. No pipeline job was needed.\n\nWhere this departs from the brief, as recorded under Progress: 3b has no recorded example of its own, since a verdict resting on an unchecked contract only shows the format, so 3c's example (an ArrayList pre-sized by an overflowing sum) shows both steps with evidence levels. And 'the result, as an expression over the arguments' applies to no gap yet: every gap kind returns void or an object, and a JDK method with a primitive result or an unmodelled static JDK method is still refused outright rather than treated as a gap, so a contract chooses which object is returned but cannot state a value. Making those gap kinds is a candidate for 3c or 3d.",
       "log_sha256": "da337388aa819ff753807ac5b269b2a752487216d9babf99527680eed1a4f594"
+    },
+    {
+      "change_id": "mvrqpwnrntppkwnllqkkxunwymlswxqw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Contracts tested on a real JVM: each contract for a gap is run against the JDK's own call on boundary and seeded random inputs before the tool's own checker applies it; one the JVM refutes goes back to the agent with its counterexamples, and the verdict counts its contracts as tested or trusted",
+      "body": "Step 3c of llm-dlc/loops/sound-verdicts.md, first part. Under --gaps advised --contracts, lib/src/contract_testing.rs generates one class for a file's contracts and runs it once with the java of the JDK the gap ids name (128 MB heap). For each contract it calls the JDK's real method on every combination of its parameters' boundary values (up to 512) and on 256 random inputs (SplitMix64, seed 1, recorded), and checks the contract with the same compiled conditions the engine's stub uses: the first throws clause that holds must be the exact class thrown, otherwise the call must return with unmodified arrays unchanged, the named result object, and the assertion holding. An instance method is called on an object its no-argument constructor builds; an initializer is tested by loading its class. A VirtualMachineError (new ArrayList<>(huge)) is counted apart, not as a counterexample. A refuted contract is refused and its gap stays open, with the counterexamples in the advice; an untestable one (object parameter, no receiver, no JVM) is trusted with the reason. Evidence is now tested or trusted, in the verdict line ('1 tested, 1 trusted'), each contract: line, the statement's basis, build.py's label and page, and the result schema. At a null array parameter the engine now meets the gap rather than applying a contract, since contracts are tested on arrays that are there.\n\nVerified inline: the brief's acceptance in a_contract_closes_its_gap_and_the_verdict_rests_on_it (native and auto): 'new ArrayList<>(n) doesn't throw' is refused with 'a JVM refutes it: on capacity=-1 the JVM's call throws java.lang.IllegalArgumentException: Illegal Capacity: -1, where the contract says it returns normally', and the corrected contract is tested and gives the review's reproducer its violation. The JVM also refutes a modifies: that leaves out a filled array, a false assertion, and \\fresh(result) for append. Every contract of the conformance corpus is tested and none refuted. cargo test --release: 126 unit, 4 conformance (2 ignored), 55 integration; 150 Python tests; --render-only of every example changed no page; no job needed.\n\nThe brief departs from what happened in two ways, recorded under Progress: proved evidence is not done, since the JDK calls that are gaps today are almost never in the engine's fragment, and a static JDK method that is (Arrays.fill) is refused outright rather than a gap; and the recorded example is deferred again, since a realistic kernel needs list.add, a primitive-result JDK call the engine also refuses. Both go to 3c's second part.",
+      "log_sha256": "5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260"
     }
   ],
   "logs": {
@@ -387,6 +410,12 @@
       "lines": 1373,
       "gzip_bytes": 645940,
       "url": "https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/5a4ea0d0391b6444e69cb7c257897bc7ce4cd5e50c7a7a3cbbcc027e5f03d989.jsonl.gz"
+    },
+    "5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260": {
+      "bytes": 24974274,
+      "lines": 8499,
+      "gzip_bytes": 4594730,
+      "url": null
     },
     "6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324": {
       "bytes": 20056807,

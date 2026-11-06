@@ -2223,10 +2223,10 @@ class AdviceTest(unittest.TestCase):
 
 
 class ContractsTest(unittest.TestCase):
-    """Step 3b of llm-dlc/loops/sound-verdicts.md: an example under --gaps advised names a file of contracts for its
-    gaps (`approach.contracts`), which the runner puts where the tool is pointed at it; a verdict that rests on a
-    contract records it with what backs it, and its label and page say so; the advice says why a contract given was
-    refused, and which gaps one closed."""
+    """Steps 3b and 3c of llm-dlc/loops/sound-verdicts.md: an example under --gaps advised names a file of contracts
+    for its gaps (`approach.contracts`), which the runner puts where the tool is pointed at it; a verdict that rests
+    on a contract records it with what backs it (a JVM test, or nothing), and its label and page say so; the advice
+    says why a contract given was refused, with the inputs on which a JVM refutes it, and which gaps one closed."""
 
     GAP = {"id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1", "kind": "jdk-constructor",
            "call": "java.util.ArrayList.<init>(int)", "sites": ["a.B.m:4"],
@@ -2279,6 +2279,54 @@ class ContractsTest(unittest.TestCase):
                       "throws java.lang.IllegalArgumentException when capacity < 0; modifies nothing. Written by an agent "
                       "(`gaps.contracts`, line 3); trusted: checked against neither the JDK's bytecode nor a JVM", text)
         self.assertEqual(build.contract_lines({**result, "verdict": "violation"}), [], "only a verified verdict rests on one")
+
+    def test_a_tested_contract_says_what_the_jvm_ran_and_a_trusted_one_why_it_did_not(self):
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        (root / "gaps.contracts").write_text("kind: gap-contracts\n")
+        testing = {"inputs": 128, "returned": 45, "thrown": [83], "outside": 0, "exhausted": 38, "seed": 1, "jdk": "25.0.4.1"}
+        tested = {**self.GAP, "contract": {**self.GAP["contract"], "evidence": "tested", "testing": testing}}
+        named = {**self.GAP, "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;@jdk-25.0.4.1",
+                 "kind": "jdk-reference-method", "call": "java.lang.StringBuilder.append(java.lang.String)",
+                 "contract": {**self.GAP["contract"], "summary": "throws nothing; then result == this; modifies this",
+                              "untested": "parameter s is a java.lang.String, which the test makes no values of"}}
+        search = {"engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 0.1, "properties": 1,
+                  "unwind": 16, "max_array_length": 8, "stage": None, "gap_mode": "advised", "gaps": [tested, named]}
+        out = equivalence_json(root, "verified", search=search)
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(0, out)):
+            result = empty_result()
+            build.run_tool_equivalence(root, self.example(), root, "crosscut", result)
+        self.assertTrue(result["verdictLabel"].endswith(", relying on 2 contracts for gaps (1 tested, 1 trusted)"), result["verdictLabel"])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["search"], {**schema["properties"]["search"], "definitions": schema.get("definitions", {})})
+        text = "\n".join(build.contract_lines(result))
+        self.assertIn("(`gaps.contracts`, line 3); tested: a JVM ran the JDK's call on 128 inputs (boundary values and random "
+                      "ones, seed 1, JDK 25.0.4.1; 38 more ran out of the test's memory), and none refutes the contract: "
+                      "evidence, not a proof.", text)
+        self.assertIn("trusted: the JVM could not test it, since parameter s is a java.lang.String, which the test makes no "
+                      "values of, so the verdict rests on whoever wrote it.", text)
+        self.assertIn("tested", build.BASIS_WORDS)
+
+    def test_a_contract_a_jvm_refutes_goes_back_with_its_counterexamples(self):
+        refused = ("a JVM refutes it: on capacity=-1 the JVM's call throws java.lang.IllegalArgumentException: Illegal "
+                   "Capacity: -1, where the contract says it returns normally (83 of 128 inputs refute it, on JDK 25.0.4.1, "
+                   "seed 1) (build/gap-contracts/gaps.contracts:3)")
+        found = [{"input": f"capacity={n}", "expected": "returns normally",
+                  "observed": f"throws java.lang.IllegalArgumentException: Illegal Capacity: {n}"} for n in (-1, -2, -13)]
+        advice = {**AdviceTest.ADVICE}
+        advice["gaps"] = [{**advice["gaps"][0], "refused_contract": refused, "counterexamples": found}]
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        result = AdviceTest().recorded(root, advice)
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["advice"], {**schema["$defs"]["advice"], "$defs": schema["$defs"]})
+        text = "\n".join(build.advice_lines(root, result))
+        self.assertIn(f"The contract given for it is refused: {refused}. Other inputs on which the JVM refutes it: "
+                      "`capacity=-2`, `capacity=-13`.", text)
 
     def test_the_advice_says_why_a_contract_was_refused_and_which_gaps_one_closed(self):
         advice = {**AdviceTest.ADVICE, "closed": ["jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.4.1"]}
