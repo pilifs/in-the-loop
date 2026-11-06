@@ -58,7 +58,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### build.py: how a verifier's run ended is decided before its verdict (verification pending)
 
-change `wkmvopxzwnzr` · [log `34c41cff05f1`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/34c41cff05f176b7682ec00e3ac04976f42ab8a791aed8b98cce1f58e60509b1.jsonl.gz)
+[`432ef36d6093`](https://github.com/pilifs/in-the-loop/commit/432ef36d6093761b21e71aeb06d96ca31fb3747e) · [log `34c41cff05f1`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/34c41cff05f176b7682ec00e3ac04976f42ab8a791aed8b98cce1f58e60509b1.jsonl.gz)
 
 Step 1a of the build-orchestration brief. Before, build.py classified a jvmcontract or Java-verifier run as verified on exit 0, unverifiable when the output said 'cannot be verified', and violation otherwise. A verifier killed by signal 9 with empty output was recorded as 'Violation: counterexample found', with no counterexample, and matched an example that expected a violation. write_evidence() also wrote an empty SARIF report when the verifier wrote none. The review's findings were checked against the code at c4fa2f64 and all still held.
 
@@ -72,7 +72,7 @@ Verification jobs, one per approach, check that the verdicts are unchanged and t
 
 ### build.py: a requested example that doesn't run never exits 0 (verification pending)
 
-change `pznwknnkmwtl` · [log `3f062394623e`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04.jsonl.gz)
+[`ab9aeb38f3b5`](https://github.com/pilifs/in-the-loop/commit/ab9aeb38f3b57911d8cf8e6988122359534c98e1) · [log `3f062394623e`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04.jsonl.gz)
 
 Step 1b of the build-orchestration brief. Before this change, build.py silently did nothing for an unknown id or a real-world one and still exited 0. An app it didn't know, or an approach with no runner, made it sys.exit in load_example, which also broke rendering the router. Now an argument that is not the three-digit id of an example folder exits 2 before anything runs. That includes a folder name, an unknown flag, and --index-only with ids.
 
@@ -86,7 +86,7 @@ Verification pending: job 20261105-113118-example-025-b8-under-build-py-s-strict
 
 ### build.py: regression proofs read from equivalence --json, and the page says where a witness was replayed (verification pending)
 
-change `wyxoyuwpmkmz` · [log `435edae71db7`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963.jsonl.gz)
+[`3e76cd1954e7`](https://github.com/pilifs/in-the-loop/commit/3e76cd1954e71968b17a8ba6a3fc0c2ce5262652) · [log `435edae71db7`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963.jsonl.gz)
 
 Step 1c of the build-orchestration brief. run_tool_equivalence() now runs jvmcontract equivalence with --json and reads the library's Outcome instead of parsing its console text. That covers the verdict, the witness, the domain, the proof line, the problem, the vacuity and the statement's path. The console text in the outcome is still written as verifier-output.txt. A new conclude_outcome() requires the exit code to agree with the outcome's verdict, and output that is not an outcome, the plain text included, is invalid-output rather than a verdict. A violation still needs its witness and the SARIF report.
 
@@ -102,7 +102,7 @@ Corrections to the brief: the review's 'replayed it on the JVM' was right for th
 
 ### build.py: every property of a target keeps its own result, read from prove --json (verification pending)
 
-change `lsoynqpomlpz` · [log `0c7768b68f09`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d.jsonl.gz)
+[`ac71b1dd85ef`](https://github.com/pilifs/in-the-loop/commit/ac71b1dd85efbe039330e5e10476e1ecaff14160) · [log `0c7768b68f09`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d.jsonl.gz)
 
 Step 1d of the build-orchestration brief. run_tool_property() used to parse jvmcontract prove's console text with regexes, which picked one assertion, one witness and one proof line out of however many properties a method had, and looked for a single harness where the tool writes one per property (property-N). Example 071, whose VoteRule#grant has three properties, recorded statement: null as a result. It now runs prove --json and keeps every property in a new result field, properties: its assumption, assertion, throws clauses as checked, verdict, domain, proof line, problem, vacuity, witness (with found and shrinkRuns), search and replay. With several properties, each entry also has its work directory and its harness, copied as statement-N.java.
 
@@ -116,7 +116,7 @@ Jobs: 20261105-122210-example-071-b11-three-properties-read-fr (three outcomes, 
 
 ### build.py: every D1 model checks the rule that was built, and a contract changed unasked is a violation (verification pending)
 
-change `xyutmrpxytwr` · [log `5f52b016f68d`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/5f52b016f68d64732c817d7cbb802be52d059d938c4962b02d02adcb97583b1c.jsonl.gz)
+[`88372924fc0e`](https://github.com/pilifs/in-the-loop/commit/88372924fc0ea4bfae1968717cebfe6a87127157) · [log `5f52b016f68d`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/5f52b016f68d64732c817d7cbb802be52d059d938c4962b02d02adcb97583b1c.jsonl.gz)
 
 Step 2a of llm-dlc/loops/build-orchestration.md, from section 1B of the outside review: a D1 model was generated from the committed contract unless behaviourChangeIntended was true, so a kernel a refactor changed was checked as it was before the patch. The gap still held at this commit. run_tool_tlc() regenerated contracts only for an intended change, and jvmcontract tla reads whatever contract file it is given. Box Office's run_tlc() had the same condition.
 
@@ -132,7 +132,7 @@ Jobs: 20261105-124133-example-146-d1-raft-election-a-kernel-ch, 20261105-124134-
 
 ### build.py: TLC coverage that was not read stays unknown, and each configuration's result is kept as it completes (verification pending)
 
-change `zsxstxpwqkqw` · [log `0453e3380571`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82.jsonl.gz)
+[`b27c8ddc5a17`](https://github.com/pilifs/in-the-loop/commit/b27c8ddc5a17c21d7bd95850250d39fb2a135abc) · [log `0453e3380571`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82.jsonl.gz)
 
 Step 2b of llm-dlc/loops/build-orchestration.md, from section 1D and 4 of the outside review. A verified D1 run whose coverage was missing used to count as one in which no step took any row, so a change could be labelled vacuous on no evidence. The gap was also in the library: jvmcontract tlc read an output with no coverage statistics, or an operator the statistics did not list, as zero counts for every row. OperatorCoverage now has 'listed', and the report says 'unknown' for an operator that is not listed. build.py's tlc_coverage() records coverage.status (complete, partial or unavailable) over the operators the verdict depends on. Each configuration records its verdict, status, reason, coverageStatus and listed operators, and each altered row records its operator and the configurations under which it was not counted (unknownUnder). Only complete coverage can make a verdict vacuous, and a jvmcontract without the flag gives unavailable. The page says 'no verdict: timed out' for an unfinished run that has no verdict, where it used to say 'stopped at the counterexample', and it says what is not known.
 
@@ -146,7 +146,7 @@ Jobs: 20261105-125705-example-072-d1-vacuous-coverage-status-c, 20261105-125706-
 
 ### build.py: one plan of each run, which the pipeline's job requirements come from (verification pending)
 
-change `koponxszyrol` · [log `d5531984eeb4`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d.jsonl.gz)
+[`f3d011a1f613`](https://github.com/pilifs/in-the-loop/commit/f3d011a1f6138ce309bbd9033897b5e066c2b2c6) · [log `d5531984eeb4`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d.jsonl.gz)
 
 plan(example) in examples/tools/build.py resolves, from example.json alone and without side effects, what a run takes: app and module, the build adapter and what it copies, the runner, the claim (target, file, behaviourChangeIntended, and for B9 the intended inputs, previous symbol and arguments, result relation), the engine and the exact flags of the proof, the tools it calls (required, and optional: JBMC under engine auto), the D1 model with every configuration and generated operator, and the files it writes. run() executes the plan, the B9/B11 runners pass its flags (proof_options, replacing engine_flag), and build.py --plan [ID ...] prints plans as JSON. The scratch directory is made on first use, so importing build.py makes nothing.
 
@@ -160,7 +160,7 @@ Brief: Progress records 3a; next is 3b. The rest of the brief still holds.
 
 ### build.py: each run is an attempt at a frozen claim, and publishes one checked bundle of evidence (verification pending)
 
-change `mkomytyrpwoy` · [log `c8154da46c42`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262.jsonl.gz)
+[`7f06a6ba1e06`](https://github.com/pilifs/in-the-loop/commit/7f06a6ba1e06d17b606a842ddabf8033f9305081) · [log `c8154da46c42`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262.jsonl.gz)
 
 Step 3b of llm-dlc/loops/build-orchestration.md, first half. Under open question 1's default, result.json gains four blocks next to the flat fields, which are unchanged. claim is frozen before anything is built and written into the attempt's own directory as claim.json. It holds the plan's statement of what is checked, the scope (array bound, and for B9 the intended inputs), and SHA-256 fingerprints of the patch, of the copied sources before and after it (build output left out; build files, contracts and models in), and for D1 of each model file. Its id is their digest: another input or scope is another claim, and the engine is not part of it. attempt records the engine and flags, each tool's identity (Java, javac and JBMC versions, the Gradle distribution, the SHA-256 of jvmcontract and of TLC's jar), the bytecode built, the pipeline job (VERIFY_JOB_ID, VERIFY_SOURCE_COMMIT, VERIFY_WORKDIR), the time and the execution. For jvmcontract proofs it also records exploration: complete only for a verified proof, which checks unwinding assertions, and otherwise unknown. conclusion gives established, refuted or unresolved for the claim and for each obligation (a B11 target's properties, a D1 model's configurations, each generated operator's contract as built). bundle lists each evidence file with its SHA-256 and size.
 
@@ -174,7 +174,7 @@ Where the brief differs from what was built: it lists before/after bytecode and 
 
 ### Allow list: maintainer approved d7e63532
 
-change `wlusqswwslxs` · [log `c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz)
+[`ab69e289dc5a`](https://github.com/pilifs/in-the-loop/commit/ab69e289dc5a19f7087fcd099e64970715507ccf) · [log `c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz)
 
 maintainer approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 

@@ -82,7 +82,7 @@ Verified by reading the changed lines; no code changed.
 
 ### build.py: how a verifier's run ended is decided before its verdict (verification pending)
 
-change `wkmvopxzwnzr` · [log `d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz)
+[`432ef36d6093`](https://github.com/pilifs/in-the-loop/commit/432ef36d6093761b21e71aeb06d96ca31fb3747e) · [log `d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz)
 
 Step 1a of the build-orchestration brief. Before, build.py classified a jvmcontract or Java-verifier run as verified on exit 0, unverifiable when the output said 'cannot be verified', and violation otherwise. A verifier killed by signal 9 with empty output was recorded as 'Violation: counterexample found', with no counterexample, and matched an example that expected a violation. write_evidence() also wrote an empty SARIF report when the verifier wrote none. The review's findings were checked against the code at c4fa2f64 and all still held.
 

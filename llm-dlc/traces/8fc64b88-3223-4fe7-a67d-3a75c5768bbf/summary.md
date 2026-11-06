@@ -156,7 +156,7 @@ Adds llm-dlc/loops/build-orchestration.md, the brief feature-loop.sh runs. It cu
 
 ### build.py: how a verifier's run ended is decided before its verdict (verification pending)
 
-change `wkmvopxzwnzr` · [log `f3f040d67314`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/f3f040d67314d9ea20efc11e37b3ebd677cf89ce229653a79e82357150e3d35d.jsonl.gz)
+[`432ef36d6093`](https://github.com/pilifs/in-the-loop/commit/432ef36d6093761b21e71aeb06d96ca31fb3747e) · [log `f3f040d67314`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/f3f040d67314d9ea20efc11e37b3ebd677cf89ce229653a79e82357150e3d35d.jsonl.gz)
 
 Step 1a of the build-orchestration brief. Before, build.py classified a jvmcontract or Java-verifier run as verified on exit 0, unverifiable when the output said 'cannot be verified', and violation otherwise. A verifier killed by signal 9 with empty output was recorded as 'Violation: counterexample found', with no counterexample, and matched an example that expected a violation. write_evidence() also wrote an empty SARIF report when the verifier wrote none. The review's findings were checked against the code at c4fa2f64 and all still held.
 

@@ -584,7 +584,7 @@ Box Office's contracts module applies both contract plugins: the behavioural/cap
 
 ### build.py: a requested example that doesn't run never exits 0 (verification pending)
 
-change `pznwknnkmwtl` · [log `9ccd10fbe3a5`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c.jsonl.gz)
+[`ab9aeb38f3b5`](https://github.com/pilifs/in-the-loop/commit/ab9aeb38f3b57911d8cf8e6988122359534c98e1) · [log `9ccd10fbe3a5`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c.jsonl.gz)
 
 Step 1b of the build-orchestration brief. Before this change, build.py silently did nothing for an unknown id or a real-world one and still exited 0. An app it didn't know, or an approach with no runner, made it sys.exit in load_example, which also broke rendering the router. Now an argument that is not the three-digit id of an example folder exits 2 before anything runs. That includes a folder name, an unknown flag, and --index-only with ids.
 
@@ -595,6 +595,12 @@ Choice taken: nothing is written for an example that was not executed. An earlie
 Verified: examples/tools/test_build.py, 33 tests, 8 of them new (unknown id, a non-id argument, a real-world id alone and next to a constructed one, every example, an app nobody builds with its result.json left alone, the reasons, render-only); verification/test_pipeline.py, 16 tests, 1 new. By hand: 'build.py 999' and '108 017x' exit 2, and 'build.py 108' prints the not-executed line and exits 1. A full --render-only exits 0 and leaves every page and the router unchanged. No recorded result moved.
 
 Verification pending: job 20261105-113118-example-025-b8-under-build-py-s-strict-s (verification/jobs/) checks that an ordinary run of one constructed example still prints 'as expected' and exits 0. The six step-1a jobs (20261105-112331-*) had not run when this cycle started.
+
+### Record session traces
+
+change `pmvzwxpvqkty` · [log `034b5e2bcdf6`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/034b5e2bcdf61ac0085bfc79613375e162c900957be603020a3c116abd8e5189.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 
