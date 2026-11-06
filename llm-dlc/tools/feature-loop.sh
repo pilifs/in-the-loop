@@ -13,6 +13,7 @@
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
 #   relational  make relational verification more efficient and accurate, with examples
+#   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
 #   CYCLES    how many cycles to run at most; without it there is no limit
 #   UNTIL     instructions the session weighs after each commit to decide whether
@@ -59,7 +60,7 @@ MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-3.5G}
 SCOPE=feature-loop
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|engines|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -77,6 +78,10 @@ fi
 [[ -z "$UNTIL" || -n "${UNTIL//[[:space:]]/}" ]] || usage
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
 BRIEF=
+# Names for briefs: the brief's own Loop settings (session, model, effort) and Loop until apply.
+case "$PROMPT" in
+  engines) PROMPT=llm-dlc/loops/engine-priorities.md ;;
+esac
 case "$PROMPT" in
   *.md)
     # Found from the caller's directory or the repo's, and named relative to the

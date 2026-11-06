@@ -1,11 +1,10 @@
 # Brief: stock JBMC asked better questions, honest measurements, and wider native coverage
 
-**For the user's final review (2026-11-06). Not approved yet: don't run it.** Once approved, this line becomes the date of
-approval. It replaces the "downstream JBMC patch queue" draft, since the evidence below moved the work away from a fork.
+**Approved by the user on 2026-11-06**, with the decisions recorded [below](#decisions). It replaces the "downstream JBMC patch queue" draft, since the evidence below moved the work away from a fork.
 That draft is in the history if needed.
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh):
-`llm-dlc/tools/feature-loop.sh llm-dlc/loops/engine-priorities.md`, in the session and with the model set under
+`llm-dlc/tools/feature-loop.sh engines` (or `llm-dlc/tools/feature-loop.sh llm-dlc/loops/engine-priorities.md`), in the session and with the model set under
 [Loop settings](#loop-settings). The loop runs until the session judges, by [Loop until](#loop-until), that the rest is
 not worth another cycle.
 

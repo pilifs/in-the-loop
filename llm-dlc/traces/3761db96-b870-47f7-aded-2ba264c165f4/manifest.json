@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T14:52:11.141Z",
-  "duration_seconds": 14616,
+  "ended": "2026-11-06T14:54:38.333Z",
+  "duration_seconds": 14763,
   "stats": {
-    "turns": 28,
-    "api_calls": 337,
-    "tool_calls": 332,
+    "turns": 29,
+    "api_calls": 344,
+    "tool_calls": 338,
     "tool_errors": 2,
     "compactions": 1,
     "peak_context_tokens": 451666,
     "usage": {
-      "input_tokens": 716,
-      "output_tokens": 208904,
-      "cache_read_input_tokens": 83190584,
-      "cache_creation_input_tokens": 530460
+      "input_tokens": 732,
+      "output_tokens": 214558,
+      "cache_read_input_tokens": 84292599,
+      "cache_creation_input_tokens": 539972
     }
   },
   "tools": {
-    "Bash": 305,
+    "Bash": 311,
     "AskUserQuestion": 14,
     "Write": 4,
     "Edit": 3,
@@ -63,24 +63,24 @@
     {
       "index": 1,
       "started": "2026-11-06T14:10:30.753Z",
-      "ended": "2026-11-06T14:52:11.141Z",
-      "turns": 9,
-      "api_calls": 50,
+      "ended": "2026-11-06T14:54:38.333Z",
+      "turns": 10,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 110,
-        "output_tokens": 41770,
-        "cache_read_input_tokens": 5187185,
-        "cache_creation_input_tokens": 117087
+        "input_tokens": 126,
+        "output_tokens": 47424,
+        "cache_read_input_tokens": 6289200,
+        "cache_creation_input_tokens": 126599
       },
-      "peak_context_tokens": 152686
+      "peak_context_tokens": 163545
     }
   ],
   "log": {
-    "sha256": "eaabbd68478042ad1d91c886c973476a454491e47451886340fa4d83420ae042",
-    "bytes": 7680161,
-    "lines": 3051,
-    "gzip_bytes": 1286378,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/eaabbd68478042ad1d91c886c973476a454491e47451886340fa4d83420ae042.jsonl.gz"
+    "sha256": "32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da",
+    "bytes": 7834073,
+    "lines": 3110,
+    "gzip_bytes": 1312738,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -275,6 +275,14 @@
       "summary": "engine-priorities.md becomes a loop brief, for the user's final review",
       "body": "The working draft is now a brief for llm-dlc/tools/feature-loop.sh, not yet approved. It has six phases in the order proposed with the user: (1) exclusive JBMC phases, the SAT backend recorded in every result, and the Bitwuzla build queued early; (2) a JBMC staging-policy option, and one benchmark job that both reruns the corpus with corrected phases and compares three policies, with JBMC's default following its evidence; (3) the root cause of the two JBMC witnesses that don't reproduce; (4) a strict job on both engines over the 41 recorded JBMC examples, saving gap_table.py's output, and class initializers counted by shape, giving a coverage inventory; (5) class initializers in the own checker to the counted scope, plus models for Enum.<init>, List.of and List.copyOf, checked by rerunning 071 and 013 under strict; (6) query transcripts, a narrow solver interface, and a job comparing CaDiCaL with Bitwuzla, bit-blasted and word-level, ending in a recommendation rather than a migration. It adds working rules, a Done-when table, Deferred (the fork, trusted contracts over objects, a word-level migration), the settled decisions, Progress, Loop settings (this session, Opus 5.5, high effort) and Loop until. The evidence section is unchanged. Links in sound-verdicts.md are reworded. Documents only.",
       "log_sha256": "eaabbd68478042ad1d91c886c973476a454491e47451886340fa4d83420ae042"
+    },
+    {
+      "change_id": "upmkvrxzvyqquopnkkrwosozkkkxtqos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The engine-priorities brief is approved, and feature-loop.sh runs it as the named loop engines",
+      "body": "The user approved llm-dlc/loops/engine-priorities.md on 2026-11-06, and its first line now says so. feature-loop.sh gains the name engines, which maps to that brief before the brief is read, so the brief's Loop settings (session 3761db96-b870-47f7-aded-2ba264c165f4, claude-opus-5-5, high) and its Loop until apply as they would for the path. The usage line, the header comment and llm-dlc/README.md list the name. Verified with bash -n, and by running the script's own awk extraction on the brief: session, model, effort and the Loop until text come out as written. Ready to start: the session's transcript exists, feature-loop.scope is inactive, 5 GB is free against the 3.5 GB cap, the release build is current, no pipeline job is running, and the working copy is clean.",
+      "log_sha256": "32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da"
     }
   ],
   "logs": {
@@ -301,6 +309,12 @@
       "lines": 1922,
       "gzip_bytes": 718612,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/296530b337d14cead695758cdf0a26e8bca1ade2ffe2158292dd2a2b7b730357.jsonl.gz"
+    },
+    "32dfd609e4ff3b8c4ff8d4c11b804aa657fff2c1d819b51e0512944a567e39da": {
+      "bytes": 7834073,
+      "lines": 3110,
+      "gzip_bytes": 1312738,
+      "url": null
     },
     "3c0f19cb3814b6826d526e0fa5c13169e3145c126a50c63ca3cb935b8a19f99b": {
       "bytes": 5770788,
