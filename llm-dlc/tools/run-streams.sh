@@ -6,11 +6,11 @@
 #   engines   the streams of llm-dlc/loops/engine-priorities.md: jbmc and native
 #   STREAM    only these streams
 #
-# Run it from the default workspace. Before any stream has a session, it compacts
-# the brief's own session (its Loop settings), the conversation that planned the
-# streams, once. Each stream's brief forks its session from that one ("- fork:"
-# in its Loop settings), so every stream starts from the same compacted
-# conversation. It adds a workspace per stream that doesn't have one, as
+# Run it from the default workspace. Each stream's brief forks its session from
+# the conversation that planned the streams ("- fork:" in its Loop settings, the
+# same in every stream), so every stream starts from it. Before any stream has a
+# session, that planning session is compacted, once. (The brief's own loop, which
+# merges the streams, starts a fresh session instead.) It adds a workspace per stream that doesn't have one, as
 # ../REPO-STREAM from the latest commit (@-), and starts each stream's loop,
 # feature-loop.sh NAME-STREAM, from that workspace's copy of the script.
 #
@@ -63,7 +63,7 @@ setting() {
 }
 project_dir() { printf '%s/%s' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects" "$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"; }
 
-PARENT=$(setting "$BRIEF" session)
+PARENT=
 MODEL=$(setting "$BRIEF" model)
 EFFORT=$(setting "$BRIEF" effort)
 declare -A DIR SESSION
@@ -73,7 +73,10 @@ for s in "${STREAMS[@]}"; do
   [[ -f "$brief" ]] || { log "no brief $brief"; exit 1; }
   ws=$(setting "$brief" workspace)
   [[ "$ws" == "$s" ]] || { log "$brief names workspace '${ws}', expected $s"; exit 1; }
-  [[ "$(setting "$brief" fork)" == "$PARENT" ]] || log "warning: $brief doesn't fork from $PARENT, the session of $BRIEF"
+  fork=$(setting "$brief" fork)
+  [[ -n "$fork" ]] || { log "$brief has no '- fork:' in its Loop settings"; exit 1; }
+  [[ -z "$PARENT" || "$fork" == "$PARENT" ]] || { log "the streams fork different sessions: $PARENT and $fork"; exit 1; }
+  PARENT=$fork
   SESSION[$s]=$(setting "$brief" session)
   DIR[$s]=$(jj workspace root --ignore-working-copy --name "$s" 2>/dev/null) || DIR[$s]=
   if [[ -z "${DIR[$s]}" || ! -e "$(project_dir "${DIR[$s]}")/${SESSION[$s]}.jsonl" ]]; then

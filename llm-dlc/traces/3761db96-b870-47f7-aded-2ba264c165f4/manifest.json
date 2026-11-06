@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T18:05:34.556Z",
-  "duration_seconds": 26220,
+  "ended": "2026-11-06T18:12:44.716Z",
+  "duration_seconds": 26650,
   "stats": {
-    "turns": 36,
-    "api_calls": 445,
-    "tool_calls": 435,
+    "turns": 37,
+    "api_calls": 455,
+    "tool_calls": 444,
     "tool_errors": 3,
     "compactions": 2,
     "peak_context_tokens": 451666,
     "usage": {
-      "input_tokens": 944,
-      "output_tokens": 307451,
-      "cache_read_input_tokens": 99829608,
-      "cache_creation_input_tokens": 751489
+      "input_tokens": 966,
+      "output_tokens": 327311,
+      "cache_read_input_tokens": 101965071,
+      "cache_creation_input_tokens": 775925
     }
   },
   "tools": {
-    "Bash": 401,
+    "Bash": 409,
     "AskUserQuestion": 15,
-    "Write": 7,
+    "Write": 8,
     "Edit": 5,
     "Read": 3,
     "ToolSearch": 2,
@@ -44,6 +44,7 @@
     "llm-dlc/loops/engine-priorities-jbmc.md",
     "llm-dlc/loops/engine-priorities-native.md",
     "llm-dlc/loops/engine-priorities.md",
+    "llm-dlc/tools/copy-session.sh",
     "llm-dlc/tools/run-streams.sh",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
@@ -81,24 +82,24 @@
     {
       "index": 2,
       "started": "2026-11-06T16:58:20.397Z",
-      "ended": "2026-11-06T18:05:34.556Z",
-      "turns": 3,
-      "api_calls": 64,
+      "ended": "2026-11-06T18:12:44.716Z",
+      "turns": 4,
+      "api_calls": 74,
       "usage": {
-        "input_tokens": 130,
-        "output_tokens": 75940,
-        "cache_read_input_tokens": 8663438,
-        "cache_creation_input_tokens": 172862
+        "input_tokens": 152,
+        "output_tokens": 95800,
+        "cache_read_input_tokens": 10798901,
+        "cache_creation_input_tokens": 197298
       },
-      "peak_context_tokens": 202360
+      "peak_context_tokens": 228151
     }
   ],
   "log": {
-    "sha256": "5af74e0f3f69affee84b821e062e94ff65eb5a99d17d3377b037779f13071997",
-    "bytes": 10263404,
-    "lines": 4063,
-    "gzip_bytes": 1742822,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/5af74e0f3f69affee84b821e062e94ff65eb5a99d17d3377b037779f13071997.jsonl.gz"
+    "sha256": "a42086f02b16680ee418c6190177c70ab0f901b69ab180c6c41509d9eb0c7927",
+    "bytes": 10529334,
+    "lines": 4155,
+    "gzip_bytes": 1780740,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/a42086f02b16680ee418c6190177c70ab0f901b69ab180c6c41509d9eb0c7927.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -349,6 +350,14 @@
       "summary": "run-streams.sh starts a brief's parallel streams in one terminal, each forked from the compacted planning session",
       "body": "llm-dlc/tools/run-streams.sh engines, run from the default workspace, sets up and runs the engine-priorities streams. The first time, it compacts the brief's own session (the conversation that planned the streams) once and adds the jj workspaces ../REPO-jbmc and ../REPO-native from @-. It then runs feature-loop.sh engines-jbmc and engines-native from their workspaces side by side, each line prefixed with its stream. Each runs in its own process group, so Ctrl-C is passed to both loops, which record the interruption. Running it again continues them without compacting or forking again. If the planning session's transcript is missing (it ran on another machine), it says where to copy it.\n\nfeature-loop.sh reads a new '- fork: SESSION' brief setting. A session with no transcript yet starts as a fork of that one (claude --resume PARENT --fork-session --session-id ID), in a first turn with tools and project settings off. The parent's transcript is copied into the workspace's project directory for the fork and removed after it, so the repo's hooks never sync it there, where it would be published as a second copy. Both stream briefs fork from 3761db96 and drop their 2.5 GB caps (they will run on a larger machine, cvm, under the default 3.5 GB each). The main brief, llm-dlc/README.md and the run-verification skill describe it.",
       "log_sha256": "5af74e0f3f69affee84b821e062e94ff65eb5a99d17d3377b037779f13071997"
+    },
+    {
+      "change_id": "ypyxtumkknpyppzwwxsrkmsllkylpxtv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "copy-session.sh moves a session to another machine, and the reconcile loop starts fresh with a map of the streams' work",
+      "body": "llm-dlc/tools/copy-session.sh HOST SESSION (id or unique prefix), run after closing a session, moves it to another machine. It refuses a session that is live (a claude process names it, or its transcript changed in the last minute) and publishes with sync.py push --bookmark main (--no-push skips that). It copies the transcript and the session's directory into HOST's Claude Code project directory for the repo, under a temporary name with a checksum check, and refuses to overwrite a different transcript there. Then it moves the local transcript to ~/.claude/moved-sessions/, so the session goes on on one machine only: a push from here republishes every session it finds and would roll back one that grew on HOST (--keep-local keeps it). It exists to take the planning session 3761db96 to cvm, where run-streams.sh forks the streams from it.\n\nThe engine-priorities brief's own loop, which merges the streams, now starts from a fresh session (c2bd9df4) instead of resuming the planning session. Its Streams section gains a table of where everything is for a session that saw none of it: the planning session and its summary, how the streams ran (workspaces, scopes, forked sessions, branches), their commits, Progress on their branches, run records in their workspaces' loop-summaries, published summaries, logs and jobs. Reconcile step 2 now refuses to commit a stream's uncommitted work, since that means an interrupted cycle. run-streams.sh takes the session to compact and fork from the stream briefs' '- fork:' (which must agree), no longer from the main brief.\n\nVerified with fake ssh and scp running against a local fake remote home. Each case behaved as intended: refusing a just-written transcript and one a claude process names, copying the transcript and its directory with matching checksums, retiring the local copy with a .moved note, refusing a different remote transcript, and --keep-local. run-streams.sh rerun in a throwaway jj repo with a fake claude: a missing planning transcript stops it, otherwise one compact and two forks from 3761db96, then both loops.",
+      "log_sha256": "a42086f02b16680ee418c6190177c70ab0f901b69ab180c6c41509d9eb0c7927"
     }
   ],
   "logs": {
@@ -459,6 +468,12 @@
       "lines": 1858,
       "gzip_bytes": 657474,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b.jsonl.gz"
+    },
+    "a42086f02b16680ee418c6190177c70ab0f901b69ab180c6c41509d9eb0c7927": {
+      "bytes": 10529334,
+      "lines": 4155,
+      "gzip_bytes": 1780740,
+      "url": null
     },
     "a5ecd558f53b3b57d9fb1c9fbd3ffbce340e1b261e06d51d052714561a3409fe": {
       "bytes": 4640125,

@@ -6,8 +6,9 @@ That draft is in the history if needed.
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). Its plan is worked in [two streams run in
 parallel](#streams), each a loop of its own with a short brief that names its phases. This brief is the instruction for
 both. Its own loop, `llm-dlc/tools/feature-loop.sh engines` in the default workspace, reconciles them once both have
-stopped, and then does what is left. It runs in the session and with the model set under [Loop settings](#loop-settings),
-until the session judges, by [Loop until](#loop-until), that the rest is not worth another cycle.
+stopped, and then does what is left. It runs in a fresh session of its own, set under [Loop settings](#loop-settings),
+with no memory of the planning or of the streams: [Streams](#streams) says where all of it is. It runs until the
+session judges, by [Loop until](#loop-until), that the rest is not worth another cycle.
 
 **Input:** [`engine-priorities-review.md`](engine-priorities-review.md), an outside review of the repository at `6cea609e`
 that reads the raw benchmark results and the JBMC jobs' outputs. **Read it in full before the first piece of work of
@@ -141,7 +142,8 @@ own commits, and collects their results there. The stream briefs say which files
 changed. The phase order above still holds within each stream.
 
 **Starting them** (the user, from the default workspace): `llm-dlc/tools/run-streams.sh engines`.
-- The first time, it compacts this brief's session, the conversation that planned the streams, and adds the
+- The first time, it compacts the planning session (`3761db96`, the conversation that planned the streams; the
+  stream briefs' `- fork:`), and adds the
   workspaces `../java-formal-verification-jbmc` and `-native` from the latest commit.
 - Each stream's session starts as a fork of that compacted conversation (`- fork:` in its Loop settings), so both
   begin with the same context.
@@ -150,6 +152,20 @@ changed. The phase order above still holds within each stream.
 
 The runner's budget is the machine's memory less the loops' caps (3.5 GB each).
 
+**How the streams ran, and where their work is.** The reconcile session starts fresh: it didn't see the planning
+conversation or the streams, and nothing of theirs is in its context. It all is in files:
+
+| What | Where |
+|---|---|
+| The planning | Session `3761db96-b870-47f7-aded-2ba264c165f4`. It planned this brief, the split and the tools, and was compacted once before the streams forked from it. Its published summary is `llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/summary.md`. |
+| How they ran | `llm-dlc/tools/run-streams.sh engines`, from this (default) workspace on cvm. Each stream was `feature-loop.sh engines-STREAM` in its own workspace, `jj workspace root --name STREAM` (`../java-formal-verification-jbmc`, `-native`), in the systemd scope `feature-loop-engine-priorities-STREAM.scope`, with the session in its brief's Loop settings, forked from the planning session. Each committed on its own branch, the `@-` line of its workspace, and never pushed or merged. |
+| Their commits | `jj log -r '::jbmc@- ~ ::default@-'`, and the same for `native`. The later paragraphs of each message say what changed and how it was verified. |
+| Their Progress | Each stream brief as its branch left it: `jj file show -r jbmc@- llm-dlc/loops/engine-priorities-jbmc.md` (the copy in this workspace is from before the streams started). It names the shared files each changed and what it deferred. |
+| Their run records | `$(jj workspace root --name STREAM)/llm-dlc/loop-summaries/*-engine-priorities-STREAM.md`, one per run: each commit as it landed, how the run ended (no commit, interrupted, or decided to stop), and the session's own summary with jobs pending, warnings and deferred items. Gitignored and only there, so read them before step 7. |
+| Their conversations | After step 2, `llm-dlc/traces/SESSION/summary.md` on each branch, the published summary. The raw transcripts, under `~/.claude/projects/` in the directory named after the workspace's path, are not to be printed (CLAUDE.md): use the summaries. |
+| Their logs | `llm-dlc/traces/SESSION/logs/` in each workspace (step 3). |
+| Their jobs | Committed on their branches under `verification/jobs/`, run by the runner here and collected here under `verification/results/`. `python3 verification/pipeline.py status` lists them with every workspace's, and `report` reads the results. |
+
 **Reconciling** is this loop's first piece of work, once both streams have stopped for good: each one's Progress says
 its phases are done, or deferred for the user, and not waiting on a job. Until then, a cycle of this loop does nothing
 and makes no commit, which stops the loop. In order:
@@ -157,6 +173,9 @@ and makes no commit, which stops the loop. In order:
 1. **Check the streams have stopped.** `systemctl --user is-active feature-loop-engine-priorities-jbmc.scope` and
    `feature-loop-engine-priorities-native.scope` must both say inactive.
 2. **Record their last turns.** In each stream's workspace (`jj workspace root --name jbmc`, then `native`), run
+   `jj st` from that directory first. If it shows changes outside `llm-dlc/traces/`, `llm-dlc/index.json` and
+   `llm-dlc/README.md`, a cycle was interrupted there: don't commit them yourself. Say so, and leave the stream to be
+   continued (`run-streams.sh engines STREAM`) or to the user. Otherwise run
    `python3 llm-dlc/tools/sync.py commit -m "Record session traces" -m "..."` from that directory. This puts the
    conversation after the stream's last commit on its branch.
 3. **Copy their logs here.** Logs are not in git. Copy each file under the stream workspace's
@@ -355,7 +374,7 @@ Settled by the user on 2026-11-06:
 
 ## Loop settings
 
-- session: 3761db96-b870-47f7-aded-2ba264c165f4
+- session: c2bd9df4-5f20-4312-95a4-3eb88a60e0cd
 - model: claude-opus-5-5
 - effort: high
 
