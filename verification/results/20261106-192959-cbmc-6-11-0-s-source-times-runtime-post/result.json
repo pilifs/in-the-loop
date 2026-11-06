@@ -1,0 +1,157 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-192959-cbmc-6-11-0-s-source-times-runtime-post",
+  "title": "CBMC 6.11.0's source times Runtime Post-process inside Runtime Solver",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.4s, peak 5.4 MiB (estimated 1m00s, 100.0 MiB)",
+  "attention": [
+    "step 1 (fetch and show CBMC 6.11.0's solver timers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-192959-cbmc-6-11-0-s-source-times-runtime-post.json",
+    "sha256": "59e14fda5e175b8dcba0b32516a4a357d9339dbc079361a4ff03c7bbe06d31e1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-192959-cbmc-6-11-0-s-source-times-runtime-post",
+      "title": "CBMC 6.11.0's source times Runtime Post-process inside Runtime Solver",
+      "description": "Network fetch: downloads two source files of CBMC at the tag cbmc-6.11.0 from raw.githubusercontent.com (goto-checker/bmc_util.cpp and solvers/prop/prop_conv_solver.cpp) and prints the code that times JBMC's solver calls. Phase 1a of llm-dlc/loops/engine-priorities.md reads JBMC's phases per solver call, on the claim that run_property_decider's 'Runtime Solver' times the whole call, and that prop_conv_solvert::dec_solve, inside it, runs finish_eager_conversion and reports it as 'Runtime Post-process'. lib/src/phases.rs now counts the post-processing under encoding alone and the rest of the call under solving. Real JBMC 6.11.0 runs (lib/tests/fixtures/jbmc-phases/) already show the nesting from their message times; the brief asks for the source to be checked too, and agents fetch from the network only inside a job.",
+      "kind": "other",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/phases.rs",
+          "lib/tests/fixtures/jbmc-phases/README.md"
+        ]
+      },
+      "expected": "Both files download; bmc_util.cpp's run_property_decider takes the time around property_decider.solve() and prints it as 'Runtime Solver'; prop_conv_solver.cpp's dec_solve calls finish_eager_conversion() and prints its time as 'Runtime Post-process' before calling the SAT solver. The step exits 0 when all three strings are found.",
+      "submitted": {
+        "at": "2026-11-06T19:29:59+00:00",
+        "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+        "by": "claude"
+      },
+      "requires": [
+        "curl"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "100M",
+        "duration": "1m",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "fetch and show CBMC 6.11.0's solver timers",
+          "run": "set -euo pipefail; base=https://raw.githubusercontent.com/diffblue/cbmc/cbmc-6.11.0/src; d=$(mktemp -d); curl -fsSL \"$base/goto-checker/bmc_util.cpp\" -o \"$d/bmc_util.cpp\"; curl -fsSL \"$base/solvers/prop/prop_conv_solver.cpp\" -o \"$d/prop_conv_solver.cpp\"; sha256sum \"$d\"/*.cpp; echo \"== bmc_util.cpp: run_property_decider\"; grep -n -A45 \"^decision_proceduret::resultt run_property_decider\" \"$d/bmc_util.cpp\" | head -70; echo \"== prop_conv_solver.cpp: dec_solve\"; grep -n -A40 \"prop_conv_solvert::dec_solve\" \"$d/prop_conv_solver.cpp\" | head -60; grep -q \"Runtime Solver\" \"$d/bmc_util.cpp\"; grep -q \"Runtime Post-process\" \"$d/prop_conv_solver.cpp\"; grep -q \"finish_eager_conversion\" \"$d/prop_conv_solver.cpp\"; rm -rf \"$d\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "b4c0164b852f3f12d21a0ceb484537508fd533e4",
+  "startedAt": "2026-11-06T19:35:19+00:00",
+  "finishedAt": "2026-11-06T19:35:20+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 178138,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 157286400,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 104857600,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 5611520,
+    "wallSeconds": 0.4,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "fetch and show CBMC 6.11.0's solver timers",
+      "run": "set -euo pipefail; base=https://raw.githubusercontent.com/diffblue/cbmc/cbmc-6.11.0/src; d=$(mktemp -d); curl -fsSL \"$base/goto-checker/bmc_util.cpp\" -o \"$d/bmc_util.cpp\"; curl -fsSL \"$base/solvers/prop/prop_conv_solver.cpp\" -o \"$d/prop_conv_solver.cpp\"; sha256sum \"$d\"/*.cpp; echo \"== bmc_util.cpp: run_property_decider\"; grep -n -A45 \"^decision_proceduret::resultt run_property_decider\" \"$d/bmc_util.cpp\" | head -70; echo \"== prop_conv_solver.cpp: dec_solve\"; grep -n -A40 \"prop_conv_solvert::dec_solve\" \"$d/prop_conv_solver.cpp\" | head -60; grep -q \"Runtime Solver\" \"$d/bmc_util.cpp\"; grep -q \"Runtime Post-process\" \"$d/prop_conv_solver.cpp\"; grep -q \"finish_eager_conversion\" \"$d/prop_conv_solver.cpp\"; rm -rf \"$d\"",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.039,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5611520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fetch-and-show-cbmc-6-11-0-s-s.log",
+        "lines": 3,
+        "bytes": 244,
+        "sha256": "e65e7aea122bbccd9b257df0b2afbe497a8d01710578d6aa99d7646935ea39b9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "33d67dcd7e63eb715ae6684c5162035e2e1d672f20428fe8e7d8df93d5da8de2  /tmp/tmp.z0RnGGTIB9/bmc_util.cpp",
+        "378b8528a9372c44d59f46c49fe3c54d6867a1b1f536c27c0ee38003a3099397  /tmp/tmp.z0RnGGTIB9/prop_conv_solver.cpp",
+        "== bmc_util.cpp: run_property_decider"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-06T19:35:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-192959-cbmc-6-11-0-s-source-times-runtime-post"
+}
