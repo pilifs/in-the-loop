@@ -19,6 +19,12 @@
 //! inputs of the harness's entry method, not the elements of an array, so a stage whose interval holds every value
 //! of every such input is the last stage again: [`stages_for`] leaves it out. A harness over arrays alone runs
 //! once.
+//!
+//! Which of those stages JBMC runs is its [`Staging`] policy (`--jbmc-staging`, step 2a of
+//! `llm-dlc/loops/engine-priorities.md`): all of them, as above (`staged`, the default); the full range alone
+//! (`full-range`), whose counterexample the shrinker makes small instead; or the first alone, on
+//! [`TIGHT_SHARE`], then the full range (`tight`). The deadline, the bounds, the models and what a verdict needs
+//! are the same under each: only the last stage proves, and a preliminary stage out of its budget hands on.
 
 use std::time::{Duration, Instant};
 
@@ -34,6 +40,68 @@ pub const STAGE_SHARE: f64 = 0.125;
 
 /// Under `--engine auto`, the part of a check kept for JBMC, should the own checker give no verdict.
 pub const FALLBACK_SHARE: f64 = 0.25;
+
+/// The most of a check the one preliminary stage of [`Staging::Tight`] may take: 3 s of a 120 s check, where a
+/// stage of [`Staging::Staged`] may take 15 s.
+pub const TIGHT_SHARE: f64 = 0.025;
+
+/// Which of JBMC's interval stages a check runs before the full range (`--jbmc-staging`). The own checker's stages
+/// are its own and do not follow it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Staging {
+    /// Every stage of [`STAGES`] that leaves out an input, each on at most [`STAGE_SHARE`], then the full range.
+    #[default]
+    Staged,
+    /// The full range alone: a counterexample is made small by the shrinker, not by a narrower search first.
+    FullRange,
+    /// The first stage that leaves out an input, on at most [`TIGHT_SHARE`], then the full range.
+    Tight,
+}
+
+impl Staging {
+    pub const NAMES: &[&str] = &["staged", "full-range", "tight"];
+
+    /// The stages to run, in order, on a harness whose entry method takes `params`; the last is the full range.
+    pub fn stages(self, params: &[Type]) -> Vec<Option<&'static str>> {
+        let all = stages_for(params);
+        match self {
+            Staging::Staged => all,
+            Staging::FullRange => vec![None],
+            Staging::Tight => all.iter().copied().filter(Option::is_some).take(1).chain([None]).collect(),
+        }
+    }
+
+    /// The most of a check a preliminary stage may take.
+    pub fn stage_share(self) -> f64 {
+        match self {
+            Staging::Tight => TIGHT_SHARE,
+            Staging::Staged | Staging::FullRange => STAGE_SHARE,
+        }
+    }
+}
+
+impl std::fmt::Display for Staging {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            Staging::Staged => "staged",
+            Staging::FullRange => "full-range",
+            Staging::Tight => "tight",
+        })
+    }
+}
+
+impl std::str::FromStr for Staging {
+    type Err = crate::Error;
+    fn from_str(s: &str) -> Result<Staging, crate::Error> {
+        match s {
+            "staged" => Ok(Staging::Staged),
+            "full-range" => Ok(Staging::FullRange),
+            "tight" => Ok(Staging::Tight),
+            _ => Err(crate::Error::new(format!("unknown JBMC staging `{s}`: {}", Staging::NAMES.join(", ")))),
+        }
+    }
+}
 
 /// When a check must be over by.
 #[derive(Debug, Clone, Copy)]
@@ -66,10 +134,10 @@ impl Deadline {
         self.left().saturating_sub(self.total.mul_f64(share))
     }
 
-    /// The budget of a JBMC stage: a preliminary one's share, or what is left for the last.
-    pub fn for_stage(&self, stage: Option<&str>) -> Duration {
+    /// The budget of a JBMC stage under `staging`: a preliminary one's share, or what is left for the last.
+    pub fn for_stage(&self, stage: Option<&str>, staging: Staging) -> Duration {
         match stage {
-            Some(_) => self.share(STAGE_SHARE),
+            Some(_) => self.share(staging.stage_share()),
             None => self.left(),
         }
     }
@@ -198,8 +266,8 @@ mod tests {
     fn a_check_has_one_deadline_and_each_run_a_budget_out_of_it() {
         let d = Deadline::starting_now(Duration::from_secs(80));
         assert!(d.left() <= Duration::from_secs(80) && d.left() > Duration::from_secs(79));
-        assert!(d.for_stage(Some("[0:20]")) <= Duration::from_secs(10));
-        assert!(d.for_stage(None) > Duration::from_secs(79));
+        assert!(d.for_stage(Some("[0:20]"), Staging::Staged) <= Duration::from_secs(10));
+        assert!(d.for_stage(None, Staging::Staged) > Duration::from_secs(79));
         assert!(d.all_but(FALLBACK_SHARE) <= Duration::from_secs(60) && d.all_but(FALLBACK_SHARE) > Duration::from_secs(59));
         let past = Deadline { started: Instant::now() - Duration::from_secs(5), total: Duration::from_secs(2) };
         assert_eq!(past.left(), Duration::ZERO);
@@ -207,5 +275,41 @@ mod tests {
         assert_eq!(past.all_but(FALLBACK_SHARE), Duration::ZERO);
         assert_eq!(seconds(Duration::from_millis(750)), "0.8");
         assert_eq!(seconds(Duration::from_secs(600)), "600");
+    }
+
+    #[test]
+    fn each_staging_policy_runs_its_stages_and_ends_on_the_full_range() {
+        let int = [Type::Int];
+        assert_eq!(Staging::Staged.stages(&int), vec![Some("[0:20]"), Some("[-100000:100000]"), None]);
+        assert_eq!(Staging::FullRange.stages(&int), vec![None]);
+        assert_eq!(Staging::Tight.stages(&int), vec![Some("[0:20]"), None], "the first stage only");
+        // A stage that bounds nothing is left out under each policy.
+        let byte = [Type::Byte];
+        assert_eq!(Staging::Staged.stages(&byte), vec![Some("[0:20]"), None]);
+        assert_eq!(Staging::Tight.stages(&byte), vec![Some("[0:20]"), None]);
+        let arrays = [Type::Array(Box::new(Type::Int))];
+        for staging in [Staging::Staged, Staging::FullRange, Staging::Tight] {
+            assert_eq!(staging.stages(&arrays), vec![None], "{staging}: an array harness runs once");
+            assert_eq!(staging.stages(&[Type::Long, Type::Char]).last(), Some(&None), "{staging}: the full range is last");
+            assert_eq!(staging.to_string().parse::<Staging>().unwrap(), staging);
+        }
+        assert_eq!(Staging::default(), Staging::Staged, "today's search, until a job decides otherwise");
+        assert!("full".parse::<Staging>().unwrap_err().to_string().contains("staged, full-range, tight"));
+        assert_eq!(serde_json::to_value(Staging::FullRange).unwrap(), "full-range");
+    }
+
+    #[test]
+    fn the_tight_stage_has_a_smaller_budget_and_the_full_range_what_is_left() {
+        let d = Deadline::starting_now(Duration::from_secs(120));
+        let staged = d.for_stage(Some("[0:20]"), Staging::Staged);
+        let tight = d.for_stage(Some("[0:20]"), Staging::Tight);
+        assert!(staged <= Duration::from_secs(15) && staged > Duration::from_secs(14), "{staged:?}");
+        assert!(tight <= Duration::from_secs(3) && tight > Duration::from_millis(2900), "{tight:?}");
+        for staging in [Staging::Staged, Staging::FullRange, Staging::Tight] {
+            assert!(d.for_stage(None, staging) > Duration::from_secs(119), "{staging}: the full range gets the rest of the check");
+        }
+        // Never past the deadline: under `auto`'s fallback, a stage's share can be all that is left.
+        let late = Deadline { started: Instant::now() - Duration::from_secs(118), total: Duration::from_secs(120) };
+        assert!(late.for_stage(Some("[0:20]"), Staging::Tight) <= Duration::from_secs(2));
     }
 }

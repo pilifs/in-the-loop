@@ -699,6 +699,128 @@ fn fake_jbmc(name: &str) -> PathBuf {
     script
 }
 
+/// A stand-in for JBMC that answers each interval stage from a file of its own next to it: `small.json` for
+/// `[0:20]`, `wide.json` for `[-100000:100000]` and `full.json` for every input. Where `STAGE.sleep` is there
+/// instead, the run outlasts any budget. Each run's stage is appended to `calls.txt`.
+fn staged_jbmc(name: &str) -> PathBuf {
+    let dir = target_tmp().join(format!("staged-jbmc-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let script = dir.join("jbmc");
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\ns=full; p=; for a in \"$@\"; do [ \"$p\" = --java-assume-inputs-interval ] && s=$a; p=$a; done\ncase \"$s\" in '[0:20]') s=small;; '[-100000:100000]') s=wide;; esac\necho $s >> \"$d/calls.txt\"\n[ -f \"$d/$s.sleep\" ] && exec sleep 20\ncat \"$d/$s.json\"\n").unwrap();
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
+    script
+}
+
+/// `--jbmc-staging` (step 2a of `llm-dlc/loops/engine-priorities.md`): each policy runs its own interval stages,
+/// each on its own budget out of the one deadline, on property proofs and regression checks alike. Only the full
+/// range proves, a preliminary stage out of its budget hands on, a violation stops the search, and a witness from
+/// the full range is shrunk as any other. JBMC is a stand-in script answering stage by stage.
+#[test]
+fn jbmcs_staging_policy_picks_the_stages_it_runs_and_their_budgets() {
+    use jvmcontract::deadline::Staging;
+    let Some(compiled) = compile() else { return };
+    let jbmc = staged_jbmc("staging");
+    let dir = jbmc.parent().unwrap().to_path_buf();
+    // What each stage answers: `None` outlasts its budget.
+    let answer = |small: Option<&Answer>, wide: Option<&Answer>, full: &Answer| {
+        for (stage, a) in [("small", small), ("wide", wide), ("full", Some(full))] {
+            let _ = std::fs::remove_file(dir.join(format!("{stage}.sleep")));
+            match a {
+                Some(a) => std::fs::write(dir.join(format!("{stage}.json")), &a.json).unwrap(),
+                None => std::fs::write(dir.join(format!("{stage}.sleep")), "").unwrap(),
+            }
+        }
+    };
+    let calls = || {
+        let c = std::fs::read_to_string(dir.join("calls.txt")).unwrap_or_default();
+        let _ = std::fs::remove_file(dir.join("calls.txt"));
+        c.lines().map(str::to_string).collect::<Vec<_>>().join(" ")
+    };
+    let work = |name: &str| {
+        let work = target_tmp().join(format!("staging-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        Some(work)
+    };
+    let prove = |staging: Staging, assert: &str, name: &str| {
+        let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#increment"));
+        options.assert = Some(assert.to_string());
+        options.jbmc = jbmc.display().to_string();
+        options.jbmc_staging = staging;
+        options.timeout_seconds = 8;
+        options.work = work(&format!("{name}-{staging}"));
+        let outcome = property::run(&options).unwrap();
+        let search = outcome.search.clone().expect("JBMC's search");
+        (outcome, search)
+    };
+    let regress = |staging: Staging, name: &str| {
+        let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#increment"));
+        options.shared_callees = false;
+        options.jbmc = jbmc.display().to_string();
+        options.jbmc_staging = staging;
+        options.timeout_seconds = 8;
+        options.work = work(&format!("regress-{name}-{staging}"));
+        let outcome = jvmcontract::equivalence::run(&options).unwrap();
+        let search = outcome.search.clone().expect("JBMC's search");
+        (outcome, search)
+    };
+    let all = [Staging::Staged, Staging::FullRange, Staging::Tight];
+    let expected_calls = |staging: Staging| match staging {
+        Staging::Staged => "small wide full",
+        Staging::FullRange => "full",
+        Staging::Tight => "small full",
+    };
+
+    // Every stage proves: each policy runs its stages to the full range, the preliminary ones on their share
+    // (an eighth of 8 s staged, a fortieth tight), the last on what is left.
+    answer(Some(&proved()), Some(&proved()), &proved());
+    for staging in all {
+        let (o, search) = prove(staging, "result == x + 1", "proved");
+        assert_eq!(o.verdict, V, "{staging}: {}", o.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}");
+        assert_eq!(search.staging, Some(staging));
+        assert_eq!(search.stage, None, "{staging}: the proof is the full range's");
+        let (last, preliminary) = search.runs.split_last().unwrap();
+        assert!(last.stage.is_none() && last.budget_seconds > 7.0, "{staging}: {:?}", search.runs);
+        let share = if staging == Staging::Tight { 0.2 } else { 1.0 };
+        assert!(preliminary.iter().all(|r| r.stage.is_some() && r.budget_seconds <= share && r.ended == "verified"), "{staging}: {:?}", search.runs);
+        assert_eq!(serde_json::to_value(&o).unwrap()["search"]["staging"], staging.to_string());
+
+        let (r, search) = regress(staging, "proved");
+        assert_eq!(r.verdict, V, "{staging}: {}", r.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}: the regression check follows the same policy");
+        assert_eq!(search.staging, Some(staging));
+    }
+
+    // `[0:20]` outlasts its budget: it hands on, and the full range still proves.
+    answer(None, Some(&proved()), &proved());
+    for staging in all {
+        let (o, search) = prove(staging, "result == x + 1", "slow");
+        assert_eq!(o.verdict, V, "{staging}: {}", o.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}");
+        if staging != Staging::FullRange {
+            assert_eq!(search.runs[0].ended, "out-of-time", "{staging}: {:?}", search.runs);
+        }
+        let (r, _) = regress(staging, "slow");
+        assert_eq!(r.verdict, V, "{staging}: {}", r.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}");
+    }
+
+    // `result < 100` fails from 99 up. The wide stage finds 5000, the full range 1000000: a violation stops the
+    // search, and either witness is shrunk in the interpreter to the same 99.
+    answer(Some(&proved()), Some(&refuted_by_jbmc("PropertyHarness", "(I)V", 5000)), &refuted_by_jbmc("PropertyHarness", "(I)V", 1_000_000));
+    for (staging, stage, found) in [(Staging::Staged, Some("[-100000:100000]"), "5000"), (Staging::FullRange, None, "1000000"), (Staging::Tight, None, "1000000")] {
+        let (o, search) = prove(staging, "result < 100", "refuted");
+        assert_eq!(o.verdict, X, "{staging}: {}", o.output);
+        assert_eq!(calls(), expected_calls(staging).replace(" full", if staging == Staging::Staged { "" } else { " full" }), "{staging}");
+        assert_eq!(search.stage.as_deref(), stage, "{staging}");
+        let witness = o.counterexample.as_ref().expect("a witness");
+        assert_eq!(runner_arguments(&witness.inputs), "99", "{staging}: {}", o.output);
+        assert_eq!(witness.found_inputs.as_deref().map(runner_arguments).as_deref(), Some(found), "{staging}: as JBMC found it");
+    }
+}
+
 /// What a stand-in JBMC answers: `text` as JBMC prints it, `json` as it prints it under `--json-ui`, the one the
 /// run asks for.
 struct Answer {

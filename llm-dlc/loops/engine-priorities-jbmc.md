@@ -111,7 +111,35 @@ Progress, so the reconcile loop knows where to look.
     - The commit check's 4 errors, after 1a, were in other workspaces' commits: the default workspace's verification
       results and the native stream's Bitwuzla job, both sessions without a manifest here. They should clear at the
       merge.
-- **Next:** 2a, the staging-policy option for JBMC checks, with unit tests.
+- **2a, the staging policy: done.**
+  - `--jbmc-staging` on `equivalence` and `prove` picks which of JBMC's interval stages run (`deadline::Staging`):
+    - `staged`: today's search, and still the default;
+    - `full-range`: the full range alone, its counterexample shrunk in the interpreter;
+    - `tight`: the first stage that leaves out an input, on at most `TIGHT_SHARE` (a fortieth of the check, 3 s of
+      120 s, where a staged stage may take 15 s), then the full range.
+  - Under every policy, the deadline, bounds, models, preflights, gap rules and stop rule are the same: only the full
+    range proves, a preliminary stage out of its budget hands on, and a violation stops the search. A stage that
+    bounds nothing is still dropped. The own checker's stages and `--confirm`'s single run don't follow the policy.
+  - A result records the policy as `search.staging` when JBMC gave the verdict.
+  - Tests:
+    - unit tests in `deadline.rs` for each policy's stages and budgets;
+    - `jbmcs_staging_policy_picks_the_stages_it_runs_and_their_budgets` in `conformance.rs`, against a stand-in
+      JBMC that answers stage by stage. It covers the stages each policy runs on both kinds of check, their
+      budgets, a slow `[0:20]` handing on, and a violation found in the wide stage and in the full range, both
+      shrunk to the same 99. It fails if `equivalence` ignores the option (checked by mutation).
+  - **For 2c** (structure, not yet a measurement): under `--engine auto`, the fallback starts with a quarter of the
+    check left. Under `staged`, two preliminary stages that time out take an eighth each, so the full range gets
+    nothing. The 2b job should show whether this happens in the corpus.
+  - Shared files changed, added to:
+    - `lib/src/main.rs`: the `--jbmc-staging` option on both commands;
+    - `lib/src/equivalence.rs` and `property.rs`: `Options.jbmc_staging`, the policy's stages and budgets in the
+      staged loop, and `Search.staging`;
+    - `lib/src/statement.rs`: `staging: None` in a test's `Search`;
+    - `lib/tests/conformance.rs`: the helper `staged_jbmc` and the test above;
+    - `lib/README.md`: the option and `search.staging`.
+- **Next:** 2b, the benchmark job over groups 1–4 with all three policies. `lib/benchmark/run.py` needs to run the
+  JBMC cases once per policy, and its table needs per-policy time and verdict, proofs and counterexamples apart, and
+  the witness size after shrinking.
 - Status: working
 
 ## Loop settings

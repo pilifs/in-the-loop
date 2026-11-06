@@ -72,6 +72,9 @@ pub struct Options {
     pub refine_strings: bool,
     /// The SAT solver to ask JBMC for ([`crate::jbmc::JbmcRun::sat_solver`]); CaDiCaL by default.
     pub sat_solver: Option<String>,
+    /// Which of JBMC's interval stages run before the full range ([`crate::deadline::Staging`]); today's staged
+    /// search by default. The own checker's stages and `--confirm`'s one run do not follow it.
+    pub jbmc_staging: crate::deadline::Staging,
     /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
     /// where the harness is within its fragment and JBMC elsewhere.
     pub engine: crate::Engine,
@@ -112,6 +115,7 @@ impl Options {
             models: true,
             refine_strings: false,
             sat_solver: Some("cadical".into()),
+            jbmc_staging: crate::deadline::Staging::Staged,
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
             contracts: None,
@@ -359,8 +363,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut runs = Vec::new();
     let mut last = None;
     // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
-    // `auto`), or that is the answer (under `native`). JBMC's interval stages run only where they bound an input.
-    let mut stages = crate::deadline::stages_for(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
+    // `auto`), or that is the answer (under `native`). JBMC's interval stages run only where they bound an input,
+    // and only those its staging policy picks ([`crate::deadline::Staging`]).
+    let mut stages = options.jbmc_staging.stages(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
@@ -458,7 +463,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
     }
     for stage in &stages {
-        let budget = deadline.for_stage(*stage);
+        let budget = deadline.for_stage(*stage, options.jbmc_staging);
         let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..base.clone() };
         let result = jbmc::run(&run)?;
         runs.push(Run::of(&result, purpose, budget));
@@ -497,6 +502,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         unwind: options.unwind,
         max_array_length: options.max_array_length,
         stage: last.stage.clone(),
+        staging: last.native.is_none().then_some(options.jbmc_staging),
         fallback,
         native: last.native.clone(),
         gap_mode: last.gap_mode,

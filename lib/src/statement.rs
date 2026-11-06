@@ -503,6 +503,7 @@ mod tests {
             unwind: 16,
             max_array_length: 8,
             stage: None,
+            staging: None,
             fallback: None,
             native: None,
             gap_mode: None,
