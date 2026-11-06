@@ -107,9 +107,18 @@ fn corpus() -> Vec<Case> {
         Case::new("otherLiteral", &[("0", "returns 0")]).holds(None, "!result", &[], V).refuted(None, "result", &[], X),
         Case::new("sameClass", &[("0", "returns 1")]).holds(None, "result", &[], V).refuted(None, "!result", &[], X),
         Case::new("concatenated", &[("0", "returns 0")]).holds(None, "!result", &[], V).refuted(None, "result", &[], X),
-        Case::new("boom", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], U),
-        Case::new("inherited", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], U),
-        Case::new("quiet", &[("3", "returns 3")]).holds(None, "result == n", &[], U),
+        Case::new("boom", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], X),
+        Case::new("inherited", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], X),
+        Case::new("quiet", &[("3", "returns 3")]).holds(None, "result == n", &[], V),
+        // Class initialization (Phase 5 of llm-dlc/loops/engine-priorities.md).
+        Case::new("counter", &[("3", "returns 8")]).holds(None, "result == n + 5", &[], V).refuted(None, "result == n", &[], X),
+        Case::new("constructed", &[("3", "returns 6")]).holds(None, "result == n + 3", &[], V).refuted(None, "result == n + 1", &[], X),
+        Case::new("superFirst", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 21", &[], X),
+        Case::new("cycle", &[("3", "returns 5")]).holds(None, "result == n + 2", &[], V).refuted(None, "result == n + 1", &[], X),
+        Case::new("declaring", &[("3", "returns 10")]).holds(None, "result == n + 7", &[], V).refuted(None, "result == n + 107", &[], X),
+        Case::new("defaults", &[("3", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 34", &[], X),
+        Case::new("fatal", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
+        Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X),
@@ -316,10 +325,10 @@ enum Contracts {
 type Mode = (Engine, GapMode, bool, Contracts);
 
 /// Contracts for the corpus's gaps, each stating what the JDK's call does as the corpus's calls show it on the JVM
-/// (step 3b of the sound-verdicts brief), written by an agent: the session that wrote the step. The initializers
-/// that throw are given contracts that say so, which the own checker refuses (it applies an initializer's only
-/// when it throws nothing), so those claims stay without a verdict. Since 3c each is tested on the JVM before it is
-/// applied, and the test fails if one is refuted or left untested.
+/// (step 3b of the sound-verdicts brief), written by an agent: the session that wrote the step. The initializers'
+/// contracts close nothing since Phase 5 of llm-dlc/loops/engine-priorities.md: the own checker runs those
+/// initializers, so they are no gaps, and the claims are decided as under strict. Since 3c each is tested on the JVM
+/// before it is applied, and the test fails if one is refuted or left untested.
 const CORPUS_CONTRACTS: &str = "kind: gap-contracts
 
 jdk-constructor:java.util.ArrayList.<init>(I)V@{jdk}

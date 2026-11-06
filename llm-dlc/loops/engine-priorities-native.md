@@ -126,7 +126,59 @@ are yours, but say under Progress which JBMC results they may change.
     applied. Every other test passes: unit, integration (64) and skill.
   - **Before Phase 5's conformance cases:** record the library again on 25.0.5 with `gap-contracts --record`. That
     runs proofs, so it is a queued job.
-- **Next: Phase 5, step 1**: static fields and class initialization in the own checker, with the conformance cases.
+- **5, step 1: class initializers in the own checker** (inline; JVM 25.0.5).
+  - **What the engine does now.** An application class's static fields are path state, merged like locals. Its
+    initialization follows JVMS §5.5: at the first `new`, `getstatic`, `putstatic` or `invokestatic`, the superclass
+    and the superinterfaces with a default method go first, then the `<clinit>` runs as bytecode. A use from inside
+    the class's own initialization goes on. An exception leaving a `<clinit>` becomes `ExceptionInInitializerError`
+    (an `Error` stays as it is). A later use of that class, or of one that waited on it, throws
+    `NoClassDefFoundError`.
+  - **What stays a gap.** A `<clinit>` outside the fragment stays a `class-initializer` gap
+    (`gaps::runs_initializer`): one that reaches a refused construct, or reads or writes a static of a class whose
+    initializer doesn't run. Over the apps that is all 49 (36 enums, through `$VALUES`, an array of references, and
+    13 switch maps). `initializer_shapes.py --apps-only` still counts the same 49 as gaps.
+  - **The gap scan** (`jvmcontract gaps`) walks the initializers the engine runs, like methods. It refuses a static
+    field only of the JDK, or of a class whose initializer doesn't run. The refusal reasons for static fields are
+    renamed to say which of those it is. Superinterfaces are now initialized in JVMS's order (an interface's
+    superinterfaces before it); the old walk put them after.
+  - **Conformance, checked on the JVM:**
+    - `boom` and `inherited` are now violations whose witnesses replay, and `quiet` is verified, in every mode.
+    - 8 new cases, 16 claims, all as the JVM decides them in every native mode: `counter`, `constructed`,
+      `superFirst`, `cycle`, `declaring` (only the declaring class is initialized), `defaults`, `fatal` (an `Error`
+      stays as it is) and `boomTwice` (`NoClassDefFoundError`).
+    - The old engine gives none of them a verdict.
+    - The test still fails only its 12 pre-existing library-record claims (above).
+  - **Interpreter fixes, needed for the witnesses to replay as on the JVM** (`lib/src/interp/mod.rs`,
+    `ensure_initialized`, `get_static`, `put_static`, a new `static_declarer`):
+    - an erroneous state, and `NoClassDefFoundError` at a later use;
+    - an `Error` not wrapped;
+    - a superclass's failure making the class erroneous;
+    - superinterfaces with default methods initialized;
+    - `getstatic`/`putstatic` initializing the declaring class only.
+    JBMC's witnesses are replayed by the same interpreter, so a JBMC counterexample through an erroneous class now
+    replays as the JVM runs it. No model changed, so no JBMC result changes otherwise.
+  - **Shared files changed:**
+    - `lib/src/interp/mod.rs`, above.
+    - `lib/tests/conformance.rs`: the cases, three recorded verdicts, and the comment on the corpus's contracts,
+      whose two initializer contracts now close nothing.
+    - `lib/tests/conformance/conformance/Conformance.java`: the cases' classes and methods.
+    - `lib/tests/integration.rs`:
+      - `identity_and_initialization_agree_with_the_jvm` has a new `Names` fixture, still a gap;
+      - `the_gap_scan_names_what_the_own_checker_approximates` has `Primes`, walked;
+      - `the_gap_scan_gives_each_class_initializer_a_shape` reads the shapes directly;
+      - `a_contract_closes_its_gap_and_the_verdict_rests_on_it` adds a `String[]` to `Contracted.Table`, so it stays
+        a gap.
+    - `lib/README.md`: the fragment, the gap list, and the corpus's contract count, which is now 5 of 6.
+    - Also changed, outside the listed shared files: `lib/src/advice.rs` and `lib/src/contract_proving.rs` (one
+      wording each), and `examples/tools/initializer_shapes.py` (its docstring).
+  - **For the reconcile loop:** `lib/benchmark/conformance.json` belongs to the JBMC stream, and it's now behind the
+    corpus. `the_benchmark_takes_its_first_group_from_this_corpus` fails here until that file is regenerated with
+    `JVMCONTRACT_BLESS=1 cargo test --test conformance the_benchmark_takes_its_first_group_from_this_corpus`: 16
+    new claims, and `nativeStrict` for boom, inherited and quiet. All other tests pass: unit (145), integration (64),
+    skill.
+- **Next: Phase 5, step 2**: the `Enum.<init>(String, int)`, `List.of` and `List.copyOf` models in `lib/models`, with
+  conformance cases checked on the JVM. Then queue the strict rerun of 071 and 013, together with the library's
+  `gap-contracts --record` on 25.0.5. After that, enums in the own checker: arrays of references for `$VALUES`.
 - Status: working
 
 ## Loop settings

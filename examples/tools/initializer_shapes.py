@@ -3,8 +3,9 @@
 
 Static, nothing proved. `jvmcontract gaps` classifies the `<clinit>` of every `class-initializer` gap it finds
 (lib/src/bmc/gaps.rs, `initializer_shape`): `enum`, `throws`, `other-statics` (reads or writes another class's
-static fields), `constants` (assigns its own static fields constants or literal tables only) or `other`. This
-script runs that scan
+static fields), `constants` (assigns its own static fields constants or literal tables only) or `other`. Since
+Phase 5 the engine runs the initializers in its fragment, which are then no gaps, so the count is of those it
+does not run (the 4b count under Progress was taken before, of every initializer). This script runs that scan
 
 - over the recorded examples the gap scan applies to (build.py's `gap_scan_problem`: B9 and B11 proofs on the javac
   apps), each from the method its proof calls, on the patched classes and, for a regression proof, the unpatched

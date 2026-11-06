@@ -25,8 +25,9 @@
 //! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
 //! as JBMC's nondeterministic arrays do, a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
-//! division by zero is. Floating point, arrays of references, static state and the rest of the JDK are refused
-//! with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
+//! division by zero is. An application class's static fields are path state, and its initializer runs where
+//! the JVM runs it (JVMS §5.5). Floating point, arrays of references, the JDK's static state and the rest of the
+//! JDK are refused with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
 //!
 //! Every instruction, and every call it can make, is implemented as the JVM does it, modelled (by a model whose
@@ -41,8 +42,9 @@
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
-//! | `getstatic` of a compile-time constant (an application field with a `ConstantValue`, `Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`) | implemented |
-//! | class initialization, at the first `new`, `getstatic` or `invokestatic` of an application class whose initialization runs a `<clinit>` ([`gaps::initializers`]) | gap: `class-initializer`, since the engine runs no initializer; a JDK class is taken to be initialized already |
+//! | `getstatic`, `putstatic` of an application class's field; `getstatic` of a JDK compile-time constant (`Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`, or a field with a `ConstantValue`) | implemented: a field is resolved as the JVM resolves it, and holds what the path wrote, else its `ConstantValue`, else zero or null |
+//! | class initialization (JVMS §5.5), at the first `new`, `getstatic`, `putstatic` or `invokestatic` of an application class | implemented ([`Engine::initialise`]): the class's superclass, then the superinterfaces that declare a default method ([`gaps::initialization_supers`]), then its `<clinit>`, run as bytecode; a use from inside its own initialization goes on; an exception that leaves a `<clinit>` is thrown as an `ExceptionInInitializerError` (an `Error` as it is), and a later use of the class, or of one that waited on it, throws `NoClassDefFoundError`. A JDK class is taken to be initialized already |
+//! | a `<clinit>` outside the fragment ([`gaps::runs_initializer`]: an enum's, which makes `$VALUES`, an array of references, and a switch map, which reads the enum's constants) | gap: `class-initializer`, met where the JVM would run it; under assume, or closed by a contract that it throws nothing, taken to have run, its static fields then known only as constants |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
@@ -51,7 +53,7 @@
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives (the result an opaque string); an object argument it would convert is a gap, `string-conversion` |
 //! | `ldc` of a string or a class | implemented: one opaque object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class |
-//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic`, any other `getstatic`, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
@@ -345,9 +347,20 @@ struct Frame {
     at: usize,
     locals: Vec<Option<Val>>,
     stack: Vec<Val>,
+    /// The class whose `<clinit>` the frame runs: when it returns the class is initialized, and when an exception
+    /// leaves it the class is erroneous (JVMS §5.5, steps 10 and 11).
+    initializes: Option<String>,
+    /// The classes the instruction being executed began to initialize and that wait for their superclasses' and
+    /// superinterfaces' initializers to finish (JVMS §5.5, step 7), outermost first: the instruction runs again
+    /// each time one of those returns, and an exception that leaves it makes them erroneous.
+    entered: Vec<String>,
 }
 
 impl Frame {
+    fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new() }
+    }
+
     fn pc(&self) -> u32 {
         self.code.pcs[self.at]
     }
@@ -376,9 +389,26 @@ struct Path {
     /// The object each string or class literal loaded so far is, so that every load of one literal is the same
     /// reference, as the JVM's interned strings and `Class` objects are.
     literals: BTreeMap<Literal, usize>,
-    /// The application classes whose initialization the path has reached ([`gaps::initializers`]), so that a
-    /// `class-initializer` gap is met once per class, where the JVM would run the initializer.
-    initialised: std::collections::BTreeSet<String>,
+    /// The state of initialization of each application class the path has used (JVMS §5.5); a class absent is not
+    /// initialized yet.
+    classes: BTreeMap<String, ClassState>,
+    /// The static fields of application classes the path has written, by declaring class and name; one it has not
+    /// is its `ConstantValue`, or zero or null.
+    statics: BTreeMap<(String, String), Val>,
+}
+
+/// Where a class is in its initialization (JVMS §5.5).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ClassState {
+    /// Begun and not finished: a use of the class from its own initialization goes on as if it were initialized.
+    InProgress,
+    /// Its `<clinit>` ran and returned, or it has none.
+    Done,
+    /// Taken to be initialized, its `<clinit>` not run: a `class-initializer` gap assumed, or closed by a contract.
+    /// Only its constants are known.
+    Assumed,
+    /// Its initialization threw: a later use throws `NoClassDefFoundError`.
+    Erroneous,
 }
 
 /// A string or class literal, the identity of what an `ldc` of it loads.
@@ -416,8 +446,12 @@ fn same_shape(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| f.initializes == g.initializes && f.entered == g.entered)
         && a.objects.len() == b.objects.len()
         && a.literals == b.literals
+        && a.classes == b.classes
+        && a.statics.len() == b.statics.len()
+        && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
         && a.objects.iter().zip(&b.objects).all(|(o, q)| {
             o.class == q.class
                 && o.fields.len() == q.fields.len()
@@ -453,6 +487,18 @@ enum Stop {
 }
 
 type Step = Result<Option<End>, Stop>;
+
+/// Where a use of a class leaves its initialization ([`Engine::initialise_class`]).
+enum Initialising {
+    /// Initialized, or being initialized by an enclosing use: the instruction goes on.
+    Ready,
+    /// A `<clinit>` was pushed to run first.
+    Running,
+    /// The class, or one it needs first, is erroneous: `NoClassDefFoundError`.
+    Erroneous,
+    /// A gap ended the path.
+    End(End),
+}
 
 /// Which sides of a branch are feasible under the path condition.
 enum Sides {
@@ -501,8 +547,10 @@ struct Engine<'a> {
     /// Whether an object of a class has a field that a subclass along its chain declares again, by class: only
     /// then does an access need the field's resolution to find its key ([`ClassPath::field_key`]).
     hides: HashMap<String, bool>,
-    /// The application classes whose `<clinit>` initializing a class would run, by class ([`gaps::initializers`]).
-    initializers: HashMap<String, Rc<Vec<String>>>,
+    /// What the JVM initializes before a class, by class ([`gaps::initialization_supers`]).
+    supers: HashMap<String, Rc<Vec<String>>>,
+    /// Whether the engine runs a class's `<clinit>`, by class ([`gaps::runs_initializer`]).
+    runs: HashMap<String, bool>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
     witness: Duration,
@@ -561,7 +609,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         contracts: options.contracts.clone(),
         applied: BTreeMap::new(),
         hides: HashMap::new(),
-        initializers: HashMap::new(),
+        supers: HashMap::new(),
+        runs: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
     };
@@ -650,7 +699,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     }
     let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
     locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), initialised: Default::default() };
+    let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
     engine.pending.push(first);
 
     // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -1114,7 +1163,6 @@ impl<'a> Engine<'a> {
         let either = self.b.or(takes_into, takes_other);
         into.cond.truncate(prefix);
         into.cond.extend(common);
-        into.initialised.extend(other.initialised.iter().cloned());
         if either != TRUE {
             into.cond.push(either);
         }
@@ -1131,6 +1179,9 @@ impl<'a> Engine<'a> {
             for (x, y) in f.stack.iter_mut().zip(&g.stack) {
                 choose(&mut self.b, x, y);
             }
+        }
+        for (x, y) in into.statics.values_mut().zip(other.statics.values()) {
+            choose(&mut self.b, x, y);
         }
         for (o, q) in into.objects.iter_mut().zip(&other.objects) {
             for (name, x) in o.fields.iter_mut() {
@@ -1413,9 +1464,16 @@ impl<'a> Engine<'a> {
 
     /// Unwinds to the nearest handler of the object's class; a path the harness's `AssertionError` leaves is a
     /// violation, and any other uncaught exception is outside what the engine can judge.
-    fn throw(&mut self, path: &mut Path, obj: usize) -> Step {
-        let class = path.objects[obj].class.clone();
+    ///
+    /// An exception that leaves a `<clinit>` makes its class erroneous and, unless it is an `Error`, is replaced by
+    /// an `ExceptionInInitializerError`; the classes the instruction that ran it was initializing are erroneous
+    /// too (JVMS §5.5, steps 7 and 11).
+    fn throw(&mut self, path: &mut Path, mut obj: usize) -> Step {
+        let mut class = path.objects[obj].class.clone();
         while let Some(frame) = path.frames.last_mut() {
+            for c in std::mem::take(&mut frame.entered) {
+                path.classes.insert(c, ClassState::Erroneous);
+            }
             let pc = frame.pc();
             let handler = frame.code.handlers.iter().find(|h| u32::from(h.start_pc) <= pc && pc < u32::from(h.end_pc) && h.catch_type.as_deref().is_none_or(|t| self.cp.is_subtype(&class, t))).cloned();
             if let Some(h) = handler {
@@ -1425,7 +1483,13 @@ impl<'a> Engine<'a> {
                 frame.at = to;
                 return Ok(None);
             }
-            path.frames.pop();
+            if let Some(c) = path.frames.pop().and_then(|f| f.initializes) {
+                path.classes.insert(c, ClassState::Erroneous);
+                if !self.cp.is_subtype(&class, "java/lang/Error") {
+                    class = "java/lang/ExceptionInInitializerError".to_string();
+                    obj = self.alloc(path, &class);
+                }
+            }
         }
         if self.cp.is_subtype(&class, "java/lang/AssertionError") {
             let feasible = self.solve(&path.cond.clone())?;
@@ -1697,9 +1761,14 @@ impl<'a> Engine<'a> {
                     Some(_) => Some(self.pop(path)?),
                     None => None,
                 };
-                path.frames.pop();
+                let returned = path.frames.pop().expect("a frame");
                 if path.frames.is_empty() {
                     return Ok(Some(End::Returned));
+                }
+                // A `<clinit>` returned: its class is initialized, and the instruction that ran it runs again.
+                if let Some(c) = returned.initializes {
+                    path.classes.insert(c, ClassState::Done);
+                    return Ok(None);
                 }
                 if let Some(v) = value {
                     self.push(path, v);
@@ -1707,16 +1776,34 @@ impl<'a> Engine<'a> {
                 self.advance(path);
                 return Ok(None);
             }
+            // The class that declares the resolved field is initialized first (JVMS §5.5).
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
-                if let Some(end) = self.initialise(path, &declaring) {
-                    return Ok(Some(end));
+                if let Some(step) = self.initialise(path, &declaring) {
+                    return step;
                 }
-                let v = self.get_static(&member.owner, &member.name, &member.descriptor)?;
+                let v = match self.application_static(path, &declaring, &member.name, &member.descriptor) {
+                    Some(v) => v?,
+                    None => self.get_static(&member.owner, &member.name, &member.descriptor)?,
+                };
                 self.push(path, v);
             }
-            Insn::PutStatic(_) => return unsupported("writes a static field"),
+            Insn::PutStatic(index) => {
+                let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if crate::classpath::is_jdk_name(&declaring) || !self.cp.is_application(&declaring) {
+                    return unsupported(format!("writes static field {}.{} of the JDK", declaring.replace('/', "."), member.name));
+                }
+                if let Some(step) = self.initialise(path, &declaring) {
+                    return step;
+                }
+                if path.classes.get(&declaring) == Some(&ClassState::Assumed) {
+                    return unsupported(format!("writes static field {}.{} of a class whose initializer was not run", declaring.replace('/', "."), member.name));
+                }
+                let v = self.pop(path)?;
+                path.statics.insert((declaring, member.name.clone()), v);
+            }
             Insn::GetField(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let r = self.pop_ref(path)?;
@@ -1745,17 +1832,19 @@ impl<'a> Engine<'a> {
             Insn::InvokeStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                if self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS {
+                    // The class that declares the method is initialized first (JVMS §5.5), the arguments still on
+                    // the stack, so that the instruction can run again once its initializer returns.
+                    let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
+                    if let Some(step) = self.initialise(path, &declaring) {
+                        return step;
+                    }
+                    let args = self.pop_args(path, descriptor.params.len())?;
+                    return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+                }
                 let args = self.pop_args(path, descriptor.params.len())?;
                 if member.owner == crate::gap_contracts::INTRINSICS {
                     return self.intrinsic(path, &member.name, args);
-                }
-                if self.cp.is_application(&member.owner) {
-                    // The class that declares the method is initialized first (JVMS §5.5).
-                    let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
-                    if let Some(end) = self.initialise(path, &declaring) {
-                        return Ok(Some(end));
-                    }
-                    return self.call(path, &member.owner, &member.name, &member.descriptor, args);
                 }
                 // A JDK class the tool models (Character.digit, say) runs as bytecode here too, so that the
                 // engine and the interpreter that replays its witnesses agree on it.
@@ -1843,8 +1932,8 @@ impl<'a> Engine<'a> {
             }
             Insn::New(index) => {
                 let name = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
-                if let Some(end) = self.initialise(path, &name) {
-                    return Ok(Some(end));
+                if let Some(step) = self.initialise(path, &name) {
+                    return step;
                 }
                 let r = self.alloc(path, &name);
                 self.push(path, Val::R(Some(r)));
@@ -1950,35 +2039,123 @@ impl<'a> Engine<'a> {
         Ok(None)
     }
 
-    /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `invokestatic`): each
-    /// application class whose `<clinit>` that would run, and the path has not reached before, is a
-    /// `class-initializer` gap, since the engine runs no initializer. Under assume it is taken to have run already.
-    fn initialise(&mut self, path: &mut Path, class: &str) -> Option<End> {
-        if path.initialised.contains(class) || crate::classpath::is_jdk_name(class) {
+    /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `putstatic`,
+    /// `invokestatic`), from the instruction at the top frame: `None` when the class is initialized, or being
+    /// initialized by an enclosing use, and the instruction goes on; otherwise what the instruction does instead,
+    /// having pushed a `<clinit>` to run first (the instruction runs again when it returns), thrown
+    /// `NoClassDefFoundError` for an erroneous class, or ended at a gap. The engine runs an application class's
+    /// `<clinit>` when it is in the fragment ([`gaps::runs_initializer`]); any other is a `class-initializer` gap,
+    /// which under assume, or closed by a contract that it throws nothing, is taken to have run. A JDK class is
+    /// taken to be initialized already.
+    fn initialise(&mut self, path: &mut Path, class: &str) -> Option<Step> {
+        if crate::classpath::is_jdk_name(class) || !self.cp.is_application(class) {
             return None;
         }
-        let classes = match self.initializers.get(class) {
-            Some(c) => c.clone(),
+        match self.initialise_class(path, class) {
+            Ok(Initialising::Ready) => {
+                debug_assert!(path.frames.last().expect("a frame").entered.is_empty());
+                None
+            }
+            Ok(Initialising::Running) => Some(Ok(None)),
+            Ok(Initialising::Erroneous) => Some(self.raise(path, "java/lang/NoClassDefFoundError")),
+            Ok(Initialising::End(end)) => Some(Ok(Some(end))),
+            Err(stop) => Some(Err(stop)),
+        }
+    }
+
+    /// The procedure of JVMS §5.5 for `class`, from the top frame's instruction, resumed where it stopped each
+    /// time a `<clinit>` it pushed returns.
+    fn initialise_class(&mut self, path: &mut Path, class: &str) -> Result<Initialising, Stop> {
+        let top = path.frames.len() - 1;
+        match path.classes.get(class) {
+            Some(ClassState::Done | ClassState::Assumed) => return Ok(Initialising::Ready),
+            Some(ClassState::Erroneous) => return Ok(Initialising::Erroneous),
+            // Being initialized by this thread, from an enclosing use: go on (step 3).
+            Some(ClassState::InProgress) if !path.frames[top].entered.iter().any(|c| c == class) => return Ok(Initialising::Ready),
+            // Begun by this instruction, which runs again: resume.
+            Some(ClassState::InProgress) => {}
             None => {
-                let c = Rc::new(gaps::initializers(self.cp, class));
-                self.initializers.insert(class.to_string(), c.clone());
-                c
-            }
-        };
-        let fresh: Vec<String> = classes.iter().filter(|c| !path.initialised.contains(*c)).cloned().collect();
-        path.initialised.insert(class.to_string());
-        path.initialised.extend(classes.iter().cloned());
-        for c in &fresh {
-            let gap = Gap { kind: GapKind::ClassInitializer, owner: c.clone(), name: "<clinit>".into(), descriptor: "()V".into() };
-            if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
-                self.apply(path, gap);
-                continue;
-            }
-            if let Some(end) = self.meet(path, GapKind::ClassInitializer, c, "<clinit>", "()V") {
-                return Some(end);
+                if !self.cp.is_application(class) {
+                    return Ok(Initialising::Ready);
+                }
+                path.classes.insert(class.to_string(), ClassState::InProgress);
+                path.frames[top].entered.push(class.to_string());
             }
         }
-        None
+        let supers = match self.supers.get(class) {
+            Some(s) => s.clone(),
+            None => {
+                let s = Rc::new(gaps::initialization_supers(self.cp, class));
+                self.supers.insert(class.to_string(), s.clone());
+                s
+            }
+        };
+        for s in supers.iter() {
+            match self.initialise_class(path, s)? {
+                Initialising::Ready => {}
+                other => return Ok(other),
+            }
+        }
+        path.frames[top].entered.retain(|c| c != class);
+        let Some(cf) = self.cp.application(class).ok().flatten() else {
+            path.classes.insert(class.to_string(), ClassState::Done);
+            return Ok(Initialising::Ready);
+        };
+        if cf.method("<clinit>", "()V").is_none() {
+            path.classes.insert(class.to_string(), ClassState::Done);
+            return Ok(Initialising::Ready);
+        }
+        let runs = match self.runs.get(class) {
+            Some(&r) => r,
+            None => {
+                let r = gaps::runs_initializer(self.cp, class);
+                self.runs.insert(class.to_string(), r);
+                r
+            }
+        };
+        if runs {
+            self.call(path, class, "<clinit>", "()V", Vec::new())?;
+            path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
+            return Ok(Initialising::Running);
+        }
+        let gap = Gap { kind: GapKind::ClassInitializer, owner: class.to_string(), name: "<clinit>".into(), descriptor: "()V".into() };
+        if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
+            self.apply(path, gap);
+        } else if let Some(end) = self.meet(path, GapKind::ClassInitializer, class, "<clinit>", "()V") {
+            return Ok(Initialising::End(end));
+        }
+        path.classes.insert(class.to_string(), ClassState::Assumed);
+        Ok(Initialising::Ready)
+    }
+
+    /// The value of the static field `name` that `declaring`, an application class, declares, once the class is
+    /// initialized: what the path wrote, else its `ConstantValue`, else zero or null. `None` for a JDK class, read
+    /// by [`Engine::get_static`]. A class taken to be initialized has only its constants.
+    fn application_static(&mut self, path: &mut Path, declaring: &str, name: &str, descriptor: &str) -> Option<Result<Val, Stop>> {
+        if crate::classpath::is_jdk_name(declaring) || !self.cp.is_application(declaring) {
+            return None;
+        }
+        if path.classes.get(declaring) == Some(&ClassState::Assumed) {
+            return Some(self.get_static(declaring, name, descriptor));
+        }
+        if let Some(v) = path.statics.get(&(declaring.to_string(), name.to_string())) {
+            return Some(Ok(v.clone()));
+        }
+        let constant = self.cp.application(declaring).ok().flatten().and_then(|cf| {
+            let field = cf.field(name).filter(|f| f.is_static())?;
+            let attr = field.attributes.iter().find(|a| a.name == "ConstantValue").filter(|a| a.data.len() == 2)?;
+            cf.pool.loadable(u16::from_be_bytes([attr.data[0], attr.data[1]])).ok()
+        });
+        Some(match constant {
+            Some(BootstrapArg::Int(v)) => Ok(Val::I(self.b.constant(i64::from(v), 32))),
+            Some(BootstrapArg::Long(v)) => Ok(Val::J(self.b.constant(v, 64))),
+            Some(BootstrapArg::Str(text)) => {
+                let o = self.literal(path, Literal::Str(text), "java/lang/String");
+                Ok(Val::R(Some(o)))
+            }
+            Some(_) => unsupported("floating point"),
+            None => self.default_value(descriptor),
+        })
     }
 
     /// The object a string or class literal is on this path: made at its first load.
@@ -2074,7 +2251,7 @@ impl<'a> Engine<'a> {
             }
         }
         locals.resize(code.max_locals.max(locals.len()), None);
-        path.frames.push(Frame { class: cf.clone(), method: name.to_string(), code, at: 0, locals, stack: Vec::new() });
+        path.frames.push(Frame::new(cf.clone(), name.to_string(), code, locals));
         Ok(None)
     }
 
@@ -2448,7 +2625,7 @@ mod tests {
                 Insn::TableSwitch { .. } => "`tableswitch`",
                 Insn::LookupSwitch { .. } => "`lookupswitch`",
                 Insn::Return(_) => "`ireturn` … `return`",
-                Insn::GetStatic(_) => "`getstatic` of a compile-time constant",
+                Insn::GetStatic(_) => "`getstatic`",
                 Insn::PutStatic(_) => "`putstatic`",
                 Insn::GetField(_) => "`getfield`",
                 Insn::PutField(_) => "`putfield`",

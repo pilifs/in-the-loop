@@ -320,7 +320,7 @@ fn describe(kind: GapKind) -> &'static str {
         GapKind::JdkVoidMethod => "is a JDK method returning nothing that the tool's own checker has no model of",
         GapKind::JdkReferenceMethod => "is a JDK method returning an object that the tool's own checker has no model of",
         GapKind::StringConversion => "is the toString a string concatenation calls on an object, which the tool's own checker does not run",
-        GapKind::ClassInitializer => "is a class initializer, which the tool's own checker does not run",
+        GapKind::ClassInitializer => "is a class initializer outside the tool's own checker's fragment, which it does not run",
         GapKind::JdkPrimitiveMethod => "is a JDK method returning a primitive that the tool's own checker has no model of",
         GapKind::JdkStaticMethod => "is a static JDK method the tool's own checker has no model of",
         GapKind::MissingBody => "is a method JBMC has no bytecode for, which it gives a stub",

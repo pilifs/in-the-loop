@@ -65,6 +65,61 @@ public class Conformance {
 
     public static int quiet(int n) { return Quiet.value(n); }
 
+    // Class initialization (JVMS §5.5): static state, the order initializers run in, a use from inside one, a
+    // field initializing only the class that declares it, a superinterface with a default method, an Error thrown
+    // as it is, and an erroneous class used again.
+    static class Trace {
+        static int log;
+        static int mark(int v) { log = log * 10 + v; return v; }
+    }
+    static class Counter { static int count = 5; }
+    static class Made {
+        static int count = 1;
+        Made() { count++; }
+    }
+    static class Elder { static { Trace.mark(1); } }
+    static class Younger extends Elder {
+        static { Trace.mark(2); }
+        static int value(int n) { return n; }
+    }
+    static class CycleA { static int a = CycleB.b + 1; }
+    static class CycleB { static int b = CycleA.a + 1; }
+    static class Holder { static int value = 7; }
+    static class Sub extends Holder { static { Trace.mark(1); } }
+    interface Greeter {
+        int SEED = Trace.mark(3);
+        default int greet() { return SEED; }
+    }
+    interface Bare { int OTHER = Trace.mark(4); }
+    static class Hello implements Bare, Greeter { static int value(int n) { return n; } }
+    static class Fatal {
+        static final int[] TABLE = table();
+        static int[] table() { throw new InternalError("fatal"); }
+        static int value(int n) { return n; }
+    }
+
+    public static int counter(int n) { Counter.count += n; return Counter.count; }
+
+    public static int constructed(int n) { new Made(); new Made(); return Made.count + n; }
+
+    public static int superFirst(int n) { Younger.value(n); return Trace.log; }
+
+    public static int cycle(int n) { return CycleA.a + n; }
+
+    public static int declaring(int n) { int v = Sub.value; return Trace.log * 100 + v + n; }
+
+    public static int defaults(int n) { Hello.value(n); return Trace.log; }
+
+    public static int fatal(int n) {
+        try { return Fatal.value(n); } catch (ExceptionInInitializerError e) { return 1; } catch (InternalError e) { return 2; }
+    }
+
+    public static int boomTwice(int n) {
+        int first = 0;
+        try { Boom.value(n); } catch (ExceptionInInitializerError e) { first = 1; }
+        try { return Boom.value(n); } catch (NoClassDefFoundError e) { return first + 1; }
+    }
+
     // Exceptions: finally overriding a return, handlers, nested handlers, bounds, casts, throwing null, rethrowing.
 
     @SuppressWarnings("finally")

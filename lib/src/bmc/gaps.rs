@@ -8,7 +8,7 @@
 //! | `jdk-void-method` | returns and does nothing | runs it, and it may change its receiver or arguments (`Random.nextBytes` fills its array), or throw | yes |
 //! | `jdk-reference-method` | returns a new object, never null | may return null or an object that exists already, or throw | yes |
 //! | `string-conversion` | makes a new string without converting its arguments | calls `toString` on an object argument, which may throw (bytecode of javac 9 to 18: from 19 on, javac calls `String.valueOf` first, which the engine refuses) | yes |
-//! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
+//! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing (an initializer it does not run, [`runs_initializer`]: one outside its fragment, as an enum's is; it runs any other) | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
 //! | `jdk-primitive-method` | nothing: refused as under strict | runs it, and returns a value the engine could only make up (`Random.nextInt(bound)`), or throws | yes |
 //! | `jdk-static-method` | nothing: refused as under strict | runs a static JDK method the engine does not model (`Integer.numberOfLeadingZeros`, `Arrays.fill`), which may return any value, change an argument array, or throw | yes |
 //! | `missing-body` | (JBMC's stub, [`crate::jbmc_gaps`]) returns any value of its type, or `null` or a new object, and does nothing else | runs a method JBMC has no bytecode for (its class is not on JBMC's class path, or it is abstract or native), which may throw or change its arguments | no: JBMC only |
@@ -31,8 +31,10 @@
 //! A JDK call the engine reproduces exactly is not a gap ([`jdk_instance_call`]): `Object.<init>`,
 //! `Record.<init>`, the constructors of the JDK's exceptions that take no argument or a message (and a cause),
 //! which change nothing the proof observes, and the static JDK methods it models ([`super::models_jdk_static`]).
-//! The scan counts those it relied on. A construct the engine refuses (floating point, a static field written, an
-//! array of references, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
+//! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
+//! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
+//! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
+//! written, an array of references, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
 //! with no verdict, as it should, in either mode. The scan lists those reasons too, since a method that has one is
 //! outside the engine whatever its gaps. `monitorenter` and `monitorexit` are implemented: they throw
 //! `NullPointerException` on null and otherwise do nothing, which is all they do in a run of one thread.
@@ -41,8 +43,9 @@
 //! (with every override an application class declares, since the receiver's class picks one), and the static
 //! methods of the tool's models. It reads every instruction of each, so it may report a gap on a path no input
 //! takes. The harness itself, and the
-//! expressions of a property or relation compiled into it, are not walked, nor are the initializers: a class that
-//! only another class's initializer initializes is not reached. Step 1a of
+//! expressions of a property or relation compiled into it, are not walked. An initializer the engine runs is
+//! walked like a method; one that is a gap is not, so a class that only such an initializer initializes is not
+//! reached. Step 1a of
 //! `llm-dlc/loops/sound-verdicts.md`: what strictness would cost each recorded example. Each `class-initializer`
 //! gap's `<clinit>` is given a shape ([`initializer_shape`]), by which Phase 4b of
 //! `llm-dlc/loops/engine-priorities.md` counts them.
@@ -559,31 +562,71 @@ fn initializers_of(cp: &ClassPath, class: &str, out: &mut Vec<String>, seen: &mu
         return;
     }
     let Ok(Some(cf)) = cp.application(class) else { return };
-    if !cf.is_interface() {
-        if let Some(sup) = &cf.super_class {
-            initializers_of(cp, sup, out, seen);
-        }
-        let mut interfaces = Vec::new();
-        let mut visit: Vec<String> = cf.interfaces.iter().rev().cloned().collect();
-        while let Some(i) = visit.pop() {
-            if interfaces.contains(&i) || crate::classpath::is_jdk_name(&i) {
-                continue;
-            }
-            if let Ok(Some(icf)) = cp.application(&i) {
-                visit.extend(icf.interfaces.iter().rev().cloned());
-            }
-            interfaces.push(i);
-        }
-        for i in interfaces {
-            let Ok(Some(icf)) = cp.application(&i) else { continue };
-            if icf.methods.iter().any(|m| !m.is_static() && !m.is_abstract() && m.name != "<clinit>") {
-                initializers_of(cp, &i, out, seen);
-            }
-        }
+    for s in initialization_supers(cp, class) {
+        initializers_of(cp, &s, out, seen);
     }
     if cf.method("<clinit>", "()V").is_some() {
         out.push(class.to_string());
     }
+}
+
+/// What the JVM initializes before `class` (JVMS §5.5, step 7), in order: for a class, its superclass, then each of
+/// its superinterfaces, direct or indirect, that declares a non-abstract instance method (a default method), in the
+/// order of a recursive enumeration that lists an interface's superinterfaces before it; for an interface, nothing.
+/// Application classes only: a JDK class is taken to be initialized already.
+pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
+    let Ok(Some(cf)) = cp.application(class) else { return Vec::new() };
+    if cf.is_interface() {
+        return Vec::new();
+    }
+    let mut out: Vec<String> = cf.super_class.iter().filter(|s| !crate::classpath::is_jdk_name(s) && cp.is_application(s)).cloned().collect();
+    fn enumerate(cp: &ClassPath, i: &str, out: &mut Vec<String>, seen: &mut BTreeSet<String>) {
+        if crate::classpath::is_jdk_name(i) || !seen.insert(i.to_string()) {
+            return;
+        }
+        let Ok(Some(icf)) = cp.application(i) else { return };
+        for s in &icf.interfaces {
+            enumerate(cp, s, out, seen);
+        }
+        if icf.methods.iter().any(|m| !m.is_static() && !m.is_abstract()) {
+            out.push(i.to_string());
+        }
+    }
+    let mut seen = BTreeSet::new();
+    for i in &cf.interfaces {
+        enumerate(cp, i, &mut out, &mut seen);
+    }
+    out
+}
+
+/// Whether the engine runs `class`'s `<clinit>` when a use initializes the class, rather than meeting a
+/// `class-initializer` gap there: the class has one, and nothing in it, or in the application methods it calls,
+/// is outside the engine's fragment ([`scan`]'s refusals). That includes a static field it reads or writes of a
+/// class whose initializer the engine does not run (a constant read apart), so an enum's constants keep its
+/// `$SwitchMap` classes out with it. Initializers that use each other's fields run if each would given that the
+/// others do.
+pub fn runs_initializer(cp: &ClassPath, class: &str) -> bool {
+    runs_initializer_in(cp, class, &BTreeSet::new())
+}
+
+fn runs_initializer_in(cp: &ClassPath, class: &str, visiting: &BTreeSet<String>) -> bool {
+    if visiting.contains(class) {
+        return true;
+    }
+    let Ok(Some(cf)) = cp.application(class) else { return false };
+    if cf.method("<clinit>", "()V").is_none() {
+        return false;
+    }
+    let mut inner = visiting.clone();
+    inner.insert(class.to_string());
+    let mut w = Walker::new(cp, inner);
+    w.enqueue(class, "<clinit>", "()V");
+    while let Some((owner, name, descriptor)) = w.queue.pop_front() {
+        if w.walk(&owner, &name, &descriptor).is_err() {
+            return false;
+        }
+    }
+    w.scan.refused.is_empty()
 }
 
 /// The shape of an application class's `<clinit>`, by which Phase 4b of `llm-dlc/loops/engine-priorities.md` counts
@@ -714,12 +757,18 @@ struct Walker<'a> {
     queue: VecDeque<(String, String, String)>,
     seen: BTreeSet<(String, String, String)>,
     initialised: BTreeSet<String>,
+    /// Empty for a scan. For the walk [`runs_initializer`] makes of an initializer, the classes whose initializers
+    /// are being decided: the walk then follows no other initializer, and takes these to run.
+    deciding: BTreeSet<String>,
+    /// [`runs_initializer`] by class, given `deciding`.
+    runs: BTreeMap<String, bool>,
 }
 
 /// Scans what the roots (`(owner, name, descriptor)`, internal names) may reach. A root that is a static method
 /// or a constructor initialises its class, as the harness's call does.
 pub fn scan(cp: &ClassPath, roots: &[MemberRef]) -> Result<Scan, Error> {
-    let mut w = Walker { cp, scan: Scan { jdk: jdk_release(), ..Scan::default() }, queue: VecDeque::new(), seen: BTreeSet::new(), initialised: BTreeSet::new() };
+    let mut w = Walker::new(cp, BTreeSet::new());
+    w.scan.jdk = jdk_release();
     for r in roots {
         let root = Site { class: "harness".into(), method: "check".into(), line: None };
         w.initialise(&r.owner, &root);
@@ -731,7 +780,21 @@ pub fn scan(cp: &ClassPath, roots: &[MemberRef]) -> Result<Scan, Error> {
     Ok(w.scan)
 }
 
-impl Walker<'_> {
+impl<'a> Walker<'a> {
+    fn new(cp: &'a ClassPath, deciding: BTreeSet<String>) -> Walker<'a> {
+        Walker { cp, scan: Scan::default(), queue: VecDeque::new(), seen: BTreeSet::new(), initialised: BTreeSet::new(), deciding, runs: BTreeMap::new() }
+    }
+
+    /// Whether the engine runs `class`'s `<clinit>` ([`runs_initializer`]), given that those being decided do.
+    fn runs(&mut self, class: &str) -> bool {
+        if let Some(&r) = self.runs.get(class) {
+            return r;
+        }
+        let r = runs_initializer_in(self.cp, class, &self.deciding);
+        self.runs.insert(class.to_string(), r);
+        r
+    }
+
     fn enqueue(&mut self, owner: &str, name: &str, descriptor: &str) {
         let key = (owner.to_string(), name.to_string(), descriptor.to_string());
         if self.seen.insert(key.clone()) {
@@ -747,17 +810,44 @@ impl Walker<'_> {
         self.scan.refused.entry(why.to_string()).or_insert_with(|| Refusal { first: what, at: site.display(), sites: 0 }).sites += 1;
     }
 
-    /// A use of `class` that initializes it (JVMS §5.5): each `<clinit>` that runs ([`initializers`]) is a gap,
-    /// since the engine runs none, recorded where the walk first reaches it.
+    /// A use of `class` that initializes it (JVMS §5.5): each `<clinit>` that runs ([`initializers`]) is walked
+    /// when the engine runs it ([`runs_initializer`]), and is otherwise a gap, recorded where the walk first
+    /// reaches it. The walk that decides an initializer follows no other.
     fn initialise(&mut self, class: &str, site: &Site) {
+        if !self.deciding.is_empty() {
+            return;
+        }
         for c in initializers(self.cp, class) {
             if self.initialised.insert(c.clone()) {
+                if self.runs(&c) {
+                    self.enqueue(&c, "<clinit>", "()V");
+                    continue;
+                }
                 self.gap(GapKind::ClassInitializer, &c, "<clinit>", "()V", site.clone());
                 if let Some(shape) = initializer_shape(self.cp, &c) {
                     self.scan.initializers.insert(c.clone(), shape);
                 }
             }
         }
+    }
+
+    /// A `getstatic` or `putstatic` (`put`) of `owner.name`: the engine holds an application class's static fields
+    /// once its initializer has run, and reads a JDK field only when it is a constant
+    /// ([`super::Engine::get_static`]). Initializes the class that declares the field.
+    fn static_field(&mut self, owner: &str, name: &str, descriptor: &str, put: bool, site: &Site) {
+        let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
+        let what = format!("{}.{name}", declaring.replace('/', "."));
+        let constant = !put && self.constant(&declaring, name);
+        if crate::classpath::is_jdk_name(&declaring) || !self.cp.is_application(&declaring) {
+            if put {
+                self.refuse("writes a static field of the JDK", what, site);
+            } else if !constant {
+                self.refuse("reads a static field of the JDK that is not a compile-time constant", what, site);
+            }
+        } else if !constant && self.cp.application(&declaring).ok().flatten().is_some_and(|cf| cf.method("<clinit>", "()V").is_some()) && !self.runs(&declaring) {
+            self.refuse(if put { "writes a static field of a class whose initializer the engine does not run" } else { "reads a static field of a class whose initializer the engine does not run" }, what, site);
+        }
+        self.initialise(&declaring, site);
     }
 
     /// The application classes that are `owner` or below it and declare `name(descriptor)`: the methods an
@@ -785,23 +875,15 @@ impl Walker<'_> {
                 Insn::FConst(_) | Insn::DConst(_) => self.refuse("floating point", "a floating-point constant".into(), &site),
                 Insn::Arith(_, k) | Insn::Return(Some(k)) | Insn::Load(k, _) | Insn::Store(k, _) | Insn::Convert(k, _) if matches!(k, Kind::Float | Kind::Double) => self.refuse("floating point", "floating-point arithmetic".into(), &site),
                 Insn::Jsr(_) | Insn::Ret(_) => self.refuse("jsr/ret", "jsr".into(), &site),
-                Insn::PutStatic(index) => {
+                Insn::PutStatic(index) | Insn::GetStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
-                    self.refuse("writes a static field", format!("{}.{}", member.owner.replace('/', "."), member.name), &site);
+                    self.static_field(&member.owner, &member.name, &member.descriptor, matches!(insn, Insn::PutStatic(_)), &site);
                 }
                 Insn::ANewArray(_) | Insn::MultiANewArray(..) => self.refuse("arrays of references", "a new array of references".into(), &site),
                 Insn::Ldc(index) => {
                     if let Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) = cf.pool.loadable(index) {
                         self.refuse("floating point", "a floating-point constant".into(), &site);
                     }
-                }
-                Insn::GetStatic(index) => {
-                    let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
-                    if !self.constant(&member.owner, &member.name) {
-                        self.refuse("reads a static field that is not a compile-time constant", format!("{}.{}", member.owner.replace('/', "."), member.name), &site);
-                    }
-                    let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
-                    self.initialise(&declaring, &site);
                 }
                 Insn::New(index) => {
                     let class = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?.to_string();
