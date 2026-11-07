@@ -706,10 +706,33 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     result relation that reads the new version's object as the call left it (`new.p` reads the arguments).
   - Shared files changed: `equivalence.rs` (the replay's reads of the previous objects), `lib/README.md` (step 5),
     `lib/tests/heap.rs` (the `raised` method, two tests and an ignored one).
-- Next: H5's rest, ninth step: views' paths through object fields (`differs` names leaf paths only under a
-  correspondence), or a same-shape parameter with an array field beside a relation for another field; what is left
-  of H5 after them is small next to what is done, so the step after should weigh `done`.
-- Status: working
+- **The stream closed (2026-11-07): H1–H5 done, the rest of H5 recorded as named gaps.** The last Next proposed a
+  ninth step, either naming the intermediate object paths in `differs` under a correspondence or widening a
+  same-shape parameter that has an array field. Checked against the code, the first changes no verdict:
+  `spec::heap::check` already refutes a required `field:p.price` when `differs` has a leaf under it (`within`
+  through `under`). The second only lifts one refusal. Both are polish by the loop's rule, so the stream stops.
+  - Done-criteria checked on this branch: the integration contract's heap part passes 6 of 6, and
+    `foundations.rs` passes (3); the rest of the contract is still unsupported, as the other streams' parts are.
+    Every job this run submitted is listed above with what it should show: `041414`, `043420`, `064330`, both
+    `064331` (151, 152), `064838`, `072431`, `080218`, `083358`, `085410`, `092158`, `104658`, `112033`, `115201`,
+    `121516`. All are *for review*; no quick job came back within its cycle.
+  - Named gaps left for a later brief. Each is refused by name where the tool meets it, never accepted silently:
+    - correspondences: equations whose old side is an expression, or that read a field that is not a leaf of
+      the construction; an equation that reads only another object's field by a path; a parameter of a floating
+      type or a computed field of `short` or floating type;
+    - output relations: identity relations that read another relation, or that only one version observes;
+      result relations that read the previous version's arrays or receiver, or the new version's object as left;
+      a result of the same classes under a relation for one field;
+    - domains and checks: a same-shape parameter with an array field beside a relation for another field; the
+      fields of an input object that may be null or shared; arrays that may be null or one object in a regression
+      check; an array's `--nullable` or `--may-alias` beside object parameters in a property check; a call of the
+      method under proof when it takes objects;
+    - outside these phases: collections, cycles and broad polymorphism (the main brief's deferrals);
+    - a fixture note for the reconcile loop, under H5's narrow case above.
+  - For a person: `Engine::probe` budgets by the wall clock, so `integration.rs` under parallel load leaves the
+    `Pricing#total` refactor unverifiable (H5's fourth step). A fix would budget by the solver's own work.
+  - Shared files changed: none in this entry.
+- Status: done
 
 ## Loop settings
 

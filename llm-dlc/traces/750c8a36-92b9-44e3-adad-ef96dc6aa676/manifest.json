@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T12:16:05.128Z",
-  "duration_seconds": 29686,
+  "ended": "2026-11-07T12:19:13.774Z",
+  "duration_seconds": 29874,
   "stats": {
-    "turns": 93,
-    "api_calls": 1245,
-    "tool_calls": 1293,
+    "turns": 98,
+    "api_calls": 1260,
+    "tool_calls": 1309,
     "tool_errors": 7,
-    "compactions": 17,
+    "compactions": 18,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 2524,
-      "output_tokens": 1001664,
-      "cache_read_input_tokens": 228137121,
-      "cache_creation_input_tokens": 4112027
+      "input_tokens": 2556,
+      "output_tokens": 1009298,
+      "cache_read_input_tokens": 229767988,
+      "cache_creation_input_tokens": 4223960
     }
   },
   "tools": {
-    "Bash": 1093,
-    "Read": 124,
-    "Edit": 50,
+    "Bash": 1102,
+    "Read": 130,
+    "Edit": 51,
     "ToolSearch": 9,
     "Monitor": 8,
     "Write": 5,
@@ -291,24 +291,38 @@
     {
       "index": 17,
       "started": "2026-11-07T11:54:03.033Z",
-      "ended": "2026-11-07T12:16:05.128Z",
-      "turns": 4,
-      "api_calls": 70,
+      "ended": "2026-11-07T12:16:44.754Z",
+      "turns": 5,
+      "api_calls": 73,
       "usage": {
-        "input_tokens": 140,
-        "output_tokens": 48084,
-        "cache_read_input_tokens": 11507024,
-        "cache_creation_input_tokens": 223311
+        "input_tokens": 148,
+        "output_tokens": 50174,
+        "cache_read_input_tokens": 12221149,
+        "cache_creation_input_tokens": 228090
       },
-      "peak_context_tokens": 236390
+      "peak_context_tokens": 241171
+    },
+    {
+      "index": 18,
+      "started": "2026-11-07T12:17:32.229Z",
+      "ended": "2026-11-07T12:19:13.774Z",
+      "turns": 4,
+      "api_calls": 12,
+      "usage": {
+        "input_tokens": 24,
+        "output_tokens": 5544,
+        "cache_read_input_tokens": 916742,
+        "cache_creation_input_tokens": 107154
+      },
+      "peak_context_tokens": 120233
     }
   ],
   "log": {
-    "sha256": "b3531b584ebcdb6dec3acb9aa1a0603d3df73836e823b3128f2833524535dbb4",
-    "bytes": 38645625,
-    "lines": 13232,
-    "gzip_bytes": 7519145,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/b3531b584ebcdb6dec3acb9aa1a0603d3df73836e823b3128f2833524535dbb4.jsonl.gz"
+    "sha256": "b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44",
+    "bytes": 39712188,
+    "lines": 13449,
+    "gzip_bytes": 7806940,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -471,6 +485,14 @@
       "summary": "Output relations for the result that read the previous version's parameters, a primitive one as the new version's in its place and an object's field path as the call left the previous object (H5's rest, eighth step; verification pending)",
       "body": "A correspondence's output relation for the result may now read old.by (a primitive parameter of the previous version, read as the new version's parameter in its place) and old.p.cents (a primitive field path of the previous version's object, read from the local it is kept in after both calls). spec::heap::output_relation writes them before$by and before$p.cents; BeforeMethod::parse_relation resolves them by the previous version's parameter names, and the replay reads the previous object's paths as its replay left them. The price kernel gained raised(Price p, int by), which returned whether it raised the price and now returns the amount it leaves, related by new.result == old.p.cents && old.result == (old.by > 0). Refused by name: an object read as a whole, a field of a primitive, an unknown name, an object not made by its constructor, and any such read under --before-arguments.\n\nVerified inline: the after build verified; a defect returning the amount before the raise refuted with raised(p=new Price(0, 0), by=1) and confirmed on a JVM; the same relation written over the new version's p (read as the call got it) verifies the defect and refutes after, so each side is read where it should be; spec::heap::check unresolved without approval, changed with approval, the defect refuted. Unit tests (201), heap.rs (46), foundations.rs, conformance.rs and integration.rs (64, one test at a time) pass. One CLI run went to JBMC inline by the command's default engine (0.2 s), recorded under Progress.\n\nJob 20261107-121516-result-relations-that-read-the-previous (quick, priority 10, for review): the new ignored test under --engine jbmc and auto --confirm, expected exit 0.",
       "log_sha256": "b3531b584ebcdb6dec3acb9aa1a0603d3df73836e823b3128f2833524535dbb4"
+    },
+    {
+      "change_id": "znwsunmzwrwsqokooxtourqsuvwnvxzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Heap stream done: H1-H5 finished, the rest of H5 recorded as named gaps",
+      "body": "The heap stream of the foundations loop closes. The proposed ninth step of H5 was checked against the code first. Naming intermediate object paths in a counterexample's differs under a correspondence changes no verdict, because spec::heap::check already refutes a required path when differs has a leaf under it. The other option, a same-shape parameter with an array field, only lifts one refusal. Both are polish, so the stream stops with Status: done. Its Progress now records the gaps that are still refused by name, a probe-budget finding for a person, and a fixture note for the reconcile loop.\n\nDone criteria checked on this branch. cargo test --release --test foundations passes 3 of 3, and the integration contract's heap part passes 6 of 6 (after total, withQuantity and discount; the offset and alias-to-copy defects refuted; outside-domain verified within the constructor-made claim). Every verification job this run submitted (15 job files, 041414 through 121516) is listed under Progress for review. No code changed.",
+      "log_sha256": "b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44"
     }
   ],
   "logs": {
@@ -544,6 +566,12 @@
       "bytes": 25380790,
       "lines": 8871,
       "gzip_bytes": 4875711,
+      "url": null
+    },
+    "b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44": {
+      "bytes": 39712188,
+      "lines": 13449,
+      "gzip_bytes": 7806940,
       "url": null
     },
     "ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d": {
