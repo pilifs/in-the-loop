@@ -129,6 +129,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   against the current crosscut app (the examples stream; the patches also change `properties.contract` and
   `Jitter.java`, which should be unaffected), then resubmit. VF-002 stays open.
 - **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-165152-example-147-b11-advised-contracts-a-cont`, `-148-` and `-149-` at `35a9ea8fadaa`, after regenerating the patches. 149 **passed** (verified as expected, results applied). 147 and 148 fail in 3 s in `stage_contracts` (`build.py:432`): `FileNotFoundError: .../.build-py/examples-*/attempts/147/attempt-*/gaps.contracts`: `shutil.copyfile(folder / name, target)` reads `gaps.contracts` from the attempt's directory, where `build.py` hasn't copied it from the example's folder (149 uses the contract library, not a `gaps.contracts`). **Needs**: `stage_contracts` reads the example's own folder (the examples stream), then resubmit 147 and 148. The entry stays open until both pass.
+- **Deferred by the timebox** of the cleanup loop after `stage_contracts` and `contracts_digest` were fixed
+  (`xmsmzwoy`). **Decided** by the user on 2026-11-07: correct the wording of 148 and 149, whose titles, summaries
+  and jobs named three contracts ("1 proved, 2 tested") although, with `Integer.numberOfLeadingZeros` no longer a gap,
+  only the two tested ones may appear, and resubmit 147 and 148. For 148, the user decided to run it first and
+  reword it after: its point was a contract proved against the JDK's bytecode, and only the run shows whether the
+  agent's contract for `numberOfLeadingZeros` is still proved and counted.
+- **Resubmitted** 2026-11-07 as `20261107-223430-example-147-b11-advised-contracts-a-cont` and
+  `20261107-223430-example-148-b11-advised-contracts-full-j`, with 149's summary, explanation and resolution corrected
+  to two contracts in the same commit (its passing result already reads `relying on 2 contracts ..., 2 tested`).
+  148's job expects the verdict alone. VF-002 closes when both pass; 148 is then reworded to what its result shows.
 
 ### VF-001: JBMC verdicts the JVM contradicts, passed through by `--engine auto`
 
