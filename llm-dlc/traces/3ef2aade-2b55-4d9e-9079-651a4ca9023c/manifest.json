@@ -59,7 +59,7 @@
   "commits": [
     {
       "change_id": "uvmurzwkyuknmokwwyslvmtmwyvxytut",
-      "commit_id": null,
+      "commit_id": "3d4fd12cfafadde8c0fa2db054d0c0b531f884d0",
       "immutable": false,
       "summary": "Record verification results: H1's benchmark comparison fails on a stale recording (VF-014)",
       "body": "Job 20261107-041414 (symbolic references in the own checker) ran the 557-run benchmark on vm-1: step 1 passed, step 2 failed on 8 verdicts that changed from unverifiable to a concrete verdict on boom/1, inherited/1 and quiet/1, whose recorded runs stopped at a class-initializer gap. Most likely cause is a stale lib/benchmark/results.json rather than H1, but the job does not isolate it; recorded as VF-014 with what would close it. Estimate was far off (30m, 2 GiB estimated; 2m47s, 1.1 GiB used).",
@@ -67,7 +67,7 @@
     },
     {
       "change_id": "vmlkxxuppzuumkktkzsolorvqvynzkms",
-      "commit_id": null,
+      "commit_id": "9bf028cc706b9e28e4ced69b4dacc8859a06e94d",
       "immutable": false,
       "summary": "Merge the four foundations streams: heap, summaries, observations and alignment",
       "body": "The reconcile of llm-dlc/loops/foundations.md. All four streams had stopped with Status: done and nothing deferred by the timebox. Each stream's last turns were recorded on its branch, their logs copied here, and the four branches merged with the default line. The workspaces heap, summaries, observations, alignment and integration were forgotten; their directories stay on disk for the user to delete.\n\nConflicts resolved: equivalence.rs (heap's object inputs, correspondence and identity comparisons against summaries' proof cache, proved helpers and per-callee refinement; summaries' replay_on now carries heap's comparisons), main.rs, examples/tools/build.py, lib/README.md, and the generated examples router (rebuilt with build.py --index-only) and trace files.\n\nThe integration check never ran a test on the combined streams, because every merge from 05:01 on conflicted. The merge found one real disagreement between streams: heap's Domain.may_alias was skipped when empty but had no serde default, so once summaries made Statement deserializable, no result could be stored in the proof cache, and compositional reuse of shop.Pricing#discount in shop.Pricing#total failed. It is fixed with the default.\n\nOther fixes: shared-IR additions threaded through (Outcome.problem filled in effects.rs and the cache's records; Counterexample.differs and .jvm stored by the cache); a proved helper's own check no longer inherits its caller's --correspondence, --nullable and --may-alias; and the canonical claim names those three options outright.\n\nVerified inline: the integration contract (lib/tests/foundations.rs) gives 24 passed, 0 unsupported, 0 failed. The whole Rust suite passes (unit tests and every integration test binary, the conformance cases on a real java among them), and so does every Python suite (verification, llm-dlc/tools, examples/tools, lib/solvers, lib/benchmark).\n\nThe brief's Progress folds the streams' work and lists the 21 jobs they left pending for review. One job came back during the run: heap's H1 benchmark, which failed (VF-014). The next step is Phase 5.\n\nOut of date in the rest of the brief: 'Where it starts from' describes the code before the streams ran. Shared-callee refinement is no longer all or nothing (summaries S5), and objects, nullability and aliasing among inputs are now supported (heap H1-H4).",
@@ -75,7 +75,7 @@
     },
     {
       "change_id": "vyqypuwxkktustunkpywyvklnvxpqqyn",
-      "commit_id": null,
+      "commit_id": "e5d8140d088a5f43529e528f596d0969680a04da",
       "immutable": false,
       "summary": "Foundations Progress: name the streams' commits by change id",
       "body": "The merge commit's Progress cited the streams' commits by commit id, but sync.py rewrites commit ids when it adds trace lines to earlier commits, and the merge's own trace commit had already done so. Every commit Progress cites is now named by its change id, which stays put, and Progress says why. Checked by resolving each id with jj log.",
@@ -83,7 +83,7 @@
     },
     {
       "change_id": "uwomrnttmmqumppxkpzwnoswmzmtquyx",
-      "commit_id": null,
+      "commit_id": "e0cf1af620742b711e07dbff3bfd6ca949d4e99b",
       "immutable": false,
       "summary": "The entry points' effect-trace proofs under the proof cache: Phase 5's exact-reuse row passes, and the stale-cache defect is checked at the boundary",
       "body": "effects::check_with runs an entry point's effect-trace proof with equivalence's proof cache, from jvmcontract effects --cache DIR and from compare --cache. The proof is a regression check of the two builds rewritten with recording stubs, so its claim key digests their closures from the generated entry method: the stubs, and with them the environment model they encode (the modeled calls in order, the payload paths snapshotted, the trace bound, the exception classes, the string literals). What the result adds to the proof (the specs' unresolved parts, the external inputs, the status mapping) is worked out again on every run, and a stored refutation's witness is replayed on a JVM again. Each result records its claim key and any exact reuse.\n\nVerified inline. tests/effects.rs has a new test, an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged: a rerun is an exact hit. One more attempt allowed, a payload path no longer snapshotted, a @ResponseStatus added to the route (the status then unresolved) and a dropped event in the handler each miss under another key. A rerun of the dropped event reuses its stored refutation, replayed on a JVM with the same attempts. The Spring stand-in HttpStatus gained CREATED for it. In tests/compare.rs the joint run's rerun reuses POST /quotes's proof under the first run's key. The defects that POST /quotes reaches prove it again. alias-to-copy changes only a method the route doesn't reach, so it reuses the proof, rightly. Every row of Phase 5's table now passes. The fixture is not yet examples 190-199, which is next.\n\nFull Rust suite: lib 203, alignment 34, compare 1, conformance 9 (2 ignored), effects 17, foundations 3, heap 46 (9 ignored), integration 64, observations 12, skill 1, summaries 40. In the full run, integration's the_tools_own_checker_agrees_with_jbmc_on_integer_proofs timed out under load (Engine::probe budgets by wall clock, a known note in the brief) and passed alone in 8 s. The brief's Progress records the cycle; the rest of the brief is unchanged and still right.",
@@ -91,7 +91,7 @@
     },
     {
       "change_id": "rwyrvxpxtnnvnmzuwxtplktzwyoyzlls",
-      "commit_id": null,
+      "commit_id": "12f7f7d90a8953e9ff61adb34f6d1b543be7b2e0",
       "immutable": false,
       "summary": "Allow list: Filip Stankovic approved 606ed0f7, 65c491aa",
       "body": "Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n606ed0f7  long-token  pro…71 (48 chars): A test's work directory name, property-after-withQuantity-<20-digit hash of the test's arguments> (48 chars), listed by ls in lib/tests/heap.rs's temporary directory: no credential.\n65c491aa  public-ip  5.…3: A JVMS section number (5.4.3.3, field and method resolution) cited in a doc comment of lib/src/relocate.rs, not an IP address",
@@ -103,13 +103,13 @@
       "bytes": 578944,
       "lines": 141,
       "gzip_bytes": 128136,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz"
     },
     "6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147": {
       "bytes": 545582,
       "lines": 118,
       "gzip_bytes": 123604,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz"
     }
   },
   "redaction_policy": 4,

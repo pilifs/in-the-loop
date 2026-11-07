@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: H1's benchmark comparison fails on a stale recording (VF-014)
 
-change `uvmurzwkyukn` · [log `6f9506472046`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz)
+[`3d4fd12cfafa`](https://github.com/pilifs/in-the-loop/commit/3d4fd12cfafadde8c0fa2db054d0c0b531f884d0) · [log `6f9506472046`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz)
 
 Job 20261107-041414 (symbolic references in the own checker) ran the 557-run benchmark on vm-1: step 1 passed, step 2 failed on 8 verdicts that changed from unverifiable to a concrete verdict on boom/1, inherited/1 and quiet/1, whose recorded runs stopped at a class-initializer gap. Most likely cause is a stale lib/benchmark/results.json rather than H1, but the job does not isolate it; recorded as VF-014 with what would close it. Estimate was far off (30m, 2 GiB estimated; 2m47s, 1.1 GiB used).
 
 ### Merge the four foundations streams: heap, summaries, observations and alignment
 
-change `vmlkxxuppzuu` · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
+[`9bf028cc706b`](https://github.com/pilifs/in-the-loop/commit/9bf028cc706b9e28e4ced69b4dacc8859a06e94d) · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
 
 The reconcile of llm-dlc/loops/foundations.md. All four streams had stopped with Status: done and nothing deferred by the timebox. Each stream's last turns were recorded on its branch, their logs copied here, and the four branches merged with the default line. The workspaces heap, summaries, observations, alignment and integration were forgotten; their directories stay on disk for the user to delete.
 
@@ -44,13 +44,13 @@ Out of date in the rest of the brief: 'Where it starts from' describes the code 
 
 ### Foundations Progress: name the streams' commits by change id
 
-change `vyqypuwxkktu` · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
+[`e5d8140d088a`](https://github.com/pilifs/in-the-loop/commit/e5d8140d088a5f43529e528f596d0969680a04da) · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
 
 The merge commit's Progress cited the streams' commits by commit id, but sync.py rewrites commit ids when it adds trace lines to earlier commits, and the merge's own trace commit had already done so. Every commit Progress cites is now named by its change id, which stays put, and Progress says why. Checked by resolving each id with jj log.
 
 ### The entry points' effect-trace proofs under the proof cache: Phase 5's exact-reuse row passes, and the stale-cache defect is checked at the boundary
 
-change `uwomrnttmmqu` · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
+[`e0cf1af62074`](https://github.com/pilifs/in-the-loop/commit/e0cf1af620742b711e07dbff3bfd6ca949d4e99b) · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
 
 effects::check_with runs an entry point's effect-trace proof with equivalence's proof cache, from jvmcontract effects --cache DIR and from compare --cache. The proof is a regression check of the two builds rewritten with recording stubs, so its claim key digests their closures from the generated entry method: the stubs, and with them the environment model they encode (the modeled calls in order, the payload paths snapshotted, the trace bound, the exception classes, the string literals). What the result adds to the proof (the specs' unresolved parts, the external inputs, the status mapping) is worked out again on every run, and a stored refutation's witness is replayed on a JVM again. Each result records its claim key and any exact reuse.
 
@@ -60,7 +60,7 @@ Full Rust suite: lib 203, alignment 34, compare 1, conformance 9 (2 ignored), ef
 
 ### Allow list: Filip Stankovic approved 606ed0f7, 65c491aa
 
-change `rwyrvxpxtnnv` · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
+[`12f7f7d90a89`](https://github.com/pilifs/in-the-loop/commit/12f7f7d90a8953e9ff61adb34f6d1b543be7b2e0) · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 

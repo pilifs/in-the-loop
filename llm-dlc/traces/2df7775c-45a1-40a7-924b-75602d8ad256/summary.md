@@ -20,31 +20,31 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record session traces
 
-change `yrvvnkqykosw` · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
+[`54101efabe38`](https://github.com/pilifs/in-the-loop/commit/54101efabe38987d9f5360a2791ab582a882f817) · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
 
 The foundations reconcile records the alignment stream's conversation after its last commit, so that its trace is on its branch before the merge.
 
 ### Record session traces
 
-change `usumnkyrtvsl` · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
+[`5cfe78f1dbbd`](https://github.com/pilifs/in-the-loop/commit/5cfe78f1dbbde465079e922432f70a9f2493b9e5) · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
 
 The foundations reconcile records the observations stream's conversation after its last commit, so that its trace is on its branch before the merge.
 
 ### Record session traces
 
-change `vrznnltvqrou` · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
+[`c7c608791dc1`](https://github.com/pilifs/in-the-loop/commit/c7c608791dc1545334ed702ab04b9e5186411ee4) · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
 
 The foundations reconcile records the summaries stream's conversation after its last commit, so that its trace is on its branch before the merge.
 
 ### Record session traces
 
-change `znkqslrsvzun` · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
+[`11435b7e7989`](https://github.com/pilifs/in-the-loop/commit/11435b7e7989b46adfd3761bfc7a2a049d05b954) · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
 
 The foundations reconcile records the heap stream's conversation after its last commit, so that its trace is on its branch before the merge.
 
 ### Merge the four foundations streams: heap, summaries, observations and alignment
 
-change `vmlkxxuppzuu` · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
+[`9bf028cc706b`](https://github.com/pilifs/in-the-loop/commit/9bf028cc706b9e28e4ced69b4dacc8859a06e94d) · [log `7bd49949a99a`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)
 
 The reconcile of llm-dlc/loops/foundations.md. All four streams had stopped with Status: done and nothing deferred by the timebox. Each stream's last turns were recorded on its branch, their logs copied here, and the four branches merged with the default line. The workspaces heap, summaries, observations, alignment and integration were forgotten; their directories stay on disk for the user to delete.
 
@@ -62,13 +62,13 @@ Out of date in the rest of the brief: 'Where it starts from' describes the code 
 
 ### Foundations Progress: name the streams' commits by change id
 
-change `vyqypuwxkktu` · [log `84504dad6389`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09.jsonl.gz)
+[`e5d8140d088a`](https://github.com/pilifs/in-the-loop/commit/e5d8140d088a5f43529e528f596d0969680a04da) · [log `84504dad6389`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09.jsonl.gz)
 
 The merge commit's Progress cited the streams' commits by commit id, but sync.py rewrites commit ids when it adds trace lines to earlier commits, and the merge's own trace commit had already done so. Every commit Progress cites is now named by its change id, which stays put, and Progress says why. Checked by resolving each id with jj log.
 
 ### Phase 5's joint run: jvmcontract compare, the four parts fed by each other on the joint example, every row checked but exact reuse at the entry points
 
-change `zwypsqzzunlo` · [log `dd35bcf1c824`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/dd35bcf1c82415c504092d0500554552b7b869e5846d26e6477f5691d9f742f0.jsonl.gz)
+[`21aa97b5c312`](https://github.com/pilifs/in-the-loop/commit/21aa97b5c3125f9a42e3ff9fb98944da851e192d) · [log `dd35bcf1c824`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/dd35bcf1c82415c504092d0500554552b7b869e5846d26e6477f5691d9f742f0.jsonl.gz)
 
 jvmcontract compare BEFORE AFTER [--cache DIR] (lib/src/compare.rs) runs the foundations loop's four parts together with nothing written by hand. The entry points are checked by their observation specs and effect traces; their inputs are anchored, so no mapping is involved. Every changed kernel method pair that alignment matches is checked by the heap engine (spec::heap::check_with, new) under alignment's own proposal and the proof cache, held to its result, its exception and the identity of the result with each object parameter of its class. The report gives the obligations, what was reused, and the effort: a person's decisions in five categories, zero included, then the questions left and what nobody decided. lib/tests/compare.rs holds it to Phase 5's table on the fixture and its six defects, inline, in 15 s. Every row passes except exact reuse, which is partial: the kernel's rerun results are exact hits from the first run, but the entry points' effect checks are not cached yet. That is the next step, then examples 190-199.
 
@@ -76,7 +76,7 @@ Two disagreements between streams were reconciled. First, alignment proposed an 
 
 ### The entry points' effect-trace proofs under the proof cache: Phase 5's exact-reuse row passes, and the stale-cache defect is checked at the boundary
 
-change `uwomrnttmmqu` · [log `f971edf822ad`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/f971edf822adedbdd460f307a2c61a517c6a6a45d4a477d677987a3e7fbda88e.jsonl.gz)
+[`e0cf1af62074`](https://github.com/pilifs/in-the-loop/commit/e0cf1af620742b711e07dbff3bfd6ca949d4e99b) · [log `f971edf822ad`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/f971edf822adedbdd460f307a2c61a517c6a6a45d4a477d677987a3e7fbda88e.jsonl.gz)
 
 effects::check_with runs an entry point's effect-trace proof with equivalence's proof cache, from jvmcontract effects --cache DIR and from compare --cache. The proof is a regression check of the two builds rewritten with recording stubs, so its claim key digests their closures from the generated entry method: the stubs, and with them the environment model they encode (the modeled calls in order, the payload paths snapshotted, the trace bound, the exception classes, the string literals). What the result adds to the proof (the specs' unresolved parts, the external inputs, the status mapping) is worked out again on every run, and a stored refutation's witness is replayed on a JVM again. Each result records its claim key and any exact reuse.
 
@@ -86,7 +86,7 @@ Full Rust suite: lib 203, alignment 34, compare 1, conformance 9 (2 ignored), ef
 
 ### Examples 190-196: the joint example run by build.py through jvmcontract compare, on the new shop app; Phase 5 done (verification pending)
 
-change `rnmyrzpwnvrs` · [log `e3cb53ccfa58`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/e3cb53ccfa58fed7d9f7cfd482eeac70bf5ce7d10f18dfaa93e2d17fa2224e7d.jsonl.gz)
+[`53d8fa214362`](https://github.com/pilifs/in-the-loop/commit/53d8fa214362573b3cbcad797673324326aca328) · [log `e3cb53ccfa58`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/e3cb53ccfa58fed7d9f7cfd482eeac70bf5ce7d10f18dfaa93e2d17fa2224e7d.jsonl.gz)
 
 Phase 0 asked Phase 5 to make the joint example's fixture an example under the numbers 190-199. The new app examples/apps/shop is the fixture's before build, with Spring stand-ins and plain tests through the route; seven examples patch it into the fixture's after build (190, verified) and each defect overlaid on it: offset (191) and alias-to-copy (192) refuted in the kernel, dropped-effect (193) and duplicated-effect (194) refuted at the route, outside-domain (195) verified within the constructor-made domain, route-change (196) unresolved with four questions. A new technique tag, joint-run, groups them.
 
@@ -98,7 +98,7 @@ The brief's Progress records this cycle and sets the status to done: every row o
 
 ### Allow list: Filip Stankovic approved 606ed0f7, 65c491aa
 
-change `rwyrvxpxtnnv` · [log `442eb3455931`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/442eb34559315b4471f8e6dfeaf67259fee878c9fed3445386a2897e7b366291.jsonl.gz)
+[`12f7f7d90a89`](https://github.com/pilifs/in-the-loop/commit/12f7f7d90a8953e9ff61adb34f6d1b543be7b2e0) · [log `442eb3455931`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/442eb34559315b4471f8e6dfeaf67259fee878c9fed3445386a2897e7b366291.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 

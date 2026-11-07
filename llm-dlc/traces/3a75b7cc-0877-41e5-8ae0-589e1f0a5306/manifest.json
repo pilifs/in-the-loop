@@ -84,7 +84,7 @@
     },
     {
       "change_id": "olwyzkwouylnzlsymynrslxstpoulspl",
-      "commit_id": null,
+      "commit_id": "2deed773c22c5a5325f1047a9b3271c6dd861776",
       "immutable": false,
       "summary": "run-streams.sh: a status bar of every loop's cycle, commits, spend and state, and tmux scrollback that works over ssh",
       "body": "Started inside tmux, run-streams.sh turns the mouse on for the session so the wheel scrolls back through the output (Ctrl-b [ also works). A pane keeps the history limit it was made with, and tmux's default is 2000 lines, so when the pane keeps fewer than RUN_STREAMS_HISTORY (200000) the script raises the session's limit and goes on in a new window, streams-NAME, passing on the RUN_STREAMS_, FEATURE_LOOP_ and VERIFICATION_LOOP_ settings; the window stays open with the output after the run until Enter (RUN_STREAMS_NEW_WINDOW=no stays in the pane). A status bar at the bottom of the pane (pane-border-status, refreshed every RUN_STREAMS_STATUS_EVERY seconds, 15) shows the run's age and total spend, the integration check's last result, and per loop its current cycle, its commits, its spend, its brief's status or how it finished, and how long since its last output line; the same line is logged every half hour, or every quarter hour outside tmux. Each loop's output now goes through llm-dlc/tools/streams_status.py tag, which prefixes it as sed did and records the 'turn done' dollar figures, the cycle and the last activity in llm-dlc/loop-summaries/run-streams-NAME/; spend and the run's start survive a restart. Commits are counted from the loops' run records.",

@@ -164,10 +164,10 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 1 | 4 | ended |
 | 2026-11-07 02:26 UTC | [761c7ea1-e32d-4b9b-81ef-1e3ada632637](traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/summary.md) | 1 | 2 | ended |
 | 2026-11-07 01:08 UTC | [38c3ac74-61ce-4832-8fda-851eeac0a3da](traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/summary.md) | 1 | 5 | ended |
-| 2026-11-07 00:11 UTC | [c2bd9df4-5f20-4312-95a4-3eb88a60e0cd](traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | 46 | 21 | open |
+| 2026-11-07 00:11 UTC | [c2bd9df4-5f20-4312-95a4-3eb88a60e0cd](traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | 46 | 21 | ended |
 | 2026-11-07 00:02 UTC | [6c5734d4-89ff-437e-bc66-c0e159c45d5c](traces/6c5734d4-89ff-437e-bc66-c0e159c45d5c/summary.md) | 1 | 2 | ended |
 | 2026-11-06 22:47 UTC | [6f7cf082-efef-4561-8de2-b54b3d27994f](traces/6f7cf082-efef-4561-8de2-b54b3d27994f/summary.md) | 6 | 6 | ended |
-| 2026-11-06 20:48 UTC | [Next multi-stream loop draft](traces/ae994066-d1ea-4620-b03e-176a07061175/summary.md) | 16 | 44 | ended |
+| 2026-11-06 20:48 UTC | [Next multi-stream loop draft](traces/ae994066-d1ea-4620-b03e-176a07061175/summary.md) | 16 | 45 | ended |
 | 2026-11-06 20:11 UTC | [0c61a765-3997-4763-acd2-113589ff7995](traces/0c61a765-3997-4763-acd2-113589ff7995/summary.md) | 6 | 12 | ended |
 | 2026-11-06 19:42 UTC | [VF-004 run_property_decider grep display](traces/2b3fe2be-7d32-44b6-8c87-3100b8426551/summary.md) | 2 | 5 | ended |
 | 2026-11-06 19:41 UTC | [b4d45e13-aa3c-46a0-8634-1baa23ce7ebb](traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/summary.md) | 1 | 5 | ended |

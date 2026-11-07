@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `c2bd9df4-5f20-4312-95a4-3eb88a60e0cd` (open) |
+| Session | `c2bd9df4-5f20-4312-95a4-3eb88a60e0cd` (ended) |
 | When | 2026-11-07 00:11 UTC to 2026-11-07 03:05 UTC (173 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.319 |
@@ -146,19 +146,19 @@ Job 20261107-024759 (at 854a0d8f756e, vm-1) passed all 5 steps in 12m50s, peak 1
 
 ### Record the foundations brief's five decisions, settled by the user as recommended
 
-change `kxnqrntnkztt` · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
+[`6f1b986dae8f`](https://github.com/pilifs/in-the-loop/commit/6f1b986dae8fd37486a8e5f4351eb188b5f0521e) · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
 
 The user adopted all five recommendations on 2026-11-07: start after the engine-priorities merge and its verified results; object inputs made by constructor or factory and labelled as that domain; a local, uncommitted proof cache; the joint example as a small Crosscut-style kernel behind one real annotated entry point; Opus 5.5 at high effort for all five loops. 'Open decisions' becomes 'Decisions' in foundations.md, its links in the heap and summaries briefs follow, and the status now waits only on the engines merge and launch steps 4-7. Checked that no link to the old anchor is left.
 
 ### Run the foundations loop without the verification pipeline: jobs are submitted for review after the run, never awaited
 
-change `xpsxzuolnwop` · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
+[`86c24d776df7`](https://github.com/pilifs/in-the-loop/commit/86c24d776df761bcf9c2ba07d8a1f19f0acb35a3) · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
 
 run-streams.sh reads a new Loop setting, '- verification: separate'. For such a brief it starts no verification loop and never waits for a job: a loop whose status says 'waiting on jobs' is counted as finished, with its jobs left for review. Without the setting nothing changes, so the engines run behaves as before. foundations.md sets it. Its rule, repeated in each stream brief: heavy work is still never run inline, but is submitted with its expected verdict or figure, committed with the change, listed under Progress for review, and the loop goes on; no loop waits for, polls or reads a result, and nothing is decided from one (the conservative choice is taken and the confirming job recorded). A step is done when its code, inline tests and job submission are committed; a criterion only a job can show is met pending review. Statuses are working, done or blocked, never waiting on jobs; the reconcile folds the streams' jobs into one list for review, and waits only for uncommitted files a separately run verification loop may leave in the default working copy. The memory note in Running it all now leaves about 25 GB for such a loop. llm-dlc/README.md documents the setting.
 
 ### Foundations: quick jobs go in at priority 10 and may be awaited briefly; long jobs are still never waited for
 
-change `nnqrnknuvslx` · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
+[`6f335998a669`](https://github.com/pilifs/in-the-loop/commit/6f335998a669f6b1a06a532f56805d57e68a6c68) · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
 
 The verification rule of foundations.md and its four stream briefs now tells jobs apart by their estimate. A quick job, a few minutes or less, is submitted with --priority 10 so a runner takes it before the long ones, and the session may await it inside its cycle: work on, poll pipeline.py status about once a minute, for at most 15 minutes after submitting, and use the result like an inline one if it is back. Otherwise, and for every long job, the job is listed for review after the run and not polled or read again. Waiting never ends a cycle or sets a status, so run-streams.sh, which waits for no job under '- verification: separate', is unchanged apart from its header comment; the bound keeps a run from hanging when no verification loop is running. The done criteria and llm-dlc/README.md say the same.
 
@@ -166,7 +166,7 @@ Checked that pipeline.py submit takes --priority (higher runs first; the pipelin
 
 ### A brief template with standing rules, the timebox first: an item that fails verification twice in a row is deferred with its finding
 
-change `xrkxxnnuwwuq` · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
+[`991cc93853e6`](https://github.com/pilifs/in-the-loop/commit/991cc93853e607a9f89191e59887992292078fe5) · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
 
 Steering a running loop from outside takes a brief edit, and a brief edit stops the loop at the next cycle, so rules a run may need belong in the brief before it starts. llm-dlc/loops/brief-template.md (new) gives the skeleton of a brief, its Loop settings keys, the two verification modes, and the standing rules every brief starts with. The first is the timebox: an item whose verification fails twice in a row (two jobs, or two inline attempts; a failure, a timeout or an out-of-memory; a resubmission with a larger budget counts) is logged under Progress as deferred by the timebox, with both attempts, the finding, and what a further attempt would try and cost, and the loop moves on. There is no third attempt: an item that fails twice has very likely been underestimated, its proof needing far more depth than the plan allowed, and it is handled separately in another session after careful consideration by a person. A rule like it would have stopped the engine-priorities loop's retries on example 071 a day earlier.
 
@@ -174,13 +174,13 @@ The foundations brief and its four streams take the rule: under separate verific
 
 ### run-streams.sh: a status bar of every loop's cycle, commits, spend and state, and tmux scrollback that works over ssh
 
-change `olwyzkwouyln` · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
+[`2deed773c22c`](https://github.com/pilifs/in-the-loop/commit/2deed773c22c5a5325f1047a9b3271c6dd861776) · [log `1f2230c9f137`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz)
 
 Started inside tmux, run-streams.sh turns the mouse on for the session so the wheel scrolls back through the output (Ctrl-b [ also works). A pane keeps the history limit it was made with, and tmux's default is 2000 lines, so when the pane keeps fewer than RUN_STREAMS_HISTORY (200000) the script raises the session's limit and goes on in a new window, streams-NAME, passing on the RUN_STREAMS_, FEATURE_LOOP_ and VERIFICATION_LOOP_ settings; the window stays open with the output after the run until Enter (RUN_STREAMS_NEW_WINDOW=no stays in the pane). A status bar at the bottom of the pane (pane-border-status, refreshed every RUN_STREAMS_STATUS_EVERY seconds, 15) shows the run's age and total spend, the integration check's last result, and per loop its current cycle, its commits, its spend, its brief's status or how it finished, and how long since its last output line; the same line is logged every half hour, or every quarter hour outside tmux. Each loop's output now goes through llm-dlc/tools/streams_status.py tag, which prefixes it as sed did and records the 'turn done' dollar figures, the cycle and the last activity in llm-dlc/loop-summaries/run-streams-NAME/; spend and the run's start survive a restart. Commits are counted from the loops' run records.
 
 ### Allow list: Filip Stankovic approved 606ed0f7, 65c491aa
 
-change `rwyrvxpxtnnv` · [log `c2a04b4f96c0`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654.jsonl.gz)
+[`12f7f7d90a89`](https://github.com/pilifs/in-the-loop/commit/12f7f7d90a8953e9ff61adb34f6d1b543be7b2e0) · [log `c2a04b4f96c0`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 

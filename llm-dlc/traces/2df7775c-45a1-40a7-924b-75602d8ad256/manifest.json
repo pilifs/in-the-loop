@@ -238,7 +238,7 @@
   "commits": [
     {
       "change_id": "yrvvnkqykoswlsnnulmwskxnruxtnrkk",
-      "commit_id": null,
+      "commit_id": "54101efabe38987d9f5360a2791ab582a882f817",
       "immutable": false,
       "summary": "Record session traces",
       "body": "The foundations reconcile records the alignment stream's conversation after its last commit, so that its trace is on its branch before the merge.",
@@ -246,7 +246,7 @@
     },
     {
       "change_id": "usumnkyrtvslnmzvmxtwyqwnsnmlmnon",
-      "commit_id": null,
+      "commit_id": "5cfe78f1dbbde465079e922432f70a9f2493b9e5",
       "immutable": false,
       "summary": "Record session traces",
       "body": "The foundations reconcile records the observations stream's conversation after its last commit, so that its trace is on its branch before the merge.",
@@ -254,7 +254,7 @@
     },
     {
       "change_id": "vrznnltvqrouzqtoynznkpyymnqlrlom",
-      "commit_id": null,
+      "commit_id": "c7c608791dc1545334ed702ab04b9e5186411ee4",
       "immutable": false,
       "summary": "Record session traces",
       "body": "The foundations reconcile records the summaries stream's conversation after its last commit, so that its trace is on its branch before the merge.",
@@ -262,7 +262,7 @@
     },
     {
       "change_id": "znkqslrsvzunnrnsxovwunkxvrnnqkry",
-      "commit_id": null,
+      "commit_id": "11435b7e7989b46adfd3761bfc7a2a049d05b954",
       "immutable": false,
       "summary": "Record session traces",
       "body": "The foundations reconcile records the heap stream's conversation after its last commit, so that its trace is on its branch before the merge.",
@@ -270,7 +270,7 @@
     },
     {
       "change_id": "vmlkxxuppzuumkktkzsolorvqvynzkms",
-      "commit_id": null,
+      "commit_id": "9bf028cc706b9e28e4ced69b4dacc8859a06e94d",
       "immutable": false,
       "summary": "Merge the four foundations streams: heap, summaries, observations and alignment",
       "body": "The reconcile of llm-dlc/loops/foundations.md. All four streams had stopped with Status: done and nothing deferred by the timebox. Each stream's last turns were recorded on its branch, their logs copied here, and the four branches merged with the default line. The workspaces heap, summaries, observations, alignment and integration were forgotten; their directories stay on disk for the user to delete.\n\nConflicts resolved: equivalence.rs (heap's object inputs, correspondence and identity comparisons against summaries' proof cache, proved helpers and per-callee refinement; summaries' replay_on now carries heap's comparisons), main.rs, examples/tools/build.py, lib/README.md, and the generated examples router (rebuilt with build.py --index-only) and trace files.\n\nThe integration check never ran a test on the combined streams, because every merge from 05:01 on conflicted. The merge found one real disagreement between streams: heap's Domain.may_alias was skipped when empty but had no serde default, so once summaries made Statement deserializable, no result could be stored in the proof cache, and compositional reuse of shop.Pricing#discount in shop.Pricing#total failed. It is fixed with the default.\n\nOther fixes: shared-IR additions threaded through (Outcome.problem filled in effects.rs and the cache's records; Counterexample.differs and .jvm stored by the cache); a proved helper's own check no longer inherits its caller's --correspondence, --nullable and --may-alias; and the canonical claim names those three options outright.\n\nVerified inline: the integration contract (lib/tests/foundations.rs) gives 24 passed, 0 unsupported, 0 failed. The whole Rust suite passes (unit tests and every integration test binary, the conformance cases on a real java among them), and so does every Python suite (verification, llm-dlc/tools, examples/tools, lib/solvers, lib/benchmark).\n\nThe brief's Progress folds the streams' work and lists the 21 jobs they left pending for review. One job came back during the run: heap's H1 benchmark, which failed (VF-014). The next step is Phase 5.\n\nOut of date in the rest of the brief: 'Where it starts from' describes the code before the streams ran. Shared-callee refinement is no longer all or nothing (summaries S5), and objects, nullability and aliasing among inputs are now supported (heap H1-H4).",
@@ -278,7 +278,7 @@
     },
     {
       "change_id": "vyqypuwxkktustunkpywyvklnvxpqqyn",
-      "commit_id": null,
+      "commit_id": "e5d8140d088a5f43529e528f596d0969680a04da",
       "immutable": false,
       "summary": "Foundations Progress: name the streams' commits by change id",
       "body": "The merge commit's Progress cited the streams' commits by commit id, but sync.py rewrites commit ids when it adds trace lines to earlier commits, and the merge's own trace commit had already done so. Every commit Progress cites is now named by its change id, which stays put, and Progress says why. Checked by resolving each id with jj log.",
@@ -286,7 +286,7 @@
     },
     {
       "change_id": "zwypsqzzunlotsnvysstsqkumxqomqoy",
-      "commit_id": null,
+      "commit_id": "21aa97b5c3125f9a42e3ff9fb98944da851e192d",
       "immutable": false,
       "summary": "Phase 5's joint run: jvmcontract compare, the four parts fed by each other on the joint example, every row checked but exact reuse at the entry points",
       "body": "jvmcontract compare BEFORE AFTER [--cache DIR] (lib/src/compare.rs) runs the foundations loop's four parts together with nothing written by hand. The entry points are checked by their observation specs and effect traces; their inputs are anchored, so no mapping is involved. Every changed kernel method pair that alignment matches is checked by the heap engine (spec::heap::check_with, new) under alignment's own proposal and the proof cache, held to its result, its exception and the identity of the result with each object parameter of its class. The report gives the obligations, what was reused, and the effort: a person's decisions in five categories, zero included, then the questions left and what nobody decided. lib/tests/compare.rs holds it to Phase 5's table on the fixture and its six defects, inline, in 15 s. Every row passes except exact reuse, which is partial: the kernel's rerun results are exact hits from the first run, but the entry points' effect checks are not cached yet. That is the next step, then examples 190-199.\n\nTwo disagreements between streams were reconciled. First, alignment proposed an output relation for a result whose class changed shape, which heap holds for a person's approval, although heap compares such a result itself under the equations of an input of the same class. Pricing#withQuantity was therefore unresolved under alignment's proposal but verified under the golden correspondence. Alignment now leaves the relation out when an input's equations say the same, term by term (tests/alignment.rs updated; Q#make, with no such input, keeps its relation). Second, heap's fixture note: the alias-to-copy copy threw for a quantity below 1, so the defect was refuted on the exception, not on result == q. The copy is now made for one item and then given the quantity; on a JVM, over 270 cases, every field agrees with after's and result == q never holds. Heap's two tests of that defect were updated to match. Also added: proof_cache::key_mark and key_since, so that a proposal's evidence names its claim key, and the fixture's compiler moved to lib/tests/foundations_fixture/, shared with tests/foundations.rs.",
@@ -294,7 +294,7 @@
     },
     {
       "change_id": "uwomrnttmmqumppxkpzwnoswmzmtquyx",
-      "commit_id": null,
+      "commit_id": "e0cf1af620742b711e07dbff3bfd6ca949d4e99b",
       "immutable": false,
       "summary": "The entry points' effect-trace proofs under the proof cache: Phase 5's exact-reuse row passes, and the stale-cache defect is checked at the boundary",
       "body": "effects::check_with runs an entry point's effect-trace proof with equivalence's proof cache, from jvmcontract effects --cache DIR and from compare --cache. The proof is a regression check of the two builds rewritten with recording stubs, so its claim key digests their closures from the generated entry method: the stubs, and with them the environment model they encode (the modeled calls in order, the payload paths snapshotted, the trace bound, the exception classes, the string literals). What the result adds to the proof (the specs' unresolved parts, the external inputs, the status mapping) is worked out again on every run, and a stored refutation's witness is replayed on a JVM again. Each result records its claim key and any exact reuse.\n\nVerified inline. tests/effects.rs has a new test, an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged: a rerun is an exact hit. One more attempt allowed, a payload path no longer snapshotted, a @ResponseStatus added to the route (the status then unresolved) and a dropped event in the handler each miss under another key. A rerun of the dropped event reuses its stored refutation, replayed on a JVM with the same attempts. The Spring stand-in HttpStatus gained CREATED for it. In tests/compare.rs the joint run's rerun reuses POST /quotes's proof under the first run's key. The defects that POST /quotes reaches prove it again. alias-to-copy changes only a method the route doesn't reach, so it reuses the proof, rightly. Every row of Phase 5's table now passes. The fixture is not yet examples 190-199, which is next.\n\nFull Rust suite: lib 203, alignment 34, compare 1, conformance 9 (2 ignored), effects 17, foundations 3, heap 46 (9 ignored), integration 64, observations 12, skill 1, summaries 40. In the full run, integration's the_tools_own_checker_agrees_with_jbmc_on_integer_proofs timed out under load (Engine::probe budgets by wall clock, a known note in the brief) and passed alone in 8 s. The brief's Progress records the cycle; the rest of the brief is unchanged and still right.",
@@ -302,7 +302,7 @@
     },
     {
       "change_id": "rnmyrzpwnvrsrqxzyqusvnttzryvpuxq",
-      "commit_id": null,
+      "commit_id": "53d8fa214362573b3cbcad797673324326aca328",
       "immutable": false,
       "summary": "Examples 190-196: the joint example run by build.py through jvmcontract compare, on the new shop app; Phase 5 done (verification pending)",
       "body": "Phase 0 asked Phase 5 to make the joint example's fixture an example under the numbers 190-199. The new app examples/apps/shop is the fixture's before build, with Spring stand-ins and plain tests through the route; seven examples patch it into the fixture's after build (190, verified) and each defect overlaid on it: offset (191) and alias-to-copy (192) refuted in the kernel, dropped-effect (193) and duplicated-effect (194) refuted at the route, outside-domain (195) verified within the constructor-made domain, route-change (196) unresolved with four questions. A new technique tag, joint-run, groups them.\n\nbuild.py gained run_tool_compare: jvmcontract compare twice under one fresh proof cache, the page from the first run and the verdict from the rerun's JSON, the verdict being the example's subject (an entry point's handler or a kernel method) and every other part recorded in the result's new joint field (verdict, exact hit on the rerun, proved helpers, obligations, decisions, questions, assumptions). jvmcontract compare gained --report DIR (with --sources and --base), writing compare.sarif with an effects-changed finding per refuted entry point and a behaviour-changed one per refuted kernel pair, since build.py records a violation only with a report.\n\nVerified: jvmcontract compare inline on the app compiled unpatched and patched gives each example's expected verdict, every decided proof an exact hit on the rerun, and the SARIF findings anchored in the app's sources; the app's tests pass on every version but offset; six new mocked runner tests and the rest of test_build.py (179) pass; cargo tests lib 203, compare 1 (now checking the findings), effects 17, foundations 3 pass. build.py itself is not run inline on B9 examples: seven quick jobs, none yet run (no runner active), for review: 20261107-140010-example-190-through-build-py-the-joint-e, 20261107-140010-example-191-through-build-py-the-joint-e, 20261107-140010-example-192-through-build-py-the-joint-e, 20261107-140010-example-193-through-build-py-the-joint-e, 20261107-140010-example-194-through-build-py-the-joint-e, 20261107-140011-example-195-through-build-py-the-joint-e, 20261107-140011-example-196-through-build-py-the-joint-e.\n\nThe brief's Progress records this cycle and sets the status to done: every row of Phase 5's table passes, and what is left (heap's two fixture notes, the temporary paths a reuse names) is small and bears on no row.",
@@ -310,7 +310,7 @@
     },
     {
       "change_id": "rwyrvxpxtnnvnmzuwxtplktzwyoyzlls",
-      "commit_id": null,
+      "commit_id": "12f7f7d90a8953e9ff61adb34f6d1b543be7b2e0",
       "immutable": false,
       "summary": "Allow list: Filip Stankovic approved 606ed0f7, 65c491aa",
       "body": "Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n606ed0f7  long-token  pro…71 (48 chars): A test's work directory name, property-after-withQuantity-<20-digit hash of the test's arguments> (48 chars), listed by ls in lib/tests/heap.rs's temporary directory: no credential.\n65c491aa  public-ip  5.…3: A JVMS section number (5.4.3.3, field and method resolution) cited in a doc comment of lib/src/relocate.rs, not an IP address",
@@ -322,61 +322,61 @@
       "bytes": 448206,
       "lines": 53,
       "gzip_bytes": 122068,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/32a128ed42692d953a17541a5fd0d9cc846c0346d78f289cb099e5a489204bda.jsonl.gz"
     },
     "442eb34559315b4471f8e6dfeaf67259fee878c9fed3445386a2897e7b366291": {
       "bytes": 10541792,
       "lines": 3205,
       "gzip_bytes": 2035563,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/442eb34559315b4471f8e6dfeaf67259fee878c9fed3445386a2897e7b366291.jsonl.gz"
     },
     "5ebd1506381c624d565b4f7d2c4425c6f3f2962b37d409fc89eb02fd237886d7": {
       "bytes": 340802,
       "lines": 65,
       "gzip_bytes": 86960,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/5ebd1506381c624d565b4f7d2c4425c6f3f2962b37d409fc89eb02fd237886d7.jsonl.gz"
     },
     "66aa3b6a8826f9e509bf45e2ad6c3216e5372510f3a0276a1b831cfc1032cbdf": {
       "bytes": 353465,
       "lines": 53,
       "gzip_bytes": 99258,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/66aa3b6a8826f9e509bf45e2ad6c3216e5372510f3a0276a1b831cfc1032cbdf.jsonl.gz"
     },
     "7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8": {
       "bytes": 2727054,
       "lines": 784,
       "gzip_bytes": 500872,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz"
     },
     "84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09": {
       "bytes": 2858637,
       "lines": 827,
       "gzip_bytes": 520199,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09.jsonl.gz"
     },
     "bbe2fe3751d5ea61d79acf7dc6487ce96b3a792a0af1fd5ed159287985725aa4": {
       "bytes": 422883,
       "lines": 73,
       "gzip_bytes": 112501,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/bbe2fe3751d5ea61d79acf7dc6487ce96b3a792a0af1fd5ed159287985725aa4.jsonl.gz"
     },
     "dd35bcf1c82415c504092d0500554552b7b869e5846d26e6477f5691d9f742f0": {
       "bytes": 5356853,
       "lines": 1662,
       "gzip_bytes": 976099,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/dd35bcf1c82415c504092d0500554552b7b869e5846d26e6477f5691d9f742f0.jsonl.gz"
     },
     "e3cb53ccfa58fed7d9f7cfd482eeac70bf5ce7d10f18dfaa93e2d17fa2224e7d": {
       "bytes": 10029506,
       "lines": 3062,
       "gzip_bytes": 1907813,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/e3cb53ccfa58fed7d9f7cfd482eeac70bf5ce7d10f18dfaa93e2d17fa2224e7d.jsonl.gz"
     },
     "f971edf822adedbdd460f307a2c61a517c6a6a45d4a477d677987a3e7fbda88e": {
       "bytes": 7266185,
       "lines": 2181,
       "gzip_bytes": 1390827,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/f971edf822adedbdd460f307a2c61a517c6a6a45d4a477d677987a3e7fbda88e.jsonl.gz"
     }
   },
   "redaction_policy": 4,

@@ -413,7 +413,7 @@
     },
     {
       "change_id": "xnzrtosuwnrvlxlptvsmkmkxxrplkmuo",
-      "commit_id": null,
+      "commit_id": "6158ee20b0bbed80e9dcd26f0347d675cc5246b0",
       "immutable": false,
       "summary": "Draft the foundations brief: four parallel streams for relational heap, proof caching, entry-point observations and mapping inference",
       "body": "A draft, not approved, of the next multi-stream loop. llm-dlc/loops/foundations.md is the main brief; foundations-heap.md, -summaries.md, -observations.md and -alignment.md are its four streams, one per priority of the product vision: relational heap and object correspondence, compositional summaries and proof caching, automatic entry-point observations, and state-mapping and alignment inference. The scope is foundations, small to medium steps, with a Phase 0 shared IR (object domain, observations, correspondence, hints file, claim key) committed before the streams fork so they meet at the same types, and a small joint demonstration after the merge. It starts only after the engine-priorities merge, since the heap stream rewrites the own checker's references in lib/src/bmc/, which that loop's native stream is still changing. Five decisions are left open for the user.\n\nThe two inputs are outside reviews shared as ChatGPT links, which only render after login; their text was extracted from the share pages' embedded data and saved as foundations-review-vision.md and foundations-review-platform.md, unchanged apart from a header. The brief's account of where the code stands (references always concrete, object inputs refused, mappings all hand-written, no proof reuse across runs, boundary analysis checked for drift only) was surveyed and spot-checked against the code at e42ea83. Nothing was built or run; the loop scripts don't know the name 'foundations' yet, which is a step after approval.",
@@ -421,7 +421,7 @@
     },
     {
       "change_id": "sluwnywnuoqylnttrnlxtnkzqsssxzlk",
-      "commit_id": null,
+      "commit_id": "cd4fb31e0a53d42124c7cfe252844ef1d93e1660",
       "immutable": false,
       "summary": "Revise the foundations draft after an outside review: a preservation contract inference can't weaken, and one four-stream example as the gate",
       "body": "The draft of llm-dlc/loops/foundations.md and its four stream briefs was reviewed by an outside reviewer, saved as foundations-review-draft.md (extracted from the ChatGPT share page's embedded data, unchanged apart from a header). The review kept the scope, the four-way split and the deferrals and changed the acceptance contract; the briefs now take that in. Every comparison has a preservation contract (external inputs and required observations) that inference works under and can't weaken, with observation accounting and intent kept apart from evidence; the hints file has both states. The joint example, a small kernel behind one real entry point, is the loop's gate: its fixture, golden IR files and stub interfaces are fixed in Phase 0, each stream's core includes its part of it, and a partial result is recorded as partial. run-streams.sh is to gain an integration check that merges the streams' current commits in a disposable workspace while they run, and a stream is finished only by its status, not by stopping. Heap: constructor-made domains labelled as such, identity relations compared within a version, input-object and allocation bounds apart, replay required with object inputs. Summaries: a canonical claim projection as the cache key, looked up on the prepared claim, adversarial invalidation tests, and a narrow mandatory S4 with a call-site applicability check and acyclic dependencies. Observations: effects as an ordered trace of modeled call attempts with payload snapshots, one environment model for both versions, and visible bounds. Planted defects now target the abstractions too.\n\nOne claim of the review was checked against the code rather than taken from it: shared.rs's shape is an exact fingerprint of a method body (constant-pool references and exception catch types resolved), but covers nothing outside the body, so S1 adds hierarchy, dispatch targets, annotations and configuration. Every anchor link between the briefs was checked to resolve. Still a draft: nothing was built or run.",
@@ -429,7 +429,7 @@
     },
     {
       "change_id": "kwwqosznuxtmllxvtyxqkswlknssuyzp",
-      "commit_id": null,
+      "commit_id": "c0f6b11e3e7612ac886f40b926e28a7a631776a7",
       "immutable": false,
       "summary": "Prepare the foundations loop for launch: its names, an integration check in run-streams.sh, and the streams' sessions",
       "body": "feature-loop.sh knows foundations and foundations-STREAM, and run-streams.sh knows foundations with its four streams (heap, summaries, observations, alignment). run-streams.sh gains an integration check for a brief whose Loop settings name '- integration: SCRIPT': while the streams run, it keeps a workspace of its own, integration, and whenever a stream's @- moves (at most hourly, RUN_STREAMS_INTEGRATION_EVERY) makes there a merge of every stream's @-, runs the script in a systemd scope named like a loop's (feature-loop-NAME-integration, 3.5 GB) so the verification runner budgets for it, and writes the result to llm-dlc/loop-summaries/NAME-integration.md, which the stream briefs now read every cycle. Conflicts are reported with the files, without running the script; each check abandons the previous merge; the check stops when every stream is finished and on Ctrl-C. The engines brief names no script, so its run is unchanged. foundations' script is llm-dlc/tools/foundations-integration.sh, which runs lib/tests/foundations.rs, to be written in Phase 0. The five briefs have session ids, the streams fork from the planning session ae994066 (this one), and the main brief lists what is left before launch: rebase onto the merged engine-priorities, Phase 0 (deferred because it rewrites statement.rs, which the jbmc stream is changing), merging into the default line, closing the planning session.",
@@ -437,7 +437,7 @@
     },
     {
       "change_id": "kxnqrntnkzttunqxzkktlvsmqyokszpr",
-      "commit_id": null,
+      "commit_id": "6f1b986dae8fd37486a8e5f4351eb188b5f0521e",
       "immutable": false,
       "summary": "Record the foundations brief's five decisions, settled by the user as recommended",
       "body": "The user adopted all five recommendations on 2026-11-07: start after the engine-priorities merge and its verified results; object inputs made by constructor or factory and labelled as that domain; a local, uncommitted proof cache; the joint example as a small Crosscut-style kernel behind one real annotated entry point; Opus 5.5 at high effort for all five loops. 'Open decisions' becomes 'Decisions' in foundations.md, its links in the heap and summaries briefs follow, and the status now waits only on the engines merge and launch steps 4-7. Checked that no link to the old anchor is left.",
@@ -445,7 +445,7 @@
     },
     {
       "change_id": "xpsxzuolnwopysqwwnprqpklkzttnnto",
-      "commit_id": null,
+      "commit_id": "86c24d776df761bcf9c2ba07d8a1f19f0acb35a3",
       "immutable": false,
       "summary": "Run the foundations loop without the verification pipeline: jobs are submitted for review after the run, never awaited",
       "body": "run-streams.sh reads a new Loop setting, '- verification: separate'. For such a brief it starts no verification loop and never waits for a job: a loop whose status says 'waiting on jobs' is counted as finished, with its jobs left for review. Without the setting nothing changes, so the engines run behaves as before. foundations.md sets it. Its rule, repeated in each stream brief: heavy work is still never run inline, but is submitted with its expected verdict or figure, committed with the change, listed under Progress for review, and the loop goes on; no loop waits for, polls or reads a result, and nothing is decided from one (the conservative choice is taken and the confirming job recorded). A step is done when its code, inline tests and job submission are committed; a criterion only a job can show is met pending review. Statuses are working, done or blocked, never waiting on jobs; the reconcile folds the streams' jobs into one list for review, and waits only for uncommitted files a separately run verification loop may leave in the default working copy. The memory note in Running it all now leaves about 25 GB for such a loop. llm-dlc/README.md documents the setting.",
@@ -453,7 +453,7 @@
     },
     {
       "change_id": "nnqrnknuvslxxulpvmmpwwluzqwunrxy",
-      "commit_id": null,
+      "commit_id": "6f335998a669f6b1a06a532f56805d57e68a6c68",
       "immutable": false,
       "summary": "Foundations: quick jobs go in at priority 10 and may be awaited briefly; long jobs are still never waited for",
       "body": "The verification rule of foundations.md and its four stream briefs now tells jobs apart by their estimate. A quick job, a few minutes or less, is submitted with --priority 10 so a runner takes it before the long ones, and the session may await it inside its cycle: work on, poll pipeline.py status about once a minute, for at most 15 minutes after submitting, and use the result like an inline one if it is back. Otherwise, and for every long job, the job is listed for review after the run and not polled or read again. Waiting never ends a cycle or sets a status, so run-streams.sh, which waits for no job under '- verification: separate', is unchanged apart from its header comment; the bound keeps a run from hanging when no verification loop is running. The done criteria and llm-dlc/README.md say the same.\n\nChecked that pipeline.py submit takes --priority (higher runs first; the pipeline README's example uses 10) and that status lists every workspace's jobs; bash -n on run-streams.sh. Documentation and brief changes only.",
@@ -461,7 +461,7 @@
     },
     {
       "change_id": "xrkxxnnuwwuqwtpmysqsyymromntuuqw",
-      "commit_id": null,
+      "commit_id": "991cc93853e607a9f89191e59887992292078fe5",
       "immutable": false,
       "summary": "A brief template with standing rules, the timebox first: an item that fails verification twice in a row is deferred with its finding",
       "body": "Steering a running loop from outside takes a brief edit, and a brief edit stops the loop at the next cycle, so rules a run may need belong in the brief before it starts. llm-dlc/loops/brief-template.md (new) gives the skeleton of a brief, its Loop settings keys, the two verification modes, and the standing rules every brief starts with. The first is the timebox: an item whose verification fails twice in a row (two jobs, or two inline attempts; a failure, a timeout or an out-of-memory; a resubmission with a larger budget counts) is logged under Progress as deferred by the timebox, with both attempts, the finding, and what a further attempt would try and cost, and the loop moves on. There is no third attempt: an item that fails twice has very likely been underestimated, its proof needing far more depth than the plan allowed, and it is handled separately in another session after careful consideration by a person. A rule like it would have stopped the engine-priorities loop's retries on example 071 a day earlier.\n\nThe foundations brief and its four streams take the rule: under separate verification it counts the failures a loop sees (quick jobs that came back, inline attempts); a stream whose core item is deferred ends blocked naming it; a joint-example row whose item is deferred makes Phase 5 partial; the reconcile lists every deferred item first for review; and no Loop until treats a deferral as a reason to go on. llm-dlc/README.md lists the template. Every anchor link between the briefs resolves, apart from one inside the template's fenced skeleton, which belongs to the brief made from it.",
@@ -469,7 +469,7 @@
     },
     {
       "change_id": "olwyzkwouylnzlsymynrslxstpoulspl",
-      "commit_id": null,
+      "commit_id": "2deed773c22c5a5325f1047a9b3271c6dd861776",
       "immutable": false,
       "summary": "run-streams.sh: a status bar of every loop's cycle, commits, spend and state, and tmux scrollback that works over ssh",
       "body": "Started inside tmux, run-streams.sh turns the mouse on for the session so the wheel scrolls back through the output (Ctrl-b [ also works). A pane keeps the history limit it was made with, and tmux's default is 2000 lines, so when the pane keeps fewer than RUN_STREAMS_HISTORY (200000) the script raises the session's limit and goes on in a new window, streams-NAME, passing on the RUN_STREAMS_, FEATURE_LOOP_ and VERIFICATION_LOOP_ settings; the window stays open with the output after the run until Enter (RUN_STREAMS_NEW_WINDOW=no stays in the pane). A status bar at the bottom of the pane (pane-border-status, refreshed every RUN_STREAMS_STATUS_EVERY seconds, 15) shows the run's age and total spend, the integration check's last result, and per loop its current cycle, its commits, its spend, its brief's status or how it finished, and how long since its last output line; the same line is logged every half hour, or every quarter hour outside tmux. Each loop's output now goes through llm-dlc/tools/streams_status.py tag, which prefixes it as sed did and records the 'turn done' dollar figures, the cycle and the last activity in llm-dlc/loop-summaries/run-streams-NAME/; spend and the run's start survive a restart. Commits are counted from the loops' run records.",
@@ -477,7 +477,7 @@
     },
     {
       "change_id": "mqztqpwnknvuyprtxktqqoozxpnxplul",
-      "commit_id": null,
+      "commit_id": "d49ba0286aa1bb3dd696f80f2240d57d2a9719d6",
       "immutable": false,
       "summary": "The foundations run stays in its tmux pane: '- new-window: no', a brief setting RUN_STREAMS_NEW_WINDOW overrides; and closing the pane no longer leaves loops running",
       "body": "run-streams.sh reads '- new-window: yes|no' from the brief's Loop settings, RUN_STREAMS_NEW_WINDOW winning over it, so moving to a new window with a long history stays available for later briefs. foundations.md sets no: its run stays in the pane it was started in, with the bar there; since that pane keeps the history it was made with, the script raises the session's limit for new panes and says so, and the brief says to start in a pane made after 'tmux set -g history-limit 200000'. A value other than yes or no exits with status 2. The template lists the key.\n\nTesting it showed a bug from the previous commit: the status bar's loop runs in a process group of its own, so killing the tmux server left it running, and it went on writing to a later server of the same name. run-streams.sh now treats a hangup like Ctrl-C (stop every loop), and the status bar and the integration check end when the script is gone. Verified in an isolated tmux server (tmux -L) with stub loops: the brief's no kept the run in window 0 with the bar and raised the session's history-limit; RUN_STREAMS_NEW_WINDOW=yes moved it to streams-foundations; 'maybe' exited 2; and killing the server three seconds into a run left no process behind. The two renderers orphaned by the earlier tests were stopped.",
@@ -485,7 +485,7 @@
     },
     {
       "change_id": "owqrsutpkwkvlporvszoxyqtvzmxlozv",
-      "commit_id": null,
+      "commit_id": "486a5ec9c36469f941857dcafdf56889e8163553",
       "immutable": false,
       "summary": "Recheck the foundations brief against main after the engine-priorities merge",
       "body": "The brief's starting point was recounted at e42ea83, before the engines merge. Rechecked on main at ea315037: line numbers moved (Val::R at bmc/mod.rs:316, same_shape :486, unsupported_parameter :290, record_of equivalence.rs:616, the refusals that suggest an expression :768-810); arrays of references (anewarray, aaload, aastore over known objects or null) and application static fields with class initialization are now implemented, so the heap stream's H0 is marked done; and aliasing among objects a method makes itself is already decided (aliasedLocals, aliasedObjects, writeThrough have verdicts), so H1 keeps those verdicts rather than earning them, and H2's first targets are the conformance cases outside the domain for their inputs: twoArrays with the same array twice, and length and lengthOrMinusOne with a null array. Parameters are still primitives and primitive arrays only.\n\nChecked by reading the merged code and lib/tests/conformance.rs; a brief change only.",
@@ -493,11 +493,19 @@
     },
     {
       "change_id": "rvxkytqyxunzzwnpplmomsnpxursnolr",
-      "commit_id": null,
+      "commit_id": "b927e5df1be94b21de89351736978f469e33553a",
       "immutable": false,
       "summary": "Foundations Phase 0: the shared IR in lib/src/spec, each stream's interface, and the joint example as an executable integration contract",
       "body": "lib/src/spec/mod.rs holds the types the four foundations streams meet at, serializable both ways: a comparison's preservation contract (external inputs and the observations the old version is held to), the object domain (classes, input-object and allocation bounds per version, nullability, aliasing, how inputs are made and the label a result states), observations beyond result and exception (field paths, identity relations within a version, effects as modeled call attempts, status), the environment model (one for both versions, exact order, a trace bound), the correspondence between old and new internal states, of which --before-arguments and --results-agree-when are special cases (Correspondence::from_flags), the hints file with intent and evidence kept apart, the canonical claim with nothing result-dependent in it, and an outcome with its observation accounting. Statement gains an optional spec field, None everywhere, so no recorded result changes. heap.rs (check), cache.rs (key, lookup, store, callee_reuse), observe.rs (entry_points, compare, effect_log, check) and align.rs (propose) are the streams' interfaces, each returning a named Unsupported until its stream does its part.\n\nlib/tests/fixtures/foundations/ is the joint example: a pricing kernel behind one real annotated route (POST /quotes, which sends a QuoteEvent), refactored from a primitive amount to a Money value object with a rewritten discount helper, six defects overlaid on the refactor (offset, alias-to-copy, dropped-effect, duplicated-effect, outside-domain, route-change), a string route left unresolved, and golden files of its IR with the verdict every case must reach. All eight builds compile against the Spring stand-ins, and on a real JVM (JDK 25.0.5) before and after agree on every probed input while each defect differs exactly where intended (outside-domain not at all through the constructor). lib/tests/foundations.rs checks that the golden files round-trip through the types and runs 24 checks over the four parts: all unsupported now, none failing; foundations-integration.sh passes on it. The briefs record Phase 0, the interface each stream owns, the reserved example numbers (150-199) and a pre-existing flaky timing test in bmc/bits.rs that failed once in three unit runs under load; lib/README.md describes the IR.\n\nVerified inline: cargo build; the spec unit tests (3); tests/foundations.rs (3 tests, 24 checks unsupported, 0 failed); the unit suite (183 passing in two of three runs, the flaky timing test failing in the third); tests/integration.rs (64 passed). No job submitted: nothing here is a proof.",
       "log_sha256": "8e27c1ead74cb70d000b29cc3a236384267d0986a66e303056f356f3512204a3"
+    },
+    {
+      "change_id": "lnnwpumqprwzooumlvsovovsznspwxtw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "83a8fc8b7e7ac9d6a4dc29eecbf432860b9ba1484e8316c35ebaeb987879a732"
     }
   ],
   "logs": {
@@ -529,13 +537,13 @@
       "bytes": 4547273,
       "lines": 1754,
       "gzip_bytes": 750014,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/ae994066-d1ea-4620-b03e-176a07061175/83a8fc8b7e7ac9d6a4dc29eecbf432860b9ba1484e8316c35ebaeb987879a732.jsonl.gz"
     },
     "8e27c1ead74cb70d000b29cc3a236384267d0986a66e303056f356f3512204a3": {
       "bytes": 4380799,
       "lines": 1696,
       "gzip_bytes": 713436,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/ae994066-d1ea-4620-b03e-176a07061175/8e27c1ead74cb70d000b29cc3a236384267d0986a66e303056f356f3512204a3.jsonl.gz"
     },
     "9db884ffdc7686815d970ef7fa3781e3ff662daf6396ff490420a0beb6b0d882": {
       "bytes": 2792303,
