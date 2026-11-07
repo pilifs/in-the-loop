@@ -1,0 +1,578 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam",
+  "title": "JBMC's stubs on no path are no gaps: examples 071 and 013 under strict, and the conformance corpus under JBMC and auto",
+  "status": "failed",
+  "summary": "failed: 4 passed, 1 failed step(s) in 12m54s, peak 1.1 GiB (estimated 25m00s, 3.0 GiB); 9 output file(s) changed; signals: example:as-expected×1; cargo:tests×1",
+  "attention": [
+    "step 3 (071: the first two proofs stand with no gap) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam.json",
+    "sha256": "03fe46ae4d20a562a7179cf2eb97d38e002b0bba28665dc916c55412ec8431ee",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam",
+      "title": "JBMC's stubs on no path are no gaps: examples 071 and 013 under strict, and the conformance corpus under JBMC and auto",
+      "description": "Item 3 of llm-dlc/loops/engine-priorities.md's Progress (Phase 5). Job 20261106-203501 found 071's first two property proofs still no verdict under strict: the models of Enum.<init>, List.of and List.copyOf are used, but JBMC's gap preflight (lib/src/jbmc_gaps.rs) walks JBMC's call graph, which takes every branch, and reaches the stubs Collection.isEmpty and Collection.toArray in the model's ImmutableCollections.listCopy, which calls them only for a collection other than the immutable lists List.of makes, and no path gives it one (Decision's record constructor copies List.of's list). Now, when the call graph reaches a stub, the preflight also runs JBMC's symbolic execution of the proof (jbmc --program-only with the proof's unwind, unwinding assertions and options, over every input, solving nothing), reads which functions its formula's steps come from by the goto listing's location numbers (each checked against the listing's comment for it), and a stub none of them comes from is no gap; a run that fails, does not finish within the preflight's minute or does not match leaves the call graph's gaps. Checked inline: unit tests, including a real JBMC 6.11.0 run on tests/fixtures/jbmc-paths/P.java (List.copyOf over List.of's list: the two stubs reached in the call graph, not entered; over an opaque Collection: entered, a gap); the whole Rust suite passes. Steps: build; 071 under strict (expected violation, as recorded); a check that 071's obligations 1 and 2 are verified with no gap, 3 a violation, and its output names the stubs as never entered; 013 under strict (expected violation) with no JBMC gap left; the conformance corpus under JBMC and auto, strict (the ignored test), which must raise no disagreement with the JVM now that fewer stubs are gaps.",
+      "kind": "model",
+      "capabilities": [
+        "B11",
+        "B9",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "071",
+          "013"
+        ],
+        "paths": [
+          "lib/src/jbmc_gaps.rs"
+        ],
+        "jobs": [
+          "20261106-203501"
+        ]
+      },
+      "expected": "071 and 013 give their recorded verdicts (violation) under strict; 071's obligations 1 and 2 verified with no gap and 3 a violation; 071's and 013's outputs name Collection.isEmpty and toArray as never entered and list no jbmc gap; the conformance test passes under JBMC and auto",
+      "submitted": {
+        "at": "2026-11-07T01:20:13+00:00",
+        "session": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+        "by": "claude (engines loop)"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "25m",
+        "memoryLimit": "3.5G",
+        "timeout": "90m",
+        "notes": "071's JBMC runs took 0.15 s each and 013's under a minute in job 20261106-203501; the symbolic execution adds one such run per preflight that reaches a stub; the JBMC conformance test took about 11 min in job 20261106-203501's step 6 and peaked at 1.0 GiB with JBMC capped at 2 GiB"
+      },
+      "steps": [
+        {
+          "name": "build jvmcontract",
+          "run": "cd lib && cargo build --release",
+          "cwd": "."
+        },
+        {
+          "name": "example 071 (B11) under strict",
+          "run": "python3 examples/tools/build.py 071",
+          "cwd": "."
+        },
+        {
+          "name": "071: the first two proofs stand with no gap",
+          "run": "python3 -c \"import json,glob; d=glob.glob('examples/071-*')[0]; r=json.load(open(d+'/result.json')); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); out=open(d+'/verifier-output.txt').read(); print([l for l in out.splitlines() if 'never enters' in l or 'jbmc gap' in l]); assert got[0]==('verified',[]) and got[1]==('verified',[]) and got[2][0]=='violation', got; assert 'never enters' in out and 'java.util.Collection.isEmpty()' in out and 'jbmc gap:' not in out\"",
+          "cwd": "."
+        },
+        {
+          "name": "example 013 (B9) under strict, no JBMC gap",
+          "run": "python3 examples/tools/build.py 013 && python3 -c \"import glob; out=open(glob.glob('examples/013-*/verifier-output.txt')[0]).read(); print([l for l in out.splitlines() if 'never enters' in l or 'jbmc gap' in l]); assert 'never enters' in out and 'jbmc gap:' not in out\"",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-paths.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse",
+        "examples/013-longest-log-wins-breaks-election-safety",
+        "lib/target/conformance-jbmc-paths.log"
+      ]
+    }
+  },
+  "sourceCommit": "8b45798e6417e08958022d579db23f765b60d4a0",
+  "startedAt": "2026-11-07T01:48:16+00:00",
+  "finishedAt": "2026-11-07T02:01:11+00:00",
+  "wallSeconds": 775.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1920315,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1500.0,
+    "notes": "071's JBMC runs took 0.15 s each and 013's under a minute in job 20261106-203501; the symbolic execution adds one such run per preflight that reaches a stub; the JBMC conformance test took about 11 min in job 20261106-203501's step 6 and peaked at 1.0 GiB with JBMC capped at 2 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1140219904,
+    "wallSeconds": 774.8,
+    "cpuSeconds": 802.7,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 92.61,
+      "cpuSeconds": 121.739,
+      "cpuThrottledSeconds": 0.505,
+      "peakMemoryBytes": 1140219904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-jvmcontract.log",
+        "lines": 46,
+        "bytes": 1544,
+        "sha256": "6fd93dbabe9e37cadc08c2684210b532fb117250c789d237c013478e8a5f4953",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling unicode-ident v1.0.27",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling memchr v2.8.3",
+        "   Compiling cc v1.10.0",
+        "   Compiling syn v3.0.9",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling psm v0.1.32",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling zmij v1.0.23",
+        "   Compiling cfg-if v1.0.5",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling strsim v0.11.1",
+        "   Compiling serde v1.0.229",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling heck v0.5.0",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 32s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 071 (B11) under strict",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 4.41,
+      "cpuSeconds": 5.714,
+      "cpuThrottledSeconds": 0.639,
+      "peakMemoryBytes": 136175616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-071-b11-under-strict.log",
+        "lines": 20,
+        "bytes": 797,
+        "sha256": "464dd8745ee29e947c5cd725fcd19eda3563c43956072eb3def5fdde47292ea2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: violation (as expected)",
+          "groups": [
+            "071",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 0.8 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 0.8 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · cargo build jvmcontract",
+        "  · cargo build jvmcontract: exited 0, 0.0 s",
+        "  · jvmcontract prove",
+        "  · jvmcontract prove: exited 1, 0.9 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "071: the first two proofs stand with no gap",
+      "run": "python3 -c \"import json,glob; d=glob.glob('examples/071-*')[0]; r=json.load(open(d+'/result.json')); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); out=open(d+'/verifier-output.txt').read(); print([l for l in out.splitlines() if 'never enters' in l or 'jbmc gap' in l]); assert got[0]==('verified',[]) and got[1]==('verified',[]) and got[2][0]=='violation', got; assert 'never enters' in out and 'java.util.Collection.isEmpty()' in out and 'jbmc gap:' not in out\"",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.029,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 8015872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-071-the-first-two-proofs-stand.log",
+        "lines": 7,
+        "bytes": 1940,
+        "sha256": "20acf27051e8192f70e9e4ed08b7f93b688b5ced5708f8be68a05fbcbee893ee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"<string>\", line 1, in <module>",
+        "    import json,glob; d=glob.glob('examples/071-*')[0]; r=json.load(open(d+'/result.json')); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); out=open(d+'/verifier-output.txt').read();",
+        "                                                                                                                                                                                                                                                                                                            ",
+        "AssertionError: [('unverifiable', []), ('unverifiable', []), ('violation', [])]",
+        "[('unverifiable', []), ('unverifiable', []), ('violation', [])]",
+        "[\"note: JBMC's call graph reaches 2 stubs that its symbolic execution of the proof (0.1 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Collection.isEmpty(), java.util.Collection.toArray()\", \"note: JBMC's call graph reaches 2 stubs that its symbolic execution of "
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 013 (B9) under strict, no JBMC gap",
+      "run": "python3 examples/tools/build.py 013 && python3 -c \"import glob; out=open(glob.glob('examples/013-*/verifier-output.txt')[0]).read(); print([l for l in out.splitlines() if 'never enters' in l or 'jbmc gap' in l]); assert 'never enters' in out and 'jbmc gap:' not in out\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 4.811,
+      "cpuSeconds": 7.082,
+      "cpuThrottledSeconds": 1.047,
+      "peakMemoryBytes": 136736768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-013-b9-under-strict-no.log",
+        "lines": 23,
+        "bytes": 1047,
+        "sha256": "f40da34cd294b003caebc9ed67b30233a388ee9d0764ff22d73293b66ec1f515",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 22,
+          "text": "013-longest-log-wins-breaks-election-safety: violation (as expected)",
+          "groups": [
+            "013",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "013-longest-log-wins-breaks-election-safety: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 0.8 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 0.8 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · javac unpatched quorum main",
+        "  · javac unpatched quorum main: exited 0, 0.8 s",
+        "  · cargo build jvmcontract",
+        "  · cargo build jvmcontract: exited 0, 0.0 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.5 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "013-longest-log-wins-breaks-election-safety: violation (as expected)",
+        "[\"note: JBMC's call graph reaches 2 stubs that its symbolic execution of the proof (0.1 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Collection.isEmpty(), java.util.Collection.toArray()\"]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-paths.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 672.799,
+      "cpuSeconds": 668.132,
+      "cpuThrottledSeconds": 0.438,
+      "peakMemoryBytes": 947888128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-conformance-corpus-under-jbmc.log",
+        "lines": 313,
+        "bytes": 22599,
+        "sha256": "6e9da104b55e00be06f2c7881a87c5232ba88bd7fb06b21263724c8877456982",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 312,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 646.28s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "shiftUnsigned    Jbmc/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Jbmc/Strict Unverifiable assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Auto/Strict Verified     assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Jbmc/Strict Unverifiable assume s == 32; assert result == 0",
+        "shiftUnsigned    Auto/Strict Violation    assume s == 32; assert result == 0",
+        "square           Jbmc/Strict Violation    assert result >= 0",
+        "square           Auto/Strict Violation    assert result >= 0",
+        "negate           Jbmc/Strict Violation    assume x < 0; assert result > 0",
+        "negate           Auto/Strict Violation    assume x < 0; assert result > 0",
+        "toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "",
+        "79 cases, 147 claims (77 refuted on the JVM), 294 runs; the interpreter refuses firstByte([0]), listChange(7)",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 646.28s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md",
+      "change": "modified",
+      "bytes": 34099,
+      "sha256": "e6261d4b42769596c7f30d941ced47a123f6f12a4ad864d6fa04213d21ac5928",
+      "sourceSha256": "22d5e1561d103ae2fb17e35ef7dd5c9fb97e1bdf4845105cc389ccb146c92694"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json",
+      "change": "modified",
+      "bytes": 37039,
+      "sha256": "1b0141703cddd60111ac16f99062f8e900593e64dc71bf744c7d8350940a1af4",
+      "sourceSha256": "b066fd5b5f2d763fde98cdf726e346f6e897c2b8380b287d6483cb113e7d3e3f"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.sarif",
+      "change": "modified",
+      "bytes": 4521,
+      "sha256": "75592732182de95a4b0d1bf12852d4ac811153fc9d4d9d1879a7766a3d36e844",
+      "sourceSha256": "c0f771183eb192ed5c9405ed78d56870d7b0d02e4e2584b752fda13ffc98ff5d"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt",
+      "change": "modified",
+      "bytes": 5605,
+      "sha256": "ebe71c65800540d8883a1a50e5f28fac7b8bc40b93bbb4095e289ff16d70a13c",
+      "sourceSha256": "c75616224647fe7e3fc86c8e5fc3daa3805dbc94df88c3bb8bef2036d2c35fec"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/README.md",
+      "change": "modified",
+      "bytes": 20992,
+      "sha256": "db17f8a8c7cdcef8b61e648c2b20b24a051afc76b23b7c1fc959c065012ab933",
+      "sourceSha256": "67d5a63eccd48df3e4cca6c9c2f06cce64a823b217a5c1e802caa2ea3ab32f9c"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/result.json",
+      "change": "modified",
+      "bytes": 19240,
+      "sha256": "08e0e9aef01688728d7890e509d2b190e1a779526572899a5e578938f2e6db17",
+      "sourceSha256": "7161a2d2733b74758fc811e69a5865d0e06dc1e1feb42afa0240cf57709b6cf0"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/result.sarif",
+      "change": "modified",
+      "bytes": 2646,
+      "sha256": "8507d18ad288467b99bdf9225e109b969f7f30fbc2a1508d92503871db79c8df",
+      "sourceSha256": "11cb642ef74d5db9b715465cbc83aa9b139b73af22d42c38604aa89f91e9ec34"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/verifier-output.txt",
+      "change": "modified",
+      "bytes": 3131,
+      "sha256": "df3d2377b9389d6a319fe73c7b978ba5d6d15e91b0ca48a1767b1ea4af735b52",
+      "sourceSha256": "a0f2b7aae3672bdda3f1d7042eca820f58cd81f6f4cbc9840cec33843ff5811a"
+    },
+    {
+      "path": "lib/target/conformance-jbmc-paths.log",
+      "change": "added",
+      "bytes": 22599,
+      "sha256": "6e9da104b55e00be06f2c7881a87c5232ba88bd7fb06b21263724c8877456982",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T02:01:36+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.sarif",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt",
+      "examples/013-longest-log-wins-breaks-election-safety/README.md",
+      "examples/013-longest-log-wins-breaks-election-safety/result.json",
+      "examples/013-longest-log-wins-breaks-election-safety/result.sarif",
+      "examples/013-longest-log-wins-breaks-election-safety/verifier-output.txt",
+      "lib/target/conformance-jbmc-paths.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam"
+}

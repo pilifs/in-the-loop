@@ -18,9 +18,25 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
-### VF-008: the conformance corpus under JBMC and auto: JBMC says `Verified` on `declaring`, which the JVM refutes
+### VF-009: `auto --confirm` disagrees with the JVM on `boomTwice` and `enumBroken`: JBMC's refutation at `n=0` is spurious, the own checker is right
 
 - **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`. Job `20261107-010728-jbmc-s-extra-initializers-named-and-refu` (at `254f1d7a4893`), step 2 (steps 1 and 3 passed: the corpus under JBMC and auto, and the draft report's example).
+- **Found**: `the_corpus_agrees_with_the_jvm_under_auto_confirm` (tests/conformance.rs:792) has 8 disagreements, all on
+  `boomTwice [assert result == 2]` and `enumBroken [assert result == 12]`, under `--gaps Strict` and `Assume`: Auto
+  reports a violation at `n=0` that the JVM does not reproduce (the interpreter gives 2 and 12, the harness holds), and
+  `--confirm` says the engines disagree: the own checker proves the property on every input and JBMC 6.11.0 refutes it
+  on `n=0`. The same shape as VF-007 (closed by job `20261106-231317`) but on methods that run an exception handler
+  twice and an enum initializer; the job's change (extra initializers named and refused in the preflight) did not
+  cover them. Step 3's JBMC output ("1 of 13 failed") is the expected violation of that example.
+- **Needs**: the engine-priorities-jbmc loop: why JBMC refutes `boomTwice(n=0)` and `enumBroken(n=0)` (a class
+  initializer JBMC runs that the JVM does not? the `--throw-runtime-exceptions` path?), and refuse or model it.
+- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md).
+- **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 2 pass.
+
+### VF-008: the conformance corpus under JBMC and auto: JBMC says `Verified` on `declaring`, which the JVM refutes
+
+- **Status**: closed by job `20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `8b45798e6417`, 2026-11-07, `vm-1`): step 5 ran `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` and it passed (646 s). Not the same job resubmitted, but the same test.
 - **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203501-examples-071-and-013-under-strict-with-t` (at `7457928f1864`), step 6.
 - **Found**: `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` (tests/conformance.rs:749) reports 1 disagreement out of
   73 cases: `declaring [assert result == n + 107]`, `--gaps strict` on JBMC says Verified ("2 properties proved over
@@ -40,7 +56,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   `jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-25.0.5`. Step 2 ran the example's own build as expected,
   so the example stands and the expectation about the models (Enum and List) is what does not hold: the models were
   not enough on JDK 25.0.5, or the recorded library does not cover `Collection`. (The 41-example job saw 071#0 and 071#1 unresolved on `Enum.<init>`/`List.of`, a different gap set.)
-- **Needs**: the submitter to say whether the `Collection` methods should be modelled or the expectation relaxed.
+- **Update 2026-11-07**: job `20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `8b45798e6417`, `vm-1`) step 3 fails
+  in a new way: the stubs on no path are now named as "no gaps" in the output (`note: JBMC's call graph reaches 2 stubs
+  ... never enters ... no gaps: Collection.isEmpty(), Collection.toArray()`), but obligations 0 and 1 are still
+  `unverifiable` with an empty gap list, where the job expects `verified`. Steps 2 (071 build), 4 (013 under strict) and 5 (corpus) passed.
+  So the gap is gone and the verdict is not: something else in the strict path still withholds the proof.
+- **Needs**: the submitter to say whether the `Collection` methods should be modelled or the expectation relaxed, and
+  why an obligation with no gaps is `unverifiable` (see the verifier-output.txt of the job's 071 output).
 - **Tracked in**: [`llm-dlc/loops/engine-priorities.md`](../llm-dlc/loops/engine-priorities.md).
 - **Closes when**: the job, resubmitted unchanged at a commit that fixes it, passes step 3.
 

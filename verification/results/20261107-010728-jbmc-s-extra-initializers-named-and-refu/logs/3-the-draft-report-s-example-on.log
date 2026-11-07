@@ -1,0 +1,106 @@
+log 3
+== jbmc I --function I.field
+JBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Parsing ...
+Trying to load Java main class: I
+Found Java main class: I
+Converting
+stub class symbol java::java.lang.Object already exists
+Java: added 1 String or Class constant symbols
+Generating GOTO Program
+Running GOTO functions transformation passes
+Running with 16 object bits, 48 offset bits (default)
+Starting Bounded Model Checking
+Unwinding recursion java::I$Holder.<clinit_wrapper> iteration 1
+Unwinding recursion java::I.<clinit_wrapper> iteration 1
+aborting path on assume(false) at file I.java line 11 function java::I.field:()V bytecode-index 12 thread 0
+Runtime Symex: 0.0010347s
+size of program expression: 124 steps
+simple slicing removed 4 assignments
+Generated 4 VCC(s), 1 remaining after simplification
+Runtime Postprocess Equation: 4.439e-06s
+Passing problem to string refinement loop with MiniSAT 2.2.1 without simplifier
+converting SSA
+Runtime Convert SSA: 9.3426e-05s
+Running string refinement loop with MiniSAT 2.2.1 without simplifier
+354 variables, 162 clauses
+SAT checker: instance is SATISFIABLE
+BV-Refinement: got SAT, and it simulates => SAT
+Total iterations: 1
+Runtime Solver: 0.000155613s
+Runtime decision procedure: 0.000276331s
+
+** Results:
+[array-create-negative-size.1] Array size should be >= 0: SUCCESS
+[array-create-negative-size.2] Array size should be >= 0: SUCCESS
+[array-create-negative-size.3] Array size should be >= 0: SUCCESS
+[array-create-negative-size.4] Array size should be >= 0: SUCCESS
+[array-create-negative-size.5] Array size should be >= 0: SUCCESS
+[array-create-negative-size.6] Array size should be >= 0: SUCCESS
+[array-create-negative-size.7] Array size should be >= 0: SUCCESS
+[array-create-negative-size.8] Array size should be >= 0: SUCCESS
+[array-create-negative-size.9] Array size should be >= 0: SUCCESS
+I.java function java::I.<clinit>:()V
+[java::I.<clinit>:()V.null-pointer-exception.1] line 3 Null pointer check: SUCCESS
+
+I.java function java::I.field:()V
+[java::I.field:()V.1] line 11 no uncaught exception: SUCCESS
+[java::I.field:()V.assertion.1] line 11 assertion at file I.java line 11 function java::I.field:()V bytecode-index 12: FAILURE
+[java::I.field:()V.null-pointer-exception.1] line 11 Null pointer check: SUCCESS
+
+** 1 of 13 failed (2 iterations)
+VERIFICATION FAILED
+exit 10
+== jbmc I --function I.iface
+JBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Parsing ...
+Trying to load Java main class: I
+Found Java main class: I
+Converting
+stub class symbol java::java.lang.Object already exists
+Java: added 1 String or Class constant symbols
+Generating GOTO Program
+Running GOTO functions transformation passes
+Running with 16 object bits, 48 offset bits (default)
+Starting Bounded Model Checking
+Unwinding recursion java::I.<clinit_wrapper> iteration 1
+Unwinding recursion java::I$Bare.<clinit_wrapper> iteration 1
+Unwinding recursion java::I$Greeter.<clinit_wrapper> iteration 1
+aborting path on assume(false) at file I.java line 12 function java::I.iface:()V bytecode-index 10 thread 0
+Runtime Symex: 0.000920055s
+size of program expression: 167 steps
+simple slicing removed 5 assignments
+Generated 4 VCC(s), 1 remaining after simplification
+Runtime Postprocess Equation: 3.978e-06s
+Passing problem to string refinement loop with MiniSAT 2.2.1 without simplifier
+converting SSA
+Runtime Convert SSA: 9.3596e-05s
+Running string refinement loop with MiniSAT 2.2.1 without simplifier
+386 variables, 162 clauses
+SAT checker: instance is SATISFIABLE
+BV-Refinement: got SAT, and it simulates => SAT
+Total iterations: 1
+Runtime Solver: 0.000142989s
+Runtime decision procedure: 0.000261132s
+
+** Results:
+[array-create-negative-size.1] Array size should be >= 0: SUCCESS
+[array-create-negative-size.2] Array size should be >= 0: SUCCESS
+[array-create-negative-size.3] Array size should be >= 0: SUCCESS
+[array-create-negative-size.4] Array size should be >= 0: SUCCESS
+[array-create-negative-size.5] Array size should be >= 0: SUCCESS
+[array-create-negative-size.6] Array size should be >= 0: SUCCESS
+[array-create-negative-size.7] Array size should be >= 0: SUCCESS
+[array-create-negative-size.8] Array size should be >= 0: SUCCESS
+[array-create-negative-size.9] Array size should be >= 0: SUCCESS
+I.java function java::I.<clinit>:()V
+[java::I.<clinit>:()V.null-pointer-exception.1] line 3 Null pointer check: SUCCESS
+
+I.java function java::I.iface:()V
+[java::I.iface:()V.1] line 12 no uncaught exception: SUCCESS
+[java::I.iface:()V.assertion.1] line 12 assertion at file I.java line 12 function java::I.iface:()V bytecode-index 10: FAILURE
+[java::I.iface:()V.null-pointer-exception.1] line 12 Null pointer check: SUCCESS
+
+** 1 of 13 failed (2 iterations)
+VERIFICATION FAILED
+exit 10

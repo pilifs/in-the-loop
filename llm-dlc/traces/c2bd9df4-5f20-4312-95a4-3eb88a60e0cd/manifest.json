@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T01:46:44.084Z",
-  "duration_seconds": 5703,
+  "ended": "2026-11-07T02:01:22.439Z",
+  "duration_seconds": 6582,
   "stats": {
-    "turns": 29,
-    "api_calls": 300,
-    "tool_calls": 309,
-    "tool_errors": 6,
-    "compactions": 5,
+    "turns": 35,
+    "api_calls": 363,
+    "tool_calls": 371,
+    "tool_errors": 7,
+    "compactions": 6,
     "peak_context_tokens": 178584,
     "usage": {
-      "input_tokens": 616,
-      "output_tokens": 182176,
-      "cache_read_input_tokens": 31380286,
-      "cache_creation_input_tokens": 751851
+      "input_tokens": 742,
+      "output_tokens": 212740,
+      "cache_read_input_tokens": 38534592,
+      "cache_creation_input_tokens": 906416
     }
   },
   "tools": {
-    "Bash": 272,
-    "Read": 15,
+    "Bash": 331,
+    "Read": 18,
     "Edit": 10,
     "Monitor": 4,
     "ToolSearch": 4,
@@ -117,24 +117,38 @@
     {
       "index": 5,
       "started": "2026-11-07T01:28:00.364Z",
-      "ended": "2026-11-07T01:46:44.084Z",
-      "turns": 4,
-      "api_calls": 51,
+      "ended": "2026-11-07T01:47:08.649Z",
+      "turns": 6,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 22125,
-        "cache_read_input_tokens": 4399548,
-        "cache_creation_input_tokens": 99836
+        "input_tokens": 112,
+        "output_tokens": 23399,
+        "cache_read_input_tokens": 4743641,
+        "cache_creation_input_tokens": 105266
       },
-      "peak_context_tokens": 112915
+      "peak_context_tokens": 118345
+    },
+    {
+      "index": 6,
+      "started": "2026-11-07T01:47:41.193Z",
+      "ended": "2026-11-07T02:01:22.439Z",
+      "turns": 4,
+      "api_calls": 60,
+      "usage": {
+        "input_tokens": 120,
+        "output_tokens": 29290,
+        "cache_read_input_tokens": 6810213,
+        "cache_creation_input_tokens": 149135
+      },
+      "peak_context_tokens": 162214
     }
   ],
   "log": {
-    "sha256": "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280",
-    "bytes": 7822733,
-    "lines": 2716,
-    "gzip_bytes": 1550115,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280.jsonl.gz"
+    "sha256": "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17",
+    "bytes": 9322718,
+    "lines": 3267,
+    "gzip_bytes": 1820696,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -209,6 +223,22 @@
       "summary": "A result's SAT solver record names the solver the checks ran on: Bitwuzla, with its version, library digest and build, when JVMCONTRACT_SOLVER chooses it",
       "body": "Phase 1b recorded the own checker's SAT solver in every result (stated.checker.sat), but always as the bundled CaDiCaL: under JVMCONTRACT_SOLVER=bitwuzla a result's checker name and solver line said Bitwuzla 0.8.2 while its sat record said CaDiCaL 1.9.5, so the benchmark's environment.sat would have named the wrong solver. Reproduced through jvmcontract prove on Conformance#monitor before the fix.\n\nEach solver now records itself (Sat::record in lib/src/bmc/sat.rs), and statement::native_sat() is the configured solver's record. CaDiCaL's is unchanged. Bitwuzla's names the version its C API reports, the loaded library's file name and SHA-256 (eac09e6d..., the digest job 20261106-194049's build gave), the build lib/solvers/bitwuzla/build.json records when it is of that version (commit 61bdc637, linking CaDiCaL 2.1.2 static), whether it is given clauses or terms, and its options. A solver choice that does not work is recorded as no solver, with why. The benchmark and Bitwuzla READMEs describe the record. Recorded results are unchanged.",
       "log_sha256": "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280"
+    },
+    {
+      "change_id": "yvoknyxulprkkwyvmztywzsyqpmrkorr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17"
+    },
+    {
+      "change_id": "tnxrkmyknzxtlvwonqslwqsnqkwnowko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 JBMC jobs: the corpus agrees under JBMC and auto, auto --confirm still disagrees on two methods",
+      "body": "Job 20261107-012013 (at 8b45798e6417): corpus under JBMC and auto passed, which closes VF-008; example 071 still has its first two obligations unverifiable with no gaps (VF-005 updated). Job 20261107-010728 (at 254f1d7a4893): step 2, auto --confirm, has 8 disagreements on boomTwice and enumBroken (new VF-009). Both ran on vm-1 with three workers and an 8 GiB budget.",
+      "log_sha256": "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17"
     }
   ],
   "logs": {
@@ -228,6 +258,12 @@
       "bytes": 6558822,
       "lines": 2236,
       "gzip_bytes": 1290182,
+      "url": null
+    },
+    "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17": {
+      "bytes": 9322718,
+      "lines": 3267,
+      "gzip_bytes": 1820696,
       "url": null
     },
     "9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29": {

@@ -1,0 +1,1021 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "56047d29f030a33b",
+    "format": 1,
+    "example": "071",
+    "statement": {
+      "approach": "B11",
+      "target": "net.terminalvalue.quorum.raft.VoteRule#grant",
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {
+      "maxArrayLength": null
+    },
+    "inputs": {
+      "patch": "9cdf953e0c4125bb7a3f7532ef7afd5c9926e54b1395f65eac7fb4f8745ecb70",
+      "before": {
+        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
+        "files": 110
+      },
+      "after": {
+        "sha256": "92bbf57f81e77376de58162c718d3176a2f67d739f48ac68e8f6f34adad89df7",
+        "files": 110
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T014949Z-e1bb5641",
+    "claim": "56047d29f030a33b",
+    "startedAt": "2026-11-07T01:49:49+00:00",
+    "seconds": 2.6,
+    "engine": "jbmc",
+    "options": [
+      "--gaps",
+      "strict"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "41252568474785beaa65724212a8f297029c7e2adcf98d6569d6b161ef4fdc85",
+      "jbmc": "6.11.0 (cbmc-6.11.0)"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "ba0728472a8045349372e080f012377e6ff17e6df87dc521431dcaf90a2dc787",
+        "files": 70
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam",
+      "sourceCommit": "8b45798e6417e08958022d579db23f765b60d4a0",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched quorum main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.8,
+        "stdout": "logs/02-javac-patched-quorum-main.stdout",
+        "stderr": "logs/02-javac-patched-quorum-main.stderr"
+      },
+      {
+        "name": "javac patched quorum tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.8,
+        "stdout": "logs/03-javac-patched-quorum-tests.stdout",
+        "stderr": "logs/03-javac-patched-quorum-tests.stderr"
+      },
+      {
+        "name": "the quorum tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-quorum-tests.stdout",
+        "stderr": "logs/04-the-quorum-tests.stderr"
+      },
+      {
+        "name": "cargo build jvmcontract",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/05-cargo-build-jvmcontract.stdout",
+        "stderr": "logs/05-cargo-build-jvmcontract.stderr"
+      },
+      {
+        "name": "jvmcontract prove",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.9,
+        "stdout": "logs/06-jvmcontract-prove.stdout",
+        "stderr": "logs/06-jvmcontract-prove.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/07-version-of-java.stdout",
+        "stderr": "logs/07-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/08-version-of-javac.stdout",
+        "stderr": "logs/08-version-of-javac.stderr"
+      },
+      {
+        "name": "version of jbmc",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/09-version-of-jbmc.stdout",
+        "stderr": "logs/09-version-of-jbmc.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-v4b1dzr4/attempts/071/attempt-6gjlltny"
+  },
+  "conclusion": {
+    "claim": "56047d29f030a33b",
+    "attempt": "20261107T014949Z-e1bb5641",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "!result",
+        "status": "unresolved",
+        "evidence": {
+          "harness": "property-1",
+          "assert": "!result",
+          "assume": "candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate",
+          "verdict": "unverifiable",
+          "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+          "proof": null,
+          "problem": "JBMC proved it, but runs 2 constructs otherwise than the JVM (extra-initializer at net.terminalvalue.quorum.raft.VoteRule.decide:39, extra-initializer at net.terminalvalue.quorum.raft.VoteRule.grant:63), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": "statement-1.java",
+          "search": {
+            "engine": "jbmc",
+            "checker": "JBMC 6.11.0",
+            "seconds": 0.252,
+            "properties": 2,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "jbmc",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 599.853,
+                "seconds": 0.101,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.009,
+                  "lowering": 0.006,
+                  "symbolic": 0.044,
+                  "encoding": 0.009,
+                  "solving": 0.007,
+                  "trace": 0.0,
+                  "other": 0.026
+                },
+                "formula": {
+                  "steps": 4721,
+                  "conditions": 1,
+                  "variables": 31760,
+                  "clauses": 21026
+                }
+              }
+            ],
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "currentTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "votedFor",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "lastLogTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "lastLogIndex",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidate",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateLastLogTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateLastLogIndex",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate",
+                "basis": "stated"
+              },
+              {
+                "kind": "library",
+                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against !result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+              "classes": 17,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "jbmc",
+              "name": "JBMC 6.11.0",
+              "solver": "cadical",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "3.0.0",
+                "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+                "configuration": [
+                  "--trace",
+                  "--throw-runtime-exceptions",
+                  "--unwinding-assertions",
+                  "--json-ui",
+                  "--timestamp",
+                  "monotonic",
+                  "--no-refine-strings",
+                  "--sat-solver",
+                  "cadical"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      },
+      {
+        "kind": "property",
+        "name": "property-2",
+        "statement": "!result",
+        "status": "unresolved",
+        "evidence": {
+          "harness": "property-2",
+          "assert": "!result",
+          "assume": "candidateTerm < currentTerm",
+          "verdict": "unverifiable",
+          "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+          "proof": null,
+          "problem": "JBMC proved it, but runs 2 constructs otherwise than the JVM (extra-initializer at net.terminalvalue.quorum.raft.VoteRule.decide:39, extra-initializer at net.terminalvalue.quorum.raft.VoteRule.grant:63), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": "statement-2.java",
+          "search": {
+            "engine": "jbmc",
+            "checker": "JBMC 6.11.0",
+            "seconds": 0.251,
+            "properties": 2,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "jbmc",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 599.854,
+                "seconds": 0.101,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.008,
+                  "lowering": 0.006,
+                  "symbolic": 0.042,
+                  "encoding": 0.009,
+                  "solving": 0.019,
+                  "trace": 0.0,
+                  "other": 0.017
+                },
+                "formula": {
+                  "steps": 4678,
+                  "conditions": 1,
+                  "variables": 31401,
+                  "clauses": 20184
+                }
+              }
+            ],
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "currentTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "votedFor",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "lastLogTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "lastLogIndex",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidate",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateLastLogTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateLastLogIndex",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "candidateTerm < currentTerm",
+                "basis": "stated"
+              },
+              {
+                "kind": "library",
+                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against !result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+              "classes": 17,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "jbmc",
+              "name": "JBMC 6.11.0",
+              "solver": "cadical",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "3.0.0",
+                "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+                "configuration": [
+                  "--trace",
+                  "--throw-runtime-exceptions",
+                  "--unwinding-assertions",
+                  "--json-ui",
+                  "--timestamp",
+                  "monotonic",
+                  "--no-refine-strings",
+                  "--sat-solver",
+                  "cadical"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      },
+      {
+        "kind": "property",
+        "name": "property-3",
+        "statement": "!result",
+        "status": "refuted",
+        "evidence": {
+          "harness": "property-3",
+          "assert": "!result",
+          "assume": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)",
+          "verdict": "violation",
+          "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+          "proof": "found by JBMC 6.11.0 in 0.3 s as grant(currentTerm=-6, votedFor=-2, lastLogTerm=9223372036854775807, lastLogIndex=-9223372036854775808, candidate=1, candidateTerm=-1, candidateLastLogTerm=-9223372036854775805, candidateLastLogIndex=9223372036854775805), shrunk to the input above in 326 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)",
+            "contract": "!result",
+            "actual": "true",
+            "found": "grant(currentTerm=-6, votedFor=-2, lastLogTerm=9223372036854775807, lastLogIndex=-9223372036854775808, candidate=1, candidateTerm=-1, candidateLastLogTerm=-9223372036854775805, candidateLastLogIndex=9223372036854775805)",
+            "shrinkRuns": 326,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "currentTerm",
+                  "type": "long",
+                  "value": "0"
+                },
+                {
+                  "name": "votedFor",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "lastLogTerm",
+                  "type": "long",
+                  "value": "0"
+                },
+                {
+                  "name": "lastLogIndex",
+                  "type": "long",
+                  "value": "0"
+                },
+                {
+                  "name": "candidate",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "candidateTerm",
+                  "type": "long",
+                  "value": "0"
+                },
+                {
+                  "name": "candidateLastLogTerm",
+                  "type": "long",
+                  "value": "-1"
+                },
+                {
+                  "name": "candidateLastLogIndex",
+                  "type": "long",
+                  "value": "1"
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "currentTerm",
+                  "type": "long",
+                  "value": "-6"
+                },
+                {
+                  "name": "votedFor",
+                  "type": "int",
+                  "value": -2
+                },
+                {
+                  "name": "lastLogTerm",
+                  "type": "long",
+                  "value": "9223372036854775807"
+                },
+                {
+                  "name": "lastLogIndex",
+                  "type": "long",
+                  "value": "-9223372036854775808"
+                },
+                {
+                  "name": "candidate",
+                  "type": "int",
+                  "value": 1
+                },
+                {
+                  "name": "candidateTerm",
+                  "type": "long",
+                  "value": "-1"
+                },
+                {
+                  "name": "candidateLastLogTerm",
+                  "type": "long",
+                  "value": "-9223372036854775805"
+                },
+                {
+                  "name": "candidateLastLogIndex",
+                  "type": "long",
+                  "value": "9223372036854775805"
+                }
+              ],
+              "call": {
+                "class": "net.terminalvalue.quorum.raft.VoteRule",
+                "classFile": "net/terminalvalue/quorum/raft/VoteRule.class",
+                "classFileSha256": "a3545827e658834a44e814c8a732be9974614d4d6abfa2ba1be3b74c86092e2b",
+                "classes": "after",
+                "method": "grant",
+                "descriptor": "(JIJJIJJJ)Z",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "currentTerm",
+                    "type": "long",
+                    "value": "0",
+                    "from": "currentTerm"
+                  },
+                  {
+                    "name": "votedFor",
+                    "type": "int",
+                    "value": 0,
+                    "from": "votedFor"
+                  },
+                  {
+                    "name": "lastLogTerm",
+                    "type": "long",
+                    "value": "0",
+                    "from": "lastLogTerm"
+                  },
+                  {
+                    "name": "lastLogIndex",
+                    "type": "long",
+                    "value": "0",
+                    "from": "lastLogIndex"
+                  },
+                  {
+                    "name": "candidate",
+                    "type": "int",
+                    "value": 0,
+                    "from": "candidate"
+                  },
+                  {
+                    "name": "candidateTerm",
+                    "type": "long",
+                    "value": "0",
+                    "from": "candidateTerm"
+                  },
+                  {
+                    "name": "candidateLastLogTerm",
+                    "type": "long",
+                    "value": "-1",
+                    "from": "candidateLastLogTerm"
+                  },
+                  {
+                    "name": "candidateLastLogIndex",
+                    "type": "long",
+                    "value": "1",
+                    "from": "candidateLastLogIndex"
+                  }
+                ]
+              }
+            }
+          },
+          "statement": "statement-3.java",
+          "search": {
+            "engine": "jbmc",
+            "checker": "JBMC 6.11.0",
+            "seconds": 0.326,
+            "properties": 2,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "jbmc",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 599.832,
+                "seconds": 0.152,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.009,
+                  "lowering": 0.006,
+                  "symbolic": 0.044,
+                  "encoding": 0.009,
+                  "solving": 0.023,
+                  "trace": 0.013,
+                  "other": 0.048
+                },
+                "formula": {
+                  "steps": 4722,
+                  "conditions": 1,
+                  "variables": 31955,
+                  "clauses": 21747
+                }
+              }
+            ],
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "currentTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "votedFor",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "lastLogTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "lastLogIndex",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidate",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateLastLogTerm",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "candidateLastLogIndex",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)",
+                "basis": "stated"
+              },
+              {
+                "kind": "library",
+                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against !result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+              "classes": 17,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "jbmc",
+              "name": "JBMC 6.11.0",
+              "solver": "cadical",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "3.0.0",
+                "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+                "configuration": [
+                  "--trace",
+                  "--throw-runtime-exceptions",
+                  "--unwinding-assertions",
+                  "--json-ui",
+                  "--timestamp",
+                  "monotonic",
+                  "--no-refine-strings",
+                  "--sat-solver",
+                  "cadical"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation: counterexample found to 1 of 3 properties, 2 unresolved",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.quorum.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+      "startLine": 61,
+      "code": "                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {\n        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;\n        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;\n        LogOrder log = candidateLastLogTerm != lastLogTerm\n                ? (candidateLastLogTerm > lastLogTerm ? AHEAD : BEHIND)\n                : candidateLastLogIndex > lastLogIndex ? AHEAD : candidateLastLogIndex == lastLogIndex ? EVEN : BEHIND;\n        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;\n    }\n}\n"
+    },
+    "after": {
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+      "startLine": 61,
+      "code": "                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {\n        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;\n        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;\n        // The longer log is the one further along; between logs of one length, the one with the newer last entry.\n        LogOrder log = candidateLastLogIndex != lastLogIndex\n                ? (candidateLastLogIndex > lastLogIndex ? AHEAD : BEHIND)\n                : candidateLastLogTerm > lastLogTerm ? AHEAD : candidateLastLogTerm == lastLogTerm ? EVEN : BEHIND;\n        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;\n    }\n}\n"
+    },
+    "casesTotal": null,
+    "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+    "counterexamples": [
+      {
+        "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)",
+        "contract": "!result",
+        "actual": "true",
+        "found": "grant(currentTerm=-6, votedFor=-2, lastLogTerm=9223372036854775807, lastLogIndex=-9223372036854775808, candidate=1, candidateTerm=-1, candidateLastLogTerm=-9223372036854775805, candidateLastLogIndex=9223372036854775805)",
+        "shrinkRuns": 326,
+        "witness": {
+          "inputs": [
+            {
+              "name": "currentTerm",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "votedFor",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "lastLogTerm",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "lastLogIndex",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "candidate",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "candidateTerm",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "candidateLastLogTerm",
+              "type": "long",
+              "value": "-1"
+            },
+            {
+              "name": "candidateLastLogIndex",
+              "type": "long",
+              "value": "1"
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "currentTerm",
+              "type": "long",
+              "value": "-6"
+            },
+            {
+              "name": "votedFor",
+              "type": "int",
+              "value": -2
+            },
+            {
+              "name": "lastLogTerm",
+              "type": "long",
+              "value": "9223372036854775807"
+            },
+            {
+              "name": "lastLogIndex",
+              "type": "long",
+              "value": "-9223372036854775808"
+            },
+            {
+              "name": "candidate",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "candidateTerm",
+              "type": "long",
+              "value": "-1"
+            },
+            {
+              "name": "candidateLastLogTerm",
+              "type": "long",
+              "value": "-9223372036854775805"
+            },
+            {
+              "name": "candidateLastLogIndex",
+              "type": "long",
+              "value": "9223372036854775805"
+            }
+          ],
+          "call": {
+            "class": "net.terminalvalue.quorum.raft.VoteRule",
+            "classFile": "net/terminalvalue/quorum/raft/VoteRule.class",
+            "classFileSha256": "a3545827e658834a44e814c8a732be9974614d4d6abfa2ba1be3b74c86092e2b",
+            "classes": "after",
+            "method": "grant",
+            "descriptor": "(JIJJIJJJ)Z",
+            "static": true,
+            "arguments": [
+              {
+                "name": "currentTerm",
+                "type": "long",
+                "value": "0",
+                "from": "currentTerm"
+              },
+              {
+                "name": "votedFor",
+                "type": "int",
+                "value": 0,
+                "from": "votedFor"
+              },
+              {
+                "name": "lastLogTerm",
+                "type": "long",
+                "value": "0",
+                "from": "lastLogTerm"
+              },
+              {
+                "name": "lastLogIndex",
+                "type": "long",
+                "value": "0",
+                "from": "lastLogIndex"
+              },
+              {
+                "name": "candidate",
+                "type": "int",
+                "value": 0,
+                "from": "candidate"
+              },
+              {
+                "name": "candidateTerm",
+                "type": "long",
+                "value": "0",
+                "from": "candidateTerm"
+              },
+              {
+                "name": "candidateLastLogTerm",
+                "type": "long",
+                "value": "-1",
+                "from": "candidateLastLogTerm"
+              },
+              {
+                "name": "candidateLastLogIndex",
+                "type": "long",
+                "value": "1",
+                "from": "candidateLastLogIndex"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "found by JBMC 6.11.0 in 0.3 s as grant(currentTerm=-6, votedFor=-2, lastLogTerm=9223372036854775807, lastLogIndex=-9223372036854775808, candidate=1, candidateTerm=-1, candidateLastLogTerm=-9223372036854775805, candidateLastLogIndex=9223372036854775805), shrunk to the input above in 326 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+    "problem": null,
+    "statement": "statement-3.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": {
+      "assert": "!result",
+      "assume": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)"
+    },
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt"
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "75592732182de95a4b0d1bf12852d4ac811153fc9d4d9d1879a7766a3d36e844",
+        "bytes": 4521
+      },
+      {
+        "path": "statement-1.java",
+        "sha256": "2e2b92de67718fad2deeaf9b243bf281a968b8765c397329cc6a65f65a4a7a3a",
+        "bytes": 1679
+      },
+      {
+        "path": "statement-2.java",
+        "sha256": "deffebb3a067782215ff522393e3778fa292fc9c8a15ddd73d8b3a563a4da8e3",
+        "bytes": 1635
+      },
+      {
+        "path": "statement-3.java",
+        "sha256": "9cf6513087a99b415a46cf7f449a40eb0fa826b28f386ed0e0f1d45b0d68cb09",
+        "bytes": 1723
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "ebe71c65800540d8883a1a50e5f28fac7b8bc40b93bbb4095e289ff16d70a13c",
+        "bytes": 5605
+      }
+    ]
+  }
+}

@@ -1,0 +1,437 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-010728-jbmc-s-extra-initializers-named-and-refu",
+  "title": "JBMC's extra initializers named and refused: the conformance corpus under JBMC, auto and --confirm, and the draft report's example",
+  "status": "failed",
+  "summary": "failed: 2 passed, 1 failed step(s) in 32m42s, peak 1.2 GiB (estimated 40m00s, 3.0 GiB); 3 output file(s) changed; signals: cargo:tests×1; jbmc:refuted×2",
+  "attention": [
+    "step 2 (conformance corpus under auto --confirm) exited 101, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-010728-jbmc-s-extra-initializers-named-and-refu.json",
+    "sha256": "866f04a882894c690937bb064b7f85b339086e0243375eed9823f18ffa61ebcf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-010728-jbmc-s-extra-initializers-named-and-refu",
+      "title": "JBMC's extra initializers named and refused: the conformance corpus under JBMC, auto and --confirm, and the draft report's example",
+      "description": "Item 2 of the engine-priorities brief's Progress (llm-dlc/loops/engine-priorities.md). Job 20261106-203501 found a false proof of JBMC under --gaps strict: conformance/declaring/2 (result == n + 107) was Verified by JBMC, while the JVM returns n + 7. Reading JBMC 6.11.0's --show-goto-functions (inline, nothing solved) showed two ways it runs class initializers the JVM does not (JVMS 5.5): at a getstatic, putstatic or invokestatic it initializes the class the instruction names, not the class that declares the resolved member (Sub.value, declared by Holder, runs Sub.<clinit>); and a class's <clinit_wrapper> initializes every superinterface, where the JVM initializes only those that declare a default method (conformance/defaults: JBMC computes 43, the JVM 3, which is why JBMC's counterexample to defaults/1 did not reproduce). The preflight (lib/src/jbmc_gaps.rs) now names each such instruction as the defect extra-initializer, by comparing the wrappers JBMC's goto program calls there with bmc::gaps::initializers of the declaring class, and refuses a JBMC proof through one under every --gaps mode, as for the three defects before. The corpus gains defaults/3 (result == 43), the second shape's false proof. The goto parser also keeps a location across JBMC's '// Labels:' comments, which it had dropped. Unit-tested on hand-written goto programs of tests/fixtures/jbmc-defects/p/D.java, and checked inline on JBMC's real listings of the fixture and of conformance.Conformance (declaring and defaults named; superFirst, cycle, boomTwice, direct reads and new not). The last step runs the draft upstream report's example (tests/fixtures/jbmc-defects/I.java) on the JVM and through JBMC, so the report's claim that JBMC fails both assertions is measured rather than read from the listing.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "lib/tests/conformance.rs",
+          "lib/tests/fixtures/jbmc-defects/README.md"
+        ]
+      },
+      "expected": "Steps 1 and 2 exit 0. In step 1, declaring/2 and defaults/3 under Jbmc/Strict are Unverifiable, the proof refused naming extra-initializer, and Violation under Auto/Strict; no claim the JVM refutes is Verified. Step 3 prints 'log 3' from the JVM and VERIFICATION FAILED from JBMC for both I.field and I.iface. Any other disagreement is a finding to triage.",
+      "submitted": {
+        "at": "2026-11-07T01:07:28+00:00"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "40m",
+        "memoryLimit": "3.5G",
+        "timeout": "2h",
+        "notes": "job -203501's corpus step under JBMC and auto took 11 min after a 1 min build; job -231317's --confirm corpus took about 20 min; the report example is seconds; peak 1.3 GiB in those jobs"
+      },
+      "steps": [
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-initializers.log",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under auto --confirm",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-initializers.log",
+          "cwd": "."
+        },
+        {
+          "name": "the draft report's example on the JVM and JBMC",
+          "run": "set -o pipefail; mkdir -p lib/target/report-i && javac -g -d lib/target/report-i lib/tests/fixtures/jbmc-defects/I.java && (java -ea -cp lib/target/report-i I; for f in field iface; do echo \"== jbmc I --function I.$f\"; jbmc I --function I.$f --classpath lib/target/report-i; echo \"exit $?\"; done) 2>&1 | tee lib/target/report-i.log; grep -q '^log 3' lib/target/report-i.log && test \"$(grep -c '^VERIFICATION FAILED' lib/target/report-i.log)\" -eq 2",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/conformance-jbmc-initializers.log",
+        "lib/target/conformance-confirm-initializers.log",
+        "lib/target/report-i.log"
+      ]
+    }
+  },
+  "sourceCommit": "254f1d7a48938a7a35c69277ef90fe3b946b2377",
+  "startedAt": "2026-11-07T01:08:15+00:00",
+  "finishedAt": "2026-11-07T01:40:58+00:00",
+  "wallSeconds": 1963.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1769379,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 2400.0,
+    "notes": "job -203501's corpus step under JBMC and auto took 11 min after a 1 min build; job -231317's --confirm corpus took about 20 min; the report example is seconds; peak 1.3 GiB in those jobs"
+  },
+  "usage": {
+    "peakMemoryBytes": 1236090880,
+    "wallSeconds": 1962.6,
+    "cpuSeconds": 2006.7,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.82
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-initializers.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 734.268,
+      "cpuSeconds": 782.539,
+      "cpuThrottledSeconds": 1.009,
+      "peakMemoryBytes": 1236090880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-corpus-under-jbmc.log",
+        "lines": 357,
+        "bytes": 23931,
+        "sha256": "933fa3734eeac739dd17f5187b89a32dee393e065d44c17f3c6e264f70e3ba23",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 356,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 641.05s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "shiftUnsigned    Jbmc/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Jbmc/Strict Unverifiable assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Auto/Strict Verified     assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Jbmc/Strict Unverifiable assume s == 32; assert result == 0",
+        "shiftUnsigned    Auto/Strict Violation    assume s == 32; assert result == 0",
+        "square           Jbmc/Strict Violation    assert result >= 0",
+        "square           Auto/Strict Violation    assert result >= 0",
+        "negate           Jbmc/Strict Violation    assume x < 0; assert result > 0",
+        "negate           Auto/Strict Violation    assume x < 0; assert result > 0",
+        "toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "",
+        "79 cases, 147 claims (77 refuted on the JVM), 294 runs; the interpreter refuses firstByte([0]), listChange(7)",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 641.05s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-initializers.log",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1227.732,
+      "cpuSeconds": 1223.347,
+      "cpuThrottledSeconds": 0.332,
+      "peakMemoryBytes": 278597632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-conformance-corpus-under-auto.log",
+        "lines": 343,
+        "bytes": 26868,
+        "sha256": "778b39bc0498fa6aa6385f1aea65bf0808c72c11b555134b949f70b7db13fb7a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 341,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1227.50s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "8 disagreements with the JVM:",
+        "boomTwice [assert result == 2]: Auto --gaps Strict reports a violation on boomTwice(n=0) that the JVM does not reproduce: the harness holds",
+        "boomTwice [assert result == 2]: Auto --gaps Assume reports a violation on boomTwice(n=0) that the JVM does not reproduce: the harness holds",
+        "enumBroken [assert result == 12]: Auto --gaps Strict reports a violation on enumBroken(n=0) that the JVM does not reproduce: the harness holds",
+        "enumBroken [assert result == 12]: Auto --gaps Assume reports a violation on enumBroken(n=0) that the JVM does not reproduce: the harness holds",
+        "boomTwice [assert result == 2]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontrac",
+        "  boomTwice(n=0)",
+        "    outcome in the interpreter: 2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "boomTwice [assert result == 2]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontrac",
+        "  boomTwice(n=0)",
+        "    outcome in the interpreter: 2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "enumBroken [assert result == 12]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcon",
+        "  enumBroken(n=0)",
+        "    outcome in the interpreter: 12, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "enumBroken [assert result == 12]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcon",
+        "  enumBroken(n=0)",
+        "    outcome in the interpreter: 12, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "failures:",
+        "    the_corpus_agrees_with_the_jvm_under_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1227.50s",
+        "",
+        "error: test failed, to rerun pass `--test conformance`"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "the draft report's example on the JVM and JBMC",
+      "run": "set -o pipefail; mkdir -p lib/target/report-i && javac -g -d lib/target/report-i lib/tests/fixtures/jbmc-defects/I.java && (java -ea -cp lib/target/report-i I; for f in field iface; do echo \"== jbmc I --function I.$f\"; jbmc I --function I.$f --classpath lib/target/report-i; echo \"exit $?\"; done) 2>&1 | tee lib/target/report-i.log; grep -q '^log 3' lib/target/report-i.log && test \"$(grep -c '^VERIFICATION FAILED' lib/target/report-i.log)\" -eq 2",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.799,
+      "cpuThrottledSeconds": 0.069,
+      "peakMemoryBytes": 63696896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-draft-report-s-example-on.log",
+        "lines": 106,
+        "bytes": 4749,
+        "sha256": "2236cb65f806aa37fd3416fdd21e8864717124957d967ab573e4f40a9a0e1dae",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jbmc:refuted": 2
+      },
+      "signals": [
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 52,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 105,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        }
+      ],
+      "tail": [
+        "Unwinding recursion java::I$Bare.<clinit_wrapper> iteration 1",
+        "Unwinding recursion java::I$Greeter.<clinit_wrapper> iteration 1",
+        "aborting path on assume(false) at file I.java line 12 function java::I.iface:()V bytecode-index 10 thread 0",
+        "Runtime Symex: 0.000920055s",
+        "size of program expression: 167 steps",
+        "simple slicing removed 5 assignments",
+        "Generated 4 VCC(s), 1 remaining after simplification",
+        "Runtime Postprocess Equation: 3.978e-06s",
+        "Passing problem to string refinement loop with MiniSAT 2.2.1 without simplifier",
+        "converting SSA",
+        "Runtime Convert SSA: 9.3596e-05s",
+        "Running string refinement loop with MiniSAT 2.2.1 without simplifier",
+        "386 variables, 162 clauses",
+        "SAT checker: instance is SATISFIABLE",
+        "BV-Refinement: got SAT, and it simulates => SAT",
+        "Total iterations: 1",
+        "Runtime Solver: 0.000142989s",
+        "Runtime decision procedure: 0.000261132s",
+        "",
+        "** Results:",
+        "[array-create-negative-size.1] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.2] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.3] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.4] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.5] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.6] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.7] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.8] Array size should be >= 0: SUCCESS",
+        "[array-create-negative-size.9] Array size should be >= 0: SUCCESS",
+        "I.java function java::I.<clinit>:()V",
+        "[java::I.<clinit>:()V.null-pointer-exception.1] line 3 Null pointer check: SUCCESS",
+        "",
+        "I.java function java::I.iface:()V",
+        "[java::I.iface:()V.1] line 12 no uncaught exception: SUCCESS",
+        "[java::I.iface:()V.assertion.1] line 12 assertion at file I.java line 12 function java::I.iface:()V bytecode-index 10: FAILURE",
+        "[java::I.iface:()V.null-pointer-exception.1] line 12 Null pointer check: SUCCESS",
+        "",
+        "** 1 of 13 failed (2 iterations)",
+        "VERIFICATION FAILED",
+        "exit 10"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/conformance-jbmc-initializers.log",
+      "change": "added",
+      "bytes": 23931,
+      "sha256": "933fa3734eeac739dd17f5187b89a32dee393e065d44c17f3c6e264f70e3ba23",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/conformance-confirm-initializers.log",
+      "change": "added",
+      "bytes": 26868,
+      "sha256": "778b39bc0498fa6aa6385f1aea65bf0808c72c11b555134b949f70b7db13fb7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/report-i.log",
+      "change": "added",
+      "bytes": 4749,
+      "sha256": "2236cb65f806aa37fd3416fdd21e8864717124957d967ab573e4f40a9a0e1dae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T02:01:36+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "lib/target/conformance-jbmc-initializers.log",
+      "lib/target/conformance-confirm-initializers.log",
+      "lib/target/report-i.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-010728-jbmc-s-extra-initializers-named-and-refu"
+}
