@@ -205,8 +205,46 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   - Resubmitted unchanged, as the second and last attempt under the timebox:
     `20261107-165152-example-147-…`, `20261107-165152-example-148-…`, `20261107-165152-example-149-…` (VF-002), and
     `20261107-165152-example-160-…`, `20261107-165153-example-161-…` (VF-016).
-- Next: E3, VF-013's reproducer and `sync.py`'s publishing of the run records. E2's third job follows once its two
-  runs are collected.
+- **E3, VF-013: done, by its check (`sync.py`'s tests cover it).** `sync.py` publishes each record in
+  `llm-dlc/loop-summaries/`:
+  - It reads the session from the header's `Started …, session ID` line. Only files that start with
+    `# Feature loop:` are records, so the integration reports are left out.
+  - It redacts each line with `redact.string`, the transcripts' rules, line by line, so that no markdown line is
+    parsed as JSON. It writes the copy to `llm-dlc/traces/<session>/runs/<record>.md` for a session with a trace
+    here.
+  - The summary's new *Loop runs* list (`${runs}` in `summary-template.md`) gives each run's link, start, end,
+    cycles with a commit and how it ended. All of it is read from the redacted copy.
+  - The list sits between markers. For a session whose transcript isn't here to render from (a stream's, merged
+    in), `splice_runs` brings the list up to date in place.
+  - `check` scans each copy. What the redactor would still change is an error, as for a log. What it leaves to judge
+    is a warning, as for a log not yet uploaded. The copies are in `checked_files`, so the publication gate covers
+    them, and in `scan_targets`, so `scan` and `review` see them. `check` notes a record that isn't published: it
+    names no session, its session has no trace here, it has changed since the last sync, or this isn't the default
+    workspace.
+  - **Republished as it grows, not held back.** A run that is killed (SIGKILL, OOM of the shell, a reboot) never
+    writes an `Ended`, `Stopped` or `Interrupted` line, so held back it would never be published, against the
+    entry's "every record". Transcripts of open sessions are published the same way. A record is 7–18 KB and only
+    grows at the end, so each republish is a small diff.
+  - **Only the default workspace publishes.** Told without running jj, since `sync` runs no process
+    (`test_performance.py` checks this): its `.jj/repo` is the store's directory, and in an added workspace it's a
+    file. So this workspace's own record stays unpublished, as the brief asks, and so will a later stream's.
+    Phase 4 publishes them once they're copied in.
+  - **Reproducer:** `llm-dlc/tools/test_runs.py`, with made-up paths, session and secret. Before the change, 2 of its
+    7 tests failed (no copy published) and 5 errored (no such functions). After it, all 8 pass. The eighth tests the
+    workspace check.
+  - In `test_performance.py`, the `Sync` and `Incremental` tests now point `LOOP_SUMMARIES` at a temporary folder, and
+    `CommitChecks` mocks `run_notes`. Otherwise this machine's real records would leak into them. All 102 tests
+    pass, and so do `test_review.py` (28) and `test_metrics.py` (21).
+  - **Docs:** `traces-readme-template.md`, `llm-dlc/README.md` (layout, tests and the run-record paragraph),
+    `specification.md` (layout and a *Run record* definition), and `sync.py`'s docstring.
+  - **For Phase 4:** a dry run over the default workspace's 8 records (not 7: `2026-11-07-122116-foundations.md`
+    came since the entry) found every one's session traced there. Every one parsed, and redacted with no finding and
+    no home path left. Nothing was written. `cleanup-integration.sh` runs `test_review.py` but not `test_runs.py`
+    or `test_performance.py`.
+- `vmxqyptp` and `nrvtlrms` (the native stream's session `2324d402`) have no manifest here either, nor does
+  `lqozoovu` (the jbmc stream's `a8cc612f`). These are more check errors that aren't this branch's.
+- Next: E4, the three foundations leftovers. E1's five jobs (`20261107-16515x`) and E2's two runs are still pending.
+  E2's third job follows once its two runs are collected.
 - Status: working
 
 ## Loop settings

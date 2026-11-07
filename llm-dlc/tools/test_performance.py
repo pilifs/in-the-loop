@@ -409,6 +409,7 @@ class Sync(unittest.TestCase):
             fake = lambda p, *a, **k: {"session_id": p.stem, "stats": {"turns": 0, "tool_calls": 0},
                                        "log": {"sha256": "0" * 64, "bytes": 0}, "commits": []}
             with mock.patch.object(sync, "claude_project_dir", return_value=Path(d)), \
+                    mock.patch.object(sync, "LOOP_SUMMARIES", Path(d) / "loop-summaries"), \
                     mock.patch.object(sync, "process", side_effect=fake), \
                     mock.patch.object(sync, "write_index") as index, \
                     mock.patch.object(sync, "commit_index", return_value=None), \
@@ -987,6 +988,7 @@ class Incremental(unittest.TestCase):
         self.patches = [mock.patch.object(sync, "REPO", root / "repo"),
                         mock.patch.object(sync, "TRACES", root / "repo" / "traces"),
                         mock.patch.object(sync, "SESSION_NOTES", root / "notes"),
+                        mock.patch.object(sync, "LOOP_SUMMARIES", root / "repo" / "loop-summaries"),
                         mock.patch.object(sync, "claude_project_dir", return_value=self.src),
                         mock.patch.object(sync, "Redactor", MadeUpRedactor),
                         mock.patch.object(sync, "write_index"),
@@ -1111,6 +1113,7 @@ class CommitChecks(unittest.TestCase):
                  mock.patch.object(sync, "check_sessions", return_value=([], ["made-up warning"], ["n1", "n2"], 0)), \
                  mock.patch.object(sync, "check_trailers", return_value=([], [])), \
                  mock.patch.object(sync, "check_global_files", return_value=[]), \
+                 mock.patch.object(sync, "run_notes", return_value=[]), \
                  mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch("sys.stdout", io.StringIO()) as out:
                 self.assertEqual(sync.cmd_check([], notes_listed=listed), 0)
             return out.getvalue()
