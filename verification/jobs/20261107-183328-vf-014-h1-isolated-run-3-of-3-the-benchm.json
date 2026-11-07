@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm",
+  "title": "VF-014, H1 isolated, run 3 of 3: the benchmark's own-checker verdicts at H1 compared with H1's parent (closes VF-014 when it passes)",
+  "description": "VF-014 in verification/findings.md: job 20261107-041414 compared the own checker's benchmark runs at step H1 of llm-dlc/loops/foundations-heap.md (symbolic references, change uyqkxsly, commit ddbb54ba) with a stale lib/benchmark/results.json, so 8 verdicts changed for reasons it couldn't tell apart from H1. Jobs 20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm (at H1's parent b927e5df) and -run-2-of-2- (at H1, ddbb54ba) ran that job's step 1 unchanged and both passed; their lib/target/benchmark-native.json files are kept, gitignored, under verification/results/ID/outputs/ in the runner's repository, not in this checkout. This job finds them there (four directories above $VERIFY_WORKDIR), checks each against the sha256 its run recorded, and applies 20261107-041414's step-2 comparison script unchanged except that it reads run 1's file in place of lib/benchmark/results.json and run 2's in place of lib/target/benchmark-native.json. It exits 1 if any own-checker verdict differs between H1's parent and H1, 2 if the outputs are missing or not the recorded ones. Tried on the same files before submitting: 557 runs at H1, 24 new (the swaps, swapsOrNull and swapsThenNull cases H1 added, in three modes), 0 verdicts changed, 0 formulas grown past 10%, 0 paths or merges changed. Closes VF-014 when it passes.",
+  "kind": "library",
+  "capabilities": [
+    "benchmark",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark",
+      "lib/src/bmc/mod.rs"
+    ],
+    "commits": [
+      "ddbb54bac20616e15ddd6e965e412519377506ad",
+      "b927e5df1be94b21de89351736978f469e33553a"
+    ]
+  },
+  "expected": "exits 0: every own-checker verdict at H1 is the one at H1's parent; the only new runs are the 24 of the swaps cases H1 added; the summary line reads 'verdicts changed: 0'",
+  "submitted": {
+    "at": "2026-11-07T18:33:28+00:00",
+    "session": "b65d132b-4eb4-46fd-8556-f4cba3311ad1",
+    "by": "claude (cleanup-examples)"
+  },
+  "requires": [],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "256M",
+    "duration": "1m",
+    "timeout": "5m",
+    "notes": "20261107-041414's step 2 took 0.2 s and 23 MB on the same script; the two files are about 1 MB each"
+  },
+  "steps": [
+    {
+      "name": "compare the own checker's runs at H1 with those at H1's parent",
+      "run": "R=\"$(cd \"$VERIFY_WORKDIR/../../../..\" && pwd)\"\nOLD=\"$R/verification/results/20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm/outputs/lib/target/benchmark-native.json\"\nNEW=\"$R/verification/results/20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm/outputs/lib/target/benchmark-native.json\"\necho \"at H1's parent: $OLD\"\necho \"at H1: $NEW\"\nprintf '%s  %s\\n' e1ba6c40a00b1c6642741ee457ef4bb34df832bb70b042a4d36ff959ff2c2dec \"$OLD\" 257ca167f16e33c6aaf0c3b4892e3d7419ad616489463880daf95ebc07269a8a \"$NEW\" | sha256sum -c - || { echo \"the two runs' collected outputs are missing or not the ones the runs recorded\"; exit 2; }\nOLD=\"$OLD\" NEW=\"$NEW\" python3 - <<'PY'\nimport json, os, sys\nnew = [r for r in json.load(open(os.environ[\"NEW\"]))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(os.environ[\"OLD\"]))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nfor r in new:\n    o = old.get((r[\"case\"], r[\"mode\"]))\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed else 0)\nPY",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

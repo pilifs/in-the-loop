@@ -235,6 +235,8 @@ pub struct Blaster {
     word_keys: HashMap<(WordOp, Vec<Bits>), usize>,
     /// The per-call time limit last given to the solver, for the transcript.
     limit: Option<f32>,
+    /// The per-call conflict limit last given to the solver, when it took one, for the transcript.
+    work_limit: Option<u64>,
     /// What reading the clock around nothing takes, which each timed operation's time includes once.
     clock: std::time::Duration,
 }
@@ -296,7 +298,7 @@ impl Blaster {
     pub fn over(mut solver: Box<dyn super::sat::Sat>, transcript: Option<super::transcript::Transcript>) -> Blaster {
         let words = solver.terms().is_some();
         assert!(!(words && transcript.is_some()), "a transcript records clauses, and this solver is given terms");
-        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None };
+        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None, work_limit: None };
         b.clause(&[TRUE]);
         b
     }
@@ -367,6 +369,20 @@ impl Blaster {
     pub fn set_timeout(&mut self, seconds: f32) {
         self.limit = Some(seconds);
         self.solver.set_limit(Some(seconds));
+    }
+
+    /// Stops the solver after this many conflicts on any one call as well, or not by conflicts: `false` when the
+    /// solver has no such limit ([`super::sat::Sat::set_work_limit`]).
+    pub fn set_work_limit(&mut self, conflicts: Option<u64>) -> bool {
+        let taken = self.solver.set_work_limit(conflicts);
+        self.work_limit = if taken { conflicts } else { None };
+        taken
+    }
+
+    /// The solver's conflicts in all its calls so far, the work [`Blaster::set_work_limit`] limits: the same on
+    /// every machine, unlike [`Blaster::solving`].
+    pub fn work(&self) -> u64 {
+        self.solver.work()
     }
 
     /// Runs `build`, a word-level operation that builds circuits: when it is not built inside another, it is timed,
@@ -1156,7 +1172,7 @@ impl Blaster {
         let took = started.elapsed();
         self.solving += took;
         if let Some(t) = &mut self.transcript {
-            t.call(&assumptions, self.limit, answer, took);
+            t.call(&assumptions, self.limit, self.work_limit, answer, took);
         }
         answer
     }

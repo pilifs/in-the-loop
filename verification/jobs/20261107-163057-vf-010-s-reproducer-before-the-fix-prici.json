@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-163057-vf-010-s-reproducer-before-the-fix-prici",
+  "title": "VF-010's reproducer before the fix: Pricing#total's regression proof on the own checker, 8 runs alike",
+  "description": "VF-010 (verification/findings.md): the own checker's branch probes (Engine::probe, lib/src/bmc/mod.rs) are given as long as all the solver calls so far took, at least a second, of wall-clock time, so which side of a branch is left undecided, and with it the path order, depends on the machine's speed. On cvm, 6 of 8 identical runs found the violation in about 4 s and 2 ran out of time. This job runs the new reproducer lib/tests/reproducers/vf-010.sh at the commit before the fix (the cleanup loop's native stream, item N1): it compiles the Pricing fixture of lib/tests/integration.rs and its rounding refactor, and runs 'jvmcontract equivalence --target fixtures.Pricing#total --engine native --timeout 40' 8 times, printing each run's exit and the own checker's numbers to the log. It exits 0 when all 8 find the violation and 1 otherwise. It is expected to reproduce the finding here, exit 1. An exit of 0 means no probe ran out on this runner in these runs, which is information about the reproducer, not a verdict on any fix. It does not close VF-010: the same script at the fixing commit does.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "native:probes"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/tests/reproducers/vf-010.sh"
+    ]
+  },
+  "expected": "exit 1: the 8 runs differ, some finding the violation in seconds and some running out of time at 40 s (the log lists each run's exit and the own checker's numbers)",
+  "submitted": {
+    "at": "2026-11-07T16:30:57+00:00",
+    "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+    "by": "cleanup-native"
+  },
+  "requires": [
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "6m",
+    "notes": "one run took 2.7 s and found the violation here in a debug build; a run that runs out stops at 40 s, so at most 8 x 40 s"
+  },
+  "steps": [
+    {
+      "name": "8 runs of Pricing#total on the own checker",
+      "run": "lib/tests/reproducers/vf-010.sh verification/.work-vf010 8 40",
+      "cwd": ".",
+      "expectExit": 1
+    }
+  ],
+  "outputs": []
+}

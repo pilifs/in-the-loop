@@ -3,9 +3,10 @@
 //! every branch which sides are feasible and, when a path reaches the harness's `AssertionError`, what input takes
 //! it there. Each path carries a model of its condition (the solver's answer when it was split off), so the side
 //! of a branch that model takes is known feasible and the solver is asked once per branch, about the other side,
-//! and not at all about a condition the path has taken before. That one question is given as long as the solver's
-//! calls so far took together, and a side undecided by then waits until the decided paths are done, so a violation
-//! is not held up by an infeasible side that is hard to refute. A division or multiplication is left to the solver
+//! and not at all about a condition the path has taken before. That one question is given as much work as the
+//! solver's calls so far did together, in conflicts and not seconds so that it is the same on every machine, and a
+//! side undecided by then waits until the decided paths are done, so a violation is not held up by an infeasible side
+//! that is hard to refute. A division or multiplication is left to the solver
 //! under what holds of every one and built as a circuit only where a model got it wrong
 //! ([`bits::Blaster::sdivrem_lazy`], [`bits::Blaster::mul_lazy`]); a quotient times its divisor is the dividend
 //! less the remainder, with no product.
@@ -41,7 +42,7 @@
 //! |---|---|
 //! | `nop`, `aconst_null`, `iconst`, `lconst`, `bipush`/`sipush`, `ldc` of an int or a long, `iload`/`lload`/`aload`, `istore`/`lstore`/`astore`, `pop`, `pop2`, `dup`, `dup_x1`, `dup_x2`, `dup2`, `dup2_x1`, `dup2_x2`, `swap`, `iinc` | implemented |
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
-//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound; `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
+//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
 //! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
@@ -479,11 +480,15 @@ struct Frame {
     /// superinterfaces' initializers to finish (JVMS §5.5, step 7), outermost first: the instruction runs again
     /// each time one of those returns, and an exception that leaves it makes them erroneous.
     entered: Vec<String>,
+    /// How often the back edges to each loop head (by its pc) were taken since the loop was last entered afresh:
+    /// a new frame enters every loop afresh, and a back edge enters afresh each loop whose head is in its body
+    /// (see [`Engine::jump`]).
+    back_edges: BTreeMap<u32, u32>,
 }
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new(), back_edges: BTreeMap::new() }
     }
 
     fn pc(&self) -> u32 {
@@ -491,8 +496,8 @@ impl Frame {
     }
 }
 
-/// One path through the harness: its frames, the condition that selects it (a conjunction of literals), models
-/// of that condition, its objects, and how often each back edge was taken.
+/// One path through the harness: its frames (each with how often its loops' back edges were taken), the condition
+/// that selects it (a conjunction of literals), models of that condition, and its objects.
 #[derive(Clone)]
 struct Path {
     frames: Vec<Frame>,
@@ -510,7 +515,6 @@ struct Path {
     /// to run the join's instruction rather than wait there again.
     resumed: bool,
     objects: Vec<Obj>,
-    back_edges: HashMap<(String, String, u32), u32>,
     /// The object each string or class literal loaded so far is, so that every load of one literal is the same
     /// reference, as the JVM's interned strings and `Class` objects are.
     literals: BTreeMap<Literal, usize>,
@@ -675,6 +679,12 @@ enum Sides {
 
 /// How many models a path keeps after a merge: the first ones, since every path has at least one.
 const MOST_MODELS: usize = 16;
+
+/// The least work a branch probe is given, in the solver's conflicts ([`Engine::probe`]): about two seconds of
+/// CaDiCaL on a formula of a few hundred thousand clauses, and less on a smaller one. `Pricing#total`'s regression
+/// proof (VF-010) has a feasible side that takes 5,167, about a second, which the old floor of a second of time
+/// decided on some runs and not others.
+const PROBE_CONFLICTS: u64 = 10_000;
 
 struct Engine<'a> {
     cp: &'a ClassPath,
@@ -919,7 +929,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -1315,22 +1325,37 @@ impl<'a> Engine<'a> {
     /// its model (the parameters' values, the sides of later branches) is one.
     fn solve(&mut self, assumptions: &[Lit]) -> Result<bool, Stop> {
         let deadline = self.deadline;
-        self.solve_until(assumptions, deadline)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
+        self.solve_until(assumptions, deadline, None)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
     }
 
-    /// Asks the solver about the other side of a branch, for as long as all the solver calls so far took
-    /// together, at least a second: `None` when it did not answer, and the side is left undecided rather than
-    /// waited for, since an infeasible side can be as hard to refute as the whole proof (that a value is not a
-    /// multiple of another, say) while the violation on the feasible side is found at once, as JBMC finds it
-    /// without ever deciding the side. What is undecided is decided once the decided paths are done, with all the
-    /// time left, so a proof loses at most the probes' time.
+    /// Asks the solver about the other side of a branch, for as much work as all the solver calls so far did
+    /// together, at least [`PROBE_CONFLICTS`] conflicts: `None` when it did not answer, and the side is left
+    /// undecided rather than waited for, since an infeasible side can be as hard to refute as the whole proof (that
+    /// a value is not a multiple of another, say) while the violation on the feasible side is found at once, as JBMC
+    /// finds it without ever deciding the side. What is undecided is decided once the decided paths are done, with
+    /// all the time left, so a proof loses at most the probes' work.
+    ///
+    /// The budget is the solver's conflicts, not its time, so that which side is left undecided, and with it the
+    /// order of the paths, is the same on every machine and every run (VF-010). Only the run's deadline is the
+    /// clock's. A solver with no conflict limit ([`sat::Sat::set_work_limit`]) is given the time the calls so far
+    /// took instead, at least a second.
     fn probe(&mut self, assumptions: &[Lit]) -> Result<Option<bool>, Stop> {
+        let budget = self.b.work().max(PROBE_CONFLICTS);
+        if self.b.set_work_limit(Some(budget)) {
+            let answer = self.solve_until(assumptions, self.deadline, Some(budget));
+            self.b.set_work_limit(None);
+            return answer;
+        }
         let budget = self.b.solving.max(Duration::from_secs(1));
         let until = self.deadline.min(Instant::now() + budget);
-        self.solve_until(assumptions, until)
+        self.solve_until(assumptions, until, None)
     }
 
-    fn solve_until(&mut self, assumptions: &[Lit], until: Instant) -> Result<Option<bool>, Stop> {
+    /// Asks the solver until it answers with a real model or no model, refining the operations a model gets wrong:
+    /// `None` when it did not answer by `until`, or within `conflicts` conflicts over all its calls here (a call
+    /// goes some way past its limit, as far on every run, before the solver looks at it).
+    fn solve_until(&mut self, assumptions: &[Lit], until: Instant, conflicts: Option<u64>) -> Result<Option<bool>, Stop> {
+        let started = self.b.work();
         loop {
             let now = Instant::now();
             if now > self.deadline {
@@ -1338,6 +1363,13 @@ impl<'a> Engine<'a> {
             }
             if now > until {
                 return Ok(None);
+            }
+            if let Some(conflicts) = conflicts {
+                let spent = self.b.work() - started;
+                if spent >= conflicts {
+                    return Ok(None);
+                }
+                self.b.set_work_limit(Some(conflicts - spent));
             }
             self.b.set_timeout((until - now).as_secs_f32());
             match self.b.solve_with(assumptions) {
@@ -1460,10 +1492,12 @@ impl<'a> Engine<'a> {
         // counts the fewer, so that the iterations the other has left are not counted twice, which would report
         // the loop as beyond the bound when no path is. A path needing more than the bound is still stopped, at
         // most as many iterations later as the counts differed: nothing is cut short, only reported later.
-        into.back_edges.retain(|key, taken| {
-            *taken = (*taken).min(other.back_edges.get(key).copied().unwrap_or(0));
-            *taken > 0
-        });
+        for (f, g) in into.frames.iter_mut().zip(&other.frames) {
+            f.back_edges.retain(|head, taken| {
+                *taken = (*taken).min(g.back_edges.get(head).copied().unwrap_or(0));
+                *taken > 0
+            });
+        }
         into.models.extend(other.models.iter().take(MOST_MODELS.saturating_sub(into.models.len())).cloned());
     }
 
@@ -1941,16 +1975,26 @@ impl<'a> Engine<'a> {
         })
     }
 
-    /// A jump within the top frame, counting back edges against the bound.
+    /// A jump within the top frame, counting back edges against the bound per entry of a loop (VF-011).
+    ///
+    /// A back edge from `from` to `target` takes another iteration of the loop headed at `target`, and is counted
+    /// for that head. It also leaves the iteration of every loop whose head is in its body, after `target` and up to
+    /// `from` (an inner loop, run again from its entry in the next iteration), so their counts start again. Each
+    /// count is kept while the path stays in its loop, and a new frame starts with none.
+    ///
+    /// It stays a bound: on a path that goes on forever in a frame, take the lowest head whose back edges it takes
+    /// without end. Its count starts again only on a back edge to a lower head, which the path takes finitely
+    /// often, so the count grows past `--unwind` and the path ends unwound (calls are at most 64 deep). An inner
+    /// loop is thus run at most `--unwind` times per iteration of the loops around it, as JBMC's `--unwind` counts.
     fn jump(&mut self, path: &mut Path, target: u32) -> Step {
         let frame = path.frames.last_mut().expect("a frame");
         let to = *frame.code.index.get(&target).ok_or_else(|| Stop::Unsupported(format!("jump to no instruction at pc {target}")))?;
         if to <= frame.at {
-            let key = (frame.class.name.clone(), frame.method.clone(), target);
-            let count = path.back_edges.entry(key).or_insert(0);
+            let from = frame.pc();
+            frame.back_edges.retain(|&head, _| head <= target || head > from);
+            let count = frame.back_edges.entry(target).or_insert(0);
             *count += 1;
             if *count > self.unwind {
-                let frame = path.frames.last().expect("a frame");
                 return Ok(Some(End::Unwound(format!("{}.{} at pc {target}", frame.class.name.replace('/', "."), frame.method))));
             }
         }
@@ -3693,6 +3737,145 @@ mod tests {
         assert!(out.problem.unwrap().contains("not fully unwound"));
     }
 
+    /// `for (i = 0; i < outer; i++) for (j = 0; j < inner(i); j++) s++;`, with `i` in slot 1, `j` in slot 2 and `s`
+    /// in slot 3, each loop tested at its top and closed by a `goto` back to it.
+    fn nested_loops(code: &mut CodeBuilder, outer: impl FnOnce(&mut CodeBuilder), inner: impl FnOnce(&mut CodeBuilder)) {
+        let (top, done, inner_top, inner_done) = (code.label(), code.label(), code.label(), code.label());
+        code.iconst(0);
+        code.store(Kind::Int, 1);
+        code.iconst(0);
+        code.store(Kind::Int, 3);
+        code.bind(top);
+        code.load(Kind::Int, 1);
+        outer(code);
+        code.if_icmp(Cond::Ge, done);
+        code.iconst(0);
+        code.store(Kind::Int, 2);
+        code.bind(inner_top);
+        code.load(Kind::Int, 2);
+        inner(code);
+        code.if_icmp(Cond::Ge, inner_done);
+        code.iinc(3, 1);
+        code.iinc(2, 1);
+        code.goto(inner_top);
+        code.bind(inner_done);
+        code.iinc(1, 1);
+        code.goto(top);
+        code.bind(done);
+    }
+
+    #[test]
+    fn an_inner_loop_is_unwound_per_entry_of_it() {
+        // VF-011: 4 iterations of an outer loop, each running an inner loop 3 times, are within --unwind 4, although
+        // the inner back edge is taken 12 times on the path.
+        let cp = harness("()V", |code, _, fail| {
+            nested_loops(code, |code| code.iconst(4), |code| code.iconst(3));
+            code.load(Kind::Int, 3);
+            code.iconst(12);
+            code.if_icmp(Cond::Ne, fail);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+
+        // Example 052's shape: a sum over i < k inside a loop over k < n, for every n up to 5, so 10 inner
+        // iterations at most and fewer than 5 on each entry. 2 s == n (n - 1).
+        let cp = harness("(I)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.iconst(5);
+            code.if_icmp(Cond::Gt, ok);
+            nested_loops(code, |code| code.load(Kind::Int, 0), |code| code.load(Kind::Int, 1));
+            code.load(Kind::Int, 3);
+            code.iconst(1);
+            code.op(0x78); // ishl
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 0);
+            code.iconst(1);
+            code.op(0x64); // isub
+            code.op(0x68); // imul
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 5, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+
+        // The count still bounds each entry: an inner loop of 5 iterations is beyond --unwind 4.
+        let cp = harness("()V", |code, _, _| nested_loops(code, |code| code.iconst(2), |code| code.iconst(5)));
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.unwrap().contains("not fully unwound"));
+    }
+
+    #[test]
+    fn a_loop_entered_again_by_an_outer_back_edge_is_bounded_by_the_outer_count() {
+        // The inner loop starts afresh on each of the outer loop's iterations, but the outer loop's 5 are beyond
+        // --unwind 4, so the path still ends with no verdict.
+        let cp = harness("()V", |code, _, _| nested_loops(code, |code| code.iconst(5), |code| code.iconst(1)));
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.unwrap().contains("not fully unwound"));
+
+        // Two loops that overlap, neither inside the other: a: if (x >= 100) goto out; b: x++; if (x % 2 == 0)
+        // goto a; goto b. Each back edge to a starts b's count again, but nothing starts a's again, so the path
+        // still ends, at a's fifth back edge.
+        let cp = harness("()V", |code, _, _| {
+            let (a, b, out) = (code.label(), code.label(), code.label());
+            code.iconst(0);
+            code.store(Kind::Int, 1);
+            code.bind(a);
+            code.load(Kind::Int, 1);
+            code.iconst(100);
+            code.if_icmp(Cond::Ge, out);
+            code.bind(b);
+            code.iinc(1, 1);
+            code.load(Kind::Int, 1);
+            code.iconst(2);
+            code.op(0x70); // irem
+            code.if_zero(Cond::Eq, a); // back to a, leaving b's loop
+            code.goto(b); // back to b, after a's head
+            code.bind(out);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.unwrap().contains("not fully unwound"));
+    }
+
+    #[test]
+    fn a_loop_is_unwound_per_call_of_its_method() {
+        // count() runs a loop 3 times; four calls of it in a row are within --unwind 4.
+        let cp = harness("()V", |code, writer, fail| {
+            let mut callee = CodeBuilder::new();
+            callee.max_locals = 2;
+            callee.max_stack = 2;
+            let (top, done) = (callee.label(), callee.label());
+            callee.iconst(0);
+            callee.store(Kind::Int, 0);
+            callee.bind(top);
+            callee.load(Kind::Int, 0);
+            callee.iconst(3);
+            callee.if_icmp(Cond::Ge, done);
+            callee.iinc(0, 1);
+            callee.goto(top);
+            callee.bind(done);
+            callee.load(Kind::Int, 0);
+            callee.return_(Some(Kind::Int));
+            writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: "count".into(), descriptor: "()I".into(), code: Some(callee) });
+            let count = writer.pool.method_ref("Check", "count", "()I");
+            for _ in 0..4 {
+                code.op_u16(0xb8, count);
+            }
+            for _ in 0..3 {
+                code.op(0x60); // iadd
+            }
+            code.iconst(12);
+            code.if_icmp(Cond::Ne, fail);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+    }
+
     #[test]
     fn a_division_is_built_in_full_only_when_the_solver_gets_it_wrong() {
         // x % y < y for x >= 0 and y > 0: what holds of every remainder proves it, with no division circuit.
@@ -3815,15 +3998,29 @@ mod tests {
         assert_eq!(clauses.len() as u64, logged.clauses);
         assert_eq!(clauses.first().map(|c| c.as_slice()), Some(&[TRUE][..]), "the constant first");
         assert!(calls.len() >= 2 && calls.len() as u64 <= logged.solves, "{} calls of {}", calls.len(), logged.solves);
-        // Every call is made under the limit last set, and the limit is within the check's budget.
+        // Every call is made under the limit last set, and the limit is within the check's budget; a branch probe is
+        // limited by conflicts as well, at least the floor's (VF-010), and every other call is not.
         let mut limit = None;
         for e in &events {
             match e {
                 sat::Event::Limit(l) => limit = *l,
                 sat::Event::Solve(..) => assert!(limit.is_some_and(|l| l > 0.0 && l <= 600.0), "{events:?}"),
-                sat::Event::Clause(_) => {}
+                sat::Event::Clause(_) | sat::Event::WorkLimit(_) => {}
             }
         }
+        let work_limits = |events: &[sat::Event]| {
+            let mut work = None;
+            events.iter().filter_map(|e| match e {
+                sat::Event::WorkLimit(w) => {
+                    work = *w;
+                    None
+                }
+                sat::Event::Solve(..) => Some(work),
+                _ => None,
+            }).collect::<Vec<_>>()
+        };
+        let probes = work_limits(&events);
+        assert!(probes.contains(&Some(PROBE_CONFLICTS)) && probes.contains(&None), "{probes:?}");
 
         // The transcript names the solver the check ran on, and holds what that solver was given.
         let text = std::fs::read_to_string(&path).unwrap();
@@ -3840,6 +4037,8 @@ mod tests {
         let replayed = sat::Logged::take();
         assert_eq!(replayed.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>(), events.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>());
         assert_eq!(replayed.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a.clone(), *r)) } else { None }).collect::<Vec<_>>(), calls.iter().map(|(a, r)| ((*a).clone(), *r)).collect::<Vec<_>>());
+        // The transcript holds each probe's conflict limit, and the replay gives it again.
+        assert_eq!(work_limits(&replayed), probes);
     }
 
     #[test]

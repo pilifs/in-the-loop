@@ -5,8 +5,8 @@
 //!   lemmas show is not real (the probes, the deferred paths, the refinement loop in `solve_until`);
 //! - **encoding** ([`super::bits::Blaster`]): word-level operations bit-blasted into clauses, and the inputs' values
 //!   read back from a model;
-//! - **solving** ([`Sat`]): clauses added, calls made under assumptions with a per-call time limit, and a model's
-//!   values read.
+//! - **solving** ([`Sat`]): clauses added, calls made under assumptions with a per-call time limit (and, where the
+//!   solver has one, a limit of work), and a model's values read.
 //!
 //! The encoding hands the solver nothing but clauses and calls, so a transcript of them ([`super::transcript`]) is
 //! the whole of what the solver was asked, and another solver that implements [`Sat`] can be put behind the same
@@ -32,6 +32,18 @@ pub trait Sat {
     fn add_clause(&mut self, lits: &[Lit]);
     /// Gives every later call at most this many seconds, or no limit.
     fn set_limit(&mut self, seconds: Option<f32>);
+    /// Gives every later call at most this many conflicts as well, or no such limit: a limit of work, which unlike
+    /// the time limit stops a call at the same point on every machine. `false` when the solver has no such limit, and
+    /// its calls are then limited by time alone.
+    fn set_work_limit(&mut self, conflicts: Option<u64>) -> bool {
+        let _ = conflicts;
+        false
+    }
+    /// The conflicts of all the calls so far, together: the work [`Sat::set_work_limit`] limits. 0 for a solver that
+    /// has no such limit.
+    fn work(&self) -> u64 {
+        0
+    }
     /// Whether the clauses and the assumptions together are satisfiable, the assumptions holding for this call
     /// only; `None` when the solver stopped at its limit.
     fn solve(&mut self, assumptions: &[Lit]) -> Option<bool>;
@@ -166,14 +178,60 @@ pub fn configured() -> Box<dyn Sat> {
     }
 }
 
-/// CaDiCaL as the `cadical` crate bundles it (1.9.5 in crate 0.1.16), with its time limit per call.
+/// CaDiCaL as the `cadical` crate bundles it (1.9.5 in crate 0.1.16), with a time limit and a conflict limit per call,
+/// both through its terminate callback ([`Watch`]). The crate's interface has no count of conflicts, so they are
+/// counted as the clauses CaDiCaL learns: it learns one in the analysis of each conflict of its search, and hands
+/// every one to the learn callback. (Its own `conflicts` limit also counts the conflicts of its inprocessing, which
+/// learns nothing, so it would be another unit than the count.) CaDiCaL polls the callback on a count of its own
+/// steps, so a call stopped by its conflicts stops at the same point on every run.
 pub struct Cadical {
-    solver: cadical::Solver<cadical::Timeout>,
+    solver: cadical::Solver<Watch>,
+    /// The clauses learned in all the calls so far.
+    learned: u64,
 }
 
 impl Cadical {
     pub fn new() -> Cadical {
-        Cadical { solver: cadical::Solver::new() }
+        let mut solver = cadical::Solver::new();
+        solver.set_callbacks(Some(Watch::default()));
+        Cadical { solver, learned: 0 }
+    }
+}
+
+/// CaDiCaL's callbacks: a count of the clauses a call learned, and the call stopped once it took its seconds or
+/// learned its clauses.
+#[derive(Default)]
+pub struct Watch {
+    /// The seconds a call may take, from when it started.
+    timeout: Option<f32>,
+    /// The clauses a call may learn.
+    conflicts: Option<u64>,
+    started: Option<std::time::Instant>,
+    learned: u64,
+}
+
+impl cadical::Callbacks for Watch {
+    fn started(&mut self) {
+        self.started = Some(std::time::Instant::now());
+        self.learned = 0;
+    }
+
+    fn terminate(&mut self) -> bool {
+        if self.conflicts.is_some_and(|c| self.learned >= c) {
+            return true;
+        }
+        match (self.timeout, self.started) {
+            (Some(timeout), Some(started)) => started.elapsed().as_secs_f32() >= timeout,
+            _ => false,
+        }
+    }
+
+    fn max_length(&self) -> i32 {
+        i32::MAX
+    }
+
+    fn learn(&mut self, _clause: &[i32]) {
+        self.learned += 1;
     }
 }
 
@@ -214,6 +272,7 @@ impl Sat for Cadical {
             "CaDiCaL's default options",
             "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
             "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback",
         ];
         crate::statement::Sat { solver: "CaDiCaL".into(), version: version.or(Some(signature.to_string())), source, configuration: configuration.map(String::from).into() }
     }
@@ -223,11 +282,22 @@ impl Sat for Cadical {
     }
 
     fn set_limit(&mut self, seconds: Option<f32>) {
-        self.solver.set_callbacks(seconds.map(cadical::Timeout::new));
+        self.solver.get_callbacks().expect("the callbacks are always set").timeout = seconds;
+    }
+
+    fn set_work_limit(&mut self, conflicts: Option<u64>) -> bool {
+        self.solver.get_callbacks().expect("the callbacks are always set").conflicts = conflicts;
+        true
+    }
+
+    fn work(&self) -> u64 {
+        self.learned
     }
 
     fn solve(&mut self, assumptions: &[Lit]) -> Option<bool> {
-        self.solver.solve_with(assumptions.iter().copied())
+        let answer = self.solver.solve_with(assumptions.iter().copied());
+        self.learned += self.solver.get_callbacks().expect("the callbacks are always set").learned;
+        answer
     }
 
     fn value(&self, lit: Lit) -> Option<bool> {
@@ -252,6 +322,7 @@ pub struct Logged {
 pub enum Event {
     Clause(Vec<Lit>),
     Limit(Option<f32>),
+    WorkLimit(Option<u64>),
     Solve(Vec<Lit>, Option<bool>),
 }
 
@@ -297,6 +368,15 @@ impl Sat for Logged {
         self.inner.set_limit(seconds);
     }
 
+    fn set_work_limit(&mut self, conflicts: Option<u64>) -> bool {
+        Self::log(Event::WorkLimit(conflicts));
+        self.inner.set_work_limit(conflicts)
+    }
+
+    fn work(&self) -> u64 {
+        self.inner.work()
+    }
+
     fn solve(&mut self, assumptions: &[Lit]) -> Option<bool> {
         let answer = self.inner.solve(assumptions);
         Self::log(Event::Solve(assumptions.to_vec(), answer));
@@ -335,6 +415,45 @@ mod tests {
         assert_eq!(s.solve(&[]), Some(false));
         s.set_limit(None);
         assert_eq!(s.solve(&[]), Some(false));
+    }
+
+    /// `pigeons` pigeons in one hole fewer: unsatisfiable, and hard for a SAT solver, which needs many conflicts.
+    fn pigeonhole(s: &mut dyn Sat, pigeons: i32) {
+        let holes = pigeons - 1;
+        let v = |p: i32, h: i32| p * holes + h + 1;
+        for p in 0..pigeons {
+            s.add_clause(&(0..holes).map(|h| v(p, h)).collect::<Vec<_>>());
+        }
+        for h in 0..holes {
+            for p in 0..pigeons {
+                for q in p + 1..pigeons {
+                    s.add_clause(&[-v(p, h), -v(q, h)]);
+                }
+            }
+        }
+    }
+
+    /// A call limited by conflicts stops after the same work on every run, whatever the machine's speed (VF-010),
+    /// and a later call without the limit goes on to the answer.
+    #[test]
+    fn a_conflict_limit_stops_a_call_at_the_same_work_every_time() {
+        let stopped = || {
+            let mut s = Cadical::new();
+            pigeonhole(&mut s, 8);
+            assert!(s.set_work_limit(Some(200)));
+            assert_eq!(s.solve(&[]), None, "200 conflicts are not enough for 8 pigeons");
+            (s.work(), s)
+        };
+        let (first, mut s) = stopped();
+        // CaDiCaL asks the callback only every so many steps, so the call goes some way past the limit, the same
+        // way each time.
+        assert!(first >= 200, "{first}");
+        for _ in 0..3 {
+            assert_eq!(stopped().0, first);
+        }
+        s.set_work_limit(None);
+        assert_eq!(s.solve(&[]), Some(false));
+        assert!(s.work() > first);
     }
 
     #[test]

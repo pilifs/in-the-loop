@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm",
+  "title": "VF-014, H1 isolated, run 1 of 2: the benchmark's own-checker runs at H1's parent (rvxkytqy, b927e5df)",
+  "description": "VF-014 in verification/findings.md: job 20261107-041414 checked step H1 of llm-dlc/loops/foundations-heap.md (symbolic references in the own checker, change uyqkxsly, commit ddbb54ba) by comparing the benchmark's own-checker runs with lib/benchmark/results.json, which was recorded long before H1. Eight verdicts on boom/1, inherited/1 and quiet/1 changed, most likely through class initializers the own checker gained since the recording, so the job could not tell those changes apart from H1's. This job and its twin isolate H1 instead, as the entry offers: this one runs 20261107-041414's step 1 unchanged at H1's parent (rvxkytqy, commit b927e5df), the twin at H1 itself. A third job, submitted once both are collected, applies 20261107-041414's step-2 comparison script to the two outputs (kept under verification/results/ID/outputs/lib/target/benchmark-native.json), and closes VF-014 when it passes. H1's parent has no swaps, swapsOrNull or swapsThenNull conformance cases (H1 added them to lib/benchmark/conformance.json), so this run has 3 fewer cases than the twin. This job only records the run: it doesn't close VF-014 by itself.",
+  "kind": "library",
+  "capabilities": [
+    "benchmark",
+    "own-checker",
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/benchmark"
+    ],
+    "commits": [
+      "ddbb54bac20616e15ddd6e965e412519377506ad",
+      "b927e5df1be94b21de89351736978f469e33553a"
+    ]
+  },
+  "expected": "exits 0: the benchmark completes on the own checker at H1's parent and writes lib/target/benchmark-native.json and its table. No verdict is checked here; the third job compares this run with the twin's at H1.",
+  "submitted": {
+    "at": "2026-11-07T16:44:50+00:00",
+    "session": "b65d132b-4eb4-46fd-8556-f4cba3311ad1",
+    "by": "claude (cleanup-examples)"
+  },
+  "revision": "b927e5df1be94b21de89351736978f469e33553a",
+  "requires": [
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "10m",
+    "memoryLimit": "3G",
+    "timeout": "1h",
+    "notes": "job 20261107-041414's step 1 took 2m47s and peaked at 1.1 GiB for 557 own-checker runs at H1"
+  },
+  "steps": [
+    {
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/benchmark-native.json",
+    "lib/target/benchmark-native.md"
+  ]
+}

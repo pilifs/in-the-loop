@@ -2,7 +2,7 @@
 # Session traces
 
 Every LLM session in this repo is published here: what was asked, what the agent did, what it cost in tokens, and which commits came out of it.
-This page adds up all the sessions. Each session's folder has a readable `summary.md`, the detailed `manifest.json`, and links to the full redacted log.
+This page adds up all the sessions. Each session's folder has a readable `summary.md`, the detailed `manifest.json`, and links to the full redacted log. A session that ran in a loop of `llm-dlc/tools/feature-loop.sh` also has a `runs/` folder: the loop's record of each run, redacted (the instruction, a line per commit, and how the run ended), which its summary lists under *Loop runs*.
 The [procedure](../README.md#procedure-for-agents) says how traces are made, and the [specification](../specification.md) defines them.
 
 ## At a glance

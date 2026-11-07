@@ -108,8 +108,8 @@
       "properties": {
         "name": { "type": "string", "description": "The parameter's or component's name; among `inputs`, the harness's own name for the input (`this.baseMillis` for a component of the receiver)." },
         "type": { "type": "string", "description": "The Java type: `int`, `long[]`, `net.example.retry.Backoff`." },
-        "value": { "description": "A boolean; a number for byte, short and int, and for char its UTF-16 code unit; a string for long (decimal, exact past 2^53) and for float and double (Java's toString of the value, which reads back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; or null. Absent for a record, whose components give it." },
-        "components": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "A record's components in declaration order: the arguments of its canonical constructor." },
+        "value": { "description": "A boolean; a number for byte, short and int, and for char its UTF-16 code unit; a string for long (decimal, exact past 2^53) and for float and double (Java's toString of the value, which reads back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; null; or `{\"same\": i}` for the same array as the `i`th input. Absent for a record or an object made by its constructor, whose components give it; for an object parameter whose choice was made null or the same object as another (step H2), null or `{\"same\": \"a\"}` by that one's name." },
+        "components": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "A record's components in declaration order: the arguments of its canonical constructor; for an object made by its constructor, that constructor's arguments, an object among them typed so in turn." },
         "from": { "type": "string", "description": "In a call: the input the argument is, or for the previous version's arguments given by `previousArguments`, the expression over the inputs that computed it." }
       }
     },
@@ -126,7 +126,7 @@
         "method": { "type": "string" },
         "descriptor": { "type": "string", "description": "The method's descriptor, as in the class file." },
         "static": { "type": "boolean" },
-        "receiver": { "$ref": "#/$defs/typedValue", "description": "An instance method's receiver: a record built by its canonical constructor from its components." },
+        "receiver": { "$ref": "#/$defs/typedValue", "description": "An instance method's receiver: a record built by its canonical constructor from its components, or an object made by its constructor from its arguments." },
         "arguments": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The arguments, in parameter order." }
       }
     },
@@ -198,11 +198,13 @@
                     "enum": [
                       "primitive",
                       "array",
-                      "record"
-                    ]
+                      "record",
+                      "object"
+                    ],
+                    "description": "`record`: a record of primitive components, built through its canonical constructor; `object`: an object of an application class made by its constructor, from primitives and objects made so in turn, whose fields after the call are observed (step H2 of llm-dlc/loops/foundations-heap.md)."
                   },
                   "null": {
-                    "description": "Whether null is among its values: never today (an array is a fresh array, a record one its constructor built).",
+                    "description": "Whether null is among its values: for an array a property's domain lets be null (`--nullable`), or an object parameter whose choice may be null (step H2); otherwise an array is a fresh array, a record one its constructor built and an object one its constructor made.",
                     "type": "boolean"
                   },
                   "maxLength": {
@@ -210,7 +212,7 @@
                     "type": "integer"
                   },
                   "components": {
-                    "description": "A record's components, `name: type`, the symbolic inputs it is built from.",
+                    "description": "A record's components, `name: type`, the symbolic inputs it is built from; for an object, the leaves of its construction.",
                     "type": "array",
                     "items": {
                       "type": "string"
@@ -220,8 +222,35 @@
               }
             },
             "sharedArrays": {
-              "description": "Whether two array parameters may be one array: never today.",
+              "description": "Whether two array parameters may be one array: only where a property's domain says which may (`--may-alias`).",
               "type": "boolean"
+            },
+            "mayAlias": {
+              "description": "The groups of parameters any two of which may be one array (a property's), or one object (a regression check's object parameters made by their constructor, step H2), by name. Absent when there are none.",
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "inputObjects": {
+              "description": "Where a parameter is an object made by its constructor: how many input objects each version's inputs are made of, the previous version's first (a `Quote` of a `Money` is two). Under a correspondence the two may differ (step H5).",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2
             },
             "text": {
               "description": "The domain as the proof line writes it.",
@@ -293,6 +322,20 @@
             },
             "arrays": {
               "description": "The array parameters whose contents after the call are compared too.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "objects": {
+              "description": "The object parameters made by their constructors whose fields after the call are compared too, each as `q: amount.cents, quantity`, the fields by path.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "identities": {
+              "description": "The identity relations within each version compared as 'holds before iff it holds now', `result == q` (step H3); objects are never compared by identity across versions.",
               "type": "array",
               "items": {
                 "type": "string"
@@ -1159,12 +1202,13 @@
         "example": { "type": "string", "pattern": "^\\d{3}$" },
         "statement": { "description": "What is checked, as build.py's plan() states it: the approach, the target and its file, behaviourChangeIntended, and for B9 the intended inputs, previous symbol and arguments, and result relation.", "type": "object" },
         "scope": {
-          "description": "What a symbolic proof's statement is over (B9, B11): the array bound (null: the tool's default) and, for B9, the intended inputs the proof leaves out. Narrowing them is another claim.",
+          "description": "What a symbolic proof's statement is over (B9, B11): the array bound (null: the tool's default) and, for B9, the intended inputs the proof leaves out and, for a B9 proof run with the proof cache (approach.cache), that it may rest on helpers' proofs made in the same run (absent otherwise). Narrowing them is another claim.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "maxArrayLength": { "type": ["integer", "null"] },
-            "intendedInputs": { "type": ["string", "null"] }
+            "intendedInputs": { "type": ["string", "null"] },
+            "proofCache": { "description": "Written by build.py's claim_scope: the cache starts empty, so a helper's proof the caller rests on was made in this run.", "const": "fresh: helpers' proofs made in the run" }
           }
         },
         "inputs": {

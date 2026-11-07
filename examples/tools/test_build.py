@@ -1147,7 +1147,12 @@ class ReplayWordingTest(unittest.TestCase):
         self.assertNotIn("replayed", page)
         self.assertIn("on which the two versions do this:", page)
 
-    def test_no_recorded_tool_example_is_said_to_be_replayed_on_the_jvm(self):
+    def test_no_recorded_example_is_said_to_be_replayed_where_its_result_does_not_say(self):
+        """A recorded violation's page says "on the JVM" exactly when its result says the witness was replayed there
+        (its `replay.by`, or its proof line before there was one). The Java verifier's (boxoffice) and the effect
+        checker's (`jvmcontract effects`, which runs the witness on a JVM under recording stubs) are; the tool's
+        equivalence checks replay in its interpreter."""
+        jvm = 0
         for folder in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*")):
             ex = json.loads((folder / "example.json").read_text())
             if ex.get("origin") != "constructed" or ex["approach"]["id"] != "B9" or (folder / "result.json").exists() is False:
@@ -1156,7 +1161,11 @@ class ReplayWordingTest(unittest.TestCase):
             if res.get("verdict") != "violation":
                 continue
             page = "\n".join(build.findings_equivalence(ex, res))
-            self.assertEqual("on the JVM" in page, build.app_of(ex) == "boxoffice", folder.name)
+            on_jvm = build.replayed_where(res) == build.REPLAYED["jvm"]
+            self.assertEqual("on the JVM" in page, on_jvm, folder.name)
+            self.assertIn(build.replayed_where(res), page, folder.name)
+            jvm += on_jvm
+        self.assertGreater(jvm, 0)
 
 
 class PlanTest(unittest.TestCase):
@@ -2229,6 +2238,50 @@ class StatementTest(unittest.TestCase):
         record = build.property_record({"verdict": "verified", "assert": "result >= 0", "stated": self.STATED}, "PropertyHarness", None)
         self.assertEqual(record["stated"]["bounds"]["maxArrayLength"], 8)
 
+    # VF-017: what `jvmcontract equivalence --json` gives as `stated` for an object parameter made by its constructor
+    # beside a record, in example 151's shape (lib/src/statement.rs's Domain and Observations, steps H2 and H3 of
+    # llm-dlc/loops/foundations-heap.md): `kind: object`, the input objects each version is made of, the fields
+    # compared after the call, and the identity relations compared within each version.
+    OBJECT_STATED = {**STATED,
+                     "domain": {"parameters": [{"name": "throttle", "type": "net.terminalvalue.crosscut.retry.Throttle", "kind": "object", "null": False,
+                                                "components": ["limits.maxTokens: int", "limits.tokenRatioMilli: int"]},
+                                               {"name": "limits", "type": "net.terminalvalue.crosscut.retry.ThrottleLimits", "kind": "record", "null": False,
+                                                "components": ["maxTokens: int", "tokenRatioMilli: int"]}],
+                                "shared_arrays": False, "input_objects": [2, 2],
+                                "text": "throttle: Throttle, made by new Throttle(new ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) × limits: ThrottleLimits[maxTokens: int, tokenRatioMilli: int]"},
+                     "assumptions": [{"kind": "constructible", "text": "both versions' constructor Throttle(ThrottleLimits) accepts the arguments of throttle: an input it rejects is skipped", "basis": "harness"},
+                                     {"kind": "initialization", "text": "every JDK class is initialized already, its static initializer having run and thrown nothing", "basis": "engine"}],
+                     "observations": {"result": "the result, its fields equal in both versions",
+                                      "exceptions": "whether it throws, and which of 15 exception classes it throws, the same in both versions",
+                                      "objects": ["throttle: milliTokens, limits.maxTokens, limits.tokenRatioMilli"],
+                                      "identities": ["result == throttle", "result.limits == throttle.limits"]},
+                     "bounds": {"unwind": 16, "max_array_length": None, "complete": True}}
+
+    def test_an_object_parameter_s_statement_validates(self):
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        statement = {**schema["$defs"]["statement"], "$defs": schema["$defs"]}
+        stated = self.recorded(stated=self.OBJECT_STATED)["stated"]
+        self.assertEqual([p["kind"] for p in stated["domain"]["parameters"]], ["object", "record"])
+        self.assertEqual(stated["domain"]["inputObjects"], [2, 2])
+        jsonschema.validate(stated, statement)
+        # A choice made null or the same object as another (step H2): `null` true, and the group that may be one.
+        s = json.loads(json.dumps(self.OBJECT_STATED))
+        s["domain"]["parameters"].append({**s["domain"]["parameters"][0], "name": "previous", "null": True})
+        s["domain"]["may_alias"] = [["throttle", "previous"]]
+        jsonschema.validate(build.camel(s), statement)
+        for wrong in ({"kind": "pointer"}, {"inputObjects": [2]}, {"mayAlias": ["throttle"]}):
+            with self.subTest(wrong=wrong), self.assertRaises(jsonschema.ValidationError):
+                jsonschema.validate({**stated, "domain": {**stated["domain"], **wrong}} if "kind" not in wrong else
+                                    {**stated, "domain": {**stated["domain"], "parameters": [{**stated["domain"]["parameters"][0], **wrong}]}}, statement)
+
+    def test_the_page_says_how_an_object_is_made_and_what_of_it_is_compared(self):
+        paragraph = build.statement_paragraph(build.camel(self.OBJECT_STATED))
+        for part in ("each object (throttle) made by its constructor", "each record (limits) built from its components",
+                     "the fields they leave in `throttle: milliTokens, limits.maxTokens, limits.tokenRatioMilli`",
+                     "`result == throttle` and `result.limits == throttle.limits`, each holding in one version iff it holds in the other"):
+            self.assertIn(part, paragraph)
+
 
 
 class ProofCacheTest(unittest.TestCase):
@@ -2281,6 +2334,21 @@ class ProofCacheTest(unittest.TestCase):
         plain = self.cached(cache=False)
         self.assertEqual(build.claim_scope(plain, build.plan(plain)), {"maxArrayLength": None, "intendedInputs": None})
 
+    def test_a_claim_that_may_rest_on_helpers_proofs_validates_against_the_schema(self):
+        # VF-016: jobs 20261107-163050 and -163051 (examples 160, 161) failed validating result.json, "Additional
+        # properties are not allowed ('proofCache' was unexpected)", in the claim's scope.
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        claim = {**schema["properties"]["claim"], "$defs": schema["$defs"]}
+        for ex in (self.cached(), self.cached(cache=False)):
+            with self.subTest(cache=ex["approach"].get("cache", False)):
+                scope = build.claim_scope(ex, build.plan(ex))
+                body = {"format": build.CLAIM_FORMAT, "example": "160", "statement": {}, "scope": scope,
+                        "inputs": {"patch": "0" * 64, "before": None, "after": None, "dependencies": "the JDK"}}
+                jsonschema.validate({"id": "0" * 16, **body}, claim)
+        with self.assertRaises(jsonschema.ValidationError):  # still only what claim_scope writes
+            jsonschema.validate({"id": "0" * 16, **body, "scope": {"proofCache": 1}}, claim)
+
     def test_a_helper_proved_first_is_recorded_as_shared_and_the_page_says_so(self):
         result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
         self.assertEqual(result["helpers"], [{"callee": "TokenBucket.lastAfter", "shared": True, "note":
@@ -2322,6 +2390,25 @@ class ProofCacheTest(unittest.TestCase):
         self.assertIn(f"(claim {self.KEY}) shows", paragraph)
         self.assertIn("(a changed helper's own regression proof, made by the tool's own checker before the caller's", paragraph)
         self.assertNotIn("a contract for a gap", paragraph)
+
+
+class PatchesApplyTest(unittest.TestCase):
+    """Every example's patch applies to its app as the repository has it now, as the stage "apply the patch" applies
+    it. An app changed under an example (a test class added to the suite list, say) leaves the patch's context stale,
+    and the job fails in its first stage: VF-002's jobs 20261107-163046, -163047 and -163049 (examples 147-149),
+    whose `Tests.java` hunk predates `RetryThrottlingTest` in the list."""
+
+    def test_every_example_s_patch_applies_to_the_current_tree(self):
+        stale = []
+        for path in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*/example.json")):
+            patch = (json.loads(path.read_text()).get("change") or {}).get("patch")
+            if not patch:
+                continue
+            proc = subprocess.run(["git", "apply", "--check", "-p1", str(path.parent / patch)], cwd=build.REPO,
+                                  capture_output=True, text=True)
+            if proc.returncode != 0:
+                stale.append(f"{path.parent.name[:3]}: {proc.stderr.strip().splitlines()[-1]}")
+        self.assertEqual(stale, [])
 
 
 class VacuityTest(unittest.TestCase):
@@ -2705,6 +2792,63 @@ class GapScanTest(unittest.TestCase):
             build.record_gap_note(folder, "Gap scan (new)")
             build.record_gap_note(folder, "Gap scan (newer)")
             self.assertEqual(json.loads((folder / "example.json").read_text())["notes"], ["kept", "Gap scan (newer)"])
+
+
+CROSSCUT = "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut"
+
+
+class ExcerptsTest(unittest.TestCase):
+    """The before and after sides a page shows: the subject file's hunks, also where the patch creates the subject
+    (VF-002) or leaves it alone and changes a helper it calls (VF-016)."""
+
+    def test_a_changed_subject_shows_its_hunks(self):
+        patch = (f"--- a/{CROSSCUT}/a/A.java\n+++ b/{CROSSCUT}/a/A.java\n@@ -3,3 +3,3 @@\n"
+                 "     int f(int x) {\n-        return x;\n+        return x + 1;\n     }\n")
+        before, after = build.excerpts(patch, f"{CROSSCUT}/a/A.java")
+        self.assertEqual((before["startLine"], before["code"]), (3, "int f(int x) {\n    return x;\n}\n"))
+        self.assertEqual(after["code"], "int f(int x) {\n    return x + 1;\n}\n")
+
+    def test_a_patch_that_creates_its_subject_has_an_empty_before_side(self):
+        # Examples 147-149: the patch adds Jitter.java, which had no before side to show.
+        subject = f"{CROSSCUT}/retry/Jitter.java"
+        patch = (f"diff --git a/{subject} b/{subject}\nnew file mode 100644\nindex 0000000..d7d5164\n"
+                 f"--- /dev/null\n+++ b/{subject}\n@@ -0,0 +1,3 @@\n" "+final class Jitter {\n+    int f() { return 0; }\n+}\n")
+        before, after = build.excerpts(patch, subject, "net.terminalvalue.crosscut.retry.Jitter#f")
+        self.assertEqual(before, {"file": subject, "startLine": 1, "code": ""})
+        self.assertEqual(after, {"file": subject, "startLine": 1, "code": "final class Jitter {\n    int f() { return 0; }\n}\n"})
+
+    def test_examples_147_to_149_have_excerpts(self):
+        for number in ("147", "148", "149"):
+            folder = next(build.EXAMPLES.glob(f"{number}-*"))
+            example = json.loads((folder / "example.json").read_text())
+            before, after = build.excerpts((folder / example["change"]["patch"]).read_text(), example["subject"]["file"],
+                                           example["subject"]["symbol"])
+            self.assertEqual(before["code"], "", number)
+            self.assertIn("fullJitterMillis", after["code"], number)
+
+    def test_an_unchanged_subject_shows_the_helper_it_calls_that_the_patch_changes(self):
+        # Examples 160 and 161: the subject is the caller RetryAfter, and the patch changes only TokenBucket.
+        for number in ("160", "161"):
+            folder = next(build.EXAMPLES.glob(f"{number}-*"))
+            example = json.loads((folder / "example.json").read_text())
+            before, after = build.excerpts((folder / example["change"]["patch"]).read_text(), example["subject"]["file"],
+                                           example["subject"]["symbol"])
+            self.assertEqual(before["file"], f"{CROSSCUT}/ratelimit/TokenBucket.java", number)
+            self.assertEqual(after["file"], before["file"], number)
+            self.assertIn("lastAfter", after["code"], number)
+
+    def test_an_unchanged_subject_that_names_no_changed_class_is_refused(self):
+        patch = (f"--- a/{CROSSCUT}/b/B.java\n+++ b/{CROSSCUT}/b/B.java\n@@ -1,1 +1,1 @@\n-int x;\n+int y;\n")
+        with self.assertRaises(SystemExit) as raised:
+            build.excerpts(patch, f"{CROSSCUT}/a/A.java", "a.A#f", subject_source="class A { int f() { return C.g(); } }")
+        self.assertIn("does not change the subject file", str(raised.exception))
+
+    def test_a_patch_of_two_helpers_the_subject_names_is_refused(self):
+        patch = "".join(f"--- a/{CROSSCUT}/b/{c}.java\n+++ b/{CROSSCUT}/b/{c}.java\n@@ -1,1 +1,1 @@\n-int x;\n+int y;\n"
+                        for c in ("B", "C"))
+        with self.assertRaises(SystemExit) as raised:
+            build.excerpts(patch, f"{CROSSCUT}/a/A.java", "a.A#f", subject_source="class A { int f() { return B.g() + C.g(); } }")
+        self.assertIn("B.java", str(raised.exception))
 
 
 class SchemaTest(unittest.TestCase):

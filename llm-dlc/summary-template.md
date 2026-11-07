@@ -16,6 +16,8 @@
 
 ${notes}
 
+${runs}
+
 ## Changes
 
 The commits this session made, oldest first, with the message the agent wrote for each.

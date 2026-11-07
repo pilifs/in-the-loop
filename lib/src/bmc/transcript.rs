@@ -10,10 +10,11 @@
 //!
 //! ```text
 //! c answer sat 0.000412 limit 599.871
+//! c answer unknown 0.081250 limit 599.790 conflicts 2048
 //! ```
 //!
-//! the answer (`sat`, `unsat`, or `unknown` when the solver stopped at its limit), the seconds the call took, and the
-//! per-call time limit it was given. Comments before the `p inccnf` line say what was checked and with what (the
+//! the answer (`sat`, `unsat`, or `unknown` when the solver stopped at its limit), the seconds the call took, the
+//! per-call time limit it was given, and the conflict limit when it was given one (a branch probe's budget). Comments before the `p inccnf` line say what was checked and with what (the
 //! tool's version, the solver, the method and the engine's options), and a last comment says how the check ended.
 //! A call the engine settles without the solver (an assumption that is the constant false) is not a call, and is not
 //! written.
@@ -102,8 +103,9 @@ impl Transcript {
         });
     }
 
-    /// A call under `assumptions`, with the per-call time `limit` it was given, what it answered and how long it took.
-    pub fn call(&mut self, assumptions: &[Lit], limit: Option<f32>, answer: Option<bool>, took: Duration) {
+    /// A call under `assumptions`, with the per-call time `limit` and conflict limit it was given, what it answered
+    /// and how long it took.
+    pub fn call(&mut self, assumptions: &[Lit], limit: Option<f32>, conflicts: Option<u64>, answer: Option<bool>, took: Duration) {
         self.calls += 1;
         self.write(|out| {
             write!(out, "a ")?;
@@ -112,10 +114,13 @@ impl Transcript {
             }
             writeln!(out, "0")?;
             write!(out, "c answer {} {:.6}", answer_name(answer), took.as_secs_f64())?;
-            match limit {
-                Some(limit) => writeln!(out, " limit {limit:.3}"),
-                None => writeln!(out),
+            if let Some(limit) = limit {
+                write!(out, " limit {limit:.3}")?;
             }
+            if let Some(conflicts) = conflicts {
+                write!(out, " conflicts {conflicts}")?;
+            }
+            writeln!(out)
         });
     }
 
@@ -159,6 +164,9 @@ pub struct Call {
     pub recorded_seconds: f64,
     /// The per-call time limit recorded, which the replay gives the call too unless told otherwise.
     pub limit: Option<f64>,
+    /// The conflict limit recorded, which the replay gives the call too.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conflicts: Option<u64>,
     pub replayed: &'static str,
     pub replayed_seconds: f64,
 }
@@ -213,8 +221,8 @@ impl Replay {
 enum Line {
     Clause(Vec<Lit>),
     Call(Vec<Lit>),
-    /// The comment after a call: the answer, the seconds and the limit.
-    Answer(Option<bool>, f64, Option<f64>),
+    /// The comment after a call: the answer, the seconds, the time limit and the conflict limit.
+    Answer(Option<bool>, f64, Option<f64>, Option<u64>),
     Comment(String),
     Header,
 }
@@ -252,12 +260,21 @@ fn parse_line(line: &str, n: usize) -> Result<Line, String> {
             _ => return Err(format!("line {n}: an answer that is not sat, unsat or unknown")),
         };
         let seconds = words.get(1).and_then(|w| w.parse().ok()).ok_or_else(|| format!("line {n}: an answer with no seconds"))?;
-        let limit = match words.get(2..) {
-            Some(["limit", l]) => Some(l.parse().map_err(|_| format!("line {n}: a limit that is not a number"))?),
-            Some([]) | None => None,
-            _ => return Err(format!("line {n}: something after the answer's seconds that is not a limit")),
-        };
-        return Ok(Line::Answer(answer, seconds, limit));
+        let mut rest = words.get(2..).unwrap_or(&[]);
+        let mut limit = None;
+        if let ["limit", l, more @ ..] = rest {
+            limit = Some(l.parse().map_err(|_| format!("line {n}: a limit that is not a number"))?);
+            rest = more;
+        }
+        let mut conflicts = None;
+        if let ["conflicts", c, more @ ..] = rest {
+            conflicts = Some(c.parse().map_err(|_| format!("line {n}: a conflict limit that is not a number"))?);
+            rest = more;
+        }
+        if !rest.is_empty() {
+            return Err(format!("line {n}: something after the answer's seconds that is not a limit"));
+        }
+        return Ok(Line::Answer(answer, seconds, limit, conflicts));
     }
     if line == "c" || line.starts_with("c ") {
         return Ok(Line::Comment(line.get(2..).unwrap_or("").to_string()));
@@ -272,7 +289,8 @@ fn parse_line(line: &str, n: usize) -> Result<Line, String> {
 }
 
 /// Runs the transcript at `path` again on the bundled CaDiCaL, call by call, each with its recorded time limit, or
-/// with `limit` seconds when one is given, and compares the answers with the recorded ones.
+/// with `limit` seconds when one is given, and its recorded conflict limit if any, and compares the answers with the
+/// recorded ones.
 pub fn replay(path: &Path, limit: Option<f32>) -> Result<Replay, crate::Error> {
     replay_on(&mut super::sat::Cadical::new(), path, limit)
 }
@@ -314,14 +332,15 @@ pub fn replay_on(solver: &mut dyn super::sat::Sat, path: &Path, limit: Option<f3
             }
             Line::Call(assumptions) => {
                 // The recorded limit is only known from the answer line, so the call is made there.
-                calls.push(Call { clauses, assumptions: assumptions.len(), recorded: "", recorded_seconds: 0.0, limit: None, replayed: "", replayed_seconds: 0.0 });
+                calls.push(Call { clauses, assumptions: assumptions.len(), recorded: "", recorded_seconds: 0.0, limit: None, conflicts: None, replayed: "", replayed_seconds: 0.0 });
                 open = Some(assumptions);
             }
-            Line::Answer(answer, seconds, recorded_limit) => {
+            Line::Answer(answer, seconds, recorded_limit, conflicts) => {
                 let Some(assumptions) = open.take() else {
                     return Err(crate::Error::new(format!("{}: line {n}: an answer with no call before it", path.display())));
                 };
                 solver.set_limit(limit.or(recorded_limit.map(|s| s as f32)));
+                solver.set_work_limit(conflicts);
                 let call_started = Instant::now();
                 let replayed = solver.solve(&assumptions);
                 let took = call_started.elapsed();
@@ -329,6 +348,7 @@ pub fn replay_on(solver: &mut dyn super::sat::Sat, path: &Path, limit: Option<f3
                 call.recorded = answer_name(answer);
                 call.recorded_seconds = seconds;
                 call.limit = recorded_limit;
+                call.conflicts = conflicts;
                 call.replayed = answer_name(replayed);
                 call.replayed_seconds = took.as_secs_f64();
             }
@@ -368,8 +388,9 @@ mod tests {
         assert_eq!(parse_line("0", 1), Ok(Line::Clause(vec![])));
         assert_eq!(parse_line("a 3 -4 0", 1), Ok(Line::Call(vec![3, -4])));
         assert_eq!(parse_line("a 0", 1), Ok(Line::Call(vec![])));
-        assert_eq!(parse_line("c answer sat 0.000412 limit 599.871", 1), Ok(Line::Answer(Some(true), 0.000412, Some(599.871))));
-        assert_eq!(parse_line("c answer unknown 1.5", 1), Ok(Line::Answer(None, 1.5, None)));
+        assert_eq!(parse_line("c answer sat 0.000412 limit 599.871", 1), Ok(Line::Answer(Some(true), 0.000412, Some(599.871), None)));
+        assert_eq!(parse_line("c answer unknown 0.08125 limit 599.79 conflicts 2048", 1), Ok(Line::Answer(None, 0.08125, Some(599.79), Some(2048))));
+        assert_eq!(parse_line("c answer unknown 1.5", 1), Ok(Line::Answer(None, 1.5, None, None)));
         assert_eq!(parse_line("c solver: CaDiCaL 1.9.5 (bundled)", 1), Ok(Line::Comment("solver: CaDiCaL 1.9.5 (bundled)".into())));
         assert_eq!(parse_line("p inccnf", 1), Ok(Line::Header));
         assert!(parse_line("1 2", 7).unwrap_err().contains("line 7: no closing 0"));
@@ -377,6 +398,8 @@ mod tests {
         assert!(parse_line("a x 0", 7).is_err());
         assert!(parse_line("c answer maybe 0.1", 7).is_err());
         assert!(parse_line("c answer sat 0.1 limit", 7).is_err());
+        assert!(parse_line("c answer sat 0.1 limit 1.0 conflicts many", 7).is_err());
+        assert!(parse_line("c answer sat 0.1 conflicts 5 limit 1.0", 7).is_err());
     }
 
     fn written(dir: &Path, body: impl FnOnce(&mut Transcript)) -> PathBuf {
@@ -393,17 +416,19 @@ mod tests {
         let path = written(dir.path(), |t| {
             t.clause(&[1, 2]);
             t.clause(&[-1]);
-            t.call(&[2], Some(10.0), Some(true), Duration::from_micros(5));
-            t.call(&[-2], Some(10.0), Some(false), Duration::from_micros(5));
+            t.call(&[2], Some(10.0), None, Some(true), Duration::from_micros(5));
+            t.call(&[-2], Some(10.0), Some(64), Some(false), Duration::from_micros(5));
             t.clause(&[2, 3]);
-            t.call(&[], None, Some(true), Duration::from_micros(5));
+            t.call(&[], None, None, Some(true), Duration::from_micros(5));
         });
         let text = std::fs::read_to_string(&path).unwrap();
         assert!(text.starts_with("c solver: CaDiCaL 1.9.5 (bundled)\np inccnf\n1 2 0\n-1 0\na 2 0\nc answer sat 0.000005 limit 10.000\n"), "{text}");
+        assert!(text.contains("a -2 0\nc answer unsat 0.000005 limit 10.000 conflicts 64\n"), "{text}");
         assert!(text.ends_with("c end: 3 clauses, 3 calls; Verified\n"), "{text}");
         let r = replay(&path, None).unwrap();
         assert_eq!((r.clauses, r.calls.len(), r.contradictions, r.undecided, r.decided), (3, 3, 0, 0, 0), "{r:?}");
         assert_eq!(r.calls.iter().map(|c| (c.clauses, c.recorded, c.replayed)).collect::<Vec<_>>(), [(2, "sat", "sat"), (2, "unsat", "unsat"), (3, "sat", "sat")]);
+        assert_eq!(r.calls.iter().map(|c| c.conflicts).collect::<Vec<_>>(), [None, Some(64), None]);
         assert_eq!(r.recorded_solver.as_deref(), Some("CaDiCaL 1.9.5 (bundled)"));
         assert_eq!(r.ending.as_deref(), Some("end: 3 clauses, 3 calls; Verified"));
         assert_eq!(r.variables, 3);
@@ -414,8 +439,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = written(dir.path(), |t| {
             t.clause(&[1]);
-            t.call(&[-1], None, Some(true), Duration::ZERO);
-            t.call(&[1], None, None, Duration::ZERO);
+            t.call(&[-1], None, None, Some(true), Duration::ZERO);
+            t.call(&[1], None, None, None, Duration::ZERO);
         });
         let r = replay(&path, None).unwrap();
         assert_eq!((r.contradictions, r.undecided, r.decided), (1, 0, 1), "{r:?}");

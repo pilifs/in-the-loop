@@ -94,9 +94,16 @@ fn the_joint_example_passes_every_row() {
     let Some(Reuse::Exact { key, .. }) = &warm_quotes.reuse else { panic!("POST /quotes: the rerun is not an exact hit: {warm_quotes:?}") };
     assert_eq!(Some(key), cold_quotes.key.as_ref(), "POST /quotes: the hit is the first run's claim");
     assert_eq!((warm_quotes.outcome.verdict, &warm_quotes.outcome.accounting), (cold_quotes.outcome.verdict, &cold_quotes.outcome.accounting), "POST /quotes: the reused result is the stored one");
+    // Each reuse names the run it came from by the builds that run was given, the entry point's included, whose
+    // proof ran on rewritten copies of them in a temporary directory.
+    let (before, after) = (build("before").display().to_string(), build("after").display().to_string());
+    let from_first_run = |from: &str| from.contains(&before) && from.contains(&after) && !from.contains("jvmcontract-effects");
+    let Some(Reuse::Exact { from, .. }) = &warm_quotes.reuse else { unreachable!() };
+    assert!(from_first_run(from), "POST /quotes: the reuse names the first run's builds: {from}");
     for subject in ["shop.Pricing#total", "shop.Pricing#withQuantity", "shop.Pricing#discount"] {
         assert!(kernel(&cold, subject).reuse.is_none(), "{subject}: nothing to reuse on a cold cache");
-        let Some(Reuse::Exact { key, .. }) = &kernel(&warm, subject).reuse else { panic!("{subject}: the rerun is not an exact hit") };
+        let Some(Reuse::Exact { key, from }) = &kernel(&warm, subject).reuse else { panic!("{subject}: the rerun is not an exact hit") };
+        assert!(from_first_run(from), "{subject}: the reuse names the first run's builds: {from}");
         assert_eq!(outcome(&warm, subject).verdict, outcome(&cold, subject).verdict, "{subject}: the reused verdict is the stored one");
         if let Some(Evidence::Proved { claim_key }) = kernel(&cold, subject).hint.as_ref().map(|h| &h.evidence) {
             assert_eq!(&key.0, claim_key, "{subject}: the hit is the claim the proposal was proved under");
@@ -176,6 +183,11 @@ fn the_joint_example_passes_every_row() {
     let unreached = quotes_of("alias-to-copy");
     assert!(matches!(&unreached.reuse, Some(Reuse::Exact { key, .. }) if Some(key) == cold_quotes.key.as_ref()), "alias-to-copy: a change POST /quotes doesn't reach is a hit: {:?}", unreached.reuse);
     assert_eq!(unreached.outcome.verdict, Verdict::Verified);
+    let Some(Reuse::Exact { from, .. }) = &unreached.reuse else { unreachable!() };
+    assert!(from_first_run(from) && !from.contains(&build("alias-to-copy").display().to_string()), "alias-to-copy: the hit names the run on after it came from: {from}");
+    let text = compare::render(&warm);
+    assert!(text.lines().filter(|l| l.contains("reused: ") && !l.contains("one function in both versions")).all(from_first_run), "every exact reuse in the text names the first run's builds:\n{text}");
+    assert!(text.lines().filter(|l| l.contains("reused: ")).count() >= 4, "the entry point's and the three kernel pairs' reuses are in the text:\n{text}");
 
     // The report's findings: one per refuted part, of the kind its check is, anchored at the source given; none for
     // the correct refactor.

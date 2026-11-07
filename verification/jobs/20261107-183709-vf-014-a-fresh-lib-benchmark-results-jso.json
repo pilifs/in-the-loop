@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso",
+  "title": "VF-014: a fresh lib/benchmark/results.json and RESULTS.md at the current engine, all three engines and staging policies",
+  "description": "VF-014 (verification/findings.md) found that lib/benchmark/results.json is stale: it was recorded by job 20261106-201041 at 26227917, before the own checker gained class initializers and before H1 added conformance cases, so job 20261107-041414 compared H1's benchmark against it and 8 verdicts changed for reasons it couldn't tell apart from H1. VF-014 itself is closed by the isolated comparison, job 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm. This job is the entry's other step, from the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E2): record the reference again at the current commit, so later comparisons start from the current engine. The step is 20261106-201041's, unchanged (native, jbmc and auto under strict, assume and advised, JBMC under its three staging policies), so the file keeps every engine's runs, not only the own checker's. Both files come back as outputs and replace the committed ones through collect; they are never edited by hand. The default workspace's copies have the same sha256 as this commit's (afb329ca... and 5c412716...), so collect can apply them. If it exits 1, the false result or JVM disagreement it names is a finding for the engine's stream (the jbmc stream for a JBMC or auto run), and results.json is not replaced.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "benchmark",
+    "own-checker",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark",
+      "lib/benchmark/results.json"
+    ]
+  },
+  "expected": "exits 0: no false success and no false alarm on any engine, mode or staging policy, and the JVM bears out every expected answer of groups 2 and 3. results.json's environment names this job and its commit; it has 120 + the new conformance cases (the swaps, swapsOrNull and swapsThenNull cases H1 added among them), and boom/1, inherited/1 and quiet/1 on the own checker as job 20261107-041414 found them (boom and inherited violations, quiet verified), not unverifiable. RESULTS.md names this job in its first line.",
+  "submitted": {
+    "at": "2026-11-07T18:37:09+00:00",
+    "session": "b65d132b-4eb4-46fd-8556-f4cba3311ad1",
+    "by": "claude (cleanup-examples stream)"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4.5G",
+    "duration": "2h",
+    "memoryLimit": "6G",
+    "timeout": "6h",
+    "notes": "job 20261106-201041 ran the same step in 1h31m at a peak of 4.0 GiB, at its 4G limit with 356 memory.high events, so the limit is raised to 6G. The corpus has grown since (the own checker alone now makes 557 runs, job 20261107-041414), so about 2h."
+  },
+  "steps": [
+    {
+      "name": "benchmark",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native,jbmc,auto --jbmc-staging staged,full-range,tight --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/results.json",
+    "lib/benchmark/RESULTS.md"
+  ]
+}

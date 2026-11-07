@@ -188,6 +188,11 @@ fn check_cached(build_dir: &Path, claim: &CanonicalClaim, cache: &Path) -> Check
     effects::check_with(claim, &quotes(&before, "POST /quotes"), &quotes(build_dir, "POST /quotes"), &before, build_dir, Some(cache)).unwrap_or_else(|u| panic!("{u}"))
 }
 
+/// Whether `text` names the run on `before` and `after` by those paths, and no temporary directory of the check's.
+fn names_builds(text: &str, before: &Path, after: &Path) -> bool {
+    text.contains(&before.display().to_string()) && text.contains(&after.display().to_string()) && !text.contains("jvmcontract-effects")
+}
+
 fn exact(c: &Checked) -> Option<&ClaimKey> {
     match &c.reuse {
         Some(Reuse::Exact { key, .. }) => Some(key),
@@ -212,6 +217,13 @@ fn an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged() {
     assert_eq!((warm.outcome.verdict, &warm.outcome.accounting), (cold.outcome.verdict, &cold.outcome.accounting), "the reused result is the stored one");
     assert!(warm.proof.as_deref().is_some_and(|p| p.contains("reused from the proof cache")), "{:?}", warm.proof);
     assert_eq!(warm.assumptions, cold.assumptions, "a reused result rests on the same assumptions, and says them");
+    // The run a reuse names is the one given these builds, not its rewritten copies in a temporary directory.
+    let Some(Reuse::Exact { from, .. }) = &warm.reuse else { unreachable!() };
+    let before = build("before").unwrap();
+    assert!(names_builds(from, &before, &after), "the reuse names the builds the first run was given: {from}");
+    assert!(warm.proof.as_deref().is_some_and(|p| names_builds(p, &before, &after)), "and so does the reused proof: {:?}", warm.proof);
+    let text = effects::render_checks(&[effects::EntryCheck { entry: "POST /quotes".into(), handler: String::new(), source_line: None, new_entry: None, checked: Some(warm.clone()), unsupported: None }]);
+    assert!(text.lines().any(|l| l.contains("reused:") && names_builds(l, &before, &after)), "the text says which run the result came from:\n{text}");
 
     // The environment model: one more attempt allowed is a different claim, although the verdict is the same.
     let mut bound = claim();

@@ -230,7 +230,8 @@ pub struct Found {
 /// no bytecode for, which a statement could name as an assumption, but code it has and translates wrongly: a
 /// counterexample that does not reproduce, or a proof of what the JVM does not do. The first two kinds let a runtime
 /// exception past the handler that catches it on the JVM, so the exception escapes the method; the third computes
-/// another value; the fourth runs an initializer the JVM does not. Found from the bytecode of the functions the harness reaches
+/// another value; the fourth runs an initializer the JVM does not; the fifth gives an initializer's exception to its
+/// caller unwrapped. Found from the bytecode of the functions the harness reaches
 /// (`tests/fixtures/jbmc-defects/README.md` has the reproducers):
 ///
 /// - `return-past-handler`: a `return` of a value whose computation may throw (an integer division or remainder,
@@ -251,9 +252,13 @@ pub struct Found {
 ///   names, where the JVM initializes the class that declares the field or method (`Sub.value` declared by
 ///   `Holder` initializes `Holder` alone), and with a class it initializes every superinterface, where the JVM
 ///   initializes only those that declare a default method.
+/// - `throwing-initializer`: the `<clinit>` of an application class that may throw an exception other than an
+///   `Error`, where a handler tells JBMC's from the JVM's: the JVM gives the caller an
+///   `ExceptionInInitializerError`, and later uses of the class a `NoClassDefFoundError` (JVMS §5.5), where JBMC
+///   gives the exception as it is and runs later uses as if the class were initialized ([`throwing_initializers`]).
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct Defect {
-    /// `return-past-handler`, `stubbed-handler`, `unmasked-shift` or `extra-initializer`.
+    /// `return-past-handler`, `stubbed-handler`, `unmasked-shift`, `extra-initializer` or `throwing-initializer`.
     pub kind: &'static str,
     /// Where: the instruction that throws, or the handler's method and line.
     pub site: String,
@@ -492,11 +497,226 @@ fn jbmc_extends(cp: &ClassPath, class: &str, ancestor: &str) -> bool {
     false
 }
 
+/// The runtime exceptions a method's instructions may raise under `--throw-runtime-exceptions` ([`raises`]), less
+/// those that straight-line code shows cannot be raised. Without that, every enum's initializer and constructor
+/// would count, though neither throws:
+/// - an array made with a constant length, and stored to or read at a constant index within it before any branch,
+///   as javac compiles an enum's `$VALUES` and a constant array (`{ 1, 2 }`);
+/// - a field or a virtual call of `this`, in an instance method that never stores another value in local 0, as an
+///   enum's constructor sets its fields.
+///
+/// An `athrow`'s own `NullPointerException` (of a `throw null`) is not counted either: the class of what it throws is,
+/// where it is made. Anything the walk doesn't follow loses what it knew, and the exceptions count again.
+fn may_raise(class: &crate::classfile::ClassFile, is_static: bool, code: &crate::classfile::Code, insns: &[(u32, Insn)]) -> BTreeSet<&'static str> {
+    #[derive(Clone, Copy, PartialEq)]
+    enum Value {
+        Constant(i64),
+        Array(i64),
+        This,
+        Other,
+    }
+    let this_kept = !is_static && !insns.iter().any(|(_, insn)| matches!(insn, Insn::Store(_, 0)));
+    let mut joins: BTreeSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+    joins.extend(code.exception_table.iter().map(|h| h.handler_pc as u32));
+    let mut out = BTreeSet::new();
+    // The operand stack, one value an entry, while the walk knows it.
+    let mut stack: Option<Vec<Value>> = Some(Vec::new());
+    for (pc, insn) in insns {
+        if joins.contains(pc) {
+            stack = None;
+        }
+        let top = |stack: &Option<Vec<Value>>, k: usize| -> Option<Value> { stack.as_ref().and_then(|s| s.len().checked_sub(k + 1).map(|i| s[i])) };
+        let within = |array: Option<Value>, index: Option<Value>| matches!((array, index), (Some(Value::Array(n)), Some(Value::Constant(i))) if (0..n).contains(&i));
+        let (exceptions, _) = raises(insn);
+        let safe = match insn {
+            Insn::AThrow => true,
+            Insn::NewArray(_) | Insn::ANewArray(_) => matches!(top(&stack, 0), Some(Value::Constant(n)) if n >= 0),
+            Insn::ArrayStore(_) => within(top(&stack, 2), top(&stack, 1)),
+            Insn::ArrayLoad(_) => within(top(&stack, 1), top(&stack, 0)),
+            Insn::PutField(_) => top(&stack, 1) == Some(Value::This),
+            Insn::GetField(_) => top(&stack, 0) == Some(Value::This),
+            Insn::InvokeVirtual(i) => class.pool.member(*i).ok().and_then(|m| MethodDescriptor::parse(&m.descriptor).ok()).is_some_and(|d| top(&stack, d.params.len()) == Some(Value::This)),
+            _ => false,
+        };
+        if !safe {
+            out.extend(exceptions.iter().copied());
+        }
+        // The stack after it, where the walk follows the instruction.
+        let Some(s) = stack.as_mut() else { continue };
+        let pops = |s: &mut Vec<Value>, n: usize| -> bool { s.len().checked_sub(n).map(|k| s.truncate(k)).is_some() };
+        let invoked = |i: &u16| class.pool.member(*i).ok().and_then(|m| MethodDescriptor::parse(&m.descriptor).ok());
+        let followed = match insn {
+            Insn::IConst(c) => {
+                s.push(Value::Constant(i64::from(*c)));
+                true
+            }
+            Insn::Load(_, 0) if this_kept => {
+                s.push(Value::This);
+                true
+            }
+            Insn::Load(..) | Insn::AConstNull | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_) | Insn::Ldc(_) | Insn::GetStatic(_) | Insn::New(_) => {
+                s.push(Value::Other);
+                true
+            }
+            Insn::Dup => match s.last().copied() {
+                Some(v) => {
+                    s.push(v);
+                    true
+                }
+                None => false,
+            },
+            Insn::NewArray(_) | Insn::ANewArray(_) => match s.pop() {
+                Some(Value::Constant(n)) => {
+                    s.push(Value::Array(n));
+                    true
+                }
+                Some(_) => {
+                    s.push(Value::Other);
+                    true
+                }
+                None => false,
+            },
+            Insn::ArrayStore(_) => pops(s, 3),
+            Insn::ArrayLoad(_) => pops(s, 2) && {
+                s.push(Value::Other);
+                true
+            },
+            Insn::PutField(_) => pops(s, 2),
+            Insn::GetField(_) => pops(s, 1) && {
+                s.push(Value::Other);
+                true
+            },
+            Insn::PutStatic(_) | Insn::Pop | Insn::Store(..) => pops(s, 1),
+            Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) => match invoked(i) {
+                Some(d) => {
+                    let receiver = usize::from(!matches!(insn, Insn::InvokeStatic(_)));
+                    pops(s, d.params.len() + receiver) && {
+                        if d.ret != Type::Void {
+                            s.push(Value::Other);
+                        }
+                        true
+                    }
+                }
+                None => false,
+            },
+            _ => false,
+        };
+        if !followed {
+            stack = None;
+        }
+    }
+    out
+}
+
+/// The exceptions other than an `Error` that an application class's initializer, the function `clinit` of JBMC's
+/// `program`, may complete with: those the instructions of the application methods it reaches may raise
+/// ([`may_raise`]), and the throwables they instantiate.
+fn initializer_raises(program: &Program, cp: &ClassPath, clinit: &str) -> BTreeSet<String> {
+    let mut raised = BTreeSet::new();
+    let mut seen = BTreeSet::new();
+    let mut queue = VecDeque::from([clinit.to_string()]);
+    while let Some(id) = queue.pop_front() {
+        if !seen.insert(id.clone()) || jdk_initializer(&id) {
+            continue;
+        }
+        let Some(f) = program.functions.get(&id) else { continue };
+        queue.extend(f.calls.keys().cloned());
+        let Some((owner, name, descriptor)) = method_of(&id) else { continue };
+        let Some(class) = cp.application(&owner).ok().flatten() else { continue };
+        let Some(method) = class.method(&name, &descriptor) else { continue };
+        let Some(code) = method.code.as_ref() else { continue };
+        let insns = code.instructions().unwrap_or_default();
+        raised.extend(may_raise(&class, method.is_static(), code, &insns).into_iter().map(str::to_string));
+        for (_, insn) in &insns {
+            if let Insn::New(i) = insn {
+                raised.extend(class.pool.class_name(*i).ok().filter(|c| cp.is_subtype(c, "java/lang/Throwable")).map(str::to_string));
+            }
+        }
+    }
+    raised.retain(|e| !cp.is_subtype(e, "java/lang/Error"));
+    raised
+}
+
+/// The `throwing-initializer` defects of what the harness reaches: each application class whose `<clinit>` JBMC
+/// runs, that may complete with an exception other than an `Error`, where a handler of the program tells what JBMC
+/// does from what the JVM does (JVMS §5.5). The JVM wraps the exception in an `ExceptionInInitializerError` (step
+/// 11), marks the class erroneous (step 12), and throws `NoClassDefFoundError` at its next use without running the
+/// initializer again (step 5). JBMC 6.11.0's initializer wrapper sets the class's `clinit_already_run` before it
+/// calls `<clinit>`, so the exception reaches the caller as it is, and the next use runs on as if the class were
+/// initialized. A handler tells them apart when it catches the exception, or the `ExceptionInInitializerError` or
+/// the `NoClassDefFoundError` the JVM throws instead. The handlers of the harness class `harness` count only where
+/// its assertion tells one exception's class from another (`tells`, [`JbmcRun::tells_exceptions`]): a property
+/// without a `throws` clause fails on any exception alike. Its `catch (Throwable)`, last, never counts, since it
+/// catches both alike. With no handler that counts, the exception escapes on both, and the harness finds it so.
+fn throwing_initializers(program: &Program, cp: &ClassPath, harness: &str, tells: bool, reached: &BTreeMap<String, Option<(String, Option<u16>)>>) -> Vec<Defect> {
+    const WRAPPED: &str = "java/lang/ExceptionInInitializerError";
+    const ERRONEOUS: &str = "java/lang/NoClassDefFoundError";
+    let mut handlers: Vec<(String, Site)> = Vec::new();
+    let mut initializers: Vec<(&String, String)> = Vec::new();
+    for id in reached.keys() {
+        let Some((owner, name, descriptor)) = method_of(id) else { continue };
+        if name == "<clinit>" && descriptor == "()V" {
+            if !is_jdk_name(&owner) && cp.is_application(&owner) {
+                initializers.push((id, owner));
+            }
+            continue;
+        }
+        let Some(class) = cp.application(&owner).ok().flatten() else { continue };
+        let Some(code) = class.method(&name, &descriptor).and_then(|m| m.code.as_ref()) else { continue };
+        for h in &code.exception_table {
+            let Some(t) = &h.catch_type else { continue };
+            if owner == harness && (!tells || t == "java/lang/Throwable") {
+                continue;
+            }
+            handlers.push((t.clone(), Site { class: owner.clone(), method: name.clone(), line: code.line_at(h.handler_pc as u32) }));
+        }
+    }
+    if handlers.is_empty() {
+        return Vec::new();
+    }
+    let mut out = Vec::new();
+    for (clinit, owner) in initializers {
+        let raised = initializer_raises(program, cp, clinit);
+        if raised.is_empty() {
+            continue;
+        }
+        let telling: Vec<String> = handlers
+            .iter()
+            .filter(|(t, _)| cp.is_subtype(WRAPPED, t) || cp.is_subtype(ERRONEOUS, t) || raised.iter().any(|e| cp.is_subtype(e, t)))
+            .map(|(t, site)| format!("catch ({}) at {}", t.replace('/', "."), site.display()))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        if telling.is_empty() {
+            continue;
+        }
+        let names: Vec<String> = raised.iter().map(|e| e.replace('/', ".")).collect();
+        out.push(Defect {
+            kind: "throwing-initializer",
+            site: Site { class: owner.clone(), method: "<clinit>".into(), line: None }.display(),
+            what: format!(
+                "the initializer of {} may throw {}, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and {} tell{} them apart",
+                owner.replace('/', "."),
+                names.join(", "),
+                telling.join(", "),
+                if telling.len() == 1 { "s" } else { "" }
+            ),
+        });
+    }
+    out
+}
+
 /// The gaps of JBMC's `program` from the function `java::<class>.<method>:...`, with JBMC's class path `jbmc_cp`
 /// (its entries, and the JDK image to tell what a JDK member is). With `entered`, the functions JBMC's symbolic
 /// execution of the proof enters ([`entered`]), a stub it does not enter is no gap: the call graph reaches it, but no
 /// path within the bounds does. The call sites JBMC does not link, the monitors and the defects are the call graph's.
 pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>, entered: Option<&BTreeSet<String>>) -> Result<Found, Error> {
+    find_told(program, class, method, jbmc_cp, jdk, entered, true)
+}
+
+/// [`find`], for a harness whose assertion tells one exception's class from another where `tells`
+/// ([`JbmcRun::tells_exceptions`]).
+fn find_told(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>, entered: Option<&BTreeSet<String>>, tells: bool) -> Result<Found, Error> {
     let prefix = format!("java::{}.{method}:", class.replace('/', "."));
     let roots: Vec<&String> = program.functions.keys().filter(|id| id.starts_with(&prefix)).collect();
     if roots.is_empty() {
@@ -607,6 +827,7 @@ pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, j
             ),
         });
     }
+    found.defects.extend(throwing_initializers(program, jbmc_cp, &class.replace('.', "/"), tells, &reached));
     found.defects.sort();
     found.defects.dedup();
     for id in only_initializers.keys() {
@@ -867,7 +1088,7 @@ fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error
     }
     let program = parse_goto(&output);
     let jdk = gaps::jdk_release();
-    let mut found = match find(&program, &run.class, &run.function, &cp, jdk.as_deref(), None) {
+    let mut found = match find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), None, run.tells_exceptions) {
         Ok(found) => found,
         Err(e) => return Ok(Preflight { found: None, problem: Some(e.to_string()), log, seconds, paths: None }),
     };
@@ -879,7 +1100,7 @@ fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error
         let begun = std::time::Instant::now();
         paths = Some(match symbolic(run, &program, &run.log.with_file_name("jbmc-symex.txt"), left) {
             Ok(entered) => {
-                found = find(&program, &run.class, &run.function, &cp, jdk.as_deref(), Some(&entered))?;
+                found = find_told(&program, &run.class, &run.function, &cp, jdk.as_deref(), Some(&entered), run.tells_exceptions)?;
                 Ok(begun.elapsed().as_secs_f64())
             }
             Err(why) => Err(why),
@@ -1182,6 +1403,104 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert!(what.contains("invokestatic initializes p.D$Hello") && what.contains("initializer of p.D$Bare where") && !what.contains("Greeter"), "{what}");
     }
 
+    /// A goto program of the functions `functions`, each an id with the ids it calls, as JBMC 6.11.0 lists them.
+    fn listing(functions: &[(&str, &[&str])]) -> Program {
+        let mut text = String::new();
+        for (id, calls) in functions {
+            text.push_str(&format!("f() /* {id} */\n"));
+            for call in *calls {
+                text.push_str(&format!("        CALL {call}()\n"));
+            }
+            text.push_str("        END_FUNCTION\n\n^^^^^^^^\n\n");
+        }
+        parse_goto(&text)
+    }
+
+    /// The program of `p.D.<method>` called from the harness class `harness` (`H`, which has no class file here, or
+    /// `p.D` itself standing in for one), where `p.D.<method>` initializes `p.D$<class>`, whose `<clinit>` calls
+    /// `p.D$<class>.<callees>`. JBMC's wrapper sets `clinit_already_run` and calls the class's `<clinit>`.
+    fn initializer_throwing(harness: &str, method: &str, class: &str, callees: &[&str]) -> Program {
+        let target = format!("java::p.D.{method}:(I)I");
+        let root = format!("java::H.{method}:()V");
+        let wrapper = format!("java::p.D${class}.<clinit_wrapper>");
+        let clinit = format!("java::p.D${class}.<clinit>:()V");
+        let called: Vec<String> = callees.iter().map(|c| format!("java::p.D${class}.{c}")).collect();
+        let mut functions: Vec<(&str, Vec<&str>)> = vec![(&target, vec![&wrapper]), (&wrapper, vec![&clinit]), (&clinit, called.iter().map(String::as_str).collect())];
+        functions.extend(called.iter().map(|c| (c.as_str(), Vec::new())));
+        if harness == "H" {
+            functions.push((&root, vec![&target]));
+        }
+        let borrowed: Vec<(&str, &[&str])> = functions.iter().map(|(id, calls)| (*id, calls.as_slice())).collect();
+        listing(&borrowed)
+    }
+
+    /// The reproducer of `conformance/boomTwice/1` and `enumBroken/1` (VF-009), whose JBMC counterexamples do not
+    /// reproduce: JBMC 6.11.0 gives the exception of a class initializer to its caller as it is, where the JVM gives
+    /// an `ExceptionInInitializerError` (job `20261107-163056` ran `tests/fixtures/jbmc-defects/F.java`). It is named
+    /// where a handler tells the two apart: one of `ExceptionInInitializerError`, or of the exception itself, or an
+    /// application's `catch (Throwable)`, after which the class is erroneous on the JVM and initialized in JBMC. An
+    /// initializer that escapes uncaught, throws an `Error` (which the JVM does not wrap), or throws nothing is not
+    /// named, nor is the harness's own `catch (Throwable)`.
+    #[test]
+    fn the_preflight_names_a_class_initializer_that_throws_where_a_handler_tells_jbmc_from_the_jvm() {
+        let Some((_dir, cp)) = defect_fixture() else { return };
+        let defects = |harness: &str, method: &str, class: &str, callees: &[&str]| -> Vec<Defect> {
+            find(&initializer_throwing(harness, method, class, callees), harness, method, &cp, None, None).unwrap().defects.into_iter().filter(|d| d.kind == "throwing-initializer").collect()
+        };
+        let sites = |d: Vec<Defect>| -> Vec<String> { d.iter().map(|d| d.site.clone()).collect() };
+        let table = ["table:()[I"];
+        assert_eq!(sites(defects("H", "boomed", "Boom", &table)), ["p.D$Boom.<clinit>"]);
+        assert_eq!(sites(defects("H", "divided", "Ratio", &[])), ["p.D$Ratio.<clinit>"]);
+        assert_eq!(sites(defects("H", "caughtAll", "Boom", &table)), ["p.D$Boom.<clinit>"]);
+        assert_eq!(sites(defects("p/D", "caughtAll", "Boom", &table)), Vec::<String>::new(), "the harness's own catch (Throwable)");
+        assert_eq!(sites(defects("H", "escaped", "Boom", &table)), Vec::<String>::new());
+        assert_eq!(sites(defects("H", "fatal", "Fatal", &table)), Vec::<String>::new());
+        assert_eq!(sites(defects("H", "quiet", "Quiet", &[])), Vec::<String>::new());
+        // An enum's initializer and constructor, and a constant array, throw nothing: their array stores are within a
+        // fresh array of constant length, and their field stores are of `this`. An array of a length read from a
+        // field may be negative.
+        assert_eq!(sites(defects("H", "toned", "Tone", &["<init>:(Ljava/lang/String;II)V", "$values:()[Lp/D$Tone;"])), Vec::<String>::new());
+        assert_eq!(sites(defects("H", "tabled", "Table", &[])), Vec::<String>::new());
+        assert_eq!(sites(defects("H", "sized", "Sized", &[])), ["p.D$Sized.<clinit>"]);
+        assert!(defects("H", "sized", "Sized", &[])[0].what.contains("may throw java.lang.NegativeArraySizeException"));
+        let what = &defects("H", "boomed", "Boom", &table)[0].what;
+        assert!(what.contains("may throw java.lang.IllegalStateException") && what.contains("catch (java.lang.ExceptionInInitializerError) at p.D.boomed:") && what.contains("NoClassDefFoundError"), "{what}");
+        let what = &defects("H", "divided", "Ratio", &[])[0].what;
+        assert!(what.contains("may throw java.lang.ArithmeticException") && what.contains("catch (java.lang.ArithmeticException) at p.D.divided:"), "{what}");
+    }
+
+    /// The same on JBMC 6.11.0's own listings of the corpus's `boomTwice` and `enumBroken` under their property
+    /// harness, which job `20261107-163056` kept (`tests/fixtures/jbmc-defects/vf009/`): the initializers of
+    /// `Boom` and `Broken` are named, by the corpus methods' `catch (ExceptionInInitializerError)`. The harness's
+    /// handlers count only where it tells exceptions apart: without a `throws` clause, any exception fails it alike.
+    #[test]
+    fn the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings() {
+        let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
+        let mut cp = ClassPath::new().with_models(false).with_default_jdk();
+        if !javac || !cp.has_jdk() {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "javac or a JDK not found: put them on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            return;
+        }
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let fixtures = root.join("tests/fixtures/jbmc-defects/vf009");
+        let out = tempfile::tempdir().unwrap();
+        let corpus = root.join("tests/conformance/conformance/Conformance.java");
+        let status = std::process::Command::new("javac").args(["-g", "-d"]).arg(out.path()).arg(&corpus).arg(fixtures.join("PropertyHarness.java")).status().unwrap();
+        assert!(status.success(), "the corpus and the harness compile");
+        cp.add(out.path()).unwrap();
+        for (method, class) in [("boomTwice", "Boom"), ("enumBroken", "Broken")] {
+            let program = parse_goto(&std::fs::read_to_string(fixtures.join(format!("{method}-goto.txt"))).unwrap());
+            for tells in [false, true] {
+                let found = find_told(&program, "PropertyHarness", "check", &cp, None, None, tells).unwrap();
+                let named: Vec<&Defect> = found.defects.iter().filter(|d| d.kind == "throwing-initializer").collect();
+                assert_eq!(named.iter().map(|d| d.site.as_str()).collect::<Vec<_>>(), [format!("conformance.Conformance${class}.<clinit>")], "{method} tells={tells}: {:?}", found.defects);
+                let what = &named[0].what;
+                assert!(what.contains(&format!("catch (java.lang.ExceptionInInitializerError) at conformance.Conformance.{method}:")), "{what}");
+                assert_eq!(what.contains("at PropertyHarness.check"), tells, "{what}");
+            }
+        }
+    }
+
     /// A JBMC proof that reaches a defect is refused under every gap mode, assume too: the defect is not an
     /// approximation a statement could name, but code JBMC runs otherwise than the JVM. A counterexample stands,
     /// for the interpreter's replay, and the replay's message names the defect as the likely cause.
@@ -1279,6 +1598,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
             sat_solver: None,
             log: dir.path().join(format!("{function}.log")),
             extra_args: Vec::new(),
+            tells_exceptions: true,
         };
         let pre = preflight(&run("copied"), Duration::from_secs(60)).unwrap();
         let found = pre.found.as_ref().unwrap_or_else(|| panic!("{:?}", pre.problem));
@@ -1322,6 +1642,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
             sat_solver: None,
             log: dir.path().join(format!("{function}.log")),
             extra_args: Vec::new(),
+            tells_exceptions: true,
         };
         let defects = |function: &str| -> Vec<(String, String)> {
             let pre = preflight(&run(function), Duration::from_secs(60)).unwrap();

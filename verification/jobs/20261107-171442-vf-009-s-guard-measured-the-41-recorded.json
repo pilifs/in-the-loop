@@ -1,0 +1,72 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-171442-vf-009-s-guard-measured-the-41-recorded",
+  "title": "VF-009's guard measured: the 41 recorded JBMC examples under strict on both engines, with the gap table, after throwing-initializer",
+  "description": "Not a closing check: it measures what VF-009's fix changes on the recorded examples. The preflight (lib/src/jbmc_gaps.rs) now names a fifth JBMC defect, throwing-initializer: an application class's <clinit> that may throw an exception other than an Error, where a handler of the program (or of a harness whose assertion tells exceptions apart) catches that exception, ExceptionInInitializerError or NoClassDefFoundError. JBMC 6.11.0 gives the initializer's exception to its caller unwrapped and leaves the class initialized, where the JVM wraps it and marks the class erroneous (JVMS 5.5). A JBMC proof through a defect is no verdict under every mode, so a recorded JBMC proof that reaches one would be lost. These are the same three steps as job 20261107-000039 (VF-006's, which passed at 98bab48570e6), run unchanged at this commit: the gap table lists every obligation that reaches a JBMC defect, by kind, and step 1's last lines say which examples differ from their expected verdict. Compare with -000039's logs: a new throwing-initializer line, or a new differing example, is what VF-009's guard costs.",
+  "kind": "library",
+  "capabilities": [
+    "B9",
+    "B11",
+    "jvmcontract:equivalence",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/gap_table.py",
+      "lib/src/jbmc_gaps.rs",
+      "llm-dlc/loops/engine-priorities-jbmc.md",
+      "examples/tools/build.py",
+      "examples/schema/result.schema.json",
+      "lib/src/phases.rs"
+    ]
+  },
+  "expected": "every step exits 0. Steps 1 and 2 each print build.py's last lines, a gap table (a line per obligation that reaches a gap or a JBMC defect, a total, and 'N example(s) differ from their expected verdict: ...'), and 'ok: N obligations of 41 examples, every one run by ENGINE under strict'. Step 3 prints each obligation whose status differs between JBMC and the own checker and a count. A step that fails means build.py stopped before finishing (exit above 1), an example published no result, or a run was not the engine or gap mode named; build.txt says where. Read against job 20261107-000039: no obligation is expected to reach throwing-initializer (the recorded subjects with enums, 013 and 071, have no handler that tells an initializer's exception apart), and no example is expected to differ from its expected verdict beyond what -000039 listed.",
+  "submitted": {
+    "at": "2026-11-07T17:14:42+00:00"
+  },
+  "priority": 5,
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "20m",
+    "memoryLimit": "3.5G",
+    "timeout": "2h",
+    "notes": "job -231837 ran the JBMC step over the 41 in about 2 minutes and stopped the own checker's at its fifth example, 3m11s in all, peak 1.1 GiB; job -082917 ran the 41 under JBMC in 8m10s at peak 1.4 GiB on 1 CPU; the own checker is faster than JBMC on every case both decide (job -102624); JBMC is capped at 3 GiB"
+  },
+  "steps": [
+    {
+      "name": "41 recorded JBMC examples under strict, on JBMC, with the gap table",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage; rm -rf \"$W\"; mkdir -p \"$W/jbmc/repo\" \"$W/native/repo\" \"$W/results/jbmc\" \"$W/results/native\"\n# build.py writes results into the examples folder it runs from: one copy per engine, so nothing recorded changes.\ncp -r examples \"$W/jbmc/repo/\"; cp -r examples \"$W/native/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\npython3 examples/tools/build.py --plan | python3 -c 'import json, sys; print(\" \".join(p[\"example\"] for p in json.load(sys.stdin) if p[\"approach\"] in (\"B9\", \"B11\") and p.get(\"engine\") == \"jbmc\" and p.get(\"app\") in (\"quorum\", \"crosscut\", \"mica\") and p[\"executable\"]))' > \"$W/ids.txt\"\nIDS=$(cat \"$W/ids.txt\"); echo \"examples ($(wc -w < \"$W/ids.txt\")): $IDS\"\ntest \"$(wc -w < \"$W/ids.txt\")\" -eq 41 || { echo \"expected the 41 recorded JBMC examples\"; exit 1; }\n# As recorded: --engine jbmc (the tool's default), --gaps strict (build.py's RECORDED_GAP_MODE).\nstatus=0; python3 \"$W/jbmc/repo/examples/tools/build.py\" $IDS > \"$W/jbmc/build.txt\" 2>&1 || status=$?\ntail -n 4 \"$W/jbmc/build.txt\"\nfor i in $IDS; do cp \"$W\"/jbmc/repo/examples/$i-*/result.json \"$W/results/jbmc/$i.json\"; done\npython3 examples/tools/gap_table.py --examples \"$W/jbmc/repo/examples\" --json \"$W/jbmc-gaps.json\" $IDS | tee \"$W/jbmc-table.txt\"\npython3 - \"$W/jbmc-gaps.json\" jbmc <<'PY'\nimport json, sys\nrows, engine = json.load(open(sys.argv[1])), sys.argv[2]\nassert len({r[\"example\"] for r in rows}) == 41, f\"{len({r['example'] for r in rows})} examples in the table, not 41\"\nassert all(r[\"engine\"] in (engine, None) for r in rows), f\"a row not run by {engine}: {[r for r in rows if r['engine'] not in (engine, None)]}\"\nassert all(set(r[\"gapModes\"]) <= {\"strict\"} for r in rows), \"every run is under --gaps strict\"\nprint(f\"ok: {len(rows)} obligations of 41 examples, every one run by {engine} under strict\")\nPY\n# build.py exits 1 when a verdict differs from the example's expected one: reported above, the recorded one stands.\ntest \"$status\" -le 1 || { echo \"build.py exited $status: it stopped before finishing (see jbmc/build.txt)\"; exit 1; }",
+      "cwd": "."
+    },
+    {
+      "name": "the same 41 under strict on the tool's own checker, with the gap table",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage; IDS=$(cat \"$W/ids.txt\")\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\n# The same examples, the same claims and bounds, asked of the tool's own checker: only approach.engine changes, in the copy.\npython3 - \"$W/native/repo/examples\" $IDS <<'PY'\nimport glob, json, sys\nroot, ids = sys.argv[1], sys.argv[2:]\nfor i in ids:\n    (path,) = glob.glob(f\"{root}/{i}-*/example.json\")\n    example = json.load(open(path))\n    assert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", f\"{i} is not a JBMC example\"\n    example[\"approach\"][\"engine\"] = \"native\"\n    open(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(f\"{len(ids)} examples set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/native/repo/examples/tools/build.py\" $IDS > \"$W/native/build.txt\" 2>&1 || status=$?\ntail -n 4 \"$W/native/build.txt\"\nfor i in $IDS; do cp \"$W\"/native/repo/examples/$i-*/result.json \"$W/results/native/$i.json\"; done\npython3 examples/tools/gap_table.py --examples \"$W/native/repo/examples\" --json \"$W/native-gaps.json\" $IDS | tee \"$W/native-table.txt\"\npython3 - \"$W/native-gaps.json\" native <<'PY'\nimport json, sys\nrows, engine = json.load(open(sys.argv[1])), sys.argv[2]\nassert len({r[\"example\"] for r in rows}) == 41, f\"{len({r['example'] for r in rows})} examples in the table, not 41\"\nassert all(r[\"engine\"] in (engine, None) for r in rows), f\"a row not run by {engine}: {[r for r in rows if r['engine'] not in (engine, None)]}\"\nassert all(set(r[\"gapModes\"]) <= {\"strict\"} for r in rows), \"every run is under --gaps strict\"\nprint(f\"ok: {len(rows)} obligations of 41 examples, every one run by {engine} under strict\")\nPY\ntest \"$status\" -le 1 || { echo \"build.py exited $status: it stopped before finishing (see native/build.txt)\"; exit 1; }",
+      "cwd": "."
+    },
+    {
+      "name": "the obligations whose status differs between the engines",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage\npython3 examples/tools/gap_table.py --compare \"$W/jbmc-gaps.json\" \"$W/native-gaps.json\" | tee \"$W/compare.txt\"",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/jobs/4a-coverage/jbmc-gaps.json",
+    "lib/target/jobs/4a-coverage/native-gaps.json",
+    "lib/target/jobs/4a-coverage/compare.txt",
+    "lib/target/jobs/4a-coverage/jbmc-table.txt",
+    "lib/target/jobs/4a-coverage/native-table.txt",
+    "lib/target/jobs/4a-coverage/jbmc/build.txt",
+    "lib/target/jobs/4a-coverage/native/build.txt",
+    "lib/target/jobs/4a-coverage/results",
+    "lib/target/jobs/4a-coverage/ids.txt"
+  ]
+}

@@ -26,7 +26,9 @@ const DEADLINE_SECONDS: u64 = 300;
 /// under it rather than for equality, so it stays unresolved until a person approves the change in the contract. An input equation that computes a field of an input the contract anchors
 /// (identity), rather than naming the field that holds it, is refused unless a person stated it in the input's
 /// derivation ([`anchored`]). A construction that needs more input objects than a version's bound leaves the result unresolved
-/// rather than proving something outside the claim. Claims about effects (an environment model) are the
+/// rather than proving something outside the claim, and so does code that may make more objects in one call than a
+/// version's allocation bound ([`allocations`]). A contract input that isn't one of the subject's parameters
+/// ([`foreign_inputs`]) is refused, since the claim would anchor nothing the method receives. Claims about effects (an environment model) are the
 /// observations stream's, and refused.
 pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
     check_with(claim, before, after, None, &mut Reused::default())
@@ -108,11 +110,27 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
         // Refused before a statement: a named gap of the check.
         return Err(unsupported(checked.problem.unwrap_or_else(|| "refused".into())));
     };
+    if let Some(gap) = foreign_inputs(&claim.contract, &stated.domain.parameters) {
+        return Err(unsupported(gap));
+    }
     if let (Some(bounds), Some((old, new))) = (claim.domain.as_ref().map(|d| &d.bounds), stated.domain.input_objects) {
         for (version, needed, bound) in [("previous", old, bounds.before.input_objects), ("new", new, bounds.after.input_objects)] {
             if needed > bound {
                 return Ok(unresolved_all(domain, format!("the {version} version's inputs are made of {needed} objects, more than the claim's bound of {bound}: the check would be about inputs outside the claim")));
             }
+        }
+    }
+    // The allocation bound, against what each version's code makes in one call: the own checker follows every
+    // allocation within the unwinding bound, so a claim that bounds them is checked here, not by the proof.
+    if let Some(bounds) = claim.domain.as_ref().map(|d| &d.bounds) {
+        for (version, build, bound) in [("previous", before, bounds.before.allocations), ("new", after, bounds.after.allocations)] {
+            let problem = match allocations(build, subject) {
+                Ok(Some(made)) if made <= bound => continue,
+                Ok(Some(made)) => format!("the {version} version's code may make {made} objects in one call, more than the claim's allocation bound of {bound}: the check would be about calls outside the claim"),
+                Ok(None) => format!("the {version} version's code makes objects in a loop or a recursion, which no number bounds, and the claim's allocation bound is {bound}: the check would be about calls outside the claim"),
+                Err(e) => format!("the {version} version's allocations could not be counted against the claim's allocation bound of {bound}: {e}"),
+            };
+            return Ok(unresolved_all(domain, problem));
         }
     }
     let compared = compared_observations(stated);
@@ -194,6 +212,167 @@ fn anchored(correspondence: &Correspondence, contract: &super::PreservationContr
         }
     }
     None
+}
+
+/// The contract's inputs that aren't the subject's own, named with the parameters it takes: a claim is about one
+/// method's inputs, and the kernel claim's `q: shop.Quote` checked against `discount(long gross, int quantity)`
+/// anchors nothing the method receives. Every external input must be one of the parameters (or the receiver,
+/// `this`) by name and type; a parameter no input names is the correspondence's, as for a standalone pair.
+fn foreign_inputs(contract: &super::PreservationContract, parameters: &[crate::statement::Parameter]) -> Option<String> {
+    let foreign: Vec<String> = contract
+        .inputs
+        .iter()
+        .filter(|i| !parameters.iter().any(|p| p.name == i.name && p.ty == i.ty))
+        .map(|i| format!("{}: {}", i.name, i.ty))
+        .collect();
+    if foreign.is_empty() {
+        return None;
+    }
+    let takes: Vec<String> = parameters.iter().map(|p| format!("{}: {}", p.name, p.ty)).collect();
+    let takes = if takes.is_empty() { "no parameters".to_string() } else { takes.join(", ") };
+    Some(format!(
+        "the preservation contract's input{} {} {} not among {}'s parameters ({takes}): a claim anchors the inputs its subject receives",
+        if foreign.len() == 1 { "" } else { "s" },
+        foreign.join(", "),
+        if foreign.len() == 1 { "is" } else { "are" },
+        contract.subject
+    ))
+}
+
+/// How many methods [`allocations`] follows before it gives up: the subjects of a claim with a domain are small.
+const ALLOCATION_METHODS: usize = 10_000;
+
+/// An upper bound on the objects one call of `subject` (`pkg.Class#method`) makes in the build at `build`, for the
+/// claim's allocation bound ([`super::ObjectBounds::allocations`]): each `new`, array instruction and
+/// `invokedynamic` (a lambda, a concatenated string) of the application code the call runs, once for each way a call
+/// reaches it, taking the most of the subject's overloads and of the targets a virtual call may dispatch to. Every
+/// one is counted, whichever branch it is on, so the bound is over every path at once. What a JDK method makes
+/// (application code it calls back included), an exception the JVM throws, and what a class initializer makes are
+/// not counted. `None` when something is made in a loop or a recursion, where no number the code states bounds it.
+fn allocations(build: &Path, subject: &str) -> Result<Option<u32>, String> {
+    let (class, name) = subject.split_once('#').ok_or_else(|| format!("{subject} is not pkg.Class#method"))?;
+    let cp = crate::closure::build_class_path(&[build]).map_err(|e| e.to_string())?;
+    let owner = class.replace('.', "/");
+    let file = cp.application(&owner).map_err(|e| e.to_string())?.ok_or_else(|| format!("no class {class} in {}", build.display()))?;
+    let mut count = Allocations { cp: &cp, classes: None, stack: Vec::new(), memo: std::collections::BTreeMap::new(), visits: 0, error: None };
+    let mut most = Some(0);
+    for m in file.methods.iter().filter(|m| m.name == name) {
+        most = most_of(most, count.method(&crate::classfile::MemberRef::new(&owner, name, &m.descriptor)).0);
+    }
+    match count.error {
+        Some(e) => Err(e),
+        None => Ok(most),
+    }
+}
+
+fn most_of(a: Option<u32>, b: Option<u32>) -> Option<u32> {
+    Some(a?.max(b?))
+}
+
+/// The walk of [`allocations`]: each method's bound, by the method that declares it, once it is final.
+struct Allocations<'a> {
+    cp: &'a crate::classpath::ClassPath,
+    classes: Option<std::collections::BTreeMap<String, std::rc::Rc<crate::classfile::ClassFile>>>,
+    /// The methods being counted, outermost first: a call to one of them is a recursion.
+    stack: Vec<crate::classfile::MemberRef>,
+    memo: std::collections::BTreeMap<crate::classfile::MemberRef, Option<u32>>,
+    visits: usize,
+    error: Option<String>,
+}
+
+impl Allocations<'_> {
+    /// The bound of one call of `reference`, and the outermost frame of the stack a recursion through it reaches,
+    /// while that frame is still being counted. A method on a recursion that makes anything has no bound; one that
+    /// makes nothing is 0, and is kept once the recursion's outermost frame is done.
+    fn method(&mut self, reference: &crate::classfile::MemberRef) -> (Option<u32>, Option<usize>) {
+        use crate::classfile::{Insn, MemberRef};
+        let Some((class, method)) = self.cp.find_method(&reference.owner, &reference.name, &reference.descriptor) else { return (Some(0), None) };
+        if !self.cp.is_application(&class.name) {
+            return (Some(0), None);
+        }
+        let declared = MemberRef::new(&class.name, &reference.name, &reference.descriptor);
+        if let Some(bound) = self.memo.get(&declared) {
+            return (*bound, None);
+        }
+        if let Some(frame) = self.stack.iter().position(|m| *m == declared) {
+            return (Some(0), Some(frame));
+        }
+        self.visits += 1;
+        if self.visits > ALLOCATION_METHODS || self.error.is_some() {
+            self.error.get_or_insert_with(|| format!("more than {ALLOCATION_METHODS} methods to follow"));
+            return (None, None);
+        }
+        let Some(code) = &method.code else { return (Some(0), None) };
+        let insns = match code.instructions() {
+            Ok(i) => i,
+            Err(e) => {
+                self.error = Some(format!("{}'s code can't be read: {e}", crate::closure::method_id(&declared)));
+                return (None, None);
+            }
+        };
+        // A branch back to an earlier offset closes a loop over the offsets between.
+        let loops: Vec<(u32, u32)> = insns.iter().flat_map(|(at, insn)| insn.targets().into_iter().filter(|t| t <= at).map(|t| (t, *at)).collect::<Vec<_>>()).collect();
+        let index = self.stack.len();
+        self.stack.push(declared.clone());
+        let (mut total, mut reaches) = (Some(0u32), None::<usize>);
+        for (at, insn) in &insns {
+            let (made, frame) = match insn {
+                Insn::New(_) | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::MultiANewArray(..) | Insn::InvokeDynamic(_) => (Some(1), None),
+                Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) => match class.pool.member(*i) {
+                    Ok(callee) if self.cp.is_application(&callee.owner) => self.method(&callee),
+                    _ => (Some(0), None),
+                },
+                Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => match class.pool.member(*i) {
+                    Ok(callee) if !callee.owner.starts_with('[') => {
+                        let mut most = (Some(0), None::<usize>);
+                        for target in self.dispatch_targets(&callee) {
+                            let (made, frame) = self.method(&MemberRef::new(&target, &callee.name, &callee.descriptor));
+                            most = (most_of(most.0, made), [most.1, frame].into_iter().flatten().min());
+                        }
+                        most
+                    }
+                    _ => (Some(0), None),
+                },
+                _ => (Some(0), None),
+            };
+            reaches = [reaches, frame].into_iter().flatten().min();
+            total = match made {
+                Some(0) => total,
+                Some(n) if !loops.iter().any(|(from, to)| from <= at && at <= to) => total.map(|t| t.saturating_add(n)),
+                _ => None,
+            };
+        }
+        self.stack.pop();
+        let recursive = reaches.is_some_and(|frame| frame <= index);
+        if recursive && total != Some(0) {
+            total = None;
+        }
+        match reaches {
+            // The recursion goes on above this frame: what this one makes isn't final until that frame is done.
+            Some(frame) if frame < index => (total, Some(frame)),
+            _ => {
+                self.memo.insert(declared, total);
+                (total, None)
+            }
+        }
+    }
+
+    /// The application classes whose method a virtual or interface call of `callee` may run, as
+    /// [`crate::closure`] follows them.
+    fn dispatch_targets(&mut self, callee: &crate::classfile::MemberRef) -> Vec<String> {
+        let cp = self.cp;
+        let classes = self.classes.get_or_insert_with(|| cp.application_classes().unwrap_or_default());
+        let owners = std::iter::once(callee.owner.clone()).chain(classes.iter().filter(|(_, c)| !c.is_interface() && !c.is_abstract()).map(|(n, _)| n.clone()));
+        let mut targets: Vec<String> = owners
+            .filter(|o| *o == callee.owner || cp.is_subtype(o, &callee.owner))
+            .filter_map(|o| cp.find_method(&o, &callee.name, &callee.descriptor))
+            .filter(|(declaring, m)| !m.is_abstract() && cp.is_application(&declaring.name))
+            .map(|(declaring, _)| declaring.name.clone())
+            .collect();
+        targets.sort();
+        targets.dedup();
+        targets
+    }
 }
 
 /// Whether two observation ids name the same observation: an identity relation either way round.
@@ -772,6 +951,59 @@ mod tests {
 
     fn correspondence(pairs: &[(&str, &str)]) -> Correspondence {
         Correspondence { inputs: pairs.iter().map(|(o, n)| Equation { old: (*o).into(), new: (*n).into() }).collect(), outputs: Vec::new() }
+    }
+
+    /// [`allocations`] over a small build: what each kind of code makes in one call, and where no number bounds it.
+    #[test]
+    fn the_allocations_of_one_call_are_counted_through_calls_and_unbounded_in_a_loop_or_a_recursion() {
+        let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
+        if !javac {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "javac not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            return;
+        }
+        let dir = tempfile::tempdir().unwrap();
+        let source = dir.path().join("A.java");
+        std::fs::write(
+            &source,
+            r#"package p;
+public class A {
+    int v;
+    A(int v) { if (v < 0) throw new IllegalArgumentException(); this.v = v; }
+    static int pure(int x) { return x * 2 + 1; }
+    static A one(int x) { return new A(x); }
+    static A either(int x) { return x > 0 ? one(x) : new A(0); }
+    static int[] arrays(int n) { int[] a = new int[n]; int[][] b = new int[2][2]; return a; }
+    static int loopPure(int n) { int s = 0; for (int i = 0; i < n; i++) s += i; return s; }
+    static int loopMakes(int n) { int s = 0; for (int i = 0; i < n; i++) s += new A(i).v; return s; }
+    static int factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
+    static int countDown(int n) { return n <= 0 ? one(0).v : countDown(n - 1); }
+    static boolean even(int n) { return n == 0 || odd(n - 1); }
+    static boolean odd(int n) { return n != 0 && even(n - 1); }
+    static boolean evenMakes(int n) { return n == 0 || oddMakes(n - 1); }
+    static boolean oddMakes(int n) { new A(n); return n != 0 && evenMakes(n - 1); }
+    int size() { return 0; }
+    static int dispatch(A a) { return a.size(); }
+}
+class B extends A { B() { super(1); } int size() { return new A(2).v + new A(3).v; } }
+"#,
+        )
+        .unwrap();
+        let status = std::process::Command::new("javac").args(["-g", "-d"]).arg(dir.path()).arg(&source).status().unwrap();
+        assert!(status.success(), "the fixture compiles");
+        let made = |m: &str| allocations(dir.path(), &format!("p.A#{m}")).expect("counted");
+        assert_eq!(made("pure"), Some(0), "nothing made");
+        assert_eq!(made("one"), Some(2), "the object and the exception its constructor may throw");
+        assert_eq!(made("either"), Some(4), "both branches, each through its constructor");
+        assert_eq!(made("arrays"), Some(2), "an array instruction is one, however many arrays it makes inside the JVM");
+        assert_eq!(made("loopPure"), Some(0), "a loop that makes nothing");
+        assert_eq!(made("loopMakes"), None, "made in a loop");
+        assert_eq!(made("factorial"), Some(0), "a recursion that makes nothing");
+        assert_eq!(made("countDown"), None, "a recursion through a call that makes objects");
+        assert_eq!(made("even"), Some(0), "a recursion through two methods that make nothing");
+        assert_eq!(made("evenMakes"), None, "a recursion through another method that makes an object");
+        assert_eq!(made("oddMakes"), None, "the same recursion from its other method");
+        assert_eq!(made("dispatch"), Some(4), "the most of the targets the call may dispatch to: B's two objects, with their exceptions");
+        assert!(allocations(dir.path(), "p.Missing#m").is_err(), "a class the build doesn't have is an error, not a bound");
     }
 
     #[test]

@@ -268,6 +268,60 @@ Settled by the user on 2026-11-07:
   `integration`'s directory was left over from the foundations run. `run-streams.sh` now names workspaces after the
   brief (`cleanup-STREAM`, `cleanup-integration`), and checks every directory before compacting anything. The afternoon run was triaged into VF-015 to VF-019, and launch
   prerequisites 1 to 3 are done.
+- **Phase 4, step 1: reconciled** (2026-11-07). All three streams had stopped: native `blocked`, jbmc `blocked`,
+  examples `done`, and `feature-loop-cleanup-integration.scope` was inactive. Each stream's last turns were recorded
+  on its branch (`trqroxpz`, `xqvqmyrq`, `xnmyynvx`), their logs and run records copied here, and the three branches
+  merged with the default line. The workspaces `cleanup-native`, `cleanup-jbmc`, `cleanup-examples` and
+  `cleanup-integration` are forgotten; their directories are the user's to delete. Each stream's own Progress, in
+  full, is in its brief (`cleanup-native.md`, `cleanup-jbmc.md`, `cleanup-examples.md`), as its branch left it.
+  - **Deferred by the timebox:**
+    - **VF-002's examples 147 and 148** (examples stream). After `excerpts()`'s fix, `20261107-163046-…`/`-163047-…`
+      failed at "apply the patch" (fixed by rebasing the patches' `Tests.java` hunk), then
+      `20261107-165152-example-147-…`/`-148-…` failed in `stage_contracts` (`examples/tools/build.py:432`) with
+      `FileNotFoundError` for `gaps.contracts`. The finding: since `myrqmxqq` (2026-11-05), `run()` hands each runner
+      the attempt directory, and `stage_contracts` and `contracts_digest` read the example's `approach.contracts`
+      file from it. A further attempt passes the example's folder to both, with a `test_build.py` reproducer, and
+      resubmits the two jobs, about 2 minutes each. 149 passed (`20261107-165152-example-149-…`).
+  - **Deferred to the user, not by the timebox:**
+    - **VF-018** (jbmc stream, by decision 6). At 1800 s, `20261107-164356-vf-018-prices-prices-total-s-computed-in`
+      passed. `-164356-vf-018-objects-kernel-price-s-output-rel`, `-164356-vf-018-lines-lines-reprice-s-equations-t`
+      and `-164356-vf-018-orders-orders-reprice-s-equations` each timed out on their first JBMC run. What is left to
+      prove in all three is two 64-bit products of symbolic operands being equal, which the own checker proves in
+      under 0.1 s. Options, in `cleanup-jbmc.md`: a longer limit again, another solver or `--refine-arithmetic`, or
+      leaving these four confirmations to the own checker.
+    - **VF-001** (jbmc stream). Its check can't pass as written: in `20261107-172721-conformance-corpus-under-jbmc-and-engine`
+      both ignored conformance tests pass (2 passed, 0 failed), but the step exits 1, because its `tee
+      target/conformance-jbmc.log` opens before cargo makes `lib/target/` in the fresh work directory. The original
+      jobs' logs open with the same error. The user can take that test result as the check, or have both jobs
+      resubmitted with only `mkdir -p target &&` added. The sibling `-172721-…-under-engine-auto-con` was stopped by
+      VF-021's scope-name collision (since fixed).
+    - **VF-015** (native stream's N3). `20261107-165827-example-109-…` failed at step 3: JBMC now proves the old
+      `toDigit`, but strict refuses the proof, which reaches JBMC's stub of `String.format`. The user has since chosen
+      [`stub-reachability.md`](stub-reachability.md) (`rmvlorrs`) over a `String.format` model, and that brief closes
+      VF-015 after this merge.
+  - **native** (`ruvmympl` … `wpxntpty`): VF-010 closed by `20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t`
+    and `-165544-vf-010-s-integration-tests-at-the-fix-li`: probes budgeted in solver conflicts, not seconds. Its
+    benchmark comparison `20261107-184603-…` gave 557 runs, 0 verdicts changed, and closed VF-021. VF-011 passed by
+    `20261107-171502-vf-011-example-052-under-strict-on-the-o` (052 established by the own checker under strict):
+    unwinding counted per entry of a loop.
+  - **jbmc** (`zykkyuuw` … `wuxrynko`): VF-009 closed by `20261107-172721-jbmc-s-extra-initializers-named-and-refu`:
+    JBMC hands a throwing class initializer's exception to its caller unwrapped, and the preflight names it as the
+    defect kind `throwing-initializer`. Cause 5 is drafted in [`jbmc-upstream.md`](jbmc-upstream.md). VF-019 closed by
+    `20261107-172721-nullable-and-one-array-parameters-in-pro`: `--confirm`'s refusal of a widened domain is named.
+    `20261107-171442-…` measured the new guard: it refuses none of the 41 recorded JBMC examples' obligations.
+  - **examples** (`wurnsyot` … `swopzxzu`): VF-016 closed by `20261107-165152-example-160-…` and
+    `-165153-example-161-…`. VF-017 closed by `20261107-164043-example-150/151/152-…`. VF-014 closed by
+    `20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm` (H1 changed no verdict), and the fresh
+    `lib/benchmark/results.json` (`20261107-183709-…`, 2829 runs) is applied. VF-013 is done by `sync.py`'s
+    tests (`test_runs.py`): each run record is published redacted under its session's trace. The three foundations
+    leftovers are fixed with tests: the allocation bound is checked, a claim naming an input its subject doesn't take
+    is refused, and a reused proof names the builds its run was given.
+  - **The merge.** Only generated trace files conflicted, and `llm-dlc/README.md`: the default line's
+    application-core sentences and the examples stream's run-record paragraph are both kept. Other files that two
+    lines changed (`lib/src/equivalence.rs`, `lib/tests/heap.rs`, `lib/README.md`, `examples/index.json`) merged
+    cleanly with independent edits. `build.py --index-only` marks 149's page current, now that its job has passed.
+  - Next: step 2, the run records, which this merge's `sync.py commit` publishes for the first time. Then step 3's
+    job, with `lib/tests/integration.rs` at the merge, since VF-010's integration job ran before it.
 - Status: working
 
 ## Loop settings

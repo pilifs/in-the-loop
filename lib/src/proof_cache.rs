@@ -432,14 +432,11 @@ impl<'a> Regression<'a> {
         KEYS.with(|k| k.borrow_mut().push((self.options.target.clone(), key.clone())));
         let mut replay = vec![self.harness.to_path_buf(), self.options.after.clone(), self.before_classes.to_path_buf()];
         replay.extend(self.options.classpath.iter().cloned());
-        let provenance = format!(
-            "jvmcontract {} ({}), --engine native, at {}, on {} and {}",
-            env!("CARGO_PKG_VERSION"),
-            binary().get(..19).unwrap_or("unknown binary"),
-            utc_now(),
-            self.options.before.display(),
-            self.options.after.display()
-        );
+        let builds = match &self.options.copied_from {
+            Some((before, after)) => format!("copies of {} and {}", before.display(), after.display()),
+            None => format!("{} and {}", self.options.before.display(), self.options.after.display()),
+        };
+        let provenance = format!("jvmcontract {} ({}), --engine native, at {}, on {builds}", env!("CARGO_PKG_VERSION"), binary().get(..19).unwrap_or("unknown binary"), utc_now());
         let required = [Observation::Result, Observation::Exception].iter().map(Observation::id).chain(self.observations.arrays.iter().map(|a| Observation::ArrayParameter { parameter: a.clone() }.id())).collect();
         let mut place = Place { dir, key, replay, models: self.options.models, types: self.layout.types(), domain: self.shown.domain.to_string(), required, provenance, note: String::new() };
         let keyed = keying.elapsed();

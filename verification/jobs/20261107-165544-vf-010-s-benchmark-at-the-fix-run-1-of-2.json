@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2",
+  "title": "VF-010's benchmark at the fix (run 1 of 2): the own checker's runs with conflict-budgeted probes, recorded for comparison with the fix's parent",
+  "description": "VF-010 (verification/findings.md): the fix budgets the own checker's branch probes in solver conflicts instead of wall-clock time (Engine::probe, lib/src/bmc/mod.rs). To check that no recorded own-checker verdict changes with it, the benchmark's own-checker runs are recorded at the fix (this job, which runs at the commit that adds it, the fix) and at the fix's parent (run 2 of 2, --revision c307e721), and a later quick job compares the two outputs, as the examples stream does for VF-014. Not compared with lib/benchmark/results.json, which VF-014 shows is stale. This job only records: it passes when the benchmark runs.",
+  "kind": "library",
+  "capabilities": [
+    "benchmark",
+    "own-checker",
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/benchmark"
+    ]
+  },
+  "expected": "exit 0, with lib/target/benchmark-native-vf010-fix.json written",
+  "submitted": {
+    "at": "2026-11-07T16:55:44+00:00",
+    "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+    "by": "cleanup-native"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "15m",
+    "notes": "job 20261107-041414's step 1, the same command, took 168 s in all with a 1.1 GiB peak"
+  },
+  "steps": [
+    {
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native-vf010-fix.json --table lib/target/benchmark-native-vf010-fix.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/benchmark-native-vf010-fix.json",
+    "lib/target/benchmark-native-vf010-fix.md"
+  ]
+}

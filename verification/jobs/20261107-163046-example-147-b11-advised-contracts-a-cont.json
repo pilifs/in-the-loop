@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-163046-example-147-b11-advised-contracts-a-cont",
+  "title": "Example 147 (B11, advised contracts): a contract for Random.nextInt that leaves out the exception is refuted on the JVM, and the proof stops with the gap open (closes VF-002 when it passes)",
+  "description": "New example for step 3c/3e of llm-dlc/loops/sound-verdicts.md. Crosscut gains Jitter#fullJitterMillis (full jitter: Random.nextInt below a ceiling shifted with Integer.numberOfLeadingZeros). The proof runs under --engine native --gaps advised --contracts gaps.contracts, contracts an agent wrote for the three JDK calls the tool's own checker does not implement. The one for nextInt(int) omits IllegalArgumentException when bound <= 0, so the JVM test refutes it at bound=0 and the run stops before solving with the gap open, the JVM's counterexamples in the advice; the other two contracts are accepted (numberOfLeadingZeros proved against the JDK's bytecode, Random(long) tested). Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-002: build.py's excerpts() now takes a subject the patch creates, with an empty before side. The earlier job, 20261106-053555-example-147-b11-advised-contracts-a-cont, stopped before any proof with 'the patch does not change the subject file'. Closes VF-002 in verification/findings.md when it passes with the expected verdict.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "147"
+    ],
+    "paths": [
+      "lib/src/contract_proving.rs",
+      "lib/src/contract_testing.rs"
+    ]
+  },
+  "expected": "verdict unverifiable (gaps-need-contracts), the advice naming jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1 with its refused contract and the counterexample bound=0, expected verdict met",
+  "submitted": {
+    "at": "2026-11-07T16:30:46+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "checked inline on the patched module: about 0.2 s for the contract checks; the build and the module's tests take most of the time"
+  },
+  "steps": [
+    {
+      "name": "example 147 (B11)",
+      "run": "python3 examples/tools/build.py 147",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/147-a-contract-that-says-random-nextint-never-throws-is-refuted-on-the-jvm-before-the-proof-relies-on-it"
+  ],
+  "supersedes": "20261106-053555-example-147-b11-advised-contracts-a-cont"
+}

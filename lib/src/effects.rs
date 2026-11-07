@@ -33,7 +33,7 @@
 //! - **Under the proof cache, when given one** ([`check_with`]). The proof is a regression check of the two rewritten
 //!   builds, keyed as any is ([`crate::proof_cache`]): their closures from the generated entry method, so the stubs
 //!   and the environment model they encode are in the key. A stored refutation's witness is replayed on a JVM again.
-//!   The run a reuse names is on the rewritten copies, in a temporary directory of that run.
+//!   A reuse names the run it came from by the builds that run was given, of which the proof's were copies.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -371,8 +371,8 @@ pub fn render_checks(checks: &[EntryCheck]) -> String {
             s.push_str(&format!("  {}: {p}\n", if k.outcome.verdict == Verdict::Verified { "proof" } else { "search" }));
         }
         s.push_str(&format!("  domain: {}\n", k.outcome.domain));
-        if let Some(crate::spec::cache::Reuse::Exact { key, .. }) = &k.reuse {
-            s.push_str(&format!("  reused: an exact hit of the same claim ({}): nothing was proved again\n", key.0));
+        if let Some(crate::spec::cache::Reuse::Exact { key, from }) = &k.reuse {
+            s.push_str(&format!("  reused: an exact hit of the same claim ({}), from {from}: nothing was proved again\n", key.0));
         }
         for a in &k.assumptions {
             s.push_str(&format!("  assumes: {a}\n"));
@@ -501,6 +501,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     options.max_array_length = claim.bounds.max_array_length;
     options.timeout_seconds = 300;
     options.cache = cache.map(Path::to_path_buf);
+    options.copied_from = Some((before.to_path_buf(), after.to_path_buf()));
     let mark = crate::proof_cache::key_mark();
     let result = crate::equivalence::run(&options).map_err(|e| unsupported(format!("the effect-trace proof of {}: {e}", old.id)))?;
     let key = cache.and_then(|_| crate::proof_cache::key_since(&new_version.target, mark));
