@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 52, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 17:33 UTC |
-| Prompts | 1,420 |
-| Model calls | 14,412 |
-| Tool calls | 15,395 (279 failed) |
-| Compactions | 209 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 18:34 UTC |
+| Prompts | 1,426 |
+| Model calls | 14,448 |
+| Tool calls | 15,431 (279 failed) |
+| Compactions | 210 |
 | Subagents | 9 |
-| Tokens written | 16,340,270 |
-| Tokens read | 2,385,639,612 (98.0% from cache) |
-| Commits with a trace | 413 |
-| Log snapshots | 498 (1282.1 MB gzipped, 488 uploaded) |
+| Tokens written | 16,362,857 |
+| Tokens read | 2,388,735,906 (98.0% from cache) |
+| Commits with a trace | 414 |
+| Log snapshots | 499 (1284.2 MB gzipped, 488 uploaded) |
 
 ## Sessions
 
@@ -78,7 +78,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
 | 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 6 |
 | 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 35 | 476 | 501 | 9 | 5 | 282,777 | 15 |
-| 2026-11-07 16:26 UTC | [b65d132b-4eb4-46fd-8556-f4cba3311ad1](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | open | 1 h 7 min | `claude-opus-5-5` | 45 | 373 | 382 | 2 | 9 | 171,947 | 9 |
+| 2026-11-07 16:26 UTC | [b65d132b-4eb4-46fd-8556-f4cba3311ad1](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | open | 2 h 8 min | `claude-opus-5-5` | 51 | 409 | 418 | 2 | 10 | 171,947 | 10 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -139,15 +139,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 339,102 | 976 | 1,254,533 | 85,418,727 | 98.6% | 256 |
-| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 228,368 | 744 | 966,149 | 32,276,009 | 97.1% | 146 |
+| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 250,955 | 818 | 1,067,867 | 35,270,511 | 97.1% | 145 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 13,415 | 87.1% | 52 |
-| `Read` | 747 | 4.9% | 28 |
-| `Edit` | 597 | 3.9% | 27 |
+| `Bash` | 13,449 | 87.2% | 52 |
+| `Read` | 748 | 4.8% | 28 |
+| `Edit` | 598 | 3.9% | 27 |
 | `Write` | 379 | 2.5% | 25 |
 | `ToolSearch` | 93 | 0.6% | 22 |
 | `Monitor` | 60 | 0.4% | 17 |
@@ -580,6 +580,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 411 | change `oqxxrtow` | spec::heap::check refuses a claim whose contract names an input its subject doesn't take, and discount is checked under a claim of its own (E4) | [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) ([log](https://terminalvalue.net/raw-traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/82a6ff15f95f6fa1115e9b0d4f890920818820e0466f570e441dd4be0bc0c0b5.jsonl.gz)) |
 | 412 | change `vsxvymrp` | A reused proof names the run it came from by the builds that run was given, not the effect-trace proof's rewritten copies in a temporary directory (E4) | [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) ([log](https://terminalvalue.net/raw-traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/e8177ed481075c445b9348f5ecd6742af59e80a41b1a7f1f435825c540d5fab0.jsonl.gz)) |
 | 413 | change `svoznurq` | spec::heap::check holds a claim's allocation bound against what each version's code makes in one call, and the golden kernel domain lets the new version make alias-to-copy's 2 objects (E4) | [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) ([log](https://terminalvalue.net/raw-traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/b3c4bdf2a3ce309ca18a83b396c086ae2309e1364a2707a7800d5effc411fef0.jsonl.gz)) |
+| 414 | change `xmsmzwoy` | VF-014's comparison queued on the two isolated runs, and VF-002's 147 and 148 deferred by the timebox after a third defect in build.py's contract staging (verification pending) | [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) ([log](https://terminalvalue.net/raw-traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/f3ae13e4f8afb0c9f7261fded7a97d6bb234c55abf6d50307e71102a1a7e4e62.jsonl.gz)) |
 
 ## Logs
 
@@ -638,7 +639,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 17 | 41.4 MB | [`9a4c7376723a`](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/9a4c7376723a063bbe8d554629ec7593fb6464570becfffed3745912318daaa2.jsonl.gz) |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 3 | 3 | 0.4 MB | [`d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz) |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 15 | 14 | 19.3 MB | `3f768f3bb246`, not uploaded |
-| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 9 | 0 | 8.7 MB | `b3c4bdf2a3ce`, not uploaded |
+| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 10 | 0 | 10.8 MB | `f3ae13e4f8af`, not uploaded |
 
 ## Session notes
 
