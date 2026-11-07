@@ -1,0 +1,158 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-184603-vf-010-s-benchmark-compared-the-own-chec",
+  "title": "VF-010's benchmark compared: the own checker's verdicts at the fix and at its parent (closes VF-021 when it passes)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 0.2s, peak 14.8 MiB (estimated 1m00s, 256.0 MiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-184603-vf-010-s-benchmark-compared-the-own-chec.json",
+    "sha256": "ae95b49cd65b35a9704754faab0d9ecec2c11610969d2188055aaef95a12fe6d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-184603-vf-010-s-benchmark-compared-the-own-chec",
+      "title": "VF-010's benchmark compared: the own checker's verdicts at the fix and at its parent (closes VF-021 when it passes)",
+      "description": "VF-010 (verification/findings.md, closed) changed the own checker's branch probes from a wall-clock budget to a budget in solver conflicts (Engine::probe, lib/src/bmc/mod.rs, commit f606b0d8). Its brief (llm-dlc/loops/cleanup-native.md, N1) also asks that no recorded own-checker verdict change. Jobs 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 (at f606b0d8) and 20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r (at its parent c307e721) ran the benchmark's own-checker runs and both passed; their gitignored outputs lib/target/benchmark-native-vf010-{fix,parent}.json are in the runner's repository (four directories above $VERIFY_WORKDIR), applied to lib/target/ or kept under verification/results/ID/outputs/. This job finds each by the sha256 its run recorded and compares every own-checker run by (case, mode), as the examples stream's VF-014 comparison (20261107-183328-...) does. It exits 1 if a verdict differs or a case is in one run and not the other, 2 if an output is missing or not the recorded one. Tried on the same files before submitting: 557 runs, 0 verdicts changed, 0 formulas grown past 10%, 0 paths or merges changed. VF-021 (the runner stopping the first pair with each other's systemd scope) closes when this passes, since the resubmitted pair ran through.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "f606b0d80e3189b56db29b8f48b4c0f1ad018375",
+          "c307e721bdc341552ea5dbfc68585bbe9b4701dc"
+        ]
+      },
+      "expected": "exits 0: 557 own-checker runs at the fix, none new or gone, and the summary line reads 'verdicts changed: 0'",
+      "submitted": {
+        "at": "2026-11-07T18:46:03+00:00",
+        "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+        "by": "claude (cleanup-native)"
+      },
+      "requires": [],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "256M",
+        "duration": "1m",
+        "timeout": "5m",
+        "notes": "the same comparison took under a second here on the two 1.1 MB files"
+      },
+      "steps": [
+        {
+          "name": "compare the own checker's runs at the fix with those at its parent",
+          "run": "R=\"$(cd \"$VERIFY_WORKDIR/../../../..\" && pwd)\"\nfind_output() {  # job id, file name, sha256: the collected output, wherever the runner kept it\n  for f in \"$R/lib/target/$2\" \"$R/verification/results/$1/outputs/lib/target/$2\"; do\n    if [ -f \"$f\" ] && printf '%s  %s\\n' \"$3\" \"$f\" | sha256sum -c --quiet - >/dev/null 2>&1; then echo \"$f\"; return 0; fi\n  done\n  return 1\n}\nOLD=$(find_output 20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r benchmark-native-vf010-parent.json ad9d1ad88ea06db3558f49e650a1953a6f5650ef86102e70a8616d18095732a6) || { echo \"the parent run's collected output is missing or not the one it recorded\"; exit 2; }\nNEW=$(find_output 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 benchmark-native-vf010-fix.json 8309386efe24f80242bae8944ad1de690d56c4188de4526038fbd33590a71d4b) || { echo \"the fix run's collected output is missing or not the one it recorded\"; exit 2; }\necho \"at the fix's parent (c307e721): $OLD\"\necho \"at the fix (f606b0d8): $NEW\"\nOLD=\"$OLD\" NEW=\"$NEW\" python3 - <<'PY'\nimport json, os, sys\nnew = [r for r in json.load(open(os.environ[\"NEW\"]))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(os.environ[\"OLD\"]))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nseen = set()\nfor r in new:\n    k = (r[\"case\"], r[\"mode\"]); seen.add(k)\n    o = old.get(k)\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\ngone = sorted(k for k in old if k not in seen)\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; cases gone: {len(gone)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor g in gone: print(\"  gone:\", *g)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed or fresh or gone else 0)\nPY",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "df6b1c2e7e1e4c910e6d0ac0fbbe617b3c6b22ad",
+  "startedAt": "2026-11-07T20:20:45+00:00",
+  "finishedAt": "2026-11-07T20:20:46+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 433338,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 402653184,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 268435456,
+    "durationSeconds": 60.0,
+    "notes": "the same comparison took under a second here on the two 1.1 MB files"
+  },
+  "usage": {
+    "peakMemoryBytes": 15568896,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "compare the own checker's runs at the fix with those at its parent",
+      "run": "R=\"$(cd \"$VERIFY_WORKDIR/../../../..\" && pwd)\"\nfind_output() {  # job id, file name, sha256: the collected output, wherever the runner kept it\n  for f in \"$R/lib/target/$2\" \"$R/verification/results/$1/outputs/lib/target/$2\"; do\n    if [ -f \"$f\" ] && printf '%s  %s\\n' \"$3\" \"$f\" | sha256sum -c --quiet - >/dev/null 2>&1; then echo \"$f\"; return 0; fi\n  done\n  return 1\n}\nOLD=$(find_output 20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r benchmark-native-vf010-parent.json ad9d1ad88ea06db3558f49e650a1953a6f5650ef86102e70a8616d18095732a6) || { echo \"the parent run's collected output is missing or not the one it recorded\"; exit 2; }\nNEW=$(find_output 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 benchmark-native-vf010-fix.json 8309386efe24f80242bae8944ad1de690d56c4188de4526038fbd33590a71d4b) || { echo \"the fix run's collected output is missing or not the one it recorded\"; exit 2; }\necho \"at the fix's parent (c307e721): $OLD\"\necho \"at the fix (f606b0d8): $NEW\"\nOLD=\"$OLD\" NEW=\"$NEW\" python3 - <<'PY'\nimport json, os, sys\nnew = [r for r in json.load(open(os.environ[\"NEW\"]))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(os.environ[\"OLD\"]))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nseen = set()\nfor r in new:\n    k = (r[\"case\"], r[\"mode\"]); seen.add(k)\n    o = old.get(k)\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\ngone = sorted(k for k in old if k not in seen)\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; cases gone: {len(gone)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor g in gone: print(\"  gone:\", *g)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed or fresh or gone else 0)\nPY",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.037,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 15568896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-the-own-checker-s-runs.log",
+        "lines": 3,
+        "bytes": 330,
+        "sha256": "5caf2aa8787eba8d35d49586825ce67e97311f0af6dd154dd96966245a7436d0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "at the fix's parent (c307e721): /home/filip/code/in-the-loop/lib/target/benchmark-native-vf010-parent.json",
+        "at the fix (f606b0d8): /home/filip/code/in-the-loop/lib/target/benchmark-native-vf010-fix.json",
+        "own-checker runs: 557; new cases: 0; cases gone: 0; verdicts changed: 0; formulas grown past 10%: 0; paths or merges changed: 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T20:20:46+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

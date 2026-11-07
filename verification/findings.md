@@ -18,16 +18,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
-### VF-021: two of VF-010's benchmark jobs were killed by SIGTERM, with no output, and no verdict comparison across its fix was made
-
-- **Status**: open
-- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`, killed after 2m19s) and `20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`, after 0.2 s).
-- **Found**: each step (`cargo build --release -q` then `python3 lib/benchmark/run.py --engines native --out ...`) ended with signal SIGTERM, not a timeout (`timedOut` false, not cancelled, no stop reason), peak 1.5 GiB and 574 MiB against 3 GiB limits, and no output file written. Three other jobs ran at the same time and finished normally (the VF-010 reproducer and integration tests at the fix, and example 109). Cause found (by the submitter, confirmed by me in `verification/pipeline.py`): the runner named each step's systemd scope `vjob-<id[:40]>-<step>`, and the two ids share their first 40 characters, so each job's step stopped the other's as a leftover of the same name. Fixed in the runner: the scope name is now the first 30 characters of the id and a hash of the whole id (`scope_id`). The same collision stopped job `20261107-172721-conformance-corpus-under-engine-auto-con` (VF-001) beside its twin.
-- **Seen again, resolved in part** 2026-11-07 on `vm-1`: the resubmitted pair `20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`) and `20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`), with ids that differ early, both passed (3m11s each) and their outputs are applied.
-- **Needs**: the submitter (cleanup loop's native stream) queues the comparison job on the two outputs.
-- **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N1).
-- **Closes when**: the two benchmark jobs pass and the comparison shows no recorded own-checker verdict changed with the fix.
-
 ### VF-020: a passed job's `changes.diff` (1.2 MiB) is not committed, because jj refuses to snapshot new files over 1 MiB
 
 - **Status**: open
@@ -202,6 +192,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Decided and closed
 
+### VF-021: two of VF-010's benchmark jobs were killed by SIGTERM, with no output, and no verdict comparison across its fix was made
+
+- **Status**: closed by job `20261107-184603-vf-010-s-benchmark-compared-the-own-chec` (at `df6b1c2e7e1e`, 2026-11-07, `vm-1`): the own checker's 557 runs at the fix and at its parent: 0 new, 0 gone, verdicts changed 0, formulas grown past 10% 0, paths or merges changed 0. The benchmark pair that fed it passed after the runner's scope-name fix.
+- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`, killed after 2m19s) and `20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`, after 0.2 s).
+- **Found**: each step (`cargo build --release -q` then `python3 lib/benchmark/run.py --engines native --out ...`) ended with signal SIGTERM, not a timeout (`timedOut` false, not cancelled, no stop reason), peak 1.5 GiB and 574 MiB against 3 GiB limits, and no output file written. Three other jobs ran at the same time and finished normally (the VF-010 reproducer and integration tests at the fix, and example 109). Cause found (by the submitter, confirmed by me in `verification/pipeline.py`): the runner named each step's systemd scope `vjob-<id[:40]>-<step>`, and the two ids share their first 40 characters, so each job's step stopped the other's as a leftover of the same name. Fixed in the runner: the scope name is now the first 30 characters of the id and a hash of the whole id (`scope_id`). The same collision stopped job `20261107-172721-conformance-corpus-under-engine-auto-con` (VF-001) beside its twin.
+- **Seen again, resolved in part** 2026-11-07 on `vm-1`: the resubmitted pair `20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`) and `20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`), with ids that differ early, both passed (3m11s each) and their outputs are applied.
+- **Needs**: the submitter (cleanup loop's native stream) queues the comparison job on the two outputs.
+- **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N1).
+- **Closes when**: the two benchmark jobs pass and the comparison shows no recorded own-checker verdict changed with the fix.
+
 ### VF-014: H1's benchmark comparison fails on 8 verdicts that changed because `lib/benchmark/results.json` is stale, not because of symbolic references
 
 - **Status**: closed by job `20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm` (at `7315cda22a96`, 2026-11-07, `vm-1`): the comparison of H1's own-checker verdicts with H1's parent's passed (0.2 s): 'verdicts changed: 0', the only new runs the 24 of the swaps cases H1 added. The stale `results.json` was the cause, not H1.
@@ -226,6 +226,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: the resubmitted job passes against a recording made at a commit without H1, or H1's parent.
 - **Isolated runs** 2026-11-07 on `vm-1`: jobs `20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm` (at H1's parent `b927e5df1be9`) and `-run-2-of-2-` (at H1 `ddbb54bac206`) both passed in 2m42s and 2m45s. Their outputs (`lib/target/benchmark-native.json`) stay in each job's `outputs/` and were not applied to the working copy (the files differ from the jobs' commits). The comparison job the descriptions name is the submitter's to queue; the entry stays open until it passes.
 - **Closed** 2026-11-07 on `vm-1`, by the job above, run after runs 1 and 2 (`20261107-164450-…`) passed.
+- **Fresh benchmark** 2026-11-07 on `vm-1`: job `20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso` (at `c9995ae17d82`) passed in 1h37m (peak 6.0 GiB against an estimate of 4.5): no false success or alarm on any engine, mode or staging policy. `lib/benchmark/results.json` and `RESULTS.md` were replaced by collect (applied, no conflicts), so the stale file is gone.
 
 ### VF-019: under `auto --confirm`, the six nullable and may-alias claims of H2 get "no engine wrote a harness", which the conformance test counts as a disagreement
 
