@@ -1,0 +1,183 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-163046-example-147-b11-advised-contracts-a-cont",
+  "title": "Example 147 (B11, advised contracts): a contract for Random.nextInt that leaves out the exception is refuted on the JVM, and the proof stops with the gap open (closes VF-002 when it passes)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 30.9 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [
+    "step 1 (example 147 (B11)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-163046-example-147-b11-advised-contracts-a-cont.json",
+    "sha256": "5b8449232a9c2a8a764d366a742408389c2decbd9b7e9c8910526a99b0a88ec9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-163046-example-147-b11-advised-contracts-a-cont",
+      "title": "Example 147 (B11, advised contracts): a contract for Random.nextInt that leaves out the exception is refuted on the JVM, and the proof stops with the gap open (closes VF-002 when it passes)",
+      "description": "New example for step 3c/3e of llm-dlc/loops/sound-verdicts.md. Crosscut gains Jitter#fullJitterMillis (full jitter: Random.nextInt below a ceiling shifted with Integer.numberOfLeadingZeros). The proof runs under --engine native --gaps advised --contracts gaps.contracts, contracts an agent wrote for the three JDK calls the tool's own checker does not implement. The one for nextInt(int) omits IllegalArgumentException when bound <= 0, so the JVM test refutes it at bound=0 and the run stops before solving with the gap open, the JVM's counterexamples in the advice; the other two contracts are accepted (numberOfLeadingZeros proved against the JDK's bytecode, Random(long) tested). Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-002: build.py's excerpts() now takes a subject the patch creates, with an empty before side. The earlier job, 20261106-053555-example-147-b11-advised-contracts-a-cont, stopped before any proof with 'the patch does not change the subject file'. Closes VF-002 in verification/findings.md when it passes with the expected verdict.",
+      "kind": "example",
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "147"
+        ],
+        "paths": [
+          "lib/src/contract_proving.rs",
+          "lib/src/contract_testing.rs"
+        ]
+      },
+      "expected": "verdict unverifiable (gaps-need-contracts), the advice naming jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.4.1 with its refused contract and the counterexample bound=0, expected verdict met",
+      "submitted": {
+        "at": "2026-11-07T16:30:46+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "checked inline on the patched module: about 0.2 s for the contract checks; the build and the module's tests take most of the time"
+      },
+      "steps": [
+        {
+          "name": "example 147 (B11)",
+          "run": "python3 examples/tools/build.py 147",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/147-a-contract-that-says-random-nextint-never-throws-is-refuted-on-the-jvm-before-the-proof-relies-on-it"
+      ],
+      "supersedes": "20261106-053555-example-147-b11-advised-contracts-a-cont"
+    }
+  },
+  "sourceCommit": "d32ddc64d1a449a6f2738ea9333ddb06a3e320ac",
+  "startedAt": "2026-11-07T16:42:31+00:00",
+  "finishedAt": "2026-11-07T16:42:32+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 30374,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 21474836480,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "checked inline on the patched module: about 0.2 s for the contract checks; the build and the module's tests take most of the time"
+  },
+  "usage": {
+    "peakMemoryBytes": 32358400,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 147 (B11)",
+      "run": "python3 examples/tools/build.py 147",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.155,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 32358400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-147-b11.log",
+        "lines": 17,
+        "bytes": 1521,
+        "sha256": "97fa0f79fa14463425527b97cc075c6337427d64a872c4bae0ac99531adf0c1c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "147-a-contract-that-says-random-nextint-never-throws-is-refuted-on-the-jvm-before-the-proof-relies-on-it: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 1, 0.0 s",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-163046-example-147-b11-advised-contracts-a-cont/examples/tools/build.py\", line 4518, in <module>",
+        "    sys.exit(main(sys.argv[1:]))",
+        "             ~~~~^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-163046-example-147-b11-advised-contracts-a-cont/examples/tools/build.py\", line 269, in main",
+        "    result = run(folder, example, out)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-163046-example-147-b11-advised-contracts-a-cont/examples/tools/build.py\", line 651, in run",
+        "    apply_patch(patch, tmp)",
+        "    ~~~~~~~~~~~^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-163046-example-147-b11-advised-contracts-a-cont/examples/tools/build.py\", line 144, in apply_patch",
+        "    proc = stage(\"apply the patch\", [\"git\", \"apply\", \"-p1\", \"--verbose\", \"-\"], input=patch, cwd=cwd, env=env, check=True)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261107-163046-example-147-b11-advised-contracts-a-cont/examples/tools/build.py\", line 190, in stage",
+        "    raise subprocess.CalledProcessError(proc.returncode, command, stdout, stderr)",
+        "subprocess.CalledProcessError: Command '['git', 'apply', '-p1', '--verbose', '-']' returned non-zero exit status 1."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T16:42:39+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "33ed1f9046abb0a4c091cce531f2c6d61ffba3e9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/33ed1f9046abb0a4c091cce531f2c6d61ffba3e9/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-163046-example-147-b11-advised-contracts-a-cont"
+}

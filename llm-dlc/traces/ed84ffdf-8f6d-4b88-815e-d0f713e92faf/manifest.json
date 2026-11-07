@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "ed84ffdf-8f6d-4b88-815e-d0f713e92faf",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-07T16:31:42.016Z",
+  "ended": "2026-11-07T16:44:33.000Z",
+  "duration_seconds": 771,
+  "stats": {
+    "turns": 1,
+    "api_calls": 20,
+    "tool_calls": 21,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 75153,
+    "usage": {
+      "input_tokens": 40,
+      "output_tokens": 10848,
+      "cache_read_input_tokens": 947636,
+      "cache_creation_input_tokens": 62034
+    }
+  },
+  "tools": {
+    "Bash": 20,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T16:31:42.016Z",
+      "ended": "2026-11-07T16:44:33.000Z",
+      "turns": 1,
+      "api_calls": 20,
+      "usage": {
+        "input_tokens": 40,
+        "output_tokens": 10848,
+        "cache_read_input_tokens": 947636,
+        "cache_creation_input_tokens": 62034
+      },
+      "peak_context_tokens": 75153
+    }
+  ],
+  "log": {
+    "sha256": "d73826af38014302e8205cbc4ae3f34e016ef9884aa75d49ce9fca4df0d6241e",
+    "bytes": 607039,
+    "lines": 192,
+    "gzip_bytes": 110256,
+    "path": "llm-dlc/traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/logs/d73826af38014302e8205cbc4ae3f34e016ef9884aa75d49ce9fca4df0d6241e.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "pkuvkylnpzkvoqwopyuvlvvorqotrnvu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 10 jobs: examples 150 to 152 pass, 147 to 149, 160 and 161 still fail, VF-009 triaged",
+      "body": "Run on vm-1 with 3 workers and 20 GiB. Passed: examples 150, 151, 152 (close VF-017), and the VF-009 triage (evidence that stock JBMC does not wrap a class initializer's throw: it fails wrapped, erroneous, once, enumWrapped, boomTwice and enumBroken, as the JVM does not). Failed: examples 147, 148 and 149 at 'apply the patch' (the crosscut Tests.java context changed; VF-002 updated), examples 160 and 161 at the result schema, which lacks scope.proofCache (VF-016 updated), and VF-010's reproducer, which exits 1 because all 8 runs found the violation in 3 to 5 s on vm-1, so the problem did not reproduce here (VF-010 updated). VF-020 is new: a 1.2 MiB changes.diff of the triage job is not committed because jj refuses to snapshot it. Verified by: collect's output, the jobs' logs, and git apply --check of the three patches against the current tree.",
+      "log_sha256": "d73826af38014302e8205cbc4ae3f34e016ef9884aa75d49ce9fca4df0d6241e"
+    }
+  ],
+  "logs": {
+    "d73826af38014302e8205cbc4ae3f34e016ef9884aa75d49ce9fca4df0d6241e": {
+      "bytes": 607039,
+      "lines": 192,
+      "gzip_bytes": 110256,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

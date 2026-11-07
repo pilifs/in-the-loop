@@ -1,0 +1,17 @@
+148-full-jitter-proved-below-the-cap-on-an-agent-s-contracts-one-proved-against-the-jdk-and-two-tested: running (B11)
+  · apply the patch
+  · apply the patch: exited 1, 0.0 s
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261107-163047-example-148-b11-advised-contracts-full-j/examples/tools/build.py", line 4518, in <module>
+    sys.exit(main(sys.argv[1:]))
+             ~~~~^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261107-163047-example-148-b11-advised-contracts-full-j/examples/tools/build.py", line 269, in main
+    result = run(folder, example, out)
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261107-163047-example-148-b11-advised-contracts-full-j/examples/tools/build.py", line 651, in run
+    apply_patch(patch, tmp)
+    ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261107-163047-example-148-b11-advised-contracts-full-j/examples/tools/build.py", line 144, in apply_patch
+    proc = stage("apply the patch", ["git", "apply", "-p1", "--verbose", "-"], input=patch, cwd=cwd, env=env, check=True)
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261107-163047-example-148-b11-advised-contracts-full-j/examples/tools/build.py", line 190, in stage
+    raise subprocess.CalledProcessError(proc.returncode, command, stdout, stderr)
+subprocess.CalledProcessError: Command '['git', 'apply', '-p1', '--verbose', '-']' returned non-zero exit status 1.

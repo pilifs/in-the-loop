@@ -1,0 +1,363 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "5186d1a2455567c1",
+    "format": 1,
+    "example": "150",
+    "statement": {
+      "approach": "B9",
+      "target": "net.terminalvalue.crosscut.retry.RetryThrottling#recorded",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": "5db410f11f45c59be4ab602781281c84e969cedb6b9b6557b071af68520f5569",
+      "before": {
+        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
+        "files": 58
+      },
+      "after": {
+        "sha256": "c61670ad09f72dff758a1e5e71f3e877c7d8bc48a12ec38c1d6cd61eb414064e",
+        "files": 58
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T164224Z-d61b180e",
+    "claim": "5186d1a2455567c1",
+    "startedAt": "2026-11-07T16:42:24+00:00",
+    "seconds": 4.4,
+    "engine": "native",
+    "options": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
+        "files": 42
+      },
+      "after": {
+        "sha256": "d6f7b7e364c863538028fe42c5e6b64088d8bcff740a7b5f2e53a472bd724794",
+        "files": 42
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-164043-example-150-crosscut-retry-throttle-a-re",
+      "sourceCommit": "e7270fd858905a69a215d667981075f9ff78e7a4",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-164043-example-150-crosscut-retry-throttle-a-re"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": true
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.4,
+        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+      },
+      {
+        "name": "javac patched crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.5,
+        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+      },
+      {
+        "name": "the crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-crosscut-tests.stdout",
+        "stderr": "logs/04-the-crosscut-tests.stderr"
+      },
+      {
+        "name": "javac unpatched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.3,
+        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+      },
+      {
+        "name": "jvmcontract equivalence",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/06-jvmcontract-equivalence.stdout",
+        "stderr": "logs/06-jvmcontract-equivalence.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/07-version-of-java.stdout",
+        "stderr": "logs/07-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.2,
+        "stdout": "logs/08-version-of-javac.stdout",
+        "stderr": "logs/08-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-hg7bttwk/attempts/150/attempt-pew0a33m"
+  },
+  "conclusion": {
+    "claim": "5186d1a2455567c1",
+    "attempt": "20261107T164224Z-d61b180e",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✓ Verified: equivalent on every input",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.crosscut.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+      "startLine": 16,
+      "code": " */\npublic static boolean recorded(Throttle throttle, boolean failed) {\n    int ceiling = throttle.limits.maxTokens() * 1000;\n    if (failed) {\n        throttle.milliTokens = throttle.milliTokens >= 1000 ? throttle.milliTokens - 1000 : 0;\n    } else {\n        int raised = throttle.milliTokens + throttle.limits.tokenRatioMilli();\n        throttle.milliTokens = raised < ceiling ? raised : ceiling;\n    }\n    return throttle.milliTokens > ceiling / 2;\n}\n\n/**\n"
+    },
+    "after": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+      "startLine": 16,
+      "code": " */\npublic static boolean recorded(Throttle throttle, boolean failed) {\n    int ceiling = throttle.limits.maxTokens() * 1000;\n    int next = failed ? throttle.milliTokens - 1000 : throttle.milliTokens + throttle.limits.tokenRatioMilli();\n    throttle.milliTokens = Math.max(0, Math.min(next, ceiling));\n    return 2 * throttle.milliTokens > ceiling;\n}\n\n/**\n"
+    },
+    "casesTotal": null,
+    "domain": "throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean",
+    "counterexamples": [],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "statement": "statement.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": null,
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.036,
+      "properties": 1,
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "stage": null,
+      "deadlineSeconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budgetSeconds": 600.0,
+          "seconds": 0.015,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.001,
+            "encoding": 0.004,
+            "solving": 0.01,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 7146,
+            "clauses": 24575
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budgetSeconds": 599.964,
+          "seconds": 0.001,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.0,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1052,
+            "clauses": 3377
+          }
+        }
+      ],
+      "native": {
+        "paths": 7,
+        "merges": 0,
+        "solverCalls": 16,
+        "solvingSeconds": 0.009853046,
+        "gatesEvaluated": 3498,
+        "evaluatingSeconds": 7.4038e-05,
+        "divisions": 1,
+        "divisionsBuilt": 1,
+        "multiplications": 0,
+        "multiplicationsBuilt": 0,
+        "variables": 7146,
+        "clauses": 24575,
+        "seconds": 0.014676313,
+        "loadingSeconds": 0.000473705,
+        "decodingSeconds": 3.9504e-05,
+        "encodingSeconds": 0.003756105,
+        "witnessSeconds": 0.0
+      },
+      "gapMode": "strict"
+    },
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "throttle",
+            "type": "net.terminalvalue.crosscut.retry.Throttle",
+            "kind": "object",
+            "null": false,
+            "components": [
+              "limits.maxTokens: int",
+              "limits.tokenRatioMilli: int"
+            ]
+          },
+          {
+            "name": "failed",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean",
+        "inputObjects": [
+          2,
+          2
+        ]
+      },
+      "assumptions": [
+        {
+          "kind": "constructible",
+          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it",
+          "basis": "harness"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result, equal in both versions",
+        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
+        "objects": [
+          "throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens"
+        ]
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+        "classes": 17,
+        "jdk": "25.0.5"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true).",
+        "witness": "recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true)"
+      }
+    },
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
+        "bytes": 2174
+      },
+      {
+        "path": "statement.java",
+        "sha256": "453464553c6dbe62296769a4773cc6804e2dac0b79b0bc710e766c1297200df3",
+        "bytes": 3364
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "c23400027cf7b9e7caf69e8223680ab91e9e3f0a8299059aae552e30c9503de5",
+        "bytes": 835
+      }
+    ]
+  }
+}

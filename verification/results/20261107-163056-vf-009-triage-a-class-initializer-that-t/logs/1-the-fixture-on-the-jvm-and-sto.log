@@ -1,0 +1,88 @@
+== java -ea F
+all hold, runs 4
+exit 0
+== jbmc F --function F.wrapped 
+[java::F.wrapped:()V.assertion.1] line 25 assertion at file F.java line 25 function java::F.wrapped:()V bytecode-index 21: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.wrapped --throw-runtime-exceptions
+[java::F.wrapped:()V.assertion.1] line 25 assertion at file F.java line 25 function java::F.wrapped:()V bytecode-index 21: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.wrapped --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+[java::F.wrapped:()V.assertion.1] line 25 assertion at file F.java line 25 function java::F.wrapped:()V bytecode-index 21: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.erroneous 
+[java::F.erroneous:()V.1] line 30 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.erroneous --throw-runtime-exceptions
+[java::F.erroneous:()V.1] line 30 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.erroneous --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+[java::F.erroneous:()V.1] line 30 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.once 
+[java::F.once:()V.1] line 38 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.once --throw-runtime-exceptions
+[java::F.once:()V.1] line 38 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.once --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+[java::F.once:()V.1] line 38 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.error 
+VERIFICATION SUCCESSFUL
+exit 0
+== jbmc F --function F.error --throw-runtime-exceptions
+VERIFICATION SUCCESSFUL
+exit 0
+== jbmc F --function F.error --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+VERIFICATION SUCCESSFUL
+exit 0
+== jbmc F --function F.enumWrapped 
+[java::F$Divide.<init>:(Ljava/lang/String;II)V.integer-divide-by-zero.1] line 18 Denominator should be nonzero: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.enumWrapped --throw-runtime-exceptions
+[java::F.enumWrapped:()V.assertion.1] line 55 assertion at file F.java line 55 function java::F.enumWrapped:()V bytecode-index 19: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.enumWrapped --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+[java::F.enumWrapped:()V.assertion.1] line 55 assertion at file F.java line 55 function java::F.enumWrapped:()V bytecode-index 19: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.boomTwice 
+[java::F.boomTwice:()V.1] line 60 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.boomTwice --throw-runtime-exceptions
+[java::F.boomTwice:()V.1] line 60 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.boomTwice --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+[java::F.boomTwice:()V.1] line 60 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.enumBroken 
+[java::F$Broken.<init>:(Ljava/lang/String;II)V.integer-divide-by-zero.1] line 19 Denominator should be nonzero: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.enumBroken --throw-runtime-exceptions
+[java::F.enumBroken:()V.1] line 68 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.enumBroken --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical
+[java::F.enumBroken:()V.1] line 68 no uncaught exception: FAILURE
+VERIFICATION FAILED
+exit 10
+== jbmc F --function F.boomTwice --throw-runtime-exceptions --show-goto-functions
+exit 0
+== jbmc F --function F.enumBroken --throw-runtime-exceptions --show-goto-functions
+exit 0

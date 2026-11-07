@@ -18,6 +18,23 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-020: a passed job's `changes.diff` (1.2 MiB) is not committed, because jj refuses to snapshot new files over 1 MiB
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`, job `20261107-163056-vf-009-triage-a-class-initializer-that-t` (at `2c352d909f21`),
+  collected in the commit that records the run of 2026-11-07 (VF-009's triage).
+- **Found**: `collect` wrote `verification/results/20261107-163056-vf-009-triage-a-class-initializer-that-t/changes.diff`
+  (1,234,232 bytes: the diff of the 168 output files, most of them `lib/target/vf009` class files and goto listings).
+  jj's `snapshot.max-new-file-size` is 1 MiB, so every `jj` command prints "Refused to snapshot some files" and the
+  file is left out of the commit. The rest of the result (`result.json`, the logs) is committed. I did not raise the
+  limit or edit the result.
+- **Needs**: a decision by the user: raise the limit for this repository (`jj config set --repo
+  snapshot.max-new-file-size 2097152`), or have `collect` leave out a `changes.diff` over the limit (or compress it),
+  or have jobs keep their scratch output out of the declared outputs. The job's `outputs` listed `lib/target/vf009`,
+  which is build output; a submitter's call for the jobs that follow.
+- **Closes when**: `jj st` shows no refused file after a collect, or the result is recorded as lacking its diff on
+  purpose.
+
 ### VF-019: under `auto --confirm`, the six nullable and may-alias claims of H2 get "no engine wrote a harness", which the conformance test counts as a disagreement
 
 - **Status**: open
@@ -71,7 +88,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-017: examples 150, 151 and 152 fail on the result schema, which has no `object` parameter kind
 
-- **Status**: open
+- **Status**: closed by jobs `20261107-164043-example-150-crosscut-retry-throttle-a-re`, `-151-` and `-152-` (at
+  `e7270fd85890`, 2026-11-07, `vm-1`): each passed in about 6 s with `example:as-expected`, 5 outputs applied each.
+  The schema fix landed, and the three results are recorded.
 - **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-064330-example-150-crosscut-retry-throttle-a-re`,
   `20261107-064331-example-151-…` and `20261107-064331-example-152-…`, at `224431e7bb68` (heap stream).
 - **Found**: each fails within 5 s, after `jvmcontract equivalence` exits 0, as `build.py` validates the result:
@@ -103,6 +122,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
 - **Closes when**: both jobs, resubmitted after the fix, pass with their expected verdicts: 160 verified with
   `lastAfter` shared, 161 a violation with no helper shared.
+- **Seen again** 2026-11-07 on `vm-1`, in jobs `20261107-163050-example-160-a-changed-refill-helper-prov` and
+  `20261107-163051-example-161-a-refill-helper-aligned-to-t` (at `d32ddc64d1a4`, resubmitted by the cleanup loop's
+  examples stream). The subject check is fixed: the patch applies, the crosscut tests run, and `jvmcontract
+  equivalence` runs (0.4 s; it exited 0 for 160 and 1 for 161, which for 161 is the expected violation). Both then
+  fail in `build.py` after the proof, validating the result: `result.json: Additional properties are not allowed
+  ('proofCache' was unexpected)`. `claim_scope` (`examples/tools/build.py:795`, from `85ee8db`) writes
+  `scope.proofCache` for a B9 proof with the proof cache, but `examples/schema/result.schema.json` (statement's
+  `scope`, around line 1161) doesn't list it, and is unchanged at the current `main`. **Needs**: the schema allows
+  `proofCache` in a claim's scope, with a `test_build.py` case validating such a result; the cleanup loop's examples
+  stream. Then resubmit both jobs unchanged.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 
@@ -208,6 +237,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   item 8).
 - **Closes when**: the reproducer gives the same answer in 8 of 8 runs, and a job runs the integration tests with no
   failure.
+- **Reproducer before the fix, 2026-11-07 on `vm-1`** (28 CPUs, x86_64), job
+  `20261107-163057-vf-010-s-reproducer-before-the-fix-prici` at `c307e721bdc3`: it did **not** reproduce here. All 8
+  runs found the violation in 3.1 to 4.8 s with identical numbers (5 paths, 13 solver calls, 120989 variables, 412482
+  clauses). The job's step exits 1 when all 8 agree, which it expected to be the other way round, so the job is
+  recorded as failed; it is not a verdict on any code. So `vm-1` can't show the problem before the fix, and so can't
+  show it gone after: the 2 of 8 runs that timed out were on `cvm` (a slower machine). Whoever fixes it should check
+  the fix by the probe budget no longer reading the clock (a code check, or a count of solver calls that is the same
+  across the runs), and run the reproducer on `cvm` for the before/after.
 
 ### VF-009: `auto --confirm` disagrees with the JVM on `boomTwice` and `enumBroken`: JBMC's refutation at `n=0` is spurious, the own checker is right
 
@@ -230,6 +267,18 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   so this finding is all that is left of the engine-priorities brief's "conformance job for the native stream's step 3
   cases" (Next, item 8).
 - **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 2 pass.
+- **Triage run** 2026-11-07 on `vm-1`: job `20261107-163056-vf-009-triage-a-class-initializer-that-t` (at
+  `2c352d909f21`, passed, 2m25s; it is evidence, it closes nothing). Step 1, the fixture
+  `lib/tests/fixtures/jbmc-defects/F.java`: on the JVM `java -ea` prints `all hold, runs 4`. Stock JBMC 6.11.0 gives
+  `VERIFICATION FAILED` on `wrapped`, `erroneous`, `once`, `enumWrapped`, `boomTwice` and `enumBroken`, and
+  `VERIFICATION SUCCESSFUL` on `error`, alike with no flags, with `--throw-runtime-exceptions`, and with the flags
+  jvmcontract passes. So the hypothesis holds: the divergence is in JBMC, not in jvmcontract's adapter. JBMC doesn't
+  wrap a throw in a class initializer in `ExceptionInInitializerError` and doesn't mark the class erroneous
+  (`NoClassDefFoundError` at its next use). Step 2, the corpus's two methods through `jvmcontract prove`: under
+  `--engine jbmc` and `auto --confirm` both report a counterexample at `n=0` that "does not reproduce" in the
+  interpreter, and `--confirm` reports the engines disagreeing, as in the entry. The log has the goto listings and each
+  run's work directory. **Needs** (now more specific): refuse a target whose reachable code runs a class
+  initializer that can throw (the preflight), or model the wrapping; a candidate for `jbmc-upstream.md`.
 - **Seen again** 2026-11-07, unchanged (the same 8 disagreements), in job
   `20261107-043420-nullable-and-one-array-parameters-in-pro`, beside VF-019's 12. Taken by the cleanup loop's jbmc
   stream ([`cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md), J1).
@@ -249,6 +298,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md#progress) (the entry of
   2026-11-06 on `vm-1`), and the notes of examples 147, 148 and 149.
 - **Closes when**: the three jobs, resubmitted after the fix, pass with each example's expected verdict.
+- **Seen again** 2026-11-07 on `vm-1`, in jobs `20261107-163046-example-147-b11-advised-contracts-a-cont`,
+  `20261107-163047-example-148-b11-advised-contracts-full-j` and `20261107-163049-example-149-b11-contract-library-full-ji`
+  (at `d32ddc64d1a4`, resubmitted unchanged by the cleanup loop's examples stream after the `excerpts()` fix). The
+  subject check is no longer what stops them. Now each fails in 0.2 s at "apply the patch": `git apply` reports
+  `crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java:19: patch does not apply`. The three patches add
+  their test classes to the suite list in `Tests.java`, whose context has since changed (the list gained entries
+  with examples 150 to 152 and the later crosscut examples). I checked with `git apply --check` that they don't
+  apply to the current tree either, so a rerun alone won't help. **Needs**: regenerate the three `change.patch` files
+  against the current crosscut app (the examples stream; the patches also change `properties.contract` and
+  `Jitter.java`, which should be unaffected), then resubmit. VF-002 stays open.
 
 ### VF-001: JBMC verdicts the JVM contradicts, passed through by `--engine auto`
 

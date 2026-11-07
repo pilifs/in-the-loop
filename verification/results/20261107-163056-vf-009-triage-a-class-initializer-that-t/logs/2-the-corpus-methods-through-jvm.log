@@ -1,0 +1,80 @@
+   Compiling libc v0.2.191
+   Compiling find-msvc-tools v0.1.15
+   Compiling shlex v2.0.1
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling object v0.39.1
+   Compiling jobserver v0.1.35
+   Compiling memchr v2.8.3
+   Compiling cc v1.10.0
+   Compiling syn v3.0.9
+   Compiling ar_archive_writer v0.5.3
+   Compiling serde_core v1.0.229
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling psm v0.1.32
+   Compiling cfg-if v1.0.5
+   Compiling zmij v1.0.23
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling crc32fast v1.5.3
+   Compiling anstream v1.0.0
+   Compiling aho-corasick v1.1.5
+   Compiling cadical v0.1.16
+   Compiling stacker v0.1.25
+   Compiling simd-adler32 v0.3.10
+   Compiling heck v0.5.0
+   Compiling adler2 v2.0.1
+   Compiling strsim v0.11.1
+   Compiling clap_lex v1.1.1
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling regex-syntax v0.8.11
+   Compiling clap_builder v4.6.7
+   Compiling regex-automata v0.4.18
+   Compiling miniz_oxide v0.9.1
+   Compiling clap_derive v4.6.7
+   Compiling serde_derive v1.0.229
+   Compiling itoa v1.0.18
+   Compiling flate2 v1.1.10
+   Compiling clap v4.6.7
+   Compiling regex v1.13.1
+   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-163056-vf-009-triage-a-class-initializer-that-t/lib)
+    Finished `release` profile [optimized] target(s) in 2m 22s
+== prove conformance.Conformance#boomTwice --assert "result == 2" --engine jbmc --gaps strict 
+✗ conformance.Conformance#boomTwice cannot be verified: JBMC's counterexample boomTwice(n=0) does not reproduce: the method returns 2 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value
+exit 1
+== prove conformance.Conformance#boomTwice --assert "result == 2" --engine auto --gaps strict --confirm
+✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
+  boomTwice(n=0)
+    outcome in the interpreter: 2, where the harness holds, as the own checker says
+
+Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
+exit 1
+== prove conformance.Conformance#boomTwice --assert "result == 2" --engine auto --gaps assume --confirm
+✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
+  boomTwice(n=0)
+    outcome in the interpreter: 2, where the harness holds, as the own checker says
+
+Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
+exit 1
+== prove conformance.Conformance#enumBroken --assert "result == 12" --engine jbmc --gaps strict 
+✗ conformance.Conformance#enumBroken cannot be verified: JBMC's counterexample enumBroken(n=0) does not reproduce: the method returns 12 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value
+exit 1
+== prove conformance.Conformance#enumBroken --assert "result == 12" --engine auto --gaps strict --confirm
+✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
+  enumBroken(n=0)
+    outcome in the interpreter: 12, where the harness holds, as the own checker says
+
+Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
+exit 1
+== prove conformance.Conformance#enumBroken --assert "result == 12" --engine auto --gaps assume --confirm
+✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
+  enumBroken(n=0)
+    outcome in the interpreter: 12, where the harness holds, as the own checker says
+
+Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
+exit 1

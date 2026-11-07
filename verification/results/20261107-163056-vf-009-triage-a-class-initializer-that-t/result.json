@@ -1,0 +1,1837 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-163056-vf-009-triage-a-class-initializer-that-t",
+  "title": "VF-009 triage: a class initializer that throws, on the JVM, in stock JBMC 6.11.0 and through jvmcontract's JBMC adapter",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 2m25s, peak 1.5 GiB (estimated 12m00s, 2.0 GiB); 168 output file(s) changed; signals: jbmc:proved×3; jbmc:refuted×18; jvmcontract:fails×6",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-163056-vf-009-triage-a-class-initializer-that-t.json",
+    "sha256": "e719a79532b2992433a9b2ba0928a46da4c8ffb60d1f5961fc6462bb1f4bd6a0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-163056-vf-009-triage-a-class-initializer-that-t",
+      "title": "VF-009 triage: a class initializer that throws, on the JVM, in stock JBMC 6.11.0 and through jvmcontract's JBMC adapter",
+      "description": "Triage for VF-009 (verification/findings.md), item J1 of llm-dlc/loops/cleanup-jbmc.md; it closes nothing. Under auto --confirm, JBMC 6.11.0 refutes conformance boomTwice (result == 2) and enumBroken (result == 12) at n=0, where the JVM and the tool's own checker hold (job 20261107-010728, step 2). Both methods run a class initializer that throws; the JVM wraps the throw in ExceptionInInitializerError (JVMS 5.5 step 11) and raises NoClassDefFoundError at the class's next use (step 5). JBMC's goto program sets clinit_already_run before it calls <clinit>, as the preflight's test fixtures show, so the hypothesis is that JBMC neither wraps the exception nor marks the class erroneous. Step 1 runs the new fixture lib/tests/fixtures/jbmc-defects/F.java, one void method per part of the semantics (wrapped, erroneous, once, error, enumWrapped, and copies of boomTwice and enumBroken), on the JVM (java -ea, where every assertion holds) and on stock JBMC with no flags, with --throw-runtime-exceptions alone, and with the flags jvmcontract passes; then the goto listings of the two copies. Step 2 runs the corpus's own two methods through jvmcontract prove under --engine jbmc and auto --confirm, keeping each run's work directory (JBMC's JSON output with its trace in jbmc.log), to tell JBMC's semantics from the adapter's reading of the trace. Evidence, not a pass/fail check: a VERIFICATION FAILED is expected where JBMC differs from the JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/fixtures/jbmc-defects/F.java",
+          "lib/src/jbmc_gaps.rs"
+        ]
+      },
+      "expected": "Both steps exit 0. Step 1: java prints 'all hold, runs 4'. The hypothesis holds if JBMC fails wrapped, erroneous, once (or not, if it never reruns), enumWrapped, boomTwice and enumBroken under --throw-runtime-exceptions, and passes error; the log says which. Step 2: the prove log names JBMC's verdict and failed property for each run; the work directories keep JBMC's trace.",
+      "submitted": {
+        "at": "2026-11-07T16:30:56+00:00",
+        "session": "a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3",
+        "by": "an agent (claude-opus-5-5, cleanup-jbmc stream)"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "timeout": "45m",
+        "notes": "a clean release build of lib (a few minutes at 8 jobs), 21 JBMC runs on a 7-method fixture (seconds each), 6 jvmcontract proofs of one-line claims (job -010728 took about 20 min for 332 runs)"
+      },
+      "steps": [
+        {
+          "name": "the fixture on the JVM and stock JBMC",
+          "run": "set -o pipefail; d=lib/target/vf009; rm -rf $d; mkdir -p $d/f && javac -g -d $d/f lib/tests/fixtures/jbmc-defects/F.java && (echo \"== java -ea F\"; java -ea -cp $d/f F; echo \"exit $?\"; for f in wrapped erroneous once error enumWrapped boomTwice enumBroken; do for flags in \"\" \"--throw-runtime-exceptions\" \"--trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical\"; do echo \"== jbmc F --function F.$f $flags\"; timeout 300 jbmc F --function F.$f --classpath $d/f $flags; echo \"exit $?\"; done; done; for f in boomTwice enumBroken; do echo \"== jbmc F --function F.$f --throw-runtime-exceptions --show-goto-functions\"; timeout 120 jbmc F --function F.$f --classpath $d/f --throw-runtime-exceptions --show-goto-functions; echo \"exit $?\"; done) > $d/f.log 2>&1; grep -E \"^(==|exit|VERIFICATION|\\\\[.*\\\\] .*FAILURE|all hold)\" $d/f.log",
+          "cwd": "."
+        },
+        {
+          "name": "the corpus methods through jvmcontract",
+          "run": "set -o pipefail; cd lib && cargo build --release && d=target/vf009 && mkdir -p $d/c && javac -parameters -g -proc:none -d $d/c tests/conformance/conformance/Conformance.java && (for m in \"boomTwice|result == 2\" \"enumBroken|result == 12\"; do name=${m%%|*}; claim=${m#*|}; for mode in \"jbmc strict\" \"auto strict confirm\" \"auto assume confirm\"; do set -- $mode; extra=; [ \"$3\" = confirm ] && extra=--confirm; echo \"== prove conformance.Conformance#$name --assert \\\"$claim\\\" --engine $1 --gaps $2 $extra\"; JVMCONTRACT_JBMC_MEMORY_MB=2048 ./target/release/jvmcontract prove \"conformance.Conformance#$name\" --classes $d/c --assert \"$claim\" --engine $1 --gaps $2 $extra --work $d/work/$name-$1-$2$extra; echo \"exit $?\"; done; done) 2>&1 | tee $d/prove.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/vf009/f.log",
+        "lib/target/vf009/prove.log",
+        "lib/target/vf009/work"
+      ]
+    }
+  },
+  "sourceCommit": "2c352d909f2136cd1cb59279a580cceaad8aec05",
+  "startedAt": "2026-11-07T16:32:05+00:00",
+  "finishedAt": "2026-11-07T16:34:32+00:00",
+  "wallSeconds": 147.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4047303,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 21474836480,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": "a clean release build of lib (a few minutes at 8 jobs), 21 JBMC runs on a 7-method fixture (seconds each), 6 jvmcontract proofs of one-line claims (job -010728 took about 20 min for 332 runs)"
+  },
+  "usage": {
+    "peakMemoryBytes": 1623367680,
+    "wallSeconds": 145.7,
+    "cpuSeconds": 178.4,
+    "memoryOfEstimate": 0.76,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the fixture on the JVM and stock JBMC",
+      "run": "set -o pipefail; d=lib/target/vf009; rm -rf $d; mkdir -p $d/f && javac -g -d $d/f lib/tests/fixtures/jbmc-defects/F.java && (echo \"== java -ea F\"; java -ea -cp $d/f F; echo \"exit $?\"; for f in wrapped erroneous once error enumWrapped boomTwice enumBroken; do for flags in \"\" \"--throw-runtime-exceptions\" \"--trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical\"; do echo \"== jbmc F --function F.$f $flags\"; timeout 300 jbmc F --function F.$f --classpath $d/f $flags; echo \"exit $?\"; done; done; for f in boomTwice enumBroken; do echo \"== jbmc F --function F.$f --throw-runtime-exceptions --show-goto-functions\"; timeout 120 jbmc F --function F.$f --classpath $d/f --throw-runtime-exceptions --show-goto-functions; echo \"exit $?\"; done) > $d/f.log 2>&1; grep -E \"^(==|exit|VERIFICATION|\\\\[.*\\\\] .*FAILURE|all hold)\" $d/f.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 0.802,
+      "cpuSeconds": 1.074,
+      "cpuThrottledSeconds": 0.06,
+      "peakMemoryBytes": 67608576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-fixture-on-the-jvm-and-sto.log",
+        "lines": 88,
+        "bytes": 4069,
+        "sha256": "cc7fe065e46536e2228df94cd1c05f574cff84d936643e927ecf8fecba42821f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jbmc:refuted": 18,
+        "jbmc:proved": 3
+      },
+      "signals": [
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 6,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 10,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 14,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 18,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 22,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 26,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 30,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 34,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 38,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "proved",
+          "line": 41,
+          "text": "VERIFICATION SUCCESSFUL",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "proved",
+          "line": 44,
+          "text": "VERIFICATION SUCCESSFUL",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "proved",
+          "line": 47,
+          "text": "VERIFICATION SUCCESSFUL",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 51,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 55,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 59,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 63,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 67,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 71,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 75,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 79,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        },
+        {
+          "tool": "jbmc",
+          "kind": "refuted",
+          "line": 83,
+          "text": "VERIFICATION FAILED",
+          "groups": []
+        }
+      ],
+      "tail": [
+        "== jbmc F --function F.enumWrapped ",
+        "[java::F$Divide.<init>:(Ljava/lang/String;II)V.integer-divide-by-zero.1] line 18 Denominator should be nonzero: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.enumWrapped --throw-runtime-exceptions",
+        "[java::F.enumWrapped:()V.assertion.1] line 55 assertion at file F.java line 55 function java::F.enumWrapped:()V bytecode-index 19: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.enumWrapped --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical",
+        "[java::F.enumWrapped:()V.assertion.1] line 55 assertion at file F.java line 55 function java::F.enumWrapped:()V bytecode-index 19: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.boomTwice ",
+        "[java::F.boomTwice:()V.1] line 60 no uncaught exception: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.boomTwice --throw-runtime-exceptions",
+        "[java::F.boomTwice:()V.1] line 60 no uncaught exception: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.boomTwice --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical",
+        "[java::F.boomTwice:()V.1] line 60 no uncaught exception: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.enumBroken ",
+        "[java::F$Broken.<init>:(Ljava/lang/String;II)V.integer-divide-by-zero.1] line 19 Denominator should be nonzero: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.enumBroken --throw-runtime-exceptions",
+        "[java::F.enumBroken:()V.1] line 68 no uncaught exception: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.enumBroken --trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical",
+        "[java::F.enumBroken:()V.1] line 68 no uncaught exception: FAILURE",
+        "VERIFICATION FAILED",
+        "exit 10",
+        "== jbmc F --function F.boomTwice --throw-runtime-exceptions --show-goto-functions",
+        "exit 0",
+        "== jbmc F --function F.enumBroken --throw-runtime-exceptions --show-goto-functions",
+        "exit 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the corpus methods through jvmcontract",
+      "run": "set -o pipefail; cd lib && cargo build --release && d=target/vf009 && mkdir -p $d/c && javac -parameters -g -proc:none -d $d/c tests/conformance/conformance/Conformance.java && (for m in \"boomTwice|result == 2\" \"enumBroken|result == 12\"; do name=${m%%|*}; claim=${m#*|}; for mode in \"jbmc strict\" \"auto strict confirm\" \"auto assume confirm\"; do set -- $mode; extra=; [ \"$3\" = confirm ] && extra=--confirm; echo \"== prove conformance.Conformance#$name --assert \\\"$claim\\\" --engine $1 --gaps $2 $extra\"; JVMCONTRACT_JBMC_MEMORY_MB=2048 ./target/release/jvmcontract prove \"conformance.Conformance#$name\" --classes $d/c --assert \"$claim\" --engine $1 --gaps $2 $extra --work $d/work/$name-$1-$2$extra; echo \"exit $?\"; done; done) 2>&1 | tee $d/prove.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 144.911,
+      "cpuSeconds": 177.331,
+      "cpuThrottledSeconds": 0.887,
+      "peakMemoryBytes": 1623367680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-corpus-methods-through-jvm.log",
+        "lines": 80,
+        "bytes": 4933,
+        "sha256": "aef4d3b111d654bcdf5babcfb5d4ad88613aefd673c8318d036548ade52fa9fc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 6
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 48,
+          "text": "✗ conformance.Conformance#boomTwice cannot be verified: JBMC's counterexample boomTwice(n=0) does not reproduce: the method returns 2 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.",
+          "groups": [
+            "conformance.Conformance#boomTwice cannot be verified: JBMC's counterexample boomTwice(n=0) does not reproduce: the method returns 2 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 51,
+          "text": "✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+          "groups": [
+            "conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 58,
+          "text": "✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+          "groups": [
+            "conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 65,
+          "text": "✗ conformance.Conformance#enumBroken cannot be verified: JBMC's counterexample enumBroken(n=0) does not reproduce: the method returns 12 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond ja",
+          "groups": [
+            "conformance.Conformance#enumBroken cannot be verified: JBMC's counterexample enumBroken(n=0) does not reproduce: the method returns 12 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 68,
+          "text": "✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+          "groups": [
+            "conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 75,
+          "text": "✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+          "groups": [
+            "conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-163056-vf-009-triage-a-class-initializer-that-t/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 22s",
+        "== prove conformance.Conformance#boomTwice --assert \"result == 2\" --engine jbmc --gaps strict ",
+        "✗ conformance.Conformance#boomTwice cannot be verified: JBMC's counterexample boomTwice(n=0) does not reproduce: the method returns 2 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.",
+        "exit 1",
+        "== prove conformance.Conformance#boomTwice --assert \"result == 2\" --engine auto --gaps strict --confirm",
+        "✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+        "  boomTwice(n=0)",
+        "    outcome in the interpreter: 2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "exit 1",
+        "== prove conformance.Conformance#boomTwice --assert \"result == 2\" --engine auto --gaps assume --confirm",
+        "✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+        "  boomTwice(n=0)",
+        "    outcome in the interpreter: 2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "exit 1",
+        "== prove conformance.Conformance#enumBroken --assert \"result == 12\" --engine jbmc --gaps strict ",
+        "✗ conformance.Conformance#enumBroken cannot be verified: JBMC's counterexample enumBroken(n=0) does not reproduce: the method returns 12 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond ja",
+        "exit 1",
+        "== prove conformance.Conformance#enumBroken --assert \"result == 12\" --engine auto --gaps strict --confirm",
+        "✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+        "  enumBroken(n=0)",
+        "    outcome in the interpreter: 12, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "exit 1",
+        "== prove conformance.Conformance#enumBroken --assert \"result == 12\" --engine auto --gaps assume --confirm",
+        "✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on",
+        "  enumBroken(n=0)",
+        "    outcome in the interpreter: 12, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "exit 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/vf009/f.log",
+      "change": "added",
+      "bytes": 238105,
+      "sha256": "65b14efd24187a09cbef64a1b20c6c73896bbcb3e8b23fa7dd3f61d908e5248f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/prove.log",
+      "change": "added",
+      "bytes": 3389,
+      "sha256": "94ca08dd81310730438d7dc3c2532f05c7bbe07480a6d8e5ea54ea16ec066555",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/bmc.log",
+      "change": "added",
+      "bytes": 248,
+      "sha256": "5500307a08f436cf13dc44786c32267672cfd1bfd0eb601abaaaa916ee2a491f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1293,
+      "sha256": "1fdbd78ac17824b6f7639f4abd839d97d71e048fb42254944802f3460069e8f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1258,
+      "sha256": "c69c6060d5f2ac940402ab33211980e937e4bce1f758c60c1169fbde4958089b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jbmc-confirm.log",
+      "change": "added",
+      "bytes": 39032,
+      "sha256": "53eed358104012610bc025595e3b2bd84adb48e5ef453331f5911b35ac4c6e1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 86356,
+      "sha256": "b036e584b332a5938ad4cedcb82301204c72949e4c58ffaf2ebcab5632cfe132",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/bmc.log",
+      "change": "added",
+      "bytes": 248,
+      "sha256": "5500307a08f436cf13dc44786c32267672cfd1bfd0eb601abaaaa916ee2a491f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1293,
+      "sha256": "1fdbd78ac17824b6f7639f4abd839d97d71e048fb42254944802f3460069e8f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1258,
+      "sha256": "c69c6060d5f2ac940402ab33211980e937e4bce1f758c60c1169fbde4958089b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jbmc-confirm.log",
+      "change": "added",
+      "bytes": 39032,
+      "sha256": "097787c418425a4a4ea88218d5ffdc4a1781d85c66717321ed6c91a42007a6fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 86356,
+      "sha256": "b036e584b332a5938ad4cedcb82301204c72949e4c58ffaf2ebcab5632cfe132",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1293,
+      "sha256": "1fdbd78ac17824b6f7639f4abd839d97d71e048fb42254944802f3460069e8f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1258,
+      "sha256": "c69c6060d5f2ac940402ab33211980e937e4bce1f758c60c1169fbde4958089b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 86356,
+      "sha256": "b036e584b332a5938ad4cedcb82301204c72949e4c58ffaf2ebcab5632cfe132",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jbmc.log",
+      "change": "added",
+      "bytes": 39029,
+      "sha256": "2661823d6b9da9d37653ba8b37c8cf59293711fbe90b13faa38a1cc9c2a8c0d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/bmc.log",
+      "change": "added",
+      "bytes": 248,
+      "sha256": "5500307a08f436cf13dc44786c32267672cfd1bfd0eb601abaaaa916ee2a491f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1295,
+      "sha256": "9ebe13c35cc8f4057a72315c97e8a8b3b2744d360e95752a1bc1aa77358176df",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1260,
+      "sha256": "31a19c37de32d675a3650b251c7f2eb00cc2eb8ebecea0359d84d22a7bb6d296",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jbmc-confirm.log",
+      "change": "added",
+      "bytes": 60864,
+      "sha256": "a9d4062418972107fdedb933e5b6cfcb3742f1fe669cb3445df9ea1990c798cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 128389,
+      "sha256": "ef1b0e8761b3a0d0cb23b66456eb49cb384daa712e6e66158af332b2a0948e61",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/bmc.log",
+      "change": "added",
+      "bytes": 248,
+      "sha256": "5500307a08f436cf13dc44786c32267672cfd1bfd0eb601abaaaa916ee2a491f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1295,
+      "sha256": "9ebe13c35cc8f4057a72315c97e8a8b3b2744d360e95752a1bc1aa77358176df",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1260,
+      "sha256": "31a19c37de32d675a3650b251c7f2eb00cc2eb8ebecea0359d84d22a7bb6d296",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jbmc-confirm.log",
+      "change": "added",
+      "bytes": 60865,
+      "sha256": "2ee6a5e81c2968a8e2e302294bea89f2644ea9fbc5a016c76420904b06768d96",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 128389,
+      "sha256": "ef1b0e8761b3a0d0cb23b66456eb49cb384daa712e6e66158af332b2a0948e61",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1295,
+      "sha256": "9ebe13c35cc8f4057a72315c97e8a8b3b2744d360e95752a1bc1aa77358176df",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1260,
+      "sha256": "31a19c37de32d675a3650b251c7f2eb00cc2eb8ebecea0359d84d22a7bb6d296",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 128389,
+      "sha256": "ef1b0e8761b3a0d0cb23b66456eb49cb384daa712e6e66158af332b2a0948e61",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jbmc.log",
+      "change": "added",
+      "bytes": 60865,
+      "sha256": "ffb4c3b61e4045bcc41dd7b58ae15e15ed8b5509397b6e45926c7d9eb376efe2",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T16:42:08+00:00",
+    "applied": [
+      "lib/target/vf009/f.log",
+      "lib/target/vf009/prove.log",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/bmc.log",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/harness/PropertyHarness.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/harness/PropertyHarness.java",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jbmc-confirm.log",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jbmc-goto.txt",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Byte.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Integer.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Long.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Math.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/Short.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/jdk/java/lang/StrictMath.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Character.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Enum.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Long$LongCache.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/Charset.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/ImmutableCollections.class",
+      "lib/target/vf009/work/boomTwice-auto-assume--confirm/models/java/util/List.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/bmc.log",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/harness/PropertyHarness.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/harness/PropertyHarness.java",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jbmc-confirm.log",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jbmc-goto.txt",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Byte.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Integer.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Long.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Math.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/Short.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/jdk/java/lang/StrictMath.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Character.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Enum.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Long$LongCache.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/Charset.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/ImmutableCollections.class",
+      "lib/target/vf009/work/boomTwice-auto-strict--confirm/models/java/util/List.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/harness/PropertyHarness.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/harness/PropertyHarness.java",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jbmc-goto.txt",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jbmc.log",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Byte.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Integer.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Long.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Math.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/Short.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/jdk/java/lang/StrictMath.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Character.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Enum.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Long$LongCache.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/Charset.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/ImmutableCollections.class",
+      "lib/target/vf009/work/boomTwice-jbmc-strict/models/java/util/List.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/bmc.log",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/harness/PropertyHarness.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/harness/PropertyHarness.java",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jbmc-confirm.log",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jbmc-goto.txt",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Byte.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Integer.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Long.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Math.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/Short.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/jdk/java/lang/StrictMath.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Character.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Enum.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Long$LongCache.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/Charset.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/ImmutableCollections.class",
+      "lib/target/vf009/work/enumBroken-auto-assume--confirm/models/java/util/List.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/bmc.log",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/harness/PropertyHarness.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/harness/PropertyHarness.java",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jbmc-confirm.log",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jbmc-goto.txt",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Byte.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Integer.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Long.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Math.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/Short.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/jdk/java/lang/StrictMath.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Character.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Enum.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Long$LongCache.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/Charset.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/ImmutableCollections.class",
+      "lib/target/vf009/work/enumBroken-auto-strict--confirm/models/java/util/List.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/harness/PropertyHarness.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/harness/PropertyHarness.java",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jbmc-goto.txt",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jbmc.log",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Byte.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Integer.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Long.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Math.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/Short.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/jdk/java/lang/StrictMath.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Byte$ByteCache.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Character.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Enum.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Integer$IntegerCache.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Long$LongCache.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/lang/Short$ShortCache.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/Charset.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/IllegalCharsetNameException.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/StandardCharsets$Standard.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/StandardCharsets.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/nio/charset/UnsupportedCharsetException.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$List12.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$ListItr.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections$ListN.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/ImmutableCollections.class",
+      "lib/target/vf009/work/enumBroken-jbmc-strict/models/java/util/List.class"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

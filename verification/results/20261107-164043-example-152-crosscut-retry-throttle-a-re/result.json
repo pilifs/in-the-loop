@@ -1,0 +1,236 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-164043-example-152-crosscut-retry-throttle-a-re",
+  "title": "Example 152: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker) (closes VF-017 when it passes)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.2s, peak 105.2 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 152 (B9)) was held back 5.1s by its 1-CPU quota in 6.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-164043-example-152-crosscut-retry-throttle-a-re.json",
+    "sha256": "c97a17c938c20f4f8c41c2a1c2722e90e3c331a005cfad8dcafd33ae7a6e0723",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-164043-example-152-crosscut-retry-throttle-a-re",
+      "title": "Example 152: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker) (closes VF-017 when it passes)",
+      "description": "Runs example 152 through build.py: a B9 regression proof by jvmcontract's own checker of Crosscut's RetryThrottling, whose Throttle parameter is made in the harness by its constructor from symbolic limits (step H2-H4 of llm-dlc/loops/foundations-heap.md). 150 is a correct rewrite of recorded, 151 the alias-to-copy defect in reconfigured, 152 a rewrite of recorded wrong only on drained throttles, which the constructor never makes. Checked inline on the same classes before submitting; the job records result.json and the page. Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-017: examples/schema/result.schema.json now allows a domain parameter of kind object, with the domain's mayAlias and inputObjects and the observations' objects and identities, which jvmcontract writes for an object made by its constructor. The earlier job failed as build.py validated its result: 'object' is not one of ['primitive', 'array', 'record']. Closes VF-017 in verification/findings.md when this and the other two pass with their expected verdicts; this one's is 152 verified within the domain its constructor makes.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "152"
+        ]
+      },
+      "expected": "verified, as 150 (the defect is only on drained throttles, outside the constructor-made domain): behaves as before on every input of constructor-made objects; existing tests passing",
+      "submitted": {
+        "at": "2026-11-07T16:40:43+00:00",
+        "by": "foundations-heap"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "example 152 (B9)",
+          "run": "python3 examples/tools/build.py 152",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ"
+      ],
+      "supersedes": "20261107-064331-example-152-crosscut-retry-throttle-a-re"
+    }
+  },
+  "sourceCommit": "e7270fd858905a69a215d667981075f9ff78e7a4",
+  "startedAt": "2026-11-07T16:42:29+00:00",
+  "finishedAt": "2026-11-07T16:42:36+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 30374,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 21474836480,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 110309376,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 6.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.211,
+      "cpuSeconds": 5.991,
+      "cpuThrottledSeconds": 5.135,
+      "peakMemoryBytes": 110309376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-152-b9.log",
+        "lines": 18,
+        "bytes": 812,
+        "sha256": "0d2ee3faeca5b334f118096ddcbb6f0138af0f0c7c19308c5b8ffe6957eeba1c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: verified (as expected)",
+          "groups": [
+            "152",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.3 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.2 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/README.md",
+      "change": "added",
+      "bytes": 17352,
+      "sha256": "b51e1040a685f2f95b7bb78b17b7b829aa4e3024516f9e83c25910959e0348e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.json",
+      "change": "added",
+      "bytes": 12518,
+      "sha256": "27f4f6fe5a625cd9cdc2fc7f41b9a6b384e1ec78bfc045c206e6f0228d6d132d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.sarif",
+      "change": "added",
+      "bytes": 2174,
+      "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/statement.java",
+      "change": "added",
+      "bytes": 3364,
+      "sha256": "453464553c6dbe62296769a4773cc6804e2dac0b79b0bc710e766c1297200df3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/verifier-output.txt",
+      "change": "added",
+      "bytes": 835,
+      "sha256": "4bb1c88af6fff80f9c4de205aaab2c255cb0c3f23e4732d565283b79f4e7afda",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T16:42:40+00:00",
+    "applied": [
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/README.md",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.json",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.sarif",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/statement.java",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "33ed1f9046abb0a4c091cce531f2c6d61ffba3e9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/33ed1f9046abb0a4c091cce531f2c6d61ffba3e9/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

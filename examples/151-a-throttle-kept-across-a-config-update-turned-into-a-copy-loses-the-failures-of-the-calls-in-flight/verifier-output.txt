@@ -1,0 +1,7 @@
+✗ Behaviour of net.terminalvalue.crosscut.retry.RetryThrottling#reconfigured changed:
+  reconfigured(throttle=new Throttle(new ThrottleLimits(1, 1)), limits=ThrottleLimits[maxTokens=1, tokenRatioMilli=1])
+    before: Throttle{limits=ThrottleLimits{maxTokens=1, tokenRatioMilli=1}, milliTokens=1000}, with result == throttle and result.limits == throttle.limits
+    after:  Throttle{limits=ThrottleLimits{maxTokens=1, tokenRatioMilli=1}, milliTokens=1000}, with result.limits == throttle.limits
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as reconfigured(throttle=new Throttle(new ThrottleLimits(20, 20)), limits=ThrottleLimits[maxTokens=20, tokenRatioMilli=20]), shrunk to the input above in 55 interpreter runs, replayed in the interpreter and run on a JVM (JDK 25.0.5), where the harness fails on it too; domain throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int))
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
