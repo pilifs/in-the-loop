@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 39, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 00:47 UTC |
-| Prompts | 1,010 |
-| Model calls | 9,838 |
-| Tool calls | 10,693 (228 failed) |
-| Compactions | 137 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 01:07 UTC |
+| Prompts | 1,017 |
+| Model calls | 9,903 |
+| Tool calls | 10,759 (228 failed) |
+| Compactions | 138 |
 | Subagents | 5 |
-| Tokens written | 12,681,088 |
-| Tokens read | 1,613,389,610 (97.9% from cache) |
-| Commits with a trace | 300 |
-| Log snapshots | 376 (1046.3 MB gzipped, 322 uploaded) |
+| Tokens written | 12,729,685 |
+| Tokens read | 1,621,338,077 (97.9% from cache) |
+| Commits with a trace | 301 |
+| Log snapshots | 377 (1047.1 MB gzipped, 322 uploaded) |
 
 ## Sessions
 
@@ -65,7 +65,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-06 20:48 UTC | [Next multi-stream loop draft](ae994066-d1ea-4620-b03e-176a07061175/summary.md) | ended | 51 min | `claude-opus-5-5` | 6 | 82 | 99 | 1 | 0 | 260,819 | 4 |
 | 2026-11-06 22:47 UTC | [6f7cf082-efef-4561-8de2-b54b3d27994f](6f7cf082-efef-4561-8de2-b54b3d27994f/summary.md) | ended | 1 h 6 min | `claude-sonnet-5-5` | 6 | 39 | 31 | 3 | 0 | 61,042 | 6 |
 | 2026-11-07 00:02 UTC | [6c5734d4-89ff-437e-bc66-c0e159c45d5c](6c5734d4-89ff-437e-bc66-c0e159c45d5c/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 11 | 11 | 0 | 0 | 43,862 | 1 |
-| 2026-11-07 00:11 UTC | [c2bd9df4-5f20-4312-95a4-3eb88a60e0cd](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | open | 35 min | `claude-opus-5-5` | 6 | 80 | 83 | 1 | 1 | 143,938 | 5 |
+| 2026-11-07 00:11 UTC | [c2bd9df4-5f20-4312-95a4-3eb88a60e0cd](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | open | 56 min | `claude-opus-5-5` | 13 | 145 | 149 | 1 | 2 | 164,973 | 6 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -113,18 +113,18 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`ae994066`](ae994066-d1ea-4620-b03e-176a07061175/summary.md) | 107,036 | 176 | 228,635 | 13,610,345 | 98.3% | 129 |
 | [`6f7cf082`](6f7cf082-efef-4561-8de2-b54b3d27994f/summary.md) | 8,230 | 92 | 49,658 | 1,506,307 | 96.8% | 189 |
 | [`6c5734d4`](6c5734d4-89ff-437e-bc66-c0e159c45d5c/summary.md) | 4,054 | 22 | 30,743 | 362,503 | 92.2% | 97 |
-| [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | 32,880 | 160 | 208,916 | 7,422,738 | 97.3% | 232 |
+| [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | 81,477 | 296 | 364,536 | 15,215,449 | 97.7% | 191 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 9,347 | 87.4% | 39 |
-| `Edit` | 451 | 4.2% | 20 |
-| `Read` | 372 | 3.5% | 21 |
+| `Bash` | 9,404 | 87.4% | 39 |
+| `Edit` | 454 | 4.2% | 20 |
+| `Read` | 375 | 3.5% | 21 |
 | `Write` | 334 | 3.1% | 17 |
-| `ToolSearch` | 68 | 0.6% | 16 |
-| `Monitor` | 35 | 0.3% | 8 |
+| `ToolSearch` | 69 | 0.6% | 17 |
+| `Monitor` | 37 | 0.3% | 9 |
 | `WebFetch` | 26 | 0.2% | 6 |
 | `AskUserQuestion` | 23 | 0.2% | 6 |
 | `TaskStop` | 15 | 0.1% | 6 |
@@ -441,6 +441,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 298 | change `pkyqqotr` | Merge the engines-jbmc and engines-native streams | [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) ([log](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)) |
 | 299 | change `qvtplyrr` | Fold the engine streams' Progress into the engine-priorities brief | [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) ([log](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29.jsonl.gz)) |
 | 300 | change `xrrxwxny` | Take the contract library's JDK 25.0.5 records from job 20261106-203501 | [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) ([log](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288.jsonl.gz)) |
+| 301 | change `pkuyvwwp` | JBMC runs class initializers the JVM does not: the preflight names them as extra-initializer and refuses a JBMC proof through one (verification pending) | [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) ([log](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986.jsonl.gz)) |
 
 ## Logs
 
@@ -486,7 +487,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`ae994066`](ae994066-d1ea-4620-b03e-176a07061175/summary.md) | 4 | 0 | 1.3 MB | `350f90610005`, not uploaded |
 | [`6f7cf082`](6f7cf082-efef-4561-8de2-b54b3d27994f/summary.md) | 2 | 0 | 0.2 MB | `f4c8c10ddb93`, not uploaded |
 | [`6c5734d4`](6c5734d4-89ff-437e-bc66-c0e159c45d5c/summary.md) | 2 | 0 | 0.2 MB | `b110c1620fe0`, not uploaded |
-| [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | 3 | 0 | 1.0 MB | `15e0a1997b60`, not uploaded |
+| [`c2bd9df4`](c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/summary.md) | 4 | 0 | 1.7 MB | `ac31a9e8a49b`, not uploaded |
 
 ## Session notes
 

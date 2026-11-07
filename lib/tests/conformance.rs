@@ -117,8 +117,10 @@ fn corpus() -> Vec<Case> {
         Case::new("constructed", &[("3", "returns 6")]).holds(None, "result == n + 3", &[], V).refuted(None, "result == n + 1", &[], X),
         Case::new("superFirst", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 21", &[], X),
         Case::new("cycle", &[("3", "returns 5")]).holds(None, "result == n + 2", &[], V).refuted(None, "result == n + 1", &[], X),
+        // JBMC 6.11.0 initializes Sub for a field Holder declares, and Bare, a superinterface with no default method,
+        // so it proved the second claim of each (tests/fixtures/jbmc-defects).
         Case::new("declaring", &[("3", "returns 10")]).holds(None, "result == n + 7", &[], V).refuted(None, "result == n + 107", &[], X),
-        Case::new("defaults", &[("3", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 34", &[], X),
+        Case::new("defaults", &[("3", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 34", &[], X).refuted(None, "result == 43", &[], X),
         Case::new("fatal", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): the calls lib/models models for

@@ -82,6 +82,10 @@ pub fn parse_goto(text: &str) -> Program {
         let Some((_, calls, at)) = current.as_mut() else { continue };
         let t = l.trim_start();
         if let Some(comment) = t.strip_prefix("// ") {
+            // `// Labels: pc0` names the labels of the instruction that follows, which keeps its location.
+            if comment.starts_with("Labels:") {
+                continue;
+            }
             bci = after_word(comment, "bytecode-index").and_then(|v| v.parse().ok());
             line = after_word(comment, "line").and_then(|v| v.parse().ok());
             continue;
@@ -172,7 +176,7 @@ pub struct Found {
 /// no bytecode for, which a statement could name as an assumption, but code it has and translates wrongly: a
 /// counterexample that does not reproduce, or a proof of what the JVM does not do. The first two kinds let a runtime
 /// exception past the handler that catches it on the JVM, so the exception escapes the method; the third computes
-/// another value. Found from the bytecode of the functions the harness reaches
+/// another value; the fourth runs an initializer the JVM does not. Found from the bytecode of the functions the harness reaches
 /// (`tests/fixtures/jbmc-defects/README.md` has the reproducers):
 ///
 /// - `return-past-handler`: a `return` of a value whose computation may throw (an integer division or remainder,
@@ -188,9 +192,14 @@ pub struct Found {
 ///   `iushr`, `lshr` and `lushr` to a shift by the whole distance, so one of 32 or more, or a negative one, fills
 ///   the value with its sign or with zeros (`x >> 33` is `x >> 1` on the JVM, `0` or `-1` in JBMC). It lowers the
 ///   left shifts with the mask.
+/// - `extra-initializer`: a `new`, `getstatic`, `putstatic` or `invokestatic` at which JBMC runs the `<clinit>` of
+///   an application class the JVM does not initialize there (JVMS §5.5): JBMC initializes the class the instruction
+///   names, where the JVM initializes the class that declares the field or method (`Sub.value` declared by
+///   `Holder` initializes `Holder` alone), and with a class it initializes every superinterface, where the JVM
+///   initializes only those that declare a default method.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct Defect {
-    /// `return-past-handler`, `stubbed-handler` or `unmasked-shift`.
+    /// `return-past-handler`, `stubbed-handler`, `unmasked-shift` or `extra-initializer`.
     pub kind: &'static str,
     /// Where: the instruction that throws, or the handler's method and line.
     pub site: String,
@@ -324,6 +333,96 @@ fn unmasked_shifts(owner: &str, name: &str, code: &crate::classfile::Code, insns
     out
 }
 
+/// The application classes whose `<clinit>` JBMC runs from the initializer wrapper `wrapper`
+/// (`java::p.C.<clinit_wrapper>`), as its goto program says: the wrapper calls the class's own `<clinit>`, if it has
+/// one, after the wrappers of its superclass and of every superinterface.
+fn jbmc_initializes(program: &Program, cp: &ClassPath, wrapper: &str, out: &mut BTreeSet<String>, seen: &mut BTreeSet<String>) {
+    if !seen.insert(wrapper.to_string()) {
+        return;
+    }
+    let Some(f) = program.functions.get(wrapper) else { return };
+    for callee in f.calls.keys() {
+        if callee.ends_with(".<clinit_wrapper>") {
+            jbmc_initializes(program, cp, callee, out, seen);
+        } else if let Some((owner, _, _)) = method_of(callee).filter(|(_, n, d)| n == "<clinit>" && d == "()V") {
+            if !is_jdk_name(&owner) && cp.is_application(&owner) {
+                out.insert(owner);
+            }
+        }
+    }
+}
+
+/// The `extra-initializer` defects of a method: each `new`, `getstatic`, `putstatic` or `invokestatic` at which
+/// JBMC's goto program runs the initializer of an application class the JVM does not initialize there (JVMS §5.5).
+/// The JVM initializes the class that declares the resolved field or method, which may be a superclass or a
+/// superinterface of the one the instruction names, and with a class its superclasses and those of its
+/// superinterfaces that declare a default method. JBMC 6.11.0 initializes the class the instruction names, and with
+/// it every superinterface.
+fn extra_initializers(program: &Program, function: &Function, cp: &ClassPath, owner: &str, name: &str, class: &crate::classfile::ClassFile, code: &crate::classfile::Code, insns: &[(u32, Insn)]) -> Vec<Defect> {
+    let mut out = Vec::new();
+    for (pc, insn) in insns {
+        let (op, named, member, declaring) = match insn {
+            Insn::New(i) => {
+                let Ok(c) = class.pool.class_name(*i) else { continue };
+                ("new", c.to_string(), None, c.to_string())
+            }
+            Insn::GetStatic(i) | Insn::PutStatic(i) | Insn::InvokeStatic(i) => {
+                let Ok(m) = class.pool.member(*i) else { continue };
+                let declaring = match insn {
+                    Insn::InvokeStatic(_) => cp.bytecode_method(&m.owner, &m.name, &m.descriptor).map(|(cf, _)| cf.name.clone()),
+                    _ => cp.resolve_field(&m.owner, &m.name, &m.descriptor),
+                };
+                let op = match insn {
+                    Insn::GetStatic(_) => "getstatic",
+                    Insn::PutStatic(_) => "putstatic",
+                    _ => "invokestatic",
+                };
+                let declaring = declaring.unwrap_or_else(|| m.owner.clone());
+                (op, m.owner.clone(), Some(m.name.clone()), declaring)
+            }
+            _ => continue,
+        };
+        if is_jdk_name(&named) {
+            continue;
+        }
+        // What JBMC initializes there: the wrappers it calls at the instruction.
+        let mut jbmc = BTreeSet::new();
+        let mut seen = BTreeSet::new();
+        for text in function.at.get(pc).map(|t| t.lines()).into_iter().flatten() {
+            let Some(callee) = text.strip_prefix("CALL ") else { continue };
+            let callee = callee.split_once(" := ").map(|(_, f)| f).unwrap_or(callee);
+            if let Some(wrapper) = callee.strip_suffix("()").filter(|w| w.ends_with(".<clinit_wrapper>")) {
+                jbmc_initializes(program, cp, wrapper, &mut jbmc, &mut seen);
+            }
+        }
+        let jvm: BTreeSet<String> = gaps::initializers(cp, &declaring).into_iter().collect();
+        let extra: Vec<String> = jbmc.difference(&jvm).map(|c| c.replace('/', ".")).collect();
+        if extra.is_empty() {
+            continue;
+        }
+        let what = match &member {
+            Some(m) if declaring != named => format!(
+                "{op} {}.{m} resolves to a member {} declares, and the JVM initializes the declaring class, where JBMC initializes the class the instruction names",
+                named.replace('/', "."),
+                declaring.replace('/', ".")
+            ),
+            _ => format!(
+                "{op} initializes {}: the JVM initializes with a class its superclasses and only those of its superinterfaces that declare a default method, where JBMC initializes every superinterface",
+                named.replace('/', ".")
+            ),
+        };
+        out.push(Defect {
+            kind: "extra-initializer",
+            site: Site { class: owner.to_string(), method: name.to_string(), line: code.line_at(*pc) }.display(),
+            what: format!(
+                "{what} (JVMS §5.5), so JBMC runs the initializer of {} where the JVM does not: what it sets, or throws, is not what the JVM does",
+                extra.join(", ")
+            ),
+        });
+    }
+    out
+}
+
 /// Whether JBMC knows `class` extends `ancestor`: up the superclasses it has class files of, a stub's being unknown.
 fn jbmc_extends(cp: &ClassPath, class: &str, ancestor: &str) -> bool {
     let mut current = class.to_string();
@@ -414,6 +513,9 @@ pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, j
         let insns = code.instructions().unwrap_or_default();
         found.defects.extend(returns_past_handlers(jbmc_cp, &owner, &name, &class, code, &insns));
         found.defects.extend(unmasked_shifts(&owner, &name, code, &insns));
+        if let Some(function) = program.functions.get(id) {
+            found.defects.extend(extra_initializers(program, function, jbmc_cp, &owner, &name, &class, code, &insns));
+        }
         for (_, insn) in &insns {
             raised.extend(raises(insn).0.iter().map(|e| e.to_string()));
             if let Insn::New(i) = insn {
@@ -766,6 +868,7 @@ p.K.m(int) /* java::p.K.m:(I)I */
         // 3 file K.java line 7 function java::p.K.m:(I)I bytecode-index 2
         CALL java::java.util.ArrayList.<init>:(I)V(new_tmp0, arg0i)
         // 4 file K.java line 8 function java::p.K.m:(I)I bytecode-index 9
+        // Labels: pc9
         ASSIGN java::p.K.m:(I)I::lambda_new_tmp0 := { { "java::lambda_synthetic_class$p_K_m_(I)I$0" } }
         END_FUNCTION
 
@@ -883,6 +986,47 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         let found = find(&calling("shiftedUnsigned", "(JI)J"), "H", "shiftedUnsigned", &cp, None).unwrap();
         let what = &found.defects[0].what;
         assert!(what.contains("a long with >>>") && what.contains("0..63") && what.contains("low six bits") && what.contains("zeros"), "{what}");
+    }
+
+    /// A goto program whose harness `H.<method>` calls `p.D.<method>`, which calls the initializer wrapper `wrapper`
+    /// at bytecode index `bci`, with the wrappers of `p.D`'s nested classes as JBMC 6.11.0 lists them for the
+    /// fixture: a class's wrapper calls its superclass's and every superinterface's, then its own `<clinit>`.
+    fn initializing(method: &str, descriptor: &str, bci: u32, wrapper: &str) -> Program {
+        let mut text = format!(
+            "H.{method}() /* java::H.{method}:()V */\n        // 1 file H.java line 1 function java::H.{method}:()V bytecode-index 1\n        CALL java::p.D.{method}:{descriptor}(x)\n        END_FUNCTION\n\n^^^^^^^^\n\np.D.{method}() /* java::p.D.{method}:{descriptor} */\n        // 2 file p/D.java line 21 function java::p.D.{method}:{descriptor} bytecode-index {bci}\n        // Labels: pc{bci}\n        CALL java::p.D${wrapper}.<clinit_wrapper>()\n        END_FUNCTION\n\n^^^^^^^^\n\n"
+        );
+        for (class, calls) in [("Holder", vec!["CALL java::p.D$Holder.<clinit>:()V()"]), ("Sub", vec!["CALL java::p.D$Holder.<clinit_wrapper>()", "CALL java::p.D$Sub.<clinit>:()V()"]), ("Bare", vec!["CALL java::p.D$Bare.<clinit>:()V()"]), ("Greeter", vec!["CALL java::p.D$Greeter.<clinit>:()V()"]), ("Hello", vec!["CALL java::p.D$Bare.<clinit_wrapper>()", "     1: CALL java::p.D$Greeter.<clinit_wrapper>()"])] {
+            text.push_str(&format!("java::p.D${class}.<clinit_wrapper> /* java::p.D${class}.<clinit_wrapper> */\n        IF ¬(java::p.D${class}::clinit_already_run ⇔ false) THEN GOTO 1\n        ASSIGN java::p.D${class}::clinit_already_run := true\n"));
+            for call in calls {
+                text.push_str(&format!("        {}\n", call.trim_start()));
+            }
+            text.push_str("     1: END_FUNCTION\n\n^^^^^^^^\n\n");
+            if class != "Hello" {
+                text.push_str(&format!("p.D${class}.<clinit>() /* java::p.D${class}.<clinit>:()V */\n        END_FUNCTION\n\n^^^^^^^^\n\n"));
+            }
+        }
+        parse_goto(&text)
+    }
+
+    /// The reproducer of `conformance/declaring/2` and `defaults/3`, which JBMC proved where the JVM refutes them:
+    /// JBMC 6.11.0 initializes the class a static member is named through rather than the one that declares it, and a
+    /// class's superinterfaces that declare no default method. Each is named where the program reaches it; a
+    /// member named through its own class, and a `new`, which the JVM initializes as JBMC does, are not.
+    #[test]
+    fn the_preflight_names_an_initializer_jbmc_runs_where_the_jvm_does_not() {
+        let Some((_dir, cp)) = defect_fixture() else { return };
+        let defects = |method: &str, descriptor: &str, bci: u32, wrapper: &str| -> Vec<Defect> { find(&initializing(method, descriptor, bci, wrapper), "H", method, &cp, None).unwrap().defects };
+        let kinds = |d: Vec<Defect>| -> Vec<(String, String)> { d.iter().map(|d| (d.kind.to_string(), d.site.clone())).collect() };
+        assert_eq!(kinds(defects("declaring", "(I)I", 0, "Sub")), [("extra-initializer".to_string(), "p.D.declaring:21".to_string())]);
+        assert_eq!(kinds(defects("assigned", "(I)V", 1, "Sub")), [("extra-initializer".to_string(), "p.D.assigned:22".to_string())]);
+        assert_eq!(kinds(defects("inherited", "(I)I", 0, "Sub")), [("extra-initializer".to_string(), "p.D.inherited:23".to_string())]);
+        assert_eq!(kinds(defects("defaults", "(I)I", 1, "Hello")), [("extra-initializer".to_string(), "p.D.defaults:25".to_string())]);
+        assert_eq!(kinds(defects("direct", "(I)I", 0, "Holder")), []);
+        assert_eq!(kinds(defects("created", "(I)I", 0, "Sub")), []);
+        let what = &defects("declaring", "(I)I", 0, "Sub")[0].what;
+        assert!(what.contains("getstatic p.D$Sub.value resolves to a member p.D$Holder declares") && what.contains("initializer of p.D$Sub where the JVM does not"), "{what}");
+        let what = &defects("defaults", "(I)I", 1, "Hello")[0].what;
+        assert!(what.contains("invokestatic initializes p.D$Hello") && what.contains("initializer of p.D$Bare where") && !what.contains("Greeter"), "{what}");
     }
 
     /// A JBMC proof that reaches a defect is refused under every gap mode, assume too: the defect is not an

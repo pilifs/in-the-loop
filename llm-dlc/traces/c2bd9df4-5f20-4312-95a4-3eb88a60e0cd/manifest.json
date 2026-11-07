@@ -12,29 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T00:47:05.174Z",
-  "duration_seconds": 2124,
+  "ended": "2026-11-07T01:07:40.824Z",
+  "duration_seconds": 3360,
   "stats": {
-    "turns": 6,
-    "api_calls": 80,
-    "tool_calls": 83,
+    "turns": 13,
+    "api_calls": 145,
+    "tool_calls": 149,
     "tool_errors": 1,
-    "compactions": 1,
-    "peak_context_tokens": 143938,
+    "compactions": 2,
+    "peak_context_tokens": 164973,
     "usage": {
-      "input_tokens": 160,
-      "output_tokens": 32880,
-      "cache_read_input_tokens": 7422738,
-      "cache_creation_input_tokens": 208916
+      "input_tokens": 296,
+      "output_tokens": 81477,
+      "cache_read_input_tokens": 15215449,
+      "cache_creation_input_tokens": 364536
     }
   },
   "tools": {
-    "Bash": 75,
-    "Edit": 4,
-    "Read": 3,
-    "TaskStop": 1
+    "Bash": 132,
+    "Edit": 7,
+    "Read": 6,
+    "Monitor": 2,
+    "TaskStop": 1,
+    "ToolSearch": 1
   },
   "files_touched": [
+    "lib/src/jbmc_gaps.rs",
     "llm-dlc/loops/engine-priorities.md"
   ],
   "context_windows": [
@@ -55,24 +58,38 @@
     {
       "index": 1,
       "started": "2026-11-07T00:22:50.983Z",
-      "ended": "2026-11-07T00:47:05.174Z",
-      "turns": 4,
-      "api_calls": 24,
+      "ended": "2026-11-07T00:47:18.865Z",
+      "turns": 5,
+      "api_calls": 26,
       "usage": {
-        "input_tokens": 48,
-        "output_tokens": 8232,
-        "cache_read_input_tokens": 1644794,
-        "cache_creation_input_tokens": 78057
+        "input_tokens": 52,
+        "output_tokens": 9112,
+        "cache_read_input_tokens": 1829166,
+        "cache_creation_input_tokens": 81783
       },
-      "peak_context_tokens": 91136
+      "peak_context_tokens": 94862
+    },
+    {
+      "index": 2,
+      "started": "2026-11-07T00:47:54.382Z",
+      "ended": "2026-11-07T01:07:40.824Z",
+      "turns": 6,
+      "api_calls": 63,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 47717,
+        "cache_read_input_tokens": 7608339,
+        "cache_creation_input_tokens": 151894
+      },
+      "peak_context_tokens": 164973
     }
   ],
   "log": {
-    "sha256": "15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288",
-    "bytes": 2236141,
-    "lines": 714,
-    "gzip_bytes": 453586,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288.jsonl.gz"
+    "sha256": "ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986",
+    "bytes": 3852645,
+    "lines": 1290,
+    "gzip_bytes": 770198,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -115,6 +132,14 @@
       "summary": "Take the contract library's JDK 25.0.5 records from job 20261106-203501",
       "body": "The job failed on other steps, so its outputs were not applied, but its step recording the contract library on JDK 25.0.5 passed: 10 contracts accepted, 3 proved and 7 tested. lib/models/contracts/checked.json was still the job's source file and the contracts are unchanged since its commit, so its output is applied as recorded, adding the 25.0.5 records to those of 25.0.4.1. The 12 conformance claims that failed on JDK 25.0.5 for want of a record now pass. The library's integration test took 25.0.4.1 to be the only JDK with records; it now reads them from checked.json. Verified: cargo test --release (unit 174, conformance 9 + 2 ignored, integration 64). the_tools_own_checker_agrees_with_jbmc_on_integer_proofs failed once in the full run on Pricing#total's refutation and passed alone, the wall-clock-dependent branch probe already listed in the brief.",
       "log_sha256": "15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288"
+    },
+    {
+      "change_id": "pkuyvwwpoplsrmykxukowqvxzwqtsxup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC runs class initializers the JVM does not: the preflight names them as extra-initializer and refuses a JBMC proof through one (verification pending)",
+      "body": "Job 20261106-203501 found a false proof of JBMC under --gaps strict: conformance/declaring/2 (result == n + 107) was Verified, while the JVM returns n + 7. JBMC 6.11.0's goto listing (nothing solved) shows two shapes against JVMS 5.5: at a getstatic, putstatic or invokestatic it initializes the class the instruction names, not the class that declares the resolved member (Sub.value, declared by Holder, runs Sub.<clinit>); and initializing a class it initializes every superinterface, where the JVM initializes only those that declare a default method (conformance/defaults: 43 in JBMC, 3 on the JVM, which is why JBMC's counterexample to defaults/1 did not reproduce).\n\nlib/src/jbmc_gaps.rs compares, at each such instruction, the <clinit> calls JBMC's wrappers make with bmc::gaps::initializers of the declaring class, and names an initializer JBMC runs and the JVM does not as the defect extra-initializer, refused under every --gaps mode like the three before. The goto parser also keeps the bytecode index across JBMC's '// Labels:' comments, which had dropped it. The corpus gains defaults/3 (result == 43), the second shape's false proof (lib/benchmark/conformance.json regenerated). tests/fixtures/jbmc-defects gains the shapes in p/D.java, cause 4 in its README, and a third upstream report drafted for the user (I.java is its example, run on the JVM inline), not filed.",
+      "log_sha256": "ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986"
     }
   ],
   "logs": {
@@ -128,6 +153,12 @@
       "bytes": 1393478,
       "lines": 439,
       "gzip_bytes": 274873,
+      "url": null
+    },
+    "ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986": {
+      "bytes": 3852645,
+      "lines": 1290,
+      "gzip_bytes": 770198,
       "url": null
     },
     "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444": {

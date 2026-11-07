@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-010728-jbmc-s-extra-initializers-named-and-refu",
+  "title": "JBMC's extra initializers named and refused: the conformance corpus under JBMC, auto and --confirm, and the draft report's example",
+  "description": "Item 2 of the engine-priorities brief's Progress (llm-dlc/loops/engine-priorities.md). Job 20261106-203501 found a false proof of JBMC under --gaps strict: conformance/declaring/2 (result == n + 107) was Verified by JBMC, while the JVM returns n + 7. Reading JBMC 6.11.0's --show-goto-functions (inline, nothing solved) showed two ways it runs class initializers the JVM does not (JVMS 5.5): at a getstatic, putstatic or invokestatic it initializes the class the instruction names, not the class that declares the resolved member (Sub.value, declared by Holder, runs Sub.<clinit>); and a class's <clinit_wrapper> initializes every superinterface, where the JVM initializes only those that declare a default method (conformance/defaults: JBMC computes 43, the JVM 3, which is why JBMC's counterexample to defaults/1 did not reproduce). The preflight (lib/src/jbmc_gaps.rs) now names each such instruction as the defect extra-initializer, by comparing the wrappers JBMC's goto program calls there with bmc::gaps::initializers of the declaring class, and refuses a JBMC proof through one under every --gaps mode, as for the three defects before. The corpus gains defaults/3 (result == 43), the second shape's false proof. The goto parser also keeps a location across JBMC's '// Labels:' comments, which it had dropped. Unit-tested on hand-written goto programs of tests/fixtures/jbmc-defects/p/D.java, and checked inline on JBMC's real listings of the fixture and of conformance.Conformance (declaring and defaults named; superFirst, cycle, boomTwice, direct reads and new not). The last step runs the draft upstream report's example (tests/fixtures/jbmc-defects/I.java) on the JVM and through JBMC, so the report's claim that JBMC fails both assertions is measured rather than read from the listing.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/jbmc_gaps.rs",
+      "lib/tests/conformance.rs",
+      "lib/tests/fixtures/jbmc-defects/README.md"
+    ]
+  },
+  "expected": "Steps 1 and 2 exit 0. In step 1, declaring/2 and defaults/3 under Jbmc/Strict are Unverifiable, the proof refused naming extra-initializer, and Violation under Auto/Strict; no claim the JVM refutes is Verified. Step 3 prints 'log 3' from the JVM and VERIFICATION FAILED from JBMC for both I.field and I.iface. Any other disagreement is a finding to triage.",
+  "submitted": {
+    "at": "2026-11-07T01:07:28+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "40m",
+    "memoryLimit": "3.5G",
+    "timeout": "2h",
+    "notes": "job -203501's corpus step under JBMC and auto took 11 min after a 1 min build; job -231317's --confirm corpus took about 20 min; the report example is seconds; peak 1.3 GiB in those jobs"
+  },
+  "steps": [
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-initializers.log",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-initializers.log",
+      "cwd": "."
+    },
+    {
+      "name": "the draft report's example on the JVM and JBMC",
+      "run": "set -o pipefail; mkdir -p lib/target/report-i && javac -g -d lib/target/report-i lib/tests/fixtures/jbmc-defects/I.java && (java -ea -cp lib/target/report-i I; for f in field iface; do echo \"== jbmc I --function I.$f\"; jbmc I --function I.$f --classpath lib/target/report-i; echo \"exit $?\"; done) 2>&1 | tee lib/target/report-i.log; grep -q '^log 3' lib/target/report-i.log && test \"$(grep -c '^VERIFICATION FAILED' lib/target/report-i.log)\" -eq 2",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/conformance-jbmc-initializers.log",
+    "lib/target/conformance-confirm-initializers.log",
+    "lib/target/report-i.log"
+  ]
+}

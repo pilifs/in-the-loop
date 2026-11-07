@@ -7,6 +7,8 @@ JDK 25.0.5. It is not the models, nor reading the trace: JBMC's trace says what 
 does. There are two causes, and each also gave a false proof (below). A third, found while reading step 2b's benchmark
 job (`20261106-201041`), is [JBMC's right shifts](#cause-3-jbmc-right-shifts-by-the-whole-distance-a-jbmc-defect):
 `conformance/shiftRight/2`'s counterexample under the `full-range` and `tight` staging policies did not reproduce.
+A fourth, found by the Phase 5 job `20261106-203501` (`conformance/declaring/2`, a false proof), is
+[the initializers JBMC runs](#cause-4-jbmc-runs-initializers-the-jvm-does-not-a-jbmc-defect).
 
 `p/D.java` is the fixture of `jbmc_gaps`'s tests (`the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm`),
 one method per shape:
@@ -27,6 +29,12 @@ one method per shape:
 | `masked` | `x >>> (s & 31)` | as the JVM | — |
 | `halved` | `x >> 1` | as the JVM | — |
 | `left` | `x << s` | masks the distance, as the JVM | — |
+| `declaring` | `Sub.value`, a field `Holder` declares | initializes `Sub` | `extra-initializer` |
+| `assigned` | `Sub.value = n` | initializes `Sub` | `extra-initializer` |
+| `inherited` | `Sub.get()`, a method `Holder` declares | initializes `Sub` (and stubs `Sub.get`) | `extra-initializer` |
+| `direct` | `Holder.value` | initializes `Holder`, as the JVM | — |
+| `defaults` | `Hello.value(n)`, `Hello implements Bare, Greeter` | initializes `Bare` and `Greeter` | `extra-initializer` |
+| `created` | `new Sub()` | initializes `Holder`, then `Sub`, as the JVM | — |
 
 `conformance/caught/1` is the first shape, the first cause. `nestedHandler/1` has both: its `IllegalArgumentException` escapes
 the `catch (RuntimeException e)`, and its `return 100 / n` the inner `catch (ArithmeticException x)`.
@@ -122,6 +130,33 @@ branch joins. A proof that reaches one is refused under every `--gaps` mode. The
 distance in range by an assumption (`conformance/shiftRight/1`, `x == -1`) is refused too, and `--engine auto` lets the
 own checker prove it.
 
+## Cause 4: JBMC runs initializers the JVM does not (a JBMC defect)
+
+JVMS §5.5 initializes, at a `getstatic`, `putstatic` or `invokestatic`, the class that *declares* the resolved field or
+method, and, when it initializes a class, first its superclass and those of its superinterfaces that declare a default
+method (a non-abstract, non-static method). JBMC 6.11.0 does otherwise in two ways, both read from
+`--show-goto-functions` (the listing alone, nothing solved) on `p/D.java` and on `conformance.Conformance`:
+
+- It initializes the class the instruction *names*. For `Sub.value`, where `Sub extends Holder` and `Holder` declares
+  `value`, javac emits `getstatic Sub.value`, and JBMC calls `Sub.<clinit_wrapper>` there, which runs `Holder.<clinit>`
+  and then `Sub.<clinit>`. The JVM runs `Holder.<clinit>` alone. The same goes for `putstatic` and for
+  `invokestatic Sub.get()` of a static method `Holder` declares (where JBMC also gives `Sub.get` a stub, a
+  `missing-body` gap the preflight already names).
+- A class's `<clinit_wrapper>` calls the wrapper of every direct superinterface, so JBMC initializes an interface
+  with no default method that the JVM leaves alone. `Hello implements Bare, Greeter`, where only `Greeter` declares a
+  default method: `Hello.value(n)` runs `Bare`'s initializer in JBMC and not on the JVM.
+
+Each gave a **false proof under strict** on `--engine jbmc`: `conformance/declaring/2` (`result == n + 107`, where
+`declaring(3)` returns 10 on the JVM: `Sub`'s initializer marks the trace in JBMC alone) was verified by JBMC in
+job `-203501`, and `defaults(n)` returns 43 in JBMC where the JVM returns 3, which is why JBMC's counterexample to
+`defaults/1` (`result == 3`) did not reproduce. `defaults/3` (`result == 43`) is in the corpus now, as the shape's
+false proof. The own checker runs the initializers as the JVM does (`bmc::gaps::initializers`) and refutes both.
+
+The preflight names an instruction at which JBMC's goto program calls a wrapper that runs the `<clinit>` of an
+application class the JVM does not initialize there as `extra-initializer`, comparing the wrappers' calls with
+`bmc::gaps::initializers` of the declaring class. A proof that reaches one is refused under every `--gaps` mode. Only
+initializers JBMC runs and the JVM does not are named: an instruction whose wrapper call JBMC put elsewhere is not one.
+
 ## Draft report for CBMC/JBMC (not filed: for the user to decide)
 
 > **JBMC: a runtime exception from an expression consumed after the end of a try range escapes the handler (`return a / b`)**
@@ -172,3 +207,40 @@ own checker prove it.
 > `shl(x, bitand(s, 31))`, but the right shift of `x >> s` is `ashr(x, s)` and of `x >>> s` is `lshr(x, s)`, with no
 > `bitand`. Masking the distance of `ishr`, `iushr`, `lshr` and `lushr` as is done for `ishl` and `lshl` would match
 > the JVM.
+
+## Draft report for CBMC/JBMC, cause 4 (not filed: for the user to decide)
+
+The example is `I.java` next to this file. The JVM's run and JBMC's listing were done inline; JBMC's verdicts on it
+come from job `20261107-010728`'s last step (`lib/target/report-i.log` among its outputs), and the report is not ready to send
+until they say `VERIFICATION FAILED` for both methods.
+
+> **JBMC: a static member named through a subclass initializes the subclass, and initializing a class initializes
+> every superinterface (JVMS §5.5)**
+>
+> JBMC 6.11.0 (cbmc-6.11.0), Linux x86_64. Classes compiled by javac 25.
+>
+> ```java
+> public class I {
+>     static int log;
+>     static int mark(int v) { log = log * 10 + v; return v; }
+>     static class Holder { static int value = 7; }
+>     static class Sub extends Holder { static { mark(1); } }
+>     interface Bare { int B = mark(4); }
+>     interface Greeter { int G = mark(3); default int greet() { return G; } }
+>     static class Hello implements Bare, Greeter { static int v() { return 0; } }
+>     public static void field() { int v = Sub.value; assert log == 0 && v == 7; }
+>     public static void iface() { Hello.v(); assert log == 3; }
+> }
+> ```
+>
+> On the JVM (`java -ea`) both assertions hold. In `field`, javac emits `getstatic I$Sub.value`, which resolves to
+> `I$Holder.value`, and JVMS §5.5 initializes the class that declared the resolved field, `I$Holder`, so
+> `I$Sub.<clinit>` does not run. In `iface`, initializing `I$Hello` initializes its superinterfaces that declare a
+> non-abstract, non-static method (§5.5, step 7): `I$Greeter`, not `I$Bare`, so `log` is 3.
+>
+> In JBMC's `--show-goto-functions`, `I.field` calls `java::I$Sub.<clinit_wrapper>()` at the `getstatic`, which runs
+> `I$Holder.<clinit>` and then `I$Sub.<clinit>`; and `java::I$Hello.<clinit_wrapper>` calls both
+> `java::I$Bare.<clinit_wrapper>()` and `java::I$Greeter.<clinit_wrapper>()`, so `log` is 43. The same holds for
+> `putstatic`, and for `invokestatic` of a static method a superclass declares (where `I$Sub.get` also gets a
+> nondeterministic stub in place of `I$Holder.get`). Initializing the class that declares the resolved member, and
+> with a class only the superinterfaces that declare a non-abstract, non-static method, would match the JVM.

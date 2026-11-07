@@ -18,4 +18,17 @@ public class D {
     public static int masked(int x, int s) { return x >>> (s & 31); }
     public static int halved(int x) { return x >> 1; }
     public static int left(int x, int s) { return x << s; }
+    public static int declaring(int n) { return Sub.value + n; }
+    public static void assigned(int n) { Sub.value = n; }
+    public static int inherited(int n) { return Sub.get() + n; }
+    public static int direct(int n) { return Holder.value + n; }
+    public static int defaults(int n) { return Hello.value(n); }
+    public static int created(int n) { new Sub(); return n; }
+
+    static int log;
+    static class Holder { static int value = 7; static int get() { return value; } }
+    static class Sub extends Holder { static { log = 1; } }
+    interface Bare { int[] T = { 4 }; }
+    interface Greeter { int[] S = { 3 }; default int greet() { return S[0]; } }
+    static class Hello implements Bare, Greeter { static int value(int n) { return n; } }
 }

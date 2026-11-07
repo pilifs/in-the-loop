@@ -426,6 +426,17 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     `ImmutableCollections.listCopy` that no path takes. The fix is a path-aware check in `jbmc_gaps.rs`.
   - **Found by that job: a false success of JBMC under strict,** `declaring`: JBMC runs `Sub.<clinit>` on a
     `getstatic Sub.value` declared in `Holder`, where the JVM initializes `Holder` alone. `auto` decides it right.
+    **Guarded** (item 2 below): JBMC's goto listing (nothing solved) showed two shapes, the class an instruction
+    names initialized in place of the declaring one (`getstatic`, `putstatic`, `invokestatic`), and every
+    superinterface initialized with a class, where the JVM takes only those with a default method (`defaults`: 43 in
+    JBMC, 3 on the JVM, the cause of `defaults/1`'s witness that did not reproduce). The preflight names both as the
+    defect `extra-initializer`, comparing the wrappers JBMC calls at the instruction with `bmc::gaps::initializers`,
+    and refuses a JBMC proof through one under every mode. Unit 175, conformance 9 (2 ignored) pass; integration 63,
+    its one failure `Pricing#total` again (item 8), passing alone. `defaults/3` (`result == 43`) joins the corpus as the second
+    shape's false proof. The goto parser now keeps a location across JBMC's `// Labels:` comments. Checked inline on
+    the real listings of the fixture and of `Conformance` (no false positive on `superFirst`, `cycle`, `boomTwice`,
+    direct reads, `new`). The cause and a third upstream report are drafted in `lib/tests/fixtures/jbmc-defects/`
+    (`I.java` is the report's example). Job `20261107-010728` runs the corpus under JBMC, `auto` and `--confirm`, and the example.
   - That job also recorded the contract library on JDK 25.0.5 (its step passed). Its `checked.json` is applied by
     hand, since a failed job's outputs aren't: the file was still the job's source (`368d584b…`), the contracts
     unchanged since its commit `7457928f`, and it adds the 10 records of 25.0.5 to those of 25.0.4.1. The 12
@@ -449,7 +460,8 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   run records in their `llm-dlc/loop-summaries/`.
 - **Next, in order:**
   1. ~~take `checked.json` from job `-203501`~~ (done);
-  2. the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user;
+  2. ~~the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user~~ (done,
+     job `20261107-010728` pending: triage it when it is back);
   3. a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013;
   4. 4c, the coverage inventory from 4a's tables and 4b;
   5. the examples' notes: 071 and 013 from `-203501` (and the rerun), 037 from `-000039`;
@@ -459,7 +471,8 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
      out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native
      stream's step 3 cases under JBMC, `auto` and `--confirm`.
 - **For the user:** the 7 allow-list proposals (mangled C++ symbols in session `7b8a1d3b`'s logs); the two drafted
-  upstream reports, and a third once `declaring`'s is drafted; a push. CaDiCaL 2.x on its own, to separate it from
+  upstream reports and the third, on initializers (`extra-initializer`), all in
+  `lib/tests/fixtures/jbmc-defects/README.md`; a push. CaDiCaL 2.x on its own, to separate it from
   Bitwuzla's word-level gain, is below the brief's bar and not queued.
 - Status: working
 
