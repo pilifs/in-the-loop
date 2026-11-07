@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
+  "title": "Cleanup merge: Deliveries' examples 170-172 rerun at the merge, each with its recorded verdict",
+  "description": "build.py on examples 170, 171 and 172 (a retry route refactored over Crosscut's kernels, checked with jvmcontract effects). Expected: 170 verified, 171 violation, 172 violation, each step printing 'as expected'. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Each example ran before at a stream's or the foundations loop's commit; this checks them on the combined code, since the merge brought VF-016's and VF-017's fixes in beside the foundations merge's changes to equivalence.rs. Every step runs even if one fails. Cleanup brief, Phase 4 step 3.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:effects",
+    "B9"
+  ],
+  "links": {
+    "commits": [
+      "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+    ],
+    "examples": [
+      "170",
+      "171",
+      "172"
+    ]
+  },
+  "expected": "example 170 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 171 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 172 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-07T21:50:01+00:00",
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "cleanup"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "10m",
+    "notes": "as jobs 20261107-065648-example-17*: two compiles of the deliveries app and two effects runs each, plus a release build of jvmcontract if the runner has none"
+  },
+  "steps": [
+    {
+      "name": "example 170 (B9)",
+      "run": "python3 examples/tools/build.py 170",
+      "cwd": "."
+    },
+    {
+      "name": "example 171 (B9)",
+      "run": "python3 examples/tools/build.py 171",
+      "cwd": "."
+    },
+    {
+      "name": "example 172 (B9)",
+      "run": "python3 examples/tools/build.py 172",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent",
+    "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace",
+    "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice"
+  ]
+}

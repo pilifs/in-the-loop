@@ -1,0 +1,90 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+  "title": "Cleanup merge: Shop's examples 190-196 rerun at the merge, each with its recorded verdict",
+  "description": "build.py on examples 190 to 196 (a quote's amount made a value object, checked with jvmcontract compare). Expected: 190 verified, 191 violation, 192 violation, 193 violation, 194 violation, 195 verified, 196 unverifiable, each step printing 'as expected'. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Each example ran before at a stream's or the foundations loop's commit; this checks them on the combined code, since the merge brought VF-016's and VF-017's fixes in beside the foundations merge's changes to equivalence.rs. Every step runs even if one fails. Cleanup brief, Phase 4 step 3.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:compare",
+    "B9"
+  ],
+  "links": {
+    "commits": [
+      "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+    ],
+    "examples": [
+      "190",
+      "191",
+      "192",
+      "193",
+      "194",
+      "195",
+      "196"
+    ]
+  },
+  "expected": "example 190 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 191 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 192 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 193 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 194 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 195 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 196 gives its expected verdict, unverifiable: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-07T21:50:01+00:00",
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "cleanup"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "12m",
+    "notes": "as jobs 20261107-140010-example-19*: two compare runs of under a second each, javac and the app's tests, per example"
+  },
+  "steps": [
+    {
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": "."
+    },
+    {
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": "."
+    },
+    {
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": "."
+    },
+    {
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": "."
+    },
+    {
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": "."
+    },
+    {
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": "."
+    },
+    {
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written",
+    "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it",
+    "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone",
+    "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends",
+    "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order",
+    "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes",
+    "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried"
+  ]
+}

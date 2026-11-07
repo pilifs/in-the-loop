@@ -1,0 +1,76 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+  "title": "Cleanup merge: Crosscut's examples 150-152 and 160-161 rerun at the merge, each with its recorded verdict",
+  "description": "build.py on examples 150, 151 and 152 (a retry throttle's object parameter, VF-017's schema fix) and 160 and 161 (a refill helper the patch changes under an unchanged caller, VF-016's fix). Expected: 150 verified, 151 violation, 152 verified, 160 verified, 161 violation, each step printing 'as expected'. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Each example ran before at a stream's or the foundations loop's commit; this checks them on the combined code, since the merge brought VF-016's and VF-017's fixes in beside the foundations merge's changes to equivalence.rs. Every step runs even if one fails. Cleanup brief, Phase 4 step 3.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9"
+  ],
+  "links": {
+    "commits": [
+      "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+    ],
+    "examples": [
+      "150",
+      "151",
+      "152",
+      "160",
+      "161"
+    ]
+  },
+  "expected": "example 150 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 151 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 152 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 160 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 161 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-07T21:50:01+00:00",
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "cleanup"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "12m",
+    "notes": "each example passed alone in 1 to 3 minutes (jobs 20261107-164043-* and -165152-*); the first may build jvmcontract's release binary"
+  },
+  "steps": [
+    {
+      "name": "example 150 (B9)",
+      "run": "python3 examples/tools/build.py 150",
+      "cwd": "."
+    },
+    {
+      "name": "example 151 (B9)",
+      "run": "python3 examples/tools/build.py 151",
+      "cwd": "."
+    },
+    {
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": "."
+    },
+    {
+      "name": "example 160 (B9)",
+      "run": "python3 examples/tools/build.py 160",
+      "cwd": "."
+    },
+    {
+      "name": "example 161 (B9)",
+      "run": "python3 examples/tools/build.py 161",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes",
+    "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight",
+    "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ",
+    "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller",
+    "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early"
+  ]
+}

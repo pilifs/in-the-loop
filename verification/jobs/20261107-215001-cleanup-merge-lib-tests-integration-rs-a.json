@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-215001-cleanup-merge-lib-tests-integration-rs-a",
+  "title": "Cleanup merge: lib/tests/integration.rs at the merge, unchanged",
+  "description": "Runs lib/tests/integration.rs as it is, at the cleanup merge. VF-010's integration job (20261107-165544-vf-010-s-integration-tests-at-the-fix-li) passed at the native stream's commit, before the merge, so nothing has run these tests (several of which run JBMC) on the combined code of the three cleanup streams and the default line. Expected: every non-ignored test passes. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Cleanup brief, Phase 4 step 3.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "native:probes"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/integration.rs"
+    ],
+    "commits": [
+      "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-07T21:50:01+00:00",
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "cleanup"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "as VF-010's integration job: a clean debug build of lib's tests with 4 jobs, then the suite (about 31 s after the build)"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

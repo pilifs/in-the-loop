@@ -329,7 +329,19 @@ Settled by the user on 2026-11-07:
   (`cleanup-integration.md`, `foundations-integration.md`) are not run records and are left unpublished.
   - Next: step 3's job at the merge commit (examples 150–152, 160–161, 170–172 and 190–196, plus
     `lib/tests/integration.rs`, since VF-010's integration job ran before the merge).
-- Status: working
+- **Phase 4, step 3: the merge's examples queued** (2026-11-07). One job per app, each running every example's
+  `build.py` step even if one fails, plus `lib/tests/integration.rs` as it is:
+  - `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`: 150 verified, 151 violation, 152 verified,
+    160 verified, 161 violation;
+  - `20261107-215001-cleanup-merge-deliveries-examples-170-17`: 170 verified, 171 and 172 violation;
+  - `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`: 190 and 195 verified, 191–194 violation,
+    196 unverifiable;
+  - `20261107-215001-cleanup-merge-lib-tests-integration-rs-a`: every non-ignored test passes.
+
+  They run at the commit that queues them, whose code is the merge's (`lpvnwkuz`): the commits since change only
+  generated trace files and this Progress. No job was pending for these examples, so none is superseded.
+  - Next: read the four results, then step 4's for-review list.
+- Status: waiting on jobs 20261107-215001-cleanup-merge-crosscut-s-examples-150-15 20261107-215001-cleanup-merge-deliveries-examples-170-17 20261107-215001-cleanup-merge-shop-s-examples-190-196-re 20261107-215001-cleanup-merge-lib-tests-integration-rs-a
 
 ## Loop settings
 
