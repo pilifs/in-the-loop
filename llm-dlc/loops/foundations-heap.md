@@ -32,8 +32,7 @@ Priority 1: proofs over objects, and between objects of different shapes. In ord
   `aliasedObjects`, `writeThrough`) get verdicts that match the JVM.
 - **H2. Object inputs.** A parameter of an application class, within Phase 0's domain: classes allowed, an
   input-object bound, nullability, and which parameters may alias. Made as the main brief's
-  [decision 2](foundations.md#open-decisions) settles: by constructor or factory with symbolic arguments, unless
-  decided otherwise. Every result over such inputs carries the domain's label, "objects made by these constructors or
+  [decision 2](foundations.md#decisions) settled: by constructor or factory with symbolic arguments. Every result over such inputs carries the domain's label, "objects made by these constructors or
   factories, under these argument constraints"; it never claims states a constructor doesn't make (an `Account` made
   with `balance = 0` says nothing about one after deposits). Fields of reference type point into the same bounded set.
   Start with classes whose fields are primitives, primitive arrays, or references to such classes; refuse the rest as

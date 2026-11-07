@@ -1,9 +1,9 @@
 # Brief: foundations for verifying application changes
 
-**Draft, revised 2026-11-06 after an [outside review](#review-of-the-draft), not approved.** The
-[open decisions](#open-decisions) need the user before this brief can run. It starts only once
-[`engine-priorities.md`](engine-priorities.md)'s loop has merged its streams ([When it starts](#when-it-starts)), and
-after the [launch prerequisites](#launch-prerequisites).
+**Drafted 2026-11-06, revised after an [outside review](#review-of-the-draft); its [decisions](#decisions) settled
+by the user on 2026-11-07.** It starts only once [`engine-priorities.md`](engine-priorities.md)'s loop has merged its
+streams and their results are verified ([When it starts](#when-it-starts)), and after the remaining
+[launch prerequisites](#launch-prerequisites).
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). Its plan is worked in [four streams run in
 parallel](#streams), one per priority, each a loop of its own with a short brief that names its phases. This brief is
@@ -278,7 +278,7 @@ interfaces, fixtures and tests; no behaviour change to any existing command.
   bound for what the code makes, each settable per version where representations differ (a value object wrapping a
   primitive adds an object without changing behaviour); nullability per parameter or field; which parameters may
   alias; and how inputs are made, labelled in every result: "objects made by these constructors or factories, under
-  these argument constraints" (see [decision 2](#open-decisions)). A field-by-field or invariant-constrained domain is
+  these argument constraints" (see [decision 2](#decisions)). A field-by-field or invariant-constrained domain is
   a later variant, named now so the label has somewhere to go.
 - **Observations.** Besides return, exception and array parameters: a field path into a returned object or a
   parameter (`result.total.cents`); an identity relation *within* a version (`result.left == result.right`,
@@ -408,21 +408,18 @@ Progress.
 - **Removing JBMC from the default paths** (the platform review's section 2). That is `engine-priorities`'s line of
   work.
 
-## Open decisions
+## Decisions
 
-For the user before this brief runs. Each has the recommendation first; the outside review agreed with each.
-1. **Start after the `engine-priorities` merge** (recommended), or start now with `lib/src/bmc/` frozen for the heap
-   stream until then.
-2. **How object inputs are made.** By constructor or factory, with symbolic arguments, as records are today
-   (recommended), labelled as that domain in every result and never claimed to cover every valid state. Or field by
-   field, which reaches states no constructor makes and reports them as assumptions.
-3. **Where the proof cache lives.** A local directory, never committed, with portable claim keys and result records
-   (recommended); or committed beside the examples' results.
-4. **The joint example's test bed.** A small Crosscut-style kernel behind one thin real annotated entry point
-   (recommended; it brings in the observation stream without a broad Box Office attempt), a kernel alone, or Box
-   Office itself.
-5. **Model and effort**: Opus 5.5 at high effort for the four streams and the merge, as for `engine-priorities`
-   (recommended), so that this run changes the acceptance controls and not the agents as well.
+Settled by the user on 2026-11-07, each as recommended (the outside review agreed with each):
+1. **Start after the `engine-priorities` merge**, and after its jobs are back and verified. Not now with
+   `lib/src/bmc/` frozen.
+2. **Object inputs are made by constructor or factory**, with symbolic arguments, as records are today, labelled as
+   that domain in every result and never claimed to cover every valid state. Field-by-field inputs are a later variant.
+3. **The proof cache is a local directory**, never committed, with portable claim keys and result records.
+4. **The joint example is a small Crosscut-style kernel behind one thin, real annotated entry point**: not a kernel
+   alone, and not Box Office itself.
+5. **Opus 5.5 at high effort** for the four streams and the merge, as for `engine-priorities`, so that this run changes
+   the acceptance controls and not the agents as well.
 
 ## Review of the draft
 
@@ -449,7 +446,8 @@ annotations or configuration, which S1 adds.
 
 - Drafted on the branch `foundations-draft`, with its inputs, and revised after the review of the draft.
 - Launch prerequisites 1–3 done on that branch: the names, the integration check, the session ids.
-- Status: blocked: the open decisions, then the `engine-priorities` merge and launch prerequisites 4–7.
+- Decisions settled by the user on 2026-11-07 ([Decisions](#decisions)).
+- Status: blocked: the `engine-priorities` merge and its verified results, then launch prerequisites 4–7.
 
 ## Loop settings
 

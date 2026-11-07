@@ -29,7 +29,7 @@ reusing a changed helper's proof is what makes refactors cheaper, and both are i
   virtual or interface call may dispatch to, field declarations and initializers, the annotations and configuration
   the claim depends on, and the models used. Per method, so that a change names which closures it touches.
 - **S2. The proof cache.** Phase 0's canonical claim, digested, maps to a result record in a local directory
-  (`--cache DIR`, or as the main brief's [decision 3](foundations.md#open-decisions) settles). The lookup happens on
+  (`--cache DIR`, local and never committed, as the main brief's [decision 3](foundations.md#decisions) settled). The lookup happens on
   the *prepared* claim: after flags, hints, inferred mappings, models and generated observations are resolved, never
   before the claim's meaning is known. A hit returns the stored result marked as an exact reuse, with the run it came
   from; a miss proves and stores. Only verified and refuted results are stored; a refuted one is stored with its
