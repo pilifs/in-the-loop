@@ -422,7 +422,12 @@ class Sync(unittest.TestCase):
         index.assert_called_once_with()
 
     def test_the_exporter_stops_at_the_first_failure(self):
-        with mock.patch.object(sync, "load_manifest", return_value={"log": {"sha256": "0" * 64}}), \
+        # Langfuse configured and no transcript on this machine, whatever this machine has: the stored log is sent.
+        empty = Path(tempfile.mkdtemp(prefix="langfuse-test-"))
+        self.addCleanup(shutil.rmtree, empty)
+        with mock.patch.object(sync, "langfuse_config", return_value=("http://stub.invalid", "pk", "sk")), \
+                mock.patch.object(sync, "claude_project_dir", return_value=empty), \
+                mock.patch.object(sync, "load_manifest", return_value={"log": {"sha256": "0" * 64}}), \
                 mock.patch.object(sync, "load_log", return_value=b'{"type":"user"}\n'), \
                 mock.patch.object(sync, "export_langfuse", side_effect=OSError("down")) as export, \
                 mock.patch.object(sync, "log"):

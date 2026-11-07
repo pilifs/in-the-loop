@@ -249,11 +249,13 @@ fn clock_cost() -> std::time::Duration {
     spans[spans.len() / 2]
 }
 
-/// One in this many word-level operations is timed, and its time counted this many times over: a clock read
-/// costs about 0.3 µs on the WSL2 machine the benchmark runs on (measured 2026-11-06), as much as a small
-/// operation takes, so timing every one doubled the encoding it measured. The operations timed are picked at
-/// random, so the estimate is unbiased whatever the order operations come in, and the clock's own cost is taken
-/// off each ([`clock_cost`]).
+/// One in this many single gates built on their own (an `and`, `xor` or `ite` of two bits) is timed, and its time
+/// counted this many times over: a clock read costs about 0.3 µs on the WSL2 machine the benchmark runs on
+/// (measured 2026-11-06), as much as a gate takes, so timing every one doubled the encoding it measured. The gates
+/// timed are picked at random, so the estimate is unbiased whatever the order gates come in. Every word-level
+/// operation (a circuit of at least a word's width of gates) is timed whole instead: sampled together with the
+/// gates, one multiplier picked among cheap gates was counted this many times over, so a short run's encoding
+/// could pass the run's own time. The clock's own cost is taken off each timing ([`clock_cost`]).
 const ENCODING_SAMPLE: u32 = 64;
 
 impl fmt::Debug for Blaster {
@@ -367,26 +369,39 @@ impl Blaster {
         self.solver.set_limit(Some(seconds));
     }
 
-    /// Runs `build`, an operation that builds circuits: one in [`ENCODING_SAMPLE`] of those not built inside
-    /// another is timed, and counted that many times over as encoding.
+    /// Runs `build`, a word-level operation that builds circuits: when it is not built inside another, it is timed,
+    /// and counted as encoding.
     #[inline]
     fn encoding<T>(&mut self, build: impl FnOnce(&mut Self) -> T) -> T {
         if self.timing {
             return build(self);
         }
         self.timing = true;
-        // xorshift64: which operations are timed does not follow their order.
+        let started = std::time::Instant::now();
+        let out = build(self);
+        self.encoding += started.elapsed().saturating_sub(self.clock);
+        self.timing = false;
+        out
+    }
+
+    /// Runs `build`, a single gate: one in [`ENCODING_SAMPLE`] of those not built inside another operation is
+    /// timed, and counted that many times over as encoding.
+    #[inline]
+    fn gate_encoding<T>(&mut self, build: impl FnOnce(&mut Self) -> T) -> T {
+        if self.timing {
+            return build(self);
+        }
+        // xorshift64: which gates are timed does not follow their order.
         self.sampling ^= self.sampling << 13;
         self.sampling ^= self.sampling >> 7;
         self.sampling ^= self.sampling << 17;
-        let out = if self.sampling % u64::from(ENCODING_SAMPLE) == 0 {
-            let started = std::time::Instant::now();
-            let out = build(self);
-            self.encoding += started.elapsed().saturating_sub(self.clock) * ENCODING_SAMPLE;
-            out
-        } else {
-            build(self)
-        };
+        if self.sampling % u64::from(ENCODING_SAMPLE) != 0 {
+            return build(self);
+        }
+        self.timing = true;
+        let started = std::time::Instant::now();
+        let out = build(self);
+        self.encoding += started.elapsed().saturating_sub(self.clock) * ENCODING_SAMPLE;
         self.timing = false;
         out
     }
@@ -453,7 +468,7 @@ impl Blaster {
     }
 
     pub fn and(&mut self, a: Lit, b: Lit) -> Lit {
-        self.encoding(|s| s.and_gate(a, b))
+        self.gate_encoding(|s| s.and_gate(a, b))
     }
 
     fn and_gate(&mut self, a: Lit, b: Lit) -> Lit {
@@ -487,7 +502,7 @@ impl Blaster {
     }
 
     pub fn xor(&mut self, a: Lit, b: Lit) -> Lit {
-        self.encoding(|s| s.xor_gate(a, b))
+        self.gate_encoding(|s| s.xor_gate(a, b))
     }
 
     fn xor_gate(&mut self, a: Lit, b: Lit) -> Lit {
@@ -535,7 +550,7 @@ impl Blaster {
 
     /// `if c then a else b`.
     pub fn ite(&mut self, c: Lit, a: Lit, b: Lit) -> Lit {
-        self.encoding(|s| s.ite_gate(c, a, b))
+        self.gate_encoding(|s| s.ite_gate(c, a, b))
     }
 
     fn ite_gate(&mut self, c: Lit, a: Lit, b: Lit) -> Lit {
@@ -1673,5 +1688,29 @@ mod tests {
         assert_eq!(b.eval(&q), -3);
         assert_eq!(b.eval(&r), -1);
         assert_eq!(b.solve_with(&[FALSE]), Some(false));
+    }
+
+    /// A short run's encoding is estimated within the phases' tolerance of the time its operations took, wherever
+    /// its one large circuit falls among cheap gates: a sampled multiplier is not counted many times over.
+    #[test]
+    fn the_encoding_estimate_does_not_count_a_large_circuit_many_times_over() {
+        let gates = 4 * ENCODING_SAMPLE as usize;
+        for at in 0..=gates {
+            let mut b = Blaster::new();
+            let (x, y) = (b.fresh(32), b.fresh(32));
+            let lits = b.fresh(2 * gates + 2);
+            let started = std::time::Instant::now();
+            for i in 0..=gates {
+                if i == at {
+                    b.mul(&x, &y);
+                } else {
+                    b.and(lits[2 * i], lits[2 * i + 1]);
+                }
+            }
+            let took = started.elapsed().as_secs_f64();
+            let estimate = b.encoding.as_secs_f64();
+            let tolerance = crate::phases::TOLERANCE_SHARE * took + crate::phases::TOLERANCE_SECONDS;
+            assert!(estimate <= took + tolerance, "the multiplication at operation {at}: encoding estimated {estimate:.6} s of {took:.6} s");
+        }
     }
 }

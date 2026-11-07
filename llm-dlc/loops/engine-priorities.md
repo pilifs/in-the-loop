@@ -429,13 +429,13 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
 - **4b, initializers counted: done** (`wnxlynrs`). Apps: 49 initializers, 36 enums and 13 `$SwitchMap`s, none
   `throws`, `constants` or `other`. Recorded examples: only 013 and 071, through four Quorum enums. Benchmark: `Boom`,
   `Base` throw, `Quiet` is constants. Scope chosen: full JVMS §5.5.
-- **5: mostly done** (`kumppqkz`, `knlrwnqu`, `ulstzomt`).
+- **5: done** (`kumppqkz`, `knlrwnqu`, `ulstzomt`; its last criterion with `xmslpytz` and job `20261107-024759`).
   - Class initializers run in the own checker as JVMS §5.5 orders them; `boom`, `inherited`, `quiet` are correct on
     it, with 8 more cases. Enums run too (arrays of references, `Enum`'s model, switch maps): over the apps the 49
     `class-initializer` gaps are 0.
   - `Enum.<init>`, `List.of`, `List.copyOf` are models on JBMC's class path, checked on the JVM by 11 cases and by
     running them relocated against the JDK's classes.
-  - **071's two proofs under strict: fixed, job `20261107-024759` pending** (VF-005). Job `20261107-012013`
+  - **071's two proofs under strict: done**, job `20261107-024759` passed (VF-005 closed). Job `20261107-012013`
     (collected by the runner, step 3 failed): the preflight named `Collection.isEmpty` and `toArray` as stubs never
     entered and no gaps, but refused obligations 1 and 2 on two `extra-initializer` defects JBMC does not have
     (`VoteRule.decide:39`, `grant:63`; 013's output named the same four). JBMC's goto listing numbers an
@@ -511,27 +511,43 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   1. ~~take `checked.json` from job `-203501`~~ (done);
   2. ~~the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user~~ (done,
      job `20261107-010728` back, failed: VF-009, JBMC's spurious refutations of `boomTwice` and `enumBroken` at
-     `n = 0` under `--confirm`, to triage next: not the index lookup, since both run an initializer that throws, which
-     the JVM wraps in `ExceptionInInitializerError` and follows with `NoClassDefFoundError`);
+     `n = 0` under `--confirm`: not the index lookup, since both run an initializer that throws, which the JVM wraps
+     in `ExceptionInInitializerError` and follows with `NoClassDefFoundError`. Deferred untriaged by the user on
+     2026-11-07, until after the foundations loop);
   3. ~~a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013~~
-     (done; job `20261107-012013` failed, VF-005: the preflight read JBMC's listing by offset, not index; fixed, rerun
-     `20261107-024759` pending);
+     (done; job `20261107-012013` failed, VF-005: the preflight read JBMC's listing by offset, not index; fixed, and
+     the rerun `20261107-024759` passed: 071's first two proofs verified with no gap, 013 with no JBMC gap, the
+     corpus under JBMC and `auto`. VF-005 is closed, and with it Phase 5's last criterion);
   4. ~~4c, the coverage inventory from 4a's tables and 4b~~ (done);
   5. ~~the examples' notes: 071 and 013 from `-203501` and the rerun `-012013`~~ (done; 037's from `-000039`
-     too), and from `-024759` once it is back;
+     too), and ~~from `-024759`~~ (done);
   6. ~~Bitwuzla's version in 1b's record~~ (done: each solver records itself, `Sat::record`);
-  7. `test_build.py`'s and `test_performance.py`'s failures;
-  8. smaller ones the streams noted: the own checker's branch probes depend on wall-clock time (`Pricing#total` timing
-     out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native
-     stream's step 3 cases under JBMC, `auto` and `--confirm`;
+  7. ~~`test_build.py`'s and `test_performance.py`'s failures~~ (done). `test_build.py`'s 35 errors were tests that
+     read committed results raw. 28 of them are now stored as format 2, so these tests read them through
+     `result_format.load`, the documented way back to the flat view. Two tests rested on results recorded before
+     the model-contract connection, and 076 and 072 have been run again since: the first now reads 077, still
+     recorded that way, and the second expects 072's two kinds of obligation. `test_performance.py`'s one failure
+     was `test_the_exporter_stops_at_the_first_failure`, which passed only on a machine with Langfuse configured; it
+     now stubs the configuration and the project directory;
+  8. the smaller ones the streams noted: ~~the sampled encoding flagging short runs `phasesExcess`~~ (fixed; job
+     `20261107-032249` pending). Single gates and whole word-level circuits were sampled one in 64 from one stream
+     with a fixed seed, so a short run that sampled a multiplier counted it 64 times on every run. Each word-level
+     operation is now timed whole and only single gates are sampled. Reproducer:
+     `the_encoding_estimate_does_not_count_a_large_circuit_many_times_over` estimated 0.063 s of 0.001 s before the
+     change, and every position fits after it. The job checks that no benchmark run is flagged and that the own
+     checker is no slower. Deferred by the user on 2026-11-07, as findings, until after the foundations loop: the
+     branch probes that depend on wall-clock time (VF-010, `Pricing#total`, which failed the full integration suite
+     once more in this piece and passed alone). The native stream's step 3 cases under `--confirm` are VF-009: under
+     JBMC and `auto` they passed in jobs `-012013` and `-022319`;
   9. the inventory's first two extensions, each small and with a reproducer first: ~~an exact `numberOfLeadingZeros`
-     (`Integer`, `Long`) in the own checker~~ (done, job `20261107-022319` passed), and its unwinding bound counted
-     per entry of a loop.
-- **For the user:** the 7 allow-list proposals (mangled C++ symbols in session `7b8a1d3b`'s logs); the two drafted
-  upstream reports and the third, on initializers (`extra-initializer`), all in
-  `lib/tests/fixtures/jbmc-defects/README.md`; a push. CaDiCaL 2.x on its own, to separate it from
-  Bitwuzla's word-level gain, is below the brief's bar and not queued.
-- Status: working
+     (`Integer`, `Long`) in the own checker~~ (done, job `20261107-022319` passed); its unwinding bound counted
+     per entry of a loop is deferred by the user, as VF-011.
+- **For the user:** ~~the 7 allow-list proposals~~ (approved by the user on 2026-11-07). The three drafted upstream
+  reports are now the draft brief [`jbmc-upstream.md`](jbmc-upstream.md), for after the foundations loop with the
+  findings the user selects then. Cause 4's report has its evidence: job `-010728` gives `VERIFICATION FAILED` on
+  both of `I.java`'s methods. Also for the user: a push. CaDiCaL 2.x on its own, to separate it from Bitwuzla's
+  word-level gain, is below the brief's bar and not queued.
+- Status: waiting on jobs 20261107-032249
 
 ## Loop settings
 

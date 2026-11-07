@@ -93,7 +93,7 @@ and the size of the formula it solved:
 | `loading` | reading and parsing class files | its first message to `Generating GOTO Program` |
 | `lowering` | decoding methods | the GOTO program and its passes, to `Starting Bounded Model Checking` |
 | `symbolic` | exploring the paths, gates evaluated in path models included | `Runtime Symex` and `Runtime Postprocess Equation` |
-| `encoding` | building circuits, as the paths are explored; one operation in 64 is timed, since a clock read costs about 0.3 µs on WSL2 | `Runtime Convert SSA` and `Runtime Post-process` |
+| `encoding` | building circuits, as the paths are explored; each word-level operation is timed whole, and one single gate in 64, since a clock read costs about 0.3 µs on WSL2, as much as a gate | `Runtime Convert SSA` and `Runtime Post-process` |
 | `solving` | CaDiCaL's calls | `Runtime Solver`, less the `Runtime Post-process` timed inside it |
 | `trace` | reading the witness out of a model | `Building error trace` to the next message |
 | `checker-other` | nothing | the rest of the run: starting, printing |

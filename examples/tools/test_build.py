@@ -189,7 +189,7 @@ class ExpectationTest(unittest.TestCase):
         for folder in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*")):
             if not (folder / "result.json").exists():
                 continue
-            recorded = json.loads((folder / "result.json").read_text())
+            recorded = build.result_format.load(folder / "result.json")
             ex = json.loads((folder / "example.json").read_text())
             result = {**recorded, "execution": recorded.get("execution") or {"status": "completed", "exitCode": None, "reason": None}}
             label = result["verdictLabel"]
@@ -400,7 +400,7 @@ class RunnerTest(RunnerCase):
         source = next(build.EXAMPLES.glob("126-*"))
         shutil.copy(source / "change.patch", self.folder / "change.patch")
         ex = json.loads((source / "example.json").read_text())
-        result = {**json.loads((source / "result.json").read_text()), "sarif": None, "statement": None}
+        result = {**build.result_format.load(source / "result.json"), "sarif": None, "statement": None}
         result["execution"] = build.execution_status(-9, "")
         (self.folder / "verifier-output.txt").write_text("")
         build.finish(result, ex)
@@ -569,7 +569,7 @@ class PropertyRunnerTest(RunnerCase):
         self.harnesses(1, 2)
         result = self.prove(1, property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "violation"))
         source = next(build.EXAMPLES.glob("071-*"))
-        recorded = json.loads((source / "result.json").read_text())
+        recorded = build.result_format.load(source / "result.json")
         merged = {**recorded, **{k: v for k, v in result.items() if k != "after"}}
         jsonschema.validate(merged, schema)
         with self.assertRaises(jsonschema.ValidationError):
@@ -765,7 +765,7 @@ class ModelContractTest(BreakerCase):
         candidate = changed_row(self.committed, BREAKER_ROW, "Transition[next=HALF_OPEN, effects=[RESET_METRICS, PERMIT]]")
         result = self.run_tlc(candidate)
         source = next(build.EXAMPLES.glob("076-*"))
-        recorded = json.loads((source / "result.json").read_text())
+        recorded = build.result_format.load(source / "result.json")
         merged = {**recorded, **{k: v for k, v in result.items() if k not in ("after",)}}
         jsonschema.validate(merged, json.loads((build.EXAMPLES / "schema/result.schema.json").read_text()))
         ex = {**json.loads((source / "example.json").read_text()), "change": {**json.loads((source / "example.json").read_text())["change"], "behaviourChangeIntended": False}}
@@ -778,8 +778,9 @@ class ModelContractTest(BreakerCase):
         self.assertIn("the committed contract, which the patched classes still match", text)
 
     def test_a_result_recorded_before_the_connection_renders_as_before(self):
-        source = next(build.EXAMPLES.glob("076-*"))
-        recorded = json.loads((source / "result.json").read_text())
+        # 077, the same breaker as 076, still has the result recorded before the connection; 076 was run again since.
+        source = next(build.EXAMPLES.glob("077-*"))
+        recorded = build.result_format.load(source / "result.json")
         self.assertNotIn("modelContracts", recorded)
         self.assertNotIn("rules come from", "\n".join(build.findings_tlc(json.loads((source / "example.json").read_text()), recorded)))
 
@@ -862,7 +863,7 @@ class CoverageStatusTest(unittest.TestCase):
     def test_results_recorded_before_the_status_render_as_they_did(self):
         # Every recorded D1 result renders, and those whose coverage has no status say nothing of missing coverage.
         for path in sorted(build.EXAMPLES.glob("*/result.json")):
-            res = json.loads(path.read_text())
+            res = build.result_format.load(path)
             if res.get("coverage") and "changedRows" in res["coverage"] and "status" not in res["coverage"]:
                 text = "\n".join(build.coverage_lines(res))
                 self.assertNotIn("not known", text, path.parent.name)
@@ -901,7 +902,7 @@ class CheckpointTest(BreakerCase):
         self.assertEqual(again["verdict"], "verified")
         self.assertEqual(len(list(self.store.glob("*.json"))), 2)
         source = next(build.EXAMPLES.glob("076-*"))
-        recorded = json.loads((source / "result.json").read_text())
+        recorded = build.result_format.load(source / "result.json")
         text = "\n".join(build.findings_tlc(json.loads((source / "example.json").read_text()),
                                             {**recorded, **{k: v for k, v in again.items() if k != "after"}}))
         self.assertIn("Under two calls in flight, TLC was not run again", text)
@@ -1151,7 +1152,7 @@ class ReplayWordingTest(unittest.TestCase):
             ex = json.loads((folder / "example.json").read_text())
             if ex.get("origin") != "constructed" or ex["approach"]["id"] != "B9" or (folder / "result.json").exists() is False:
                 continue
-            res = json.loads((folder / "result.json").read_text())
+            res = build.result_format.load(folder / "result.json")
             if res.get("verdict") != "violation":
                 continue
             page = "\n".join(build.findings_equivalence(ex, res))
@@ -1605,7 +1606,7 @@ class WitnessTest(RunnerCase):
         self.classes()
         schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
         source = next(build.EXAMPLES.glob("128-*"))
-        recorded = json.loads((source / "result.json").read_text())
+        recorded = build.result_format.load(source / "result.json")
         out = equivalence_json(self.root, counterexample={**BATCH_WITNESS, "found_inputs": BATCH_WITNESS["inputs"]})
         result = self.run_runner(build.run_tool_equivalence, proc(1, out), example(), report="equivalence.sarif")
         recorded["counterexamples"] = result["counterexamples"]
@@ -1906,9 +1907,9 @@ class StoredFormatTest(unittest.TestCase):
     through the flat view, so no page or check changes; format 1 results read as they are."""
 
     def complete(self, folder):
-        """A committed result (format 1) as a run would end it now: with the blocks run() adds, and the execution and
-        expectation a result recorded before them did not have."""
-        r = json.loads((folder / "result.json").read_text())
+        """A committed result, of any stored format, read through the flat view as a run would end it now: with the
+        blocks run() adds, and the execution and expectation a result recorded before them did not have."""
+        r = build.result_format.load(folder / "result.json")
         if r.get("execution") is None:
             r["execution"] = {"status": "completed", "exitCode": 1 if r["verdict"] == "violation" else 0, "reason": "made up"}
         r.setdefault("expectation", "yes" if r["matchesExpected"] else "no")
@@ -1924,14 +1925,16 @@ class StoredFormatTest(unittest.TestCase):
                 build.validate(build.result_format.pack(r), "stored-result.schema.json", folder)
 
     def test_format_two_stores_each_fact_once(self):
-        folder = next(build.EXAMPLES.glob("072-*"))  # D1: configurations, coverage, a vacuous verdict
+        folder = next(build.EXAMPLES.glob("072-*"))  # D1: configurations, an operator's contract, coverage, a vacuous verdict
         r = self.complete(folder)
         doc = build.result_format.pack(r)
         self.assertEqual(list(doc), ["format", "claim", "attempt", "conclusion", "evidence", "bundle"])
-        for derived in ("verdict", "verdictLabel", "execution", "expectation", "matchesExpected", "configurations"):
+        for derived in ("verdict", "verdictLabel", "execution", "expectation", "matchesExpected", "configurations",
+                        "modelContracts"):
             self.assertNotIn(derived, doc["evidence"])
-        self.assertEqual(doc["conclusion"]["obligationKeys"], {"configuration": "configurations"})
-        self.assertEqual([o["evidence"] for o in doc["conclusion"]["obligations"]], r["configurations"])
+        self.assertEqual(doc["conclusion"]["obligationKeys"],
+                         {"configuration": "configurations", "operator-contract": "modelContracts"})
+        self.assertEqual([o["evidence"] for o in doc["conclusion"]["obligations"]], r["configurations"] + r["modelContracts"])
         self.assertEqual((doc["conclusion"]["status"], doc["conclusion"]["label"]), ("established", r["verdictLabel"]))
         self.assertEqual(build.result_format.view(doc), r)
 
@@ -2616,7 +2619,7 @@ class SchemaTest(unittest.TestCase):
         import jsonschema
         schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
         source = next(build.EXAMPLES.glob("126-*"))
-        result = {**json.loads((source / "result.json").read_text()), "sarif": None}
+        result = {**build.result_format.load(source / "result.json"), "sarif": None}
         result["execution"] = build.execution_status(-9, "")
         build.finish(result, json.loads((source / "example.json").read_text()))
         jsonschema.validate(result, schema)
@@ -2627,7 +2630,7 @@ class SchemaTest(unittest.TestCase):
         import jsonschema
         schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
         source = next(build.EXAMPLES.glob("126-*"))
-        result = json.loads((source / "result.json").read_text())
+        result = build.result_format.load(source / "result.json")
         result["search"] = {"engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 0.5, "properties": 1,
                             "unwind": 32, "maxArrayLength": 8, "stage": None, "sharedCallees": ["a.C.f"], "native": {"paths": 3, "solverCalls": 4}}
         result["replay"] = {"by": "interpreter", "reproduced": True}

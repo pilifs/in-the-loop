@@ -18,6 +18,43 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-011: the own checker counts a loop's unwinding over the whole path, so example 052 is left to JBMC
+
+- **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)
+- **Raised**: 2026-11-07, from job `20261107-000039-the-41-recorded-jbmc-examples-under-stri` (at `98bab485`, `vm-1`) and
+  the coverage inventory `examples/coverage.md` (commit `unvpruot`). Not a job failure.
+- **Found**: under `--gaps strict`, obligation `052#0` is established by JBMC (with unwinding assertions at 16) and
+  unresolved on the own checker: "a loop was not fully unwound with --unwind 16 (PropertyHarness.check at pc 238)".
+  As read, not yet reproduced: `Engine::jump` in `lib/src/bmc/mod.rs` counts back edges per path and per
+  `(class, method, target)`, and never resets the count when the loop is left. The property's `\max` over `k` of a
+  `\sum` over `i < k` is two nested loops in the harness (`harness/expr.rs` compiles each quantifier as a loop), so over
+  an array of length 8 one path takes the inner back edge up to 36 times. The count is incomplete, not unsound: a
+  path cut short gives no verdict.
+- **Needs**: a reproducer first (a nested loop whose inner loop runs fewer than the bound each time but more in total),
+  then counting per entry of a loop. Ranked second among the own checker's extensions in `examples/coverage.md`.
+- **Tracked in**: `examples/coverage.md` (extension 2), `llm-dlc/loops/engine-priorities.md` (Next, item 9).
+- **Closes when**: a job runs 052 under strict on the own checker (`approach.engine` set to native in a copy) and it is
+  established with no gap.
+
+### VF-010: the own checker's regression proof of `Pricing#total` sometimes runs out of time: its branch probes depend on wall-clock time
+
+- **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)
+- **Raised**: 2026-11-06 on cvm, inline, while triaging job `20261106-203452`; seen again in full inline suite runs on
+  2026-11-06 and 2026-11-07 (commits `xrrxwxny`, `vrkpmtqv`, `pkuyvwwp`).
+- **Found**: `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` (`lib/tests/integration.rs`) fails now and then
+  on the own checker's regression proof of `fixtures.Pricing#total` (the rounding refactor) and passes alone. Of 8
+  identical runs of `jvmcontract equivalence --target 'fixtures.Pricing#total' --engine native --timeout 40`, 6 found
+  the violation in about 4 s (13 solver calls, 2 of 2 divisions built in full) and 2 ran out of time at the 8th solver
+  call (0 of 2 built). As read: the branch probes (`bmc/mod.rs`, `probe`) are given as long as the solver calls so far
+  took, at least a second, so which side of a branch is left undecided, and with it the path order and the queries,
+  depends on the machine's speed. One order leaves a query that doesn't finish.
+- **Needs**: probe budgets that don't depend on wall-clock time (a count of conflicts or of solver calls, say), with
+  the 8-run reproducer above showing every run alike.
+- **Tracked in**: `llm-dlc/loops/engine-priorities-jbmc.md` (step 3's notes), `llm-dlc/loops/engine-priorities.md` (Next,
+  item 8).
+- **Closes when**: the reproducer gives the same answer in 8 of 8 runs, and a job runs the integration tests with no
+  failure.
+
 ### VF-009: `auto --confirm` disagrees with the JVM on `boomTwice` and `enumBroken`: JBMC's refutation at `n=0` is spurious, the own checker is right
 
 - **Status**: open
@@ -31,40 +68,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   cover them. Step 3's JBMC output ("1 of 13 failed") is the expected violation of that example.
 - **Needs**: the engine-priorities-jbmc loop: why JBMC refutes `boomTwice(n=0)` and `enumBroken(n=0)` (a class
   initializer JBMC runs that the JVM does not? the `--throw-runtime-exceptions` path?), and refuse or model it.
-- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md).
+- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md). Deferred by
+  the user on 2026-11-07, untriaged, until after the foundations loop; a candidate for the draft brief
+  [`llm-dlc/loops/jbmc-upstream.md`](../llm-dlc/loops/jbmc-upstream.md) if JBMC's handling of a throwing initializer
+  turns out to be the cause. Both methods are cases the engines-native stream added in Phase 5, step 3 (`ulstzomt`):
+  the rest of that stream's cases agree with the JVM under JBMC and `auto` (jobs `20261107-012013`, `20261107-022319`),
+  so this finding is all that is left of the engine-priorities brief's "conformance job for the native stream's step 3
+  cases" (Next, item 8).
 - **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 2 pass.
-
-### VF-008: the conformance corpus under JBMC and auto: JBMC says `Verified` on `declaring`, which the JVM refutes
-
-- **Status**: closed by job `20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `8b45798e6417`, 2026-11-07, `vm-1`): step 5 ran `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` and it passed (646 s). Not the same job resubmitted, but the same test.
-- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203501-examples-071-and-013-under-strict-with-t` (at `7457928f1864`), step 6.
-- **Found**: `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` (tests/conformance.rs:749) reports 1 disagreement out of
-  73 cases: `declaring [assert result == n + 107]`, `--gaps strict` on JBMC says Verified ("2 properties proved over
-  n: int in 0.2 s; loops unwound 16 times with unwinding assertions") and the JVM refutes it. This is the unsoundness
-  VF-001 describes, now on a case the strict policy was meant to cover.
-- **Needs**: the engine-priorities-jbmc loop (or whoever owns the JBMC staging policy) to find why strict lets this
-  proof through (a model or exception path unmodelled?), and add the case to the brief's Progress.
-- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md); see also VF-001.
-- **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 6 pass.
-
-### VF-005: example 071 under strict: the first two proofs are `unverifiable` on JDK 25.0.5 where the job expects `verified` with no gap
-
-- **Status**: open
-- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203501-examples-071-and-013-under-strict-with-t` (at `7457928f1864`), step 3 (steps 1, 2, 4 and 5 passed: 013 under strict, and the contract library recorded on this JDK).
-- **Found**: the assertion that obligations 0 and 1 of example 071's result are `verified` with no gaps fails: they are
-  `unverifiable` with gaps `jdk-reference-method:java.util.Collection.toArray()...@jdk-25.0.5` and
-  `jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-25.0.5`. Step 2 ran the example's own build as expected,
-  so the example stands and the expectation about the models (Enum and List) is what does not hold: the models were
-  not enough on JDK 25.0.5, or the recorded library does not cover `Collection`. (The 41-example job saw 071#0 and 071#1 unresolved on `Enum.<init>`/`List.of`, a different gap set.)
-- **Update 2026-11-07**: job `20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `8b45798e6417`, `vm-1`) step 3 fails
-  in a new way: the stubs on no path are now named as "no gaps" in the output (`note: JBMC's call graph reaches 2 stubs
-  ... never enters ... no gaps: Collection.isEmpty(), Collection.toArray()`), but obligations 0 and 1 are still
-  `unverifiable` with an empty gap list, where the job expects `verified`. Steps 2 (071 build), 4 (013 under strict) and 5 (corpus) passed.
-  So the gap is gone and the verdict is not: something else in the strict path still withholds the proof.
-- **Needs**: the submitter to say whether the `Collection` methods should be modelled or the expectation relaxed, and
-  why an obligation with no gaps is `unverifiable` (see the verifier-output.txt of the job's 071 output).
-- **Tracked in**: [`llm-dlc/loops/engine-priorities.md`](../llm-dlc/loops/engine-priorities.md).
-- **Closes when**: the job, resubmitted unchanged at a commit that fixes it, passes step 3.
 
 ### VF-002: examples 147, 148 and 149 never reach a proof
 
@@ -109,6 +120,38 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
 
 ## Decided and closed
+
+### VF-008: the conformance corpus under JBMC and auto: JBMC says `Verified` on `declaring`, which the JVM refutes
+
+- **Status**: closed by job `20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `8b45798e6417`, 2026-11-07, `vm-1`): step 5 ran `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` and it passed (646 s). Not the same job resubmitted, but the same test.
+- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203501-examples-071-and-013-under-strict-with-t` (at `7457928f1864`), step 6.
+- **Found**: `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` (tests/conformance.rs:749) reports 1 disagreement out of
+  73 cases: `declaring [assert result == n + 107]`, `--gaps strict` on JBMC says Verified ("2 properties proved over
+  n: int in 0.2 s; loops unwound 16 times with unwinding assertions") and the JVM refutes it. This is the unsoundness
+  VF-001 describes, now on a case the strict policy was meant to cover.
+- **Needs**: the engine-priorities-jbmc loop (or whoever owns the JBMC staging policy) to find why strict lets this
+  proof through (a model or exception path unmodelled?), and add the case to the brief's Progress.
+- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md); see also VF-001.
+- **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 6 pass.
+
+### VF-005: example 071 under strict: the first two proofs are `unverifiable` on JDK 25.0.5 where the job expects `verified` with no gap
+
+- **Status**: closed by job `20261107-024759-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `854a0d8f756e`, 2026-11-07, `vm-1`): step 3, `071: the first two proofs stand with no gap`, passed, with obligations 0 and 1 verified and no gaps (the `Collection` stubs reached by JBMC's call graph and never entered), after the preflight's index fix (`xmslpytz`). Not the same job resubmitted, but the same assertion.
+- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203501-examples-071-and-013-under-strict-with-t` (at `7457928f1864`), step 3 (steps 1, 2, 4 and 5 passed: 013 under strict, and the contract library recorded on this JDK).
+- **Found**: the assertion that obligations 0 and 1 of example 071's result are `verified` with no gaps fails: they are
+  `unverifiable` with gaps `jdk-reference-method:java.util.Collection.toArray()...@jdk-25.0.5` and
+  `jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-25.0.5`. Step 2 ran the example's own build as expected,
+  so the example stands and the expectation about the models (Enum and List) is what does not hold: the models were
+  not enough on JDK 25.0.5, or the recorded library does not cover `Collection`. (The 41-example job saw 071#0 and 071#1 unresolved on `Enum.<init>`/`List.of`, a different gap set.)
+- **Update 2026-11-07**: job `20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam` (at `8b45798e6417`, `vm-1`) step 3 fails
+  in a new way: the stubs on no path are now named as "no gaps" in the output (`note: JBMC's call graph reaches 2 stubs
+  ... never enters ... no gaps: Collection.isEmpty(), Collection.toArray()`), but obligations 0 and 1 are still
+  `unverifiable` with an empty gap list, where the job expects `verified`. Steps 2 (071 build), 4 (013 under strict) and 5 (corpus) passed.
+  So the gap is gone and the verdict is not: something else in the strict path still withholds the proof.
+- **Needs**: the submitter to say whether the `Collection` methods should be modelled or the expectation relaxed, and
+  why an obligation with no gaps is `unverifiable` (see the verifier-output.txt of the job's 071 output).
+- **Tracked in**: [`llm-dlc/loops/engine-priorities.md`](../llm-dlc/loops/engine-priorities.md).
+- **Closes when**: the job, resubmitted unchanged at a commit that fixes it, passes step 3.
 
 ### VF-007: engine-priorities step 3: escaping exceptions: `auto --confirm` disagrees with the JVM on 12 claims, and an integration test times out
 

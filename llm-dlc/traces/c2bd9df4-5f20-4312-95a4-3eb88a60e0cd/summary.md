@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `c2bd9df4-5f20-4312-95a4-3eb88a60e0cd` (open) |
+| Session | `c2bd9df4-5f20-4312-95a4-3eb88a60e0cd` (ended) |
 | When | 2026-11-07 00:11 UTC to 2026-11-07 03:05 UTC (173 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.319 |
@@ -137,10 +137,6 @@ Filip Stankovic approved 7 value(s) at their terminal with sync.py allow; the co
 acb2d832  long-token  _ZZ…ex (107 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
 b9e8252b  long-token  _ZT…gt (40 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
 c7295890  long-token  _ZZ…ex (102 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
-
-### (in progress)
-
-change `souklvryurxp`, not yet described
 
 ### Record verification results for the stubs-on-no-path job: examples 071 and 013 under strict and the conformance corpus under JBMC and auto all pass
 
