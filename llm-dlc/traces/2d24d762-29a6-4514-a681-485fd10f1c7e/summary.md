@@ -84,6 +84,14 @@ change `xlsmwprlkmpz` · [log `719632e3f136`](https://terminalvalue.net/raw-trac
 
 Ran the four jobs queued at b6cc7ceb0c96 on vm-1: examples 150-152 and 160-161, 170-172 and 190-196 each gave their recorded verdict (as expected), and lib/tests/integration.rs passed unchanged. Collect applied 40 example output files (README, result.json, verifier-output) and regenerated the examples table. Only attention: 1-CPU quotas held the example steps back a few seconds; estimates were far over (minutes against under a minute). No findings added.
 
+### prune_workspaces.py only reports, and prints the delete command for a person to run
+
+change `tposrkskrpmn` · [log `719632e3f136`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/719632e3f1363999e9a66b6986979d3d1bca086c1090fe86c365cda4aae230e9.jsonl.gz)
+
+Without --delete the script only reports whether each workspace is safe to delete, and ends with the exact command that deletes the safe ones. Where a workspace is blocked only by files found nowhere else, it also prints the --archive DIR form. --delete now takes the workspaces by name and refuses unless a person is at a terminal, the check sync.py's allow approve uses: stdin and stdout are terminals, and CLAUDECODE is unset. It checks the named workspaces again, lists the safe ones and asks the person to type "delete" before forgetting and removing any. --archive writes, so it goes with --delete only.
+
+Verified by test_prune_workspaces.py, now 14 cases. The deleting ones run main() with the terminal check and the prompt patched. New: the report prints the command and deletes nothing; --delete is refused in an agent's shell; --delete needs names; a wrong answer deletes nothing; --archive without --delete is a usage error. On this repo the report prints python3 llm-dlc/tools/prune_workspaces.py --delete examples jbmc native, and the same --delete run from this session was refused, with ../in-the-loop-native still in place.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/719632e3f1363999e9a66b6986979d3d1bca086c1090fe86c365cda4aae230e9.jsonl.gz) has every step in between: reasoning, tool calls and their results.

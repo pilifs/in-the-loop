@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Find the jj workspaces of this repository that are no longer used, prove that deleting
-them loses nothing, and (with --delete) forget and delete them.
+"""Find the jj workspaces of this repository that are no longer used, and prove that deleting
+them loses nothing. It only reports, and prints the command that deletes the safe ones, for a
+person to run.
 
-Usage: python3 llm-dlc/tools/prune_workspaces.py [--into REV] [--delete] [--archive DIR] [NAME|PATH ...]
+Usage: python3 llm-dlc/tools/prune_workspaces.py [--into REV] [NAME|PATH ...]
+       python3 llm-dlc/tools/prune_workspaces.py --delete [--into REV] [--archive DIR] NAME ...
 
 Run from the default workspace. Without names it considers every workspace but the
 default: the ones jj still lists, and the directories of forgotten ones, siblings of the
-default workspace named REPO-* whose .jj/repo points at this repository. Without --delete
-it only reports.
+default workspace named REPO-* whose .jj/repo points at this repository.
 
 A workspace is deleted only when all of these hold. Anything else blocks it, and the report
 says why.
@@ -35,13 +36,17 @@ says why.
    history, so outside the build outputs they must match a file of the default workspace;
    llm-dlc/loop-summaries/, verification/.state/, .env files and the like usually do once a
    reconcile has copied them, and otherwise block. --archive DIR copies the files that
-   would be lost to DIR/NAME/PATH, checks each copy, and then counts them as recoverable.
+   would be lost to DIR/NAME/PATH, checks each copy, and then counts them as recoverable; it
+   writes, so it goes with --delete only.
 
---delete re-checks rule 1 just before each deletion, runs `jj workspace forget` for a listed
-workspace, and removes the directory. Session transcripts that Claude Code filed under the
-directory (~/.claude/projects/...) are left alone and named in the report: sync.py
-publishes from there. Exit status: 0 when every workspace considered is clear (or was
-deleted), 1 when any is blocked, 2 on a usage error.
+--delete is a person's, from their own terminal, as sync.py's `allow approve` is: it refuses
+without a terminal, or in Claude Code's environment. It takes the workspaces by name, checks
+them all again, lists the safe ones and asks to type "delete". Then, re-checking rule 1 just
+before each, it runs `jj workspace forget` for a listed workspace, removes the directory
+and prunes git's record of a worktree that is gone. Session transcripts that Claude Code
+filed under the directory (~/.claude/projects/...) are left alone and named in the report:
+sync.py publishes from there. Exit status: 0 when every workspace considered is safe (or
+was deleted), 1 when any is blocked or refused, 2 on a usage error.
 """
 
 from __future__ import annotations
@@ -49,6 +54,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import shlex
 import shutil
 import stat
 import subprocess
@@ -335,13 +341,55 @@ def human(n: int) -> str:
     return str(n)
 
 
+CONFIRMATION = "delete"
+
+
+def person_at_terminal() -> bool:
+    """A check that an agent's shell fails, as sync.py's: it has no terminal, and Claude Code marks its environment."""
+    return sys.stdin.isatty() and sys.stdout.isatty() and not os.environ.get("CLAUDECODE")
+
+
+def report(ws: Workspace) -> None:
+    kind = "listed" if ws.listed else "forgotten"
+    print(f"\n{ws.name} ({kind}, {ws.path}): {'BLOCKED' if ws.problems else 'safe to delete'}")
+    print(f"  {ws.files} file(s) checked, each in history or the default workspace" if not ws.lost else f"  {ws.files} file(s) checked")
+    if ws.regenerated:
+        print(f"  {human(ws.regenerated)} of gitignored build output not checked (regenerable)")
+    for p in ws.problems:
+        print(f"  - {p}")
+    for rel, size, ign in ws.lost[:50]:
+        print(f"    {rel} ({human(size)}{', gitignored' if ign else ''})")
+    if len(ws.lost) > 50:
+        print(f"    ... and {len(ws.lost) - 50} more")
+    if ws.sessions:
+        print(f"  its Claude Code sessions stay in {ws.sessions}")
+
+
+def command(names: list[str], into: str, archive: bool = False) -> str:
+    parts = ["python3", "llm-dlc/tools/prune_workspaces.py", "--delete"]
+    if into != "@-":
+        parts += ["--into", shlex.quote(into)]
+    if archive:
+        parts += ["--archive", "DIR"]
+    return " ".join(parts + [shlex.quote(n) for n in names])
+
+
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0], formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("workspaces", nargs="*", help="names or directories; default: every workspace but the default")
     ap.add_argument("--into", default="@-", help="the revision a workspace's work must be merged into (default: the default workspace's @-)")
-    ap.add_argument("--delete", action="store_true", help="forget and delete each workspace that is clear (default: report only)")
-    ap.add_argument("--archive", type=Path, help="copy files that would be lost to ARCHIVE/NAME/PATH first, then count them as kept")
+    ap.add_argument("--delete", action="store_true", help="forget and delete the named workspaces that are safe: a person only, from their own terminal")
+    ap.add_argument("--archive", type=Path, help="with --delete: copy files that would be lost to ARCHIVE/NAME/PATH first, then count them as kept")
     args = ap.parse_args(argv)
+    if args.archive is not None and not args.delete:
+        print("--archive writes files, so it goes with --delete only; without it the script only reports", file=sys.stderr)
+        return 2
+    if args.delete and not args.workspaces:
+        print("--delete takes the workspaces to delete by name, as the report's command lists them", file=sys.stderr)
+        return 2
+    if args.delete and not person_at_terminal():
+        print("refused: a person must delete workspaces, from their own terminal. Ask them to run this command.", file=sys.stderr)
+        return 1
 
     try:
         root = Path(run(["jj", "--ignore-working-copy", "workspace", "root", "--name", "default"]).decode().strip()).resolve()
@@ -369,44 +417,44 @@ def main(argv: list[str]) -> int:
             print("--archive must be outside the workspaces it may delete", file=sys.stderr)
             return 2
 
-    blocked = 0
     print(f"merged means reachable from {args.into} ({', '.join(c[:12] for c in repo.intos)})")
     for ws in spaces:
         check(repo, ws, args.archive)
-        kind = "listed" if ws.listed else "forgotten"
-        verdict = "BLOCKED" if ws.problems else "clear"
-        print(f"\n{ws.name} ({kind}, {ws.path}): {verdict}")
-        print(f"  {ws.files} file(s) checked, each in history or the default workspace" if not ws.lost else f"  {ws.files} file(s) checked")
-        if ws.regenerated:
-            print(f"  {human(ws.regenerated)} of gitignored build output not checked (regenerable)")
-        for p in ws.problems:
-            print(f"  - {p}")
-        for rel, size, ign in ws.lost[:50]:
-            print(f"    {rel} ({human(size)}{', gitignored' if ign else ''})")
-        if len(ws.lost) > 50:
-            print(f"    ... and {len(ws.lost) - 50} more")
-        if ws.sessions:
-            print(f"  its Claude Code sessions stay in {ws.sessions}")
-        if ws.problems:
-            blocked += 1
-            continue
-        if not args.delete:
-            continue
+        report(ws)
+    safe = [ws for ws in spaces if not ws.problems]
+    blocked = [ws for ws in spaces if ws.problems]
+    print(f"\n{len(spaces)} workspace(s): {len(safe)} safe to delete, {len(blocked)} blocked")
+
+    if not args.delete:
+        if safe:
+            print("\nTo delete the safe ones, run this yourself, in your own terminal (it asks to confirm):")
+            print(f"  {command([ws.name for ws in safe], args.into)}")
+        keep = [ws for ws in blocked if ws.lost and all(p.startswith(f"{len(ws.lost)} file(s)") for p in ws.problems)]
+        if keep:
+            print("Blocked only by files found nowhere else; to copy them to DIR first, then delete:")
+            print(f"  {command([ws.name for ws in keep], args.into, archive=True)}")
+        return 1 if blocked else 0
+
+    if not safe:
+        print("nothing to delete")
+        return 1
+    print("\nTo forget and delete: " + ", ".join(f"{ws.name} ({ws.path})" for ws in safe))
+    if input(f'Type "{CONFIRMATION}" to delete {len(safe)} workspace(s): ').strip() != CONFIRMATION:
+        print("nothing deleted")
+        return 1
+    failed = len(blocked)
+    for ws in safe:
         if again := users(ws.path):
-            print(f"  not deleted: in use now by {'; '.join(again)}")
-            blocked += 1
+            print(f"{ws.name}: not deleted, in use now by {'; '.join(again)}")
+            failed += 1
             continue
         if ws.listed:
             jj(root, "workspace", "forget", ws.name)
         shutil.rmtree(ws.path)
         # A workspace jj made as a git worktree leaves git's record of it; prune drops records of missing worktrees only.
         run(["git", "--git-dir", str(repo.git_dir), "worktree", "prune"])
-        print("  forgotten and deleted" if ws.listed else "  deleted")
-    clear = len(spaces) - blocked
-    print(f"\n{len(spaces)} workspace(s): {clear} clear{' (deleted)' if args.delete else ''}, {blocked} blocked")
-    if not args.delete and clear:
-        print("run again with --delete to forget and delete the clear ones")
-    return 1 if blocked else 0
+        print(f"{ws.name}: {'forgotten and deleted' if ws.listed else 'deleted'}")
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

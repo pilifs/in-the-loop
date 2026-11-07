@@ -2,15 +2,23 @@
 """Tests of prune_workspaces.py, each on a throwaway colocated jj repository with a second
 workspace. Run: python3 llm-dlc/tools/test_prune_workspaces.py"""
 
+import contextlib
+import importlib.util
+import io
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().with_name("prune_workspaces.py")
 ENV = {**os.environ, "JJ_USER": "Test", "JJ_EMAIL": "test@example.invalid", "JJ_CONFIG": "/dev/null"}
+spec = importlib.util.spec_from_file_location("prune_workspaces", SCRIPT)
+prune_workspaces = importlib.util.module_from_spec(spec)
+sys.modules["prune_workspaces"] = prune_workspaces  # its dataclasses look their module up there
+spec.loader.exec_module(prune_workspaces)
 
 
 def sh(cwd, *cmd):
@@ -39,6 +47,19 @@ class PruneTest(unittest.TestCase):
         r = subprocess.run([sys.executable, str(SCRIPT), *args], cwd=self.root, env=ENV, capture_output=True, text=True)
         return r.returncode, r.stdout + r.stderr
 
+    def delete(self, *args, answer="delete"):
+        """--delete as a person runs it: at a terminal, typing answer at the prompt."""
+        out = io.StringIO()
+        cwd = os.getcwd()
+        os.chdir(self.root)
+        try:
+            with mock.patch.dict(os.environ, ENV), mock.patch.object(prune_workspaces, "person_at_terminal", return_value=True), \
+                    mock.patch("builtins.input", return_value=answer), contextlib.redirect_stdout(out), contextlib.redirect_stderr(out):
+                code = prune_workspaces.main(["--delete", *args])
+        finally:
+            os.chdir(cwd)
+        return code, out.getvalue()
+
     def merge_side(self):
         """Merge the side workspace's commits into the default line, as a reconcile does."""
         sh(self.root, "jj", "new", "@-", "side@-", "-m", "merge")
@@ -48,10 +69,12 @@ class PruneTest(unittest.TestCase):
         (self.ws / "b.txt").write_text("side work\n")
         sh(self.ws, "jj", "commit", "-m", "side work")
         self.merge_side()
-        code, out = self.prune("side")
+        code, out = self.prune()
         self.assertEqual(code, 0, out)
-        self.assertIn("clear", out)
-        code, out = self.prune("--delete", "side")
+        self.assertIn("safe to delete", out)
+        self.assertIn("python3 llm-dlc/tools/prune_workspaces.py --delete side", out)
+        self.assertTrue(self.ws.exists())  # the report deletes nothing
+        code, out = self.delete("side")
         self.assertEqual(code, 0, out)
         self.assertFalse(self.ws.exists())
         self.assertNotIn("side", sh(self.root, "jj", "workspace", "list"))
@@ -60,7 +83,7 @@ class PruneTest(unittest.TestCase):
     def test_an_unmerged_commit_blocks(self):
         (self.ws / "b.txt").write_text("side work\n")
         sh(self.ws, "jj", "commit", "-m", "side work")
-        code, out = self.prune("--delete", "side")
+        code, out = self.delete("side")
         self.assertEqual(code, 1, out)
         self.assertIn("not in ::@-", out)
         self.assertTrue(self.ws.exists())
@@ -68,7 +91,7 @@ class PruneTest(unittest.TestCase):
     def test_an_edit_jj_never_snapshotted_blocks(self):
         self.merge_side()
         (self.ws / "a.txt").write_text("edited, never snapshotted\n")
-        code, out = self.prune("--delete", "side")
+        code, out = self.delete("side")
         self.assertEqual(code, 1, out)
         self.assertIn("a.txt", out)
         self.assertTrue((self.ws / "a.txt").exists())
@@ -80,7 +103,10 @@ class PruneTest(unittest.TestCase):
         self.assertIn(".env", out)
         self.assertIn("gitignored", out)
         archive = Path(self.tmp.name) / "archive"
-        code, out = self.prune("--delete", "--archive", str(archive), "side")
+        code, out = self.prune("--archive", str(archive), "side")
+        self.assertEqual(code, 2, out)  # it writes, so only with --delete
+        self.assertIn("--delete --archive DIR side", self.prune()[1])
+        code, out = self.delete("--archive", str(archive), "side")
         self.assertEqual(code, 0, out)
         self.assertEqual((archive / "side" / ".env").read_text(), "TOKEN=made-up-value\n")
         self.assertFalse(self.ws.exists())
@@ -113,7 +139,7 @@ class PruneTest(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("side (forgotten", out)
         (self.ws / "only-here.txt").write_text("nowhere else\n")
-        code, out = self.prune("--delete")
+        code, out = self.delete("side")
         self.assertEqual(code, 1, out)
         self.assertIn("only-here.txt", out)
         self.assertTrue(self.ws.exists())
@@ -121,7 +147,7 @@ class PruneTest(unittest.TestCase):
     def test_a_workspace_in_use_blocks(self):
         proc = subprocess.Popen(["sleep", "30"], cwd=self.ws)
         try:
-            code, out = self.prune("--delete", "side")
+            code, out = self.delete("side")
         finally:
             proc.kill()
             proc.wait()
@@ -149,6 +175,19 @@ class PruneTest(unittest.TestCase):
         brief.write_text("## Progress\n\n- Status: waiting on jobs 20261107-000000-x\n- Status: done\n")
         code, out = self.prune("repo-side")
         self.assertEqual(code, 0, out)
+
+    def test_delete_is_refused_in_an_agents_shell(self):
+        code, out = self.prune("--delete", "side")  # no terminal, and CLAUDECODE when an agent runs the tests
+        self.assertEqual(code, 1, out)
+        self.assertIn("refused: a person must delete workspaces", out)
+        self.assertTrue(self.ws.exists())
+
+    def test_delete_needs_names_and_the_typed_confirmation(self):
+        self.assertEqual(self.delete()[0], 2)
+        code, out = self.delete("side", answer="yes")
+        self.assertEqual(code, 1, out)
+        self.assertIn("nothing deleted", out)
+        self.assertTrue(self.ws.exists())
 
     def test_it_runs_only_from_the_default_workspace(self):
         r = subprocess.run([sys.executable, str(SCRIPT)], cwd=self.ws, env=ENV, capture_output=True, text=True)
