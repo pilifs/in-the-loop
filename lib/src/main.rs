@@ -201,6 +201,29 @@ enum Command {
         #[arg(long)]
         base: Option<PathBuf>,
     },
+    /// Compare two builds of an application with nothing written by hand: each entry point's observations proved
+    /// preserved, effects included (as `effects` does), and each changed kernel method checked under the
+    /// correspondence alignment proposes (as `align` proposes it), with the proof cache when given one; then every
+    /// obligation, what was reused, and every decision a person made or is asked to make.
+    Compare {
+        /// The old build's classes (one directory).
+        before: PathBuf,
+        /// The new build's classes (one directory).
+        after: PathBuf,
+        /// The proof cache's directory, for the kernel's checks: an unchanged rerun reuses each result, and a changed
+        /// pure helper is proved once and shared in its callers. Local; never commit it.
+        #[arg(long)]
+        cache: Option<PathBuf>,
+        /// The unwinding bound of every proof.
+        #[arg(long, default_value_t = 16)]
+        unwind: u32,
+        /// The longest array a proof considers.
+        #[arg(long, default_value_t = 8)]
+        max_array_length: u32,
+        /// Print the report as JSON instead of text.
+        #[arg(long)]
+        json: bool,
+    },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
         /// The contract file (`OrderLifecycle.decide.contract`).
@@ -969,6 +992,16 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             let all = checks.iter().all(|c| c.checked.as_ref().is_some_and(|k| k.outcome.verdict == jvmcontract::spec::Verdict::Verified));
             Ok(if all { 0 } else { 1 })
+        }
+        Command::Compare { before, after, cache, unwind, max_array_length, json } => {
+            let options = jvmcontract::compare::Options { before, after, cache, bounds: jvmcontract::spec::ClaimBounds { unwind, max_array_length } };
+            let report = jvmcontract::compare::run(&options).map_err(|u| Error::new(u.to_string()))?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&report).expect("serializable"));
+            } else {
+                print!("{}", jvmcontract::compare::render(&report));
+            }
+            Ok(if report.all_verified() { 0 } else { 1 })
         }
         Command::Tla { contract, output, module, operator } => {
             let contract = jvmcontract::contract::Contract::read(&contract)?;

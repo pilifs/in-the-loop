@@ -618,13 +618,57 @@ annotations or configuration, which S1 adds.
     older collapse rule, so 122 or 123 shown as asked is not a regression).
   - These ran at the streams' commits, before the merge; the merge changed `equivalence.rs`, so a rerun of 150–152,
     160–161 and 170–172 at the merge is what shows the combination.
-- **Next: Phase 5**, the joint example as examples 190–199. Inline today: the integration contract's 24 parts pass,
-  so each stream's part reaches its verdict on the fixture. What Phase 5 adds is one run through all of them in
-  order (alignment's proposal fed to heap's check without a hand-written mapping, the effect obligation, the cache
-  on a rerun, the helper's proof in the caller), the honest-incompleteness case, the effort count, and the fixture
-  notes heap left: the `alias-to-copy` copy also throws for `quantity <= 0`, so `expected.json`'s "every field agrees"
-  holds only for a quantity of 1 or more; `allocations: 0` is not checked; the kernel claim is reused for `discount`,
-  whose inputs don't match it.
+- **Phase 5, the joint run** (2026-11-07, this loop's second cycle): `jvmcontract compare BEFORE AFTER [--cache DIR]`
+  (`lib/src/compare.rs`) runs the four parts together with nothing written by hand: the entry points by their
+  observation specs and effect traces, and every changed kernel pair alignment matches checked by `heap::check_with`
+  under alignment's own proposal and the proof cache; then the obligations, the reuse and the effort.
+  `lib/tests/compare.rs` holds it to the table, inline (15 s for the fixture and its six defects). By row:
+  - Automatic mapping, passes: `total`'s and `withQuantity`'s correspondences are alignment's, inferred and proposed,
+    and no person decided anything.
+  - Object correspondence, passes: both are verified over the constructor-made domain, which the result names, and
+    each proposal's evidence is "proved for" its claim key.
+  - Boundary preservation, passes: `POST /quotes`'s result, exception, status and event are preserved, and each is an
+    obligation.
+  - Exact reuse, **partial**: the rerun's kernel results are exact hits from the first run, but the entry points'
+    effect checks are not cached. The effect check proves a rewritten copy of each build with recording stubs, and
+    whether a key covers the stubs and the environment model is not checked yet.
+  - Compositional reuse, passes: `Pricing.discount`'s own proof is used in `total`'s.
+  - Defect detection, passes: all 12 cases of `golden/expected.json`.
+    - offset, dropped-effect and duplicated-effect are refuted, the entry points' witnesses replayed on a JVM.
+    - offset's `total` is proved again, not reused.
+    - alias-to-copy's `withQuantity` is refuted on `identity:result==q` alone.
+    - outside-domain's `total` is verified within the constructor-made domain.
+    - route-change's `POST /quotes` is unresolved, with four observation-change questions.
+    - The stale-cache defect is exercised for the kernel only, since the entry points are uncached.
+  - Honest incompleteness, passes: `POST /quotes/text` is unresolved (string concatenation). So are two kernel pairs,
+    named: `Quote#cents` moved to `Money#cents`, and the instance method `Quote#quantity`.
+  - Effort, passes: the run counts decisions in five categories (zero for the correct refactor), lists its questions,
+    and lists the five assumptions nobody decided.
+
+  Reconciled on the way:
+  - Alignment proposed an output relation for a result whose class changed shape. Heap held that relation for a
+    person's approval, yet compares such a result under the equations of an input of the same class itself
+    (`equivalence.rs`). So `withQuantity` was unresolved under alignment's proposal and verified under the golden
+    correspondence. Alignment now leaves the relation out when an input's equations already say the same, term by
+    term (`Mapping::result_implied`). The `Q#make` case, with no input of the result's class, keeps its relation.
+  - Heap's fixture note: the `alias-to-copy` copy threw for a quantity below 1, so the defect was refuted on the
+    exception instead of the identity. The copy is now made for one item and then given the quantity. Rechecked on a
+    JVM over 270 cases: every field agrees with `after`'s, and `result == q` never holds.
+    Heap's two tests of the defect (`tests/heap.rs`) now expect the identity alone where they expected the exception
+    too.
+  - Added for the joint run:
+    - `heap::check_with` (a cache directory, and a `Reused` report of the claim key, the exact hit and the callees);
+    - `proof_cache::key_mark` and `key_since`;
+    - the fixture's compiler, moved to `lib/tests/foundations_fixture/`, shared with `tests/foundations.rs`.
+- **Next**, in order:
+  - The entry points' checks under the proof cache, with a key that covers the recording stubs and the environment
+    model: the rest of the exact-reuse row, and the stale-cache defect at the boundary (route-change, or a change to
+    configuration).
+  - Examples 190–199 for the joint example, run by `build.py` through `compare`.
+  - Heap's two remaining fixture notes:
+    - the golden domain's `allocations: 0` is not checked;
+    - the integration contract checks `discount` under the kernel claim, whose input `q` it doesn't have. The joint
+      run derives each pair's claim, so it isn't affected.
 - Status: working
 
 ## Loop settings

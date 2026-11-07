@@ -622,8 +622,9 @@ fn an_offset_total_is_refuted_under_the_correspondence_by_a_recipe_of_the_new_sh
 fn the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_be_made() {
     use jvmcontract::spec::{ObservationState, Verdict as V};
     let Some(root) = kernel_builds() else { return };
-    // The fixture's copy is made by the constructor, which rejects a quantity of 0 or less: there the defect throws
-    // as well. Elsewhere only the identity relation tells the versions apart.
+    // The fixture's copy is made for one item and then given the quantity, so it agrees with q in every field for
+    // every quantity: only the identity relation tells the versions apart. Under a scope that leaves out the
+    // quantities the constructor refuses, the witness is one the constructor could make.
     let claim = kernel_claim("shop.Pricing#withQuantity", &[]);
     let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join("alias-to-copy"), "shop.Pricing#withQuantity");
     options.engine = jvmcontract::Engine::Native;
@@ -647,12 +648,12 @@ fn the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_
     let stated = o.stated.as_ref().unwrap();
     assert_eq!(stated.observations.identities, ["result == q"]);
     assert_eq!(stated.domain.input_objects, Some((1, 2)), "a Quote before, a Quote of a Money now");
-    // As the claim has it, over every quantity: refuted, with the relation accounted for.
+    // As the claim has it, over every quantity: refuted on the identity relation alone, the rest unresolved.
     let Some(r) = kernel_check("alias-to-copy", &kernel_claim("shop.Pricing#withQuantity", &[identity_result_q()])) else { return };
     let o = r.expect("supported");
     assert_eq!(o.verdict, V::Refuted, "{o:?}");
-    assert!(o.accounting.iter().any(|a| a.observation == "identity:result==q"));
-    assert_eq!(state_of(&o, "exception"), ObservationState::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "identity:result==q"), ObservationState::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "exception"), ObservationState::Unresolved, "a refutation proves nothing of the rest: {o:?}");
 }
 
 #[test]
@@ -665,7 +666,7 @@ fn a_witness_that_differs_only_where_the_claim_does_not_look_refutes_nothing() {
     let o = r.expect("supported");
     assert_eq!(o.verdict, V::Unresolved, "{o:?}");
     assert_eq!(state_of(&o, "result"), ObservationState::Unresolved);
-    assert!(o.problem.as_deref().unwrap().contains("differ only in exception"), "{o:?}");
+    assert!(o.problem.as_deref().unwrap().contains("differ only in identity:result==q"), "{o:?}");
     assert!(o.witness.is_some(), "the witness is still shown");
 }
 

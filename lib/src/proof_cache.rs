@@ -599,6 +599,17 @@ thread_local! {
     static KEYS: RefCell<Vec<(String, ClaimKey)>> = const { RefCell::new(Vec::new()) };
 }
 
+/// How many claim keys checks on this thread have been prepared under so far: a mark for [`key_since`].
+pub fn key_mark() -> usize {
+    KEYS.with(|k| k.borrow().len())
+}
+
+/// The claim key the latest check of `target` (`pkg.Class#method`) on this thread was prepared under with the
+/// proof cache since `mark` ([`key_mark`]), if one was: what a proposal checked by that proof names as its evidence.
+pub fn key_since(target: &str, mark: usize) -> Option<ClaimKey> {
+    KEYS.with(|k| k.borrow().iter().skip(mark).rev().find(|(t, _)| t == target).map(|(_, key)| key.clone()))
+}
+
 /// At most this share of a caller's time goes to proving its changed helpers; what they take comes out of it.
 const HELPER_SHARE: u32 = 2;
 

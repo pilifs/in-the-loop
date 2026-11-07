@@ -29,6 +29,25 @@ const DEADLINE_SECONDS: u64 = 300;
 /// rather than proving something outside the claim. Claims about effects (an environment model) are the
 /// observations stream's, and refused.
 pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
+    check_with(claim, before, after, None, &mut Reused::default())
+}
+
+/// What a check under the proof cache reused, from [`check_with`].
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Reused {
+    /// The claim key the check was prepared under, when the cache was used and the claim was cacheable.
+    pub key: Option<super::cache::ClaimKey>,
+    /// The stored result was the result: the same claim key, from an earlier run.
+    pub exact: Option<super::cache::Reuse>,
+    /// Changed pure helpers proved equivalent by a check of their own and taken as one function in both versions
+    /// in this check, each with its proof's claim key.
+    pub callees: Vec<super::cache::Reuse>,
+}
+
+/// [`check`], under the proof cache in `cache` when one is given (`equivalence --cache`): the stored result of the
+/// same claim is the result, a verified or refuted one is stored, and each changed pure helper is proved first and
+/// shared. What was reused is written to `reused`.
+pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Option<&Path>, reused: &mut Reused) -> Result<Outcome, Unsupported> {
     let unsupported = |what: String| Unsupported::new(Part::Heap, what);
     let subject = &claim.contract.subject;
     if !subject.contains('#') {
@@ -54,6 +73,7 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
     options.max_array_length = claim.bounds.max_array_length;
     options.timeout_seconds = DEADLINE_SECONDS;
     options.correspondence = claim.correspondence.clone();
+    options.cache = cache.map(Path::to_path_buf);
     // The domain's parameters that may be null or one object (step H2); a field of an input object that may be
     // null or shared is not made yet.
     if let Some(d) = &claim.domain {
@@ -71,10 +91,18 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
         witness: None,
         problem: Some(problem),
     };
+    let mark = crate::proof_cache::key_mark();
     let checked = match crate::equivalence::run(&options) {
         Ok(o) => o,
         Err(e) => return Ok(unresolved_all(String::new(), format!("the check could not run: {e}"))),
     };
+    reused.key = cache.and_then(|_| crate::proof_cache::key_since(subject, mark));
+    reused.exact = checked.reuse.clone().filter(|r| matches!(r, super::cache::Reuse::Exact { .. }));
+    reused.callees = checked.stated.iter().flat_map(|s| &s.assumptions).filter(|a| a.basis == crate::statement::Basis::Proved).filter_map(|a| {
+        let key = a.id.clone()?;
+        let callee = a.text.split('(').next()?.trim().to_string();
+        Some(super::cache::Reuse::Callee { callee, key: super::cache::ClaimKey(key) })
+    }).collect();
     let domain = checked.domain.clone().unwrap_or_default();
     let Some(stated) = &checked.stated else {
         // Refused before a statement: a named gap of the check.

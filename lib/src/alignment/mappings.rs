@@ -332,7 +332,33 @@ impl Mapping {
                 if fields.is_empty() { vec![own] } else { fields }
             })
             .collect();
+        if self.result_implied(p) {
+            correspondence.outputs.retain(|o| o.observation != "result");
+        }
         correspondence
+    }
+
+    /// Whether the proposal's relation between the results, of a class that changed shape, says no more than the
+    /// field equations of an input of that same class: each old field at the path the input's equations give it.
+    /// The regression check compares such a result under those equations itself (`equivalence.rs`, a result of the
+    /// classes of a parameter the correspondence relates), so the relation adds nothing; written as an output relation
+    /// it would stand in for the equality the contract requires, and wait for a person's approval of a change that
+    /// is only the class's representation.
+    fn result_implied(&self, p: &Proposal) -> bool {
+        let (Some(relation), ResultKind::Fields, Some(class)) = (p.relation.as_deref(), self.result.kind, self.result.fields.as_ref().map(|f| &f.class)) else { return false };
+        let terms: Vec<(&str, &str)> = relation.split(" && ").filter_map(|t| t.trim().strip_prefix("previous.")?.split_once(" == ")).collect();
+        if terms.len() != relation.split(" && ").count() {
+            return false;
+        }
+        self.inputs.iter().filter(|i| i.fields.as_ref().is_some_and(|f| &f.class == class)).any(|i| {
+            let prefix = format!("old.{}.", i.old);
+            let equations: Vec<(&str, &str)> = p.fields.iter().filter_map(|e| Some((e.old.strip_prefix(&prefix)?, e.new.as_str()))).collect();
+            equations.len() == terms.len()
+                && terms.iter().all(|(field, at)| {
+                    let Some(path) = at.strip_prefix("result.") else { return false };
+                    equations.iter().any(|(f, new)| f == field && new.strip_prefix("new.").and_then(|n| n.split_once('.')).is_some_and(|(_, rest)| rest == path))
+                })
+        })
     }
 }
 

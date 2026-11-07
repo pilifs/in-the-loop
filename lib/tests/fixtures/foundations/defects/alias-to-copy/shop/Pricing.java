@@ -20,6 +20,11 @@ public final class Pricing {
     /** The same quote for another quantity: changed in place and handed back. */
     public static Quote withQuantity(Quote q, int quantity) {
         q.quantity = quantity;
-        return new Quote(q.amount, quantity);
+        // The copy is made for one item and then given the quantity, so that it agrees with q in every field for
+        // every quantity, the constructor's refusal of a quantity below 1 included: identity is all that tells them
+        // apart.
+        Quote copy = new Quote(q.amount, 1);
+        copy.quantity = quantity;
+        return copy;
     }
 }

@@ -31,6 +31,7 @@ pub mod capabilities;
 pub mod classfile;
 pub mod classpath;
 pub mod closure;
+pub mod compare;
 pub mod config;
 pub mod failures;
 pub mod contract_library;

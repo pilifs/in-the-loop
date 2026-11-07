@@ -586,10 +586,10 @@ fn code_that_did_not_change_over_a_class_that_did_is_mapped_through_the_class() 
     let relation = "previous.cents == result.amount.cents && previous.quantity == result.quantity";
     assert_eq!((m.proposals.len(), m.proposals[0].fields.clone(), m.proposals[0].relation.as_deref()), (1, q.clone(), Some(relation)));
     let hints = alignment::hints(&a);
-    let want = Correspondence {
-        inputs: q.into_iter().chain([equation("old.quantity", "new.quantity")]).collect(),
-        outputs: vec![Relation { observation: "result".into(), holds: "old.result.cents == new.result.amount.cents && old.result.quantity == new.result.quantity".into() }],
-    };
+    // The result is a Quote, the class q's equations already relate, by the same equations: the regression check
+    // compares it under them itself, so the correspondence has no output relation for it, which would stand in for
+    // the contract's equality and wait for a person (the joint run, `tests/compare.rs`, proves it so).
+    let want = Correspondence { inputs: q.into_iter().chain([equation("old.quantity", "new.quantity")]).collect(), outputs: Vec::new() };
     assert_eq!(correspondences(&hints, "shop.Pricing#withQuantity"), vec![&want]);
     // The receiver's class changed: `this` is internal and related field by field, and the int result is equal.
     let m = mapping(&a, "shop.Quote#quantity");
