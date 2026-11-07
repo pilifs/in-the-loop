@@ -392,6 +392,62 @@ impl Sat for Logged {
     }
 }
 
+/// A solver for tests: CaDiCaL, with every call made [`Slow::DELAY`] slower, as on a loaded machine. What it answers
+/// is CaDiCaL's, so a check that depends only on the solver's work gives the same outcome on it.
+#[cfg(test)]
+pub struct Slow {
+    inner: Cadical,
+}
+
+#[cfg(test)]
+impl Slow {
+    pub const DELAY: std::time::Duration = std::time::Duration::from_millis(300);
+
+    pub fn boxed() -> Box<dyn Sat> {
+        Box::new(Slow { inner: Cadical::new() })
+    }
+}
+
+#[cfg(test)]
+impl Sat for Slow {
+    fn signature(&self) -> String {
+        format!("slow {}", self.inner.signature())
+    }
+
+    fn record(&self) -> crate::statement::Sat {
+        self.inner.record()
+    }
+
+    fn add_clause(&mut self, lits: &[Lit]) {
+        self.inner.add_clause(lits);
+    }
+
+    fn set_limit(&mut self, seconds: Option<f32>) {
+        self.inner.set_limit(seconds);
+    }
+
+    fn set_work_limit(&mut self, conflicts: Option<u64>) -> bool {
+        self.inner.set_work_limit(conflicts)
+    }
+
+    fn work(&self) -> u64 {
+        self.inner.work()
+    }
+
+    fn solve(&mut self, assumptions: &[Lit]) -> Option<bool> {
+        std::thread::sleep(Self::DELAY);
+        self.inner.solve(assumptions)
+    }
+
+    fn value(&self, lit: Lit) -> Option<bool> {
+        self.inner.value(lit)
+    }
+
+    fn variables(&self) -> i32 {
+        self.inner.variables()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

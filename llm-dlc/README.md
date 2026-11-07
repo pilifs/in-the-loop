@@ -159,7 +159,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-11-07 21:51 UTC | [VM disk space and jj workspaces](traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | 1 | 4 | ended |
 | 2026-11-07 21:50 UTC | [00316fc7-52d4-4009-9502-48e1d40764a8](traces/00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | 1 | 4 | ended |
-| 2026-11-07 21:29 UTC | [2d24d762-29a6-4514-a681-485fd10f1c7e](traces/2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 25 | 17 | open |
+| 2026-11-07 21:29 UTC | [2d24d762-29a6-4514-a681-485fd10f1c7e](traces/2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 25 | 18 | open |
 | 2026-11-07 18:55 UTC | [Multi agent feature stream run](traces/3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | 15 | 18 | ended |
 | 2026-11-07 16:31 UTC | [ed84ffdf-8f6d-4b88-815e-d0f713e92faf](traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/summary.md) | 4 | 25 | ended |
 | 2026-11-07 16:26 UTC | [367bd874-02ec-44ea-8935-70e651fad013](traces/367bd874-02ec-44ea-8935-70e651fad013/summary.md) | 1 | 2 | ended |

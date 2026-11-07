@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:35:16.678Z",
-  "duration_seconds": 3933,
+  "ended": "2026-11-07T22:42:53.070Z",
+  "duration_seconds": 4390,
   "stats": {
     "turns": 25,
-    "api_calls": 199,
-    "tool_calls": 201,
-    "tool_errors": 5,
+    "api_calls": 215,
+    "tool_calls": 217,
+    "tool_errors": 6,
     "compactions": 4,
-    "peak_context_tokens": 194418,
+    "peak_context_tokens": 228183,
     "usage": {
-      "input_tokens": 404,
-      "output_tokens": 105474,
-      "cache_read_input_tokens": 18657153,
-      "cache_creation_input_tokens": 487179
+      "input_tokens": 436,
+      "output_tokens": 121215,
+      "cache_read_input_tokens": 22048039,
+      "cache_creation_input_tokens": 520944
     }
   },
   "tools": {
-    "Bash": 175,
+    "Bash": 191,
     "Read": 12,
     "Edit": 5,
     "AskUserQuestion": 3,
@@ -100,24 +100,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:35:16.678Z",
+      "ended": "2026-11-07T22:42:53.070Z",
       "turns": 7,
-      "api_calls": 95,
+      "api_calls": 111,
       "usage": {
-        "input_tokens": 190,
-        "output_tokens": 58065,
-        "cache_read_input_tokens": 11345179,
-        "cache_creation_input_tokens": 181339
+        "input_tokens": 222,
+        "output_tokens": 73806,
+        "cache_read_input_tokens": 14736065,
+        "cache_creation_input_tokens": 215104
       },
-      "peak_context_tokens": 194418
+      "peak_context_tokens": 228183
     }
   ],
   "log": {
-    "sha256": "2c26267add2e466014e55aa1aba37f89dbc4fc2d3cbc09f84d5f17c1a56acd22",
-    "bytes": 5884399,
-    "lines": 1926,
-    "gzip_bytes": 1158301,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/2c26267add2e466014e55aa1aba37f89dbc4fc2d3cbc09f84d5f17c1a56acd22.jsonl.gz"
+    "sha256": "e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57",
+    "bytes": 6242672,
+    "lines": 2068,
+    "gzip_bytes": 1208110,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -256,6 +256,14 @@
       "summary": "VF-002: examples 147 and 148 resubmitted, and 149's wording corrected to the two contracts its proof rests on (verification pending)",
       "body": "Jobs 20261107-223430-example-147-b11-advised-contracts-a-cont and 20261107-223430-example-148-b11-advised-contracts-full-j supersede the 165152 pair. The cleanup loop's timebox stopped those after build.py's stage_contracts and contracts_digest were fixed to read the example's own folder (xmsmzwoy), and they were never rerun. Since the examples were written, the own checker computes Integer.numberOfLeadingZeros exactly, so that call is no gap. Example 149's passing result already reads 'relying on 2 contracts for gaps of the tool's own checker, 2 tested', so its summary, explanation, resolution and two notes now say two contracts, and a note records the pass; its page and examples/index.json were re-rendered with build.py --render-only 149. Example 148's title says one contract proved against the JDK and two tested. As the user decided, it is run first and reworded to what its result shows, since only the run tells whether the agent's numberOfLeadingZeros contract is still proved and counted; its job now expects the verdict alone, which is all build.py checks. test_build.py's 189 tests pass.\n\nverification/findings.md, VF-002: the user's decision and the resubmission. The commit that recorded the review's decisions said it recorded VF-002's, but that edit never applied (its anchor didn't match); it is recorded here.",
       "log_sha256": "2c26267add2e466014e55aa1aba37f89dbc4fc2d3cbc09f84d5f17c1a56acd22"
+    },
+    {
+      "change_id": "nktsywyrkqyyqluryslmvrtxnkuxtuvk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The own checker's search for a smaller witness is bounded by work, not time, so the witness is the same on every machine (verification pending)",
+      "body": "After the first violation, check() in lib/src/bmc/mod.rs searches the remaining paths for one that fails in an earlier stage. It used to stop at as long again as the first violation took, at least a second, so a slower or loaded machine could stop it sooner and report another witness (the verdict was the same either way). This was the last clock dependency in the own checker after VF-010, listed for review by the cleanup loop. The search now stops at as much solver work again as the first violation took (conflicts, at least PROBE_CONFLICTS, 10,000) and as many paths again (at least WITNESS_PATHS, 64): the loop checks the budget before each path, and solve() gives each call only the work left. A solver with no conflict limit keeps the time rule. lib/README.md says so.",
+      "log_sha256": "e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57"
     }
   ],
   "logs": {
@@ -324,6 +332,12 @@
       "lines": 814,
       "gzip_bytes": 570741,
       "url": "https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/8f991c89ffc44cbfcd50422dd2d72ec8e3789da87bd375f645076d7b317427bc.jsonl.gz"
+    },
+    "e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57": {
+      "bytes": 6242672,
+      "lines": 2068,
+      "gzip_bytes": 1208110,
+      "url": null
     },
     "fcbaafbe77e14b238656184366ae4bf00d1a2d5007c0479f288827e05fff9b26": {
       "bytes": 4021438,

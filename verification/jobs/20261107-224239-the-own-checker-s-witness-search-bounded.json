@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-224239-the-own-checker-s-witness-search-bounded",
+  "title": "The own checker's witness search bounded by work: lib/tests/integration.rs, alignment.rs and observations.rs",
+  "description": "After the first violation, the own checker searches the remaining paths for a witness in an earlier stage (lib/src/bmc/mod.rs, check). That search used to stop at as long again as the first violation took, at least a second, so on a loaded or slower machine it could stop sooner and report another witness: the last clock dependency in the own checker after VF-010. It now stops at as much solver work again (conflicts, at least PROBE_CONFLICTS) and as many paths again (at least 64), the same on every machine; a solver with no conflict limit keeps the time rule. The library's unit tests (211, with the reproducer the_search_for_a_smaller_witness_does_not_depend_on_the_clock, which fails on the old code under a solver 300 ms slower per call), foundations, compare, effects, heap, summaries and conformance (non-ignored) passed inline. This job runs the suites that weren't run inline, which several of run JBMC, at the commit that makes the change. Expected: every non-ignored test passes.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "native:probes"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/tests/integration.rs"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-07T22:42:39+00:00",
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "as the cleanup merge's integration job (2m37s, peak 2.0 GiB), plus two smaller suites"
+  },
+  "steps": [
+    {
+      "name": "integration, alignment and observations tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration --test alignment --test observations",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

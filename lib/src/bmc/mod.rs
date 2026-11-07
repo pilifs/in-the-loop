@@ -686,6 +686,10 @@ const MOST_MODELS: usize = 16;
 /// decided on some runs and not others.
 const PROBE_CONFLICTS: u64 = 10_000;
 
+/// The fewest paths the search for a smaller witness runs past the first violation, when fewer ran before it
+/// ([`Engine::witness_budget`]).
+const WITNESS_PATHS: u64 = 64;
+
 struct Engine<'a> {
     cp: &'a ClassPath,
     b: Blaster,
@@ -700,6 +704,11 @@ struct Engine<'a> {
     merge_after: u64,
     unwind: u32,
     deadline: Instant,
+    /// Set at the first violation: the paths and the solver's work (conflicts, [`Blaster::work`]) at which the search
+    /// for a smaller witness stops, as many again as the first violation took, at least [`WITNESS_PATHS`] paths and
+    /// [`PROBE_CONFLICTS`] conflicts. Counted in work, not time, so that the witness reported is the same on every
+    /// machine and every run, as the probes are (VF-010).
+    witness_budget: Option<(u64, u64)>,
     max_paths: u64,
     paths: u64,
     /// The harness's scalar parameters: slot, type and bits, for reading the input off a model.
@@ -791,6 +800,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         merge_after: options.merge_after,
         unwind: options.unwind,
         deadline: started + options.timeout,
+        witness_budget: None,
         max_paths: options.max_paths,
         paths: 0,
         params: Vec::new(),
@@ -934,8 +944,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
         // search, since another path may have one in the first stage, as it does when the first path to fail is an
-        // overflow and the second a rounding. The search for a better one is given as long again as the first took,
-        // within the deadline; the violation stands whatever the remaining paths do.
+        // overflow and the second a rounding. The search for a better one is given as much work again as the first
+        // took (`witness_budget`), within the deadline; the violation stands whatever the remaining paths do.
         let mut best: Option<(usize, Input)> = None;
         let violation = |engine: &Engine, best: Option<(usize, Input)>| {
             let (stage, input) = best.expect("a violation");
@@ -943,6 +953,11 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
             outcome(engine, Verdict::Violation, input, stage, None)
         };
         loop {
+            if let Some((paths, work)) = engine.witness_budget {
+                if engine.paths >= paths || engine.b.work() >= work {
+                    break 'search Ok(violation(&engine, best));
+                }
+            }
             let path = match engine.next_path() {
                 Ok(Some(path)) => path,
                 Ok(None) => break,
@@ -964,8 +979,14 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
                     };
                     if best.as_ref().is_none_or(|(s, _)| stage < *s) {
                         if best.is_none() {
-                            let elapsed = started.elapsed();
-                            engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                            if engine.b.set_work_limit(None) {
+                                let (paths, work) = (engine.paths, engine.b.work());
+                                engine.witness_budget = Some((paths + paths.max(WITNESS_PATHS), work + work.max(PROBE_CONFLICTS)));
+                            } else {
+                                // A solver with no conflict limit is given as long again as the first took, at least a second.
+                                let elapsed = started.elapsed();
+                                engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                            }
                         }
                         best = Some((stage, input));
                     }
@@ -1318,14 +1339,21 @@ impl<'a> Engine<'a> {
         input
     }
 
-    /// Asks the solver, which is given the time left until the deadline (the search for a smaller witness after
-    /// a violation shortens it, and one call must not run past it). A model is only taken when it is a real one:
+    /// Asks the solver, which is given the time left until the deadline, and during the search for a smaller witness
+    /// after a violation the work left in [`Engine::witness_budget`]. A model is only taken when it is a real one:
     /// while the solver's choice for a division left to it is not the real division of the operands it chose, the
     /// circuit of that division is built and the solver asked again, so a `true` means an execution exists and
     /// its model (the parameters' values, the sides of later branches) is one.
     fn solve(&mut self, assumptions: &[Lit]) -> Result<bool, Stop> {
         let deadline = self.deadline;
-        self.solve_until(assumptions, deadline, None)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
+        let Some((_, work)) = self.witness_budget else {
+            return self.solve_until(assumptions, deadline, None)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()));
+        };
+        let spent = || Stop::Budget("the search for a smaller witness spent its work".into());
+        let left = work.checked_sub(self.b.work()).filter(|&w| w > 0).ok_or_else(spent)?;
+        let answer = self.solve_until(assumptions, deadline, Some(left));
+        self.b.set_work_limit(None);
+        answer?.ok_or_else(spent)
     }
 
     /// Asks the solver about the other side of a branch, for as much work as all the solver calls so far did
@@ -3704,6 +3732,42 @@ mod tests {
         assert_eq!(out.stage.as_deref(), Some("[0:20]"));
         let a: i64 = out.raw_inputs[&0].parse().unwrap();
         assert!((0..=20).contains(&a), "{a}");
+    }
+
+    /// After the first violation the search for a smaller witness is bounded by the solver's work and the paths
+    /// run, not by the clock: on a solver as slow as a loaded machine's, the witness is the one a fast solver gives.
+    #[test]
+    fn the_search_for_a_smaller_witness_does_not_depend_on_the_clock() {
+        // The path explored first (a < 0) fails only at -7000000, outside every stage. The other runs past eight
+        // branches, each a solver call, before it fails at 3, in the first stage.
+        let cp = harness("(I)V", |code, writer, fail| {
+            let negative = code.label();
+            let done = code.label();
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, negative);
+            for k in 1..=8 {
+                code.load(Kind::Int, 0);
+                let c = writer.pool.integer(1000 + k);
+                code.ldc(c);
+                code.if_icmp(Cond::Eq, done);
+            }
+            code.load(Kind::Int, 0);
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.goto(done);
+            code.bind(negative);
+            code.load(Kind::Int, 0);
+            let big = writer.pool.integer(-7_000_000);
+            code.ldc(big);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(done);
+        });
+        let fast = run(&cp);
+        assert_eq!(fast.verdict, Verdict::Violation, "{:?}", fast.problem);
+        assert_eq!((fast.stage.as_deref(), fast.raw_inputs[&0].as_str()), (Some("[0:20]"), "3"));
+        let slow = check(&cp, "Check", "check", &Options { solver: sat::Slow::boxed, ..Options::default() }).unwrap();
+        assert_eq!(slow.verdict, Verdict::Violation, "{:?}", slow.problem);
+        assert_eq!((slow.stage.as_deref(), slow.raw_inputs[&0].as_str(), slow.paths), (Some("[0:20]"), "3", fast.paths));
     }
 
     #[test]
