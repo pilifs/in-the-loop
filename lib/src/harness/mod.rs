@@ -123,6 +123,11 @@ pub struct Corresponds {
     /// The correspondence's output relations for the parameter's fields as the calls leave them (H5's rest): each
     /// compared in place of the equations about the path it is for, which still make the previous object.
     pub relations: Vec<FieldRelation>,
+    /// Whether the two objects have the same shape and no input equation is about them (H5's rest): the equations
+    /// are then the identity on every primitive field path, implied rather than stated, so that output relations
+    /// for some of its fields have the rest to be compared with. They are neither assumed of the two objects as
+    /// made, which come from the same leaves as without a correspondence, nor said in the domain's words.
+    pub same_shape: bool,
 }
 
 impl Corresponds {
@@ -1079,7 +1084,7 @@ impl Layout {
                     let p = &self.params[*i];
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
-                Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.is_some() => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
+                Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| !c.same_shape) => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
                 Slot::Record { name, record, .. } => (format!("{}{}", record.domain_part(name), self.or_null(name)), false),
             })
             .collect();
@@ -1726,6 +1731,10 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         for (i, slot) in records.iter().enumerate() {
             let Slot::Record { record, before: Some(previous), .. } = slot else { continue };
             let (Some(c), Some(fields), Some(old_fields)) = (&previous.corresponds, &record.fields, &previous.fields) else { continue };
+            // Implied equations of two objects of the same shape (H5's rest) are only compared.
+            if c.same_shape {
+                continue;
+            }
             let (new_local, old_local) = object_slots(i);
             let scratch = code.max_locals;
             let used = compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, &[], params, scratch, outside);
@@ -2569,7 +2578,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                         text
                     };
                     s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", chosen("before", old_made), chosen("after", new_made)));
-                    if let Some(c) = &previous.corresponds {
+                    if let Some(c) = previous.corresponds.as_ref().filter(|c| !c.same_shape) {
                         s.push_str(&format!("        if (!{}) {{ return; }} // the correspondence's input equations, of the objects as made\n", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations)));
                     }
                 }

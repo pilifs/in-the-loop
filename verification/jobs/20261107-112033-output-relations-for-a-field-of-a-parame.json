@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-112033-output-relations-for-a-field-of-a-parame",
+  "title": "Output relations for a field of a parameter of the same shape (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an output relation for a field of an object parameter whose two versions have the same shape and which no input equation relates, field:l.quantity, compared in the harness in place of equality for that path while every other primitive path is still compared for equality, and nothing assumed of the two objects as made. Over the object kernel of lib/tests/heap.rs (objects.Kernel#bump, which adds one to l.quantity before and two in the defect build), under new.l.quantity == old.l.quantity + 1: the defect build is verified and the after build (which still adds one) is refuted in field:l.quantity, its witness run on a JVM. Inline on the own checker both pass. This job runs the ignored test that repeats the two under --engine jbmc and under --engine auto --confirm, where JBMC checks the same harness.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/spec/heap.rs",
+      "lib/src/harness/mod.rs",
+      "lib/src/witness.rs",
+      "lib/src/equivalence.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines: defect Verified, after Violation with its witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T11:20:33+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 4 small JBMC runs over one int field"
+  },
+  "steps": [
+    {
+      "name": "same-shape field relations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored the_same_shape_relations_have",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

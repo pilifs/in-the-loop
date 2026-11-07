@@ -124,7 +124,8 @@ pub struct Options {
     /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations giving
     /// field paths of the previous version's parameter from the new one's, or an expression over them
     /// ([`crate::spec::heap::relate`]), output relations for such a parameter's fields as the calls leave them in
-    /// place of the equations about them, and an output relation for the result in place of
+    /// place of the equations about them, or for the fields of one of the same shape in both versions in place of
+    /// equality for their paths ([`crate::spec::heap::relate_same_shape`]), and an output relation for the result in place of
     /// [`Options::results_agree_when`] ([`crate::spec::heap::output_relation`]).
     pub correspondence: Option<crate::spec::Correspondence>,
     /// Object parameters made by their constructor that may be null (`--nullable`, step H2 of
@@ -992,6 +993,17 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                         Err(gap) => return refuse(&mut out, line, gap),
                     }
                 }
+                // Of the same shape and with no input equation about it, but output relations for its fields (H5's
+                // rest): each in place of equality for its path, the other paths compared for equality.
+                Some(mut b) if correspondence.is_some() && r.is_made() && b.is_made() && b.same_shape(r) && crate::spec::heap::relate_same_shape(correspondence.expect("checked"), &before_names[i], name, r, &b).is_some() => {
+                    match crate::spec::heap::relate_same_shape(correspondence.expect("checked"), &before_names[i], name, r, &b).expect("checked") {
+                        Ok(related) => {
+                            b.corresponds = Some(related);
+                            Some((r.clone(), Some(b)))
+                        }
+                        Err(gap) => return refuse(&mut out, line, gap),
+                    }
+                }
                 Some(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
                 Some(b) if r.is_made() || b.is_made() => {
                     return refuse(&mut out, line, format!("parameter {name} is made differently in the two versions: {} before, {} now; relate them with a correspondence's input equations between their fields, such as old.{name}.f == new.{name}.g", b.domain_part(name), r.domain_part(name)));
@@ -1014,7 +1026,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         for (root, r) in crate::spec::heap::field_relation_roots(c) {
             let taken = before_names.iter().position(|n| *n == root).and_then(|i| both_records.get(i)).and_then(|b| b.as_ref()).and_then(|(_, b)| b.as_ref()).and_then(|b| b.corresponds.as_ref()).is_some_and(|c| c.relations.iter().any(|x| x.observation(&root) == r.observation));
             if !taken {
-                return refuse(&mut out, line, format!("the correspondence's output relation for {} ({}) is about {root}, which is not an object parameter the correspondence's input equations relate: only relations for such a parameter's fields, and one for the result, are supported yet", r.observation, r.holds));
+                return refuse(&mut out, line, format!("the correspondence's output relation for {} ({}) is about {root}, which is not an object parameter made by its constructor that the correspondence's input equations relate or that has the same shape in both versions: only relations for such a parameter's fields, and one for the result, are supported yet", r.observation, r.holds));
             }
         }
     }
@@ -1065,7 +1077,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             both_records.iter().flatten().find_map(|(r, b)| match (&r.fields, b) {
                 // Equations that read a parameter (H5's rest) are about the parameter in this call, not about every
                 // object of its classes.
-                (Some(f), Some(b)) if f.class == new.class && b.fields.as_ref().is_some_and(|g| g.class == old.class) => b.corresponds.as_ref().filter(|c| !c.equations.iter().any(harness::FieldEquation::reads_parameters)).map(|c| c.equations.clone()),
+                (Some(f), Some(b)) if f.class == new.class && b.fields.as_ref().is_some_and(|g| g.class == old.class) => b.corresponds.as_ref().filter(|c| !c.same_shape && !c.equations.iter().any(harness::FieldEquation::reads_parameters)).map(|c| c.equations.clone()),
                 _ => None,
             })
         };
@@ -1734,7 +1746,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 if !layout.records().is_empty() {
                     ways.push("rejected by a record's constructor");
                 }
-                if layout.records().iter().any(|s| matches!(s, harness::Slot::Record { before: Some(b), .. } if b.corresponds.is_some())) {
+                if layout.records().iter().any(|s| matches!(s, harness::Slot::Record { before: Some(b), .. } if b.corresponds.as_ref().is_some_and(|c| !c.same_shape))) {
                     ways.push("outside the correspondence's input equations");
                 }
                 if previous.as_ref().is_some_and(|b| b.arguments.is_some()) {

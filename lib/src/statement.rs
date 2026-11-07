@@ -422,7 +422,7 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
     }
     for slot in layout.records() {
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
-            if let Some(c) = &previous.corresponds {
+            if let Some(c) = previous.corresponds.as_ref().filter(|c| !c.same_shape) {
                 out.push(Assumption {
                     kind: AssumptionKind::Constructible,
                     text: format!("the new version's constructor {} accepts the arguments of {name}, and the previous version's {} accepts those the correspondence's input equations give it from them, the two objects as made satisfying the equations ({}): an input either constructor rejects, or on which they do not hold, is skipped, so the statement is about the pairs of objects the correspondence relates", record.describe(), previous.describe(), c.equations.iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", ")),
@@ -493,6 +493,17 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
         .filter_map(|s| match s {
             // The equations an output relation for a field takes the place of are left out, and the relation
             // follows (H5's rest): `p: under the correspondence; p.cents under the output relation …`.
+            // Of two objects of the same shape (H5's rest), the paths compared, then the relations: `l: price.cents;
+            // l.quantity under the output relation …`.
+            Slot::Record { name, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| c.same_shape) => previous.corresponds.as_ref().map(|c| {
+                let paths = c.compared_equations().iter().map(|e| e.old.clone()).collect::<Vec<_>>().join(", ");
+                let mut parts = if paths.is_empty() { Vec::new() } else { vec![paths] };
+                for r in &c.relations {
+                    let path = if r.path.is_empty() { name.clone() } else { format!("{name}.{}", r.path) };
+                    parts.push(format!("{path} under the output relation {}", r.holds.trim()));
+                }
+                format!("{name}: {}", parts.join("; "))
+            }),
             Slot::Record { name, before: Some(previous), .. } if previous.corresponds.is_some() => previous.corresponds.as_ref().map(|c| {
                 let equations = c.compared_equations().iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", ");
                 let mut text = if equations.is_empty() { format!("{name}: under the correspondence") } else { format!("{name}: under the correspondence, {equations}") };

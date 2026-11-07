@@ -206,7 +206,15 @@ fn compared_observations(stated: &crate::statement::Statement) -> Vec<String> {
                 paths.extend(parts.filter_map(|p| p.split_once(" under the output relation ")).filter_map(|(path, _)| path.strip_prefix(&format!("{name}.")).map(str::to_string)));
                 paths
             }
-            None => rest.split(", ").map(str::to_string).collect(),
+            // The paths compared, then under a relation for some of them (H5's rest) each path it compares:
+            // `price.cents; l.quantity under the output relation …`.
+            None => rest
+                .split("; ")
+                .flat_map(|part| match part.split_once(" under the output relation ") {
+                    Some((path, _)) => path.strip_prefix(&format!("{name}.")).map(str::to_string).into_iter().collect::<Vec<_>>(),
+                    None => part.split(", ").filter(|p| !p.is_empty()).map(str::to_string).collect(),
+                })
+                .collect(),
         };
         out.extend(paths.iter().map(|p| Observation::FieldPath { path: format!("{name}.{p}") }.id()));
         out.push(Observation::FieldPath { path: name.to_string() }.id());
@@ -524,7 +532,32 @@ pub(crate) fn relate(correspondence: &Correspondence, old_name: &str, new_name: 
         Ok(r) => r,
         Err(gap) => return Some(Err(gap)),
     };
-    Some(Ok(Corresponds { leaves, equations, relations }))
+    Some(Ok(Corresponds { leaves, equations, relations, same_shape: false }))
+}
+
+/// How the previous version's object for the parameter `old_name` (the new version's `new_name`) is compared with
+/// the new one's where the two have the same shape and no input equation is about it, but the correspondence has
+/// output relations for its fields (H5's rest): each relation in place of equality for its path, and every other
+/// primitive field path compared for equality as without a correspondence, by implied equations that make the
+/// previous object from the same leaves and are not assumed of the two as made. None when no output relation is
+/// about it; `Err` names what is not supported.
+pub(crate) fn relate_same_shape(correspondence: &Correspondence, old_name: &str, new_name: &str, new: &RecordType, old: &RecordType) -> Option<Result<Corresponds, String>> {
+    let (Some(_), Some(old_fields)) = (&new.fields, &old.fields) else { return None };
+    let whole = format!("field:{old_name}");
+    if !correspondence.outputs.iter().any(|r| r.observation == whole || r.observation.strip_prefix(whole.as_str()).is_some_and(|rest| rest.starts_with('.'))) {
+        return None;
+    }
+    let relations = match field_relations(correspondence, old_name, new_name, new, old) {
+        Ok(r) => r,
+        Err(gap) => return Some(Err(gap)),
+    };
+    // An array field is compared by its elements, which no equation between paths says.
+    if let Some((path, _)) = old_fields.paths().into_iter().find(|(p, t)| !t.is_primitive() && !relations.iter().any(|r| r.covers(p))) {
+        return Some(Err(format!("the correspondence's output relation for {old_name}'s fields leaves {old_name}.{path} to be compared for equality, and it is an array: an output relation for a field of a parameter of the same shape in both versions is supported yet only where its other fields are primitives or objects of them")));
+    }
+    let equations = old_fields.paths().into_iter().filter(|(_, t)| t.is_primitive()).map(|(p, ty)| FieldEquation { old: p.clone(), new: p, ty, computed: None }).collect();
+    let leaves = (0..old.components.len()).map(Source::Leaf).collect();
+    Some(Ok(Corresponds { leaves, equations, relations, same_shape: true }))
 }
 
 /// The correspondence's output relations for the parameter's fields as the calls leave them (H5's rest), each for
@@ -839,6 +872,40 @@ mod tests {
         other.outputs.push(super::super::Relation { observation: "field:pp.cents".into(), holds: "true".into() });
         assert!(relate(&other, "p", "p", &new, &old, &[]).unwrap().unwrap().relations.is_empty());
         assert_eq!(field_relation_roots(&other).iter().map(|(root, _)| root.as_str()).collect::<Vec<_>>(), ["pp"]);
+    }
+
+    #[test]
+    fn a_parameter_of_the_same_shape_takes_relations_for_its_fields_and_keeps_equality_for_the_rest() {
+        let money_fields = Fields { class: "m/Money".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] };
+        let money = RecordType::made("m/Money", vec![("cents".into(), Type::Long)], Vec::new(), money_fields.clone());
+        let line_of = |extra: Option<(&str, FieldKind)>| {
+            let mut fields = vec![("price".to_string(), FieldKind::Object(Box::new(money_fields.clone()))), ("quantity".to_string(), FieldKind::Value(Type::Int))];
+            fields.extend(extra.map(|(n, k)| (n.to_string(), k)));
+            RecordType::made("m/Line", vec![("price".into(), Type::Object("m/Money".into())), ("quantity".into(), Type::Int)], vec![money.clone()], Fields { class: "m/Line".into(), fields })
+        };
+        let line = line_of(None);
+        let mut c = correspondence(&[]);
+        assert!(relate_same_shape(&c, "l", "l", &line, &line).is_none(), "no relation is about l");
+        c.outputs.push(super::super::Relation { observation: "field:l.quantity".into(), holds: "new.l.quantity == old.l.quantity + 1".into() });
+        let related = relate_same_shape(&c, "l", "l", &line, &line).expect("about l").expect("supported");
+        assert!(related.same_shape);
+        // Every primitive path in an implied equation, the leaves the same, and the relation in place of quantity's.
+        assert_eq!(related.equations.iter().map(|e| (e.old.as_str(), e.new.as_str())).collect::<Vec<_>>(), [("price.cents", "price.cents"), ("quantity", "quantity")]);
+        assert_eq!(related.leaves, [Source::Leaf(0), Source::Leaf(1)]);
+        assert_eq!(related.compared_equations().iter().map(|e| e.old.as_str()).collect::<Vec<_>>(), ["price.cents"]);
+        assert_eq!(related.relations.len(), 1);
+        // Another parameter's relation is not l's; an array left to equality and an unknown path are refused.
+        let mut other = correspondence(&[]);
+        other.outputs.push(super::super::Relation { observation: "field:ll.quantity".into(), holds: "true".into() });
+        assert!(relate_same_shape(&other, "l", "l", &line, &line).is_none());
+        let tagged = line_of(Some(("marks", FieldKind::Array(Type::Array(Box::new(Type::Int))))));
+        assert!(relate_same_shape(&c, "l", "l", &tagged, &tagged).unwrap().unwrap_err().contains("leaves l.marks to be compared for equality, and it is an array"));
+        let mut whole = correspondence(&[]);
+        whole.outputs.push(super::super::Relation { observation: "field:l".into(), holds: "true".into() });
+        assert!(relate_same_shape(&whole, "l", "l", &tagged, &tagged).unwrap().is_ok(), "a relation for the whole object covers the array");
+        let mut unknown = correspondence(&[]);
+        unknown.outputs.push(super::super::Relation { observation: "field:l.count".into(), holds: "true".into() });
+        assert!(relate_same_shape(&unknown, "l", "l", &line, &line).unwrap().unwrap_err().contains("names count, which is not a field path"));
     }
 
     #[test]

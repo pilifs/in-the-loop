@@ -598,9 +598,48 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Shared files changed: `equivalence.rs` (the identity relations put on the layout, the observations' words, the
     replays' evaluation of them), `lib/README.md` (step 5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (two
     builds, the `price` test's refusal words).
-- Next: H5's rest, sixth step: an output relation for a field of an object parameter whose two versions have the same
-  shape and no input equations (`field:l.quantity` on the object kernel, refused today as "not an object parameter
-  the correspondence's input equations relate"), compared in place of field-by-field equality for its path.
+- **H5's rest, sixth step (2026-11-07): output relations for a field of a parameter of the same shape.** An object
+  parameter made by its constructor whose two versions have the same shape, and which no input equation relates,
+  takes output relations for its fields too: a `bump` that now adds two is related by `field:l.quantity`, `new.l.quantity
+  == old.l.quantity + 1` ([`spec::heap::relate_same_shape`](../../lib/src/spec/heap.rs)). It is a `Corresponds` with
+  `same_shape` set: implied equations, the identity on every primitive path, and the leaves the same, so the objects
+  are made as without a correspondence and nothing is assumed of them as made (no input check in the bytecode or the
+  Java, the plain constructible assumption and domain words); after the calls each relation is compared in place of
+  equality for its path and every other path still for equality, through the third step's machinery (the views, the
+  relation's evaluation in the replays, the notes). The observations say `l: price.cents; l.quantity under the output
+  relation …`, which `spec::heap::check`'s `compared_observations` reads, so the accounting is the other relations':
+  unresolved without approval, changed with approval when proved, refuted when the witness breaks it, the other
+  paths preserved. Also: a counterexample over an object compared field by field without a correspondence now names
+  each primitive path its replays read differently beside `field:l` (`Replayed::object_paths` kept for every such
+  parameter, `witness::differences`), so a claim requiring `field:l.quantity` is refuted in it where before it was
+  unresolved. Results of the same classes stay compared field by field. Refused by name: one whose other fields
+  include an array (a relation for the whole object covers it), and, as before, a path the object doesn't have, one
+  for a parameter that is neither related nor of the same shape (the words now say both).
+  - Evidence inline: `lib/tests/heap.rs`, two tests on the object kernel's `bump`: the defect verified under the
+    relation, the observations' words, the domain, the constructible assumption and the harness's source checked
+    (`(l_before.price.cents == l_after.price.cents) && (l_after.quantity == l_before.quantity + 1)`, no input
+    check); `after` refuted in `field:l.quantity` alone with the note, on the JVM; under a relation for
+    `field:l.price.cents` alone the defect refuted in `field:l, field:l.quantity`, on the JVM; equality written out
+    giving the default's verdicts; an unknown path and an `int` parameter's field named. Through
+    `spec::heap::check`: refuted in `field:l.quantity` without the relation; unresolved under it, the price
+    preserved; approved by `field:l.quantity` or `field:l`, the defect changed with approval and `after` refuted.
+    The plain `bump` refutation now asserts `differs = [field:l, field:l.quantity]`; the `price` test's former
+    refusal of `field:l.quantity` is now a verified check beside the result relation. A unit test of
+    `relate_same_shape` (the implied equations and leaves, another parameter's relation, the array refusal and the
+    whole object covering it, an unknown path). Unit tests (199), `heap.rs` (42), `foundations.rs`, `conformance.rs`
+    and `integration.rs` (64, run one test at a time, 106 s) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-112033`, the new ignored test in `heap.rs`,
+    the two checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `defect` verified and `after`
+    refuted with its witness run on a JVM.
+  - Not yet: a parameter of the same shape with an array field beside a relation for another field; a result of the
+    same classes under a relation for a field (results are related by the result's relation only).
+  - Shared files changed: `equivalence.rs` (the same-shape arm, the refusal's words, results and the vacuity reason
+    not under implied equations, the `correspondence` option's doc), `statement.rs` (the constructible assumption
+    and the observations' words for a same-shape parameter), `lib/README.md` (step 5, `differs`,
+    `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (two tests, the `price` test, the `bump` assertion).
+- Next: H5's rest, seventh step: an input equation whose expression reads another object parameter's fields
+  (`old.l.total == new.l.price * new.o.count`, refused today as "reads the fields of the new version's o, which is
+  not the parameter in l's place"), made before the call and compared after it as a primitive parameter's read is.
 - Status: working
 
 ## Loop settings

@@ -302,7 +302,9 @@ pub struct Replayed {
     /// (`amount.cents`), for a relation between the results (step H5); a path through null is absent.
     pub result_paths: BTreeMap<String, Value>,
     /// Under output relations for an object parameter's fields (H5's rest), each such parameter's primitive field
-    /// paths as the call left it, by name, for evaluating them over both replays; a path through null is absent.
+    /// paths as the call left it, by name, for evaluating them over both replays, and those of each object
+    /// parameter of the same shape in both versions compared without a correspondence, for naming the paths two
+    /// replays differ in; a path through null is absent.
     pub object_paths: Vec<(String, BTreeMap<String, Value>)>,
 }
 
@@ -550,6 +552,10 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 if let (false, Some(fields), Value::Ref(_)) = (c.relations.is_empty(), fields, v) {
                     object_paths.push((name.clone(), primitive_paths(&m, *v, fields)));
                 }
+            } else if let (None, Some(old), Some(new), Value::Ref(_)) = (&previous.corresponds, &previous.fields, &record.fields, v) {
+                // Of the same shape without a correspondence, compared field by field: its paths too, so that a
+                // difference names each path it is in (H5's rest).
+                object_paths.push((name.clone(), primitive_paths(&m, *v, if prefix.is_some() { old } else { new })));
             }
         }
     }
@@ -601,7 +607,8 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
 /// The observations two replays of the same input differ in, by id ([`crate::spec::Observation::id`]), as the
 /// harness compares them: `exception` for the category, `result` (when both returned; through the correspondence's
 /// view under one), `array:a` for an array parameter as left, `field:q` for an object parameter as left (its view
-/// under a correspondence, with `field:q.cents` for each previous version's path the views read differently), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
+/// under a correspondence, with `field:q.cents` for each previous version's path the views read differently, or
+/// each primitive path read differently of an object of the same shape compared without one), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
 pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> Vec<String> {
     let mut out = Vec::new();
     let view = |r: &Replayed, name: &str| r.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
@@ -628,6 +635,18 @@ pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], argume
         let left = |r: &Replayed| view(r, name).or_else(|| r.objects_after.iter().find(|(n, _)| n == name).map(|(_, t)| t.clone()));
         if left(before) != left(after) {
             out.push(format!("field:{name}"));
+            // Of the same shape without a correspondence, each primitive path read differently, `field:l.quantity`.
+            let paths = |r: &Replayed| r.object_paths.iter().find(|(n, _)| n == name).map(|(_, p)| p.clone());
+            if let (None, None, Some(x), Some(y)) = (view(before, name), view(after, name), paths(before), paths(after)) {
+                let mut names: Vec<&String> = x.keys().chain(y.keys()).collect();
+                names.sort();
+                names.dedup();
+                for path in names {
+                    if format!("{:?}", x.get(path)) != format!("{:?}", y.get(path)) {
+                        out.push(format!("field:{name}.{path}"));
+                    }
+                }
+            }
             // Through a correspondence's views, each previous version's path read differently too, `field:q.cents`.
             if let (Some(x), Some(y)) = (view(before, name), view(after, name)) {
                 let parts = |v: &str| -> Vec<(String, String)> {

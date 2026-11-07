@@ -361,6 +361,8 @@ fn a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted() {
     let c = o.counterexample.as_ref().expect("a counterexample");
     assert!(c.before.contains("leaving l=Line{price=Money{cents="), "{}", c.before);
     assert_ne!(c.before, c.after, "the replays differ");
+    // The object and each path it differs in, so that a claim requiring the path is refuted in it (H5's rest).
+    assert_eq!(c.differs, ["field:l", "field:l.quantity"], "{}", o.output);
     confirmed_on_the_jvm(&o);
     let Some(same) = regression("after", "bump") else { return };
     assert_eq!(same.verdict, Verdict::Verified, "{}", same.output);
@@ -735,11 +737,12 @@ fn a_result_that_became_a_value_object_is_related_by_the_correspondences_output_
     assert_eq!((cx.before.as_str(), cx.after.as_str()), ("0", "Money[cents=1]"));
     assert_eq!(cx.differs, ["result"]);
     confirmed_on_the_jvm(&o);
-    // Refused by name: a relation for another observation, and one with --results-agree-when too.
-    let mut gap = correspondence(&[], None);
-    gap.outputs.push(jvmcontract::spec::Relation { observation: "field:l.quantity".into(), holds: "old.l.quantity == new.l.quantity".into() });
-    let o = related(root, "after", "objects.Kernel#price", gap, "gap");
-    assert!(o.problem.as_deref().unwrap().contains("is about l, which is not an object parameter the correspondence's input equations relate"), "{}", o.output);
+    // Refused by name: a relation for an identity relation the check does not observe.
+    // A relation for a field of l, of the same shape in both versions, is taken beside it (H5's rest).
+    let mut beside = correspondence(&[], Some("old.result == new.result.cents"));
+    beside.outputs.push(jvmcontract::spec::Relation { observation: "field:l.quantity".into(), holds: "old.l.quantity == new.l.quantity".into() });
+    let o = related(root, "after", "objects.Kernel#price", beside, "beside");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let mut gap = correspondence(&[], Some("old.result == new.result.cents"));
     gap.outputs.push(jvmcontract::spec::Relation { observation: "identity:result==l".into(), holds: "true".into() });
     let o = related(root, "after", "objects.Kernel#price", gap, "gap-identity");
@@ -1609,6 +1612,132 @@ fn the_identity_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
         for (build, expected) in cases {
             let o = related_on(engine, confirm, root, build, "shop.Pricing#withQuantity", identity_relation(ALWAYS_A_COPY), "identity");
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+// Output relations for a field of a parameter whose two versions have the same shape and no input equations (H5's
+// rest): the object kernel's `bump`, whose defect adds two where the previous version added one.
+
+const ONE_MORE: &str = "new.l.quantity == old.l.quantity + 1";
+
+/// A correspondence with no input equations and one output relation, for `field:l.quantity`.
+fn quantity_relation(holds: &str) -> jvmcontract::spec::Correspondence {
+    let mut c = correspondence(&[], None);
+    c.outputs.push(jvmcontract::spec::Relation { observation: "field:l.quantity".into(), holds: holds.into() });
+    c
+}
+
+#[test]
+fn an_output_relation_for_a_field_of_a_parameter_of_the_same_shape_compares_it_in_place_of_equality() {
+    let Some(root) = object_builds() else { return };
+    let target = "objects.Kernel#bump";
+    // `+= 2` in place of `+= 1`, refuted without a relation, is verified under one saying the new version adds one more.
+    let o = related(root, "defect", target, quantity_relation(ONE_MORE), "bump-more");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.objects, [format!("l: price.cents; l.quantity under the output relation {ONE_MORE}")]);
+    // The two objects are made from the same leaves as without a correspondence: no equation is assumed of them.
+    let domain = o.domain.as_deref().unwrap();
+    assert!(!domain.contains("in the previous version"), "{domain}");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("either version's constructor Line(price: Money(cents: long), quantity: int) accepts the arguments of l")), "{:?}", stated.assumptions);
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("&& (l_before.price.cents == l_after.price.cents) && (l_after.quantity == l_before.quantity + 1)"), "{source}");
+    assert!(!source.contains("of the objects as made"), "{source}");
+    // The new version's `+ 1`, the same as before, breaks it, in l.quantity alone, on a witness the JVM runs too.
+    let o = related(root, "after", target, quantity_relation(ONE_MORE), "bump-same");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["field:l.quantity"], "{}", o.output);
+    assert!(o.output.contains(&format!("l.quantity as the calls leave it is not related by {ONE_MORE}")), "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // Its other paths are still compared for equality: under a relation for l.price.cents alone, the defect is
+    // refuted in the quantity.
+    let mut price = correspondence(&[], None);
+    price.outputs.push(jvmcontract::spec::Relation { observation: "field:l.price.cents".into(), holds: "true".into() });
+    let o = related(root, "defect", target, price, "bump-price");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert_eq!(o.counterexample.as_ref().unwrap().differs, ["field:l", "field:l.quantity"], "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // Equality written out gives the default's verdicts.
+    let same = quantity_relation("new.l.quantity == old.l.quantity");
+    assert_eq!(related(root, "after", target, same.clone(), "bump-equal").verdict, Verdict::Verified);
+    assert_eq!(related(root, "defect", target, same, "bump-equal").verdict, Verdict::Violation);
+    // Refused by name: a path the previous version's Line doesn't have, and a relation for an int parameter's field.
+    let mut unknown = correspondence(&[], None);
+    unknown.outputs.push(jvmcontract::spec::Relation { observation: "field:l.count".into(), holds: "true".into() });
+    let o = related(root, "after", target, unknown, "bump-unknown");
+    assert!(o.problem.as_deref().unwrap().contains("names count, which is not a field path of the previous version's Line (price.cents, quantity)"), "{}", o.output);
+    let mut int = correspondence(&[], None);
+    int.outputs.push(jvmcontract::spec::Relation { observation: "field:quantity".into(), holds: "true".into() });
+    let o = related(root, "after", "objects.Kernel#withQuantity", int, "with-int");
+    assert!(o.problem.as_deref().unwrap().contains("is about quantity, which is not an object parameter made by its constructor that the correspondence's input equations relate or that has the same shape in both versions"), "{}", o.output);
+}
+
+/// The claim over the object kernel's `bump`, `l` anchored (identity) and `l.quantity` and `l.price.cents`
+/// required, under `correspondence`.
+fn bump_claim(c: jvmcontract::spec::Correspondence) -> jvmcontract::spec::CanonicalClaim {
+    use jvmcontract::spec::{Derivation, ExternalInput, Observation};
+    let fields = [Observation::FieldPath { path: "l.quantity".into() }, Observation::FieldPath { path: "l.price.cents".into() }];
+    let mut claim = kernel_claim("objects.Kernel#bump", &fields);
+    claim.contract.inputs = vec![ExternalInput { name: "l".into(), ty: "objects.Line".into(), derivation: Derivation::Identity }];
+    let domain = claim.domain.as_mut().unwrap();
+    domain.classes = vec!["objects.Line".into(), "objects.Money".into()];
+    domain.bounds.before.input_objects = 2;
+    domain.bounds.after.input_objects = 2;
+    claim.correspondence = Some(c);
+    claim
+}
+
+#[test]
+fn a_required_field_of_a_parameter_of_the_same_shape_under_an_output_relation_is_unresolved_until_approved() {
+    use jvmcontract::spec::{ApprovedChange, ObservationState, Verdict as V};
+    let Some(root) = object_builds() else { return };
+    let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)).expect("supported");
+    // Without the relation, adding two is refuted in the quantity.
+    let o = check("defect", &bump_claim(correspondence(&[], None)));
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "field:l.quantity"), ObservationState::Refuted);
+    // Under it, the contract still requires equality: unresolved until a person approves, the price preserved.
+    let mut claim = bump_claim(quantity_relation(ONE_MORE));
+    let o = check("defect", &claim);
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "field:l.quantity"), ObservationState::Unresolved);
+    assert_eq!(state_of(&o, "field:l.price.cents"), ObservationState::Preserved);
+    assert!(o.problem.as_deref().unwrap().contains("compares field:l.quantity in place of equality"), "{o:?}");
+    // Approved, by its path or the object's: changed with approval where it holds, refuted where it doesn't.
+    for approved in ["field:l.quantity", "field:l"] {
+        claim.contract.approved_changes = vec![ApprovedChange { observation: approved.into(), text: "a bump adds two now".into() }];
+        let o = check("defect", &claim);
+        assert_eq!(o.verdict, V::Verified, "{approved}: {o:?}");
+        assert_eq!(state_of(&o, "field:l.quantity"), ObservationState::ChangedWithApproval);
+        assert_eq!(state_of(&o, "field:l.price.cents"), ObservationState::Preserved);
+        let o = check("after", &claim);
+        assert_eq!(o.verdict, V::Refuted, "{approved}: {o:?}");
+        assert_eq!(state_of(&o, "field:l.quantity"), ObservationState::Refuted);
+    }
+}
+
+/// The output relations for a field of a parameter of the same shape under JBMC and under `auto --confirm`: the
+/// same verdicts as on the own checker, each refutation's witness run on a JVM, since JBMC checks the same harness.
+/// A pipeline job (`cargo test --release --test heap -- --ignored same_shape_relations`).
+#[test]
+#[ignore = "runs JBMC on the same-shape field relations: a pipeline job"]
+fn the_same_shape_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = object_builds() else { return };
+    let cases = [("defect", Verdict::Verified), ("after", Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, expected) in cases {
+            let o = related_on(engine, confirm, root, build, "objects.Kernel#bump", quantity_relation(ONE_MORE), "same-shape");
             let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
             if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
                 failures.push(format!("{engine:?} confirm={confirm} {build}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
