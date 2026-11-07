@@ -562,9 +562,45 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Shared files changed: `equivalence.rs` (the new parameters passed to `relate`, `roots`' empty new root, results
     not related by an equation that reads a parameter), `lib/README.md` (step 5, `spec::heap::check`'s paragraph),
     `lib/tests/heap.rs` (the line kernel).
-- Next: H5's rest, fifth step: an output relation for an identity relation under a correspondence
-  (`identity:result==q`, a boolean over `old.result == old.q` and `new.result == new.q`), compared in place of "holds
-  before iff it holds now" and accounted as the field relations are.
+- **H5's rest, fifth step (2026-11-07): output relations for identity relations.** A correspondence's output
+  relation for an identity relation the check observes, `identity:result==q` (named either way round), is a boolean
+  over whether it holds in each version, written `old.result == old.q` and `new.result == new.q` (either way round,
+  or with `!=`), compared in place of "holds before iff it holds now"
+  ([`harness::IdentityRelation`](../../lib/src/harness/mod.rs) on `Layout::identity_relations`, made by
+  [`spec::heap::identity_relations`](../../lib/src/spec/heap.rs) over `Layout::identity_pairs`): a `withQuantity`
+  that now hands back a copy on purpose is related by `old.result == old.q && new.result != new.q`. The harness
+  computes each version's relation into a boolean by `if_acmp` and evaluates the relation over the two; the Java
+  rendering says `((a == q_before) && !(b == q_after))`; the observations say `result == q, under the output relation
+  …`; a replay evaluates it on whether the relation holds in each (`Replayed::identity_holds`), the pair left out of
+  the "iff" comparison, and a witness it fails on differs in `identity:result==q`, with a note (`result == q is not
+  related by …: it holds before and holds now`). In `spec::heap::check` it is accounted as the other output
+  relations are: unresolved without approval, changed with approval when proved, refuted when the witness breaks it.
+  Refused by name: a relation the check doesn't observe, a second for the same one, and one that reads anything
+  else (a field path, a reference alone, references of two versions), or is not a boolean.
+  - Evidence inline: `lib/tests/heap.rs`, two builds of the joint example's new `withQuantity` written by the test
+    (`copied`, a copy with the same values made past the constructor's check so it never throws; `sometimes-copied`,
+    the quote itself where its quantity is already the one asked for) and two tests: without the relation `copied`
+    refuted by `identity:result==q` alone; under it verified, with the observations' words and the harness's source
+    checked; `after` and `sometimes-copied` refuted in `identity:result==q` with the note, on the JVM; the "iff"
+    written out giving the default's verdicts; an unobserved relation and a field read named. Through
+    `spec::heap::check`: unresolved on `copied` without approval (the rest preserved), and on `after` with "differ
+    under the correspondence's output relation"; approved, `copied` changed with approval and `after` and
+    `sometimes-copied` refuted in it. A unit test of `identity_relations` (the pair either way round, `!=`, the
+    "iff", nested references, seven refusals), and `output_relation` leaving identity relations to it. The `price`
+    test's identity refusal now reads "names result == l, which is not an identity relation the check observes
+    (none)". Unit tests (198), `heap.rs` (40), `foundations.rs` and `conformance.rs` pass; `integration.rs` passes
+    run one test at a time (64, 106 s), as the last step recorded.
+  - *For review* unless it comes back in this cycle: quick job `20261107-104658`, the new ignored test in `heap.rs`,
+    the three checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `copied` verified, `after` and
+    `sometimes-copied` refuted with witnesses run on a JVM.
+  - Not yet: an identity relation's output relation that reads another relation (`result.amount == q.amount` beside
+    `result == q`), or one for a pair only one version observes.
+  - Shared files changed: `equivalence.rs` (the identity relations put on the layout, the observations' words, the
+    replays' evaluation of them), `lib/README.md` (step 5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (two
+    builds, the `price` test's refusal words).
+- Next: H5's rest, sixth step: an output relation for a field of an object parameter whose two versions have the same
+  shape and no input equations (`field:l.quantity` on the object kernel, refused today as "not an object parameter
+  the correspondence's input equations relate"), compared in place of field-by-field equality for its path.
 - Status: working
 
 ## Loop settings

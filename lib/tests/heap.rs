@@ -489,6 +489,31 @@ fn a_choice_of_null_or_one_object_is_refused_by_name_outside_object_parameters()
 // and a `Money` now, related by the kernel claim's correspondence.
 
 /// The kernel of the joint example, compiled once: `before`, `after`, and each kernel defect overlaid on `after`.
+/// The joint example's new `Pricing` with another `withQuantity` in place of `WITH_QUANTITY`.
+const PRICING_OF: &str = r#"package shop;
+public final class Pricing {
+    private Pricing() {}
+    static long discount(long gross, int quantity) {
+        if (quantity < 10) return 0;
+        return gross / 10;
+    }
+    public static long total(Quote q) {
+        long gross = q.amount.cents() * q.quantity;
+        return gross - discount(gross, q.quantity);
+    }
+    public static Quote withQuantity(Quote q, int quantity) {
+WITH_QUANTITY
+    }
+}
+"#;
+
+/// The alias turned into a copy on purpose: the quote changed in place, and a copy with the same values handed
+/// back, made past the constructor's check so that it never throws where the previous version doesn't.
+const PRICING_COPIED: &str = "        q.quantity = quantity;\n        Quote copy = new Quote(q.amount, 1);\n        copy.quantity = quantity;\n        return copy;";
+
+/// As [`PRICING_COPIED`], but the quote itself handed back where its quantity is already the one asked for.
+const PRICING_SOMETIMES: &str = "        if (q.quantity == quantity) return q;\n        q.quantity = quantity;\n        Quote copy = new Quote(q.amount, 1);\n        copy.quantity = quantity;\n        return copy;";
+
 fn kernel_builds() -> Option<&'static PathBuf> {
     static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
     DIR.get_or_init(|| {
@@ -505,6 +530,15 @@ fn kernel_builds() -> Option<&'static PathBuf> {
             let mut files: Vec<PathBuf> = after.iter().filter(|p| !p.ends_with("Pricing.java")).cloned().collect();
             files.push(overlay);
             builds.push((defect.into(), files));
+        }
+        // Two more of the new shape's withQuantity, for output relations for an identity relation (H5's rest).
+        for (name, body) in [("copied", PRICING_COPIED), ("sometimes-copied", PRICING_SOMETIMES)] {
+            let overlay = root.join(format!("src-{name}/shop/Pricing.java"));
+            std::fs::create_dir_all(overlay.parent().unwrap()).unwrap();
+            std::fs::write(&overlay, PRICING_OF.replace("WITH_QUANTITY", body)).unwrap();
+            let mut files: Vec<PathBuf> = after.iter().filter(|p| !p.ends_with("Pricing.java")).cloned().collect();
+            files.push(overlay);
+            builds.push((name.into(), files));
         }
         for (name, files) in builds {
             let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-d"]).arg(root.join(&name)).args(&files).status().expect("javac runs");
@@ -706,10 +740,10 @@ fn a_result_that_became_a_value_object_is_related_by_the_correspondences_output_
     gap.outputs.push(jvmcontract::spec::Relation { observation: "field:l.quantity".into(), holds: "old.l.quantity == new.l.quantity".into() });
     let o = related(root, "after", "objects.Kernel#price", gap, "gap");
     assert!(o.problem.as_deref().unwrap().contains("is about l, which is not an object parameter the correspondence's input equations relate"), "{}", o.output);
-    let mut gap = correspondence(&[], None);
+    let mut gap = correspondence(&[], Some("old.result == new.result.cents"));
     gap.outputs.push(jvmcontract::spec::Relation { observation: "identity:result==l".into(), holds: "true".into() });
     let o = related(root, "after", "objects.Kernel#price", gap, "gap-identity");
-    assert!(o.problem.as_deref().unwrap().contains("only one for the result"), "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().contains("names result == l, which is not an identity relation the check observes (none)"), "{}", o.output);
 }
 
 #[test]
@@ -1466,6 +1500,118 @@ fn the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
             let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
             if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
                 failures.push(format!("{engine:?} confirm={confirm} {build} {method}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+// Output relations for identity relations (H5's rest): a correspondence's relation over whether `result == q` holds
+// in each version, compared in place of "holds before iff it holds now", for a change that hands back a copy on
+// purpose.
+
+/// The joint example's correspondence, with an output relation for `identity:result==q`.
+fn identity_relation(holds: &str) -> jvmcontract::spec::Correspondence {
+    let mut c = correspondence(&[("old.q.cents", "new.q.amount.cents"), ("old.q.quantity", "new.q.quantity")], None);
+    c.outputs.push(jvmcontract::spec::Relation { observation: "identity:result==q".into(), holds: holds.into() });
+    c
+}
+
+/// The previous version handed back the quote itself; the new one always hands back another object.
+const ALWAYS_A_COPY: &str = "old.result == old.q && new.result != new.q";
+
+#[test]
+fn an_output_relation_for_an_identity_relation_compares_it_in_place_of_holds_before_iff_it_holds_now() {
+    let Some(root) = kernel_builds() else { return };
+    let target = "shop.Pricing#withQuantity";
+    // Without the relation, the copy is the alias-to-copy defect, told apart by result == q alone.
+    let plain = correspondence(&[("old.q.cents", "new.q.amount.cents"), ("old.q.quantity", "new.q.quantity")], None);
+    let o = related(root, "copied", target, plain, "identity-plain");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert_eq!(o.counterexample.as_ref().unwrap().differs, ["identity:result==q"], "{}", o.output);
+    // Under it, the copy is what the relation says.
+    let o = related(root, "copied", target, identity_relation(ALWAYS_A_COPY), "identity");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(o.stated.as_ref().unwrap().observations.identities, [format!("result == q, under the output relation {ALWAYS_A_COPY}")]);
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("&& ((a == q_before) && !(b == q_after))"), "{source}");
+    // The quote itself handed back breaks it, as does handing it back only sometimes: each refuted in the relation,
+    // with a note, on a JVM too.
+    let o = related(root, "after", target, identity_relation(ALWAYS_A_COPY), "identity");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["identity:result==q"], "{}", o.output);
+    assert!(o.output.contains(&format!("result == q is not related by {ALWAYS_A_COPY}: it holds before and holds now")), "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    let o = related(root, "sometimes-copied", target, identity_relation(ALWAYS_A_COPY), "identity");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["identity:result==q"], "{}", o.output);
+    assert!(cx.input.starts_with("withQuantity(q=new Quote(new Money("), "{}", cx.input);
+    confirmed_on_the_jvm(&o);
+    // "Holds before iff it holds now", written out, is the default's verdict on each.
+    let iff = "(old.result == old.q) == (new.result == new.q)";
+    assert_eq!(related(root, "after", target, identity_relation(iff), "identity-iff").verdict, Verdict::Verified);
+    assert_eq!(related(root, "copied", target, identity_relation(iff), "identity-iff").verdict, Verdict::Violation);
+    // Refused by name: a relation the check doesn't observe, and one that reads a field.
+    let mut gap = identity_relation("true");
+    gap.outputs[0].observation = "identity:result==quantity".into();
+    let o = related(root, "copied", target, gap, "identity-gap");
+    assert!(o.problem.as_deref().unwrap().contains("names result == quantity, which is not an identity relation the check observes (result == q)"), "{}", o.output);
+    let o = related(root, "copied", target, identity_relation("new.q.quantity > 0"), "identity-field");
+    assert!(o.problem.as_deref().unwrap().contains("reads new.q.quantity alone"), "{}", o.output);
+}
+
+#[test]
+fn a_required_identity_relation_under_an_output_relation_is_unresolved_until_approved_and_then_changed_with_approval_or_refuted() {
+    use jvmcontract::spec::{ApprovedChange, ObservationState, Verdict as V};
+    let claim_with = |approved: bool| {
+        let mut claim = kernel_claim("shop.Pricing#withQuantity", &[identity_result_q()]);
+        claim.correspondence = Some(identity_relation(ALWAYS_A_COPY));
+        if approved {
+            claim.contract.approved_changes.push(ApprovedChange { observation: "identity:result==q".into(), text: "withQuantity hands back a copy now".into() });
+        }
+        claim
+    };
+    // Unapproved, the copy is unresolved in the relation, whatever the check finds, and the rest preserved.
+    let Some(r) = kernel_check("copied", &claim_with(false)) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "identity:result==q"), ObservationState::Unresolved);
+    assert_eq!(state_of(&o, "result"), ObservationState::Preserved);
+    assert!(o.problem.as_deref().unwrap().contains("compares identity:result==q in place of equality, which the preservation contract requires and no person approved as changed"), "{o:?}");
+    let o = kernel_check("after", &claim_with(false)).unwrap().expect("supported");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert!(o.problem.as_deref().unwrap().contains("differ under the correspondence's output relation for identity:result==q"), "{o:?}");
+    // Approved, the relation is the claim: the copy changed with approval, and the quote itself handed back, always
+    // or sometimes, refuted in it.
+    let o = kernel_check("copied", &claim_with(true)).unwrap().expect("supported");
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert_eq!(state_of(&o, "identity:result==q"), ObservationState::ChangedWithApproval);
+    assert_eq!(state_of(&o, "result"), ObservationState::Preserved);
+    assert_eq!(state_of(&o, "exception"), ObservationState::Preserved);
+    for build in ["after", "sometimes-copied"] {
+        let o = kernel_check(build, &claim_with(true)).unwrap().expect("supported");
+        assert_eq!(o.verdict, V::Refuted, "{build}: {o:?}");
+        assert_eq!(state_of(&o, "identity:result==q"), ObservationState::Refuted, "{build}");
+    }
+}
+
+#[test]
+#[ignore = "runs JBMC on the identity relations: a pipeline job"]
+fn the_identity_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = kernel_builds() else { return };
+    let cases = [("copied", Verdict::Verified), ("after", Verdict::Violation), ("sometimes-copied", Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, expected) in cases {
+            let o = related_on(engine, confirm, root, build, "shop.Pricing#withQuantity", identity_relation(ALWAYS_A_COPY), "identity");
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
             }
         }
     }

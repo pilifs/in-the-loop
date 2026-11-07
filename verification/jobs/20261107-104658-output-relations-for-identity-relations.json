@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-104658-output-relations-for-identity-relations",
+  "title": "Output relations for identity relations (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an output relation for an identity relation the check observes, identity:result==q, a boolean over whether it holds in each version (old.result == old.q, new.result == new.q), compared in the harness in place of 'holds before iff it holds now'. Over the joint example's two shapes of Quote (lib/tests/fixtures/foundations, with two more builds of withQuantity written by lib/tests/heap.rs), under old.result == old.q && new.result != new.q: a build that hands back a copy with the same values on purpose (copied) is verified; the build that hands back the quote itself (after) and one that does so only when the quantity is unchanged (sometimes-copied) are refuted in identity:result==q, their witnesses run on a JVM. Inline on the own checker all three pass. This job runs the ignored test that repeats the three under --engine jbmc and under --engine auto --confirm, where JBMC checks the same harness (the relation compiled over two booleans from if_acmp).",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/spec/heap.rs",
+      "lib/src/witness.rs",
+      "lib/src/equivalence.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines: copied Verified, after and sometimes-copied Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T10:46:58+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 6 small JBMC runs over reference comparisons"
+  },
+  "steps": [
+    {
+      "name": "identity relations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored the_identity_relations_have",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

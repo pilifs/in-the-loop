@@ -324,6 +324,12 @@ impl Replayed {
         }
     }
 
+    /// Whether the identity relation `x == y` holds in this replay: both references there and the same object.
+    pub fn identity_holds(&self, x: &str, y: &str) -> bool {
+        let value = |path: &str| self.references.iter().find(|(p, _)| p == path).map(|(_, v)| *v);
+        matches!((value(x), value(y)), (Some(a), Some(b)) if a == b)
+    }
+
     /// The outcome, followed by what the method left in each array argument it changed: `3, leaving a=[0, 0]`.
     pub fn with_leftovers(&self, params: &[Param], arguments: &[Argument]) -> String {
         let mut outcome = self.outcome.clone();

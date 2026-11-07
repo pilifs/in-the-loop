@@ -5,7 +5,7 @@
 use std::path::Path;
 
 use super::{Accounted, CanonicalClaim, Correspondence, Observation, ObservationState, Outcome, Part, Unsupported, Verdict};
-use crate::harness::{field_steps, Computed, Corresponds, FieldEquation, FieldRelation, Piece, Read, RecordType, RelationRead, Source};
+use crate::harness::{field_steps, Computed, Corresponds, FieldEquation, FieldRelation, IdentityRelation, Piece, Read, RecordType, RelationRead, Source};
 use crate::classfile::Type;
 
 /// How long one check may take: the joint example's are small.
@@ -22,7 +22,7 @@ const DEADLINE_SECONDS: u64 = 300;
 /// otherwise unresolved, as is every observation the check does not compare, so that none leaves the count. A
 /// witness that differs only in observations the claim does not require refutes nothing, and the result is
 /// unresolved, as it is when no JVM has run the witness too (step H4). A required observation under one of the
-/// correspondence's output relations (the result's, or a parameter's field's as the call leaves it) is compared
+/// correspondence's output relations (the result's, a parameter's field's as the call leaves it, or an identity relation's) is compared
 /// under it rather than for equality, so it stays unresolved until a person approves the change in the contract. An input equation that computes a field of an input the contract anchors
 /// (identity), rather than naming the field that holds it, is refused unless a person stated it in the input's
 /// derivation ([`anchored`]). A construction that needs more input objects than a version's bound leaves the result unresolved
@@ -189,7 +189,7 @@ fn overlaps(a: &str, b: &str) -> bool {
 
 /// The observations a regression statement compares, by id: the result and the exception always (a void method's
 /// result is nothing, alike in both), each array parameter, each object parameter's fields by path (`field:q.cents`,
-/// under a correspondence the previous version's paths), and each identity relation.
+/// under a correspondence the previous version's paths), and each identity relation, under an output relation or not.
 fn compared_observations(stated: &crate::statement::Statement) -> Vec<String> {
     let o = &stated.observations;
     let mut out = vec![Observation::Result.id(), Observation::Exception.id()];
@@ -211,7 +211,9 @@ fn compared_observations(stated: &crate::statement::Statement) -> Vec<String> {
         out.extend(paths.iter().map(|p| Observation::FieldPath { path: format!("{name}.{p}") }.id()));
         out.push(Observation::FieldPath { path: name.to_string() }.id());
     }
-    out.extend(o.identities.iter().filter_map(|i| i.split_once(" == ")).map(|(x, y)| Observation::Identity { left: x.into(), right: y.into() }.id()));
+    // `result == q`, or `result == q, under the output relation …`, which counts as compared as a field's does.
+    let pair = |i: &str| i.split(", under the output relation ").next().unwrap_or(i).to_string();
+    out.extend(o.identities.iter().map(|i| pair(i)).filter_map(|i| i.split_once(" == ").map(|(x, y)| Observation::Identity { left: x.into(), right: y.into() }.id())));
     out
 }
 
@@ -355,15 +357,17 @@ pub(crate) fn is_computed(e: &super::Equation) -> bool {
 /// form): a boolean over `old.result` (the previous version's result), `new.result` (the new one's) and the new
 /// version's parameters, `new.n` or `n`, which becomes one over `previous`, `result` and `n`. An object result is
 /// in it by its field paths, `old.result.cents == new.result.amount.cents`. None without an output relation for
-/// the result (those for a parameter's fields are [`relate`]'s); `Err` names an output relation not supported yet:
-/// one about another observation than the result or a field path, several about the result, or one that reads the
-/// previous version's parameters.
+/// the result (those for a parameter's fields are [`relate`]'s, and those for an identity relation
+/// [`identity_relations`]'); `Err` names an output relation not supported yet: one about another observation than the
+/// result, a field path or an identity relation, several about the result, or one that reads the previous version's
+/// parameters.
 pub(crate) fn output_relation(correspondence: &Correspondence) -> Result<Option<String>, String> {
     let result = Observation::Result.id();
-    if let Some(r) = correspondence.outputs.iter().find(|r| r.observation != result && !r.observation.starts_with("field:")) {
-        return Err(format!("the correspondence's output relation for {} ({}) is not supported yet: only one for the result, over old.result, new.result and the new version's parameters, and ones for an object parameter's fields as the call leaves them, over old.p and new.p paths", r.observation, r.holds));
+    if let Some(r) = correspondence.outputs.iter().find(|r| r.observation != result && !r.observation.starts_with("field:") && !r.observation.starts_with("identity:")) {
+        return Err(format!("the correspondence's output relation for {} ({}) is not supported yet: only one for the result, over old.result, new.result and the new version's parameters, ones for an object parameter's fields as the call leaves them, over old.p and new.p paths, and ones for an identity relation, over old.x == old.y and new.x == new.y", r.observation, r.holds));
     }
-    // Those for a parameter's fields are compared with the parameter (relate).
+    // Those for a parameter's fields are compared with the parameter (relate), and those for an identity relation
+    // with it (identity_relations).
     let mut relations = correspondence.outputs.iter().filter(|r| r.observation == result);
     let Some(relation) = relations.next() else { return Ok(None) };
     if relations.next().is_some() {
@@ -582,6 +586,74 @@ fn under(path: &str, prefix: &str) -> bool {
     prefix.is_empty() || path == prefix || path.strip_prefix(prefix).is_some_and(|rest| rest.starts_with('.'))
 }
 
+/// The correspondence's output relations for identity relations (H5's rest), each for `identity:x==y`, one of the
+/// relations the check observes (`pairs`, [`crate::harness::Layout::identity_pairs`]), and a boolean over whether it
+/// holds in each version, written `old.x == old.y` and `new.x == new.y` (either way round, or with `!=` for its
+/// negation): `new.result != new.q` says the new version always hands back another object. `Err` names one that is
+/// not supported.
+pub(crate) fn identity_relations(correspondence: &Correspondence, pairs: &[(String, String)]) -> Result<Vec<IdentityRelation>, String> {
+    let mut out: Vec<IdentityRelation> = Vec::new();
+    for r in correspondence.outputs.iter().filter(|r| r.observation.starts_with("identity:")) {
+        let about = |why: String| format!("the correspondence's output relation for {} ({}) {why}", r.observation, r.holds);
+        let Some((x, y)) = r.observation.strip_prefix("identity:").and_then(|p| p.split_once("==")).map(|(x, y)| (x.trim(), y.trim())) else {
+            return Err(about("names no identity relation: write it identity:x==y".into()));
+        };
+        let observed = || if pairs.is_empty() { "none".to_string() } else { pairs.iter().map(|(a, b)| format!("{a} == {b}")).collect::<Vec<_>>().join(", ") };
+        let Some(pair) = pairs.iter().find(|(a, b)| (a == x && b == y) || (a == y && b == x)) else {
+            return Err(about(format!("names {x} == {y}, which is not an identity relation the check observes ({})", observed())));
+        };
+        if out.iter().any(|o| o.pair == *pair) {
+            return Err(about(format!("is the second for {x} == {y}: state the relations for it as one, joined by &&")));
+        }
+        let mut relation = IdentityRelation { pair: pair.clone(), holds: r.holds.clone(), pieces: Vec::new(), reads: Vec::new() };
+        let only = format!("an output relation for an identity relation reads only that relation in each version, old.{x} == old.{y} and new.{x} == new.{y}");
+        let reference = |root: &str, path: &str| if path.is_empty() { root.to_string() } else { format!("{root}.{path}") };
+        let mut pieces = pieces_of(&r.holds).map_err(&about)?.into_iter().peekable();
+        while let Some(piece) = pieces.next() {
+            let (previous, root, path) = match piece {
+                Ok(plain) => {
+                    relation.pieces.push(Piece::Text(plain));
+                    continue;
+                }
+                Err(read) => read,
+            };
+            let left = reference(&root, &path);
+            let shown = |previous: bool, what: &str| format!("{}.{what}", if previous { "old" } else { "new" });
+            // A reference read is the relation's side: the comparison, then the other side, of the same version.
+            let op = match pieces.next() {
+                Some(Ok(t)) if matches!(t.trim(), "==" | "!=") => t.trim().to_string(),
+                _ => return Err(about(format!("reads {} alone: {only}", shown(previous, &left)))),
+            };
+            let Some(Err((other_previous, other_root, other_path))) = pieces.next() else {
+                return Err(about(format!("compares {} with no reference: {only}", shown(previous, &left))));
+            };
+            let right = reference(&other_root, &other_path);
+            if other_previous != previous {
+                return Err(about(format!("compares {} with {}: a reference is compared only with one of its own version, {only}", shown(previous, &left), shown(other_previous, &right))));
+            }
+            if !((left == pair.0 && right == pair.1) || (left == pair.1 && right == pair.0)) {
+                return Err(about(format!("reads {} {op} {}: {only}", shown(previous, &left), shown(previous, &right))));
+            }
+            let at = match relation.reads.iter().position(|p| *p == previous) {
+                Some(at) => at,
+                None => {
+                    relation.reads.push(previous);
+                    relation.reads.len() - 1
+                }
+            };
+            if op == "!=" {
+                relation.pieces.push(Piece::Text("!".into()));
+            }
+            relation.pieces.push(Piece::Read(at));
+        }
+        if let Err(why) = relation.parse(&(0..relation.reads.len() as u16).map(|i| 2 * i).collect::<Vec<_>>()) {
+            return Err(about(format!("is not one the harness compares: {why}")));
+        }
+        out.push(relation);
+    }
+    Ok(out)
+}
+
 /// The parameters the correspondence's output relations for fields are about: `q` for `field:q.cents`.
 pub(crate) fn field_relation_roots(correspondence: &Correspondence) -> Vec<(String, &super::Relation)> {
     correspondence.outputs.iter().filter_map(|r| r.observation.strip_prefix("field:").map(|p| (p.split('.').next().unwrap_or(p).to_string(), r))).collect()
@@ -777,15 +849,47 @@ mod tests {
     }
 
     #[test]
+    fn an_output_relation_for_an_identity_relation_reads_it_in_each_version() {
+        let with = |observation: &str, holds: &str| Correspondence { inputs: Vec::new(), outputs: vec![super::super::Relation { observation: observation.into(), holds: holds.into() }] };
+        let pairs = vec![("result".to_string(), "q".to_string()), ("result.amount".to_string(), "q.amount".to_string())];
+        // Named either way round, read either way round, and negated with !=.
+        let r = identity_relations(&with("identity:q==result", "old.result == old.q && new.q != new.result"), &pairs).unwrap();
+        assert_eq!(r.len(), 1);
+        assert_eq!(r[0].pair, ("result".to_string(), "q".to_string()));
+        assert_eq!(r[0].observation(), "identity:result==q");
+        assert_eq!(r[0].reads, vec![true, false]);
+        assert_eq!(r[0].text(&|previous| format!("{}", if previous { "OLD" } else { "NEW" })), "OLD && !NEW");
+        assert!(r[0].eval(true, false).unwrap() && !r[0].eval(true, true).unwrap() && !r[0].eval(false, false).unwrap());
+        // "Holds before iff it holds now", written out, and a relation of nested references.
+        let iff = identity_relations(&with("identity:result.amount==q.amount", "(old.result.amount == old.q.amount) == (new.result.amount == new.q.amount)"), &pairs).unwrap();
+        assert!(iff[0].eval(true, true).unwrap() && iff[0].eval(false, false).unwrap() && !iff[0].eval(true, false).unwrap());
+        // Other output relations are someone else's.
+        assert!(identity_relations(&with("result", "true"), &pairs).unwrap().is_empty());
+        // Refused by name.
+        let gap = |observation: &str, holds: &str| identity_relations(&with(observation, holds), &pairs).unwrap_err();
+        assert!(gap("identity:result==l", "true").contains("names result == l, which is not an identity relation the check observes (result == q, result.amount == q.amount)"));
+        assert!(gap("identity:result==q", "old.result.amount == old.q.amount").contains("reads old.result.amount == old.q.amount: an output relation for an identity relation reads only that relation in each version"));
+        assert!(gap("identity:result==q", "old.result == new.q").contains("compares old.result with new.q: a reference is compared only with one of its own version"));
+        assert!(gap("identity:result==q", "new.result").contains("reads new.result alone"));
+        assert!(gap("identity:result==q", "old.q.quantity > 0").contains("reads old.q.quantity alone"));
+        assert!(gap("identity:result==q", "1 + (new.result == new.q)").contains("is not one the harness compares"));
+        assert!(gap("identity:result", "true").contains("names no identity relation"));
+        let twice = Correspondence { inputs: Vec::new(), outputs: vec![super::super::Relation { observation: "identity:result==q".into(), holds: "true".into() }, super::super::Relation { observation: "identity:q==result".into(), holds: "true".into() }] };
+        assert!(identity_relations(&twice, &pairs).unwrap_err().contains("is the second for q == result"));
+    }
+
+    #[test]
     fn an_output_relation_becomes_one_between_previous_and_result() {
         let with = |outputs: &[(&str, &str)]| Correspondence { inputs: Vec::new(), outputs: outputs.iter().map(|(o, h)| super::super::Relation { observation: (*o).into(), holds: (*h).into() }).collect() };
         assert_eq!(output_relation(&with(&[])).unwrap(), None);
         assert_eq!(output_relation(&with(&[("result", "old.result == new.result.amount.cents && new.n > 0")])).unwrap().as_deref(), Some("previous == result.amount.cents && n > 0"));
         // A word that only ends in old, a member after a dot, and a bare parameter are left alone.
         assert_eq!(output_relation(&with(&[("result", "Math.abs(old.result - new.result.cents) <= gold.length")])).unwrap().as_deref(), Some("Math.abs(previous - result.cents) <= gold.length"));
-        // One for a parameter's field is the parameter's (relate); one for an identity relation isn't supported.
+        // One for a parameter's field is the parameter's (relate), one for an identity relation the relation's
+        // (identity_relations); one for an array parameter isn't supported.
         assert_eq!(output_relation(&with(&[("field:q.cents", "old.q.cents == new.q.amount.cents")])).unwrap(), None);
-        assert!(output_relation(&with(&[("identity:result==q", "true")])).unwrap_err().contains("only one for the result"));
+        assert_eq!(output_relation(&with(&[("identity:result==q", "new.result != new.q")])).unwrap(), None);
+        assert!(output_relation(&with(&[("array:a", "true")])).unwrap_err().contains("only one for the result"));
         assert!(output_relation(&with(&[("result", "old.result == new.result"), ("result", "true")])).unwrap_err().contains("several output relations"));
         assert!(output_relation(&with(&[("result", "old.result == old.q.cents")])).unwrap_err().contains("reads old.q"));
     }

@@ -201,6 +201,63 @@ impl FieldRelation {
     }
 }
 
+/// An output relation of a correspondence for an identity relation (H5's rest): a boolean over whether the relation
+/// holds in each version, `old.result == old.q` and `new.result == new.q`, compared in place of "holds before iff it
+/// holds now". `new.result != new.q` says the new version hands back another object, always.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IdentityRelation {
+    /// The two references, as [`Layout::identity_pairs`] gives them: `("result", "q")`.
+    pub pair: (String, String),
+    /// As the correspondence writes it.
+    pub holds: String,
+    /// The text, each read of the relation in a version a [`Piece::Read`] of the index of `reads`.
+    pub pieces: Vec<Piece>,
+    /// Which version's relation each read is, `true` for the previous one's, each once.
+    pub reads: Vec<bool>,
+}
+
+impl IdentityRelation {
+    /// The observation id it is for, `identity:result==q`.
+    pub fn observation(&self) -> String {
+        format!("identity:{}=={}", self.pair.0, self.pair.1)
+    }
+
+    /// Whether it is for the pair `x`, `y`, either way round.
+    pub fn is_for(&self, x: &str, y: &str) -> bool {
+        (self.pair.0 == x && self.pair.1 == y) || (self.pair.0 == y && self.pair.1 == x)
+    }
+
+    /// It written with each read as `name(previous)`.
+    pub fn text(&self, name: &dyn Fn(bool) -> String) -> String {
+        self.pieces.iter().map(|p| match p {
+            Piece::Text(t) => t.clone(),
+            Piece::Read(i) => name(self.reads[*i]),
+        }).collect()
+    }
+
+    /// It compiled over locals, read `i` a boolean in the local `slots[i]`; `Err` unless it is a boolean.
+    pub fn parse(&self, slots: &[u16]) -> Result<expr::Expr, Error> {
+        let params: Vec<Param> = slots.iter().enumerate().map(|(i, s)| Param { name: format!("read__{i}"), ty: Type::Boolean, slot: *s }).collect();
+        let text = self.text(&|previous| format!("read__{}", self.reads.iter().position(|r| *r == previous).unwrap_or(0)));
+        let e = expr::parse_value(&text, &params, None, slots.iter().map(|s| s + 2).max().unwrap_or(0))?;
+        if e.ty() != expr::Ty::Boolean {
+            return Err(Error::new(format!("{} is not a boolean", self.holds.trim())));
+        }
+        Ok(e)
+    }
+
+    /// Whether it holds where the identity relation holds before (`old`) and now (`new`).
+    pub fn eval(&self, old: bool, new: bool) -> Result<bool, Error> {
+        let slots: Vec<u16> = (0..self.reads.len() as u16).map(|i| 2 * i).collect();
+        let e = self.parse(&slots)?;
+        let mut locals = vec![crate::interp::Value::Int(0); 2 * self.reads.len()];
+        for (i, previous) in self.reads.iter().enumerate() {
+            locals[2 * i] = crate::interp::Value::Int(if *previous { old } else { new } as i32);
+        }
+        Ok(expr::eval(&e, &locals)? == crate::interp::Value::Int(1))
+    }
+}
+
 /// What a leaf of the previous version's construction is made from, under a correspondence (step H5).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Source {
@@ -673,6 +730,9 @@ pub struct Layout {
     /// The object parameters that may be null or the same object as an earlier one (step H2), in slot order, each
     /// choice a boolean flat parameter after every leaf ([`Layout::choose`]).
     pub choices: Vec<Choice>,
+    /// A correspondence's output relations for identity relations (H5's rest), each compared in place of "holds
+    /// before iff it holds now" for its pair of [`Layout::identity_pairs`].
+    pub identity_relations: Vec<IdentityRelation>,
 }
 
 /// How an object parameter made by its constructor may be made otherwise (step H2 of
@@ -719,7 +779,7 @@ pub fn alias_groups(pairs: &[(String, String)], order: &[String]) -> Vec<Vec<Str
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new() }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() }
     }
 
     /// Lets the object parameters `nullable` be null and those of each group of `groups` be one object (step H2):
@@ -896,6 +956,12 @@ impl Layout {
         pairs
     }
 
+    /// The correspondence's output relation compared for the identity relation `x == y` in place of "holds before
+    /// iff it holds now", if it has one.
+    pub fn identity_relation(&self, x: &str, y: &str) -> Option<&IdentityRelation> {
+        self.identity_relations.iter().find(|r| r.is_for(x, y))
+    }
+
     /// Lays out the receiver (new record, and the previous one when the previous version has it) and the
     /// parameters, of which `records[i]` says which are records (new, and previous when it has one), flattening
     /// each record into its components.
@@ -942,7 +1008,7 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new() }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() }
     }
 
     /// The flat parameters' types: the harness method's.
@@ -2031,6 +2097,32 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         }
         let at = |version: usize, path: &str| locals[version].iter().find(|(p, _)| p == path).map(|(_, l)| *l).expect("a path of both versions");
         for (x, y) in &pairs {
+            // Under an output relation for it (H5's rest): whether it holds in each version, a boolean each, then
+            // the relation over them.
+            if let Some(relation) = layout.identity_relation(x, y) {
+                let slots: Vec<u16> = (0..relation.reads.len() as u16).map(|j| base + 2 * j).collect();
+                let Ok(compiled) = relation.parse(&slots) else {
+                    // Refused when the correspondence was read; never agree on one.
+                    code.goto(fail);
+                    continue;
+                };
+                for (previous, slot) in relation.reads.iter().zip(&slots) {
+                    let version = if *previous { 0 } else { 1 };
+                    let apart = code.label();
+                    code.iconst(0);
+                    code.store(Kind::Int, *slot);
+                    code.load(Kind::Ref, at(version, x));
+                    code.load(Kind::Ref, at(version, y));
+                    code.if_acmpne(apart);
+                    code.iconst(1);
+                    code.store(Kind::Int, *slot);
+                    code.bind(apart);
+                }
+                expr::emit(&compiled, &mut code, &mut writer.pool);
+                code.if_zero(Cond::Eq, fail);
+                code.max_locals = code.max_locals.max(base + 2 * relation.reads.len() as u16 + 2);
+                continue;
+            }
             let apart_before = code.label();
             let next = code.label();
             code.load(Kind::Ref, at(0, x));
@@ -2604,7 +2696,11 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         format!("{root}{rest}")
     };
     for (x, y) in layout.identity_pairs(ret, before_ret, with_args) {
-        s.push_str(&format!(" && (({} == {}) == ({} == {}))", in_version(&x, true), in_version(&y, true), in_version(&x, false), in_version(&y, false)));
+        match layout.identity_relation(&x, &y) {
+            // Under an output relation for it (H5's rest), the relation over whether it holds in each version.
+            Some(r) => s.push_str(&format!(" && ({})", r.text(&|previous| format!("({} == {})", in_version(&r.pair.0, previous), in_version(&r.pair.1, previous))).trim())),
+            None => s.push_str(&format!(" && (({} == {}) == ({} == {}))", in_version(&x, true), in_version(&y, true), in_version(&x, false), in_version(&y, false))),
+        }
     }
     s.push_str(";\n    }\n}\n");
     s
@@ -2741,7 +2837,7 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new() };
+    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() };
     generate_property_over(class_internal, method, &layout, ret, assume, assertion, signals, max_array_length)
 }
 
@@ -3262,7 +3358,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new() }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new() }
     }
 
     #[test]

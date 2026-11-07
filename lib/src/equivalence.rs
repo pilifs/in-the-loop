@@ -1102,6 +1102,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             return refuse(&mut out, line, problem);
         }
     }
+    // The correspondence's output relations for identity relations (H5's rest), each compared in place of "holds
+    // before iff it holds now" for one the check observes.
+    if let Some(c) = correspondence {
+        match crate::spec::heap::identity_relations(c, &layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none())) {
+            Ok(relations) => layout.identity_relations = relations,
+            Err(gap) => return refuse(&mut out, line, gap),
+        }
+    }
     let layout = layout;
     let params = &layout.params;
     let flat_types = layout.types();
@@ -1154,7 +1162,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // The statement as data: what holds of every verdict on this harness, and what the run it comes from adds.
     let stated_domain = crate::statement::domain(&layout, options.max_array_length);
     let mut observations = crate::statement::regression_observations(&layout, &descriptor.ret, relation_shown.as_deref());
-    observations.identities = layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none()).iter().map(|(x, y)| format!("{x} == {y}")).collect();
+    observations.identities = layout
+        .identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none())
+        .iter()
+        .map(|(x, y)| match layout.identity_relation(x, y) {
+            Some(r) => format!("{x} == {y}, under the output relation {}", r.holds.trim()),
+            None => format!("{x} == {y}"),
+        })
+        .collect();
     let observations = observations;
     let claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
     let stated = |last: Option<&JbmcResult>, search: Option<&Search>, complete: bool| crate::statement::Statement {
@@ -1429,6 +1444,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // outcomes reading the same; a replay that failed never agrees.
     // The identity relations the harness compares, which the replays state where they hold.
     let identity_pairs = layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none());
+    // Those compared as "holds before iff it holds now": the rest are under an output relation (H5's rest), which
+    // is evaluated over the two replays below.
+    let iff_pairs: Vec<(String, String)> = identity_pairs.iter().filter(|(x, y)| layout.identity_relation(x, y).is_none()).cloned().collect();
     // A relation that reads the results' objects is evaluated by the harness itself, run in the interpreter.
     let relation_cp = match &harness.relation {
         Some(r) if r.expr.reads_objects() => Some(witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models)),
@@ -1437,7 +1455,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let replay_both = |arguments: &[Argument]| -> Replays {
         let after = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
         let after_text = format!("{}{}", after.with_leftovers(params, arguments), after.identities(&identity_pairs));
-        let after_compared = after.compared(params, arguments, &identity_pairs);
+        let after_compared = after.compared(params, arguments, &iff_pairs);
         let mut before_compared = String::new();
         let (before, before_text) = match map_arguments(arguments) {
             Ok(mapped) => {
@@ -1450,7 +1468,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 };
                 let text = if harness.before_args.is_some() { replayed.with_leftovers(before_params, &mapped) } else { replayed.with_leftovers(params, &mapped) };
                 let text = format!("{text}{}", replayed.identities(&identity_pairs));
-                before_compared = if harness.before_args.is_some() { text.clone() } else { replayed.compared(params, &mapped, &identity_pairs) };
+                before_compared = if harness.before_args.is_some() { text.clone() } else { replayed.compared(params, &mapped, &iff_pairs) };
                 (Some(replayed), text)
             }
             Err(e) => (None, format!("<could not replay: the previous version's arguments could not be computed: {e}>")),
@@ -1459,7 +1477,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let same = if harness.before_args.is_some() { before_text == after_text } else { before_compared == after_compared } && !before_text.starts_with("<could not replay");
         // Which observations the two differ in, by id, for the accounting of a refutation.
         let mut differs = match &before {
-            Some(b) if harness.before_args.is_none() => witness::differences(b, &after, params, arguments, &identity_pairs),
+            Some(b) if harness.before_args.is_none() => witness::differences(b, &after, params, arguments, &iff_pairs),
             _ => Vec::new(),
         };
         // The correspondence's output relations for an object parameter's fields (H5's rest), each evaluated over
@@ -1483,6 +1501,19 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     field_notes.push(note);
                     differs.push(r.observation(name));
                 }
+            }
+            // The output relations for identity relations, over whether each holds in either replay.
+            for r in &layout.identity_relations {
+                let (x, y) = (&r.pair.0, &r.pair.1);
+                let (old, new) = (b.identity_holds(x, y), after.identity_holds(x, y));
+                let shown = |holds: bool| if holds { "holds" } else { "does not hold" };
+                let note = match r.eval(old, new) {
+                    Ok(true) => continue,
+                    Ok(false) => format!("{x} == {y} is not related by {}: it {} before and {} now", r.holds.trim(), shown(old), shown(new)),
+                    Err(e) => format!("the relation {} cannot be evaluated on {x} == {y}: {e}", r.holds.trim()),
+                };
+                field_notes.push(note);
+                differs.push(r.observation());
             }
         }
         let finish = |mut r: Replays| -> Replays {
