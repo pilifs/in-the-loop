@@ -421,9 +421,16 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     `class-initializer` gaps are 0.
   - `Enum.<init>`, `List.of`, `List.copyOf` are models on JBMC's class path, checked on the JVM by 11 cases and by
     running them relocated against the JDK's classes.
-  - **Open: 071's two proofs don't stand under strict.** Job `20261106-203501` (failed): the models are used, but
-    JBMC's preflight walks the call graph, not paths, and reaches `Collection.isEmpty` and `toArray` stubs in
-    `ImmutableCollections.listCopy` that no path takes. The fix is a path-aware check in `jbmc_gaps.rs`.
+  - **071's two proofs under strict: fixed, job `20261107-012013` pending.** Job `20261106-203501` (failed): the
+    models are used, but JBMC's preflight walks the call graph, not paths, and reaches `Collection.isEmpty` and
+    `toArray` stubs in `ImmutableCollections.listCopy` that no path takes. Now, when the call graph reaches a stub,
+    the preflight also runs JBMC's symbolic execution of the proof (`--program-only`, the proof's bounds, every
+    input, nothing solved), whose formula is what the proof solves, and a stub none of its steps comes from is no
+    gap. Steps are read by the listing's location numbers, each checked against the listing's comment; a run that
+    fails or doesn't match leaves the call graph's gaps. Call sites, monitors and defects stay the call graph's.
+    Checked inline on JBMC 6.11.0 with `tests/fixtures/jbmc-paths/P.java` (over `List.of`'s list the two stubs
+    aren't entered; over an opaque `Collection` they are); unit 177, integration 64, conformance 9 (2 ignored) pass.
+    The job reruns 071, 013 and the JBMC/auto conformance corpus.
   - **Found by that job: a false success of JBMC under strict,** `declaring`: JBMC runs `Sub.<clinit>` on a
     `getstatic Sub.value` declared in `Holder`, where the JVM initializes `Holder` alone. `auto` decides it right.
     **Guarded** (item 2 below): JBMC's goto listing (nothing solved) showed two shapes, the class an instruction
@@ -462,7 +469,8 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   1. ~~take `checked.json` from job `-203501`~~ (done);
   2. ~~the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user~~ (done,
      job `20261107-010728` pending: triage it when it is back);
-  3. a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013;
+  3. ~~a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013~~
+     (done, job `20261107-012013` pending: triage it when it is back);
   4. 4c, the coverage inventory from 4a's tables and 4b;
   5. the examples' notes: 071 and 013 from `-203501` (and the rerun), 037 from `-000039`;
   6. Bitwuzla's version in 1b's record (`statement::native_sat()` from the configured solver);

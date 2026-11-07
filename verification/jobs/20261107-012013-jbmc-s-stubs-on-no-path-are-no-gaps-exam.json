@@ -1,0 +1,79 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-012013-jbmc-s-stubs-on-no-path-are-no-gaps-exam",
+  "title": "JBMC's stubs on no path are no gaps: examples 071 and 013 under strict, and the conformance corpus under JBMC and auto",
+  "description": "Item 3 of llm-dlc/loops/engine-priorities.md's Progress (Phase 5). Job 20261106-203501 found 071's first two property proofs still no verdict under strict: the models of Enum.<init>, List.of and List.copyOf are used, but JBMC's gap preflight (lib/src/jbmc_gaps.rs) walks JBMC's call graph, which takes every branch, and reaches the stubs Collection.isEmpty and Collection.toArray in the model's ImmutableCollections.listCopy, which calls them only for a collection other than the immutable lists List.of makes, and no path gives it one (Decision's record constructor copies List.of's list). Now, when the call graph reaches a stub, the preflight also runs JBMC's symbolic execution of the proof (jbmc --program-only with the proof's unwind, unwinding assertions and options, over every input, solving nothing), reads which functions its formula's steps come from by the goto listing's location numbers (each checked against the listing's comment for it), and a stub none of them comes from is no gap; a run that fails, does not finish within the preflight's minute or does not match leaves the call graph's gaps. Checked inline: unit tests, including a real JBMC 6.11.0 run on tests/fixtures/jbmc-paths/P.java (List.copyOf over List.of's list: the two stubs reached in the call graph, not entered; over an opaque Collection: entered, a gap); the whole Rust suite passes. Steps: build; 071 under strict (expected violation, as recorded); a check that 071's obligations 1 and 2 are verified with no gap, 3 a violation, and its output names the stubs as never entered; 013 under strict (expected violation) with no JBMC gap left; the conformance corpus under JBMC and auto, strict (the ignored test), which must raise no disagreement with the JVM now that fewer stubs are gaps.",
+  "kind": "model",
+  "capabilities": [
+    "B11",
+    "B9",
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "071",
+      "013"
+    ],
+    "paths": [
+      "lib/src/jbmc_gaps.rs"
+    ],
+    "jobs": [
+      "20261106-203501"
+    ]
+  },
+  "expected": "071 and 013 give their recorded verdicts (violation) under strict; 071's obligations 1 and 2 verified with no gap and 3 a violation; 071's and 013's outputs name Collection.isEmpty and toArray as never entered and list no jbmc gap; the conformance test passes under JBMC and auto",
+  "submitted": {
+    "at": "2026-11-07T01:20:13+00:00",
+    "session": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+    "by": "claude (engines loop)"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "memoryLimit": "3.5G",
+    "timeout": "90m",
+    "notes": "071's JBMC runs took 0.15 s each and 013's under a minute in job 20261106-203501; the symbolic execution adds one such run per preflight that reaches a stub; the JBMC conformance test took about 11 min in job 20261106-203501's step 6 and peaked at 1.0 GiB with JBMC capped at 2 GiB"
+  },
+  "steps": [
+    {
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": "."
+    },
+    {
+      "name": "example 071 (B11) under strict",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": "."
+    },
+    {
+      "name": "071: the first two proofs stand with no gap",
+      "run": "python3 -c \"import json,glob; d=glob.glob('examples/071-*')[0]; r=json.load(open(d+'/result.json')); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); out=open(d+'/verifier-output.txt').read(); print([l for l in out.splitlines() if 'never enters' in l or 'jbmc gap' in l]); assert got[0]==('verified',[]) and got[1]==('verified',[]) and got[2][0]=='violation', got; assert 'never enters' in out and 'java.util.Collection.isEmpty()' in out and 'jbmc gap:' not in out\"",
+      "cwd": "."
+    },
+    {
+      "name": "example 013 (B9) under strict, no JBMC gap",
+      "run": "python3 examples/tools/build.py 013 && python3 -c \"import glob; out=open(glob.glob('examples/013-*/verifier-output.txt')[0]).read(); print([l for l in out.splitlines() if 'never enters' in l or 'jbmc gap' in l]); assert 'never enters' in out and 'jbmc gap:' not in out\"",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-paths.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse",
+    "examples/013-longest-log-wins-breaks-election-safety",
+    "lib/target/conformance-jbmc-paths.log"
+  ]
+}

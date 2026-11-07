@@ -15,7 +15,9 @@
 //! what it runs, so the call graph is JBMC's, virtual dispatch included. From the harness's entry, a function
 //! reached with no bytecode on JBMC's class path is a stub, an `invokedynamic` of a function reached whose
 //! instructions JBMC made no `lambda_synthetic_class$` for is the zero fallback, and a function reached that
-//! synchronizes is a `monitor` gap. Two kinds of stub are not gaps:
+//! synchronizes is a `monitor` gap. The call graph takes every branch, so a stub it reaches may be on no path: when
+//! it reaches one, the preflight runs JBMC's symbolic execution of the proof too ([`symbolic_command`]), which follows
+//! the paths the bounds allow, and a stub it never enters is no gap ([`entered`]). Two more kinds of stub are not gaps:
 //!
 //! - calls JBMC's stub reproduces exactly, as the own checker's [`gaps::exact_jdk_call`] says, and a JDK
 //!   constructor whose bytecode only calls such a constructor of its superclass (`Number.<init>()`);
@@ -51,6 +53,9 @@ pub struct Function {
     pub calls: BTreeMap<String, Option<u16>>,
     /// Its instructions' text by the bytecode index they come from.
     pub at: BTreeMap<u32, String>,
+    /// Its instructions' location numbers, unique in the program, each with the text of its comment after the number
+    /// (`file F line L function G bytecode-index K`, or `no location`): how JBMC's symbolic execution names its steps.
+    pub locations: BTreeMap<u32, String>,
 }
 
 /// JBMC's goto program as `--show-goto-functions` prints it: each function under its id (`java::pkg.C.m:(I)V`).
@@ -63,8 +68,8 @@ pub struct Program {
 /// at a line of `^`; within it, a comment `// N file F line L function G bytecode-index K` says where the next
 /// instructions come from.
 pub fn parse_goto(text: &str) -> Program {
-    let mut raw: Vec<(String, Vec<(String, Option<u16>)>, BTreeMap<u32, String>)> = Vec::new();
-    let mut current: Option<(String, Vec<(String, Option<u16>)>, BTreeMap<u32, String>)> = None;
+    let mut raw: Vec<(String, Vec<(String, Option<u16>)>, Function)> = Vec::new();
+    let mut current: Option<(String, Vec<(String, Option<u16>)>, Function)> = None;
     let (mut bci, mut line): (Option<u32>, Option<u16>) = (None, None);
     for l in text.lines() {
         if l.starts_with('^') {
@@ -74,17 +79,21 @@ pub fn parse_goto(text: &str) -> Program {
         if !l.starts_with(char::is_whitespace) && l.ends_with(" */") {
             if let Some(start) = l.rfind(" /* ") {
                 raw.extend(current.take());
-                current = Some((l[start + 4..l.len() - 3].to_string(), Vec::new(), BTreeMap::new()));
+                current = Some((l[start + 4..l.len() - 3].to_string(), Vec::new(), Function::default()));
                 (bci, line) = (None, None);
                 continue;
             }
         }
-        let Some((_, calls, at)) = current.as_mut() else { continue };
+        let Some((_, calls, function)) = current.as_mut() else { continue };
         let t = l.trim_start();
         if let Some(comment) = t.strip_prefix("// ") {
             // `// Labels: pc0` names the labels of the instruction that follows, which keeps its location.
             if comment.starts_with("Labels:") {
                 continue;
+            }
+            let (number, rest) = comment.split_once(' ').unwrap_or((comment, ""));
+            if let Ok(n) = number.parse::<u32>() {
+                function.locations.insert(n, rest.trim().to_string());
             }
             bci = after_word(comment, "bytecode-index").and_then(|v| v.parse().ok());
             line = after_word(comment, "line").and_then(|v| v.parse().ok());
@@ -98,7 +107,7 @@ pub fn parse_goto(text: &str) -> Program {
             calls.push((callee.to_string(), line));
         }
         if let Some(k) = bci {
-            let entry = at.entry(k).or_default();
+            let entry = function.at.entry(k).or_default();
             entry.push_str(insn);
             entry.push('\n');
         }
@@ -106,8 +115,7 @@ pub fn parse_goto(text: &str) -> Program {
     raw.extend(current.take());
     let ids: BTreeSet<String> = raw.iter().map(|(id, _, _)| id.clone()).collect();
     let mut program = Program::default();
-    for (id, calls, at) in raw {
-        let mut f = Function { calls: BTreeMap::new(), at };
+    for (id, calls, mut f) in raw {
         for (text, line) in calls {
             // The callee is the longest function id the call's text starts with, followed by its arguments.
             let callee = ids.iter().filter(|c| text.starts_with(c.as_str()) && text[c.len()..].starts_with('(')).max_by_key(|c| c.len());
@@ -129,6 +137,48 @@ fn after_word<'a>(comment: &'a str, word: &str) -> Option<&'a str> {
         }
     }
     None
+}
+
+/// The functions of `program` that JBMC's symbolic execution enters, from what `--program-only` prints: the formula
+/// a proof solves, a step to a line, each after a comment `// N ...` that names the location it comes from by the
+/// number the goto listing gives it. Symbolic execution follows the paths the bounds allow and leaves out a branch
+/// whose condition it simplifies to false, so a function none of its steps comes from is on no path the proof
+/// checks. An `Err` says why the output cannot be read so: it is not a finished symbolic execution, or its
+/// locations are not the listing's (a location the listing lacks, or one whose comment differs).
+pub fn entered(program: &Program, ssa: impl std::io::BufRead) -> Result<BTreeSet<String>, String> {
+    let mut located: BTreeMap<u32, (&str, &str)> = BTreeMap::new();
+    for (id, f) in &program.functions {
+        for (n, text) in &f.locations {
+            located.insert(*n, (id.as_str(), text.as_str()));
+        }
+    }
+    let (mut constraints, mut steps) = (false, 0usize);
+    let mut entered = BTreeSet::new();
+    for line in ssa.lines() {
+        let line = line.map_err(|e| format!("its output cannot be read: {e}"))?;
+        if line == "Program constraints:" {
+            constraints = true;
+            continue;
+        }
+        let Some(comment) = line.strip_prefix("// ").filter(|_| constraints) else { continue };
+        let (number, rest) = comment.split_once(' ').unwrap_or((comment, ""));
+        let Ok(n) = number.parse::<u32>() else { continue };
+        let Some((id, text)) = located.get(&n) else { return Err(format!("its step at location {n} is at none of the listing's")) };
+        // The listing says `no location` where symbolic execution prints nothing.
+        let rest = rest.trim();
+        if rest != *text && !(rest.is_empty() && *text == "no location") {
+            return Err(format!("its location {n} is `{rest}`, the listing's `{text}`"));
+        }
+        steps += 1;
+        entered.insert(id.to_string());
+    }
+    if !constraints {
+        return Err("it printed no formula (no `Program constraints:`)".into());
+    }
+    if steps == 0 {
+        return Err("its formula names no location".into());
+    }
+    Ok(entered)
 }
 
 /// A function id of a Java method: its class (internal name), name and descriptor. `None` for JBMC's own
@@ -170,6 +220,9 @@ pub struct Found {
     pub exact: BTreeMap<String, usize>,
     /// Where JBMC runs the bytecode otherwise than the JVM, whatever is on its class path ([`Defect`]).
     pub defects: Vec<Defect>,
+    /// The stubs the call graph reaches but JBMC's symbolic execution of the proof never enters, as calls: on no
+    /// path within the proof's bounds, so not gaps ([`entered`]).
+    pub unreached: Vec<String>,
 }
 
 /// A place where JBMC 6.11.0 runs a method's bytecode otherwise than the JVM: not an approximation of a call it has
@@ -439,8 +492,10 @@ fn jbmc_extends(cp: &ClassPath, class: &str, ancestor: &str) -> bool {
 }
 
 /// The gaps of JBMC's `program` from the function `java::<class>.<method>:...`, with JBMC's class path `jbmc_cp`
-/// (its entries, and the JDK image to tell what a JDK member is).
-pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>) -> Result<Found, Error> {
+/// (its entries, and the JDK image to tell what a JDK member is). With `entered`, the functions JBMC's symbolic
+/// execution of the proof enters ([`entered`]), a stub it does not enter is no gap: the call graph reaches it, but no
+/// path within the bounds does. The call sites JBMC does not link, the monitors and the defects are the call graph's.
+pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, jdk: Option<&str>, entered: Option<&BTreeSet<String>>) -> Result<Found, Error> {
     let prefix = format!("java::{}.{method}:", class.replace('/', "."));
     let roots: Vec<&String> = program.functions.keys().filter(|id| id.starts_with(&prefix)).collect();
     if roots.is_empty() {
@@ -497,6 +552,7 @@ pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, j
                 }
             }
             Body::Exact => *found.exact.entry(gaps_call(&owner, &name, &descriptor)).or_default() += 1,
+            Body::Stub(_) if entered.is_some_and(|e| !e.contains(id)) => found.unreached.push(gaps_call(&owner, &name, &descriptor)),
             Body::Stub(kind) => {
                 found.gaps.entry(Gap { kind, owner, name, descriptor }).or_default().insert(site(caller));
             }
@@ -701,15 +757,71 @@ fn approximation(cp: &ClassPath, g: &Gap) -> String {
 
 /// The command of the preflight: the proof's, listing the goto program in place of checking it.
 pub fn command(run: &JbmcRun) -> Vec<String> {
+    let mut cmd = program_command(run, &[]);
+    cmd.push("--show-goto-functions".into());
+    cmd
+}
+
+/// The command of the preflight's second step, when the call graph reaches a stub: the proof's, with its bounds,
+/// through symbolic execution alone (`--program-only`), which prints the formula and solves nothing ([`entered`]).
+/// It runs over every input, as the proof's last run does, which an earlier stage only restricts.
+pub fn symbolic_command(run: &JbmcRun) -> Vec<String> {
+    let unwind = run.unwind.to_string();
+    let mut cmd = program_command(run, &["--unwind", &unwind, "--unwinding-assertions"]);
+    cmd.push("--program-only".into());
+    cmd
+}
+
+/// The proof's program, class path and options that change it, with `bounds`.
+fn program_command(run: &JbmcRun, bounds: &[&str]) -> Vec<String> {
     let entries: Vec<PathBuf> = run.classpath.iter().map(|p| crate::jbmc::absolute(p)).collect();
     let classpath = std::env::join_paths(&entries).map(|p| p.to_string_lossy().into_owned()).unwrap_or_default();
-    let mut cmd = vec![run.executable.clone(), run.class.clone(), "--function".into(), format!("{}.{}", run.class, run.function), "--classpath".into(), classpath, "--throw-runtime-exceptions".into()];
+    let mut cmd = vec![run.executable.clone(), run.class.clone(), "--function".into(), format!("{}.{}", run.class, run.function), "--classpath".into(), classpath];
+    cmd.extend(bounds.iter().map(|b| b.to_string()));
+    cmd.push("--throw-runtime-exceptions".into());
     if !run.refine_strings {
         cmd.push("--no-refine-strings".into());
     }
     cmd.extend(run.extra_args.iter().cloned());
-    cmd.push("--show-goto-functions".into());
     cmd
+}
+
+/// Runs JBMC's symbolic execution of the proof ([`symbolic_command`]) within `budget`, its output in `out`, and reads
+/// which functions of `program` it enters; an `Err` says why it cannot tell. The output is kept for a reader only
+/// while it is small: a large program prints a long formula.
+fn symbolic(run: &JbmcRun, program: &Program, out: &Path, budget: Duration) -> Result<BTreeSet<String>, String> {
+    if budget < Duration::from_secs(1) {
+        return Err("the listing left it no time".into());
+    }
+    let cwd = run.log.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
+    let memory = crate::jbmc::memory_limit_mb();
+    let cmd = crate::jbmc::limited(symbolic_command(run), memory);
+    let file = std::fs::File::create(out).map_err(|e| format!("{} cannot be written: {e}", out.display()))?;
+    let err = file.try_clone().map_err(|e| e.to_string())?;
+    let mut child = std::process::Command::new(&cmd[0]).args(&cmd[1..]).current_dir(&cwd).stdout(file).stderr(err).spawn().map_err(|e| format!("it cannot be run: {e}"))?;
+    let started = std::time::Instant::now();
+    let status = loop {
+        if let Some(status) = child.try_wait().map_err(|e| e.to_string())? {
+            break status;
+        }
+        if started.elapsed() > budget {
+            let _ = child.kill();
+            let _ = child.wait();
+            let _ = std::fs::remove_file(out);
+            return Err(format!("it did not finish within {} s", crate::deadline::seconds(budget)));
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    };
+    let read = if status.success() {
+        std::fs::File::open(out).map_err(|e| e.to_string()).and_then(|f| entered(program, std::io::BufReader::new(f)))
+    } else {
+        let limit = memory.map(|mb| format!(", perhaps out of memory (the limit is {mb} MiB)")).unwrap_or_default();
+        Err(format!("it ended with {status}{limit}"))
+    };
+    if std::fs::metadata(out).is_ok_and(|m| m.len() > 16 << 20) {
+        let _ = std::fs::remove_file(out);
+    }
+    read
 }
 
 /// What the preflight of a JBMC proof found, or why it could not tell.
@@ -720,6 +832,10 @@ pub struct Preflight {
     pub problem: Option<String>,
     pub log: PathBuf,
     pub seconds: f64,
+    /// When the call graph reaches a stub, what JBMC's symbolic execution of the proof told of it: `Ok` with the
+    /// seconds it took, the stubs it never enters then left out of the gaps ([`Found::unreached`]), or `Err` with why
+    /// it could not tell, the gaps then the call graph's.
+    pub paths: Option<Result<f64, String>>,
 }
 
 /// Runs the preflight for `run` (its log next to the run's), within `budget`.
@@ -731,14 +847,14 @@ fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error
     let log = run.log.with_file_name("jbmc-goto.txt");
     let started = std::time::Instant::now();
     if !crate::jbmc::available(&run.executable) {
-        return Ok(Preflight { found: None, problem: Some(format!("jbmc is not installed ({} not found)", run.executable)), log, seconds: 0.0 });
+        return Ok(Preflight { found: None, problem: Some(format!("jbmc is not installed ({} not found)", run.executable)), log, seconds: 0.0, paths: None });
     }
     let cwd = run.log.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
     let output = crate::tla::run_with_timeout(&crate::jbmc::limited(command(run), crate::jbmc::memory_limit_mb()), &cwd, budget.min(Duration::from_secs(PREFLIGHT_SECONDS)))?;
     std::fs::write(&log, &output)?;
     let seconds = started.elapsed().as_secs_f64();
     if output.contains("did not finish within") {
-        return Ok(Preflight { found: None, problem: Some(format!("listing JBMC's program did not finish within {} s", crate::deadline::seconds(budget.min(Duration::from_secs(PREFLIGHT_SECONDS))))), log, seconds });
+        return Ok(Preflight { found: None, problem: Some(format!("listing JBMC's program did not finish within {} s", crate::deadline::seconds(budget.min(Duration::from_secs(PREFLIGHT_SECONDS))))), log, seconds, paths: None });
     }
     let mut cp = ClassPath::new().with_models(false).with_default_jdk();
     for entry in &run.classpath {
@@ -747,10 +863,26 @@ fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error
         }
     }
     let program = parse_goto(&output);
-    match find(&program, &run.class, &run.function, &cp, gaps::jdk_release().as_deref()) {
-        Ok(found) => Ok(Preflight { found: Some(found), problem: None, log, seconds }),
-        Err(e) => Ok(Preflight { found: None, problem: Some(e.to_string()), log, seconds }),
+    let jdk = gaps::jdk_release();
+    let mut found = match find(&program, &run.class, &run.function, &cp, jdk.as_deref(), None) {
+        Ok(found) => found,
+        Err(e) => return Ok(Preflight { found: None, problem: Some(e.to_string()), log, seconds, paths: None }),
+    };
+    // The call graph takes every branch: a stub the program calls only where a condition the bounds decide is false
+    // is reached there too. JBMC's symbolic execution of the proof says which it enters.
+    let mut paths = None;
+    if found.gaps.keys().any(|g| !matches!(g.kind, GapKind::Monitor | GapKind::InvokeDynamic)) {
+        let left = budget.min(Duration::from_secs(PREFLIGHT_SECONDS)).saturating_sub(started.elapsed());
+        let begun = std::time::Instant::now();
+        paths = Some(match symbolic(run, &program, &run.log.with_file_name("jbmc-symex.txt"), left) {
+            Ok(entered) => {
+                found = find(&program, &run.class, &run.function, &cp, jdk.as_deref(), Some(&entered))?;
+                Ok(begun.elapsed().as_secs_f64())
+            }
+            Err(why) => Err(why),
+        });
     }
+    Ok(Preflight { found: Some(found), problem: None, log, seconds: started.elapsed().as_secs_f64(), paths })
 }
 
 impl Preflight {
@@ -767,9 +899,25 @@ impl Preflight {
     /// The note a report prints for it.
     pub fn note(&self) -> String {
         match (&self.found, &self.problem) {
-            (Some(f), _) if f.records.is_empty() && f.defects.is_empty() => String::new(),
             (Some(f), _) => {
                 let mut out = String::new();
+                match &self.paths {
+                    Some(Ok(seconds)) if !f.unreached.is_empty() => {
+                        let n = f.unreached.len();
+                        let _ = writeln!(
+                            out,
+                            "note: JBMC's call graph reaches {n} stub{} that its symbolic execution of the proof ({:.1} s, nothing solved) never enters, on no path within the bounds, so no gap{}: {}",
+                            if n == 1 { "" } else { "s" },
+                            seconds,
+                            if n == 1 { "" } else { "s" },
+                            f.unreached.join(", ")
+                        );
+                    }
+                    Some(Err(why)) => {
+                        let _ = writeln!(out, "note: which stubs JBMC's paths reach is not known, since its symbolic execution of the proof could not tell ({why}): the gaps are those of its call graph");
+                    }
+                    _ => {}
+                }
                 if !f.records.is_empty() {
                     let _ = writeln!(out, "note: JBMC reaches {} construct{} it approximates (its stubs and unlinked call sites, {}):", f.records.len(), if f.records.len() == 1 { "" } else { "s" }, self.log.display());
                     for r in &f.records {
@@ -902,6 +1050,8 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert_eq!(check.calls["java::p.K.m:(I)I"], Some(3));
         let m = &p.functions["java::p.K.m:(I)I"];
         assert!(m.at[&9].contains("lambda_synthetic_class$"), "{:?}", m.at);
+        assert_eq!(m.locations[&4], "file K.java line 8 function java::p.K.m:(I)I bytecode-index 9", "{:?}", m.locations);
+        assert_eq!(check.locations.keys().collect::<Vec<_>>(), [&1, &2]);
         assert!(m.at[&2].starts_with("CALL java::java.util.ArrayList"), "{:?}", m.at);
         assert_eq!(method_of("java::java.util.ArrayList.<init>:(I)V"), Some(("java/util/ArrayList".into(), "<init>".into(), "(I)V".into())));
         assert_eq!(method_of("java::java.lang.Integer.<clinit_wrapper>"), None);
@@ -919,7 +1069,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         if !cp.has_jdk() {
             return;
         }
-        let found = find(&p, "H", "check", &cp, Some("25")).unwrap();
+        let found = find(&p, "H", "check", &cp, Some("25"), None).unwrap();
         let ids: Vec<&str> = found.records.iter().map(|r| r.id.as_str()).collect();
         assert_eq!(ids, ["jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25", "missing-body:p.K.m(I)I"], "{found:?}");
         assert_eq!(found.initializer_stubs, ["java.lang.Class.getPrimitiveClass(java.lang.String)"]);
@@ -927,7 +1077,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert_eq!(list.sites, ["p.K.m:7"]);
         assert!(list.approximation.starts_with("is JBMC's stub: it constructs the object and does nothing else"), "{}", list.approximation);
         assert_eq!(list.checker.as_deref(), Some("jbmc"));
-        assert!(find(&p, "H", "other", &cp, None).is_err());
+        assert!(find(&p, "H", "other", &cp, None, None).is_err());
     }
 
     /// `tests/fixtures/jbmc-defects/p/D.java`, compiled, on JBMC's class path with the JDK image: `None` without
@@ -964,7 +1114,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     fn the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm() {
         let Some((_dir, cp)) = defect_fixture() else { return };
         let defects = |method: &str, descriptor: &str| -> Vec<(String, String)> {
-            let found = find(&calling(method, descriptor), "H", method, &cp, None).unwrap();
+            let found = find(&calling(method, descriptor), "H", method, &cp, None, None).unwrap();
             found.defects.iter().map(|d| (d.kind.to_string(), d.site.clone())).collect()
         };
         assert_eq!(defects("returned", "(I)I"), [("return-past-handler".to_string(), "p.D.returned:7".to_string())]);
@@ -977,13 +1127,13 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         for (method, descriptor) in [("stored", "(I)I"), ("uncaught", "([II)I"), ("called", "(I)I"), ("exact", "(I)I"), ("masked", "(II)I"), ("halved", "(I)I"), ("left", "(II)I")] {
             assert_eq!(defects(method, descriptor), [], "{method}");
         }
-        let found = find(&calling("returned", "(I)I"), "H", "returned", &cp, None).unwrap();
+        let found = find(&calling("returned", "(I)I"), "H", "returned", &cp, None, None).unwrap();
         let what = &found.defects[0].what;
         assert!(what.contains("java.lang.ArithmeticException") && what.contains("after it leaves the try block"), "{what}");
-        let found = find(&calling("thrown", "(I)I"), "H", "thrown", &cp, None).unwrap();
+        let found = find(&calling("thrown", "(I)I"), "H", "thrown", &cp, None, None).unwrap();
         let what = &found.defects[0].what;
         assert!(what.contains("catch (java.lang.RuntimeException)") && what.contains("java.lang.IllegalArgumentException"), "{what}");
-        let found = find(&calling("shiftedUnsigned", "(JI)J"), "H", "shiftedUnsigned", &cp, None).unwrap();
+        let found = find(&calling("shiftedUnsigned", "(JI)J"), "H", "shiftedUnsigned", &cp, None, None).unwrap();
         let what = &found.defects[0].what;
         assert!(what.contains("a long with >>>") && what.contains("0..63") && what.contains("low six bits") && what.contains("zeros"), "{what}");
     }
@@ -1015,7 +1165,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     #[test]
     fn the_preflight_names_an_initializer_jbmc_runs_where_the_jvm_does_not() {
         let Some((_dir, cp)) = defect_fixture() else { return };
-        let defects = |method: &str, descriptor: &str, bci: u32, wrapper: &str| -> Vec<Defect> { find(&initializing(method, descriptor, bci, wrapper), "H", method, &cp, None).unwrap().defects };
+        let defects = |method: &str, descriptor: &str, bci: u32, wrapper: &str| -> Vec<Defect> { find(&initializing(method, descriptor, bci, wrapper), "H", method, &cp, None, None).unwrap().defects };
         let kinds = |d: Vec<Defect>| -> Vec<(String, String)> { d.iter().map(|d| (d.kind.to_string(), d.site.clone())).collect() };
         assert_eq!(kinds(defects("declaring", "(I)I", 0, "Sub")), [("extra-initializer".to_string(), "p.D.declaring:21".to_string())]);
         assert_eq!(kinds(defects("assigned", "(I)V", 1, "Sub")), [("extra-initializer".to_string(), "p.D.assigned:22".to_string())]);
@@ -1035,7 +1185,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
     #[test]
     fn a_proof_through_a_defect_is_refused_under_every_mode_and_a_counterexample_is_left_to_the_replay() {
         let defect = Defect { kind: "return-past-handler", site: "p.D.returned:7".into(), what: "raises it after it leaves the try block".into() };
-        let pre = Preflight { found: Some(Found { defects: vec![defect], ..Found::default() }), problem: None, log: PathBuf::from("jbmc-goto.txt"), seconds: 0.0 };
+        let pre = Preflight { found: Some(Found { defects: vec![defect], ..Found::default() }), problem: None, log: PathBuf::from("jbmc-goto.txt"), seconds: 0.0, paths: None };
         let result = |verdict: Verdict| crate::jbmc::JbmcResult {
             verdict,
             version: "6.11.0".into(),
@@ -1065,5 +1215,77 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert!(pre.note().contains("jbmc defect: return-past-handler at p.D.returned:7"), "{}", pre.note());
         assert!(pre.unreproduced_cause().is_some_and(|c| c.contains("return-past-handler at p.D.returned:7")));
         assert_eq!(Preflight { found: Some(Found::default()), ..pre }.unreproduced_cause(), None);
+    }
+
+    /// What `--program-only` prints for [`GOTO`] when the harness's call of `p.K.m` is on no path: the steps of
+    /// `H.check` alone, each after the comment of its location in the listing.
+    const SSA: &str = "JBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux\nsize of program expression: 2 steps\nProgram constraints:\n// 1 file H.java line 3 function java::H.check:(I)V bytecode-index 1\n(1) x!0#1 == 0\n// 2 file H.java line 4 function java::H.check:(I)V bytecode-index 5\n";
+
+    #[test]
+    fn the_functions_symbolic_execution_enters_are_read_by_the_listings_locations() {
+        let p = parse_goto(GOTO);
+        let entered = entered(&p, SSA.as_bytes()).unwrap();
+        assert_eq!(entered.iter().collect::<Vec<_>>(), ["java::H.check:(I)V"]);
+        // Another program's locations, an unfinished run, or a formula of no location tell nothing.
+        let moved = SSA.replace("line 4 function", "line 5 function");
+        assert!(entered_err(&p, &moved).contains("location 2 is `file H.java line 5"), "{}", entered_err(&p, &moved));
+        assert!(entered_err(&p, &SSA.replace("// 2 ", "// 99 ")).contains("location 99"));
+        assert!(entered_err(&p, &SSA.replace("Program constraints:", "")).contains("no formula"));
+        assert!(entered_err(&p, "Program constraints:\n(1) x == 0\n").contains("no location"));
+        // A stub the call graph reaches and symbolic execution does not enter is no gap.
+        let cp = ClassPath::new().with_models(false).with_default_jdk();
+        if !cp.has_jdk() {
+            return;
+        }
+        let mut entered = entered;
+        entered.insert("java::p.K.m:(I)I".into());
+        let found = find(&p, "H", "check", &cp, Some("25"), Some(&entered)).unwrap();
+        assert_eq!(found.records.iter().map(|r| r.id.as_str()).collect::<Vec<_>>(), ["missing-body:p.K.m(I)I"]);
+        assert_eq!(found.unreached, ["java.util.ArrayList.<init>(int)"]);
+    }
+
+    fn entered_err(p: &Program, ssa: &str) -> String {
+        entered(p, ssa.as_bytes()).unwrap_err()
+    }
+
+    /// `tests/fixtures/jbmc-paths/P.java` through the preflight on JBMC 6.11.0, with the models on its class path:
+    /// the model of `List.copyOf` calls `Collection.isEmpty` and `toArray` only for a collection other than the
+    /// immutable lists `List.of` makes. Over a list `List.of` made, the call graph reaches the two stubs and the
+    /// symbolic execution of the proof enters neither, so the proof meets no gap; over a collection JBMC knows
+    /// nothing of, it enters them. Neither run solves anything.
+    #[test]
+    fn a_stub_on_no_path_the_proof_takes_is_no_gap() {
+        let Some((dir, _cp)) = defect_fixture() else { return };
+        if !crate::jbmc::available("jbmc") {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            return;
+        }
+        let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/jbmc-paths/P.java");
+        let status = std::process::Command::new("javac").args(["-g", "-d"]).arg(dir.path()).arg(&source).status().unwrap();
+        assert!(status.success(), "the fixture compiles");
+        let run = |function: &str| JbmcRun {
+            executable: "jbmc".into(),
+            class: "P".into(),
+            function: function.into(),
+            classpath: vec![dir.path().to_path_buf(), Path::new(env!("CARGO_MANIFEST_DIR")).join("models/classes")],
+            unwind: 5,
+            timeout: Duration::from_secs(60),
+            stage: None,
+            refine_strings: false,
+            sat_solver: None,
+            log: dir.path().join(format!("{function}.log")),
+            extra_args: Vec::new(),
+        };
+        let pre = preflight(&run("copied"), Duration::from_secs(60)).unwrap();
+        let found = pre.found.as_ref().unwrap_or_else(|| panic!("{:?}", pre.problem));
+        assert!(matches!(pre.paths, Some(Ok(_))), "{:?}", pre.paths);
+        assert_eq!(found.records.iter().map(|r| r.id.as_str()).collect::<Vec<_>>(), Vec::<&str>::new(), "{}", pre.note());
+        assert!(found.unreached.contains(&"java.util.Collection.isEmpty()".to_string()) && found.unreached.contains(&"java.util.Collection.toArray()".to_string()), "{:?}", found.unreached);
+        assert!(pre.note().contains("never enters") && pre.note().contains("java.util.Collection.isEmpty()"), "{}", pre.note());
+        let pre = preflight(&run("opaque"), Duration::from_secs(60)).unwrap();
+        let found = pre.found.as_ref().unwrap();
+        assert!(matches!(pre.paths, Some(Ok(_))), "{:?}", pre.paths);
+        let ids: Vec<&str> = found.records.iter().map(|r| r.id.as_str()).collect();
+        assert!(ids.iter().any(|id| id.starts_with("jdk-primitive-method:java.util.Collection.isEmpty()Z")), "{ids:?}");
     }
 }
