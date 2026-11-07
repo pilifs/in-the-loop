@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 07:55 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 07:56 UTC |
 | Prompts | 1,135 |
-| Model calls | 11,195 |
-| Tool calls | 12,070 (251 failed) |
+| Model calls | 11,202 |
+| Tool calls | 12,077 (251 failed) |
 | Compactions | 157 |
 | Subagents | 5 |
-| Tokens written | 13,742,936 |
-| Tokens read | 1,830,167,075 (97.9% from cache) |
-| Commits with a trace | 343 |
-| Log snapshots | 420 (1100.8 MB gzipped, 404 uploaded) |
+| Tokens written | 13,747,361 |
+| Tokens read | 1,831,534,370 (97.9% from cache) |
+| Commits with a trace | 344 |
+| Log snapshots | 421 (1105.3 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | open | 3 h 54 min | `claude-opus-5-5` | 64 | 584 | 605 | 9 | 12 | 247,357 | 15 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | open | 3 h 55 min | `claude-opus-5-5` | 64 | 591 | 612 | 9 | 12 | 247,357 | 16 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,13 +127,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 536,347 | 1,178 | 2,212,431 | 85,485,348 | 97.5% | 164 |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 540,772 | 1,192 | 2,219,881 | 86,845,179 | 97.5% | 165 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,554 | 87.4% | 46 |
+| `Bash` | 10,561 | 87.4% | 46 |
 | `Read` | 483 | 4.0% | 23 |
 | `Edit` | 474 | 3.9% | 22 |
 | `Write` | 350 | 2.9% | 20 |
@@ -498,6 +498,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 341 | change `xuyyxpyz` | Alignment A5: each decision that is a person's put as a question, with its candidates, what each means, and a one-line approve that sets intent only | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/3c1114fb0efc5bb93a56e896f622dc0fccd84a07e4607d427accac3ef740b64d.jsonl.gz)) |
 | 342 | change `pomtzpnq` | Alignment A5: an approved relation's evidence comes from a proof under the current claim key, goes stale when it no longer matches, and approved-but-unproved decisions are listed | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/936ffea984cf467127ab9090c820b8eaf4493e365e1d582c8248c5e403a382ce.jsonl.gz)) |
 | 343 | change `kkkqlqut` | Alignment A5: proved relations with the same inputs are one candidate, told apart by a result no input gives; a question names an input that separates its candidates | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/0bf0ebdb11b3d49ab52a6d3636f5da02ed99ff54adfed9b118e56ef9305dfc7d.jsonl.gz)) |
+| 344 | change `spwpnwnu` | Alignment Progress: undo the copy of the brief's text that the last commit appended to its Progress | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/37a5ef9021634ea8c01a85415e013cd737c189c7794d3d5c06999a7a54603369.jsonl.gz)) |
 
 ## Logs
 
@@ -550,7 +551,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 15 | 0 | 32.3 MB | `0bf0ebdb11b3`, not uploaded |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 16 | 0 | 36.8 MB | `37a5ef902163`, not uploaded |
 
 ## Session notes
 
