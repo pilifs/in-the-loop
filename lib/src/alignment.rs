@@ -15,11 +15,12 @@
 //! For each pair matched, [`mappings`](mod@mappings) relates the arguments, records and result under the comparison's
 //! preservation contract (step A3): anchored inputs fixed to themselves, internal ones and the result proposed from a
 //! small catalogue. An object whose class changed shape is related field by field ([`fields`], step A4), from how
-//! each version's constructors route their parameters into fields.
+//! each version's constructors route their parameters into fields. What is left a person's decision is put as a
+//! question ([`questions`], step A5), with each candidate, what approving it would mean, and the line that approves
+//! it; approving sets the intent state only.
 //!
-//! What this does not do: relate two different classes, or fields a constructor sets other than straight from a
-//! parameter (the rest of A4); prove anything (a regression proof
-//! settles a proposal's evidence); match loops or other control flow (deferred); or match one old method to several
+//! What this does not do: relate fields a constructor computes, or a class holding its own class; prove anything (a
+//! regression proof settles a proposal's evidence); match loops or other control flow (deferred); or match one old method to several
 //! new ones (an inlined or split method gets the closest one, or none).
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -28,12 +29,13 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 use crate::classfile::{flags, ClassFile, Insn, Method};
-use crate::spec::{Evidence, Hint, HintContent, Hints, Intent, Source};
+use crate::spec::{Ask, Evidence, Hint, HintContent, Hints, Intent, Source};
 use crate::Error;
 
 pub mod fields;
 pub mod proofs;
 pub mod mappings;
+pub mod questions;
 pub use mappings::{mapping_hints, mappings, Mapping};
 
 /// How far ahead of the second the first candidate must be to lead, and the least score with which even a candidate
@@ -435,6 +437,10 @@ pub fn method_hints(report: &MethodReport) -> Hints {
     let mut entries = Vec::new();
     for m in &report.methods {
         let alone = m.candidates.len() == 1;
+        // A vanished method none of whose candidates leads is a person's choice.
+        let decide = (m.change == Change::Vanished && !m.leads && !m.candidates.is_empty()).then(|| {
+            format!("which new method takes the place of {}: {} candidate{}, none sure enough to propose on its own", m.before, m.candidates.len(), if alone { "" } else { "s" })
+        });
         for (i, c) in m.candidates.iter().enumerate() {
             let mut why: Vec<String> = c.basis.iter().map(Basis::describe).collect();
             why.push(format!("score {}{}", c.score, if i == 0 && m.leads && !alone { ", leading" } else { "" }));
@@ -444,7 +450,8 @@ pub fn method_hints(report: &MethodReport) -> Hints {
                 source: Source::Inferred,
                 intent: Intent::Proposed,
                 evidence: Evidence::Unchecked,
-                rank: (!alone).then_some(i as u32 + 1),
+                rank: (!alone || decide.is_some()).then_some(i as u32 + 1),
+                ask: decide.as_ref().map(|d| Ask { decide: d.clone(), means: vec![format!("{} takes its place, and is compared against it (score {}: {})", c.after, c.score, c.basis.iter().map(Basis::describe).collect::<Vec<_>>().join("; "))] }),
                 why,
             });
         }
@@ -454,7 +461,7 @@ pub fn method_hints(report: &MethodReport) -> Hints {
 
 /// Whether a hint is the tool's proposal, which a later run replaces, rather than a person's (stated or approved),
 /// which no run touches.
-fn tool_proposal(h: &Hint) -> bool {
+pub(crate) fn tool_proposal(h: &Hint) -> bool {
     h.source == Source::Inferred && h.intent == Intent::Proposed
 }
 
@@ -574,7 +581,7 @@ mod tests {
     }
 
     fn hint(subject: &str, after: &str, source: Source, intent: Intent) -> Hint {
-        Hint { subject: subject.into(), content: HintContent::Method { before: subject.into(), after: after.into() }, source, intent, evidence: Evidence::Unchecked, rank: None, why: Vec::new() }
+        Hint { subject: subject.into(), content: HintContent::Method { before: subject.into(), after: after.into() }, source, intent, evidence: Evidence::Unchecked, rank: None, why: Vec::new(), ask: None }
     }
 
     #[test]

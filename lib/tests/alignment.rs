@@ -117,6 +117,12 @@ fn two_equally_good_candidates_are_a_question() {
     assert_eq!(m.candidates.len(), 2, "{}", alignment::render(&report));
     assert!(!m.leads, "neither leads: {}", alignment::render(&report));
     assert!(m.leading().is_none());
+    let asked = alignment::questions::questions(&alignment::method_hints(&report), Some(Path::new("h.json")));
+    let [q] = asked.as_slice() else { panic!("{}", alignment::questions::render(&asked)) };
+    assert_eq!((q.kind.as_str(), q.subject.as_str()), ("method", "A#f"));
+    assert!(q.decide.starts_with("which new method takes the place of A#f: 2 candidates"), "{}", q.decide);
+    assert!(q.answers.iter().all(|a| a.means[0].contains("takes its place")));
+    assert_eq!(q.answers[1].approve, "jvmcontract approve --hints h.json --kind method --subject 'A#f' --rank 2");
 }
 
 #[test]
@@ -188,6 +194,7 @@ fn the_command_writes_hints_and_keeps_what_a_person_approved() {
         evidence: Evidence::Unchecked,
         rank: None,
         why: Vec::new(),
+        ask: None,
     };
     alignment::write_hints(&path, &Hints { version: alignment::HINTS_VERSION, entries: vec![approved.clone()] }).unwrap();
     let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(["align", "--before"]).arg(&before).arg("--after").arg(&after).arg("--hints").arg(&path).output().unwrap();
@@ -341,6 +348,13 @@ fn two_inputs_only_their_type_ties_are_a_question() {
     assert!(m.proposals.len() > 1);
     let hints = alignment::mapping_hints(&a.mappings);
     assert_eq!(hints.entries.iter().map(|h| h.rank).collect::<Vec<_>>(), (1..=m.proposals.len() as u32).map(Some).collect::<Vec<_>>());
+    // The question: both inputs, and what each candidate makes them.
+    let asked = alignment::questions::questions(&hints, None);
+    let [q] = asked.as_slice() else { panic!("{}", alignment::questions::render(&asked)) };
+    assert!(q.decide.starts_with("(against C#span) what the old x is made from: 2 candidates, none ahead (this.p | this.q); what the old y is made from"), "{}", q.decide);
+    assert!(q.answers.iter().any(|a| a.means == ["x = this.p", "y = this.q", "new inputs left free: none"]), "{}", alignment::questions::render(&asked));
+    assert!(q.answers.iter().any(|a| a.means == ["x = this.p", "y = this.p", "new inputs left free: this.q"]), "what each leaves free: {}", alignment::questions::render(&asked));
+    assert_eq!(q.answers.len(), m.proposals.len());
 }
 
 #[test]
@@ -706,6 +720,7 @@ fn of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds() {
     let evidence: Vec<&Evidence> = hints.entries.iter().filter(|h| h.subject == "P#span").map(|h| &h.evidence).collect();
     assert_eq!(evidence.iter().filter(|e| matches!(e, Evidence::Proved { .. })).count(), 1, "{evidence:?}");
     assert!(hints.entries.iter().filter(|h| h.subject == "P#span").all(|h| h.intent == Intent::Proposed), "a proof sets the evidence, never the intent");
+    assert!(alignment::questions::questions(&hints, None).iter().all(|q| q.subject != "P#span"), "the proof settled the question on type alone");
 }
 
 #[test]
@@ -750,6 +765,15 @@ fn several_proved_relations_for_a_changed_result_are_a_question() {
     let mut relations: Vec<&str> = proved.iter().map(|&i| m.proposals[i].relation.as_deref().unwrap()).collect();
     relations.sort();
     assert_eq!(relations, ["previous == (result != 0)", "previous == (result > 0)"], "{}", proofs::render(&a.proofs));
+    // Put as a question: every candidate with what it means and its evidence, a counterexample under each refuted one.
+    let hints = alignment::hints(&a);
+    let asked = alignment::questions::questions(&hints, None);
+    let q = asked.iter().find(|q| q.subject == "A#positive").expect("asked");
+    assert!(q.decide.contains("which of the 2 relations proved is intended"), "{}", q.decide);
+    assert_eq!(q.answers.len(), m.proposals.len(), "{}", alignment::questions::render(&asked));
+    assert!(q.answers.iter().all(|a| a.means.iter().any(|w| w.starts_with("result: previous == (result ")) && a.approve.contains("--subject 'A#positive' --rank")));
+    assert_eq!(q.answers.iter().filter(|a| matches!(a.evidence, Evidence::Proved { .. })).count(), 2);
+    assert!(q.answers.iter().filter(|a| !matches!(a.evidence, Evidence::Proved { .. })).all(|a| matches!(&a.evidence, Evidence::Refuted { witness, .. } if witness.contains("positive("))), "{}", alignment::questions::render(&asked));
 }
 
 #[test]
@@ -779,4 +803,120 @@ fn the_outcome_rules_count_no_vacuous_proof_and_name_a_person_s_decision() {
     let Settled::Proved { proposal: 0, note: Some(note), .. } = &settled else { panic!("{settled:?}") };
     assert!(note.contains("a person's decision") && !m.standalone, "{note}");
     assert!(summary.contains("intent still proposed"), "{summary}");
+}
+
+// Step A5: the question, well put.
+
+/// The kernel compiled without debug information or parameter names, so every name is `argN` and its fields are
+/// matched on type alone.
+fn bare_kernel(test: &str, version: &str) -> Option<PathBuf> {
+    if !has_javac() {
+        return None;
+    }
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations").join(version).join("shop");
+    let files: Vec<PathBuf> = ["Pricing.java", "Quote.java", "Money.java"].iter().map(|f| src.join(f)).filter(|p| p.exists()).collect();
+    let out = scratch(&format!("bare-{test}-{version}"));
+    let status = Command::new("javac").args(["-proc:none", "-d"]).arg(&out).args(&files).status().expect("javac runs");
+    assert!(status.success());
+    Some(out)
+}
+
+#[test]
+fn a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_free() {
+    let (Some(b), Some(a)) = (bare_kernel("lone", "before"), bare_kernel("lone", "after")) else { return };
+    let aligned = alignment::align(&Build::load(&b).unwrap(), &Build::load(&a).unwrap(), None);
+    let total = mapping(&aligned, "shop.Pricing#total");
+    let fc = total.inputs[0].fields.as_ref().expect("related field by field");
+    let cents = fc.fields.iter().find(|f| f.old == "cents").unwrap();
+    assert!(!cents.leads && cents.candidates.len() == 1, "on type alone: {}", alignment::mappings::render(&aligned.mappings));
+    assert_eq!(total.proposals.len(), 1);
+    // What only the question's candidate reaches is not free, and not called so.
+    assert!(fc.free.is_empty() && fc.open == ["amount"], "{fc:?}");
+    let hints = alignment::hints(&aligned);
+    let h = hints.entries.iter().find(|h| h.subject == "shop.Pricing#total" && matches!(h.content, HintContent::Correspondence { .. })).unwrap();
+    assert!(!h.why.iter().any(|w| w.contains("no equation reaches")), "{:?}", h.why);
+    let with = mapping(&aligned, "shop.Pricing#withQuantity");
+    assert!(!with.result.candidates[0].why.contains("not compared"), "{}", with.result.candidates[0].why);
+    // One proposal, but a question: ranked, with what to decide and what approving it means.
+    assert_eq!(h.rank, Some(1));
+    let ask = h.ask.as_ref().expect("asked");
+    assert!(ask.decide.starts_with("which new value the old arg0.cents is: its one candidate, amount.cents, is not sure enough to propose on its own"), "{}", ask.decide);
+    assert_eq!(ask.means, ["old.arg0.cents == new.arg0.amount.cents", "new fields of shop.Quote left uncompared: none"]);
+    let asked = alignment::questions::questions(&hints, None);
+    let subjects: Vec<&str> = asked.iter().map(|q| q.subject.as_str()).collect();
+    assert_eq!(subjects, ["shop.Pricing#total", "shop.Pricing#withQuantity", "shop.Quote#quantity"], "{}", alignment::questions::render(&asked));
+    let with_ask = &asked[1];
+    assert!(with_ask.decide.contains("which new value the old result's cents is compared with"), "{}", with_ask.decide);
+    assert!(with_ask.answers[0].means.iter().any(|m| m == "result: previous.cents == result.amount.cents && previous.quantity == result.quantity"), "{:?}", with_ask.answers[0].means);
+    // With names, nothing in the kernel is a person's decision.
+    let (Some(nb), Some(na)) = (kernel("lone-named", "before"), kernel("lone-named", "after")) else { return };
+    let named = alignment::align(&Build::load(&nb).unwrap(), &Build::load(&na).unwrap(), None);
+    let none = alignment::questions::questions(&alignment::hints(&named), None);
+    assert!(none.is_empty(), "{}", alignment::questions::render(&none));
+}
+
+#[test]
+fn approving_sets_the_intent_only_and_a_file_whose_decisions_are_approved_asks_nothing() {
+    let (Some(b), Some(a)) = (bare_kernel("approve", "before"), bare_kernel("approve", "after")) else { return };
+    let path = scratch("approve-hints").join("hints.json");
+    let run = |args: &[&str]| Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(args).output().unwrap();
+    let align = || {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(["align", "--before"]).arg(&b).arg("--after").arg(&a).arg("--hints").arg(&path).output().unwrap();
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).to_string()
+    };
+    let text = align();
+    assert!(text.contains("question  shop.Pricing#total (correspondence): decide which new value the old arg0.cents is"), "{text}");
+    assert!(text.contains("3 questions for a person"), "{text}");
+    let line = format!("jvmcontract approve --hints {} --kind correspondence --subject 'shop.Pricing#total' --rank 1", path.display());
+    assert!(text.contains(&line), "the one line that approves it: {text}");
+    let before = alignment::read_hints(&path).unwrap();
+    let proposed = before.entries.iter().find(|h| h.subject == "shop.Pricing#total" && matches!(h.content, HintContent::Correspondence { .. })).unwrap().clone();
+
+    let p = path.to_str().unwrap();
+    let out = run(&["approve", "--hints", p, "--kind", "correspondence", "--subject", "shop.Pricing#total", "--rank", "1"]);
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert!(String::from_utf8_lossy(&out.stdout).contains("intent approved; evidence unchecked"), "{}", String::from_utf8_lossy(&out.stdout));
+    let after = alignment::read_hints(&path).unwrap();
+    let approved = after.entries.iter().find(|h| h.subject == "shop.Pricing#total" && matches!(h.content, HintContent::Correspondence { .. })).unwrap();
+    assert_eq!(approved, &Hint { intent: Intent::Approved, ..proposed }, "only the intent changes: the evidence is still unchecked");
+    assert_eq!(after.entries.len(), before.entries.len());
+
+    // A second approval of a decided subject, a subject with no proposal, and an unnamed choice among several are refused.
+    assert!(!run(&["approve", "--hints", p, "--kind", "correspondence", "--subject", "shop.Pricing#total", "--rank", "1"]).status.success());
+    assert!(!run(&["approve", "--hints", p, "--kind", "correspondence", "--subject", "shop.Nothing#here"]).status.success());
+
+    // A rerun keeps the approval, and no longer asks about it.
+    let text = align();
+    assert!(!text.contains("question  shop.Pricing#total") && text.contains("2 questions for a person"), "{text}");
+    for subject in ["shop.Pricing#withQuantity", "shop.Quote#quantity"] {
+        assert!(run(&["approve", "--hints", p, "--kind", "correspondence", "--subject", subject, "--rank", "1"]).status.success());
+    }
+    let text = align();
+    assert!(text.contains("questions: none"), "every decision approved: {text}");
+    let hints = alignment::read_hints(&path).unwrap();
+    assert_eq!(hints.entries.iter().filter(|h| h.intent == Intent::Approved).count(), 3);
+    assert!(hints.entries.iter().all(|h| h.evidence == Evidence::Unchecked), "approving proves nothing");
+}
+
+#[test]
+fn approve_needs_a_rank_among_several() {
+    let hint = |rank| Hint {
+        subject: "A#f".into(),
+        content: HintContent::Method { before: "A#f".into(), after: format!("A#g{rank}") },
+        source: Source::Inferred,
+        intent: Intent::Proposed,
+        evidence: Evidence::Unchecked,
+        rank: Some(rank),
+        why: Vec::new(),
+        ask: None,
+    };
+    let hints = Hints { version: alignment::HINTS_VERSION, entries: vec![hint(1), hint(2)] };
+    let e = alignment::questions::approve(hints.clone(), "method", "A#f", None).unwrap_err();
+    assert!(e.0.contains("name one with --rank (1, 2)"), "{}", e.0);
+    assert!(alignment::questions::approve(hints.clone(), "method", "A#f", Some(3)).is_err());
+    assert!(alignment::questions::approve(hints.clone(), "correspondence", "A#f", Some(1)).is_err(), "the kind is part of what is approved");
+    let (out, chosen) = alignment::questions::approve(hints, "method", "A#f", Some(2)).unwrap();
+    assert_eq!(out.entries, vec![chosen.clone()], "the others are dropped: the person chose");
+    assert_eq!((chosen.intent, chosen.rank), (Intent::Approved, Some(2)));
 }

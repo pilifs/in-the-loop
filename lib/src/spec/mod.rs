@@ -297,13 +297,27 @@ pub struct Hint {
     pub source: Source,
     pub intent: Intent,
     pub evidence: Evidence,
-    /// Where several hints for one subject are alternatives, their place in the ranking, best first (1); `None` for a
-    /// hint that has no alternative.
+    /// Where several hints for one subject are alternatives, their place in the ranking, best first (1); also `1` for
+    /// the one candidate of a question (`ask`); `None` for a hint that has no alternative.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rank: Option<u32>,
     /// The static facts it was proposed on, for the person deciding it. Not evidence: that is `evidence`'s.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub why: Vec<String>,
+    /// Set when the hint is one candidate answer to a decision that is a person's: several candidates and none
+    /// ahead, a lone one matched on type alone, or a result whose meaning changed. `None` for a hint the tool
+    /// proposes on its own. Approving one sets its intent only; its evidence still comes from a proof.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ask: Option<Ask>,
+}
+
+/// A decision that is a person's, as one candidate answers it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Ask {
+    /// What to decide: the same for every candidate of the subject.
+    pub decide: String,
+    /// What approving this candidate would settle, part by part.
+    pub means: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

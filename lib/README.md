@@ -89,6 +89,12 @@ jvmcontract align --before base/classes --after head/classes --hints build/align
 # the relation holds and whether it is the intended one is unconfirmed); several are a question; none lists each
 # mapping tried with its counterexample. A vacuous proof counts as none. Runs proofs: queue it as a job.
 jvmcontract align --before base/classes --after head/classes --prove --subject 'net.example.Expiry#remaining' --hints build/alignment-hints.json
+# align ends with its questions: each decision that is a person's (several candidates and none ahead, a lone one
+# matched on type alone, a result whose meaning changed, or what a proof left open), what to decide, each candidate
+# with what approving it would mean and its evidence (a counterexample where a proof refuted it), and the line that
+# approves it. Approving sets the intent state only; the evidence stays what a proof showed. A hints file whose
+# decisions are all approved asks nothing.
+jvmcontract approve --hints build/alignment-hints.json --kind correspondence --subject 'shop.Pricing#total' --rank 1
 
 # A property of one method, proved over every input, or refuted with a witness.
 jvmcontract prove 'net.example.Backoff#delayMillis' --classes build/classes/java/main \
@@ -316,7 +322,8 @@ aliasing, and how inputs are made, labelled in every result), observations beyon
 identity relations within a version, effects as modeled boundary-call attempts), the correspondence between old and
 new internal states (of which `--before-arguments` and `--results-agree-when` are special cases,
 `Correspondence::from_flags`), the hints file (each hint with an intent state and an evidence state, kept apart, and
-optionally its rank among alternatives and the static facts it was proposed on), and the canonical claim a cache key
+optionally its rank among alternatives, the static facts it was proposed on, and for a candidate answer to a
+person's decision what to decide and what approving it would mean), and the canonical claim a cache key
 digests. `Statement` carries them in its optional `spec` field. Each of the loop's
 four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`, `align.rs`), which returns a named
 `Unsupported` until that stream implements it; `tests/foundations.rs` checks every part against the joint example in
@@ -324,7 +331,8 @@ four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`,
 mappings (`align`, `src/alignment.rs` and `src/alignment/mappings.rs`), and what their proofs settle
 (`src/alignment/proofs.rs`), are scored against the hand-written mappings of
 the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md); field correspondence
-(`src/alignment/fields.rs`), which none of them needs, is checked on the joint example, through `align.rs`.
+(`src/alignment/fields.rs`), which none of them needs, is checked on the joint example, through `align.rs`. The
+questions a person decides, and their approval, are `src/alignment/questions.rs`.
 
 ## Limits
 

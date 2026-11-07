@@ -185,7 +185,8 @@ enum Command {
     /// statically, from names, descriptors, body shapes and callers: ranked candidates, each with what ties it to the
     /// old method. Then, for each pair, how its arguments, records and result relate, under the preservation
     /// contract: an input it fixes is mapped to itself and nothing else. Proves nothing unless --prove; --hints
-    /// writes them to a hints file as proposed, their evidence unchecked or what --prove showed.
+    /// writes them to a hints file as proposed, their evidence unchecked or what --prove showed. Ends with the
+    /// questions: each decision that is a person's, its candidates, and the line that approves one.
     Align {
         /// The old build's class files.
         #[arg(long)]
@@ -238,6 +239,23 @@ enum Command {
         /// Print the report as JSON.
         #[arg(long)]
         json: bool,
+    },
+    /// Approve one of the tool's proposals in a hints file, as `align` lists them under its questions: the subject's
+    /// other proposals of that kind are dropped, and later runs keep the approved one as it is. Sets the intent state
+    /// only: the evidence stays what a proof under the current claim key showed, or unchecked.
+    Approve {
+        /// The hints file.
+        #[arg(long)]
+        hints: PathBuf,
+        /// The kind of hint: `method`, `correspondence` or `observation-change`.
+        #[arg(long)]
+        kind: String,
+        /// The hint's subject (`pkg.Class#method`, as the hints file writes it).
+        #[arg(long)]
+        subject: String,
+        /// Which of the subject's ranked proposals; needed when it has more than one.
+        #[arg(long)]
+        rank: Option<u32>,
     },
     /// Print the structure of a class file: constant pool size, members, attributes and bytecode.
     Inspect {
@@ -867,11 +885,25 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 print!("{}", jvmcontract::alignment::mappings::render(&alignment.mappings));
                 print!("{}", jvmcontract::alignment::proofs::render(&alignment.proofs));
             }
-            if let Some(path) = hints {
-                let merged = jvmcontract::alignment::merge_hints(jvmcontract::alignment::read_hints(&path)?, jvmcontract::alignment::hints(&alignment));
-                jvmcontract::alignment::write_hints(&path, &merged)?;
-                eprintln!("({} hints in {})", merged.entries.len(), path.display());
+            let proposed = jvmcontract::alignment::hints(&alignment);
+            let (asked, file) = match hints {
+                Some(path) => {
+                    let merged = jvmcontract::alignment::merge_hints(jvmcontract::alignment::read_hints(&path)?, proposed);
+                    jvmcontract::alignment::write_hints(&path, &merged)?;
+                    eprintln!("({} hints in {})", merged.entries.len(), path.display());
+                    (merged, Some(path))
+                }
+                None => (proposed, None),
+            };
+            if !json {
+                print!("{}", jvmcontract::alignment::questions::render(&jvmcontract::alignment::questions::questions(&asked, file.as_deref())));
             }
+            Ok(0)
+        }
+        Command::Approve { hints, kind, subject, rank } => {
+            let (updated, approved) = jvmcontract::alignment::questions::approve(jvmcontract::alignment::read_hints(&hints)?, &kind, &subject, rank)?;
+            jvmcontract::alignment::write_hints(&hints, &updated)?;
+            println!("approved  {subject} ({kind}{}): intent approved; evidence {}", rank.map(|r| format!(", rank {r}")).unwrap_or_default(), jvmcontract::alignment::questions::describe(&approved.evidence));
             Ok(0)
         }
         Command::Inspect { class_file, code } => {

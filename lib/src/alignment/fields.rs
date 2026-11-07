@@ -65,8 +65,12 @@ pub struct FieldCorrespondence {
     pub constructors: Vec<(String, String)>,
     /// One per old instance field, in declaration order.
     pub fields: Vec<FieldMapping>,
-    /// New fields no leading equation reaches.
+    /// New fields no candidate reaches: not compared, whichever candidates are chosen.
     pub free: Vec<String>,
+    /// New fields only the candidates of a question reach: not compared under the others
+    /// ([`FieldCorrespondence::free_under`]).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub open: Vec<String>,
     /// What this step can't relate.
     pub unsupported: Vec<String>,
     /// For a method moved into a value object: the field of the new class that holds the object the new method
@@ -82,6 +86,13 @@ impl FieldCorrespondence {
     /// Every old field has a candidate, and nothing is unsupported.
     pub fn complete(&self) -> bool {
         self.unsupported.is_empty() && !self.fields.is_empty() && self.fields.iter().all(|f| !f.candidates.is_empty())
+    }
+
+    /// The new paths an object related by `chosen` (paths into the new object, as the candidates write them) leaves
+    /// uncompared: [`FieldCorrespondence::free`], and each of [`FieldCorrespondence::open`] that `chosen` doesn't reach.
+    pub fn free_under(&self, chosen: &[String]) -> Vec<String> {
+        let chosen: Vec<&str> = chosen.iter().map(|c| uncast(c)).collect();
+        self.free.iter().chain(self.open.iter().filter(|p| !reaches(&chosen, p))).cloned().collect()
     }
 }
 
@@ -225,7 +236,7 @@ fn over_paths(expression: &str, params: &[(String, Type)], stored: &[(String, us
 }
 
 /// A path with its cast, if any, taken off: `amount.cents` of `(int) amount.cents`.
-fn uncast(expression: &str) -> &str {
+pub(super) fn uncast(expression: &str) -> &str {
     expression.rsplit(") ").next().unwrap_or_default()
 }
 
@@ -252,7 +263,7 @@ fn correspondence_at(before: &Build, after: &Build, report: &MethodReport, name:
     if same_shape(before, after, &t) {
         return None;
     }
-    let mut out = FieldCorrespondence { class: t.java_name(), constructors: Vec::new(), fields: Vec::new(), free: Vec::new(), unsupported: Vec::new(), within: None, unread: Vec::new() };
+    let mut out = FieldCorrespondence { class: t.java_name(), constructors: Vec::new(), fields: Vec::new(), free: Vec::new(), open: Vec::new(), unsupported: Vec::new(), within: None, unread: Vec::new() };
     // Each old path a constructor stores a parameter at, with its candidates, in the order first met.
     let mut candidates: Vec<(String, Vec<Choice>)> = Vec::new();
     let (mut old_other, mut new_stored): (Vec<String>, BTreeSet<String>) = (Vec::new(), BTreeSet::new());
@@ -381,16 +392,35 @@ fn correspondence_at(before: &Build, after: &Build, report: &MethodReport, name:
         }
     }
     out.unsupported.dedup();
-    let reached: BTreeSet<&str> = out.fields.iter().filter(|f| f.leads).map(|f| uncast(&f.candidates[0].expression)).collect();
-    let head = |p: &str| p.split('.').next().unwrap_or_default().to_string();
-    let heads: BTreeSet<String> = reached.iter().map(|p| head(p)).collect();
-    out.free = fields(new).into_iter().map(|(n, _)| n).filter(|n| !heads.contains(n)).collect();
-    // Inside an object the new constructor makes, a path no old one reaches is free too.
-    out.free.extend(new_stored.into_iter().filter(|p| p.contains('.') && heads.contains(&head(p)) && !reached.iter().any(|r| r == p || r.starts_with(&format!("{p}.")))));
-    let nested_free: Vec<String> = nested_free.into_iter().filter(|p| !out.free.contains(p) && !reached.contains(p.as_str())).collect();
-    out.free.extend(nested_free);
+    // Free: what no candidate reaches. Open: what only a question's candidates reach, free under the others.
+    let reached = |all: bool| -> BTreeSet<String> {
+        out.fields.iter().flat_map(|f| if f.leads { &f.candidates[..1] } else if all { &f.candidates[..] } else { &[] }).map(|c| uncast(&c.expression).to_string()).collect()
+    };
+    let (any, leading) = (reached(true), reached(false));
+    let new_fields: Vec<String> = fields(new).into_iter().map(|(n, _)| n).collect();
+    out.free = free_paths(&new_fields, &new_stored, &nested_free, &any);
+    out.open = free_paths(&new_fields, &new_stored, &nested_free, &leading).into_iter().filter(|p| !out.free.contains(p)).collect();
     Some(out)
 }
+
+/// Whether one of `paths` reaches `p`: is it, or lies inside it.
+pub fn reaches<S: AsRef<str>>(paths: &[S], p: &str) -> bool {
+    paths.iter().any(|r| r.as_ref() == p || r.as_ref().starts_with(&format!("{p}.")))
+}
+
+/// The new paths that none of `reached` reaches: each new field outside them, and inside an object the new
+/// constructor makes (or a nested class's correspondence relates), each path no old one reaches.
+fn free_paths(new_fields: &[String], new_stored: &BTreeSet<String>, nested_free: &[String], reached: &BTreeSet<String>) -> Vec<String> {
+    let reached: Vec<&String> = reached.iter().collect();
+    let head = |p: &str| p.split('.').next().unwrap_or_default().to_string();
+    let heads: BTreeSet<String> = reached.iter().map(|p| head(p)).collect();
+    let mut out: Vec<String> = new_fields.iter().filter(|n| !heads.contains(*n)).cloned().collect();
+    out.extend(new_stored.iter().filter(|p| p.contains('.') && heads.contains(&head(p)) && !reaches(&reached, p)).cloned());
+    let nested: Vec<String> = nested_free.iter().filter(|p| !out.contains(p) && heads.contains(&head(p)) && !reached.iter().any(|r| r == p)).cloned().collect();
+    out.extend(nested);
+    out
+}
+
 
 /// The fields of the object in local `slot`, of class `owner` (internal name), that a method reads, when reading
 /// them (`aload; getfield`) is all it does with it: no call on it, nothing stored over it, not passed on or
@@ -435,7 +465,8 @@ pub fn within(before: &Build, after: &Build, report: &MethodReport, name: &str, 
     let mut fields = Vec::new();
     for f in fc.fields.iter().filter(|f| read.contains(&f.old)) {
         if !f.leads {
-            return Err(format!("{} has several candidates in the new {}: a question about the class first", f.old, fc.class));
+            let what = if f.candidates.len() == 1 { "one candidate not sure enough to propose on its own" } else { "several candidates and none ahead" };
+            return Err(format!("{} has {what} in the new {}: a question about the class first", f.old, fc.class));
         }
         let c = &f.candidates[0];
         let (cast, path) = match c.expression.strip_prefix('(').and_then(|r| r.split_once(") ")) {
@@ -461,7 +492,7 @@ pub fn within(before: &Build, after: &Build, report: &MethodReport, name: &str, 
         return Err(format!("the new {}'s field {g} is not an object", fc.class));
     };
     let unread = before.classes.get(name).map(fields_of).unwrap_or_default().into_iter().filter(|f| !read.contains(f)).collect();
-    let out = FieldCorrespondence { class: fc.class, constructors: fc.constructors, fields, free: Vec::new(), unsupported: Vec::new(), within: Some(g.clone()), unread };
+    let out = FieldCorrespondence { class: fc.class, constructors: fc.constructors, fields, free: Vec::new(), open: Vec::new(), unsupported: Vec::new(), within: Some(g.clone()), unread };
     Ok((g, class, out))
 }
 

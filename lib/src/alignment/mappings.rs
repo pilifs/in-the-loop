@@ -42,10 +42,10 @@ use std::collections::BTreeSet;
 use serde::{Deserialize, Serialize};
 
 use super::fields::{self, FieldCorrespondence};
-use super::proofs::{MappingProof, Settled};
+use super::proofs::{MappingProof, Settled, Tried};
 use super::{symbol, Build, Change, MethodReport, HINTS_VERSION};
 use crate::classfile::{ClassFile, Method, Type};
-use crate::spec::{Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, Observation, PreservationContract, Source};
+use crate::spec::{Ask, Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, Observation, PreservationContract, Source};
 
 /// At most this many complete correspondences are written per method pair, best first.
 pub const ALTERNATIVES: usize = 12;
@@ -138,8 +138,11 @@ pub struct Mapping {
     /// that a relation holds, not that it is the one intended.
     pub standalone: bool,
     pub inputs: Vec<InputMapping>,
-    /// New inputs that no candidate uses: left free.
+    /// New inputs that no candidate uses: left free, whichever candidates are chosen.
     pub free: Vec<String>,
+    /// New inputs only the candidates of a question use: left free under the others ([`Mapping::free_under`]).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub open: Vec<String>,
     pub result: ResultMapping,
     /// Every observation of the contract, with how it is compared.
     pub accounting: Vec<Kept>,
@@ -227,6 +230,68 @@ impl Mapping {
         out.sort_by_key(|(rank, ..)| *rank);
         out.truncate(ALTERNATIVES);
         out.into_iter().map(|(_, a, e, r)| (a, e, r)).collect()
+    }
+
+    /// The new inputs proposal `p` leaves free: [`Mapping::free`], and each of [`Mapping::open`] its arguments don't use.
+    pub fn free_under(&self, p: &Proposal) -> Vec<String> {
+        let uses = |leaf: &str| self.inputs.iter().zip(&p.arguments).any(|(i, a)| mentions(a, leaf) || (i.fields.is_some() && leaf.starts_with(&format!("{a}."))));
+        self.free.iter().chain(self.open.iter().filter(|l| !uses(l))).cloned().collect()
+    }
+
+    /// What in this mapping is a person's decision, before any proof: an input or field none of whose candidates
+    /// leads (several and none ahead, or one matched on type alone), and a result whose meaning changed.
+    pub fn undecided(&self) -> Vec<String> {
+        let open = |what: String, cs: &[Choice]| match cs {
+            [one] => format!("{what}: its one candidate, {}, is not sure enough to propose on its own ({})", one.expression, one.why),
+            cs => format!("{what}: {} candidates, none ahead ({})", cs.len(), cs.iter().map(|c| c.expression.as_str()).collect::<Vec<_>>().join(" | ")),
+        };
+        let mut out = Vec::new();
+        for i in &self.inputs {
+            if !i.leads && !i.candidates.is_empty() {
+                out.push(open(format!("what the old {} is made from", i.old), &i.candidates));
+            }
+            for f in i.fields.iter().flat_map(|fc| &fc.fields).filter(|f| !f.leads && !f.candidates.is_empty()) {
+                out.push(open(format!("which new value the old {}.{} is", i.old, f.old), &f.candidates));
+            }
+        }
+        for f in self.result.fields.iter().filter(|_| self.result.kind == ResultKind::Fields).flat_map(|fc| &fc.fields).filter(|f| !f.leads && !f.candidates.is_empty()) {
+            out.push(open(format!("which new value the old result's {} is compared with", f.old), &f.candidates));
+        }
+        if !self.result.inferred && !self.result.candidates.is_empty() {
+            out.push(format!("how the old result relates to the new one: what it means changed, so the relation is a person's decision ({} candidates)", self.result.candidates.len()));
+        }
+        out
+    }
+
+    /// What approving proposal `p` would settle, part by part: each undecided input as it would be made, each
+    /// undecided field's equation, the result relation where it is part of the decision, and what it leaves free.
+    /// With `whole`, every internal input and the relation, for a decision a proof raised.
+    fn means(&self, p: &Proposal, whole: bool) -> Vec<String> {
+        let mut out = Vec::new();
+        for (i, a) in self.inputs.iter().zip(&p.arguments) {
+            if (!i.leads && i.candidates.len() > 0) || (whole && i.anchor == Anchor::Internal && i.fields.is_none()) {
+                out.push(format!("{} = {a}", i.old));
+            }
+            let prefix = format!("old.{}.", i.old);
+            for f in i.fields.iter().flat_map(|fc| &fc.fields).filter(|f| whole || !f.leads) {
+                let wanted = format!("{prefix}{}", f.old);
+                out.extend(p.fields.iter().filter(|e| e.old == wanted).map(|e| format!("{} == {}", e.old, e.new)));
+            }
+            if let Some(fc) = i.fields.as_ref().filter(|fc| !fc.open.is_empty()) {
+                let chosen: Vec<String> = p.fields.iter().filter(|e| e.old.starts_with(&prefix)).filter_map(|e| fields::uncast(&e.new).strip_prefix(&format!("new.{a}.")).map(str::to_string)).collect();
+                let left = fc.free_under(&chosen);
+                out.push(format!("new fields of {} left uncompared: {}", fc.class, if left.is_empty() { "none".into() } else { left.join(", ") }));
+            }
+        }
+        let result_open = self.result.fields.as_ref().is_some_and(|fc| self.result.kind == ResultKind::Fields && fc.fields.iter().any(|f| !f.leads));
+        if let Some(r) = p.relation.as_ref().filter(|_| whole || result_open || !self.result.inferred) {
+            out.push(format!("result: {r}"));
+        }
+        if !self.open.is_empty() {
+            let left = self.free_under(p);
+            out.push(format!("new inputs left free: {}", if left.is_empty() { "none".into() } else { left.join(", ") }));
+        }
+        out
     }
 
     /// The old inputs' names, in `--before-arguments` order.
@@ -583,16 +648,23 @@ fn map(before: &Build, after: &Build, report: &MethodReport, (bc, bm): (&ClassFi
         inputs[i] = Some(InputMapping { old: name.clone(), anchor: Anchor::Internal, candidates, leads: lead, fields: related });
     }
     let inputs: Vec<InputMapping> = inputs.into_iter().flatten().collect();
-    let used: BTreeSet<String> = inputs
-        .iter()
-        .filter(|i| i.leads)
-        .flat_map(|i| {
-            let object = format!("{}.", i.candidates[0].expression);
-            new_leaves.iter().filter(|l| mentions(&i.candidates[0].expression, &l.path) || (i.fields.is_some() && l.path.starts_with(&object))).map(|l| l.path.clone()).collect::<Vec<_>>()
-        })
-        .collect();
+    // What the candidates use: the leading ones alone, or every candidate of a question too.
+    let used = |all: bool| -> BTreeSet<String> {
+        let mut out = BTreeSet::new();
+        for i in &inputs {
+            let cs: &[Choice] = if i.leads { &i.candidates[..1] } else if all { &i.candidates } else { &[] };
+            for c in cs {
+                let object = format!("{}.", c.expression);
+                out.extend(new_leaves.iter().filter(|l| mentions(&c.expression, &l.path) || (i.fields.is_some() && l.path.starts_with(&object))).map(|l| l.path.clone()));
+            }
+        }
+        out
+    };
+    let (any, leading) = (used(true), used(false));
     let complete = unsupported.is_empty() && inputs.iter().all(|i| !i.candidates.is_empty());
-    let free = if complete { new_leaves.iter().map(|l| l.path.clone()).filter(|p| !used.contains(p) && !taken.contains(p)).collect() } else { Vec::new() };
+    let unused = |by: &BTreeSet<String>| -> Vec<String> { if complete { new_leaves.iter().map(|l| l.path.clone()).filter(|p| !by.contains(p) && !taken.contains(p)).collect() } else { Vec::new() } };
+    let free = unused(&any);
+    let open: Vec<String> = unused(&leading).into_iter().filter(|p| !free.contains(p)).collect();
     let result = result_mapping(&old, &new, report);
     let accounting = contract
         .required
@@ -610,7 +682,7 @@ fn map(before: &Build, after: &Build, report: &MethodReport, (bc, bm): (&ClassFi
             },
         })
         .collect();
-    let mut mapping = Mapping { before: symbol(bc, bm), after: symbol(ac, am), standalone, contract, inputs, free, result, accounting, unsupported, proposals: Vec::new() };
+    let mut mapping = Mapping { before: symbol(bc, bm), after: symbol(ac, am), standalone, contract, inputs, free, open, result, accounting, unsupported, proposals: Vec::new() };
     let names: Vec<String> = new_inputs.into_iter().map(|(n, _)| n).collect();
     mapping.proposals = mapping.alternatives().into_iter().map(|(arguments, fields, relation)| {
         let flags = mapping.flags(&arguments, relation.as_deref(), &names);
@@ -725,24 +797,34 @@ fn result_by_fields(old: &Side, new: &Side, report: &MethodReport, t: &Type) -> 
     if !gaps.is_empty() {
         return Some(ResultMapping { kind: ResultKind::Changed, candidates: Vec::new(), inferred: false, fields: Some(fc), gaps });
     }
-    let mut combos: Vec<(u32, u32, Vec<String>)> = vec![(0, 3, Vec::new())];
+    // Each combination: its place, how sure it is, its terms, and the paths into the new result it compares.
+    type Combo = (u32, u32, Vec<String>, Vec<String>);
+    let mut combos: Vec<Combo> = vec![(0, 3, Vec::new(), Vec::new())];
     for f in &fc.fields {
         let options: Vec<&Choice> = if f.leads { vec![&f.candidates[0]] } else { f.candidates.iter().collect() };
         combos = combos
             .iter()
-            .flat_map(|(place, score, terms)| options.iter().enumerate().map(move |(i, c)| (place + i as u32, (*score).min(c.score), terms.iter().cloned().chain([format!("previous.{} == {}", f.old, at("result", &c.expression))]).collect())))
+            .flat_map(|(place, score, terms, paths)| {
+                options.iter().enumerate().map(move |(i, c)| {
+                    let term = format!("previous.{} == {}", f.old, at("result", &c.expression));
+                    (place + i as u32, (*score).min(c.score), terms.iter().cloned().chain([term]).collect(), paths.iter().cloned().chain([c.expression.clone()]).collect())
+                })
+            })
             .take(ALTERNATIVES * 4)
             .collect();
     }
     combos.sort_by_key(|(place, ..)| *place);
     combos.truncate(ALTERNATIVES);
-    let free = if fc.free.is_empty() { String::new() } else { format!("; new fields the old version doesn't have, not compared: {}", fc.free.join(", ")) };
     let candidates = combos
         .into_iter()
-        .map(|(_, score, terms)| Choice {
-            expression: terms.join(" && "),
-            score,
-            why: format!("the result's class {simple} changed shape: each old field compared at its path in the new object, by the correspondence its constructors give ({}){free}", fc.constructors.iter().map(|(o, n)| format!("{o} -> {n}")).collect::<Vec<_>>().join(", ")),
+        .map(|(_, score, terms, paths)| {
+            let left = fc.free_under(&paths);
+            let free = if left.is_empty() { String::new() } else { format!("; new fields the old version doesn't have, not compared: {}", left.join(", ")) };
+            Choice {
+                expression: terms.join(" && "),
+                score,
+                why: format!("the result's class {simple} changed shape: each old field compared at its path in the new object, by the correspondence its constructors give ({}){free}", fc.constructors.iter().map(|(o, n)| format!("{o} -> {n}")).collect::<Vec<_>>().join(", ")),
+            }
         })
         .collect();
     Some(ResultMapping { kind: ResultKind::Fields, candidates, inferred: true, fields: Some(fc), gaps: Vec::new() })
@@ -794,6 +876,18 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
         };
         let kept: Vec<usize> = (0..m.proposals.len()).filter(|i| !collapsed.contains(i)).collect();
         let alone = kept.len() == 1;
+        // What is a person's to decide: the static questions, unless a proof settled them or raised its own.
+        let (parts, whole) = match proof {
+            Some(MappingProof { settled: Settled::Proved { .. }, .. }) if m.result.inferred => (Vec::new(), false),
+            Some(MappingProof { settled: Settled::Proved { .. }, .. }) => (vec!["whether the proved result relation is the intended one: what the result means changed, so approving it is a person's decision".to_string()], false),
+            Some(MappingProof { settled: Settled::Asked { proved }, .. }) => (vec![format!("which of the {} relations proved is intended: each holds, and they give the old version different observations", proved.len())], true),
+            Some(MappingProof { settled: Settled::NoneProved, attempts, .. }) if !attempts.is_empty() && attempts.iter().all(|a| matches!(a.tried, Tried::Refuted { .. })) => {
+                (vec!["none of the candidates holds, each refuted by a replayed counterexample: whether the change is a regression, or the intended mapping is one not tried".to_string()], true)
+            }
+            _ => (m.undecided(), false),
+        };
+        let against = if m.before == m.after { String::new() } else { format!("(against {}) ", m.before) };
+        let decide = (!parts.is_empty()).then(|| format!("{against}{}", parts.join("; ")));
         for (place, &i) in kept.iter().enumerate() {
             let p = &m.proposals[i];
             let mut correspondence = Correspondence::from_flags(&m.old_inputs(), Some(&p.arguments), p.relation.as_deref());
@@ -824,8 +918,11 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
                         let Some(c) = fc.fields.iter().flat_map(|f| f.candidates.iter().map(move |c| (f, c))).find(|(f, c)| field_equation(&input.old, chosen, &f.old, &c.expression) == *e).map(|(_, c)| c) else { continue };
                         why.push(format!("{} == {} (internal state): {}", e.old, e.new, c.why));
                     }
-                    if !fc.free.is_empty() {
-                        why.push(format!("new fields of {} no equation reaches: {}", fc.class, fc.free.join(", ")));
+                    let prefix = format!("old.{}.", input.old);
+                    let reached: Vec<String> = p.fields.iter().filter(|e| e.old.starts_with(&prefix)).filter_map(|e| fields::uncast(&e.new).strip_prefix(&format!("new.{chosen}.")).map(str::to_string)).collect();
+                    let left = fc.free_under(&reached);
+                    if !left.is_empty() {
+                        why.push(format!("new fields of {} no equation reaches: {}", fc.class, left.join(", ")));
                     }
                     if !fc.unread.is_empty() {
                         why.push(format!("fields of the old {} the old method never reads, so no equation relates them: {}", fc.class, fc.unread.join(", ")));
@@ -836,8 +933,9 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
                 let c = m.result.candidates.iter().find(|c| &c.expression == r).expect("chosen among them");
                 why.push(format!("result: {}{}", c.why, if m.result.inferred { "" } else { "; what the result means changed, so this is a person's decision" }));
             }
-            if !m.free.is_empty() {
-                why.push(format!("left free: {}", m.free.join(", ")));
+            let left = m.free_under(p);
+            if !left.is_empty() {
+                why.push(format!("left free: {}", left.join(", ")));
             }
             if m.standalone {
                 why.push("standalone: nothing external fixes what the inputs mean, so a proof would show that this relation holds, not that it is the one intended".into());
@@ -865,8 +963,9 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
                 source: Source::Inferred,
                 intent: Intent::Proposed,
                 evidence,
-                rank: (!alone).then_some(place as u32 + 1),
+                rank: (!alone || decide.is_some()).then_some(place as u32 + 1),
                 why,
+                ask: decide.as_ref().map(|d| Ask { decide: d.clone(), means: m.means(p, whole) }),
             });
         }
     }

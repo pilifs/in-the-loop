@@ -374,9 +374,52 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
       what the leading candidates reach.
 - Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the reshaped test, and the
   A2 kernel test's `withQuantity` assertion).
-- Next: A5, the question well put. Each decision gets its candidates, what each would mean, and a one-line approval in
-  the hints file. Approving sets intent only, and a run whose hints are all approved and proved asks nothing. Start
-  with the two cases above.
+- **A5, first step: the questions and their approval, done** (2026-11-07), in the new `lib/src/alignment/questions.rs`
+  and in `mappings.rs`, `fields.rs` and `alignment.rs`:
+  - **A hint that answers a person's decision says so.** `Hint` gains `ask` (`Ask { decide, means }`): what to decide,
+    the same for every candidate of the subject, and what approving this candidate would settle, part by part (each
+    undecided input as it would be made, each undecided field's equation, the result relation where it is part of the
+    decision, and what it leaves free). Such a hint is ranked even when it is the only candidate (`rank: 1`).
+  - **What is asked.** Before a proof: an input or field none of whose candidates leads (several, none ahead, or one
+    on type alone), a result field likewise, a result whose meaning changed, and a vanished method no candidate leads
+    to. After `--prove`: one proved settles it (unless the result's meaning changed: then whether it is the intended
+    one); several relations proved ask which is intended; every candidate refuted asks whether the change is a
+    regression or the intended mapping is one not tried. A standalone proved mapping is not asked: its note says the
+    relation holds and whether it is the intended one is unconfirmed.
+  - **The questions.** `align` ends with them, read from the hints file after the merge: each decision, every
+    candidate with what it means, its evidence (the counterexample where a proof refuted it), and the one line that
+    approves it, `jvmcontract approve --hints FILE --kind correspondence --subject 'shop.Pricing#total' --rank 1`. The
+    new `approve` command sets the chosen proposal's intent to approved and nothing else, and drops the subject's other
+    proposals of that kind; it refuses a decided subject, a missing one, and an unnamed choice among several. A subject
+    with an approved or stated hint is not asked again, so a hints file whose decisions are all approved asks nothing.
+  - **The two cases above, fixed.** A field question with one candidate is still one proposal, now asked as such. What
+    only a question's candidate reaches is no longer free: `free` is what no candidate reaches, and a new `open` (on
+    `Mapping` and `FieldCorrespondence`, serde-defaulted) is what only some candidates reach, so each proposal, and
+    each result candidate, names what it leaves uncompared (`FieldCorrespondence::free_under`, `Mapping::free_under`).
+    On the kernel without names, `amount` is no longer called "not compared".
+  - **Tests:** 3 more in `lib/tests/alignment.rs` (the lone candidate on the kernel without names, asked and nothing
+    called free, and the kernel with names asking nothing; `approve` through the command, intent only, then reruns
+    asking 2, then nothing; `approve`'s refusals), and questions asserted in 4 existing tests (a method tie, two
+    inputs tied on type with what each candidate leaves free, a proof settling a question, two relations proved with
+    a counterexample under each refuted candidate). All 31 pass, and the unit (185), foundations (3), skill (1) and conformance (9, 2 ignored)
+    suites; every test target compiles; the Python tests pass. The integration contract on this branch: 2 passed, 22
+    unsupported, 0 failed.
+  - **Score:** unchanged on 121–139 (122 and 123 asked). Re-recorded under the new tool's hash.
+  - **Not done yet, A5's second step:**
+    - an approved hint's evidence on a rerun: `merge_hints` keeps it as it is, so evidence proved under an older claim
+      key stays "proved". It should turn `stale` when the key no longer matches, and an `--prove` run should give it
+      the evidence of its proof under the current key;
+    - "asks nothing" for approved *and proved*: today an approved subject is not asked whatever its evidence; one whose
+      evidence isn't proved under the current key should be listed as approved and unproved (not asked);
+    - what tells two proved relations apart is said in words only, with no input that separates them.
+  - On the kernel without names, `Quote#cents -> Money#cents` has no mapping: the field it reads is itself a lone
+    question in `Quote`'s correspondence, so it is decided through that question, not asked on its own.
+- Shared files changed: `lib/src/spec/mod.rs` (`Hint.ask` and the `Ask` type, serde-defaulted and skipped when empty,
+  so the golden files are unchanged; a `Hint { .. }` literal in another stream's code would need `ask: None` at the
+  merge; `rank`'s doc now also covers a question's lone candidate); `lib/src/main.rs` (the `approve` command, and the
+  questions at the end of `align`); `lib/README.md` (the `approve` example and a sentence on the hints file);
+  `lib/tests/alignment.rs` (the A5 tests).
+- Next: A5's second step, the three items above.
 - Status: working
 
 ## Loop settings
