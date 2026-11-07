@@ -37,7 +37,7 @@ rather than being replaced by the library's. `--no-contract-library` turns the l
 Keep only contracts the JVM can test or the checker can prove. A trusted one (a parameter of an object type, say)
 would rest every verdict that used it on whoever wrote it, and `--max-trust 0` refuses it anyway.
 
-## What is here (JDK 25.0.4.1)
+## What is here (recorded on JDK 25.0.4.1 and 25.0.5)
 
 | Class | Calls | Evidence |
 |---|---|---|

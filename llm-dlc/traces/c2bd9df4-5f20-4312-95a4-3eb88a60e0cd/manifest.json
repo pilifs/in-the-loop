@@ -12,26 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T00:21:51.898Z",
-  "duration_seconds": 611,
+  "ended": "2026-11-07T00:47:05.174Z",
+  "duration_seconds": 2124,
   "stats": {
-    "turns": 1,
-    "api_calls": 54,
-    "tool_calls": 55,
-    "tool_errors": 0,
-    "compactions": 0,
-    "peak_context_tokens": 140982,
+    "turns": 6,
+    "api_calls": 80,
+    "tool_calls": 83,
+    "tool_errors": 1,
+    "compactions": 1,
+    "peak_context_tokens": 143938,
     "usage": {
-      "input_tokens": 108,
-      "output_tokens": 23346,
-      "cache_read_input_tokens": 5495122,
-      "cache_creation_input_tokens": 127903
+      "input_tokens": 160,
+      "output_tokens": 32880,
+      "cache_read_input_tokens": 7422738,
+      "cache_creation_input_tokens": 208916
     }
   },
   "tools": {
-    "Bash": 52,
-    "Read": 2,
-    "Edit": 1
+    "Bash": 75,
+    "Edit": 4,
+    "Read": 3,
+    "TaskStop": 1
   },
   "files_touched": [
     "llm-dlc/loops/engine-priorities.md"
@@ -40,24 +41,38 @@
     {
       "index": 0,
       "started": "2026-11-07T00:11:40.870Z",
-      "ended": "2026-11-07T00:21:51.898Z",
-      "turns": 1,
-      "api_calls": 54,
+      "ended": "2026-11-07T00:22:08.496Z",
+      "turns": 2,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 23346,
-        "cache_read_input_tokens": 5495122,
-        "cache_creation_input_tokens": 127903
+        "input_tokens": 112,
+        "output_tokens": 24648,
+        "cache_read_input_tokens": 5777944,
+        "cache_creation_input_tokens": 130859
       },
-      "peak_context_tokens": 140982
+      "peak_context_tokens": 143938
+    },
+    {
+      "index": 1,
+      "started": "2026-11-07T00:22:50.983Z",
+      "ended": "2026-11-07T00:47:05.174Z",
+      "turns": 4,
+      "api_calls": 24,
+      "usage": {
+        "input_tokens": 48,
+        "output_tokens": 8232,
+        "cache_read_input_tokens": 1644794,
+        "cache_creation_input_tokens": 78057
+      },
+      "peak_context_tokens": 91136
     }
   ],
   "log": {
-    "sha256": "9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29",
-    "bytes": 1393478,
-    "lines": 439,
-    "gzip_bytes": 274873,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29.jsonl.gz"
+    "sha256": "15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288",
+    "bytes": 2236141,
+    "lines": 714,
+    "gzip_bytes": 453586,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -92,9 +107,23 @@
       "summary": "Fold the engine streams' Progress into the engine-priorities brief",
       "body": "Reconcile steps 6 and 7 of llm-dlc/loops/engine-priorities.md. Its Progress now has one entry per phase with the streams' commits (change ids) and job ids: 1a-1c, 2a-2c, 3, 4a, 4b and 6a-6d are done; Phase 5 is done except its last criterion, since 071's two proofs still stop at JBMC stubs that the call-graph preflight reaches but no path takes. It lists in order what the streams left for this loop (the contract library recorded on JDK 25.0.5, a JBMC false success under strict on the declaring case, the path-aware stub check, 4c, the examples' notes, Bitwuzla in 1b's record, two Python test failures that predate the merge), and what needs the user.\n\nThe jbmc and native jj workspaces are forgotten. Their directories, ../in-the-loop-jbmc and ../in-the-loop-native, stay on disk for the user to delete, with the streams' run records. Nothing else changed: no code, no tests run.",
       "log_sha256": "9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29"
+    },
+    {
+      "change_id": "xrrxwxnykxwstwulktxklklqnvvwmrno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Take the contract library's JDK 25.0.5 records from job 20261106-203501",
+      "body": "The job failed on other steps, so its outputs were not applied, but its step recording the contract library on JDK 25.0.5 passed: 10 contracts accepted, 3 proved and 7 tested. lib/models/contracts/checked.json was still the job's source file and the contracts are unchanged since its commit, so its output is applied as recorded, adding the 25.0.5 records to those of 25.0.4.1. The 12 conformance claims that failed on JDK 25.0.5 for want of a record now pass. The library's integration test took 25.0.4.1 to be the only JDK with records; it now reads them from checked.json. Verified: cargo test --release (unit 174, conformance 9 + 2 ignored, integration 64). the_tools_own_checker_agrees_with_jbmc_on_integer_proofs failed once in the full run on Pricing#total's refutation and passed alone, the wall-clock-dependent branch probe already listed in the brief.",
+      "log_sha256": "15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288"
     }
   ],
   "logs": {
+    "15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288": {
+      "bytes": 2236141,
+      "lines": 714,
+      "gzip_bytes": 453586,
+      "url": null
+    },
     "9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29": {
       "bytes": 1393478,
       "lines": 439,

@@ -2832,8 +2832,9 @@ fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted
     std::fs::write(dir.join("Contracted.java"), CONTRACTED).unwrap();
     let Some(classes) = compile("library", &[dir.join("Contracted.java")]) else { return };
     let jdk = jvmcontract::bmc::gaps::jdk_release().unwrap_or_default();
-    // The library is recorded on the JDK it was written for; on another, each run checks its contracts again.
-    let recorded_here = jdk == "25.0.4.1";
+    // The library is recorded on the JDKs its records name; on another, each run checks its contracts again.
+    let records: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("models/contracts/checked.json")).unwrap()).unwrap();
+    let recorded_here = records["records"].as_array().unwrap().iter().any(|r| r["jdk"] == jdk.as_str());
     let block = |id: &str, body: &str| format!("\n{id}@jdk-{jdk}\n{body}  written-by: the test\n");
     let prove = |name: &str, method: &str, assert: &str, throws: &[&str], blocks: &[&str], max_trust: Option<usize>, engine: Engine| {
         let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Contracted#{method}"));
@@ -2865,7 +2866,7 @@ fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted
         assert_eq!(c.file, "lib/models/contracts/java.util.ArrayList.contracts", "{}", o.output);
         assert_eq!(c.evidence, Evidence::Tested, "{}", o.output);
         if recorded_here {
-            assert!(c.recorded.as_deref().unwrap().starts_with("checked once, on JDK 25.0.4.1 by jvmcontract "), "{c:?}");
+            assert!(c.recorded.as_deref().unwrap().starts_with(&format!("checked once, on JDK {jdk} by jvmcontract ")), "{c:?}");
             assert!(!o.work.join("contract-tests").exists() && !o.work.join("contract-proofs").exists(), "a recorded contract is not checked again");
         } else {
             assert!(o.output.contains("note: the contract library's contract for jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-"), "{}", o.output);
@@ -2876,7 +2877,7 @@ fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(o.output.contains(", relying on 1 contract for gaps of the tool's own checker, 1 tested (--gaps advised)"), "{}", o.output);
         if recorded_here {
-            assert!(o.output.contains("; checked once, on JDK 25.0.4.1 by jvmcontract "), "{}", o.output);
+            assert!(o.output.contains(&format!("; checked once, on JDK {jdk} by jvmcontract ")), "{}", o.output);
         }
 
         // Two of the library's contracts, for Random, and one proved for Integer.numberOfLeadingZeros.

@@ -426,7 +426,13 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     `ImmutableCollections.listCopy` that no path takes. The fix is a path-aware check in `jbmc_gaps.rs`.
   - **Found by that job: a false success of JBMC under strict,** `declaring`: JBMC runs `Sub.<clinit>` on a
     `getstatic Sub.value` declared in `Holder`, where the JVM initializes `Holder` alone. `auto` decides it right.
-  - That job also recorded the contract library on JDK 25.0.5 (step passed); its `checked.json` isn't applied yet.
+  - That job also recorded the contract library on JDK 25.0.5 (its step passed). Its `checked.json` is applied by
+    hand, since a failed job's outputs aren't: the file was still the job's source (`368d584b…`), the contracts
+    unchanged since its commit `7457928f`, and it adds the 10 records of 25.0.5 to those of 25.0.4.1. The 12
+    conformance claims that failed on the library's records now pass (the whole conformance test, on JDK 25.0.5).
+    The library's integration test named 25.0.4.1 as the one JDK with records; it now reads them from `checked.json`.
+    In the full suite `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` failed once on `Pricing#total`'s
+    refutation and passed alone: the wall-clock branch probes of item 8.
 - **6a–6d: done** (`wnktqxrt`, `syntvmqp`, `osspkxkz`, `wqskvlym`, `ulsqmxuq`, `tpytwvmv`). Transcripts
   (`JVMCONTRACT_TRANSCRIPTS`, `jvmcontract transcript`), the `Sat` trait, Bitwuzla behind it on clauses and on
   word-level terms. Jobs `20261106-224616` and `-230455` passed: on clauses Bitwuzla is 2–43× slower; on terms with
@@ -442,7 +448,7 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   `../in-the-loop-jbmc` (0.5 GB) and `../in-the-loop-native` (2.2 GB) stay for the user to delete, with the streams'
   run records in their `llm-dlc/loop-summaries/`.
 - **Next, in order:**
-  1. take `checked.json` from job `-203501` (the 12 conformance claims);
+  1. ~~take `checked.json` from job `-203501`~~ (done);
   2. the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user;
   3. a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013;
   4. 4c, the coverage inventory from 4a's tables and 4b;
