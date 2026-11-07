@@ -303,6 +303,15 @@ fn regression(after: &str, method: &str) -> Option<jvmcontract::equivalence::Out
     Some(jvmcontract::equivalence::run(&options).unwrap())
 }
 
+/// A witness over objects is run on a JVM as well as in the interpreter (step H4): the harness on it, its objects
+/// made from the same leaves, loading the application's classes opened so that it may read their private and
+/// package-private fields.
+fn confirmed_on_the_jvm(o: &jvmcontract::equivalence::Outcome) {
+    let c = o.counterexample.as_ref().expect("a counterexample");
+    assert!(c.jvm.is_some(), "{}", o.output);
+    assert!(o.output.contains("replayed in the interpreter and run on a JVM (JDK "), "{}", o.output);
+}
+
 #[test]
 fn an_object_made_by_its_constructor_is_a_regression_input_and_the_domain_says_how_it_is_made() {
     let Some(o) = regression("after", "total") else { return };
@@ -320,6 +329,7 @@ fn a_changed_result_over_an_object_input_is_refuted_with_a_construction_recipe()
     let c = o.counterexample.as_ref().expect("a counterexample");
     assert!(c.input.starts_with("total(l=new Line(new Money("), "{}", c.input);
     assert_ne!(c.before, c.after, "the replays differ");
+    confirmed_on_the_jvm(&o);
 }
 
 #[test]
@@ -329,6 +339,7 @@ fn a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted() {
     let c = o.counterexample.as_ref().expect("a counterexample");
     assert!(c.before.contains("leaving l=Line{price=Money{cents="), "{}", c.before);
     assert_ne!(c.before, c.after, "the replays differ");
+    confirmed_on_the_jvm(&o);
     let Some(same) = regression("after", "bump") else { return };
     assert_eq!(same.verdict, Verdict::Verified, "{}", same.output);
 }
@@ -369,6 +380,7 @@ fn an_alias_turned_into_a_copy_with_the_same_values_is_refuted_by_its_identity_r
     // Every field agrees: only the relation tells them apart.
     let fields = |t: &str| t.split(", with").next().unwrap().to_string();
     assert_eq!(fields(&c.before), fields(&c.after));
+    confirmed_on_the_jvm(&o);
 }
 
 #[test]
@@ -380,6 +392,7 @@ fn a_result_of_a_class_made_by_its_constructor_is_compared_field_by_field() {
     let c = d.counterexample.as_ref().expect("a counterexample");
     assert!(c.before.starts_with("Line{price=Money{cents="), "{}", c.before);
     assert_ne!(c.before, c.after);
+    confirmed_on_the_jvm(&d);
 }
 
 #[test]
@@ -391,6 +404,7 @@ fn an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation()
     assert_eq!(d.verdict, Verdict::Violation, "{}", d.output);
     let c = d.counterexample.as_ref().expect("a counterexample");
     assert!(c.before.contains("with result == a") && !c.after.contains("with result == a"), "{} / {}", c.before, c.after);
+    confirmed_on_the_jvm(&d);
 }
 
 // H5's narrow case: the joint example's kernel (`tests/fixtures/foundations`), whose `Quote` holds a `long` before
@@ -495,6 +509,7 @@ fn the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_
     assert_eq!(cx.before, "Quote{cents=0, quantity=1}, with result == q");
     assert_eq!(cx.after, "Quote{amount=Money{cents=0}, quantity=1}");
     assert_eq!(cx.differs, ["identity:result==q"], "the fields agree under the correspondence");
+    confirmed_on_the_jvm(&o);
     let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
     assert!(source.contains("before.shop.Quote a = null;"), "{source}");
     assert!(source.contains("q_before = new before.shop.Quote(q_amount_cents, q_quantity); q_after = new shop.Quote(new shop.Money(q_amount_cents), q_quantity);"), "{source}");

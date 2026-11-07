@@ -20,7 +20,7 @@ const DEADLINE_SECONDS: u64 = 300;
 /// accounted for: preserved by a proof that compared it; refuted where the replayed witness differs in it; and
 /// otherwise unresolved, as is every observation the check does not compare, so that none leaves the count. A
 /// witness that differs only in observations the claim does not require refutes nothing, and the result is
-/// unresolved. A construction that needs more input objects than a version's bound leaves the result unresolved
+/// unresolved, as it is when no JVM has run the witness too (step H4). A construction that needs more input objects than a version's bound leaves the result unresolved
 /// rather than proving something outside the claim. Claims about effects (an environment model) are the
 /// observations stream's, and refused.
 pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
@@ -83,6 +83,11 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
         crate::Verdict::Violation => {
             let Some(cx) = &checked.counterexample else { return Ok(unresolved_all(domain, "a refutation without a counterexample".into())) };
             let witness = format!("{}: before, {}; after, {}", cx.input, cx.before, cx.after);
+            // Over objects, a witness the interpreter replays is reported once a JVM has run it too (step H4).
+            if cx.jvm.is_none() {
+                let how = checked.proof.clone().unwrap_or_default();
+                return Ok(Outcome { verdict: Verdict::Unresolved, domain, accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: Some(witness), problem: Some(format!("the witness replays in the interpreter but was not confirmed on a JVM ({how})")) });
+            }
             let refuted: Vec<&String> = required.iter().filter(|r| cx.differs.iter().any(|d| same_id(d, r))).collect();
             let accounting: Vec<Accounted> = required.iter().map(|r| Accounted { observation: r.clone(), state: if refuted.contains(&r) { ObservationState::Refuted } else { ObservationState::Unresolved } }).collect();
             if refuted.is_empty() {

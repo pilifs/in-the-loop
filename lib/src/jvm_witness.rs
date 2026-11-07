@@ -194,6 +194,9 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     std::fs::write(dir.join(format!("{CLASS}.class")), writer.to_bytes()).map_err(|e| format!("cannot write the JVM run: {e}"))?;
     let absolute = |p: &Path| std::path::absolute(p).unwrap_or_else(|_| p.to_path_buf());
     let mut class_path = vec![absolute(dir)];
+    if open_classes(&dir.join(OPENED), harness_class, calls, entries)? {
+        class_path.push(absolute(&dir.join(OPENED)));
+    }
     class_path.extend(entries.iter().map(|e| absolute(e)));
     let class_path = std::env::join_paths(&class_path).map_err(|e| format!("a class path entry cannot be joined: {e}"))?;
     let stdout = std::fs::File::create(dir.join("stdout")).map_err(|e| e.to_string())?;
@@ -226,6 +229,37 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
         return Err(format!("the JVM run stopped before its end{}", if tail.is_empty() { String::new() } else { format!(": {}", tail.into_iter().rev().collect::<Vec<_>>().join(" / ")) }));
     }
     parse(&text, jdk, types, slots, calls)
+}
+
+/// The directory, under the run's, of the application classes it loads opened.
+const OPENED: &str = "opened";
+
+/// Writes into `out` an opened copy ([`crate::relocate::opened`]) of every application class the harness names and
+/// of each direct call's owner, as the first of `entries` that has it holds it, so that the harness, a class of
+/// the unnamed package, may read their fields and call their constructors on a JVM as it does in the checker,
+/// which doesn't check access: a record's fields are private, and a class's are often package-private. JDK
+/// classes are never copied: they aren't in `entries`. Returns whether it wrote any.
+fn open_classes(out: &Path, harness_class: &str, calls: &[DirectCall], entries: &[PathBuf]) -> Result<bool, String> {
+    let find = |name: &str| entries.iter().map(|e| e.join(format!("{name}.class"))).find(|p| p.is_file());
+    let Some(harness) = find(harness_class) else { return Ok(false) };
+    let bytes = std::fs::read(&harness).map_err(|e| format!("cannot read {}: {e}", harness.display()))?;
+    let mut names = crate::relocate::referenced_classes(&bytes).map_err(|e| format!("cannot read {}: {e}", harness.display()))?;
+    names.extend(calls.iter().map(|c| c.owner.clone()));
+    names.sort();
+    names.dedup();
+    let mut wrote = false;
+    for name in names.iter().filter(|n| n.as_str() != harness_class) {
+        let Some(path) = find(name) else { continue };
+        let bytes = std::fs::read(&path).map_err(|e| format!("cannot read {}: {e}", path.display()))?;
+        let opened = crate::relocate::opened(&bytes).map_err(|e| format!("cannot open {name} for the JVM run: {e}"))?;
+        let target = out.join(format!("{name}.class"));
+        if let Some(parent) = target.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
+        std::fs::write(&target, opened).map_err(|e| e.to_string())?;
+        wrote = true;
+    }
+    Ok(wrote)
 }
 
 /// Reads the run's lines.

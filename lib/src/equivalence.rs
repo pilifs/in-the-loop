@@ -193,6 +193,11 @@ pub struct Counterexample {
     /// previous version's arguments are expressions.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub differs: Vec<String>,
+    /// The JDK a real JVM ran the harness on `input` on and found it failing too, where the witness is over objects
+    /// or differs in a field or an identity relation (step H4 of `llm-dlc/loops/foundations-heap.md`), or where only
+    /// a JVM could run it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub jvm: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -744,6 +749,15 @@ fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Res
     }
     within.pop();
     Ok(Ok(harness::Fields { class: name.to_string(), fields }))
+}
+
+/// Whether a regression witness is run on a JVM as well as in the interpreter (step H4): where it has an object made
+/// by its constructor among its inputs, a result compared field by field, or the versions differ on it in a field
+/// of an object or an identity relation. A witness of primitives, arrays and records of primitive components alone
+/// is replayed in the interpreter, as before.
+fn observes_objects(layout: &harness::Layout, differs: &[String]) -> bool {
+    let made = layout.receiver.iter().chain(&layout.args).any(|s| matches!(s, harness::Slot::Record { record, before, .. } if record.fields.is_some() || before.as_ref().is_some_and(|b| b.fields.is_some() || b.corresponds.is_some())));
+    made || layout.result_fields.0.is_some() || layout.result_fields.1.is_some() || differs.iter().any(|d| d.starts_with("field:") || d.starts_with("identity:"))
 }
 
 fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
@@ -1542,7 +1556,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Some(witness::typed_call(&before_target, &layout, &found, true, &[]))
         };
         let inputs = witness::typed_inputs(params, &found);
-        let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call, differs: replays.differs });
+        let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call, differs: replays.differs, jvm: None });
         let replay = Some(Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
         let stated = Some(stated(Some(&last), search.as_ref(), false));
         return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
@@ -1602,6 +1616,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // the JDK's real calls where the contracts stood, then each version alone when both are static
             // methods of the harness's parameters, for what each did.
             let mut on_jvm: Option<String> = None;
+            let mut on_jvm_too: Option<String> = None;
             let mut jvm_ran = false;
             if let Some(p) = &unconfirmed {
                 let mut entries = vec![harness_dir.clone(), options.after.clone(), before_dir.clone()];
@@ -1688,6 +1703,39 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let Replays { before: before_outcome, after: after_outcome, relation_note, differs, .. } = replays;
             let (mut rendered, witnesses) = witness::call_in(&method_name, &layout, &arguments);
             let (rendered_found, _) = witness::call_in(&method_name, &layout, &found);
+            // A witness over objects, or one the versions differ on in a field or an identity relation, is run on a
+            // JVM as well as in the interpreter (step H4 of `llm-dlc/loops/foundations-heap.md`): the harness on the
+            // input, which makes its objects from the same leaves, with the same identities, as in the interpreter,
+            // loading the application's classes opened so that it may read their fields. The JVM is the reference:
+            // where its harness finds the versions agreeing, the interpreter was wrong and nothing is reported.
+            let mut jvm_note = None;
+            if on_jvm.is_none() && observes_objects(&layout, &differs) {
+                let mut entries = vec![harness_dir.clone(), options.after.clone(), before_dir.clone()];
+                entries.extend(options.classpath.iter().cloned());
+                let slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();
+                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::CLASS, &flat_types, &slots, &arguments, &[], &entries) {
+                    Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
+                        jvm_note = Some(format!("and run on a JVM (JDK {}), where the harness fails on it too", run.jdk));
+                        on_jvm_too = Some(run.jdk);
+                    }
+                    Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
+                        let p = format!("the counterexample {rendered} replays in the interpreter as before: {before_outcome}; after: {after_outcome}, but on a JVM (JDK {}) the harness finds the two versions agreeing on it. The JVM is the reference, so the tool's interpreter is wrong here and the witness is not reported", run.jdk);
+                        let message = format!("{} cannot be verified: {p}", options.target);
+                        let _ = writeln!(out, "✗ {message}");
+                        findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                        problem = Some(p);
+                        verdict = Verdict::Unverifiable;
+                        replay = Some(Replay { by: "jvm".into(), reproduced: false });
+                        if let Some(report) = &options.report {
+                            sarif::write(&report.join("equivalence.sarif"), &findings)?;
+                        }
+                        let stated = Some(stated(Some(&last), search.as_ref(), false));
+                        return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
+                    }
+                    Ok(run) => jvm_note = Some(format!("not confirmed on a JVM, where the harness threw {}", match run.check { crate::jvm_witness::Check::Threw(c) => c, _ => unreachable!() })),
+                    Err(e) => jvm_note = Some(format!("not run on a JVM: {e}")),
+                }
+            }
             if harness.before_args.is_some() {
                 if let Ok(mapped) = map_arguments(&arguments) {
                     rendered = format!("{rendered}, previously {}", witness::call_in(&before_method_name, &before_layout, &mapped).0);
@@ -1705,9 +1753,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let _ = writeln!(out, "✗ {message}");
             let stage = last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default();
             let shrinking = if shrunk { format!(" as {rendered_found}, shrunk to the input above in {shrink_runs} interpreter runs") } else { String::new() };
-            let replayed_by = match &on_jvm {
-                Some(jdk) => run_on_jvm_words(jdk),
-                None => "replayed in the interpreter".into(),
+            let replayed_by = match (&on_jvm, &jvm_note) {
+                (Some(jdk), _) => run_on_jvm_words(jdk),
+                (None, Some(note)) => format!("replayed in the interpreter {note}"),
+                (None, None) => "replayed in the interpreter".into(),
             };
             let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, {replayed_by}; domain {domain}{sharing}", last.version);
             if on_jvm.is_some() {
@@ -1733,7 +1782,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             };
             let inputs = witness::typed_inputs(params, &arguments);
             let found_inputs = shrunk.then(|| witness::typed_inputs(params, &found));
-            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call, previous_call, differs });
+            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call, previous_call, differs, jvm: on_jvm.clone().or(on_jvm_too) });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());

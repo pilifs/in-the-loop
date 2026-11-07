@@ -274,12 +274,40 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     `statement.rs` (`Domain::input_objects`, the observations' and the constructible assumption's words under a
     correspondence), `spec/mod.rs` (`Outcome::problem`), `lib/README.md` (step 5 of the regression proof, and
     `spec::heap::check` under the foundations IR), `lib/tests/heap.rs`. No job: every check is inline and small.
-- Next: H4, witnesses with identity on the JVM: the harness reads fields with `getfield`, which a JVM refuses
-  (`IllegalAccessError`) for a package-private or private field of another package's class, so a regression witness
-  over objects can't yet run on the JVM (`jvm_witness.rs`); give the harness accessible reads, then run the H2/H3
-  witnesses and the joint example's refutations there with their identities. Then examples in 150–159 (a correct
-  change proved, the alias-to-copy defect, a bug outside the constructor-made domain); then H2's rest (nullability and
-  aliasing among object parameters, property checks over objects).
+- **H4, first step (2026-11-07): regression witnesses over objects run on the JVM with their identities.** A
+  counterexample over objects (an object parameter made by its constructor, a result compared field by field, or
+  versions differing in a field of an object or an identity relation; `equivalence::observes_objects`) is run on a
+  real JVM after the interpreter's replay and the shrinking: the harness on the input, which makes each version's
+  objects from the same leaves, with the same identities, as in the interpreter. The JVM loads copies of the
+  application classes the harness names (its constant pool's class entries) with the class, its fields, its
+  constructors and its static methods made public ([`relocate::opened`](../../lib/src/relocate.rs), placed first on
+  the class path by [`jvm_witness`](../../lib/src/jvm_witness.rs)): a record's fields are private and a class's often
+  package-private, which a JVM refuses to another package's `getfield`. Field resolution and those calls don't
+  depend on access; instance methods keep theirs, which decides overriding. The proof line says `replayed in the
+  interpreter and run on a JVM (JDK ...), where the harness fails on it too`, and the counterexample has `jvm`, the
+  JDK. Where the JVM's harness holds on the witness the result is unverifiable (the JVM is the reference); where it
+  could not run, the interpreter's replay stands and the proof line says why. `spec::heap::check` gives a refutation
+  only with that confirmation, and unresolved otherwise. Shrinking changes only the leaves, so it never merges or
+  splits objects.
+  - Evidence inline: every object refutation in `lib/tests/heap.rs` (a changed result, a change in the object as
+    left, the alias-to-copy defect, a `Line` result field by field, an array handed back in place of a copy, the
+    joint example's alias-to-copy under the correspondence) now asserts the JVM's confirmation; with the opened
+    copies left out, the JVM's harness throws `IllegalAccessError` and the two tests over records' private fields
+    fail, as they should. A unit test of `opened` (a private constructor, private and protected fields and a static
+    method made public; a private instance method and `<clinit>` left; the code and the pool unchanged). The
+    integration contract's heap part: 6 passed, its refutations confirmed on the JVM. Unit tests (188), `heap.rs`
+    (18), `foundations.rs` and `conformance.rs` pass. `integration.rs` under the other streams' load (612 s) passed 63
+    of 64, failing `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` as in every earlier step; alone it
+    passed in 10.9 s. It is a primitive check, which runs no JVM confirmation.
+  - Not yet: a JVM confirmation that disagrees with the interpreter has no test (no such disagreement is known);
+    object parameters that may be null or the same object (H2's rest), so a witness with two parameters one object
+    is still only an array's, in property checks; property checks over objects.
+  - Shared files changed: `equivalence.rs` (`observes_objects`, the JVM run after shrinking, `Counterexample::jvm`),
+    `lib/README.md` (step 6 of the regression proof, `spec::heap::check`'s paragraph), `lib/tests/heap.rs`. No job:
+    every check is inline and small.
+- Next: examples in 150–159 (a correct change proved, the alias-to-copy defect, a bug outside the constructor-made
+  domain), then H2's rest (nullability and aliasing among object parameters, property checks over objects), then
+  H5's rest.
 - Status: working
 
 ## Loop settings
