@@ -42,7 +42,7 @@
 //! |---|---|
 //! | `nop`, `aconst_null`, `iconst`, `lconst`, `bipush`/`sipush`, `ldc` of an int or a long, `iload`/`lload`/`aload`, `istore`/`lstore`/`astore`, `pop`, `pop2`, `dup`, `dup_x1`, `dup_x2`, `dup2`, `dup2_x1`, `dup2_x2`, `swap`, `iinc` | implemented |
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
-//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound; `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
+//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
 //! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
@@ -480,11 +480,15 @@ struct Frame {
     /// superinterfaces' initializers to finish (JVMS §5.5, step 7), outermost first: the instruction runs again
     /// each time one of those returns, and an exception that leaves it makes them erroneous.
     entered: Vec<String>,
+    /// How often the back edges to each loop head (by its pc) were taken since the loop was last entered afresh:
+    /// a new frame enters every loop afresh, and a back edge enters afresh each loop whose head is in its body
+    /// (see [`Engine::jump`]).
+    back_edges: BTreeMap<u32, u32>,
 }
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new(), back_edges: BTreeMap::new() }
     }
 
     fn pc(&self) -> u32 {
@@ -492,8 +496,8 @@ impl Frame {
     }
 }
 
-/// One path through the harness: its frames, the condition that selects it (a conjunction of literals), models
-/// of that condition, its objects, and how often each back edge was taken.
+/// One path through the harness: its frames (each with how often its loops' back edges were taken), the condition
+/// that selects it (a conjunction of literals), models of that condition, and its objects.
 #[derive(Clone)]
 struct Path {
     frames: Vec<Frame>,
@@ -511,7 +515,6 @@ struct Path {
     /// to run the join's instruction rather than wait there again.
     resumed: bool,
     objects: Vec<Obj>,
-    back_edges: HashMap<(String, String, u32), u32>,
     /// The object each string or class literal loaded so far is, so that every load of one literal is the same
     /// reference, as the JVM's interned strings and `Class` objects are.
     literals: BTreeMap<Literal, usize>,
@@ -926,7 +929,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -1489,10 +1492,12 @@ impl<'a> Engine<'a> {
         // counts the fewer, so that the iterations the other has left are not counted twice, which would report
         // the loop as beyond the bound when no path is. A path needing more than the bound is still stopped, at
         // most as many iterations later as the counts differed: nothing is cut short, only reported later.
-        into.back_edges.retain(|key, taken| {
-            *taken = (*taken).min(other.back_edges.get(key).copied().unwrap_or(0));
-            *taken > 0
-        });
+        for (f, g) in into.frames.iter_mut().zip(&other.frames) {
+            f.back_edges.retain(|head, taken| {
+                *taken = (*taken).min(g.back_edges.get(head).copied().unwrap_or(0));
+                *taken > 0
+            });
+        }
         into.models.extend(other.models.iter().take(MOST_MODELS.saturating_sub(into.models.len())).cloned());
     }
 
@@ -1970,16 +1975,26 @@ impl<'a> Engine<'a> {
         })
     }
 
-    /// A jump within the top frame, counting back edges against the bound.
+    /// A jump within the top frame, counting back edges against the bound per entry of a loop (VF-011).
+    ///
+    /// A back edge from `from` to `target` takes another iteration of the loop headed at `target`, and is counted
+    /// for that head. It also leaves the iteration of every loop whose head is in its body, after `target` and up to
+    /// `from` (an inner loop, run again from its entry in the next iteration), so their counts start again. Each
+    /// count is kept while the path stays in its loop, and a new frame starts with none.
+    ///
+    /// It stays a bound: on a path that goes on forever in a frame, take the lowest head whose back edges it takes
+    /// without end. Its count starts again only on a back edge to a lower head, which the path takes finitely
+    /// often, so the count grows past `--unwind` and the path ends unwound (calls are at most 64 deep). An inner
+    /// loop is thus run at most `--unwind` times per iteration of the loops around it, as JBMC's `--unwind` counts.
     fn jump(&mut self, path: &mut Path, target: u32) -> Step {
         let frame = path.frames.last_mut().expect("a frame");
         let to = *frame.code.index.get(&target).ok_or_else(|| Stop::Unsupported(format!("jump to no instruction at pc {target}")))?;
         if to <= frame.at {
-            let key = (frame.class.name.clone(), frame.method.clone(), target);
-            let count = path.back_edges.entry(key).or_insert(0);
+            let from = frame.pc();
+            frame.back_edges.retain(|&head, _| head <= target || head > from);
+            let count = frame.back_edges.entry(target).or_insert(0);
             *count += 1;
             if *count > self.unwind {
-                let frame = path.frames.last().expect("a frame");
                 return Ok(Some(End::Unwound(format!("{}.{} at pc {target}", frame.class.name.replace('/', "."), frame.method))));
             }
         }
@@ -3720,6 +3735,145 @@ mod tests {
         let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
         assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
         assert!(out.problem.unwrap().contains("not fully unwound"));
+    }
+
+    /// `for (i = 0; i < outer; i++) for (j = 0; j < inner(i); j++) s++;`, with `i` in slot 1, `j` in slot 2 and `s`
+    /// in slot 3, each loop tested at its top and closed by a `goto` back to it.
+    fn nested_loops(code: &mut CodeBuilder, outer: impl FnOnce(&mut CodeBuilder), inner: impl FnOnce(&mut CodeBuilder)) {
+        let (top, done, inner_top, inner_done) = (code.label(), code.label(), code.label(), code.label());
+        code.iconst(0);
+        code.store(Kind::Int, 1);
+        code.iconst(0);
+        code.store(Kind::Int, 3);
+        code.bind(top);
+        code.load(Kind::Int, 1);
+        outer(code);
+        code.if_icmp(Cond::Ge, done);
+        code.iconst(0);
+        code.store(Kind::Int, 2);
+        code.bind(inner_top);
+        code.load(Kind::Int, 2);
+        inner(code);
+        code.if_icmp(Cond::Ge, inner_done);
+        code.iinc(3, 1);
+        code.iinc(2, 1);
+        code.goto(inner_top);
+        code.bind(inner_done);
+        code.iinc(1, 1);
+        code.goto(top);
+        code.bind(done);
+    }
+
+    #[test]
+    fn an_inner_loop_is_unwound_per_entry_of_it() {
+        // VF-011: 4 iterations of an outer loop, each running an inner loop 3 times, are within --unwind 4, although
+        // the inner back edge is taken 12 times on the path.
+        let cp = harness("()V", |code, _, fail| {
+            nested_loops(code, |code| code.iconst(4), |code| code.iconst(3));
+            code.load(Kind::Int, 3);
+            code.iconst(12);
+            code.if_icmp(Cond::Ne, fail);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+
+        // Example 052's shape: a sum over i < k inside a loop over k < n, for every n up to 5, so 10 inner
+        // iterations at most and fewer than 5 on each entry. 2 s == n (n - 1).
+        let cp = harness("(I)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.iconst(5);
+            code.if_icmp(Cond::Gt, ok);
+            nested_loops(code, |code| code.load(Kind::Int, 0), |code| code.load(Kind::Int, 1));
+            code.load(Kind::Int, 3);
+            code.iconst(1);
+            code.op(0x78); // ishl
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 0);
+            code.iconst(1);
+            code.op(0x64); // isub
+            code.op(0x68); // imul
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 5, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+
+        // The count still bounds each entry: an inner loop of 5 iterations is beyond --unwind 4.
+        let cp = harness("()V", |code, _, _| nested_loops(code, |code| code.iconst(2), |code| code.iconst(5)));
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.unwrap().contains("not fully unwound"));
+    }
+
+    #[test]
+    fn a_loop_entered_again_by_an_outer_back_edge_is_bounded_by_the_outer_count() {
+        // The inner loop starts afresh on each of the outer loop's iterations, but the outer loop's 5 are beyond
+        // --unwind 4, so the path still ends with no verdict.
+        let cp = harness("()V", |code, _, _| nested_loops(code, |code| code.iconst(5), |code| code.iconst(1)));
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.unwrap().contains("not fully unwound"));
+
+        // Two loops that overlap, neither inside the other: a: if (x >= 100) goto out; b: x++; if (x % 2 == 0)
+        // goto a; goto b. Each back edge to a starts b's count again, but nothing starts a's again, so the path
+        // still ends, at a's fifth back edge.
+        let cp = harness("()V", |code, _, _| {
+            let (a, b, out) = (code.label(), code.label(), code.label());
+            code.iconst(0);
+            code.store(Kind::Int, 1);
+            code.bind(a);
+            code.load(Kind::Int, 1);
+            code.iconst(100);
+            code.if_icmp(Cond::Ge, out);
+            code.bind(b);
+            code.iinc(1, 1);
+            code.load(Kind::Int, 1);
+            code.iconst(2);
+            code.op(0x70); // irem
+            code.if_zero(Cond::Eq, a); // back to a, leaving b's loop
+            code.goto(b); // back to b, after a's head
+            code.bind(out);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.unwrap().contains("not fully unwound"));
+    }
+
+    #[test]
+    fn a_loop_is_unwound_per_call_of_its_method() {
+        // count() runs a loop 3 times; four calls of it in a row are within --unwind 4.
+        let cp = harness("()V", |code, writer, fail| {
+            let mut callee = CodeBuilder::new();
+            callee.max_locals = 2;
+            callee.max_stack = 2;
+            let (top, done) = (callee.label(), callee.label());
+            callee.iconst(0);
+            callee.store(Kind::Int, 0);
+            callee.bind(top);
+            callee.load(Kind::Int, 0);
+            callee.iconst(3);
+            callee.if_icmp(Cond::Ge, done);
+            callee.iinc(0, 1);
+            callee.goto(top);
+            callee.bind(done);
+            callee.load(Kind::Int, 0);
+            callee.return_(Some(Kind::Int));
+            writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: "count".into(), descriptor: "()I".into(), code: Some(callee) });
+            let count = writer.pool.method_ref("Check", "count", "()I");
+            for _ in 0..4 {
+                code.op_u16(0xb8, count);
+            }
+            for _ in 0..3 {
+                code.op(0x60); // iadd
+            }
+            code.iconst(12);
+            code.if_icmp(Cond::Ne, fail);
+        });
+        let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
     }
 
     #[test]

@@ -12,27 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.363Z",
-  "ended": "2026-11-07T16:58:59.740Z",
-  "duration_seconds": 1933,
+  "ended": "2026-11-07T17:15:52.515Z",
+  "duration_seconds": 2946,
   "stats": {
-    "turns": 15,
-    "api_calls": 109,
-    "tool_calls": 107,
+    "turns": 20,
+    "api_calls": 142,
+    "tool_calls": 140,
     "tool_errors": 2,
-    "compactions": 3,
+    "compactions": 4,
     "peak_context_tokens": 154452,
     "usage": {
-      "input_tokens": 216,
-      "output_tokens": 73929,
-      "cache_read_input_tokens": 9733801,
-      "cache_creation_input_tokens": 299509
+      "input_tokens": 282,
+      "output_tokens": 102195,
+      "cache_read_input_tokens": 12037435,
+      "cache_creation_input_tokens": 388995
     }
   },
   "tools": {
-    "Bash": 106,
-    "Edit": 1
+    "Bash": 137,
+    "Edit": 3
   },
   "files_touched": [
+    "lib/src/bmc/mod.rs",
     "llm-dlc/loops/cleanup-native.md"
   ],
   "context_windows": [
@@ -81,24 +82,38 @@
     {
       "index": 3,
       "started": "2026-11-07T16:57:46.992Z",
-      "ended": "2026-11-07T16:58:59.740Z",
-      "turns": 4,
-      "api_calls": 10,
+      "ended": "2026-11-07T16:59:14.607Z",
+      "turns": 5,
+      "api_calls": 12,
       "usage": {
-        "input_tokens": 20,
-        "output_tokens": 5049,
-        "cache_read_input_tokens": 467625,
-        "cache_creation_input_tokens": 44176
+        "input_tokens": 24,
+        "output_tokens": 5807,
+        "cache_read_input_tokens": 583661,
+        "cache_creation_input_tokens": 47039
       },
-      "peak_context_tokens": 57255
+      "peak_context_tokens": 60118
+    },
+    {
+      "index": 4,
+      "started": "2026-11-07T16:59:48.423Z",
+      "ended": "2026-11-07T17:15:52.515Z",
+      "turns": 4,
+      "api_calls": 31,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 27508,
+        "cache_read_input_tokens": 2187598,
+        "cache_creation_input_tokens": 86623
+      },
+      "peak_context_tokens": 99702
     }
   ],
   "log": {
-    "sha256": "1bd3c19813f0169232153c01a0d05e5ca6754c71edc15d4f57e44825d0284021",
-    "bytes": 2948912,
-    "lines": 1038,
-    "gzip_bytes": 560353,
-    "path": "llm-dlc/traces/2324d402-3f17-421a-8a85-5b6846d2c728/logs/1bd3c19813f0169232153c01a0d05e5ca6754c71edc15d4f57e44825d0284021.jsonl.gz"
+    "sha256": "6ec8a60d346233862ce649b186737ca905fc3d8c2a3ba0d9c336d2ddce762cd0",
+    "bytes": 3944280,
+    "lines": 1394,
+    "gzip_bytes": 754396,
+    "path": "llm-dlc/traces/2324d402-3f17-421a-8a85-5b6846d2c728/logs/6ec8a60d346233862ce649b186737ca905fc3d8c2a3ba0d9c336d2ddce762cd0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -125,6 +140,14 @@
       "summary": "VF-015: example 109's replay job resubmitted unchanged at the native stream's commit (verification pending)",
       "body": "The cleanup loop's native stream resubmits job 20261103-010716-example-109-revisited-hex-todigit-s-regr as its brief's first step for VF-015. That job's step 3 failed because JBMC refuted the old Hex#toDigit on ch == 1632 and the interpreter could not replay the witness: it refuses to read java.nio.charset.StandardCharsets.UTF_8. JDK models have shipped with jvmcontract since, so the failure may be gone. The new job's steps, expectations and budget are the old one's. Only its title and description now name VF-015, which it closes when it passes. Validated with pipeline.py validate (0 problems).\n\nJob: 20261107-165827-example-109-revisited-hex-todigit-s-regr (clones Commons Codec, so it needs the network).\n\nThe stream brief's Progress records the step, and corrects step 2's note on sync.py check's errors: there were 13, all from other workspaces' sessions and commits, not 4.",
       "log_sha256": "1bd3c19813f0169232153c01a0d05e5ca6754c71edc15d4f57e44825d0284021"
+    },
+    {
+      "change_id": "qlkvoryrpzwykrmomtxzzzymzszomxkm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-011: the own checker counts a loop's unwinding per entry of the loop, so an inner loop gets --unwind iterations per outer iteration (verification pending)",
+      "body": "Engine::jump (lib/src/bmc/mod.rs) counted each back edge over the whole path, so a nested quantifier's inner loop ran out of --unwind across the outer loop's iterations, and example 052's property was left to JBMC under strict ('a loop was not fully unwound with --unwind 16'). Counts are now kept per frame, by loop head, and a back edge from 'from' to 'target' starts again the count of every head after 'target' up to 'from' (the loops in its body), as JBMC's --unwind counts. It stays a bound: on a path that never ends, the lowest head it keeps returning to is restarted only by back edges to lower heads, taken finitely often, so its count passes the bound and the path ends unwound with no verdict; calls stay at most 64 deep. Merges keep the lower count per frame.\n\nReproducer, committed with the fix: new unit tests an_inner_loop_is_unwound_per_entry_of_it (4 x 3 nested iterations under --unwind 4, and 052's shape, a sum over i < k inside a loop over k < n), a_loop_is_unwound_per_call_of_its_method, both failing before the fix with 'not fully unwound' and passing after, and a_loop_entered_again_by_an_outer_back_edge_is_bounded_by_the_outer_count (an outer loop beyond the bound, and two overlapping loops, still unwound). Every lib suite passed inline: unit 207, integration.rs 64, conformance, heap, observations, alignment and the rest.\n\nJob 20261107-171502-vf-011-example-052-under-strict-on-the-o runs 052 under strict on the own checker (approach.engine set to native in a copy of examples/) and closes VF-011 when every obligation is established with no gap. The stream brief's Progress records this, fixes a change-id typo (pkuvkyln), and ends waiting on its seven pending jobs. For review: examples/coverage.md (extension 2, the examples stream's file) still describes the count as per path.",
+      "log_sha256": "6ec8a60d346233862ce649b186737ca905fc3d8c2a3ba0d9c336d2ddce762cd0"
     }
   ],
   "logs": {
@@ -138,6 +161,12 @@
       "bytes": 2357097,
       "lines": 855,
       "gzip_bytes": 424211,
+      "url": null
+    },
+    "6ec8a60d346233862ce649b186737ca905fc3d8c2a3ba0d9c336d2ddce762cd0": {
+      "bytes": 3944280,
+      "lines": 1394,
+      "gzip_bytes": 754396,
       "url": null
     },
     "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c": {

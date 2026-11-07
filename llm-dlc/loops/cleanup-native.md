@@ -139,7 +139,7 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
   - Next: N2's reproducer (VF-011), and N3's unchanged resubmission (VF-015).
   - Correction: step 2's `sync.py commit` reported 13 errors, not 4, all of the same kind (none from this session):
     session `2df7775c`'s log `3f768f3bb246`, and commits of the sibling streams and the verification loop with no
-    manifest in this workspace (`uxvwumlz`, `lqozoovu`, `ulvlrqwu`, `pkuvkylu`, `muznwonp`, `wmuwlwkx`, `uytnkqst`,
+    manifest in this workspace (`uxvwumlz`, `lqozoovu`, `ulvlrqwu`, `pkuvkyln`, `muznwonp`, `wmuwlwkx`, `uytnkqst`,
     `vtkypktk`, `wurnsyot`, `zykkyuuw`, `syqpoxom`).
 - **N3, step 1: the unchanged resubmission.** Job `20261107-165827-example-109-revisited-hex-todigit-s-regr`
   supersedes `20261103-010716-…` with its steps, expectations and budget unchanged. Only its title and description
@@ -147,7 +147,38 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
   As read, the interpreter still refuses static fields it doesn't know (`lib/src/interp/natives.rs:373`), so if JBMC
   still refutes step 3's claim, its witness will fail to replay the same way, and the fix comes next.
   - Next: N2's reproducer (VF-011), while this job and N1's four are pending.
-- Status: working
+  - Correction: N1's step-2 entry above lists `pkuvkyln` (it read `pkuvkylu`, a typo).
+- **N2, steps 1 and 2: the reproducer and the fix, with 052's job queued.** Unwinding is now counted per entry of a
+  loop. Each frame keeps its own counts, by loop head. A back edge from `from` to `target` counts for `target`, and it
+  starts again the count of every head after `target` and up to `from`, the loops nested in its body. So an inner
+  loop gets `--unwind` iterations per iteration of the loop around it, and per call of its method, as JBMC's
+  `--unwind` counts.
+  - It stays a bound. On a path that never ends in a frame, the lowest head it keeps going back to is started again
+    only by a back edge to a lower head, which the path takes finitely often. So that count passes `--unwind` and the
+    path ends unwound, with no verdict. Calls are still at most 64 deep. A merge keeps the lower count per frame, as
+    it did per path. This argument is in `Engine::jump`'s doc comment.
+  - The reproducer is new unit tests in `lib/src/bmc/mod.rs`. Before the fix the first and third failed with "not
+    fully unwound" (`Check.check at pc 15`, `Check.count at pc 3`), and after it they pass:
+    - `an_inner_loop_is_unwound_per_entry_of_it`: 4 × 3 nested iterations under `--unwind 4`, and 052's shape
+      (`\sum` over `i < k` inside a loop over `k < n`, `n` up to 5) proved under `--unwind 5`. An inner loop of 5
+      iterations is still beyond `--unwind 4`;
+    - `a_loop_entered_again_by_an_outer_back_edge_is_bounded_by_the_outer_count`: an outer loop of 5 iterations with a
+      one-iteration inner loop is still unwound, and so are two overlapping loops, neither inside the other, whose
+      back edges alternate. This guard passed before the fix too;
+    - `a_loop_is_unwound_per_call_of_its_method`: four calls of a method whose loop runs 3 times.
+  - Verified inline: every lib suite passed (unit 207, `integration.rs` 64, conformance, heap, observations,
+    alignment and the rest).
+  - Job `20261107-171502-vf-011-example-052-under-strict-on-the-o` is the entry's check, and closes VF-011 when it
+    passes. It copies `examples/`, sets 052's `approach.engine` to native in the copy, runs `build.py 052`, and
+    expects every obligation established, by the own checker, under strict, with no gap.
+  - **For review:**
+    - The own checker now explores nested and repeatedly called loops further before it stops, so some of its
+      "not fully unwound" results may become verdicts, or timeouts. Both are sound outcomes. N1's benchmark jobs
+      were submitted before this change, so they don't measure it.
+    - `examples/coverage.md` (extension 2) still describes the count as per path. It is the examples stream's file.
+  - Everything left waits on jobs: N1's comparison job needs both benchmark outputs, N2 needs 052's job, and N3 needs
+    109's.
+- Status: waiting on jobs 20261107-163057-vf-010-s-reproducer-before-the-fix-prici 20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t 20261107-165544-vf-010-s-integration-tests-at-the-fix-li 20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2 20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r 20261107-165827-example-109-revisited-hex-todigit-s-regr 20261107-171502-vf-011-example-052-under-strict-on-the-o
 
 ## Loop settings
 
