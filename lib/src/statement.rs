@@ -233,6 +233,10 @@ pub struct Observations {
     /// `q: amount.cents, quantity`, the fields by path.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub objects: Vec<String>,
+    /// The identity relations within each version compared as "holds before iff it holds now", `result == q`
+    /// (step H3 of `llm-dlc/loops/foundations-heap.md`); objects are never compared by identity across versions.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub identities: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -425,6 +429,10 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
     let result = match (relation, &layout.result.0, ret) {
         (Some(r), _, _) => format!("the results, related by {r} whenever both versions return"),
         (None, Some(record), _) => format!("the result, a {} compared component by component ({})", record.simple_name(), record.components.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>().join(", ")),
+        (None, None, Type::Object(_)) if layout.result_fields.0.is_some() => {
+            let fields = layout.result_fields.0.as_ref().expect("checked");
+            format!("the result, a {} compared field by field ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), fields.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))
+        }
         (None, None, Type::Void) => "nothing: the method returns no value".into(),
         (None, None, Type::Array(_)) => "the result, an array compared element by element".into(),
         (None, None, _) => "the result, equal in both versions".into(),
@@ -438,13 +446,13 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
             _ => None,
         })
         .collect();
-    Observations { result, exceptions: exception_categories("the same in both versions"), arrays, objects }
+    Observations { result, exceptions: exception_categories("the same in both versions"), arrays, objects, identities: Vec::new() }
 }
 
 /// What a property proof observes: the result against the assertion, and an exception against the throws clauses.
 pub fn property_observations(assertion: &str, throws_checked: &[String]) -> Observations {
     let exceptions = if throws_checked.is_empty() { "none may be thrown".to_string() } else { format!("none may be thrown but as a throws clause says: {}", throws_checked.join("; ")) };
-    Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new(), objects: Vec::new() }
+    Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new(), objects: Vec::new(), identities: Vec::new() }
 }
 
 /// How the regression harness tells exceptions apart: by class, among a fixed list.

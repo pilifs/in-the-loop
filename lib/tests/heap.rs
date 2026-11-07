@@ -237,6 +237,9 @@ public final class Kernel {
     public static long checked(Line l) { return l.price.cents() * l.quantity; }
     public static void bump(Line l) { l.quantity += 1; }
     public static int tagged(Tagged t) { return t.n; }
+    public static Line withQuantity(Line l, int quantity) { l.quantity = quantity; return l; }
+    public static Line doubled(Line l) { return new Line(l.price, l.quantity * 2); }
+    public static int[] filled(int[] a) { for (int i = 0; i < a.length; i++) a[i] = 7; return a; }
 }
 "#;
 
@@ -247,6 +250,9 @@ public final class Kernel {
     public static long checked(Line l) { if (l.quantity <= 0) return -1; return l.quantity * l.price.cents(); }
     public static void bump(Line l) { l.quantity = l.quantity + 1; }
     public static int tagged(Tagged t) { return t.n; }
+    public static Line withQuantity(Line l, int quantity) { Line same = l; same.quantity = quantity; return same; }
+    public static Line doubled(Line l) { return new Line(l.price, l.quantity + l.quantity); }
+    public static int[] filled(int[] a) { int i = 0; while (i < a.length) { a[i] = 7; i++; } return a; }
 }
 "#;
 
@@ -257,6 +263,11 @@ public final class Kernel {
     // Seen only in the parameter as the call leaves it.
     public static void bump(Line l) { l.quantity += 2; }
     public static int tagged(Tagged t) { return t.n; }
+    // The alias-to-copy defect: a copy with the same values, the same price object, in place of the line itself.
+    public static Line withQuantity(Line l, int quantity) { l.quantity = quantity; Line copy = new Line(l.price, 1); copy.quantity = quantity; return copy; }
+    public static Line doubled(Line l) { return new Line(l.price, l.quantity * 3); }
+    // The same defect for an array: filled in place, then a copy handed back.
+    public static int[] filled(int[] a) { int[] b = new int[a.length]; for (int i = 0; i < a.length; i++) { a[i] = 7; b[i] = 7; } return b; }
 }
 "#;
 
@@ -337,4 +348,47 @@ fn an_object_with_a_field_outside_the_supported_kinds_is_a_named_gap() {
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     let problem = o.problem.unwrap();
     assert!(problem.contains("the field tag of objects.Tagged has type java.lang.String"), "{problem}");
+}
+
+#[test]
+fn the_same_object_handed_back_is_compared_by_its_identity_relations_within_each_version() {
+    let Some(o) = regression("after", "withQuantity") else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.identities, vec!["result == l".to_string(), "result.price == l.price".to_string()]);
+    assert!(stated.observations.result.contains("a Line compared field by field (price.cents, quantity)"), "{}", stated.observations.result);
+}
+
+#[test]
+fn an_alias_turned_into_a_copy_with_the_same_values_is_refuted_by_its_identity_relation() {
+    let Some(o) = regression("defect", "withQuantity") else { return };
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().expect("a counterexample");
+    assert!(c.before.contains("with result == l and result.price == l.price"), "{}", c.before);
+    assert!(c.after.contains("with result.price == l.price") && !c.after.contains("result == l "), "{}", c.after);
+    // Every field agrees: only the relation tells them apart.
+    let fields = |t: &str| t.split(", with").next().unwrap().to_string();
+    assert_eq!(fields(&c.before), fields(&c.after));
+}
+
+#[test]
+fn a_result_of_a_class_made_by_its_constructor_is_compared_field_by_field() {
+    let Some(o) = regression("after", "doubled") else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let Some(d) = regression("defect", "doubled") else { return };
+    assert_eq!(d.verdict, Verdict::Violation, "{}", d.output);
+    let c = d.counterexample.as_ref().expect("a counterexample");
+    assert!(c.before.starts_with("Line{price=Money{cents="), "{}", c.before);
+    assert_ne!(c.before, c.after);
+}
+
+#[test]
+fn an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation() {
+    let Some(o) = regression("after", "filled") else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(o.stated.as_ref().unwrap().observations.identities, vec!["result == a".to_string()]);
+    let Some(d) = regression("defect", "filled") else { return };
+    assert_eq!(d.verdict, Verdict::Violation, "{}", d.output);
+    let c = d.counterexample.as_ref().expect("a counterexample");
+    assert!(c.before.contains("with result == a") && !c.after.contains("with result == a"), "{} / {}", c.before, c.after);
 }

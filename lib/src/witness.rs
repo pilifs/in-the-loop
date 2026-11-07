@@ -268,9 +268,29 @@ pub struct Replayed {
     pub objects_after: Vec<(String, String)>,
     /// The class of the exception thrown, as an internal name.
     pub thrown: Option<String>,
+    /// Each reference identity relations are over ([`crate::harness::Layout::references`]), by path, as the call
+    /// left it: the result null where the method threw, a field of null null.
+    pub references: Vec<(String, Value)>,
 }
 
 impl Replayed {
+    /// The identity relations among `pairs` (from [`crate::harness::Layout::identity_pairs`]) that hold in this
+    /// replay, as `, with result == q`; empty when none does. Two replays agree on the relations exactly when these
+    /// read the same.
+    pub fn identities(&self, pairs: &[(String, String)]) -> String {
+        let value = |path: &str| self.references.iter().find(|(p, _)| p == path).map(|(_, v)| *v);
+        let holding: Vec<String> = pairs
+            .iter()
+            .filter(|(x, y)| matches!((value(x), value(y)), (Some(a), Some(b)) if a == b))
+            .map(|(x, y)| format!("{x} == {y}"))
+            .collect();
+        if holding.is_empty() {
+            String::new()
+        } else {
+            format!(", with {}", holding.join(" and "))
+        }
+    }
+
     /// The outcome, followed by what the method left in each array argument it changed: `3, leaving a=[0, 0]`.
     pub fn with_leftovers(&self, params: &[Param], arguments: &[Argument]) -> String {
         let mut outcome = self.outcome.clone();
@@ -409,8 +429,9 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             })
             .collect()
     };
+    let arg_values = values.clone();
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)) },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new() },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -419,6 +440,29 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     };
     let after = left(&m);
     let objects_after = changed(&m);
+    // The references the identity relations are over, as the call left them.
+    let result_value = match &outcome {
+        Ok(Some(v)) => *v,
+        _ => Value::Null,
+    };
+    let mut references: Vec<(String, Value)> = Vec::new();
+    for r in layout.references(prefix.is_some(), ret, true) {
+        let v = match &r.field {
+            None => match r.root {
+                crate::harness::Root::Result => result_value,
+                crate::harness::Root::Arg(i) => arg_values.get(i).copied().unwrap_or(Value::Null),
+            },
+            Some((parent, _, name, _)) => match references[*parent].1 {
+                Value::Ref(p) => match m.heap.get(p) {
+                    Object::Instance { fields, .. } => fields.get(name).copied().unwrap_or(Value::Null),
+                    _ => Value::Null,
+                },
+                _ => Value::Null,
+            },
+        };
+        references.push((r.path.clone(), v));
+    }
+    let result_fields_of = if prefix.is_some() { &layout.result_fields.1 } else { &layout.result_fields.0 };
     let mut replayed = match outcome {
         Ok(Some(v)) => {
             let (array, fields) = match v {
@@ -431,16 +475,18 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             };
             let text = match (&array, ret) {
                 (Some(data), Type::Array(element)) => self::array(data, element),
+                (_, Type::Object(_)) if result_fields_of.is_some() => object_fields(&m, v, result_fields_of.as_ref().expect("checked")),
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new() }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)) },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new() },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new() },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new() },
     };
     replayed.objects_after = objects_after;
+    replayed.references = references;
     replayed
 }
 

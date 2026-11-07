@@ -264,6 +264,62 @@ impl RecordType {
     }
 }
 
+/// Where a reference of [`RefPath`] starts: the result, or the target's argument `args[i]`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Root {
+    Result,
+    Arg(usize),
+}
+
+/// A reference that identity relations are observed over, in one version (step H3 of
+/// `llm-dlc/loops/foundations-heap.md`): the result, an array parameter or an object parameter made by its
+/// constructor, or a field of an object one of those reaches (`q.amount`), by its path.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RefPath {
+    pub path: String,
+    /// Its static type: a class's internal name as the new version has it (unrelocated), or an array's descriptor.
+    pub ty: String,
+    pub root: Root,
+    /// The reference it is a field of, by index among the same version's paths (always an earlier one), and the
+    /// field: its declaring class (unrelocated), name and descriptor. None for a root.
+    pub field: Option<(usize, String, String, String)>,
+}
+
+impl RefPath {
+    /// The field's reference for the version under `prefix` (`before`): its class, and a class in its descriptor,
+    /// relocated there.
+    pub fn field_in(&self, prefix: Option<&str>) -> Option<(usize, String, String, String)> {
+        let (parent, owner, name, descriptor) = self.field.clone()?;
+        Some(match prefix {
+            Some(p) => {
+                let descriptor = match descriptor.strip_prefix('L') {
+                    Some(class) => format!("L{p}/{class}"),
+                    None => descriptor,
+                };
+                (parent, format!("{p}/{owner}"), name, descriptor)
+            }
+            None => (parent, owner, name, descriptor),
+        })
+    }
+}
+
+/// Appends the references among the fields of an object at `path` (index `at` among `out`), depth first.
+fn field_refs(out: &mut Vec<RefPath>, path: &str, at: usize, root: Root, fields: &Fields) {
+    for (name, kind) in &fields.fields {
+        let ty = match kind {
+            FieldKind::Value(_) => continue,
+            FieldKind::Array(t) => t.descriptor(),
+            FieldKind::Object(inner) => inner.class.clone(),
+        };
+        let descriptor = if matches!(kind, FieldKind::Object(_)) { format!("L{ty};") } else { ty.clone() };
+        let here = out.len();
+        out.push(RefPath { path: format!("{path}.{name}"), ty, root, field: Some((at, fields.class.clone(), name.clone(), descriptor)) });
+        if let FieldKind::Object(inner) = kind {
+            field_refs(out, &format!("{path}.{name}"), here, root, inner);
+        }
+    }
+}
+
 /// One argument of the target, made from the harness's flat parameters.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Slot {
@@ -289,12 +345,74 @@ pub struct Layout {
     /// and compared component by component; under one, the relation names the components `result.c` and
     /// `previous.c`.
     pub result: (Option<RecordType>, Option<RecordType>),
+    /// The fields of the result in the new version and in the previous one, when it is an object of an application
+    /// class other than a record of primitive components (step H3): compared field by field, as an object
+    /// parameter is, and followed for identity relations.
+    pub result_fields: (Option<Fields>, Option<Fields>),
 }
 
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None) }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None) }
+    }
+
+    /// The references a version's identity relations are over (step H3): the result when it is an array or an object
+    /// with [`Layout::result_fields`] (`ret` the version's return type), each array parameter, each object parameter
+    /// made by its constructor, and every reference field those reach. `previous` picks the previous version's
+    /// objects; `with_args` leaves the parameters out when false (the previous version's arguments are expressions).
+    pub fn references(&self, previous: bool, ret: &Type, with_args: bool) -> Vec<RefPath> {
+        let mut out = Vec::new();
+        let result_fields = if previous { &self.result_fields.1 } else { &self.result_fields.0 };
+        match (result_fields, ret) {
+            (Some(fields), _) => {
+                out.push(RefPath { path: "result".into(), ty: fields.class.clone(), root: Root::Result, field: None });
+                field_refs(&mut out, "result", 0, Root::Result, fields);
+            }
+            (None, Type::Array(_)) => out.push(RefPath { path: "result".into(), ty: ret.descriptor(), root: Root::Result, field: None }),
+            _ => {}
+        }
+        if !with_args {
+            return out;
+        }
+        for (i, slot) in self.args.iter().enumerate() {
+            match slot {
+                Slot::Plain(p) if matches!(self.params[*p].ty, Type::Array(_)) => {
+                    out.push(RefPath { path: self.params[*p].name.clone(), ty: self.params[*p].ty.descriptor(), root: Root::Arg(i), field: None });
+                }
+                Slot::Record { name, record, before, .. } => {
+                    let made = if previous { before.as_ref() } else { Some(record) };
+                    if let Some(fields) = made.and_then(|r| r.fields.as_ref()) {
+                        let at = out.len();
+                        out.push(RefPath { path: name.clone(), ty: fields.class.clone(), root: Root::Arg(i), field: None });
+                        field_refs(&mut out, name, at, Root::Arg(i), fields);
+                    }
+                }
+                Slot::Plain(_) => {}
+            }
+        }
+        out
+    }
+
+    /// The identity relations compared, each as "holds in the previous version iff in the new one" (step H3), as
+    /// pairs of paths: every two references both versions have under the same paths, of the same static type in
+    /// one of them. References of different static types are never the same object, since a class an input or a
+    /// result is followed into extends `Object` directly, so those pairs are left out. Physical identities are
+    /// never compared across versions.
+    pub fn identity_pairs(&self, ret: &Type, before_ret: &Type, with_args: bool) -> Vec<(String, String)> {
+        let new = self.references(false, ret, with_args);
+        let old = self.references(true, before_ret, with_args);
+        let ty_in = |refs: &[RefPath], path: &str| refs.iter().find(|r| r.path == path).map(|r| r.ty.clone());
+        let mut pairs = Vec::new();
+        for (i, x) in new.iter().enumerate() {
+            for y in &new[i + 1..] {
+                let (Some(ox), Some(oy)) = (ty_in(&old, &x.path), ty_in(&old, &y.path)) else { continue };
+                if x.ty == y.ty || ox == oy {
+                    pairs.push((x.path.clone(), y.path.clone()));
+                }
+            }
+        }
+        pairs
     }
 
     /// Lays out the receiver (new record, and the previous one when the previous version has it) and the
@@ -326,7 +444,7 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None) }
     }
 
     /// The flat parameters' types: the harness method's.
@@ -358,6 +476,7 @@ impl Layout {
             Type::Object(name) => {
                 let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name))
                     || self.result.1.as_ref().is_some_and(|previous| previous.class == *name)
+                    || self.result_fields.1.as_ref().is_some_and(|previous| previous.class == *name)
                     || also.iter().flatten().any(|r| r.class == *name);
                 if known {
                     format!("Lbefore/{name};")
@@ -1183,6 +1302,23 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                     });
                 }
             }
+            Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() => {
+                // Two objects of an application class agree when both are null or their fields do, followed into
+                // the objects they refer to, as an object parameter's are.
+                let (Some(fields), Some(old_fields)) = (&layout.result_fields.0, &layout.result_fields.1) else { unreachable!("checked") };
+                let compare = code.label();
+                code.load(Kind::Ref, a);
+                code.if_nonnull(compare);
+                code.load(Kind::Ref, b);
+                code.if_null(arrays);
+                code.goto(fail);
+                code.bind(compare);
+                code.load(Kind::Ref, b);
+                code.if_null(fail);
+                let scratch = code.max_locals.max(index + 1);
+                let used = compare_fields(&mut code, &mut writer.pool, a, b, old_fields, fields, scratch, index, fail);
+                code.max_locals = code.max_locals.max(used);
+            }
             Type::Object(_) => {
                 let equals = writer.pool.method_ref("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z");
                 code.load(Kind::Ref, a);
@@ -1208,6 +1344,83 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         scratch = scratch.max(used);
     }
     code.max_locals = code.max_locals.max(scratch);
+    // The identity relations within each version, compared as "holds before iff it holds now" (step H3): each
+    // version's references into locals, a field of a null reference null, then each pair compared by `if_acmp`.
+    // A version that threw has a null result in both, so the relations over it agree there.
+    let with_args = before.is_none_or(|b| b.arguments.is_none());
+    let pairs = layout.identity_pairs(ret, before_ret, with_args);
+    if !pairs.is_empty() {
+        let mut base = scratch;
+        let mut locals: Vec<Vec<(String, u16)>> = Vec::new();
+        for (previous, version_ret) in [(true, before_ret), (false, ret)] {
+            let refs = layout.references(previous, version_ret, with_args);
+            let prefix = previous.then_some("before");
+            let mut placed = Vec::new();
+            for (k, r) in refs.iter().enumerate() {
+                let local = base + k as u16;
+                match r.field_in(prefix) {
+                    None => {
+                        let from = match r.root {
+                            Root::Result => if previous { a } else { b },
+                            Root::Arg(i) => match &layout.args[i] {
+                                Slot::Plain(p) => {
+                                    let p = &params[*p];
+                                    match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
+                                        Some((_, copy, _)) if previous => *copy,
+                                        _ => p.slot,
+                                    }
+                                }
+                                slot => {
+                                    let at = records.iter().position(|r| *r == slot).expect("an argument record");
+                                    let (new_local, old_local) = object_slots(at);
+                                    if previous { old_local } else { new_local }
+                                }
+                            },
+                        };
+                        code.load(Kind::Ref, from);
+                        code.store(Kind::Ref, local);
+                    }
+                    Some((parent, owner, name, descriptor)) => {
+                        let read = code.label();
+                        let done = code.label();
+                        code.load(Kind::Ref, base + parent as u16);
+                        code.if_nonnull(read);
+                        code.op(0x01); // aconst_null
+                        code.store(Kind::Ref, local);
+                        code.goto(done);
+                        code.bind(read);
+                        let field = writer.pool.field_ref(&owner, &name, &descriptor);
+                        code.load(Kind::Ref, base + parent as u16);
+                        code.op_u16(0xb4, field); // getfield
+                        code.store(Kind::Ref, local);
+                        code.bind(done);
+                    }
+                }
+                placed.push((r.path.clone(), local));
+            }
+            base += refs.len() as u16;
+            locals.push(placed);
+        }
+        let at = |version: usize, path: &str| locals[version].iter().find(|(p, _)| p == path).map(|(_, l)| *l).expect("a path of both versions");
+        for (x, y) in &pairs {
+            let apart_before = code.label();
+            let next = code.label();
+            code.load(Kind::Ref, at(0, x));
+            code.load(Kind::Ref, at(0, y));
+            code.if_acmpne(apart_before);
+            code.load(Kind::Ref, at(1, x));
+            code.load(Kind::Ref, at(1, y));
+            code.if_acmpne(fail);
+            code.goto(next);
+            code.bind(apart_before);
+            code.load(Kind::Ref, at(1, x));
+            code.load(Kind::Ref, at(1, y));
+            code.if_acmpne(next);
+            code.goto(fail);
+            code.bind(next);
+        }
+        code.max_locals = code.max_locals.max(base);
+    }
     code.goto(ok);
     code.bind(fail);
     emit_failure(&mut code, &mut writer.pool);
@@ -1475,8 +1688,9 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         let built_receiver = side == "before" && before.is_some_and(|b| b.receiver.is_some());
         let on_receiver = if side == "before" { layout.before_receiver() || built_receiver } else { layout.receiver.is_some() };
         let owner = if built_receiver { "this_".to_string() } else if on_receiver { format!("this_{side}") } else { owner };
-        let type_name = |t: &Type| match (if side == "before" { &layout.result.1 } else { &layout.result.0 }, t) {
-            (Some(record), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, record.java_name()),
+        let type_name = |t: &Type| match (if side == "before" { &layout.result.1 } else { &layout.result.0 }, if side == "before" { &layout.result_fields.1 } else { &layout.result_fields.0 }, t) {
+            (Some(record), _, Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, record.java_name()),
+            (None, Some(_), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, type_name(t)),
             _ => type_name(t),
         };
         if !is_void {
@@ -1518,6 +1732,10 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     let components = record.components.iter().zip(&previous.components).map(|((n, _), (o, _))| format!("a.{o} == b.{n}")).collect::<Vec<_>>().join(" && ");
                     format!("(a == null ? b == null : b != null && {components})")
                 }
+                Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() => {
+                    let (Some(fields), Some(old_fields)) = (&layout.result_fields.0, &layout.result_fields.1) else { unreachable!("checked") };
+                    format!("(a == null ? b == null : b != null && {})", fields_source("a", "b", old_fields, fields))
+                }
                 _ => "java.util.Objects.equals(a, b)".to_string(),
             };
             s.push_str(&format!(" && (ea != 0 || {equal})"));
@@ -1533,6 +1751,28 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                 s.push_str(&format!(" && {}", fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields)));
             }
         }
+    }
+    // The identity relations within each version, "holds before iff it holds now"; a field of null reads as null.
+    let with_args = before.is_none_or(|b| b.arguments.is_none());
+    let in_version = |path: &str, previous: bool| -> String {
+        let (root, rest) = path.split_once('.').map(|(r, rest)| (r, format!(".{rest}"))).unwrap_or((path, String::new()));
+        let root = match (root, previous) {
+            ("result", true) => "a".to_string(),
+            ("result", false) => "b".to_string(),
+            (name, _) => {
+                let record = records.iter().any(|slot| matches!(slot, Slot::Record { name: n, .. } if n == name));
+                match (record, previous) {
+                    (true, true) => format!("{name}_before"),
+                    (true, false) => format!("{name}_after"),
+                    (false, true) => format!("{name}_before"),
+                    (false, false) => name.to_string(),
+                }
+            }
+        };
+        format!("{root}{rest}")
+    };
+    for (x, y) in layout.identity_pairs(ret, before_ret, with_args) {
+        s.push_str(&format!(" && (({} == {}) == ({} == {}))", in_version(&x, true), in_version(&y, true), in_version(&x, false), in_version(&y, false)));
     }
     s.push_str(";\n    }\n}\n");
     s
@@ -2011,7 +2251,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None) }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None) }
     }
 
     #[test]

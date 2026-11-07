@@ -937,7 +937,33 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         (None, Some(b)) if !relation_given => return refuse(&mut out, line, format!("the previous version returns the record {} and the new one {}; a regression proof relates the same components in both versions", b.java_name(), descriptor.ret.java_name())),
         (r, b) => (r.clone(), b.clone()),
     };
-    let layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
+    // A result of an application class other than a record of primitive components (step H3 of
+    // `llm-dlc/loops/foundations-heap.md`): compared by its fields, as an object parameter is, and followed for the
+    // identity relations. An enum, an interface or an abstract class is compared as before.
+    let result_fields = if relation_given || result.0.is_some() || result.1.is_some() {
+        (None, None)
+    } else {
+        let fields = |cp: &ClassPath, t: &Type| -> Result<Option<Result<harness::Fields, String>>, Error> {
+            let Type::Object(name) = t else { return Ok(None) };
+            match cp.application(name)? {
+                Some(cf) if !cf.is_enum() && !cf.is_interface() && !cf.is_abstract() => Ok(Some(fields_of(cp, name, &mut Vec::new())?)),
+                _ => Ok(None),
+            }
+        };
+        match (fields(&after_cp, &descriptor.ret)?, fields(&before_cp, &before_descriptor.ret)?) {
+            (Some(Err(gap)), _) => return refuse(&mut out, line, format!("the result has type {}, which is outside the objects a regression check compares: {gap}", descriptor.ret.java_name())),
+            (_, Some(Err(gap))) => return refuse(&mut out, line, format!("in the previous version, the result has type {}, which is outside the objects a regression check compares: {gap}", before_descriptor.ret.java_name())),
+            (Some(Ok(new)), Some(Ok(old))) if new.same_shape(&old) => (Some(new), Some(old)),
+            (Some(Ok(new)), Some(Ok(old))) => {
+                let paths = |f: &harness::Fields| f.paths().iter().map(|(p, _)| p.clone()).collect::<Vec<_>>().join(", ");
+                return refuse(&mut out, line, format!("the result's fields changed: {} ({}) before, {} ({}) now; a correspondence between objects of different shapes is not supported yet", old.class.replace('/', "."), paths(&old), new.class.replace('/', "."), paths(&new)));
+            }
+            _ => (None, None),
+        }
+    };
+    let mut layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
+    layout.result_fields = result_fields;
+    let layout = layout;
     let params = &layout.params;
     let flat_types = layout.types();
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
@@ -953,13 +979,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     // The previous version's own layout, for replaying it on the arguments computed by the expressions: its
     // records, built by expressions, flattened into their components.
-    let before_layout = harness::Layout::new(
+    let mut before_layout = harness::Layout::new(
         previous_receiver.clone().map(|r| (r.clone(), Some(r))),
         &before_names,
         &before_descriptor.params,
         &previous_records.iter().map(|r| r.clone().map(|r| (r.clone(), Some(r)))).collect::<Vec<_>>(),
         (None, None),
     );
+    before_layout.result_fields = layout.result_fields.clone();
+    let before_layout = before_layout;
     let before_params = &before_layout.params;
     let previous = (!plain).then(|| harness::BeforeMethod {
         owner: before_class_internal.clone(),
@@ -982,7 +1010,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let domain = layout.domain(options.max_array_length);
     // The statement as data: what holds of every verdict on this harness, and what the run it comes from adds.
     let stated_domain = crate::statement::domain(&layout, options.max_array_length);
-    let observations = crate::statement::regression_observations(&layout, &descriptor.ret, options.results_agree_when.as_deref());
+    let mut observations = crate::statement::regression_observations(&layout, &descriptor.ret, options.results_agree_when.as_deref());
+    observations.identities = layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none()).iter().map(|(x, y)| format!("{x} == {y}")).collect();
+    let observations = observations;
     let claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
     let stated = |last: Option<&JbmcResult>, search: Option<&Search>, complete: bool| crate::statement::Statement {
         kind: "regression".into(),
@@ -1254,9 +1284,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // Both versions replayed on an input: what each did, and whether the two agree, which under a relation between
     // the results is the relation holding when both return (with the arrays left the same), and otherwise the two
     // outcomes reading the same; a replay that failed never agrees.
+    // The identity relations the harness compares, which the replays state where they hold.
+    let identity_pairs = layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none());
     let replay_both = |arguments: &[Argument]| -> Replays {
         let after = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
-        let after_text = after.with_leftovers(params, arguments);
+        let after_text = format!("{}{}", after.with_leftovers(params, arguments), after.identities(&identity_pairs));
         let (before, before_text) = match map_arguments(arguments) {
             Ok(mapped) => {
                 // With the previous version's arguments as expressions, each is a primitive or an array; otherwise
@@ -1267,6 +1299,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     witness::replay_in(&replay_cp, &layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
                 };
                 let text = if harness.before_args.is_some() { replayed.with_leftovers(before_params, &mapped) } else { replayed.with_leftovers(params, &mapped) };
+                let text = format!("{text}{}", replayed.identities(&identity_pairs));
                 (Some(replayed), text)
             }
             Err(e) => (None, format!("<could not replay: the previous version's arguments could not be computed: {e}>")),

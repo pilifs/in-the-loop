@@ -231,7 +231,7 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
 /// Reads the run's lines.
 fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[DirectCall]) -> Result<Run, String> {
     let mut check = None;
-    let mut replayed: Vec<Replayed> = calls.iter().map(|_| Replayed { outcome: "<not run>".into(), returned: None, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None }).collect();
+    let mut replayed: Vec<Replayed> = calls.iter().map(|_| Replayed { outcome: "<not run>".into(), returned: None, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None, references: Vec::new() }).collect();
     let mut message_of: Option<usize> = None;
     for line in text.lines() {
         if let Some(rest) = line.strip_prefix("@check ") {

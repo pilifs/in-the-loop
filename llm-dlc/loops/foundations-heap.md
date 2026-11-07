@@ -196,10 +196,42 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     identical-closure check over every constructor the harness calls), `statement.rs` (`ParameterKind::Object`,
     `Observations.objects`, the constructible assumption's words for objects), `lib/README.md` (step 5 of the
     regression proof, the limits, the domain's kinds), `lib/tests/heap.rs`. No job: every check is inline and small.
-- Next: H3 with H5's narrow case, toward `spec::heap::check`: results of a class made by its constructor compared by
-  their fields, identity relations within each version compared as "holds in old iff in new" (`result == q`), the
-  joint example's two shapes of `Quote` related by the correspondence's input equations (the old object made from
-  the new one's leaves), then `spec::heap::check` on the fixture; then H4's accessible field reads for the JVM run.
+- **H3, first step (2026-11-07): results of made classes by their fields, and identity within each version.** In
+  regression checks, a result of an application class other than a record of primitive components is compared field
+  by field as an object parameter is ([`Layout::result_fields`](../../lib/src/harness/mod.rs)), where it was compared
+  by `Objects.equals`, which is identity across two versions' distinct classes; a result class with a field outside
+  the supported kinds is a named gap, and one whose fields changed between the versions is refused for H5. Identity
+  relations are observed within each version and compared as "holds before iff it holds now"
+  ([`Layout::references`, `identity_pairs`](../../lib/src/harness/mod.rs)): the references are the result, each
+  array parameter, each object parameter made by its constructor and every object or array field those reach; every
+  two under the same path in both versions and of one static type are compared by `if_acmp` (pairs of different
+  types are left out: the classes followed extend `Object` directly, so they are never one object). A field of null
+  reads as null, a version that throws has a null result, and records of primitive components stay values, compared
+  by components only. `stated.observations.identities` lists them (`result == l`, `result.price == l.price`), and
+  the replay states which hold in each version (`…, with result == l and result.price == l.price` against `…, with
+  result.price == l.price`), so a witness that differs only in identity replays as different.
+  - Evidence inline: `lib/tests/heap.rs`, four new checks on the own checker: `withQuantity` handing back its
+    argument, rewritten, verified with both relations listed; the alias-to-copy defect (a copy with the same values
+    and the same `Money`) refuted, its two replays reading alike but for the relation; a `Line` result compared
+    field by field (a rewrite verified, `quantity * 3` refuted with `Line{price=Money{cents=…}, …}`); an array
+    filled in place then copied, refuted by `result == a`. Unit tests (185), `heap.rs` (13), `conformance.rs`,
+    `foundations.rs` and `integration.rs` pass. `integration.rs` under the other streams' load (615 s, load 5.3)
+    timed out once in `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` ("the solver did not finish within
+    the time limit"), as in both earlier steps; alone it passed in 11.6 s. It is a primitive check this change
+    doesn't reach.
+  - Not yet: a result is compared field by field only where both versions' result classes have the same
+    fields (H5 relates different ones), identity relations under `--before-arguments` cover the result alone, and
+    the JVM run of such a witness has the `getfield` access problem named under H2 (H4).
+  - Shared files changed: `equivalence.rs` (the result's fields worked out and refused by name, the previous
+    version's own layout given them, the replays' texts ending in the relations that hold, the observations'
+    identities), `statement.rs` (`Observations.identities`, skipped when empty; the words for a result compared
+    field by field), `lib/README.md` (step 5 of the regression proof, the JSON's observations), `lib/tests/heap.rs`.
+    No job: every check is inline and small.
+- Next: H5's narrow case and `spec::heap::check` on the joint example: the two shapes of `Quote` related by the
+  correspondence's input equations (the old object made from the new one's leaves), the result's fields and the
+  identity relations compared under the same correspondence where the shapes differ, the claim's domain label and the
+  accounting of each required observation, then the six heap cases of `lib/tests/foundations.rs`; then H4's
+  accessible field reads for the JVM run.
 - Status: working
 
 ## Loop settings
