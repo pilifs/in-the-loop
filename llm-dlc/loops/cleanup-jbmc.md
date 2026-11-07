@@ -1,0 +1,139 @@
+# Stream brief: cleanup, JBMC's verdicts
+
+One of three streams of [`cleanup.md`](cleanup.md) that run in parallel, each in its own jj workspace on its own
+branch. The others are [`cleanup-native.md`](cleanup-native.md) and [`cleanup-examples.md`](cleanup-examples.md).
+Once all three are finished, the main brief's loop merges them ([Reconciling](cleanup.md#reconciling)).
+
+Started with the others by `llm-dlc/tools/run-streams.sh cleanup` from the default workspace, or alone with
+`llm-dlc/tools/feature-loop.sh cleanup-jbmc` from this stream's workspace (`jj workspace root --name jbmc`). The loop
+refuses any other.
+
+**The main brief is the instruction.** Read [`cleanup.md`](cleanup.md) in full every cycle, and its inputs. Its
+direction, starting point, working rules, deferrals and decisions all apply here. This file says which items are
+yours, and keeps your Progress. Within the briefs, edit only this file's `## Progress` section, and
+[`jbmc-upstream.md`](jbmc-upstream.md)'s candidate reports. Edit implementation files according to the main brief's
+[ownership](cleanup.md#streams).
+
+**Every cycle, read the integration check first**:
+`$(jj workspace root --name default)/llm-dlc/loop-summaries/cleanup-integration.md`, if it exists. A failure in your
+files on the latest combined commits is your next piece of work.
+
+## Your items
+
+In order:
+
+- **J1. VF-009, JBMC's refutations of `boomTwice` and `enumBroken` at `n=0`.**
+  - The facts, from job `20261107-010728` (at `254f1d7a`):
+    - `the_corpus_agrees_with_the_jvm_under_auto_confirm` (`lib/tests/conformance.rs`) has 8 disagreements, all on
+      these two methods, under `--gaps Strict` and `Assume`.
+    - JBMC 6.11.0 refutes at `n=0`. The JVM and the own checker hold.
+    - Both methods run a class initializer that throws. The JVM wraps the throw in `ExceptionInInitializerError`,
+      and then raises `NoClassDefFoundError` on the class's next use.
+  - **Triage first, as quick jobs** (JBMC never runs inline), each small and at `--priority 10`:
+    - JBMC on the two methods alone, with and without `--throw-runtime-exceptions` and the flags the adapter passes;
+    - each class initializer on its own;
+    - the JVM's behaviour, on a real `java`, inline.
+
+    Find which of these it is: JBMC's semantics of a failed initializer, a flag jvmcontract passes or doesn't, or
+    the adapter's reading of the trace.
+  - **Then fix it in jvmcontract**:
+    - If it is the adapter or a flag, correct it.
+    - If it is JBMC's semantics, the preflight (`jbmc_gaps.rs`) names such initializers as a gap, refused under
+      strict as the extra initializers of `-010728` are. Add a candidate report to `jbmc-upstream.md`, with the
+      evidence: the job, the class, and what the JVM does. Never file it.
+
+    Add a conformance case if the two methods don't already pin the cause.
+  - **VF-019, in the same test.** Since `-010728` ran, H2 added six nullable and may-alias claims to the corpus:
+    `twoArrays` with `may alias a,b`, and `length` and `lengthOrMinusOne` with `nullable a`. Under `auto --confirm`
+    each gives "no engine wrote a harness", under strict and assume alike (job
+    `20261107-043420-nullable-and-one-array-parameters-in-pro`, 12 of its 20 disagreements). JBMC can't take such
+    an input, so `--confirm` should refuse with a named reason. Make it do so, and have the test read a named
+    refusal as no verdict. An unnamed missing harness stays a failure: nothing gets weaker.
+  - **Closes when** job `20261107-010728-jbmc-s-extra-initializers-named-and-refu`, resubmitted unchanged at the
+    fixing commit, has step 2 pass (VF-009), and job `20261107-043420-…`, resubmitted unchanged, passes (VF-019).
+    Name both entries in the resubmissions.
+- **J2. VF-001, what is left of it.**
+  - Recheck each of its parts against the current code and the passing runs of
+    `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto`, in `-010728` (step 1) and `-024759`:
+    - the seven `Verified`s under strict that the JVM refutes;
+    - `caught` and `nestedHandler` at `n=0`;
+    - `auto` taking JBMC's `Verified` for `loadFactor` and `pairsEqual`.
+  - Say under Progress which commit fixed each part, or that it is still open. Fix any part still open, with a
+    conformance case.
+  - **Closes when** both of its jobs, `20261106-021741-conformance-corpus-under-jbmc-and-engine` and
+    `20261106-024336-conformance-corpus-under-engine-auto-con`, resubmitted unchanged, pass. The first runs every
+    ignored conformance test, `--confirm`'s included, so submit both after J1's fix. They run about 20 minutes each.
+    If a part is JBMC's and can only be refused, the refusal is the fix (strict gives no verdict). The jobs pass
+    once the JVM never contradicts a verdict.
+
+- **J3. VF-018, JBMC's timeouts on H5's object proofs.** Four of the heap stream's H5 tests under `--engine jbmc`
+  fail on their first JBMC run with "JBMC did not finish within 600 s". The own checker proves each claim:
+  - `Kernel#price` (`lib/tests/heap.rs:986`, job `20261107-080218-…`);
+  - `Prices#total` (`:1172`, `-083358-…`);
+  - `Lines#reprice` (`:1472`, `-092158-…`);
+  - `Orders#reprice` (`:1685`, `-115201-…`).
+
+  The other four H5 jobs, over the same harness machinery, passed in 2 to 6 minutes.
+  - **First, more time** ([decision 6](cleanup.md#decisions)). The 600 s is the tests' own time limit for each run,
+    `timeout_seconds: 600`, the default of `equivalence::Options::new` (`lib/src/equivalence.rs:157`) and
+    `property::Options` (`property.rs:123`), which `related_on` (`lib/tests/heap.rs:710`) and `property_on` keep. It
+    is not a limit of JBMC's own.
+    - Let the ignored JBMC tests take their limit from an environment variable, with 600 s still the default.
+      This is an addition to `heap.rs` (a shared file for this purpose): name it under Progress.
+    - Submit the four tests as one job, or four, with the variable set to 1800 s, and the job's duration and timeout
+      sized for it.
+    - The expectations stay unchanged: each claim `Verified` under JBMC and under `auto --confirm`.
+  - **If that fails, defer it to the user.** One failed attempt is enough here, by the user's decision; don't
+    wait for a second. Record under Progress, as *deferred to the user*: the job, how long JBMC ran, and a short
+    look at the harness JBMC was given (its size, its unwinding, how the correspondence's equations reach it). Don't
+    change the harness or the tests' expectations in this loop.
+  - **Closes when** the job with the longer limit passes.
+
+**Not yours:**
+- the own checker's engine and the interpreter (the native stream);
+- `build.py`, the examples and `sync.py` (the examples stream).
+
+A change to `lib/models/` says under Progress which recorded JBMC results it may change.
+
+## Working in a stream
+
+- **Commit only here**, with `sync.py commit` as CLAUDE.md says. Never push, merge, rebase onto another branch, or
+  move a bookmark. The branch is this workspace's `@-` line, and the main brief's loop merges it.
+- **Jobs, with the pipeline**, as the main brief's [rule](cleanup.md#how-to-work-through-it) says:
+  - Submit each check as a job, named for the entry it closes, and commit it with the change.
+  - Go on with any item that doesn't depend on it.
+  - When all that is left waits on jobs, end with `- Status: waiting on jobs ID ...`, and you will be run again once
+    they are collected. Read results with `python3 "$(jj workspace root --name default)/verification/pipeline.py"
+    report ID`.
+  - Never edit `verification/findings.md`.
+- **The timebox**: two failures in a row on one item end it in this loop. Log it as *deferred by the timebox*, with
+  both jobs, the finding and what a further attempt would cost. Triage jobs that run as designed don't count: a
+  JBMC run that shows the disagreement is evidence, not a failure.
+- **Status.** The last line of `## Progress` is a status, kept current in every commit and read by `run-streams.sh`:
+  - `working` while there is work you can do;
+  - `waiting on jobs ID ...` when everything left waits on them;
+  - `done` when every item is closed or deferred by the timebox;
+  - `blocked: ...` with what needs the user.
+- **Where you started.** Your session is a fork of the conversation that planned the streams (session `2df7775c`,
+  compacted). What it settled is in the briefs. Where your memory of it and a brief differ, the brief wins.
+
+## Progress
+
+- Nothing yet.
+- Status: working
+
+## Loop settings
+
+- session: a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3
+- model: claude-opus-5-5
+- effort: high
+- memory: 4G
+- workspace: jbmc
+- fork: 2df7775c-45a1-40a7-924b-75602d8ad256
+
+## Loop until
+
+Go on while an item has a step that needs nothing but your own work. When everything left waits on jobs, stop with
+`waiting on jobs ID ...`. Stop with `done` when every item is closed by its check or deferred by the timebox. Stop
+with `blocked: ...` when what is left needs the user and is recorded under Progress. Don't take on work beyond your
+items: anything new you find goes under Progress, for the main brief's for-review list.

@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 51, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 15:59 UTC |
-| Prompts | 1,370 |
-| Model calls | 13,995 |
-| Tool calls | 14,966 (273 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 16:11 UTC |
+| Prompts | 1,371 |
+| Model calls | 14,014 |
+| Tool calls | 14,987 (274 failed) |
 | Compactions | 199 |
 | Subagents | 9 |
-| Tokens written | 16,078,298 |
-| Tokens read | 2,341,461,761 (98.0% from cache) |
-| Commits with a trace | 401 |
-| Log snapshots | 486 (1266.3 MB gzipped, 484 uploaded) |
+| Tokens written | 16,090,653 |
+| Tokens read | 2,345,887,914 (98.0% from cache) |
+| Commits with a trace | 402 |
+| Log snapshots | 487 (1268.6 MB gzipped, 484 uploaded) |
 
 ## Sessions
 
@@ -77,7 +77,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 8 h 19 min | `claude-opus-5-5` | 103 | 1,268 | 1,316 | 7 | 19 | 329,169 | 22 |
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
 | 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 5 |
-| 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 3 h 38 min | `claude-opus-5-5` | 30 | 432 | 454 | 5 | 4 | 282,777 | 12 |
+| 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 3 h 50 min | `claude-opus-5-5` | 31 | 451 | 475 | 6 | 4 | 282,777 | 13 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -137,19 +137,19 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 1,015,945 | 2,572 | 4,274,633 | 230,317,308 | 98.2% | 231 |
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
-| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 305,498 | 884 | 1,196,696 | 74,541,707 | 98.4% | 248 |
+| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 317,853 | 924 | 1,215,462 | 78,949,054 | 98.5% | 252 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 13,025 | 87.0% | 51 |
+| `Bash` | 13,042 | 87.0% | 51 |
 | `Read` | 736 | 4.9% | 27 |
-| `Edit` | 572 | 3.8% | 26 |
+| `Edit` | 575 | 3.8% | 26 |
 | `Write` | 377 | 2.5% | 24 |
 | `ToolSearch` | 93 | 0.6% | 22 |
 | `Monitor` | 60 | 0.4% | 17 |
-| `AskUserQuestion` | 26 | 0.2% | 8 |
+| `AskUserQuestion` | 27 | 0.2% | 8 |
 | `WebFetch` | 26 | 0.2% | 6 |
 | `TaskStop` | 24 | 0.2% | 10 |
 | `Agent` | 9 | 0.1% | 4 |
@@ -566,6 +566,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 399 | [`53d8fa21`](https://github.com/pilifs/in-the-loop/commit/53d8fa214362573b3cbcad797673324326aca328) | Examples 190-196: the joint example run by build.py through jvmcontract compare, on the new shop app; Phase 5 done (verification pending) | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/e3cb53ccfa58fed7d9f7cfd482eeac70bf5ce7d10f18dfaa93e2d17fa2224e7d.jsonl.gz)) |
 | 400 | [`34e1d87b`](https://github.com/pilifs/in-the-loop/commit/34e1d87b2d607aeada68997594fdbbe760a6f531) | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/1d34a6ec5da2c04490d165f9741caad86a778b6cfdbcf31ee223641cdb52a901.jsonl.gz)) |
 | 401 | change `slpkklol` | Record verification results for 28 jobs: the foundations loop's pending jobs, 18 passed and 10 failed, triaged into VF-015 to VF-019 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/652dd77e1b30629cb603fb3de0e460120193fa4b673ea11532789c13e1bf99d3.jsonl.gz)) |
+| 402 | change `pxwmrkvm` | The cleanup loop's briefs: three streams that work through the open verification findings, with the pipeline | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7216fa3f81d409b1bef8fd0a6b8331c2d46de2a878d07fea527b51fa4cbe21c1.jsonl.gz)) |
 
 ## Logs
 
@@ -623,7 +624,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 22 | 22 | 90.5 MB | [`26d304137ac5`](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/26d304137ac5a035f6db33c25faa517642596b3068beb9cc92951f5b476a8f3d.jsonl.gz) |
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 17 | 41.4 MB | [`9a4c7376723a`](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/9a4c7376723a063bbe8d554629ec7593fb6464570becfffed3745912318daaa2.jsonl.gz) |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 3 | 2 | 0.4 MB | `d7d88434bf74`, not uploaded |
-| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 12 | 11 | 12.2 MB | `652dd77e1b30`, not uploaded |
+| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 13 | 11 | 14.5 MB | `7216fa3f81d4`, not uploaded |
 
 ## Session notes
 
