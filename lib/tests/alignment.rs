@@ -439,22 +439,90 @@ fn a_renamed_field_is_related_by_its_constructor_and_a_new_one_left_free() {
 }
 
 #[test]
-fn a_constructor_that_computes_or_shifts_what_it_stores_is_never_related() {
+fn a_value_object_the_constructor_makes_is_related_inside_it() {
     let before = [("Q.java", "final class Q { long cents; Q(long cents) { this.cents = cents; } static long f(Q q) { return q.cents; } }")];
     let wrapped = [
         ("M.java", "record M(long cents) {}"),
         ("Q.java", "final class Q { M amount; Q(long cents) { this.amount = new M(cents); } static long f(Q q) { return q.amount.cents(); } }"),
     ];
+    // Two levels down: the value object's own constructor makes another.
+    let nested = [
+        ("C.java", "record C(long v) {}"),
+        ("M.java", "final class M { C c; M(long cents) { this.c = new C(cents); } }"),
+        ("Q.java", "final class Q { M amount; Q(long cents) { this.amount = new M(cents); } static long f(Q q) { return q.amount.c.v(); } }"),
+    ];
+    for (name, after, path) in [("fields-wrapped", &wrapped[..], "new.q.amount.cents"), ("fields-nested", &nested[..], "new.q.amount.c.v")] {
+        let Some(a) = aligned(name, &before, after, None) else { return };
+        let f = mapping(&a, "Q#f");
+        assert!(f.unsupported.is_empty(), "{name}: {}", alignment::mappings::render(&a.mappings));
+        assert_eq!(f.proposals.len(), 1, "{name}");
+        assert_eq!(f.proposals[0].fields, vec![equation("old.q.cents", path)], "{name}");
+        assert_eq!(correspondences(&alignment::hints(&a), "Q#f"), vec![&Correspondence { inputs: vec![equation("old.q.cents", path)], outputs: Vec::new() }]);
+    }
+    // And the other way: the old version kept the value object, the new one the primitive.
+    let Some(a) = aligned("fields-unwrapped", &wrapped, &before, None) else { return };
+    let f = mapping(&a, "Q#f");
+    assert_eq!(f.proposals.iter().map(|p| p.fields.clone()).collect::<Vec<_>>(), vec![vec![equation("old.q.amount.cents", "new.q.cents")]], "{}", alignment::mappings::render(&a.mappings));
+}
+
+#[test]
+fn a_constructor_that_shifts_what_it_stores_or_stores_a_constant_is_never_related() {
+    let before = [("Q.java", "final class Q { long cents; Q(long cents) { this.cents = cents; } static long f(Q q) { return q.cents; } }")];
     // The field-level offset: the stored value is shifted, so `old.q.cents == new.q.cents` would hide it, and
     // `old.q.cents == new.q.cents - 1` is never proposed.
     let shifted = [("Q.java", "final class Q { long cents; int pad; Q(long cents) { this.cents = cents + 1; } static long f(Q q) { return q.cents - 1; } }")];
-    for (name, after) in [("fields-wrapped", &wrapped[..]), ("fields-shifted", &shifted[..])] {
+    // A value made inside the argument list is computed too, not passed straight.
+    let computed = [
+        ("M.java", "record M(long cents) {}"),
+        ("Q.java", "final class Q { M amount; Q(long cents) { this.amount = new M(cents * 2); } static long f(Q q) { return q.amount.cents() / 2; } }"),
+    ];
+    for (name, after, gap) in [("fields-shifted", &shifted[..], "cents"), ("fields-computed", &computed[..], "cents")] {
         let Some(a) = aligned(name, &before, after, None) else { return };
         let f = mapping(&a, "Q#f");
         assert!(f.proposals.is_empty() && f.inputs[0].fields.is_none(), "{name}: {}", alignment::mappings::render(&a.mappings));
-        assert!(f.unsupported.iter().any(|u| u.contains("cents")), "{name}: the gap is named: {:?}", f.unsupported);
+        assert!(f.unsupported.iter().any(|u| u.contains(gap)), "{name}: the gap is named: {:?}", f.unsupported);
         assert!(correspondences(&alignment::hints(&a), "Q#f").is_empty());
     }
+    // An old value object holding a constant its constructor sets: nothing in the new object is known to match it.
+    let constant = [
+        ("M.java", "final class M { long cents; int scale; M(long cents) { this.cents = cents; this.scale = 2; } }"),
+        ("Q.java", "final class Q { M amount; Q(long cents) { this.amount = new M(cents); } static long f(Q q) { return q.amount.cents * q.amount.scale; } }"),
+    ];
+    let Some(a) = aligned("fields-constant", &constant, &before, None) else { return };
+    let f = mapping(&a, "Q#f");
+    assert!(f.proposals.is_empty(), "{}", alignment::mappings::render(&a.mappings));
+    assert!(f.unsupported.iter().any(|u| u.contains("amount.scale")), "the constant is named: {:?}", f.unsupported);
+}
+
+#[test]
+fn a_method_moved_into_the_value_object_takes_it_in_place_of_the_old_object() {
+    let (Some(before), Some(after)) = (kernel("moved", "before"), kernel("moved", "after")) else { return };
+    let a = alignment::align(&Build::load(&before).unwrap(), &Build::load(&after).unwrap(), Some(&kernel_contract()));
+    let cents = mapping(&a, "shop.Quote#cents");
+    assert_eq!(cents.after, "shop.Money#cents");
+    assert!(cents.unsupported.is_empty(), "{}", alignment::mappings::render(&a.mappings));
+    let fc = cents.inputs[0].fields.as_ref().expect("the receiver is related field by field");
+    assert_eq!((fc.within.as_deref(), fc.unread.clone()), (Some("amount"), vec!["quantity".to_string()]), "the Money stands for the new Quote's amount, and quantity is never read");
+    assert_eq!(cents.proposals.len(), 1);
+    assert_eq!(cents.proposals[0].fields, vec![equation("old.this.cents", "new.this.cents")]);
+    let hints = alignment::hints(&a);
+    assert_eq!(correspondences(&hints, "shop.Money#cents"), vec![&Correspondence { inputs: vec![equation("old.this.cents", "new.this.cents")], outputs: Vec::new() }]);
+    let why = &hints.entries.iter().find(|h| h.subject == "shop.Money#cents").unwrap().why;
+    assert!(why.iter().any(|w| w.contains("never reads") && w.contains("quantity")), "{why:?}");
+}
+
+#[test]
+fn a_moved_method_that_reads_what_the_value_object_does_not_keep_is_not_related() {
+    let before = [("Q.java", "final class Q { long cents; int n; Q(long cents, int n) { this.cents = cents; this.n = n; } long cents() { return n > 0 ? cents : 0; } }")];
+    let after = [
+        ("M.java", "record M(long cents) {}"),
+        ("Q.java", "final class Q { M amount; int n; Q(M amount, int n) { this.amount = amount; this.n = n; } }"),
+    ];
+    let Some(a) = aligned("moved-reads-more", &before, &after, None) else { return };
+    let cents = mapping(&a, "Q#cents");
+    assert_eq!(cents.after, "M#cents", "{}", alignment::mappings::render(&a.mappings));
+    assert!(cents.proposals.is_empty() && cents.inputs[0].fields.is_none());
+    assert!(cents.unsupported.iter().any(|u| u.contains("n is the new Q's own field n")), "{:?}", cents.unsupported);
 }
 
 // Step A3's second half: each proposal checked by the regression proof, by the tool's own checker on methods small

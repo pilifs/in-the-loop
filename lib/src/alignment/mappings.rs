@@ -271,6 +271,11 @@ impl<'b> Side<'b> {
     fn inputs(&self) -> Vec<(String, Type)> {
         self.receiver().map(|t| ("this".to_string(), t)).into_iter().chain(self.params.iter().cloned()).collect()
     }
+
+    /// The local variable slot of input `index`, in [`Side::inputs`]'s order.
+    fn slot(&self, index: usize) -> u16 {
+        self.inputs().iter().take(index).map(|(n, t)| if n == "this" { 1 } else { t.slots() }).sum()
+    }
 }
 
 /// A class's shape in a build: its record components, or for another class its instance fields.
@@ -504,7 +509,32 @@ fn map(before: &Build, after: &Build, report: &MethodReport, (bc, bm): (&ClassFi
                         .map(|(n, _)| Choice { expression: n.clone(), score: if n == name { 3 } else { 1 }, why: format!("the same class {}{}: {n}", s.simple, if n == name { " and name" } else { "" }) })
                         .collect();
                     if same.is_empty() {
-                        unsupported.push(format!("{name}'s class {} changed and the new version takes no {}: relating two classes is not done yet", s.simple, s.simple));
+                        // A method moved into the value object the class now keeps: the new input of that class
+                        // stands for it, when the old method only reads fields the class keeps there.
+                        let class = t.class_name().unwrap_or_default();
+                        let moved = fields::reads(old.class, old.method, class, old.slot(i))
+                            .ok_or_else(|| "the old method does more with it than read its fields".to_string())
+                            .and_then(|read| fields::within(before, after, report, class, &read));
+                        match moved {
+                            Ok((field, held, fc)) => {
+                                let h = Type::object(&held);
+                                same = new_inputs
+                                    .iter()
+                                    .filter(|(n, u)| *u == h && !taken.contains(n))
+                                    .map(|(n, _)| Choice {
+                                        expression: n.clone(),
+                                        score: if n == name { 3 } else { 1 },
+                                        why: format!("the {} that the new {} keeps in {field}{}: {n}", h.simple_name(), s.simple, if n == name { ", and the same name" } else { "" }),
+                                    })
+                                    .collect();
+                                if same.is_empty() {
+                                    unsupported.push(format!("{name}'s class {} changed, and the new version takes neither a {} nor the {} it keeps in {field}", s.simple, s.simple, h.simple_name()));
+                                } else {
+                                    related = Some(fc);
+                                }
+                            }
+                            Err(why) => unsupported.push(format!("{name}'s class {} changed and the new version takes no {}: {why}", s.simple, s.simple)),
+                        }
                     } else {
                         related = by_fields(name, t, &mut unsupported);
                         if related.is_none() {
@@ -715,6 +745,9 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
                     if !fc.free.is_empty() {
                         why.push(format!("new fields of {} no equation reaches: {}", fc.class, fc.free.join(", ")));
                     }
+                    if !fc.unread.is_empty() {
+                        why.push(format!("fields of the old {} the old method never reads, so no equation relates them: {}", fc.class, fc.unread.join(", ")));
+                    }
                 }
             }
             if let Some(r) = &p.relation {
@@ -772,6 +805,9 @@ pub fn render(mappings: &[Mapping]) -> String {
                 ([], _) => out.push_str(&format!("  {} ({anchor}): no candidate\n", i.old)),
                 ([c, ..], true) => out.push_str(&format!("  {} ({anchor}) = {}: {}\n", i.old, c.expression, c.why)),
                 (cs, false) => out.push_str(&format!("  {} ({anchor}), a question: {}\n", i.old, cs.iter().map(|c| c.expression.as_str()).collect::<Vec<_>>().join(" | "))),
+            }
+            if let Some(fc) = i.fields.as_ref().filter(|fc| fc.within.is_some()) {
+                out.push_str(&format!("    {} stands for the new {}'s {}; not read, so not related: {}\n", i.old, fc.class, fc.within.as_deref().unwrap_or_default(), if fc.unread.is_empty() { "nothing".into() } else { fc.unread.join(", ") }));
             }
             for f in i.fields.iter().flat_map(|fc| &fc.fields) {
                 match (f.candidates.as_slice(), f.leads) {

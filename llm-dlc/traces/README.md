@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 05:54 UTC |
-| Prompts | 1,099 |
-| Model calls | 10,882 |
-| Tool calls | 11,738 (246 failed) |
-| Compactions | 150 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 06:17 UTC |
+| Prompts | 1,104 |
+| Model calls | 10,937 |
+| Tool calls | 11,794 (246 failed) |
+| Compactions | 151 |
 | Subagents | 5 |
-| Tokens written | 13,488,841 |
-| Tokens read | 1,784,793,880 (97.9% from cache) |
-| Commits with a trace | 336 |
-| Log snapshots | 413 (1077.7 MB gzipped, 404 uploaded) |
+| Tokens written | 13,536,990 |
+| Tokens read | 1,792,337,661 (97.9% from cache) |
+| Commits with a trace | 337 |
+| Log snapshots | 414 (1080.0 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | open | 1 h 52 min | `claude-opus-5-5` | 28 | 271 | 273 | 4 | 5 | 247,357 | 8 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | open | 2 h 16 min | `claude-opus-5-5` | 33 | 326 | 329 | 4 | 6 | 247,357 | 9 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,15 +127,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 282,252 | 550 | 1,032,584 | 41,292,628 | 97.6% | 150 |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 330,401 | 660 | 1,196,960 | 48,671,923 | 97.6% | 151 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,300 | 87.7% | 46 |
-| `Edit` | 462 | 3.9% | 22 |
-| `Read` | 423 | 3.6% | 23 |
+| `Bash` | 10,348 | 87.7% | 46 |
+| `Edit` | 463 | 3.9% | 22 |
+| `Read` | 430 | 3.6% | 23 |
 | `Write` | 348 | 3.0% | 20 |
 | `ToolSearch` | 74 | 0.6% | 18 |
 | `Monitor` | 42 | 0.4% | 12 |
@@ -491,6 +491,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 334 | change `orrmouym` | Alignment A4 (narrow case): field correspondence from constructor routing; align::propose passes the joint example's alignment checks | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/13edef94c2f9becdb92c9c4a0ba08250d1f61a1c594ee8aa20ffb943a2f8e2e8.jsonl.gz)) |
 | 335 | change `wrwkmlpx` | Alignment A3 (second half): align --prove checks every proposal by the regression proof, collapses by proof, and settles each pair (verification pending) | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/4d7819cc24cb4806409952fa20c4182fff17183a4b6903b77fff2ca98e5f3296.jsonl.gz)) |
 | 336 | change `llvlkvuq` | Alignment Progress: A3's proof job not taken within 15 minutes, now for review | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/71cdfb7f016e92572eb86a84f94d2ee21bace7ace9bb4b8adcd297191f74e276.jsonl.gz)) |
+| 337 | change `pxuuumry` | Alignment A4: field correspondence through value objects a constructor makes, and a method moved into one | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/dadc4f00a0f59f9d44870007cba471cf571d152772f7a4f29b04d205f76d246f.jsonl.gz)) |
 
 ## Logs
 
@@ -543,7 +544,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 8 | 0 | 9.2 MB | `71cdfb7f016e`, not uploaded |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 9 | 0 | 11.5 MB | `dadc4f00a0f5`, not uploaded |
 
 ## Session notes
 

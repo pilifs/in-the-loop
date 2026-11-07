@@ -274,8 +274,40 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   hides a regression, and the first thing to look at.
 - For the reconcile loop: after this commit `sync.py check` lists 24 errors, all of the kinds named above (other
   streams' commits without a manifest here, and the five launch commits before the fork). None is this stream's.
-- Next: the rest of A4, starting with fields a constructor computes (`this.amount = new Money(cents)`) and a method
-  moved between the two classes (`Quote#cents` to `Money#cents`). Then A5.
+  (It was 27 by the end of that cycle, and is 30 before the next commit: the same kinds, as the other streams commit.)
+- **A4: value objects a constructor makes, and a method moved into one, done** (2026-11-07), in
+  `lib/src/alignment/fields.rs`:
+  - **Constructed fields.** Constructor routing now follows a field set to a new object made from parameters passed
+    straight (`this.amount = new Money(cents)`) into that class's own constructor, to three levels. So
+    `old.q.cents == new.q.amount.cents` for that constructor, `new.q.amount.c.v` when `Money`'s constructor makes a
+    `C` in turn, and the other way round `old.q.amount.cents == new.q.cents`. Anything computed is named and not
+    related: `new Money(cents * 2)`, `cents + 1`, or a constant an old value object's constructor sets
+    (`this.scale = 2`).
+  - **A method moved into the value object** (`Quote#cents` to `Money#cents`, whose receivers differ). The old method
+    must do nothing with its object but read fields (`aload; getfield`), and the class's correspondence must put
+    every field it reads inside one field `g` of the new class (`amount`). Then a new input of `g`'s class stands for
+    it: `old.this.cents == new.this.cents`. The fields it never reads (`quantity`) are named in the mapping and in
+    the hint's `why`, and no equation relates them. A read of a field kept elsewhere is named, and nothing is
+    proposed. `FieldCorrespondence` gains `within` and `unread`, serde-defaulted and skipped when empty.
+  - **For the reconcile loop:** such a correspondence leaves old fields with no equation. The heap stream should read
+    them as unconstrained (any value the old constructor accepts). That is sound only because the old method never
+    reads them; the IR's doc for `Correspondence.inputs` ("how the old input is made from the new one's") doesn't
+    say so yet.
+  - **Tests:** 4 replace the A4 test that held a constructed value object never related, since that was the gap this
+    step closes: wrapped, nested and unwrapped are related; shifted, computed in the argument list, and an old
+    constant are not; the kernel's `Quote#cents` takes the `Money`; a moved method that reads a field the value
+    object doesn't keep is not related. All 25 in `lib/tests/alignment.rs` pass, and the whole cargo suite. The
+    integration contract on this branch: 2 passed, 22 unsupported, 0 failed.
+  - **Score:** unchanged on 121–139, where no class changed shape behind a constructor. Re-recorded under the new
+    tool's hash.
+- Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the A4 tests).
+- Next, the rest of A4:
+  - nested shapes: an old field set from a parameter whose own class changed shape, named today as "nested field
+    correspondence is not done yet";
+  - a result whose class changed shape, still `changed`, a person's decision;
+  - `Pricing#withQuantity`, unchanged code over changed classes.
+
+  Then A5.
 - Status: working
 
 ## Loop settings

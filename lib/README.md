@@ -72,7 +72,10 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 # else; only internal ones (a parameter gathered into a record, a record that gained a component) and the result
 # (equal, widened, wrapped, compared on the old components, or a changed meaning put as a question) are proposed.
 # An object whose class changed shape is related field by field (old.q.cents == new.q.amount.cents), from how each
-# version's constructors store their parameters in fields; a field set any other way is named, never guessed.
+# version's constructors store their parameters in fields, straight or inside a value object they make with
+# new Money(cents); a field set any other way is named, never guessed. A method moved into that value object
+# (Quote#cents to Money#cents) takes it in place of the old object when the old method only reads fields it keeps
+# (old.this.cents == new.this.cents), and the fields it never reads are named.
 # --hints writes them to a hints file as proposed, their evidence unchecked, keeping every hint a person stated or
 # approved. Proves nothing.
 jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json
