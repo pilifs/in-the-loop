@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.363Z",
-  "ended": "2026-11-07T16:31:13.335Z",
-  "duration_seconds": 267,
+  "ended": "2026-11-07T16:56:34.996Z",
+  "duration_seconds": 1789,
   "stats": {
-    "turns": 5,
-    "api_calls": 27,
-    "tool_calls": 26,
+    "turns": 10,
+    "api_calls": 96,
+    "tool_calls": 94,
     "tool_errors": 2,
-    "compactions": 1,
-    "peak_context_tokens": 100458,
+    "compactions": 2,
+    "peak_context_tokens": 150242,
     "usage": {
-      "input_tokens": 52,
-      "output_tokens": 18138,
-      "cache_read_input_tokens": 1864398,
-      "cache_creation_input_tokens": 105017
+      "input_tokens": 190,
+      "output_tokens": 67369,
+      "cache_read_input_tokens": 8811070,
+      "cache_creation_input_tokens": 251123
     }
   },
   "tools": {
-    "Bash": 26
+    "Bash": 94
   },
   "files_touched": [],
   "context_windows": [
@@ -50,24 +50,38 @@
     {
       "index": 1,
       "started": "2026-11-07T16:26:43.700Z",
-      "ended": "2026-11-07T16:31:13.335Z",
-      "turns": 5,
-      "api_calls": 27,
+      "ended": "2026-11-07T16:32:09.759Z",
+      "turns": 6,
+      "api_calls": 33,
       "usage": {
-        "input_tokens": 52,
-        "output_tokens": 18138,
-        "cache_read_input_tokens": 1864398,
-        "cache_creation_input_tokens": 105017
+        "input_tokens": 64,
+        "output_tokens": 21539,
+        "cache_read_input_tokens": 2485716,
+        "cache_creation_input_tokens": 113960
       },
-      "peak_context_tokens": 100458
+      "peak_context_tokens": 109401
+    },
+    {
+      "index": 2,
+      "started": "2026-11-07T16:32:56.816Z",
+      "ended": "2026-11-07T16:56:34.996Z",
+      "turns": 4,
+      "api_calls": 63,
+      "usage": {
+        "input_tokens": 126,
+        "output_tokens": 45830,
+        "cache_read_input_tokens": 6325354,
+        "cache_creation_input_tokens": 137163
+      },
+      "peak_context_tokens": 150242
     }
   ],
   "log": {
-    "sha256": "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c",
-    "bytes": 813849,
-    "lines": 246,
-    "gzip_bytes": 161093,
-    "path": "llm-dlc/traces/2324d402-3f17-421a-8a85-5b6846d2c728/logs/b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c.jsonl.gz"
+    "sha256": "1ec9246346ce2ff2c4aafb30526d46628264c8bb34bd637180dfa7726360deb4",
+    "bytes": 2357097,
+    "lines": 855,
+    "gzip_bytes": 424211,
+    "path": "llm-dlc/traces/2324d402-3f17-421a-8a85-5b6846d2c728/logs/1ec9246346ce2ff2c4aafb30526d46628264c8bb34bd637180dfa7726360deb4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -78,9 +92,23 @@
       "summary": "VF-010's reproducer: Pricing#total's regression proof on the own checker, run 8 times alike (verification pending)",
       "body": "The cleanup loop's native stream, item N1, step 1. VF-010 says the own checker's branch probes are budgeted by wall-clock time (Engine::probe gives a probe as long as all the solver calls so far took, at least a second), so which side of a branch stays undecided, and with it the path order, depends on the machine: of 8 identical runs of Pricing#total's regression proof on cvm, 6 found the violation in about 4 s and 2 ran out of time. The new script lib/tests/reproducers/vf-010.sh compiles lib/tests/integration.rs's Pricing fixture and its rounding refactor, runs the entry's 'jvmcontract equivalence --target fixtures.Pricing#total --engine native --timeout 40' N times, prints each run's exit and the own checker's numbers, and exits 0 only when every run finds the violation. Tried once inline with a debug build: the violation in 2.7 s.\n\nVerification pending: job 20261107-163057-vf-010-s-reproducer-before-the-fix-prici (verification/jobs/) runs it 8 times at this commit, before the fix, expecting exit 1. The fix comes next, and the same script at the fixing commit is VF-010's closing check, with the integration tests.",
       "log_sha256": "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c"
+    },
+    {
+      "change_id": "nrvtlrmsozokwltnmznomuumvzvurxwr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-010: the own checker's branch probes are budgeted in solver conflicts, not seconds, so the path order is the same on every machine (verification pending)",
+      "body": "Engine::probe (lib/src/bmc/mod.rs) gave the other side of a branch as long as all the solver calls so far took, at least a second, of wall-clock time. Pricing#total's regression proof has a feasible side whose probe takes about 1.04 s here, so some runs decided it and found the violation in seconds, and others left it undecided and ran out of time (VF-010). A probe is now given as many conflicts as all the calls so far had, at least PROBE_CONFLICTS (10,000). The Sat trait gains a work limit (set_work_limit, work; lib/src/bmc/sat.rs), and so does the Blaster. For CaDiCaL, the conflicts are counted as the clauses it learns, and a call is stopped through the terminate callback, which CaDiCaL polls on a count of its own steps, so a stop is the same on every run. Bitwuzla has no such limit and keeps the wall-clock budget. The run's deadline stays the user's --timeout. The doc comment's design is kept: an undecided side is decided after the decided paths, with all the time left. Transcripts record a probe's conflict limit, and replay gives it again. The module doc and lib/README.md's sentence on the probe budget say so.\n\nVerified inline: lib/tests/reproducers/vf-010.sh found the violation in 8 of 8 runs at the fix, with identical numbers (6 paths, 12 solver calls, 358,609 clauses). The new test a_conflict_limit_stops_a_call_at_the_same_work_every_time passes, and the logged-solver test now checks that probes, and only probes, carry the conflict limit and that a replay gives it again. Every lib test suite passed: 204 unit tests, and integration.rs's 64, JBMC's small cases included.\n\nJobs: 20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t and 20261107-165544-vf-010-s-integration-tests-at-the-fix-li close VF-010 when both pass. 20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2 (at this commit) and 20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r (at the parent, c307e721) record the own checker's benchmark runs, and a later quick job compares the two.",
+      "log_sha256": "1ec9246346ce2ff2c4aafb30526d46628264c8bb34bd637180dfa7726360deb4"
     }
   ],
   "logs": {
+    "1ec9246346ce2ff2c4aafb30526d46628264c8bb34bd637180dfa7726360deb4": {
+      "bytes": 2357097,
+      "lines": 855,
+      "gzip_bytes": 424211,
+      "url": null
+    },
     "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c": {
       "bytes": 813849,
       "lines": 246,

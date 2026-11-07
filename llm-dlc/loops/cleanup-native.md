@@ -99,6 +99,44 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
   this commit, expecting exit 1 (runs that differ). One debug run here found the violation in 2.7 s (13 solver calls,
   1 of 2 divisions built in full). Next: the fix. CaDiCaL's per-call `conflicts` limit (`cadical::Solver::set_limit`)
   can budget a probe by solver work; the deadline stays the terminate callback's wall-clock.
+- **N1, step 2: the fix, and its checks queued.** `Engine::probe` now gives a probe as many conflicts as all the
+  solver calls so far had, at least `PROBE_CONFLICTS` (10,000), through a new work limit on `Sat`
+  (`set_work_limit`, `work`) and `Blaster`. `solve_until` counts the conflicts across its refinement calls. CaDiCaL's
+  conflicts are counted as the clauses it learns (one per conflict of its search). The call is stopped through the
+  terminate callback, which CaDiCaL polls on a count of its steps, so the stop is the same on every run. CaDiCaL's
+  own `conflicts` limit also counts inprocessing conflicts, a different unit, so it isn't used. Bitwuzla has no such
+  limit and keeps the old wall-clock budget. Transcripts record a probe's limit (`conflicts N` after `limit`), and
+  replay gives it again.
+  - The cause, measured: the probe that finds Pricing's violating side needs 5,167 conflicts, about 1.04 s here, just
+    over the old 1 s floor. At a 2,000-conflict floor it is left undecided and the run times out at 40 s, so 10,000
+    gives it twice that margin.
+  - Verified inline:
+    - 8 of 8 reproducer runs found the violation with identical numbers;
+    - new tests: `a_conflict_limit_stops_a_call_at_the_same_work_every_time`, and the logged-solver test checks
+      probe limits and their replay;
+    - every lib suite passed, unit tests and `integration.rs` included.
+  - Jobs:
+    - `20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t` (expects exit 0) and
+      `20261107-165544-vf-010-s-integration-tests-at-the-fix-li` close VF-010 when both pass;
+    - `20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at the fix: it carries no `--revision`, so it runs
+      at the commit that adds it) and `20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r` (`--revision`
+      c307e721) record the own checker's benchmark runs to `lib/target/benchmark-native-vf010-{fix,parent}.json`.
+  - Next for N1: once both benchmark runs are collected, a quick comparison job over their outputs. Every verdict
+    should be the same.
+  - Shared file: `lib/README.md`'s sentence on the probe budget now says conflicts, not seconds (a rewrite of one
+    sentence, since the docs move with the behaviour).
+  - **For review:**
+    - One clock dependency is left: after the first violation, the search for a smaller witness shortens the
+      deadline to the time taken so far, at least a second (`check`, `lib/src/bmc/mod.rs` ~957). That can change which
+      witness is reported, but not the verdict, so it is outside VF-010.
+    - Step 1's `sync.py commit` reported 4 errors that aren't this stream's:
+      - session `2df7775c`'s log `3f768f3bb246` is neither stored nor uploaded here (it is only in the default
+        workspace's `llm-dlc/traces/`);
+      - other workspaces' commits `zykkyuuw` (jbmc stream) and `syqpoxom` (verification loop) have no manifest
+        here.
+
+      The foundations streams saw the same (`foundations-alignment.md`), and the merge should resolve them.
+  - Next: N2's reproducer (VF-011), and N3's unchanged resubmission (VF-015).
 - Status: working
 
 ## Loop settings

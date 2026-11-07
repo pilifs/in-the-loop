@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-165544-vf-010-s-integration-tests-at-the-fix-li",
+  "title": "VF-010's integration tests at the fix: lib/tests/integration.rs passes with conflict-budgeted probes (closes VF-010 with the reproducer job)",
+  "description": "VF-010 (verification/findings.md) was found as a flaky failure of lib/tests/integration.rs's the_tools_own_checker_agrees_with_jbmc_on_integer_proofs on Pricing#total, about 2 runs in 8: the own checker's branch probes were given wall-clock time. The fix (cleanup loop, native stream, item N1) budgets each probe in solver conflicts (Engine::probe, lib/src/bmc/mod.rs; the Sat trait's work limit, lib/src/bmc/sat.rs). This job runs the whole integration suite unchanged at the fix, JBMC cases included. Inline, here, all 64 tests passed once, and every other lib suite passed. With job 'VF-010's reproducer at the fix' it closes VF-010 when both pass.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "native:probes"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/integration.rs",
+      "lib/src/bmc/mod.rs"
+    ]
+  },
+  "expected": "exit 0: cargo test --test integration reports 64 passed, 0 failed",
+  "submitted": {
+    "at": "2026-11-07T16:55:44+00:00",
+    "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+    "by": "cleanup-native"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "the suite took 31 s inline after the build; a clean debug build of lib's tests peaked at 3.1 GiB with 28 jobs (cleanup.md), here 4"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

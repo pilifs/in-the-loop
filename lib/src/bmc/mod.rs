@@ -3,9 +3,10 @@
 //! every branch which sides are feasible and, when a path reaches the harness's `AssertionError`, what input takes
 //! it there. Each path carries a model of its condition (the solver's answer when it was split off), so the side
 //! of a branch that model takes is known feasible and the solver is asked once per branch, about the other side,
-//! and not at all about a condition the path has taken before. That one question is given as long as the solver's
-//! calls so far took together, and a side undecided by then waits until the decided paths are done, so a violation
-//! is not held up by an infeasible side that is hard to refute. A division or multiplication is left to the solver
+//! and not at all about a condition the path has taken before. That one question is given as much work as the
+//! solver's calls so far did together, in conflicts and not seconds so that it is the same on every machine, and a
+//! side undecided by then waits until the decided paths are done, so a violation is not held up by an infeasible side
+//! that is hard to refute. A division or multiplication is left to the solver
 //! under what holds of every one and built as a circuit only where a model got it wrong
 //! ([`bits::Blaster::sdivrem_lazy`], [`bits::Blaster::mul_lazy`]); a quotient times its divisor is the dividend
 //! less the remainder, with no product.
@@ -676,6 +677,12 @@ enum Sides {
 /// How many models a path keeps after a merge: the first ones, since every path has at least one.
 const MOST_MODELS: usize = 16;
 
+/// The least work a branch probe is given, in the solver's conflicts ([`Engine::probe`]): about two seconds of
+/// CaDiCaL on a formula of a few hundred thousand clauses, and less on a smaller one. `Pricing#total`'s regression
+/// proof (VF-010) has a feasible side that takes 5,167, about a second, which the old floor of a second of time
+/// decided on some runs and not others.
+const PROBE_CONFLICTS: u64 = 10_000;
+
 struct Engine<'a> {
     cp: &'a ClassPath,
     b: Blaster,
@@ -1315,22 +1322,37 @@ impl<'a> Engine<'a> {
     /// its model (the parameters' values, the sides of later branches) is one.
     fn solve(&mut self, assumptions: &[Lit]) -> Result<bool, Stop> {
         let deadline = self.deadline;
-        self.solve_until(assumptions, deadline)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
+        self.solve_until(assumptions, deadline, None)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
     }
 
-    /// Asks the solver about the other side of a branch, for as long as all the solver calls so far took
-    /// together, at least a second: `None` when it did not answer, and the side is left undecided rather than
-    /// waited for, since an infeasible side can be as hard to refute as the whole proof (that a value is not a
-    /// multiple of another, say) while the violation on the feasible side is found at once, as JBMC finds it
-    /// without ever deciding the side. What is undecided is decided once the decided paths are done, with all the
-    /// time left, so a proof loses at most the probes' time.
+    /// Asks the solver about the other side of a branch, for as much work as all the solver calls so far did
+    /// together, at least [`PROBE_CONFLICTS`] conflicts: `None` when it did not answer, and the side is left
+    /// undecided rather than waited for, since an infeasible side can be as hard to refute as the whole proof (that
+    /// a value is not a multiple of another, say) while the violation on the feasible side is found at once, as JBMC
+    /// finds it without ever deciding the side. What is undecided is decided once the decided paths are done, with
+    /// all the time left, so a proof loses at most the probes' work.
+    ///
+    /// The budget is the solver's conflicts, not its time, so that which side is left undecided, and with it the
+    /// order of the paths, is the same on every machine and every run (VF-010). Only the run's deadline is the
+    /// clock's. A solver with no conflict limit ([`sat::Sat::set_work_limit`]) is given the time the calls so far
+    /// took instead, at least a second.
     fn probe(&mut self, assumptions: &[Lit]) -> Result<Option<bool>, Stop> {
+        let budget = self.b.work().max(PROBE_CONFLICTS);
+        if self.b.set_work_limit(Some(budget)) {
+            let answer = self.solve_until(assumptions, self.deadline, Some(budget));
+            self.b.set_work_limit(None);
+            return answer;
+        }
         let budget = self.b.solving.max(Duration::from_secs(1));
         let until = self.deadline.min(Instant::now() + budget);
-        self.solve_until(assumptions, until)
+        self.solve_until(assumptions, until, None)
     }
 
-    fn solve_until(&mut self, assumptions: &[Lit], until: Instant) -> Result<Option<bool>, Stop> {
+    /// Asks the solver until it answers with a real model or no model, refining the operations a model gets wrong:
+    /// `None` when it did not answer by `until`, or within `conflicts` conflicts over all its calls here (a call
+    /// goes some way past its limit, as far on every run, before the solver looks at it).
+    fn solve_until(&mut self, assumptions: &[Lit], until: Instant, conflicts: Option<u64>) -> Result<Option<bool>, Stop> {
+        let started = self.b.work();
         loop {
             let now = Instant::now();
             if now > self.deadline {
@@ -1338,6 +1360,13 @@ impl<'a> Engine<'a> {
             }
             if now > until {
                 return Ok(None);
+            }
+            if let Some(conflicts) = conflicts {
+                let spent = self.b.work() - started;
+                if spent >= conflicts {
+                    return Ok(None);
+                }
+                self.b.set_work_limit(Some(conflicts - spent));
             }
             self.b.set_timeout((until - now).as_secs_f32());
             match self.b.solve_with(assumptions) {
@@ -3815,15 +3844,29 @@ mod tests {
         assert_eq!(clauses.len() as u64, logged.clauses);
         assert_eq!(clauses.first().map(|c| c.as_slice()), Some(&[TRUE][..]), "the constant first");
         assert!(calls.len() >= 2 && calls.len() as u64 <= logged.solves, "{} calls of {}", calls.len(), logged.solves);
-        // Every call is made under the limit last set, and the limit is within the check's budget.
+        // Every call is made under the limit last set, and the limit is within the check's budget; a branch probe is
+        // limited by conflicts as well, at least the floor's (VF-010), and every other call is not.
         let mut limit = None;
         for e in &events {
             match e {
                 sat::Event::Limit(l) => limit = *l,
                 sat::Event::Solve(..) => assert!(limit.is_some_and(|l| l > 0.0 && l <= 600.0), "{events:?}"),
-                sat::Event::Clause(_) => {}
+                sat::Event::Clause(_) | sat::Event::WorkLimit(_) => {}
             }
         }
+        let work_limits = |events: &[sat::Event]| {
+            let mut work = None;
+            events.iter().filter_map(|e| match e {
+                sat::Event::WorkLimit(w) => {
+                    work = *w;
+                    None
+                }
+                sat::Event::Solve(..) => Some(work),
+                _ => None,
+            }).collect::<Vec<_>>()
+        };
+        let probes = work_limits(&events);
+        assert!(probes.contains(&Some(PROBE_CONFLICTS)) && probes.contains(&None), "{probes:?}");
 
         // The transcript names the solver the check ran on, and holds what that solver was given.
         let text = std::fs::read_to_string(&path).unwrap();
@@ -3840,6 +3883,8 @@ mod tests {
         let replayed = sat::Logged::take();
         assert_eq!(replayed.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>(), events.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>());
         assert_eq!(replayed.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a.clone(), *r)) } else { None }).collect::<Vec<_>>(), calls.iter().map(|(a, r)| ((*a).clone(), *r)).collect::<Vec<_>>());
+        // The transcript holds each probe's conflict limit, and the replay gives it again.
+        assert_eq!(work_limits(&replayed), probes);
     }
 
     #[test]
