@@ -155,9 +155,10 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   serde-defaulted and skipped when empty, so the golden files are unchanged; a `Hint { .. }` literal in another
   stream's code would need them at the merge); `lib/README.md` (the command, and a sentence on the hints file);
   `lib/tests/alignment.rs` (new).
-- For the reconcile loop: `sync.py check` in this workspace reports one error that this stream can't fix:
-  "change xuxuymrrrqsq: session be22079e-… has no manifest". That's the summaries stream's S1 commit, whose manifest
-  is on its own branch; it resolves at the merge.
+- For the reconcile loop: `sync.py check` in this workspace reports errors this stream can't fix, all "session …
+  has no manifest", for other streams' commits that `check` sees in the shared repository: `xuxuymrrrqsq` and
+  `spkzmqwzmuom` (summaries S1, S2a), `uyqkxslyysrm` (heap H1) and `lslmmpwrvxuz` (observations O1). None is on this
+  branch. Their manifests are in their own workspaces; the errors should resolve at the merge.
 - Next: A3, argument, record and result mappings under the contract, for the pairs A2 matches: anchored inputs fixed
   to themselves, internal ones (a parameter gathered into a record, a reordering, a widening) and catalogue result
   relations proposed, candidates collapsed, checked by the existing regression proof (a quick job), scored on the

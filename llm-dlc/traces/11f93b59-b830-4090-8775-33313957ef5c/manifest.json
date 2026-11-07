@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.567Z",
-  "ended": "2026-11-07T04:28:06.506Z",
-  "duration_seconds": 1607,
+  "ended": "2026-11-07T04:28:26.117Z",
+  "duration_seconds": 1627,
   "stats": {
     "turns": 10,
-    "api_calls": 90,
-    "tool_calls": 91,
+    "api_calls": 92,
+    "tool_calls": 93,
     "tool_errors": 1,
     "compactions": 2,
     "peak_context_tokens": 198359,
     "usage": {
-      "input_tokens": 178,
-      "output_tokens": 97288,
-      "cache_read_input_tokens": 11940284,
-      "cache_creation_input_tokens": 393027
+      "input_tokens": 182,
+      "output_tokens": 98804,
+      "cache_read_input_tokens": 12323885,
+      "cache_creation_input_tokens": 394921
     }
   },
   "tools": {
-    "Bash": 78,
+    "Bash": 80,
     "Read": 9,
     "Write": 4
   },
@@ -71,24 +71,24 @@
     {
       "index": 2,
       "started": "2026-11-07T04:11:49.210Z",
-      "ended": "2026-11-07T04:28:06.506Z",
+      "ended": "2026-11-07T04:28:26.117Z",
       "turns": 4,
-      "api_calls": 48,
+      "api_calls": 50,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 55966,
-        "cache_read_input_tokens": 6421031,
-        "cache_creation_input_tokens": 178126
+        "input_tokens": 100,
+        "output_tokens": 57482,
+        "cache_read_input_tokens": 6804632,
+        "cache_creation_input_tokens": 180020
       },
-      "peak_context_tokens": 191205
+      "peak_context_tokens": 193099
     }
   ],
   "log": {
-    "sha256": "ecff2f691d4e1d28381dddef4dadce90759417f1bc56b30657f95c4157ddfbfa",
-    "bytes": 3300988,
-    "lines": 1033,
-    "gzip_bytes": 679069,
-    "path": "llm-dlc/traces/11f93b59-b830-4090-8775-33313957ef5c/logs/ecff2f691d4e1d28381dddef4dadce90759417f1bc56b30657f95c4157ddfbfa.jsonl.gz"
+    "sha256": "e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e",
+    "bytes": 3356913,
+    "lines": 1053,
+    "gzip_bytes": 689041,
+    "path": "llm-dlc/traces/11f93b59-b830-4090-8775-33313957ef5c/logs/e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -107,6 +107,14 @@
       "summary": "Alignment A2: jvmcontract align proposes method correspondence between two builds, ranked, written to the hints file",
       "body": "A new module, lib/src/alignment.rs, and the command jvmcontract align --before DIR --after DIR [--hints FILE] [--json]. It works statically and proves nothing. An old method the new build declares with the same class, name and descriptor corresponds to itself and to nothing else. For a vanished one, the candidates are the new build's new methods tied to it by the same name (in its class or moved), the same body shape, a similar body, a caller in common, or the same parameters in the same class. Each tie adds weight to a score. The first candidate leads only with at least 3 points and 3 ahead of the next; otherwise the choice is a person's. --hints replaces the file's inferred proposals and keeps every hint a person stated or approved. Hint gains two optional fields, rank and why (the shared IR, added only; the golden files are unchanged).\n\nScored on the A1 ground truth with the new examples/tools/alignment.py score, recorded in examples/tools/alignment/scores/A2-methods.json and on its page. Methods that kept their name: 15 of 15 found. Moved: 2 of 2 found. Renamed: 1 found, 1 asked (122, whose only tie is its parameters). Nothing was wrong or missed. Caveat: the same-parameters tie and the lead threshold were set after a first run, and the table and the scorer come from this stream, so the score shows agreement with the table, not generality. Verified with 2 unit tests and 7 tests in lib/tests/alignment.rs on javac-compiled pairs and the joint example's kernel, and 15 Python tests in test_alignment.py; the foundations integration test still passes (alignment still unsupported there until A4's field correspondence). lib/README.md documents the command.",
       "log_sha256": "ecff2f691d4e1d28381dddef4dadce90759417f1bc56b30657f95c4157ddfbfa"
+    },
+    {
+      "change_id": "szkpqzylrnmvwxtxuopwqstlwvxwsrxq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Alignment Progress: name every other stream's commit that sync.py check reports without a manifest",
+      "body": "The check after the A2 commit reported four 'has no manifest' errors, not one. All four are other streams' commits (summaries S1 and S2a, heap H1, observations O1) that check sees in the shared repository; none is on this branch, and their manifests are in their own workspaces. The note under Progress for the reconcile loop now lists all four. Only the brief's Progress section changed.",
+      "log_sha256": "e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e"
     }
   ],
   "logs": {
@@ -114,6 +122,12 @@
       "bytes": 1531768,
       "lines": 422,
       "gzip_bytes": 336301,
+      "url": null
+    },
+    "e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e": {
+      "bytes": 3356913,
+      "lines": 1053,
+      "gzip_bytes": 689041,
       "url": null
     },
     "ecff2f691d4e1d28381dddef4dadce90759417f1bc56b30657f95c4157ddfbfa": {
