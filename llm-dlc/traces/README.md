@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 04:54 UTC |
-| Prompts | 1,091 |
-| Model calls | 10,819 |
-| Tool calls | 11,678 (243 failed) |
-| Compactions | 149 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 05:17 UTC |
+| Prompts | 1,096 |
+| Model calls | 10,894 |
+| Tool calls | 11,755 (243 failed) |
+| Compactions | 150 |
 | Subagents | 5 |
-| Tokens written | 13,418,102 |
-| Tokens read | 1,775,436,292 (97.9% from cache) |
-| Commits with a trace | 334 |
-| Log snapshots | 411 (1074.8 MB gzipped, 404 uploaded) |
+| Tokens written | 13,506,602 |
+| Tokens read | 1,790,243,447 (97.9% from cache) |
+| Commits with a trace | 335 |
+| Log snapshots | 412 (1076.8 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | open | 53 min | `claude-opus-5-5` | 20 | 208 | 213 | 1 | 4 | 255,299 | 6 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | open | 1 h 16 min | `claude-opus-5-5` | 25 | 283 | 290 | 1 | 5 | 271,450 | 7 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,15 +127,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | 211,513 | 416 | 864,583 | 32,103,175 | 97.4% | 156 |
+| [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | 300,013 | 566 | 1,125,386 | 46,649,377 | 97.6% | 159 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,249 | 87.8% | 46 |
-| `Edit` | 466 | 4.0% | 22 |
-| `Read` | 413 | 3.5% | 23 |
+| `Bash` | 10,318 | 87.8% | 46 |
+| `Edit` | 468 | 4.0% | 22 |
+| `Read` | 419 | 3.6% | 23 |
 | `Write` | 347 | 3.0% | 20 |
 | `ToolSearch` | 72 | 0.6% | 17 |
 | `Monitor` | 42 | 0.4% | 12 |
@@ -489,6 +489,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 332 | change `wwxvkxkm` | Summaries Progress: name the other streams' commits that sync.py check reports without a manifest | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/0aafe926b7f7dc1ff807d83cf829eb8890fd5fc22939e4b9d82d00ceafe155aa.jsonl.gz)) |
 | 333 | change `nplsyutx` | Summaries S3: jvmcontract impact, the claims a change invalidates and the parts of their code that changed | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/67bb1c62ef957ae44ca49b16ffbddae17b2583a26822db443bb8a2604402b895.jsonl.gz)) |
 | 334 | change `krmrutop` | Summaries Progress: name the 15 errors sync.py check reports after S3, none from this branch's work | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/a8cfa6d10626647e56a38c2578761a326a134305f3cc8993b932e6787e0680af.jsonl.gz)) |
+| 335 | change `ztyymsko` | Summaries S4a: a changed pure helper proved equivalent is one function in both versions of its callers | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/75a83fe563bc6aa7b206e0b014ef96bbb1f8b1730ce9edd2abff407841c0453f.jsonl.gz)) |
 
 ## Logs
 
@@ -541,7 +542,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | 6 | 0 | 6.3 MB | `a8cfa6d10626`, not uploaded |
+| [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | 7 | 0 | 8.3 MB | `75a83fe563bc`, not uploaded |
 
 ## Session notes
 

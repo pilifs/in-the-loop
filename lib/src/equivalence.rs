@@ -896,20 +896,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // The statement as data: what holds of every verdict on this harness, and what the run it comes from adds.
     let stated_domain = crate::statement::domain(&layout, options.max_array_length);
     let observations = crate::statement::regression_observations(&layout, &descriptor.ret, options.results_agree_when.as_deref());
-    let claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
-    let stated = |last: Option<&JbmcResult>, search: Option<&Search>, complete: bool| crate::statement::Statement {
-        kind: "regression".into(),
-        domain: stated_domain.clone(),
-        assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
-        observations: observations.clone(),
-        bounds: crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete),
-        models: crate::statement::models(options.models && last.is_some()),
-        checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
-        gap_mode: last.and_then(|l| l.gap_mode),
-        confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
-        vacuity: None,
-        spec: None,
-    };
+    let mut claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
 
     // 3. The statement, as a harness JBMC can check.
     let harness = match harness::generate(&class_internal, &method_name, &layout, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length, previous.as_ref()) {
@@ -937,10 +924,28 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let shared_after_cp = with_jdk(&options.after)?;
     let shared_before_cp = with_jdk(&options.before)?;
+    // A changed pure helper is shared too once its own proof shows its two versions agree on every input
+    // ([`crate::proof_cache::Helpers`]): under `--cache` and `--engine native`, proved first or found in the cache.
+    let mut helpers = crate::proof_cache::Helpers::new(options, &work);
     let mut plan = if options.shared_callees {
-        shared::plan(&shared_before_cp, &shared_after_cp, &MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &MemberRef::new(&class_internal, &method_name, &method.descriptor), plain)
+        shared::plan_with(&shared_before_cp, &shared_after_cp, &MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &MemberRef::new(&class_internal, &method_name, &method.descriptor), plain, &mut |c| helpers.prove(c))
     } else {
         shared::Plan::default()
+    };
+    out.push_str(&helpers.notes);
+    claim_assumptions.extend(helpers.assumptions().iter().cloned());
+    let stated = |last: Option<&JbmcResult>, search: Option<&Search>, complete: bool| crate::statement::Statement {
+        kind: "regression".into(),
+        domain: stated_domain.clone(),
+        assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
+        observations: observations.clone(),
+        bounds: crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete),
+        models: crate::statement::models(options.models && last.is_some()),
+        checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
+        gap_mode: last.and_then(|l| l.gap_mode),
+        confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
+        vacuity: None,
+        spec: None,
     };
     // The harness builds each record through its constructor in both versions: a target identical in both needs no
     // proof only when the constructors are too.
@@ -1033,7 +1038,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let started = std::time::Instant::now();
     // One deadline for the whole check, each run a budget out of it ([`crate::deadline`]).
-    let deadline = Deadline::starting_now(Duration::from_secs(options.timeout_seconds));
+    let deadline = Deadline::starting_now(helpers.remaining(Duration::from_secs(options.timeout_seconds)));
     let mut runs = Vec::new();
     let mut last = None;
     // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
@@ -1042,7 +1047,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut stages = options.jbmc_staging.stages(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
-    let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+    let mut entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+    // Under the tool's own checker, a changed helper proved equivalent is its new version in both: the previous
+    // version's calls of it are redirected there ([`shared::substitute_directory`]).
+    let native_shared = shared::substitute(&plan.callees, &before_dir, &work.join("substituted-classes"), &mut entries)?;
     let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
     let claim = crate::advice::Claim { kind: "regression".into(), target: options.target.clone(), text: format!("{relation}{restriction}"), harness: statement.clone() };
     // Under advised, a gap the proof reaches with no contract goes to the agent before anything is solved.
@@ -1255,7 +1263,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // With the shared callees first: a proof with them is a proof, and a counterexample with them is one when it
     // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are
     // proved as written.
-    let mut shared_used = Vec::new();
+    let mut shared_used = if last.as_ref().is_some_and(|l: &JbmcResult| l.native.is_some()) { native_shared } else { Vec::new() };
     let mut jbmc_notes = String::new();
     if last.is_none() {
         if let Some(cp) = &shared_classpath {
@@ -1313,11 +1321,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         phases: None,
     });
     let mut replay = None;
-    let sharing = match shared_used.len() {
-        0 => String::new(),
-        1 => format!("; {} unchanged in both versions and taken as one function in both", shared_used[0]),
-        n => format!("; {n} callees unchanged in both versions and taken as one function in both: {}", shared_used.join(", ")),
-    };
+    let sharing = shared::sharing(&plan.callees, &shared_used);
 
     let mut findings = Vec::new();
     let mut counterexample = None;
@@ -1570,6 +1574,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
     let mut stated = stated(Some(&last), search.as_ref(), verdict == Verdict::Verified);
+    crate::proof_cache::keep_used(&mut stated, &plan.callees, &shared_used);
     stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
     let stated = Some(stated);
     let mut outcome = Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay, stated, advice: None, reuse: None };

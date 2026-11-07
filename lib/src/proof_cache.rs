@@ -28,10 +28,23 @@
 //! refutation is stored only when its witness, read back as stored, reproduces in the interpreter (one confirmed
 //! only on a JVM is not stored). Every use of the cache is a note in the output; a failure to store one never
 //! changes the verdict.
+//!
+//! **A changed helper's proof, reused in its caller** ([`Helpers`], S4): with `--cache` and `--engine native`, a
+//! changed pure helper of the narrow kind [`crate::shared`] describes is proved first, as a regression check of its
+//! own (the same builds, bounds and settings, the helper as the target, nothing restricting its inputs), on demand
+//! and within a share of the caller's time, or found in the cache under that check's key. A proof that covers every
+//! input, with no assumption beyond the checker's own, makes the helper one stub in both versions of the caller's
+//! proof, and the caller's statement gains an assumption of kind `callee` and basis `proved` whose id is the helper
+//! proof's claim key. That assumption is part of the caller's own claim, so the caller's key changes with the
+//! helper proof's. The dependencies are acyclic: a helper is never proved within its own proof, directly or through
+//! others (the checks in progress on this thread are a stack, and a helper on it stays as written), and through the
+//! cache no cycle can form, since a claim's key digests the keys of the helper proofs it rests on.
 
+use std::cell::RefCell;
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
+use std::time::{Duration, Instant};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -45,7 +58,7 @@ use crate::jbmc::Argument;
 use crate::sarif::{self, Finding};
 use crate::spec::cache::{self, ClaimKey, ResultRecord, Reuse};
 use crate::spec::{Accounted, CanonicalClaim, ClaimBounds, Correspondence, Derivation, ExternalInput, Observation, ObservationState, Part, PreservationContract, ToolIdentity, Unsupported, VersionDigests};
-use crate::statement::{Assumption, Domain, Observations, Statement};
+use crate::statement::{Assumption, AssumptionKind, Basis, Domain, Observations, Statement};
 use crate::{witness, Error, Verdict};
 
 /// `sha256:` and the digest of the running executable's bytes; empty when it can't be read. Read once per process.
@@ -404,6 +417,7 @@ impl<'a> Regression<'a> {
                 return Ok((inert, None));
             }
         };
+        KEYS.with(|k| k.borrow_mut().push((self.options.target.clone(), key.clone())));
         let mut replay = vec![self.harness.to_path_buf(), self.options.after.clone(), self.before_classes.to_path_buf()];
         replay.extend(self.options.classpath.iter().cloned());
         let provenance = format!(
@@ -549,4 +563,162 @@ impl Entry {
             Err(u) => note(outcome, format!("the result is not stored in the proof cache: {}", u.what)),
         }
     }
+}
+
+thread_local! {
+    /// The checks in progress on this thread whose changed helpers may be proved, innermost last, by target: a
+    /// helper on it is not proved again within its own proof.
+    static PROVING: RefCell<Vec<String>> = const { RefCell::new(Vec::new()) };
+    /// The claim key each check on this thread got once prepared, by target, latest last: how a helper's check,
+    /// run by [`Helpers`], names the claim it proved.
+    static KEYS: RefCell<Vec<(String, ClaimKey)>> = const { RefCell::new(Vec::new()) };
+}
+
+/// At most this share of a caller's time goes to proving its changed helpers; what they take comes out of it.
+const HELPER_SHARE: u32 = 2;
+
+/// A regression check's changed helpers, proved first (S4): the provider [`crate::shared::plan_with`] asks, and what
+/// the caller's claim and output gain from it.
+pub struct Helpers<'a> {
+    options: &'a Options,
+    work: PathBuf,
+    budget: Duration,
+    spent: Duration,
+    assumptions: Vec<Assumption>,
+    /// The note per helper asked about, for the caller's output.
+    pub notes: String,
+}
+
+impl<'a> Helpers<'a> {
+    /// The helpers of the check `options` describes, worked on under `work`.
+    pub fn new(options: &'a Options, work: &Path) -> Helpers<'a> {
+        Helpers { options, work: work.join("helpers"), budget: Duration::from_secs(options.timeout_seconds) / HELPER_SHARE, spent: Duration::ZERO, assumptions: Vec::new(), notes: String::new() }
+    }
+
+    /// Whether this check proves its changed helpers: it is cacheable (`--cache`, `--engine native`), and shares
+    /// callees at all.
+    fn active(&self) -> bool {
+        self.options.cache.is_some() && self.options.engine == crate::Engine::Native && self.options.shared_callees
+    }
+
+    /// The caller's time left once its helpers are proved: `total` less what they took.
+    pub fn remaining(&self, total: Duration) -> Duration {
+        total.saturating_sub(self.spent)
+    }
+
+    /// The assumptions the caller's claim gains: one per helper proved, of kind `callee`, basis `proved`, with the
+    /// helper proof's claim key as its id.
+    pub fn assumptions(&self) -> &[Assumption] {
+        &self.assumptions
+    }
+
+    /// The proof of `callee`'s two versions' equivalence, from the cache or proved now; `None`, with a note, when
+    /// there is none to use.
+    pub fn prove(&mut self, callee: &MemberRef) -> Option<crate::shared::Proved> {
+        if !self.active() {
+            return None;
+        }
+        let target = crate::shared::target_of(callee);
+        let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
+        let mut note = |why: String| {
+            let _ = writeln!(self.notes, "note: {name}, changed, stays as written in both versions: {why}");
+        };
+        let caller = self.options.target.clone();
+        let names_callee = |t: &String| crate::verifier::parse_target(t).is_some_and(|(c, m)| c == callee.owner && m == callee.name);
+        let cycle = names_callee(&caller) || PROVING.with(|p| p.borrow().iter().any(names_callee));
+        if cycle {
+            note("its proof would rest on the proof it is used in".into());
+            return None;
+        }
+        let left = self.budget.saturating_sub(self.spent);
+        if left < Duration::from_secs(1) {
+            note("no time is left for its proof".into());
+            return None;
+        }
+        let mut helper = self.options.clone();
+        helper.target = target.clone();
+        helper.before_target = None;
+        helper.before_arguments = None;
+        helper.results_agree_when = None;
+        helper.unchanged_unless = None;
+        helper.report = None;
+        helper.confirm = false;
+        helper.timeout_seconds = left.as_secs().max(1);
+        helper.work = Some(self.work.join(format!("{}.{}", callee.owner.replace('/', "."), callee.name)));
+        let started = Instant::now();
+        PROVING.with(|p| p.borrow_mut().push(caller.clone()));
+        let outcome = crate::equivalence::run(&helper);
+        PROVING.with(|p| p.borrow_mut().pop());
+        self.spent += started.elapsed();
+        let outcome = match outcome {
+            Ok(o) => o,
+            Err(e) => {
+                note(format!("its check failed: {e}"));
+                return None;
+            }
+        };
+        let key = KEYS.with(|k| k.borrow().iter().rev().find(|(t, _)| *t == target).map(|(_, key)| key.clone()));
+        if let Err(why) = applicable(&outcome) {
+            note(why);
+            return None;
+        }
+        let Some(key) = key else {
+            note("its claim has no key".into());
+            return None;
+        };
+        let dir = self.options.cache.as_ref().expect("active");
+        let record = match cache::lookup(dir, &key) {
+            Ok(Some(r)) if r.outcome.verdict == crate::spec::Verdict::Verified => r,
+            _ => {
+                note(format!("its proof is not in the proof cache (claim {})", key.0));
+                return None;
+            }
+        };
+        let how = match &outcome.reuse {
+            Some(Reuse::Exact { .. }) => "found in the proof cache",
+            _ => "proved now and stored in the proof cache",
+        };
+        let params = crate::classfile::MethodDescriptor::parse(&callee.descriptor).map(|d| d.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", ")).unwrap_or_default();
+        let _ = writeln!(self.notes, "note: {name}, changed: its two versions have the same outcome, result or exception, on every input, {how} (claim {}); one function in both versions", key.0);
+        self.assumptions.push(Assumption {
+            kind: AssumptionKind::Callee,
+            text: format!(
+                "{name}({params}), changed, is one function in both versions: a regression proof of its own (claim {}, {}) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain",
+                key.0, record.provenance
+            ),
+            basis: Basis::Proved,
+            id: Some(key.0.clone()),
+        });
+        Some(crate::shared::Proved { key: key.0, from: record.provenance })
+    }
+}
+
+/// Whether a helper's own check is a proof one stub may stand on at every call: verified, over every execution
+/// within its bounds, and resting on nothing that narrows its inputs (only the checker's own assumptions, and the
+/// proofs of the helpers it shared in turn).
+pub fn applicable(outcome: &Outcome) -> Result<(), String> {
+    if outcome.verdict != Verdict::Verified {
+        let why = outcome.problem.as_deref().map(|p| format!(": {p}")).unwrap_or_default();
+        return Err(match outcome.verdict {
+            Verdict::Violation => format!("its two versions differ{}", outcome.counterexample.as_ref().map(|c| format!(", at {}", c.input)).unwrap_or_default()),
+            _ => format!("its proof gave no verdict{why}"),
+        });
+    }
+    let Some(stated) = &outcome.stated else { return Err("its proof states nothing".into()) };
+    if !stated.bounds.complete {
+        return Err("its proof did not cover every execution within its bounds".into());
+    }
+    let narrowing: Vec<&Assumption> = stated.assumptions.iter().filter(|a| !matches!(a.kind, AssumptionKind::Initialization | AssumptionKind::Callee)).collect();
+    if let Some(a) = narrowing.first() {
+        return Err(format!("its proof rests on an assumption a call would have to be checked against: {}", a.text));
+    }
+    Ok(())
+}
+
+/// The caller's statement once its result is known: the `callee` assumptions of helpers its proof did not end up
+/// using (the proof ran again with the callees as written) are dropped, since the result doesn't rest on them.
+pub fn keep_used(statement: &mut Statement, callees: &[crate::shared::Callee], used: &[String]) {
+    let names = crate::shared::names(callees);
+    let unused: Vec<&str> = names.iter().zip(callees).filter(|(n, _)| !used.contains(n)).filter_map(|(_, c)| c.proved.as_ref().map(|p| p.key.as_str())).collect();
+    statement.assumptions.retain(|a| !(a.kind == AssumptionKind::Callee && a.id.as_deref().is_some_and(|id| unused.contains(&id))));
 }

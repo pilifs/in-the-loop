@@ -265,7 +265,37 @@ pub fn store_detail(dir: &Path, record: &ResultRecord, detail: Option<Value>) ->
 
 /// The callee evidence a check of `subject` (`pkg.Class#method`) between the classes under `before` and `after` reuses:
 /// pure helpers whose own equivalence proof is in the cache under `dir`, shared in both versions (S4).
+///
+/// It plans `subject`'s check as `equivalence --engine native --cache DIR` does, without running it: each changed pure
+/// helper of the narrow kind [`crate::shared`] describes is proved (or found in the cache) as a check of its own, and
+/// the ones proved equivalent on every input are the evidence the check would reuse, each named `pkg.Class#method`
+/// with its proof's claim key.
 pub fn callee_reuse(dir: &Path, subject: &str, before: &Path, after: &Path) -> Result<Vec<Reuse>, Unsupported> {
-    let _ = (dir, subject, before, after);
-    Err(Unsupported::new(Part::Summaries, "shared helpers proved equivalent (S4)"))
+    let failed = |e: String| Unsupported::new(Part::Summaries, format!("{subject}'s callees could not be planned: {e}"));
+    let cp = |dir: &Path| -> Result<crate::classpath::ClassPath, Unsupported> {
+        let mut cp = crate::classpath::ClassPath::new();
+        cp.add(dir).map_err(|e| failed(e.to_string()))?;
+        Ok(cp.with_default_jdk())
+    };
+    let (before_cp, after_cp) = (cp(before)?, cp(after)?);
+    let method = |cp: &crate::classpath::ClassPath| -> Result<crate::classfile::MemberRef, Unsupported> {
+        let (class, _) = crate::verifier::parse_target(subject).ok_or_else(|| failed("a subject is <class>#<method>".into()))?;
+        let file = cp.application(&class).map_err(|e| failed(e.to_string()))?.ok_or_else(|| failed(format!("no class {class}")))?;
+        let m = crate::verifier::select_method(&file, subject).map_err(failed)?;
+        Ok(crate::classfile::MemberRef::new(&class, &m.name, &m.descriptor))
+    };
+    let (before_target, target) = (method(&before_cp)?, method(&after_cp)?);
+    let mut options = crate::equivalence::Options::new(before, after, subject);
+    options.engine = crate::Engine::Native;
+    options.cache = Some(dir.to_path_buf());
+    options.timeout_seconds = 120;
+    let work = crate::tla::tempfile_path("jvmcontract-callee-reuse");
+    let mut helpers = crate::proof_cache::Helpers::new(&options, &work);
+    let plan = crate::shared::plan_with(&before_cp, &after_cp, &before_target, &target, true, &mut |c| helpers.prove(c));
+    let _ = std::fs::remove_dir_all(&work);
+    Ok(plan
+        .callees
+        .iter()
+        .filter_map(|c| c.proved.as_ref().map(|p| Reuse::Callee { callee: format!("{}#{}", c.owner.replace('/', "."), c.name), key: ClaimKey(p.key.clone()) }))
+        .collect())
 }

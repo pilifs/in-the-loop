@@ -189,6 +189,9 @@ pub enum AssumptionKind {
     Gap,
     /// What a contract for a gap states, which the own checker applied at the call (`--contracts`).
     Contract,
+    /// A callee whose two versions differ, taken as one function in both because a regression proof of its own
+    /// showed they have the same outcome on every input ([`crate::shared::Proved`]); `id` is that proof's claim key.
+    Callee,
 }
 
 /// Why an assumption is taken: what stands behind it.
@@ -204,7 +207,8 @@ pub enum Basis {
     /// An approximation the own checker took at a gap (`--gaps assume`), checked against nothing.
     Assumed,
     /// A contract for a gap that the tool's own checker proved against the JDK's bytecode on every input it is
-    /// about, and a real JVM's test does not refute (`--contracts`).
+    /// about, and a real JVM's test does not refute (`--contracts`). For a [`AssumptionKind::Callee`], the regression
+    /// proof of the callee's two versions under the claim key in `id`.
     Proved,
     /// A contract for a gap that a real JVM ran the JDK's call against, on boundary and seeded random inputs, none
     /// refuting it (`--contracts`): evidence, not a proof.

@@ -276,15 +276,88 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     04:44 on 2026-11-07, after S2b, and jj rebased this branch onto the rewrite. The default workspace's manifest of
     `c2bd9df4` lists that log, and this branch's copy, from before the rewrite, doesn't. This branch may not edit
     `llm-dlc/traces/`, so the errors clear at the merge.
-- Next: S4, narrow shared helpers proved equivalent.
-  - In `shared.rs`: a pure, deterministic helper pair with the same parameter and result types, whose own
-    equivalence proof (in the cache, or proved first within the budget) covers the caller's call sites. It gets one
-    stub in both versions, with an assumption of basis `proved` naming the helper's claim key.
-  - The applicability check is at each call: the helper proof's bounds and assumptions become assertions there.
-  - The dependencies are acyclic.
-  - Examples 160 and 161: a refactored helper proved once, then reused by its caller; and a sibling where the
-    helper's change is wrong and the caller's check finds it.
-  - Then the integration contract's "summaries reuse" check.
+- **S4 split in two** (2026-11-07): S4a is the mechanism, its tests and the integration contract's "summaries reuse"
+  check. S4b is examples 160 and 161, which need `build.py` to run an example with `--cache`, and a job.
+- **S4a done** (2026-11-07): a changed helper proved equivalent, shared in its callers.
+  - **Found first:** under `--engine native`, no callee was ever shared. The stub class and the redirected classes
+    went only on JBMC's class path, and the own checker proved with every callee as written. For an identical callee
+    that costs nothing, since the checker's hashing makes both versions' calls one circuit (example 120's notes say
+    so). The cache is native-only, so a proved helper has to be shared under the own checker.
+  - **How it is shared.** Under the own checker, the one function is the helper's new version itself. The previous
+    version's calls of it are redirected to the new method (`shared::substitute_directory`). The two versions have
+    the same outcome on every input and neither has an effect, so the redirected previous version behaves exactly as
+    written. The proof is exact: a counterexample is a real one, and no refinement is needed. The memo stub of an
+    unchanged callee is still what JBMC would get.
+  - **The narrow class** (`shared::plan_with`). The helper:
+    - is a static method both versions call, pure in each (no fields, arrays or effects);
+    - works over integral values only (a regression proof's comparison doesn't tell `0.0` from `-0.0`);
+    - raises no exception of its own, so it can throw only the JVM's `ArithmeticException` (a regression proof
+      compares exceptions by class, not message);
+    - has no static initializer in its classes, nor in their application superclasses, in either version, since a
+      redirected call would initialize the other version's class;
+    - is not trivial in both versions.
+  - **The proof** (`proof_cache::Helpers`). With `--cache` and `--engine native`, the helper is checked first as a
+    check of its own: the same builds and settings, the helper as the target, nothing restricting its inputs. It runs
+    within half the caller's time, and the caller's deadline loses what it took. Or the proof is found in the cache
+    under that check's key.
+    - It is used only if verified, complete, in the cache, and resting on no assumption beyond the checker's own and
+      other helpers' proofs.
+    - The caller's statement then gains an assumption of kind `callee`, basis `proved`, with the helper proof's key
+      as its id. It is in the caller's claim, so the caller's key changes with the helper's proof.
+    - If the caller's proof ends up not using it, the assumption is dropped from the result (`keep_used`).
+    - A helper that can't be shared is left as written, with a note saying why: refuted (with its counterexample),
+      unresolved, no time left, or a cycle.
+  - **Applicability at the call site.** Only a proof over every input of the helper's parameter types is used, so
+    every call, in either version and with any arguments, is in its domain. The assertion at the call is then
+    `true`, and nothing is compared by numeric bounds. A helper proof with a narrower domain (`--unchanged-unless`,
+    mapped arguments, a relation between results) is never used, since it would need a real assertion at each call.
+  - **Acyclic.** The checks in progress on a thread are a stack, and a helper on it stays as written. No cycle can
+    form through the cache either, since a claim's key digests the keys of the helper proofs it rests on.
+  - `cache::callee_reuse` plans a subject's check without running it. The integration contract's "summaries reuse
+    of shop.Pricing#discount in shop.Pricing#total" now passes, with the fixture's `discount` proved natively. All
+    three summaries checks pass.
+  - Tests: 5 more in `lib/tests/summaries.rs` (36 in all).
+    - A refactored helper is proved once, and is one function in both versions of each of its two callers. The
+      second caller finds the proof in the cache. The previous version's calls are redirected, the proof line names
+      the claim, and the key is the one a check of the helper alone gets.
+    - A helper that rounds up is refuted and stays as written, and its caller's check finds the regression with a
+      replayed counterexample.
+    - A helper changed only where one caller never calls it is refuted. That caller is proved with it as written,
+      and its other caller is refuted.
+    - A helper that throws its own exception, and one over `double`, are never offered for proof.
+    - Mutually recursive helpers: the helper's stored proof was made with its caller as written.
+  - S2b's exact-hit test now finds two cache entries: `Fee.base`, rewritten from `n * 3` to `n + n + n`, is a changed
+    helper and is proved first.
+  - Checked that the tests can fail:
+    - With the cycle check off, the acyclicity test fails: the inner proof rests on the outer one.
+    - With a refuted helper proof accepted, both the rounded-up regression and the one above a thousand are
+      "verified", and two tests fail.
+  - The unit tests (183), `conformance.rs` (9), `integration.rs` (64), `foundations.rs` (3) and `summaries.rs` (36)
+    pass.
+  - Shared files changed:
+    - `lib/src/equivalence.rs`:
+      - the plan is made with `shared::plan_with` and `proof_cache::Helpers`;
+      - `claim_assumptions` gains the helpers' assumptions; it is now `mut`, and the `stated` closure moved below the
+        plan to allow that;
+      - the deadline is shortened by the helpers' time;
+      - the proof line's sharing clause comes from `shared::sharing`, with the same text as before for unchanged
+        callees;
+      - the native run's class path gets the redirected previous version, and `shared_used` is set for it;
+      - `keep_used` is applied to the final statement.
+    - `lib/src/statement.rs`: `AssumptionKind::Callee`, and a sentence in `Basis::Proved`'s doc.
+    - `examples/schema/result.schema.json`: the `callee` kind, and the basis description.
+    - `lib/tests/summaries.rs`, and `lib/README.md` (a paragraph on proved helpers).
+    - Own files: `shared.rs`, `proof_cache.rs` (`Helpers`, `applicable`, `keep_used`, and the keys recorded per
+      thread) and `spec/cache.rs` (`callee_reuse`).
+  - Note for the reconcile loop: a hook another stream adds to `equivalence.rs` between the harness and the plan,
+    and calls `stated` from, has to go below the plan now.
+- Next: S4b, examples 160 and 161.
+  - 160: a refactored pure helper on a javac app, proved once, then reused by its caller.
+  - 161: a sibling where the helper's change is wrong, and the caller's check finds it with a replayed
+    counterexample.
+  - `build.py` passes `--cache` to an example's B9 run when its `approach` asks for it, with a fresh directory under
+    the build, never committed. It also records the `callee` assumption and the helper's note.
+  - Both are B9 runs, so they go to a job.
 - Status: working
 
 ## Loop settings

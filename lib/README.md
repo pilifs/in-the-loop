@@ -328,6 +328,21 @@ to an exact reuse naming the claim key and the run it came from, and no checker 
 stored witness in the harness on both versions as they are now, and is a miss if it no longer reproduces; a
 refutation whose witness doesn't reproduce in the interpreter, as stored, is not stored at all.
 
+With `--cache`, a **changed helper proved equivalent** is shared too ([`shared`](src/shared.rs),
+[`proof_cache::Helpers`](src/proof_cache.rs)), narrowly: a static helper both versions call, pure in each (as for an
+unchanged shared callee), over integral values only, raising no exception of its own (a regression proof compares
+exceptions by class, not message), whose classes have no static initializer. It is proved first as a check of its
+own (the same builds and settings, the helper as the target, nothing restricting its inputs), within half the
+caller's time, or found in the cache under that check's key. A proof on every input makes it one function in both
+versions: under the own checker, the previous version's calls are redirected to the new version's method, so the
+proof is of the versions as they behave and needs no refinement. The caller's statement gains an assumption of
+kind `callee`, basis `proved`, whose id is the helper proof's key, so the caller's own key changes with it. Since
+the helper's proof covers every input, every call in either version is in its domain; a proof with a narrower domain
+(`--unchanged-unless`, mapped arguments, a relation between results) is never used, as it would need an assertion at
+each call. A refuted or unresolved helper stays as written in both versions, with a note saying why, and the
+caller's check finds what the change does there. A helper is never proved within its own proof, directly or
+through others: the checks in progress are a stack, and a helper on it stays as written.
+
 `impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
 invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as
 it is, with `previousSymbol` for a renamed method). A claim's code is what its key digests: the closures of the

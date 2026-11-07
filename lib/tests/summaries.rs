@@ -653,7 +653,9 @@ fn a_rerun_of_the_same_claim_is_an_exact_hit() {
     assert_eq!(cold.verdict, jvmcontract::Verdict::Verified, "{}", cold.output);
     assert!(cold.reuse.is_none() && cold.search.is_some(), "the first run proves");
     assert!(cold.output.contains("stored in the proof cache"), "{}", cold.output);
-    assert_eq!(walk_files(&dir).len(), 1, "one entry");
+    // Two entries: the check's, and that of `base`, the changed helper it shares once proved first (S4).
+    assert_eq!(walk_files(&dir).len(), 2, "two entries");
+    assert!(cold.output.contains("Fee.base, changed: its two versions have the same outcome"), "{}", cold.output);
     // Another work directory: where a check works is not part of its claim.
     let warm = check(&before, &after, &dir, "hit-warm", |_| {});
     assert_eq!(warm.verdict, jvmcontract::Verdict::Verified, "{}", warm.output);
@@ -829,4 +831,213 @@ fn claims_are_read_from_build_py_s_records_as_they_are() {
     let expected = [("023", "p.A#f", None), ("128", "p.B#g", Some("p.C#g")), ("031", "p.D#h", None), ("x", "p.E#i", Some("p.E#j"))];
     assert_eq!(claims, expected.map(|(id, t, b)| Claim { id: id.into(), target: t.into(), before_target: b.map(str::to_string) }));
     assert!(impact::claims_from_json(&serde_json::json!([{"example": "1"}])).is_err(), "a claim with no target is refused");
+}
+
+// S4: a changed helper proved equivalent, shared in its callers.
+
+use jvmcontract::statement::{AssumptionKind, Basis};
+
+const SPLIT: &str = r#"package h;
+public class Split {
+    static long share(long total, int ways) { return ways <= 0 ? 0 : total / ways; }
+    public static long perSeat(long total, int seats) { return share(total, seats) + 1; }
+    public static long perRow(long total, int rows) { return rows > 100 ? 0 : share(total, rows) * 2; }
+}
+"#;
+
+/// `SPLIT` with the helper written the other way round: the same outcome on every input.
+const SPLIT_REFACTORED: &str = r#"package h;
+public class Split {
+    static long share(long total, int ways) {
+        if (ways < 1) return 0;
+        return total / ways;
+    }
+    public static long perSeat(long total, int seats) { return share(total, seats) + 1; }
+    public static long perRow(long total, int rows) { return rows > 100 ? 0 : share(total, rows) * 2; }
+}
+"#;
+
+/// `SPLIT` with the helper rounding up: a regression wherever the division leaves a remainder.
+const SPLIT_ROUNDED_UP: &str = r#"package h;
+public class Split {
+    static long share(long total, int ways) {
+        if (ways < 1) return 0;
+        return (total + ways - 1) / ways;
+    }
+    public static long perSeat(long total, int seats) { return share(total, seats) + 1; }
+    public static long perRow(long total, int rows) { return rows > 100 ? 0 : share(total, rows) * 2; }
+}
+"#;
+
+/// `SPLIT` with the helper changed only above a thousand ways, which `perRow` never asks for.
+const SPLIT_CAPPED: &str = r#"package h;
+public class Split {
+    static long share(long total, int ways) {
+        if (ways < 1 || ways > 1000) return 0;
+        return total / ways;
+    }
+    public static long perSeat(long total, int seats) { return share(total, seats) + 1; }
+    public static long perRow(long total, int rows) { return rows > 100 ? 0 : share(total, rows) * 2; }
+}
+"#;
+
+fn split(name: &str, source: &str) -> Option<PathBuf> {
+    compile(name, &[("h/Split.java", source)])
+}
+
+/// A native regression check of `target` with the cache `cache`.
+fn check_target(before: &Path, after: &Path, cache: &Path, name: &str, target: &str) -> equivalence::Outcome {
+    check(before, after, cache, name, |o| o.target = target.into())
+}
+
+/// The `callee` assumptions of a result: (text, basis, id).
+fn callee_assumptions(outcome: &equivalence::Outcome) -> Vec<(String, Basis, Option<String>)> {
+    outcome.stated.iter().flat_map(|s| s.assumptions.iter()).filter(|a| a.kind == AssumptionKind::Callee).map(|a| (a.text.clone(), a.basis, a.id.clone())).collect()
+}
+
+#[test]
+fn a_changed_helper_proved_once_is_one_function_in_each_of_its_callers() {
+    let (Some(before), Some(after)) = (split("split-before", SPLIT), split("split-refactored", SPLIT_REFACTORED)) else { return };
+    let dir = empty_cache("split");
+    let first = check_target(&before, &after, &dir, "split-per-seat", "h.Split#perSeat");
+    assert_eq!(first.verdict, jvmcontract::Verdict::Verified, "{}", first.output);
+    assert!(first.output.contains("note: Split.share, changed: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:"), "{}", first.output);
+    let assumed = callee_assumptions(&first);
+    assert_eq!(assumed.len(), 1, "{assumed:?}");
+    let (text, basis, id) = &assumed[0];
+    let key = id.clone().expect("the helper proof's claim key");
+    assert_eq!(*basis, Basis::Proved);
+    assert!(text.starts_with("Split.share(long, int), changed, is one function in both versions") && text.contains(&key), "{text}");
+    assert_eq!(first.shared, vec!["Split.share".to_string()]);
+    let proof = first.proof.clone().unwrap_or_default();
+    assert!(proof.contains(&format!("Split.share changed, its two versions proved to have the same outcome on every input (claim {key}), and taken as one function in both")), "{proof}");
+    // The one function is the helper's new version: the previous version's calls of it were redirected there.
+    let substituted = std::fs::read(first.work.join("substituted-classes/before/h/Split.class")).expect("the previous version's class, redirected");
+    let class = jvmcontract::classfile::ClassFile::parse(&substituted).unwrap();
+    let calls: Vec<String> = class
+        .methods
+        .iter()
+        .filter_map(|m| m.code.as_ref())
+        .flat_map(|c| c.instructions().unwrap())
+        .filter_map(|(_, i)| match i {
+            jvmcontract::classfile::Insn::InvokeStatic(i) => class.pool.member(i).ok().map(|m| format!("{}.{}", m.owner, m.name)),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(calls, vec!["h/Split.share".to_string(), "h/Split.share".to_string()], "perSeat's and perRow's calls");
+    // The helper's proof is in the cache under its own claim, the one a check of the helper alone has.
+    assert!(cache::lookup(&dir, &ClaimKey(key.clone())).unwrap().is_some_and(|r| r.outcome.verdict == Verdict::Verified));
+    let alone = check_target(&before, &after, &dir, "split-share", "h.Split#share(long, int)");
+    assert_eq!(exact_key(&alone), Some(ClaimKey(key.clone())), "{}", alone.output);
+    // Another caller of the helper reuses that proof, and proves nothing of the helper again.
+    let second = check_target(&before, &after, &dir, "split-per-row", "h.Split#perRow");
+    assert_eq!(second.verdict, jvmcontract::Verdict::Verified, "{}", second.output);
+    assert!(second.output.contains(&format!("found in the proof cache (claim {key}); one function in both versions")), "{}", second.output);
+    assert_eq!(callee_assumptions(&second).iter().map(|a| a.2.clone()).collect::<Vec<_>>(), vec![Some(key.clone())]);
+    // The helper proof is part of each caller's claim: its stored statement names it.
+    let rerun = check_target(&before, &after, &dir, "split-per-seat-again", "h.Split#perSeat");
+    assert!(exact_key(&rerun).is_some(), "{}", rerun.output);
+    assert_eq!(callee_assumptions(&rerun), assumed, "{:#?}\n{}", rerun.stated, rerun.output);
+}
+
+#[test]
+fn a_wrong_helper_change_is_not_shared_and_its_caller_s_check_finds_it() {
+    let (Some(before), Some(wrong)) = (split("split-before-2", SPLIT), split("split-rounded-up", SPLIT_ROUNDED_UP)) else { return };
+    let dir = empty_cache("split-wrong");
+    let outcome = check_target(&before, &wrong, &dir, "split-wrong-per-seat", "h.Split#perSeat");
+    assert_eq!(outcome.verdict, jvmcontract::Verdict::Violation, "{}", outcome.output);
+    assert!(outcome.output.contains("note: Split.share, changed, stays as written in both versions: its two versions differ, at share("), "{}", outcome.output);
+    assert!(callee_assumptions(&outcome).is_empty() && outcome.shared.is_empty());
+    assert!(outcome.replay.as_ref().is_some_and(|r| r.reproduced), "a counterexample replayed: {:?}", outcome.replay);
+    let c = outcome.counterexample.expect("a counterexample");
+    assert_ne!(c.before, c.after, "{c:?}");
+}
+
+#[test]
+fn a_helper_that_differs_only_where_its_caller_never_calls_it_is_proved_as_written() {
+    let (Some(before), Some(capped)) = (split("split-before-3", SPLIT), split("split-capped", SPLIT_CAPPED)) else { return };
+    let dir = empty_cache("split-capped");
+    let outcome = check_target(&before, &capped, &dir, "split-capped-per-row", "h.Split#perRow");
+    assert_eq!(outcome.verdict, jvmcontract::Verdict::Verified, "{}", outcome.output);
+    assert!(outcome.output.contains("note: Split.share, changed, stays as written in both versions: its two versions differ"), "{}", outcome.output);
+    assert!(callee_assumptions(&outcome).is_empty() && outcome.shared.is_empty());
+    // Its other caller does call it there.
+    let other = check_target(&before, &capped, &dir, "split-capped-per-seat", "h.Split#perSeat");
+    assert_eq!(other.verdict, jvmcontract::Verdict::Violation, "{}", other.output);
+}
+
+/// Helpers outside the narrow kind: one that throws an exception of its own, whose message a regression proof
+/// doesn't compare, and one over `double`.
+const ODD_HELPERS: &str = r#"package h;
+public class Odd {
+    static long checked(long total, int ways) { if (ways <= 0) throw new IllegalArgumentException("no ways: " + ways); return total / ways; }
+    static double half(double x) { return x / 2; }
+    public static long use(long total, int ways, double x) { return checked(total, ways) + (long) half(x); }
+}
+"#;
+
+const ODD_HELPERS_CHANGED: &str = r#"package h;
+public class Odd {
+    static long checked(long total, int ways) { if (ways < 1) throw new IllegalArgumentException("ways " + ways + " < 1"); return total / ways; }
+    static double half(double x) { return x * 0.5; }
+    public static long use(long total, int ways, double x) { return checked(total, ways) + (long) half(x); }
+}
+"#;
+
+#[test]
+fn only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof() {
+    let (Some(before), Some(after)) = (compile("odd-before", &[("h/Odd.java", ODD_HELPERS)]), compile("odd-after", &[("h/Odd.java", ODD_HELPERS_CHANGED)])) else { return };
+    let (b, a) = (cp(&before), cp(&after));
+    let target = MemberRef::new("h/Odd", "use", "(JID)J");
+    let mut asked = Vec::new();
+    let plan = shared::plan_with(&b, &a, &target, &target, true, &mut |c| {
+        asked.push(c.name.clone());
+        None
+    });
+    assert!(asked.is_empty(), "asked about {asked:?}");
+    assert!(plan.callees.is_empty(), "{:?}", plan.callees);
+    // The same helpers over the split: asked, and shared with the proof given.
+    let (Some(before), Some(after)) = (split("split-plan-before", SPLIT), split("split-plan-after", SPLIT_REFACTORED)) else { return };
+    let (b, a) = (cp(&before), cp(&after));
+    let target = MemberRef::new("h/Split", "perSeat", "(JI)J");
+    let given = shared::Proved { key: "sha256:given".into(), from: "a test".into() };
+    let plan = shared::plan_with(&b, &a, &target, &target, true, &mut |c| (c.name == "share").then(|| given.clone()));
+    assert_eq!(plan.callees.len(), 1);
+    assert_eq!((plan.callees[0].name.as_str(), plan.callees[0].proved.as_ref()), ("share", Some(&given)));
+    assert_eq!(plan.callees[0].throws, vec!["java/lang/ArithmeticException".to_string()]);
+    assert!(shared::plan(&b, &a, &target, &target, true).callees.is_empty(), "without a proof, nothing is shared");
+}
+
+/// Two changed helpers that call each other, each the other's helper: neither proof may rest on the other's.
+const MUTUAL: &str = r#"package h;
+public class Mutual {
+    public static int f(int n) { return n > 10 ? g(10) + 1 : n * 2 + 1; }
+    static int g(int n) { return n > 5 ? f(5) * 3 : n * 3; }
+}
+"#;
+
+const MUTUAL_REWRITTEN: &str = r#"package h;
+public class Mutual {
+    public static int f(int n) { if (n <= 10) return n * 2 + 1; return g(10) + 1; }
+    static int g(int n) { if (n <= 5) return n * 3; return f(5) * 3; }
+}
+"#;
+
+#[test]
+fn a_helper_s_proof_never_rests_on_the_proof_it_is_used_in() {
+    let (Some(before), Some(after)) = (compile("mutual-before", &[("h/Mutual.java", MUTUAL)]), compile("mutual-after", &[("h/Mutual.java", MUTUAL_REWRITTEN)])) else { return };
+    let dir = empty_cache("mutual");
+    let outcome = check_target(&before, &after, &dir, "mutual-f", "h.Mutual#f");
+    assert_eq!(outcome.verdict, jvmcontract::Verdict::Verified, "{}", outcome.output);
+    let assumed = callee_assumptions(&outcome);
+    assert_eq!(assumed.len(), 1, "g's proof is reused in f's: {assumed:?}");
+    let key = ClaimKey(assumed[0].2.clone().unwrap());
+    // g's proof was made with f as written: f's proof is the one it is used in.
+    let (record, detail) = cache::lookup_detail(&dir, &key).unwrap().expect("g's proof is stored");
+    assert_eq!(record.outcome.verdict, Verdict::Verified);
+    let detail = detail.expect("its report");
+    let output = detail["output"].as_str().unwrap();
+    assert!(output.contains("note: Mutual.f, changed, stays as written in both versions: its proof would rest on the proof it is used in"), "{output}");
+    let rests: Vec<&Value> = detail["statement"]["assumptions"].as_array().unwrap().iter().filter(|a| a["kind"] == "callee").collect();
+    assert!(rests.is_empty(), "{rests:?}");
 }
