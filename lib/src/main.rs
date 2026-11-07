@@ -188,6 +188,10 @@ enum Command {
         /// The longest array the proof considers.
         #[arg(long, default_value_t = 8)]
         max_array_length: u32,
+        /// The proof cache's directory: each entry point's effect-trace proof is looked up under its claim key (the
+        /// rewritten builds' closures, recording stubs included) and stored once decided. Local; never commit it.
+        #[arg(long)]
+        cache: Option<PathBuf>,
         /// Print JSON (one check per entry point, with its outcome, assumptions and traces) instead of text.
         #[arg(long)]
         json: bool,
@@ -210,8 +214,9 @@ enum Command {
         before: PathBuf,
         /// The new build's classes (one directory).
         after: PathBuf,
-        /// The proof cache's directory, for the kernel's checks: an unchanged rerun reuses each result, and a changed
-        /// pure helper is proved once and shared in its callers. Local; never commit it.
+        /// The proof cache's directory, for every proof of the run: an unchanged rerun reuses each result (the entry
+        /// points' effect-trace proofs and the kernel's checks), and a changed pure helper is proved once and shared
+        /// in its callers. Local; never commit it.
         #[arg(long)]
         cache: Option<PathBuf>,
         /// The unwinding bound of every proof.
@@ -979,9 +984,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(0)
         }
-        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, json, report, sources, base } => {
+        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, cache, json, report, sources, base } => {
             let bounds = jvmcontract::spec::ClaimBounds { unwind, max_array_length };
-            let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds).map_err(|u| Error::new(u.to_string()))?;
+            let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds, cache.as_deref()).map_err(|u| Error::new(u.to_string()))?;
             if let Some(report) = &report {
                 jvmcontract::sarif::write(&report.join("effects.sarif"), &jvmcontract::effects::findings(&checks, &sources, base.as_deref()))?;
             }

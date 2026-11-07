@@ -629,9 +629,8 @@ annotations or configuration, which S1 adds.
     each proposal's evidence is "proved for" its claim key.
   - Boundary preservation, passes: `POST /quotes`'s result, exception, status and event are preserved, and each is an
     obligation.
-  - Exact reuse, **partial**: the rerun's kernel results are exact hits from the first run, but the entry points'
-    effect checks are not cached. The effect check proves a rewritten copy of each build with recording stubs, and
-    whether a key covers the stubs and the environment model is not checked yet.
+  - Exact reuse, passes since this loop's third cycle (below): the rerun's results are exact hits from the first run,
+    `POST /quotes`'s effect-trace proof and the kernel's checks alike.
   - Compositional reuse, passes: `Pricing.discount`'s own proof is used in `total`'s.
   - Defect detection, passes: all 12 cases of `golden/expected.json`.
     - offset, dropped-effect and duplicated-effect are refuted, the entry points' witnesses replayed on a JVM.
@@ -639,7 +638,7 @@ annotations or configuration, which S1 adds.
     - alias-to-copy's `withQuantity` is refuted on `identity:result==q` alone.
     - outside-domain's `total` is verified within the constructor-made domain.
     - route-change's `POST /quotes` is unresolved, with four observation-change questions.
-    - The stale-cache defect is exercised for the kernel only, since the entry points are uncached.
+    - The stale-cache defect is exercised in the kernel and, since the third cycle, at the boundary.
   - Honest incompleteness, passes: `POST /quotes/text` is unresolved (string concatenation). So are two kernel pairs,
     named: `Quote#cents` moved to `Money#cents`, and the instance method `Quote#quantity`.
   - Effort, passes: the run counts decisions in five categories (zero for the correct refactor), lists its questions,
@@ -660,10 +659,34 @@ annotations or configuration, which S1 adds.
     - `heap::check_with` (a cache directory, and a `Reused` report of the claim key, the exact hit and the callees);
     - `proof_cache::key_mark` and `key_since`;
     - the fixture's compiler, moved to `lib/tests/foundations_fixture/`, shared with `tests/foundations.rs`.
+- **The entry points under the proof cache** (2026-11-07, this loop's third cycle), the rest of the exact-reuse row:
+  `effects::check_with` runs the effect-trace proof with `equivalence`'s cache, from `jvmcontract effects --cache DIR`
+  and from `compare --cache`. The proof is a regression check of the two rewritten builds, so its key digests their
+  closures from the generated entry method. That takes in the recording stubs and the environment model they encode:
+  the calls in log order, the snapshotted payload paths, the trace bound, the exception classes and the string
+  literals. Checked against `closure.rs`: a closure follows `invokestatic` into the stubs' methods, and digests their
+  class's fields with it. What the result adds to the proof (the specs' unresolved parts, the external inputs, the
+  status mapping) is worked out again on every run. The configuration files are not copied into the rewritten builds,
+  and none is read: the handler is made with its dependencies null and its configuration at the types' defaults, as
+  the result's assumptions say.
+  - The stale-cache defect at the boundary, in `tests/effects.rs`
+    (`an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged`):
+    - a rerun is an exact hit;
+    - one more attempt allowed, `data.quantity` no longer snapshotted, `@ResponseStatus(CREATED)` added to the route
+      (status then unresolved), and the dropped event each miss under another key;
+    - a rerun of the dropped event reuses its stored refutation, with the witness replayed on a JVM again and both
+      builds' attempts as before.
+    - `route-change` never reaches the cache: the old route has no counterpart.
+    - The Spring stand-in `HttpStatus` gained `CREATED` for this.
+  - In the joint run (`tests/compare.rs`):
+    - `POST /quotes` is a hit on the rerun under the first run's key.
+    - offset, dropped-effect, duplicated-effect and outside-domain prove it again under other keys.
+    - alias-to-copy reuses it, rightly: it changes only `withQuantity`, which the route doesn't reach.
+  - A reuse names the run it came from with the rewritten copies' temporary paths, not the builds given. That is true
+    but less useful than it could be.
+- Every row of Phase 5's table now passes inline. What Phase 0 also asks of Phase 5 is still open: the fixture made an
+  example under the numbers 190–199.
 - **Next**, in order:
-  - The entry points' checks under the proof cache, with a key that covers the recording stubs and the environment
-    model: the rest of the exact-reuse row, and the stale-cache defect at the boundary (route-change, or a change to
-    configuration).
   - Examples 190–199 for the joint example, run by `build.py` through `compare`.
   - Heap's two remaining fixture notes:
     - the golden domain's `allocations: 0` is not checked;

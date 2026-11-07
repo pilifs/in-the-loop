@@ -30,6 +30,10 @@
 //! - **Replayed under the modeled dependencies.** A counterexample is run again on a real JVM: the harness on the
 //!   witness, then each build's log on its own, decoded into the attempts each made. It is a run under the stubs,
 //!   not against a broker or a store.
+//! - **Under the proof cache, when given one** ([`check_with`]). The proof is a regression check of the two rewritten
+//!   builds, keyed as any is ([`crate::proof_cache`]): their closures from the generated entry method, so the stubs
+//!   and the environment model they encode are in the key. A stored refutation's witness is replayed on a JVM again.
+//!   The run a reuse names is on the rewritten copies, in a temporary directory of that run.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -70,6 +74,13 @@ pub struct Checked {
     /// What each build did on the witness, replayed on the JVM, for a refutation (or an unresolved witness).
     pub before: Option<Trace>,
     pub after: Option<Trace>,
+    /// The claim key of the effect-trace proof, when it ran under the proof cache: the closures of both rewritten
+    /// builds, the recording stubs and the generated entry method included.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key: Option<crate::spec::cache::ClaimKey>,
+    /// The stored result that was the proof's: an exact hit of the same key.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reuse: Option<crate::spec::cache::Reuse>,
 }
 
 /// One build's log on one input, decoded.
@@ -181,8 +192,19 @@ fn unsupported(what: impl Into<String>) -> Unsupported {
 /// Discharges the obligations of the entry point `old` (in the classes under `before`) against `new` (under
 /// `after`): see the module's documentation.
 pub fn check(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path) -> Result<Checked, Unsupported> {
+    check_with(claim, old, new, before, after, None)
+}
+
+/// [`check`], with the effect-trace proof under the proof cache in `cache` ([`crate::proof_cache`]) when one is given.
+/// The proof is a regression check of the two rewritten builds, so its claim key digests their closures from the
+/// generated entry method: the handler and what it reaches, the recording stubs, and so the environment model the
+/// stubs encode (the modeled calls in log order, the payload paths each snapshots, the trace bound, the exception
+/// classes the outcome tells apart and the string literals a snapshot can name). A change to any of them is a
+/// different key. Everything else in the result (the specs' unresolved parts, the external inputs, the status
+/// mapping) is worked out again on every run, hit or not, and a stored refutation is replayed on a JVM as a new one is.
+pub fn check_with(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
     let work = crate::tla::tempfile_path("jvmcontract-effects");
-    let checked = check_in(&work, claim, old, new, before, after);
+    let checked = check_in(&work, claim, old, new, before, after, cache);
     let _ = std::fs::remove_dir_all(&work);
     checked
 }
@@ -249,8 +271,9 @@ pub fn findings(checks: &[EntryCheck], sources: &[PathBuf], base: Option<&Path>)
 /// Every entry point of the classes under `before` (or those of `only`, by id), each checked against its
 /// counterpart under `after`, matched as `observations --against` matches them, under the claim its own spec makes
 /// ([`claim_for`]). An entry point with no counterpart is unresolved; one the narrow case can't model is reported
-/// as unsupported, and the others are still checked.
-pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds) -> Result<Vec<EntryCheck>, Unsupported> {
+/// as unsupported, and the others are still checked. With `cache`, each proof runs under the proof cache
+/// ([`check_with`]).
+pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds, cache: Option<&Path>) -> Result<Vec<EntryCheck>, Unsupported> {
     let old = crate::spec::observe::entry_points(before)?;
     let new = crate::spec::observe::entry_points(after)?;
     for id in only {
@@ -274,11 +297,13 @@ pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: O
                 proof: None,
                 before: None,
                 after: None,
+                key: None,
+                reuse: None,
             };
             out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: Some(checked), unsupported: None });
             continue;
         };
-        match check(&claim, spec, counterpart, before, after) {
+        match check_with(&claim, spec, counterpart, before, after, cache) {
             Ok(checked) => out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: Some(checked), unsupported: None }),
             Err(u) => out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: None, unsupported: Some(u.what.clone()) }),
         }
@@ -346,6 +371,9 @@ pub fn render_checks(checks: &[EntryCheck]) -> String {
             s.push_str(&format!("  {}: {p}\n", if k.outcome.verdict == Verdict::Verified { "proof" } else { "search" }));
         }
         s.push_str(&format!("  domain: {}\n", k.outcome.domain));
+        if let Some(crate::spec::cache::Reuse::Exact { key, .. }) = &k.reuse {
+            s.push_str(&format!("  reused: an exact hit of the same claim ({}): nothing was proved again\n", key.0));
+        }
         for a in &k.assumptions {
             s.push_str(&format!("  assumes: {a}\n"));
         }
@@ -360,7 +388,7 @@ fn domain_of(spec: &EntryPointSpec) -> String {
 }
 
 /// [`check`], with the builds, the proof and the JVM run under `work`.
-fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path) -> Result<Checked, Unsupported> {
+fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
     let required = claim.contract.required.clone();
     let environment = claim.environment.clone().unwrap_or_else(|| old.environment.clone());
     let handler = old.handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or("").to_string();
@@ -373,6 +401,8 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         proof: None,
         before: None,
         after: None,
+        key: None,
+        reuse: None,
     };
     let unseen: Vec<String> = old.unresolved.iter().map(|u| format!("the old build: {u}")).chain(new.unresolved.iter().map(|u| format!("the new build: {u}"))).collect();
     if !unseen.is_empty() {
@@ -470,7 +500,13 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     options.unwind = claim.bounds.unwind;
     options.max_array_length = claim.bounds.max_array_length;
     options.timeout_seconds = 300;
+    options.cache = cache.map(Path::to_path_buf);
+    let mark = crate::proof_cache::key_mark();
     let result = crate::equivalence::run(&options).map_err(|e| unsupported(format!("the effect-trace proof of {}: {e}", old.id)))?;
+    let key = cache.and_then(|_| crate::proof_cache::key_since(&new_version.target, mark));
+    let reuse = result.reuse.clone().filter(|r| matches!(r, crate::spec::cache::Reuse::Exact { .. }));
+    // Every result below carries the proof's key and its reuse, an unresolved one included.
+    let unresolved = |reason: String| Checked { key: key.clone(), reuse: reuse.clone(), ..unresolved(reason) };
     let names: Vec<String> = old.inputs.iter().map(|i| i.name.clone()).collect();
     let proof = result.proof.as_deref().map(|p| with_names(p, &names));
     match result.verdict {
@@ -503,7 +539,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
                 .collect::<Vec<_>>();
             let verdict = if reasons.is_empty() { Verdict::Verified } else { Verdict::Unresolved };
             let reason = if reasons.is_empty() { None } else { Some(reasons.join("; ")) };
-            Ok(Checked { outcome: Outcome { verdict, domain, accounting, witness: None, problem: reason.clone() }, reason, assumptions: assumed, proof, before: None, after: None })
+            Ok(Checked { outcome: Outcome { verdict, domain, accounting, witness: None, problem: reason.clone() }, reason, assumptions: assumed, proof, before: None, after: None, key, reuse })
         }
         crate::Verdict::Unverifiable => Ok(Checked { proof, ..unresolved(format!("the effect-trace proof gave no verdict: {}", result.problem.clone().unwrap_or_default())) }),
         crate::Verdict::Violation => {
@@ -590,7 +626,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
                 ta.words(),
                 run.jdk
             );
-            Ok(Checked { outcome: Outcome { verdict: Verdict::Refuted, domain, accounting, witness: Some(witness), problem: None }, reason: None, assumptions: assumed, proof, before: Some(tb), after: Some(ta) })
+            Ok(Checked { outcome: Outcome { verdict: Verdict::Refuted, domain, accounting, witness: Some(witness), problem: None }, reason: None, assumptions: assumed, proof, before: Some(tb), after: Some(ta), key, reuse })
         }
     }
 }

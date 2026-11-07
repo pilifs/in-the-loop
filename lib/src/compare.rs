@@ -11,8 +11,10 @@
 //!    returning one of its object parameters is held to. A subject with several proposals, or one a person must
 //!    decide, is not checked: it is a question. The proposal's evidence is the proof's, under its claim key; its intent
 //!    stays proposed, and a standalone method's proved relation is not an approved refactor.
-//! 3. **Reuse.** With a cache directory, every kernel check runs under the proof cache: an unchanged rerun is an exact
-//!    hit, and a changed pure helper is proved once and taken as one function in its callers.
+//! 3. **Reuse.** With a cache directory, every proof runs under the proof cache: an unchanged rerun is an exact hit,
+//!    the entry points' effect-trace proofs ([`crate::effects::check_with`], keyed on the rewritten builds, recording
+//!    stubs included) as the kernel's checks, and a changed pure helper is proved once and taken as one function in
+//!    its callers.
 //! 4. **Effort.** Every decision a person made, by category, and every question the run leaves for one. This run
 //!    takes no person's input, so the decisions are none; what it asks, it lists.
 
@@ -35,7 +37,8 @@ use crate::spec::{
 pub struct Options {
     pub before: PathBuf,
     pub after: PathBuf,
-    /// The proof cache's directory, for the kernel's checks; none runs them without it.
+    /// The proof cache's directory, for every proof: the entry points' effect traces and the kernel's checks; none
+    /// runs them without it.
     pub cache: Option<PathBuf>,
     pub bounds: ClaimBounds,
 }
@@ -115,7 +118,7 @@ pub fn run(options: &Options) -> Result<Report, Unsupported> {
     let old = crate::spec::observe::entry_points(before)?;
     let new = crate::spec::observe::entry_points(after)?;
     let obligations = crate::spec::observe::compare(&old, &new)?;
-    let entries = crate::effects::check_builds(before, after, &[], None, options.bounds.clone())?;
+    let entries = crate::effects::check_builds(before, after, &[], None, options.bounds.clone(), options.cache.as_deref())?;
     let handlers: Vec<&str> = old.iter().chain(new.iter()).map(|s| s.handler.as_str()).collect();
 
     let load = |dir: &Path| Build::load(dir).map_err(|e| unsupported(format!("reading the build {}: {e}", dir.display())));
@@ -256,7 +259,7 @@ fn state_word(s: crate::spec::ObservationState) -> &'static str {
 /// effort.
 pub fn render(report: &Report) -> String {
     let mut s = String::new();
-    s.push_str(&format!("comparing {} with {}\n\nThe entry points (no mapping: their inputs are anchored by the observation specs; not cached)\n\n", report.before, report.after));
+    s.push_str(&format!("comparing {} with {}\n\nThe entry points (no mapping: their inputs are anchored by the observation specs)\n\n", report.before, report.after));
     s.push_str(&crate::effects::render_checks(&report.entries));
     s.push_str("\nThe kernel (each changed method pair alignment matched, under its proposal)\n\n");
     let mut counts = [0usize; 4];

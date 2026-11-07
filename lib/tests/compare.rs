@@ -86,7 +86,14 @@ fn the_joint_example_passes_every_row() {
     let accounted: Vec<&str> = cold.obligations.iter().filter(|o| o.entry == "POST /quotes").map(|o| o.observation.as_str()).collect();
     assert!(quotes.accounting.iter().all(|a| accounted.contains(&a.observation.as_str())), "every observation of POST /quotes is an obligation: {accounted:?}");
 
-    // Exact reuse: the unchanged rerun's kernel results are the stored ones, each from the first run.
+    // Exact reuse: the unchanged rerun's results are the stored ones, each from the first run: the entry point's
+    // effect-trace proof, under a key of the rewritten builds (recording stubs included), and the kernel's checks.
+    let checked = |r: &Report, id: &str| r.entries.iter().find(|e| e.entry == id).and_then(|e| e.checked.clone()).unwrap_or_else(|| panic!("{id} unchecked"));
+    let (cold_quotes, warm_quotes) = (checked(&cold, "POST /quotes"), checked(&warm, "POST /quotes"));
+    assert!(cold_quotes.reuse.is_none(), "POST /quotes: nothing to reuse on a cold cache");
+    let Some(Reuse::Exact { key, .. }) = &warm_quotes.reuse else { panic!("POST /quotes: the rerun is not an exact hit: {warm_quotes:?}") };
+    assert_eq!(Some(key), cold_quotes.key.as_ref(), "POST /quotes: the hit is the first run's claim");
+    assert_eq!((warm_quotes.outcome.verdict, &warm_quotes.outcome.accounting), (cold_quotes.outcome.verdict, &cold_quotes.outcome.accounting), "POST /quotes: the reused result is the stored one");
     for subject in ["shop.Pricing#total", "shop.Pricing#withQuantity", "shop.Pricing#discount"] {
         assert!(kernel(&cold, subject).reuse.is_none(), "{subject}: nothing to reuse on a cold cache");
         let Some(Reuse::Exact { key, .. }) = &kernel(&warm, subject).reuse else { panic!("{subject}: the rerun is not an exact hit") };
@@ -159,6 +166,16 @@ fn the_joint_example_passes_every_row() {
     // A defect in the kernel is a fresh proof, not the stored result of after's claim.
     let offset = &reports.iter().find(|(n, _)| n == "offset").unwrap().1;
     assert!(kernel(offset, "shop.Pricing#total").reuse.is_none(), "offset's total is proved again");
+    // And so is a defect at the boundary, in the code POST /quotes reaches; alias-to-copy changes only withQuantity,
+    // which it doesn't reach, so its rewritten builds are after's and the stored proof is the same claim's.
+    let quotes_of = |name: &str| checked(&reports.iter().find(|(n, _)| n == name).unwrap().1, "POST /quotes");
+    for name in ["offset", "dropped-effect", "duplicated-effect", "outside-domain"] {
+        let q = quotes_of(name);
+        assert!(q.reuse.is_none() && q.key.as_ref() != cold_quotes.key.as_ref(), "{name}: POST /quotes is proved again under another key: {:?}", q.reuse);
+    }
+    let unreached = quotes_of("alias-to-copy");
+    assert!(matches!(&unreached.reuse, Some(Reuse::Exact { key, .. }) if Some(key) == cold_quotes.key.as_ref()), "alias-to-copy: a change POST /quotes doesn't reach is a hit: {:?}", unreached.reuse);
+    assert_eq!(unreached.outcome.verdict, Verdict::Verified);
 
     // Effort: the correct refactor asks nothing; the route change asks about each of the old route's observations.
     assert!(cold.effort.questions.is_empty(), "{:?}", cold.effort.questions);

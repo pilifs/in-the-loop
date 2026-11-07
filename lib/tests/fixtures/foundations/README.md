@@ -4,7 +4,11 @@ The fixture of [`llm-dlc/loops/foundations.md`](../../../../llm-dlc/loops/founda
 Phase 0 so that the four streams build towards the same target. [`lib/tests/foundations.rs`](../../foundations.rs)
 checks each stream's part against it, and `llm-dlc/tools/foundations-integration.sh` runs that test on a merge of the
 streams while they work. [`lib/tests/compare.rs`](../../compare.rs) runs the four parts together, as `jvmcontract compare`
-does, and holds the result to each row of Phase 5's table.
+does, and holds the result to each row of Phase 5's table, with the proof cache over every run: the rerun of `after`
+is an exact hit at the entry point and in the kernel, each defect the route reaches is proved again under another key,
+and `alias-to-copy`, which changes only a method the route doesn't reach, reuses the route's proof. The stale-cache
+defect at the boundary (a changed trace bound, snapshot, `@ResponseStatus` or handler) is `tests/effects.rs`'s
+`an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged`.
 
 **The change.** A small pricing kernel behind one thin, real annotated entry point (`POST /quotes`, which returns the
 total and sends a `QuoteEvent` on the `quotes` topic when the total is positive). The refactor from `before/` to
@@ -22,7 +26,7 @@ layer that could make it disappear:
 | `dropped-effect` | no event for 100 items or more | the effect trace |
 | `duplicated-effect` | two events for a bulk order | the effect trace, in exact order |
 | `outside-domain` | wrong only for a quantity the constructor rejects | the result's domain label: proved over constructor-made quotes, and nothing claimed beyond |
-| `route-change` | the route is renamed | the obligation is changed, not proved, without approval; a cached result for the old route is not reused |
+| `route-change` | the route is renamed | the obligation is changed, not proved, without approval; a cached result for the old route is not reused (the old route has no counterpart, so no proof is looked up for it) |
 
 `POST /quotes/text` builds a string by concatenation, which this loop doesn't support: it stays visibly unresolved.
 

@@ -9,7 +9,8 @@ use std::sync::{Mutex, OnceLock};
 
 use jvmcontract::effects::{self, Checked};
 use jvmcontract::spec::observe::{self, EntryPointSpec};
-use jvmcontract::spec::{CanonicalClaim, ObservationState, OrderPolicy, Verdict};
+use jvmcontract::spec::cache::{ClaimKey, Reuse};
+use jvmcontract::spec::{CanonicalClaim, Observation, ObservationState, OrderPolicy, Verdict};
 
 const SEND: &str = "effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
 
@@ -178,6 +179,80 @@ fn a_trace_past_its_bound_is_unresolved_not_shorter() {
     // The refactor makes at most one attempt, so the same bound proves it.
     let c = check(&build("after").unwrap(), &claim);
     assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
+}
+
+/// `POST /quotes` of `before` checked against the same entry point of `build`, the proof under the proof cache in
+/// `cache`.
+fn check_cached(build_dir: &Path, claim: &CanonicalClaim, cache: &Path) -> Checked {
+    let before = build("before").unwrap();
+    effects::check_with(claim, &quotes(&before, "POST /quotes"), &quotes(build_dir, "POST /quotes"), &before, build_dir, Some(cache)).unwrap_or_else(|u| panic!("{u}"))
+}
+
+fn exact(c: &Checked) -> Option<&ClaimKey> {
+    match &c.reuse {
+        Some(Reuse::Exact { key, .. }) => Some(key),
+        _ => None,
+    }
+}
+
+/// The stale-cache defect at the boundary: an entry point's effect-trace proof is reused exactly when its claim is
+/// unchanged, and a change to the environment model, to what a recording stub snapshots, to the route's metadata or
+/// to the handler's code is a miss. A stored refutation is a hit too, with its witness replayed on a JVM again.
+#[test]
+fn an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged() {
+    let Some(after) = build("after") else { return };
+    let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("effects-cache");
+    let _ = std::fs::remove_dir_all(&cache);
+    let cold = check_cached(&after, &claim(), &cache);
+    assert_eq!(cold.outcome.verdict, Verdict::Verified, "{cold:?}");
+    let key = cold.key.clone().expect("the proof ran under a claim key");
+    assert!(cold.reuse.is_none(), "nothing to reuse on a cold cache");
+    let warm = check_cached(&after, &claim(), &cache);
+    assert_eq!(exact(&warm), Some(&key), "the unchanged rerun is an exact hit of the same claim: {warm:?}");
+    assert_eq!((warm.outcome.verdict, &warm.outcome.accounting), (cold.outcome.verdict, &cold.outcome.accounting), "the reused result is the stored one");
+    assert!(warm.proof.as_deref().is_some_and(|p| p.contains("reused from the proof cache")), "{:?}", warm.proof);
+    assert_eq!(warm.assumptions, cold.assumptions, "a reused result rests on the same assumptions, and says them");
+
+    // The environment model: one more attempt allowed is a different claim, although the verdict is the same.
+    let mut bound = claim();
+    bound.environment.as_mut().unwrap().trace_bound += 1;
+    let c = check_cached(&after, &bound, &cache);
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
+    assert!(c.reuse.is_none() && c.key.as_ref().is_some_and(|k| *k != key), "a changed trace bound is a miss under another key: {:?}", c.key);
+
+    // What a recording stub snapshots: the event's quantity no longer observed.
+    let mut payload = claim();
+    for o in &mut payload.observations {
+        if let Observation::Effect { payload, .. } = o {
+            payload.retain(|p| p != "data.quantity");
+        }
+    }
+    let c = check_cached(&after, &payload, &cache);
+    assert!(c.reuse.is_none() && c.key.as_ref().is_some_and(|k| *k != key), "a changed snapshot is a miss under another key: {:?}", c.key);
+
+    // The route's metadata: the same code answering 201. A miss, and the changed status is no longer preserved.
+    let created = controller("", "", "        if (total > 0) kafka.send(\"quotes\", new QuoteEvent(total, quantity));\n")
+        .replace("    @PostMapping(\"/quotes\")\n", "    @PostMapping(\"/quotes\")\n    @ResponseStatus(HttpStatus.CREATED)\n")
+        .replace("import org.springframework.web.bind.annotation.RestController;\n", "import org.springframework.web.bind.annotation.RestController;\nimport org.springframework.web.bind.annotation.ResponseStatus;\nimport org.springframework.http.HttpStatus;\n");
+    let created = build_with("status-created", Some(&created)).unwrap();
+    let c = check_cached(&created, &claim(), &cache);
+    assert!(c.reuse.is_none() && c.key.as_ref().is_some_and(|k| *k != key), "a changed annotation is a miss: {:?}", c.key);
+    assert_eq!(state(&c, "status"), ObservationState::Unresolved, "{c:?}");
+    assert_eq!(c.outcome.verdict, Verdict::Unresolved, "{c:?}");
+
+    // The handler's code: the dropped event is proved again, not the refactor's stored result, and refuted; a rerun
+    // reuses the stored refutation, its witness replayed on a JVM again.
+    let dropped = build("dropped-effect").unwrap();
+    let first = check_cached(&dropped, &claim(), &cache);
+    assert!(first.reuse.is_none(), "a changed handler is a miss");
+    assert_eq!(first.outcome.verdict, Verdict::Refuted, "{first:?}");
+    let again = check_cached(&dropped, &claim(), &cache);
+    assert_eq!(exact(&again), first.key.as_ref(), "the rerun reuses the stored refutation: {again:?}");
+    assert_eq!(again.outcome.verdict, Verdict::Refuted, "{again:?}");
+    assert_eq!(state(&again, SEND), ObservationState::Refuted);
+    assert!(again.outcome.witness.as_deref().is_some_and(|w| w.contains("Replayed on a JVM")), "{:?}", again.outcome.witness);
+    assert_eq!(again.before, first.before, "the replay gives the old build's attempts again");
+    assert_eq!(again.after, first.after, "and the new build's");
 }
 
 #[test]
