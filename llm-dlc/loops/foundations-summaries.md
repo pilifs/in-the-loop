@@ -173,13 +173,54 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - `sync.py check` reports 3 errors, none from this branch: sessions with no manifest, behind the heap, observations
     and alignment streams' commits (`uyqkxslyysrm`, `lslmmpwrvxuz`, `yomwzkpyqppx`). Each manifest lives on its
     stream's branch; the errors clear at the merge.
-- Next: S2b, the cache's one call each way in `equivalence.rs`, with `--cache DIR` in `main.rs`.
-  - The lookup goes after the shared plan, on the prepared claim: closures of the target and the record
-    constructors in both versions, assumptions with the shared callees, and the checker configuration in
-    `tools.checker`.
-  - A verified hit returns the stored result marked `Reuse::Exact` with its provenance. A refuted hit replays the
-    stored witness on both versions first, and is a miss if it no longer reproduces.
-  - Cacheable only under `--engine native` until JBMC's own identity is in the key.
+- **S2b done** (2026-11-07): `equivalence --cache DIR`, in `lib/src/proof_cache.rs` (`Regression`, `Entry`).
+  - The hooks in `equivalence.rs`: one lookup once the claim is prepared (after the harness is made and the shared
+    callees are planned, before any checker runs), and one store before the last return.
+  - The claim is the preservation contract (the target and its parameters, by identity or `--before-arguments`), the
+    observations, the flags' correspondence, and the bounds. It also has the statement's assumptions and domain, the
+    harness's digest, and each version's closure from the target and every record constructor. The tools carry every
+    setting that can change a verdict: gap mode, the contracts' digest, the contract library, max trust, the solver
+    record, shrinking, and the JDK.
+  - The deadline is left out of the key: it only decides whether a verdict is reached, and an unresolved result is
+    never stored.
+  - Only `--engine native` is cacheable: under `jbmc` or `auto`, JBMC may decide the claim, and its identity isn't
+    in the key yet. Any other engine gets a note, and nothing is stored.
+  - A verified hit gives back the stored result and statement, with `Outcome.reuse = Reuse::Exact { key, from }`.
+    No checker runs.
+  - A refuted hit replays the stored witness in the harness on both versions as they are now, and is a miss if it
+    no longer reproduces. A refutation whose witness, as stored, doesn't reproduce in the interpreter is never stored
+    (one confirmed only on a JVM, say).
+  - The check's own report is stored beside the record (`cache::store_detail`): output, proof line, statement,
+    findings, counterexample. Its witness types are mirrored here, since `witness.rs` is the heap stream's.
+  - Tests: 5 more in `lib/tests/summaries.rs` (27 in all), with native checks on small `javac` builds.
+    - A rerun is an exact hit with the same statement, gap mode and vacuity included.
+    - A different after version, unwinding bound, array bound, scope, gap mode, no models, or no shared callees
+      each miss.
+    - A refuted hit gives back the same counterexample, and a stored witness edited to an input both versions agree on
+      is a miss and is proved again.
+    - Every argument type reads back from a stored witness. Found by it and fixed: a `null` array argument read back
+      as no value.
+    - Under `auto`, nothing is stored.
+  - Checked that the tests can fail: with the replay of a refuted hit skipped, or the after version's closure fixed,
+    the matching test fails.
+  - Unit tests (183), `conformance.rs` (9), `integration.rs` (64), `foundations.rs` (3) and `summaries.rs` (27)
+    pass. The CLI was run twice on one claim: a miss that stores, then an exact hit.
+  - Shared files changed:
+    - `lib/src/equivalence.rs`: `Options.cache`, `Outcome.reuse` (with `reuse: None` added to its 7 literals),
+      `Confirmed` derives `Deserialize`, and the two calls.
+    - `lib/src/statement.rs`: `Deserialize` on the statement's types. `gap_mode` is `skip_deserializing` because
+      `GapMode` is the heap stream's; the cache restores it by name. Two `Vec` fields get `default`.
+    - `lib/src/main.rs`: `--cache` on `equivalence`.
+    - `lib/tests/summaries.rs`, and `lib/README.md` (a paragraph on `--cache`).
+    - Own files: `spec/cache.rs` (`lookup_detail`, `store_detail`, and `Reuse::Exact` gains `key`) and
+      `proof_cache.rs`.
+  - Notes for the reconcile loop:
+    - A field another stream adds to `Statement` must deserialize, or be `skip_deserializing`. If not, the merge
+      fails to compile, loudly.
+    - Another stream's new field on `equivalence::Outcome` goes beside `reuse` in the same literals.
+- Next: S3, `jvmcontract impact --before DIR --after DIR`. For a set of claims (a `build.py` run's), it names those
+  a change invalidates and why: the parts of each closure that changed, from `Closure::changes`. It is checked on the
+  recorded examples' own before and after builds.
 - Status: working
 
 ## Loop settings

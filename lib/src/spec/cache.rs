@@ -8,7 +8,8 @@
 //! identity) makes it uncacheable too. Nothing that depends on the result or the run is in the claim to begin with.
 //!
 //! **The cache** is a local directory, never committed (decision 3 of `foundations.md`): one JSON file per key,
-//! `claims/HH/HEX.json`, holding a [`ResultRecord`]. Only verified and refuted results are stored, a refuted one with
+//! `claims/HH/HEX.json`, holding a [`ResultRecord`] and, beside it, the check's own report of the result for a reuse
+//! to give back ([`store_detail`]). Only verified and refuted results are stored, a refuted one with
 //! the witness its reuse replays; an unresolved one is never stored. An entry that can't be read, names another key,
 //! or holds what is never stored is a miss.
 
@@ -37,8 +38,8 @@ pub struct ResultRecord {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", tag = "kind")]
 pub enum Reuse {
-    /// The same claim key: the stored result is the result.
-    Exact { from: String },
+    /// The same claim key: the stored result is the result, from the run `from`.
+    Exact { key: ClaimKey, from: String },
     /// A callee's proved equivalence used as a shared stub, with that proof's key.
     Callee { callee: String, key: ClaimKey },
 }
@@ -214,28 +215,49 @@ fn unstorable(outcome: &Outcome) -> Option<&'static str> {
     }
 }
 
+/// What a cache file holds: the record, and beside it the check's own report of the result, for a reuse to give
+/// back as the command that made it reported it (a regression proof's is [`crate::proof_cache`]'s).
+#[derive(Serialize, Deserialize)]
+struct Entry {
+    #[serde(flatten)]
+    record: ResultRecord,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    detail: Option<Value>,
+}
+
 /// The stored result for a key, in the cache directory `dir`; none on a miss. An entry that can't be read, is for
 /// another key, or holds a result that is never stored is a miss.
 pub fn lookup(dir: &Path, key: &ClaimKey) -> Result<Option<ResultRecord>, Unsupported> {
+    Ok(lookup_detail(dir, key)?.map(|(record, _)| record))
+}
+
+/// [`lookup`], with the report stored beside the record, if any.
+pub fn lookup_detail(dir: &Path, key: &ClaimKey) -> Result<Option<(ResultRecord, Option<Value>)>, Unsupported> {
     let path = entry(dir, key)?;
     let Ok(text) = std::fs::read_to_string(&path) else { return Ok(None) };
-    let Ok(record) = serde_json::from_str::<ResultRecord>(&text) else { return Ok(None) };
+    let Ok(Entry { record, detail }) = serde_json::from_str::<Entry>(&text) else { return Ok(None) };
     if record.key != *key || unstorable(&record.outcome).is_some() {
         return Ok(None);
     }
-    Ok(Some(record))
+    Ok(Some((record, detail)))
 }
 
 /// Stores a verified or refuted result; an unresolved one is never stored (an error says so). Written to a
 /// temporary file first and renamed, so a reader never sees half a record.
 pub fn store(dir: &Path, record: &ResultRecord) -> Result<(), Unsupported> {
+    store_detail(dir, record, None)
+}
+
+/// [`store`], with the check's own report of the result beside the record.
+pub fn store_detail(dir: &Path, record: &ResultRecord, detail: Option<Value>) -> Result<(), Unsupported> {
     if let Some(why) = unstorable(&record.outcome) {
         return Err(Unsupported::new(Part::Summaries, why));
     }
     let path = entry(dir, &record.key)?;
     let failed = |e: std::io::Error| Unsupported::new(Part::Summaries, format!("the cache could not store {}: {e}", path.display()));
     std::fs::create_dir_all(path.parent().expect("an entry is in a folder")).map_err(failed)?;
-    let text = serde_json::to_string_pretty(record).map_err(|e| Unsupported::new(Part::Summaries, format!("the record does not serialize: {e}")))?;
+    let entry = Entry { record: record.clone(), detail };
+    let text = serde_json::to_string_pretty(&entry).map_err(|e| Unsupported::new(Part::Summaries, format!("the record does not serialize: {e}")))?;
     let temporary = path.with_extension(format!("tmp-{}", std::process::id()));
     std::fs::write(&temporary, text).map_err(failed)?;
     std::fs::rename(&temporary, &path).map_err(failed)

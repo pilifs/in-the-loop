@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.542Z",
-  "ended": "2026-11-07T04:20:45.441Z",
-  "duration_seconds": 1166,
+  "ended": "2026-11-07T04:38:19.825Z",
+  "duration_seconds": 2220,
   "stats": {
-    "turns": 10,
-    "api_calls": 85,
-    "tool_calls": 87,
+    "turns": 15,
+    "api_calls": 136,
+    "tool_calls": 139,
     "tool_errors": 0,
-    "compactions": 2,
-    "peak_context_tokens": 207655,
+    "compactions": 3,
+    "peak_context_tokens": 249689,
     "usage": {
-      "input_tokens": 168,
-      "output_tokens": 82393,
-      "cache_read_input_tokens": 12009451,
-      "cache_creation_input_tokens": 414696
+      "input_tokens": 270,
+      "output_tokens": 151828,
+      "cache_read_input_tokens": 20854143,
+      "cache_creation_input_tokens": 654680
     }
   },
   "tools": {
-    "Bash": 73,
-    "Read": 7,
+    "Bash": 115,
+    "Read": 17,
     "Write": 4,
     "Edit": 3
   },
@@ -74,24 +74,38 @@
     {
       "index": 2,
       "started": "2026-11-07T04:11:42.125Z",
-      "ended": "2026-11-07T04:20:45.441Z",
-      "turns": 4,
-      "api_calls": 35,
+      "ended": "2026-11-07T04:21:12.717Z",
+      "turns": 5,
+      "api_calls": 38,
       "usage": {
-        "input_tokens": 70,
-        "output_tokens": 40882,
-        "cache_read_input_tokens": 4828626,
-        "cache_creation_input_tokens": 194576
+        "input_tokens": 76,
+        "output_tokens": 42330,
+        "cache_read_input_tokens": 5454187,
+        "cache_creation_input_tokens": 197950
       },
-      "peak_context_tokens": 207655
+      "peak_context_tokens": 211029
+    },
+    {
+      "index": 3,
+      "started": "2026-11-07T04:21:54.987Z",
+      "ended": "2026-11-07T04:38:19.825Z",
+      "turns": 4,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 96,
+        "output_tokens": 67987,
+        "cache_read_input_tokens": 8219131,
+        "cache_creation_input_tokens": 236610
+      },
+      "peak_context_tokens": 249689
     }
   ],
   "log": {
-    "sha256": "ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25",
-    "bytes": 3308154,
-    "lines": 977,
-    "gzip_bytes": 694235,
-    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25.jsonl.gz"
+    "sha256": "0574a91e67a69d966e737ad41438686c9683d75e5fd5bdcdaded18b2f584ede9",
+    "bytes": 5350078,
+    "lines": 1586,
+    "gzip_bytes": 1122028,
+    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/0574a91e67a69d966e737ad41438686c9683d75e5fd5bdcdaded18b2f584ede9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -110,9 +124,23 @@
       "summary": "Summaries S2a: the claim key and the local proof cache, with adversarial invalidation tests",
       "body": "spec/cache.rs implements key, lookup and store. The key is the SHA-256 of the canonical claim written canonically (object keys sorted) under a projection version line. The projection knows every claim field by its path: a field it doesn't know, such as one another stream adds, makes the claim uncacheable rather than being left out of the key, and so does a computed part left empty. The cache is a local directory with one record per key. It stores only verified results and refuted ones that carry a witness; storing an unresolved result is an error, and an entry that is corrupt, for another key, or unresolved is a miss. New: closure::version_digest (a version's code as the closures of the target and of the constructors its inputs are made with), and lib/src/proof_cache.rs (the tool identity: the executable's bytes, the JDK's whole release file, the models' digest).",
       "log_sha256": "ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25"
+    },
+    {
+      "change_id": "tumpnkkqksypoxysyzskovlwuztmrukm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summaries S2b: equivalence --cache DIR, the proof cache's lookup on the prepared claim and its store of the result",
+      "body": "A regression proof under --engine native now takes --cache DIR (lib/src/proof_cache.rs, Regression and Entry). equivalence.rs gets the two calls the summaries brief allows: one lookup once the claim is prepared (the harness generated and the shared callees planned, before any checker runs), and one store before the last return. The canonical claim is built from the preservation contract, the observations, the flags' correspondence, the bounds, the statement's assumptions and domain, the harness's digest, both versions' code closures (the target and every record constructor), and the tools with every setting that can change a verdict. The deadline is left out: it only decides whether a verdict is reached, and an unresolved result is never stored. Under --engine jbmc or auto the claim is uncacheable, with a note, because JBMC's own identity isn't in the key yet.\n\nA verified hit gives back the stored result and statement, marked Outcome.reuse = exact with the claim key and the run it came from, and no checker runs. A refuted hit first replays the stored witness in the harness on both versions as they are now; if it no longer reproduces, the hit is a miss and the claim is proved again. A refutation is stored only when its witness, read back as stored, reproduces in the interpreter. The check's own report (output, proof line, statement, findings, counterexample) is stored beside the record (spec::cache::store_detail). To read it back, statement.rs's types now derive Deserialize (gap_mode is skipped and restored by name, since GapMode is the heap stream's), and the witness types are mirrored in proof_cache.rs.\n\nVerified by 5 new tests in lib/tests/summaries.rs, native checks on small javac builds. A rerun is an exact hit with an equal statement. A different after version, unwinding bound, array bound, scope, gap mode, no models, or no shared callees each miss. A refuted hit gives back the same counterexample, and a stored witness edited to an input both versions agree on is a miss and is proved again. Every argument type reads back from a stored witness; this test found and fixed a null array read back as no value. Under auto, nothing is stored. Skipping the refuted hit's replay, or fixing the after version's closure, makes the matching test fail. Unit tests (183), conformance (9), integration (64), foundations (3) and summaries (27) pass, and the CLI run twice gives a miss that stores, then an exact hit. Shared files changed: equivalence.rs (Options.cache, Outcome.reuse in its 7 literals, the two calls, Confirmed derives Deserialize), statement.rs (Deserialize derives), main.rs (--cache), lib/tests/summaries.rs and lib/README.md. Notes for the reconcile loop: a field another stream adds to Statement must deserialize, and another stream's new Outcome field goes beside reuse in the same literals.",
+      "log_sha256": "0574a91e67a69d966e737ad41438686c9683d75e5fd5bdcdaded18b2f584ede9"
     }
   ],
   "logs": {
+    "0574a91e67a69d966e737ad41438686c9683d75e5fd5bdcdaded18b2f584ede9": {
+      "bytes": 5350078,
+      "lines": 1586,
+      "gzip_bytes": 1122028,
+      "url": null
+    },
     "472982d3adf890c5900c66a7c6834718f74db3d6a5b70ef27dd796b7334864fd": {
       "bytes": 1540668,
       "lines": 430,

@@ -581,3 +581,169 @@ fn an_entry_that_is_corrupt_for_another_key_or_unresolved_is_a_miss() {
     std::fs::write(&path, "{\"key\":").unwrap();
     assert_eq!(cache::lookup(&dir, &verified.key).unwrap(), None, "half a record");
 }
+
+// S2b: the proof cache in a regression proof (`equivalence::run` with `--cache`).
+
+use jvmcontract::equivalence;
+use jvmcontract::spec::cache::Reuse;
+
+const FEE: &str = r#"package c;
+public class Fee {
+    static int base(int n) { return n * 3; }
+    public static int fee(int n) { return n < 0 ? 0 : base(n) + 1; }
+}
+"#;
+
+/// `FEE` with `base` rewritten, behaviour kept.
+const FEE_SUMMED: &str = r#"package c;
+public class Fee {
+    static int base(int n) { return n + n + n; }
+    public static int fee(int n) { return n < 0 ? 0 : base(n) + 1; }
+}
+"#;
+
+/// `FEE` rewritten another way, behaviour kept: another closure.
+const FEE_SHIFTED: &str = r#"package c;
+public class Fee {
+    static int base(int n) { return (n << 1) + n; }
+    public static int fee(int n) { return n < 0 ? 0 : base(n) + 1; }
+}
+"#;
+
+/// `FEE` with a regression above 100.
+const FEE_WRONG: &str = r#"package c;
+public class Fee {
+    static int base(int n) { return n * 3; }
+    public static int fee(int n) { return n < 0 ? 0 : base(n) + (n > 100 ? 2 : 1); }
+}
+"#;
+
+fn fee(name: &str, source: &str) -> Option<PathBuf> {
+    compile(name, &[("c/Fee.java", source)])
+}
+
+/// A native regression check of `c.Fee#fee` with the cache `cache`, in a work directory of its own.
+fn check(before: &Path, after: &Path, cache: &Path, name: &str, change: impl FnOnce(&mut equivalence::Options)) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, "c.Fee#fee");
+    options.engine = jvmcontract::Engine::Native;
+    options.timeout_seconds = 120;
+    options.cache = Some(cache.to_path_buf());
+    let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("summaries-equivalence").join(name);
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    change(&mut options);
+    equivalence::run(&options).unwrap()
+}
+
+fn exact_key(outcome: &equivalence::Outcome) -> Option<ClaimKey> {
+    match &outcome.reuse {
+        Some(Reuse::Exact { key, from }) => {
+            assert!(from.contains("--engine native"), "the run it came from: {from}");
+            Some(key.clone())
+        }
+        _ => None,
+    }
+}
+
+#[test]
+fn a_rerun_of_the_same_claim_is_an_exact_hit() {
+    let (Some(before), Some(after)) = (fee("fee-hit-before", FEE), fee("fee-hit-after", FEE_SUMMED)) else { return };
+    let dir = empty_cache("hit");
+    let cold = check(&before, &after, &dir, "hit-cold", |_| {});
+    assert_eq!(cold.verdict, jvmcontract::Verdict::Verified, "{}", cold.output);
+    assert!(cold.reuse.is_none() && cold.search.is_some(), "the first run proves");
+    assert!(cold.output.contains("stored in the proof cache"), "{}", cold.output);
+    assert_eq!(walk_files(&dir).len(), 1, "one entry");
+    // Another work directory: where a check works is not part of its claim.
+    let warm = check(&before, &after, &dir, "hit-warm", |_| {});
+    assert_eq!(warm.verdict, jvmcontract::Verdict::Verified, "{}", warm.output);
+    let key = exact_key(&warm).expect("an exact reuse");
+    assert!(warm.output.contains(&format!("an exact hit of claim {}", key.0)), "{}", warm.output);
+    assert!(warm.search.is_none(), "no checker ran");
+    assert_eq!(warm.stated, cold.stated, "the same statement, gap mode and vacuity included");
+    assert_eq!(warm.stated.as_ref().and_then(|s| s.gap_mode), Some(jvmcontract::bmc::gaps::GapMode::Strict));
+    assert_eq!((warm.vacuous.clone(), warm.shared.clone()), (cold.vacuous.clone(), cold.shared.clone()));
+    assert!(warm.proof.as_deref().is_some_and(|p| p.starts_with("reused from the proof cache")), "{:?}", warm.proof);
+    // The result as it was reported, without what the cache said then.
+    let reported: String = cold.output.lines().filter(|l| !l.starts_with("note: the proof cache has no result") && !l.starts_with("note: stored in the proof cache")).map(|l| format!("{l}\n")).collect();
+    assert!(warm.output.starts_with(&reported) && !warm.output.contains("has no result"), "{}", warm.output);
+}
+
+#[test]
+fn a_changed_version_or_setting_is_a_miss() {
+    let (Some(before), Some(after), Some(other)) = (fee("fee-miss-before", FEE), fee("fee-miss-after", FEE_SUMMED), fee("fee-miss-other", FEE_SHIFTED)) else { return };
+    let dir = empty_cache("miss-claim");
+    let cold = check(&before, &after, &dir, "miss-cold", |_| {});
+    assert_eq!(cold.verdict, jvmcontract::Verdict::Verified, "{}", cold.output);
+    let changes: Vec<(&str, PathBuf, Box<dyn FnOnce(&mut equivalence::Options)>)> = vec![
+        ("another new version, behaviour kept", other.clone(), Box::new(|_| {})),
+        ("another unwinding bound", after.clone(), Box::new(|o| o.unwind += 1)),
+        ("another array bound", after.clone(), Box::new(|o| o.max_array_length += 1)),
+        ("a scope", after.clone(), Box::new(|o| o.unchanged_unless = Some("n > 5".into()))),
+        ("another gap mode", after.clone(), Box::new(|o| o.gaps = jvmcontract::bmc::gaps::GapMode::Assume)),
+        ("no models", after.clone(), Box::new(|o| o.models = false)),
+        ("no shared callees", after.clone(), Box::new(|o| o.shared_callees = false)),
+    ];
+    for (i, (what, version, change)) in changes.into_iter().enumerate() {
+        let run = check(&before, &version, &dir, &format!("miss-{i}"), change);
+        assert!(exact_key(&run).is_none(), "{what} is another claim:\n{}", run.output);
+        assert!(run.output.contains("the proof cache has no result for this claim"), "{what}:\n{}", run.output);
+    }
+}
+
+#[test]
+fn a_refuted_hit_replays_its_witness_first() {
+    let (Some(before), Some(after)) = (fee("fee-refuted-before", FEE), fee("fee-refuted-after", FEE_WRONG)) else { return };
+    let dir = empty_cache("refuted");
+    let cold = check(&before, &after, &dir, "refuted-cold", |_| {});
+    assert_eq!(cold.verdict, jvmcontract::Verdict::Violation, "{}", cold.output);
+    assert!(cold.output.contains("stored in the proof cache"), "{}", cold.output);
+    let warm = check(&before, &after, &dir, "refuted-warm", |_| {});
+    assert_eq!(warm.verdict, jvmcontract::Verdict::Violation, "{}", warm.output);
+    assert!(exact_key(&warm).is_some(), "an exact reuse:\n{}", warm.output);
+    assert!(warm.output.contains("its witness replayed again on both versions in the interpreter, and reproduces"), "{}", warm.output);
+    let (c, w) = (cold.counterexample.as_ref().unwrap(), warm.counterexample.as_ref().unwrap());
+    assert_eq!((&w.input, &w.before, &w.after, &w.values), (&c.input, &c.before, &c.after, &c.values));
+    assert_eq!(serde_json::to_value(w).unwrap(), serde_json::to_value(c).unwrap(), "the counterexample, typed inputs and calls included");
+    assert!(warm.replay.as_ref().is_some_and(|r| r.reproduced));
+    // A stored witness that no longer reproduces (here, written by hand: an input both versions agree on) is never
+    // the result: the claim is proved again.
+    let path = walk_files(&dir).pop().unwrap();
+    let mut entry: Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+    let mut witness: Value = serde_json::from_str(entry["outcome"]["witness"].as_str().unwrap()).unwrap();
+    witness[0]["value"] = Value::from(1);
+    entry["outcome"]["witness"] = Value::String(witness.to_string());
+    std::fs::write(&path, entry.to_string()).unwrap();
+    let again = check(&before, &after, &dir, "refuted-again", |_| {});
+    assert!(again.reuse.is_none() && again.search.is_some(), "proved again:\n{}", again.output);
+    assert!(again.output.contains("no longer reproduces"), "{}", again.output);
+    assert_eq!(again.verdict, jvmcontract::Verdict::Violation, "{}", again.output);
+}
+
+#[test]
+fn a_stored_witness_reads_back_as_the_arguments_it_was() {
+    use jvmcontract::classfile::Type;
+    use jvmcontract::interp::Value as V;
+    use jvmcontract::jbmc::Argument;
+    let types = [Type::Int, Type::Long, Type::Boolean, Type::Char, Type::Double, Type::Array(Box::new(Type::Byte)), Type::Array(Box::new(Type::Int))];
+    let witness = r#"[{"name":"a","type":"int","value":-7},{"name":"b","type":"long","value":"-9223372036854775808"},
+        {"name":"c","type":"boolean","value":true},{"name":"d","type":"char","value":65535},{"name":"e","type":"double","value":"-0.0"},
+        {"name":"f","type":"byte[]","value":[-128,0,127]},{"name":"g","type":"int[]","value":null}]"#;
+    let arguments = proof_cache::witness_arguments(&types, witness).expect("reads back");
+    assert_eq!(arguments[..4], [Argument::Scalar(V::Int(-7)), Argument::Scalar(V::Long(i64::MIN)), Argument::Scalar(V::Int(1)), Argument::Scalar(V::Int(65535))]);
+    assert!(matches!(arguments[4], Argument::Scalar(V::Double(d)) if d == 0.0 && d.is_sign_negative()));
+    assert_eq!(arguments[5..], [Argument::Array(vec![V::Int(-128), V::Int(0), V::Int(127)]), Argument::Null]);
+    assert_eq!(proof_cache::witness_arguments(&types[..2], witness), None, "one value for each parameter, no more");
+    assert_eq!(proof_cache::witness_arguments(&[Type::Int], r#"[{"name":"a","type":"int","value":"x"}]"#), None, "not an int");
+}
+
+#[test]
+fn the_cache_is_used_with_the_own_checker_only() {
+    let (Some(before), Some(after)) = (fee("fee-auto-before", FEE), fee("fee-auto-after", FEE_SUMMED)) else { return };
+    let dir = empty_cache("auto");
+    // Under auto the own checker decides this one, so JBMC never runs; the claim is still one JBMC may decide.
+    let run = check(&before, &after, &dir, "auto", |o| o.engine = jvmcontract::Engine::Auto);
+    assert_eq!(run.verdict, jvmcontract::Verdict::Verified, "{}", run.output);
+    assert!(run.output.contains("the proof cache is not used") && run.output.contains("JBMC"), "{}", run.output);
+    assert!(walk_files(&dir).is_empty(), "nothing stored");
+}

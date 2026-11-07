@@ -17,7 +17,7 @@
 //! A(x) no input in D satisfies holds of every program. Its status is non-vacuous, vacuous, or unknown, with how that
 //! is known. A vacuous `Verified` still exits 0, which is the user's to change (the brief's open question 1).
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::bmc::gaps::{GapMode, GapTreatment};
 use crate::classfile::Type;
@@ -25,7 +25,7 @@ use crate::equivalence::{Confirmed, Search};
 use crate::harness::{self, Layout, Param, Slot};
 use crate::jbmc::JbmcResult;
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Statement {
     /// `regression` (two versions compared) or `property` (one version against an assertion).
     pub kind: String,
@@ -36,7 +36,9 @@ pub struct Statement {
     pub bounds: Bounds,
     pub models: Models,
     pub checker: Checker,
-    /// The gap mode of the checker the verdict comes from (the own checker's; none for JBMC, which has none).
+    /// The gap mode of the checker the verdict comes from (the own checker's; none for JBMC, which has none). Not
+    /// read back with the rest (its type doesn't deserialize): a reader that needs it restores it by its name.
+    #[serde(skip_deserializing)]
     pub gap_mode: Option<GapMode>,
     /// What JBMC made of the own checker's proof under `--confirm`; none when it was not asked for.
     pub confirmation: Option<Confirmed>,
@@ -51,7 +53,7 @@ pub struct Statement {
 }
 
 /// Whether some input in D satisfies A and reaches the calls, so that a proof of the statement says something.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Vacuity {
     pub status: VacuityStatus,
     pub basis: VacuityBasis,
@@ -62,7 +64,7 @@ pub struct Vacuity {
     pub witness: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum VacuityStatus {
     /// Some input in D reaches the calls.
@@ -73,7 +75,7 @@ pub enum VacuityStatus {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum VacuityBasis {
     /// Nothing in the harness skips an input before the calls, so every input in D reaches them.
@@ -117,7 +119,7 @@ impl Vacuity {
 }
 
 /// D: the inputs the statement is about.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Domain {
     /// The target's receiver and parameters, as the target takes them (a record as one, built from its components).
     pub parameters: Vec<Parameter>,
@@ -128,7 +130,7 @@ pub struct Domain {
     pub text: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Parameter {
     /// `n`, `this` for a record's receiver.
     pub name: String,
@@ -143,11 +145,11 @@ pub struct Parameter {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_length: Option<u32>,
     /// A record's components, `name: type`, which are the symbolic inputs it is built from.
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub components: Vec<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum ParameterKind {
     Primitive,
@@ -157,7 +159,7 @@ pub enum ParameterKind {
 }
 
 /// One conjunct of A.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Assumption {
     pub kind: AssumptionKind,
     /// What it says, in words.
@@ -168,7 +170,7 @@ pub struct Assumption {
     pub id: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum AssumptionKind {
     /// A regression proof's scope: the inputs outside the intended change (`--unchanged-unless`).
@@ -190,7 +192,7 @@ pub enum AssumptionKind {
 }
 
 /// Why an assumption is taken: what stands behind it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Basis {
     /// The claim states it: it is part of what is claimed, not a weakness of the proof.
@@ -213,18 +215,18 @@ pub enum Basis {
 }
 
 /// Obs: what is observed of a call.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Observations {
     /// What is compared or checked of the result.
     pub result: String,
     /// What is compared or checked of an exception.
     pub exceptions: String,
     /// The array parameters whose contents after the call are compared too.
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arrays: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Bounds {
     /// The loop unwinding bound, which unwinding assertions check: a proof's every loop ends within it. None when no
     /// checker ran (identical bytecode).
@@ -237,7 +239,7 @@ pub struct Bounds {
 }
 
 /// The models of the JDK the checker read in place of the JDK's own classes, and the JDK whose classes it read.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Models {
     /// Whether the tool's models (`lib/models`, [`crate::models`]) were used.
     pub used: bool,
@@ -248,7 +250,7 @@ pub struct Models {
     pub jdk: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Checker {
     /// `native`, `jbmc`, or `none` when no checker ran (identical bytecode).
     pub engine: String,
@@ -267,7 +269,7 @@ pub struct Checker {
 /// The SAT solver a checker ran on, as the evidence for a result names it: the own checker's bundled CaDiCaL
 /// ([`native_sat`]), or the one JBMC was asked for ([`crate::jbmc::sat`]). The benchmark gathers them into
 /// `results.json`'s environment.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Sat {
     /// `CaDiCaL`, or the solver JBMC used by default.
     pub solver: String,

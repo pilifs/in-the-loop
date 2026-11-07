@@ -308,6 +308,11 @@ struct EquivalenceArgs {
     /// and prove a target whose bytecode is identical in both versions instead of taking it as unchanged.
     #[arg(long = "no-shared-callees")]
     no_shared_callees: bool,
+    /// A local proof cache directory, never committed: a result stored there for the same prepared claim (both
+    /// versions' code closures, the flags, the bounds, the models, the JDK and this binary's digest) is the result,
+    /// marked as reused, and a verified or refuted result is stored. Used with `--engine native` only, for now.
+    #[arg(long)]
+    cache: Option<PathBuf>,
     /// Report the counterexample as JBMC found it, without shrinking it in the interpreter.
     #[arg(long)]
     no_shrink: bool,
@@ -588,6 +593,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.before_target = args.before_target;
             options.before_arguments = args.before_arguments;
             options.results_agree_when = args.results_agree_when;
+            options.cache = args.cache;
             let outcome = equivalence::run(&options)?;
             if args.json {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));

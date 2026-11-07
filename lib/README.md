@@ -317,6 +317,17 @@ another part adds) makes the claim uncacheable rather than leaving it out of the
 computed. The proof cache is a local directory of result records, one per key; only verified and refuted results are
 stored, a refutation with its witness, and an entry that can't be read or is for another key is a miss.
 
+`equivalence --cache DIR` uses it ([`proof_cache::Regression`](src/proof_cache.rs)), under `--engine native` only
+for now: JBMC's own identity is not yet in the key, so a claim JBMC may decide is uncacheable, and says so in a note.
+The lookup is on the prepared claim (the harness generated, the shared callees planned), whose parts are the
+preservation contract, the observations, the flags' correspondence, the bounds, the statement's assumptions and
+domain, the harness's digest, both versions' closures, and the tools with every setting that can change a verdict
+(the gap mode, the contracts' digest, the solver). The deadline is not: it only decides whether a verdict is reached,
+and an unresolved result is never stored. A verified hit gives back the stored result and statement with `reuse` set
+to an exact reuse naming the claim key and the run it came from, and no checker runs. A refuted hit first replays the
+stored witness in the harness on both versions as they are now, and is a miss if it no longer reproduces; a
+refutation whose witness doesn't reproduce in the interpreter, as stored, is not stored at all.
+
 ## Limits
 
 - The interpreter models a subset of the JDK. Code outside it is *unverifiable*, never wrong; the message names the method. JBMC's view of the JDK is narrower still: it gets six JDK classes (`Byte`, `Short`, `Integer`, `Long`, `Math`, `StrictMath`) and the tool's [models](models/README.md) of a few more (the boxing caches, `Character.digit`, `java.nio.charset`, `Enum`, `List.of` and `List.copyOf`), and treats every other JDK class as a stub with nondeterministic fields and results, so a class whose static initializer reads a JDK static the tool does not model, or a call into a JDK method it does not, can end in a `NullPointerException` or an arbitrary result the JVM never produces. The replay in the interpreter is the check that catches most of these (a witness the interpreter cannot reproduce is reported as unverifiable, not as a violation); the fix is a model. Enum `hashCode` is deterministic here (the constant's name hash) where a JVM's is identity-based, and `ClassCastException` messages omit the class-loader suffix a JVM adds.
