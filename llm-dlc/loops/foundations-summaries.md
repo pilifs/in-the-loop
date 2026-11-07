@@ -354,7 +354,7 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 - `sync.py check` after S4a reports 18 errors, none from this branch's work: the 15 listed after S3, and 4 more
   sessions with no manifest, behind other streams' commits that are not ancestors of `@`. They are heap's
   `nmrmkovpnwqy` and `xkutknnpsxmn`, and alignment's `vvtltnmzuwru` and `orvwtmzmlqts`. They clear at the merge.
-- **S4b done** (2026-11-07), pending the two quick jobs below: examples 160 and 161, and `build.py`'s cache option.
+- **S4b done** (2026-11-07), pending review of the two jobs below: examples 160 and 161, and `build.py`'s cache option.
   S4, and with it this stream's core, is done.
   - **Found first, in S4a, and fixed:** the `callee` assumption's text named the run the helper's proof came from:
     its time and its build directories. The assumption is part of the caller's claim, so two cold runs of the same
@@ -390,7 +390,8 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     - the statement's wording.
   - The unit tests (183), `conformance.rs` (9), `integration.rs` (64), `foundations.rs` (3) and `summaries.rs`
     (37) pass.
-  - Jobs, both quick (`--priority 10`):
+  - Jobs, both quick (`--priority 10`), and *for review*: they were still pending 15 minutes after submitting
+    (05:36 to 05:51), with no runner running, so they count as long jobs from then on:
     - `20261107-053635-example-160-a-changed-refill-helper-prov`: example 160, expected verified as above;
     - `20261107-053635-example-161-a-refill-helper-aligned-to-t`: example 161, expected violation as above.
   - Shared files changed:

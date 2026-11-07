@@ -12,27 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.542Z",
-  "ended": "2026-11-07T05:37:24.888Z",
-  "duration_seconds": 5765,
+  "ended": "2026-11-07T05:51:45.295Z",
+  "duration_seconds": 6626,
   "stats": {
-    "turns": 30,
-    "api_calls": 390,
-    "tool_calls": 401,
+    "turns": 31,
+    "api_calls": 397,
+    "tool_calls": 407,
     "tool_errors": 2,
     "compactions": 6,
     "peak_context_tokens": 277743,
     "usage": {
-      "input_tokens": 780,
-      "output_tokens": 371411,
-      "cache_read_input_tokens": 66263581,
-      "cache_creation_input_tokens": 1380624
+      "input_tokens": 798,
+      "output_tokens": 373703,
+      "cache_read_input_tokens": 68121562,
+      "cache_creation_input_tokens": 1387133
     }
   },
   "tools": {
-    "Bash": 352,
+    "Bash": 357,
     "Read": 33,
     "Edit": 10,
-    "Write": 6
+    "Write": 6,
+    "ToolSearch": 1
   },
   "files_touched": [
     "examples/tools/impact_check.py",
@@ -132,24 +133,24 @@
     {
       "index": 6,
       "started": "2026-11-07T05:18:40.788Z",
-      "ended": "2026-11-07T05:37:24.888Z",
-      "turns": 4,
-      "api_calls": 103,
+      "ended": "2026-11-07T05:51:45.295Z",
+      "turns": 5,
+      "api_calls": 110,
       "usage": {
-        "input_tokens": 206,
-        "output_tokens": 68498,
-        "cache_read_input_tokens": 18518584,
-        "cache_creation_input_tokens": 248945
+        "input_tokens": 224,
+        "output_tokens": 70790,
+        "cache_read_input_tokens": 20376565,
+        "cache_creation_input_tokens": 255454
       },
-      "peak_context_tokens": 262024
+      "peak_context_tokens": 268533
     }
   ],
   "log": {
-    "sha256": "99f62421d85e86c2ae874b0ee34e0c851a22aebaf0ce63617d9001f745a74818",
-    "bytes": 12307579,
-    "lines": 4174,
-    "gzip_bytes": 2440367,
-    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/99f62421d85e86c2ae874b0ee34e0c851a22aebaf0ce63617d9001f745a74818.jsonl.gz"
+    "sha256": "fd172806fb5d804c510ac3c60fa81cfb83d58efcbe3759ddb33ac2ef159c0baa",
+    "bytes": 12472566,
+    "lines": 4232,
+    "gzip_bytes": 2477586,
+    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/fd172806fb5d804c510ac3c60fa81cfb83d58efcbe3759ddb33ac2ef159c0baa.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -232,6 +233,14 @@
       "summary": "Summaries Progress: name the 20 errors sync.py check reports after S4b, none from this branch's work",
       "body": "The check after S4b's commit reports the 18 errors known after S4a. It also reports two more sessions with no manifest, behind the observations stream's O2 commit (yvpqmlqtoqzv) and the alignment stream's A4 commit (orrmouymnxzz). Neither commit is an ancestor of this branch. Each manifest lives on its stream's branch, so the errors clear when the reconcile loop merges the streams. Progress names them; nothing else changed.",
       "log_sha256": "99f62421d85e86c2ae874b0ee34e0c851a22aebaf0ce63617d9001f745a74818"
+    },
+    {
+      "change_id": "sntmsqzuwwuvprznoqopqwyqwkrvmqll",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summaries Progress: S4b's two jobs are for review, not back within 15 minutes",
+      "body": "Examples 160 and 161's jobs were submitted as quick jobs at 05:36. They were still pending at 05:51, and no runner was running, so by the brief's rule they now count as long jobs, listed for review. Their expected results are unchanged: 160 verified with TokenBucket.lastAfter shared, and 161 a violation with no helper shared.",
+      "log_sha256": "fd172806fb5d804c510ac3c60fa81cfb83d58efcbe3759ddb33ac2ef159c0baa"
     }
   ],
   "logs": {
@@ -287,6 +296,12 @@
       "bytes": 12244002,
       "lines": 4141,
       "gzip_bytes": 2430187,
+      "url": null
+    },
+    "fd172806fb5d804c510ac3c60fa81cfb83d58efcbe3759ddb33ac2ef159c0baa": {
+      "bytes": 12472566,
+      "lines": 4232,
+      "gzip_bytes": 2477586,
       "url": null
     },
     "ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25": {
