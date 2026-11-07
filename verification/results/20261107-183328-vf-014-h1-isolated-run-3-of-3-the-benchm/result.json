@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm",
+  "title": "VF-014, H1 isolated, run 3 of 3: the benchmark's own-checker verdicts at H1 compared with H1's parent (closes VF-014 when it passes)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 0.2s, peak 13.3 MiB (estimated 1m00s, 256.0 MiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm.json",
+    "sha256": "6d3635f46705b9db36ae842cdefc1ba4ce5d91abc91c81dbe1fe0ad46a2dcaf6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm",
+      "title": "VF-014, H1 isolated, run 3 of 3: the benchmark's own-checker verdicts at H1 compared with H1's parent (closes VF-014 when it passes)",
+      "description": "VF-014 in verification/findings.md: job 20261107-041414 compared the own checker's benchmark runs at step H1 of llm-dlc/loops/foundations-heap.md (symbolic references, change uyqkxsly, commit ddbb54ba) with a stale lib/benchmark/results.json, so 8 verdicts changed for reasons it couldn't tell apart from H1. Jobs 20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm (at H1's parent b927e5df) and -run-2-of-2- (at H1, ddbb54ba) ran that job's step 1 unchanged and both passed; their lib/target/benchmark-native.json files are kept, gitignored, under verification/results/ID/outputs/ in the runner's repository, not in this checkout. This job finds them there (four directories above $VERIFY_WORKDIR), checks each against the sha256 its run recorded, and applies 20261107-041414's step-2 comparison script unchanged except that it reads run 1's file in place of lib/benchmark/results.json and run 2's in place of lib/target/benchmark-native.json. It exits 1 if any own-checker verdict differs between H1's parent and H1, 2 if the outputs are missing or not the recorded ones. Tried on the same files before submitting: 557 runs at H1, 24 new (the swaps, swapsOrNull and swapsThenNull cases H1 added, in three modes), 0 verdicts changed, 0 formulas grown past 10%, 0 paths or merges changed. Closes VF-014 when it passes.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark",
+          "lib/src/bmc/mod.rs"
+        ],
+        "commits": [
+          "ddbb54bac20616e15ddd6e965e412519377506ad",
+          "b927e5df1be94b21de89351736978f469e33553a"
+        ]
+      },
+      "expected": "exits 0: every own-checker verdict at H1 is the one at H1's parent; the only new runs are the 24 of the swaps cases H1 added; the summary line reads 'verdicts changed: 0'",
+      "submitted": {
+        "at": "2026-11-07T18:33:28+00:00",
+        "session": "b65d132b-4eb4-46fd-8556-f4cba3311ad1",
+        "by": "claude (cleanup-examples)"
+      },
+      "requires": [],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "256M",
+        "duration": "1m",
+        "timeout": "5m",
+        "notes": "20261107-041414's step 2 took 0.2 s and 23 MB on the same script; the two files are about 1 MB each"
+      },
+      "steps": [
+        {
+          "name": "compare the own checker's runs at H1 with those at H1's parent",
+          "run": "R=\"$(cd \"$VERIFY_WORKDIR/../../../..\" && pwd)\"\nOLD=\"$R/verification/results/20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm/outputs/lib/target/benchmark-native.json\"\nNEW=\"$R/verification/results/20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm/outputs/lib/target/benchmark-native.json\"\necho \"at H1's parent: $OLD\"\necho \"at H1: $NEW\"\nprintf '%s  %s\\n' e1ba6c40a00b1c6642741ee457ef4bb34df832bb70b042a4d36ff959ff2c2dec \"$OLD\" 257ca167f16e33c6aaf0c3b4892e3d7419ad616489463880daf95ebc07269a8a \"$NEW\" | sha256sum -c - || { echo \"the two runs' collected outputs are missing or not the ones the runs recorded\"; exit 2; }\nOLD=\"$OLD\" NEW=\"$NEW\" python3 - <<'PY'\nimport json, os, sys\nnew = [r for r in json.load(open(os.environ[\"NEW\"]))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(os.environ[\"OLD\"]))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nfor r in new:\n    o = old.get((r[\"case\"], r[\"mode\"]))\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed else 0)\nPY",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7315cda22a962355d7528c5722ec002b2084c573",
+  "startedAt": "2026-11-07T18:37:31+00:00",
+  "finishedAt": "2026-11-07T18:37:32+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 353286,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 402653184,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 268435456,
+    "durationSeconds": 60.0,
+    "notes": "20261107-041414's step 2 took 0.2 s and 23 MB on the same script; the two files are about 1 MB each"
+  },
+  "usage": {
+    "peakMemoryBytes": 13955072,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "compare the own checker's runs at H1 with those at H1's parent",
+      "run": "R=\"$(cd \"$VERIFY_WORKDIR/../../../..\" && pwd)\"\nOLD=\"$R/verification/results/20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm/outputs/lib/target/benchmark-native.json\"\nNEW=\"$R/verification/results/20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm/outputs/lib/target/benchmark-native.json\"\necho \"at H1's parent: $OLD\"\necho \"at H1: $NEW\"\nprintf '%s  %s\\n' e1ba6c40a00b1c6642741ee457ef4bb34df832bb70b042a4d36ff959ff2c2dec \"$OLD\" 257ca167f16e33c6aaf0c3b4892e3d7419ad616489463880daf95ebc07269a8a \"$NEW\" | sha256sum -c - || { echo \"the two runs' collected outputs are missing or not the ones the runs recorded\"; exit 2; }\nOLD=\"$OLD\" NEW=\"$NEW\" python3 - <<'PY'\nimport json, os, sys\nnew = [r for r in json.load(open(os.environ[\"NEW\"]))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(os.environ[\"OLD\"]))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nfor r in new:\n    o = old.get((r[\"case\"], r[\"mode\"]))\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed else 0)\nPY",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 0.2,
+      "cpuSeconds": 0.035,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13955072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-the-own-checker-s-runs.log",
+        "lines": 29,
+        "bytes": 1915,
+        "sha256": "4d4346a104191b6e2ed558a0cc5274fb17ab48fc5dc946522cddfd76eeb523d6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "at H1's parent: /home/filip/code/in-the-loop/verification/results/20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm/outputs/lib/target/benchmark-native.json",
+        "at H1: /home/filip/code/in-the-loop/verification/results/20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm/outputs/lib/target/benchmark-native.json",
+        "/home/filip/code/in-the-loop/verification/results/20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm/outputs/lib/target/benchmark-native.json: OK",
+        "/home/filip/code/in-the-loop/verification/results/20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm/outputs/lib/target/benchmark-native.json: OK",
+        "own-checker runs: 557; new cases: 24; verdicts changed: 0; formulas grown past 10%: 0; paths or merges changed: 0",
+        "  new: conformance/swaps/1 strict verified",
+        "  new: conformance/swaps/1 assume verified",
+        "  new: conformance/swaps/1 advised verified",
+        "  new: conformance/swaps/2 strict violation",
+        "  new: conformance/swaps/2 assume violation",
+        "  new: conformance/swaps/2 advised violation",
+        "  new: conformance/swapsOrNull/1 strict verified",
+        "  new: conformance/swapsOrNull/1 assume verified",
+        "  new: conformance/swapsOrNull/1 advised verified",
+        "  new: conformance/swapsOrNull/2 strict verified",
+        "  new: conformance/swapsOrNull/2 assume verified",
+        "  new: conformance/swapsOrNull/2 advised verified",
+        "  new: conformance/swapsOrNull/3 strict violation",
+        "  new: conformance/swapsOrNull/3 assume violation",
+        "  new: conformance/swapsOrNull/3 advised violation",
+        "  new: conformance/swapsThenNull/1 strict verified",
+        "  new: conformance/swapsThenNull/1 assume verified",
+        "  new: conformance/swapsThenNull/1 advised verified",
+        "  new: conformance/swapsThenNull/2 strict violation",
+        "  new: conformance/swapsThenNull/2 assume violation",
+        "  new: conformance/swapsThenNull/2 advised violation",
+        "  new: conformance/swapsThenNull/3 strict violation",
+        "  new: conformance/swapsThenNull/3 assume violation",
+        "  new: conformance/swapsThenNull/3 advised violation"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T18:40:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

@@ -12,24 +12,24 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-07T16:31:42.016Z",
-  "ended": "2026-11-07T18:32:09.329Z",
-  "duration_seconds": 7227,
+  "ended": "2026-11-07T18:41:31.864Z",
+  "duration_seconds": 7790,
   "stats": {
     "turns": 3,
-    "api_calls": 50,
-    "tool_calls": 48,
+    "api_calls": 59,
+    "tool_calls": 56,
     "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 129736,
+    "peak_context_tokens": 139315,
     "usage": {
-      "input_tokens": 108,
-      "output_tokens": 28703,
-      "cache_read_input_tokens": 3708311,
-      "cache_creation_input_tokens": 116617
+      "input_tokens": 128,
+      "output_tokens": 34198,
+      "cache_read_input_tokens": 4910708,
+      "cache_creation_input_tokens": 126196
     }
   },
   "tools": {
-    "Bash": 43,
+    "Bash": 51,
     "ScheduleWakeup": 4,
     "Monitor": 1
   },
@@ -38,24 +38,24 @@
     {
       "index": 0,
       "started": "2026-11-07T16:31:42.016Z",
-      "ended": "2026-11-07T18:32:09.329Z",
+      "ended": "2026-11-07T18:41:31.864Z",
       "turns": 3,
-      "api_calls": 50,
+      "api_calls": 59,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 28703,
-        "cache_read_input_tokens": 3708311,
-        "cache_creation_input_tokens": 116617
+        "input_tokens": 128,
+        "output_tokens": 34198,
+        "cache_read_input_tokens": 4910708,
+        "cache_creation_input_tokens": 126196
       },
-      "peak_context_tokens": 129736
+      "peak_context_tokens": 139315
     }
   ],
   "log": {
-    "sha256": "ad8d33c81d1ee28410a67d4b20be898588149b939745c959fcebab08359b03a7",
-    "bytes": 1048530,
-    "lines": 405,
-    "gzip_bytes": 165798,
-    "path": "llm-dlc/traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/logs/ad8d33c81d1ee28410a67d4b20be898588149b939745c959fcebab08359b03a7.jsonl.gz"
+    "sha256": "ea5df1679e449b5a43fc7241271e31e928fd87bd696246c7a376cb32b90f99b8",
+    "bytes": 1153628,
+    "lines": 465,
+    "gzip_bytes": 178445,
+    "path": "llm-dlc/traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/logs/ea5df1679e449b5a43fc7241271e31e928fd87bd696246c7a376cb32b90f99b8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -82,6 +82,14 @@
       "summary": "VF-020: a second oversized changes.diff left out of the results",
       "body": "The guard job 20261107-171442-vf-009-s-guard-measured-the-41-recorded also has a 1.3 MiB changes.diff that jj refuses to snapshot; recorded in verification/findings.md.",
       "log_sha256": "ad8d33c81d1ee28410a67d4b20be898588149b939745c959fcebab08359b03a7"
+    },
+    {
+      "change_id": "wwlnosomvoyrzkmwmrksounvnkwzkoxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 jobs: VF-014 closed, VF-010's benchmark pair recorded, and the runner's scope names made unique",
+      "body": "Run on vm-1. Job 20261107-183328 (VF-014's comparison) passed with 'verdicts changed: 0' and closes VF-014. The resubmitted VF-010 benchmark pair passed (3m11s each), outputs applied; the verdict comparison is still to be queued by the native stream, so VF-021 stays open. The pipeline fix: the runner named a step's systemd scope vjob-<id[:40]>-<step>, so two jobs whose ids share 40 characters stopped each other's steps with SIGTERM; verification/pipeline.py now uses scope_id(), the first 30 characters and a hash of the whole id. That was also the cause of one VF-001 job's SIGTERM, noted there. Verified by loading pipeline.py and checking that the two colliding ids of that pair give different names, and by the pair's passing without a collision.",
+      "log_sha256": "ea5df1679e449b5a43fc7241271e31e928fd87bd696246c7a376cb32b90f99b8"
     }
   ],
   "logs": {
@@ -101,6 +109,12 @@
       "bytes": 607039,
       "lines": 192,
       "gzip_bytes": 110256,
+      "url": null
+    },
+    "ea5df1679e449b5a43fc7241271e31e928fd87bd696246c7a376cb32b90f99b8": {
+      "bytes": 1153628,
+      "lines": 465,
+      "gzip_bytes": 178445,
       "url": null
     }
   },

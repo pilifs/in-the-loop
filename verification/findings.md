@@ -22,8 +22,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 - **Status**: open
 - **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`, killed after 2m19s) and `20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`, after 0.2 s).
-- **Found**: each step (`cargo build --release -q` then `python3 lib/benchmark/run.py --engines native --out ...`) ended with signal SIGTERM, not a timeout (`timedOut` false, not cancelled, no stop reason), peak 1.5 GiB and 574 MiB against 3 GiB limits, and no output file written. Three other jobs ran at the same time and finished normally (the VF-010 reproducer and integration tests at the fix, and example 109). I don't know what sent the signal: it may be the runner's isolation, another session on the machine, or the benchmark script. Not rerun here: a resubmit runs at the commit that commits it, which would lose the pinned revisions the pair exists for.
-- **Needs**: the submitter (cleanup loop's native stream) resubmits both jobs pinned the same way (so they run at the fix and its parent) when the machine is quiet, then queues the comparison job. If it recurs, whoever manages the runner looks at how a step comes to get SIGTERM.
+- **Found**: each step (`cargo build --release -q` then `python3 lib/benchmark/run.py --engines native --out ...`) ended with signal SIGTERM, not a timeout (`timedOut` false, not cancelled, no stop reason), peak 1.5 GiB and 574 MiB against 3 GiB limits, and no output file written. Three other jobs ran at the same time and finished normally (the VF-010 reproducer and integration tests at the fix, and example 109). Cause found (by the submitter, confirmed by me in `verification/pipeline.py`): the runner named each step's systemd scope `vjob-<id[:40]>-<step>`, and the two ids share their first 40 characters, so each job's step stopped the other's as a leftover of the same name. Fixed in the runner: the scope name is now the first 30 characters of the id and a hash of the whole id (`scope_id`). The same collision stopped job `20261107-172721-conformance-corpus-under-engine-auto-con` (VF-001) beside its twin.
+- **Seen again, resolved in part** 2026-11-07 on `vm-1`: the resubmitted pair `20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`) and `20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`), with ids that differ early, both passed (3m11s each) and their outputs are applied.
+- **Needs**: the submitter (cleanup loop's native stream) queues the comparison job on the two outputs.
 - **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N1).
 - **Closes when**: the two benchmark jobs pass and the comparison shows no recorded own-checker verdict changed with the fix.
 
@@ -96,30 +97,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N3).
 - **Closes when**: the job, resubmitted at a fixing commit, passes.
 - **Rerun** 2026-11-07 on `vm-1`: job `20261107-165827-example-109-revisited-hex-todigit-s-regr` (at `86e4ce7d220f`) failed at step 3, differently. The witness replay is no longer the problem (JBMC now proves the old `toDigit` for `0x0660`). Now `jvmcontract` refuses the result under `--gaps strict`: "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it: `jdk-static-method:java.lang.String.format(String, Object[])`" (a stub JBMC returns null or any object for). Steps 4 and 5 were skipped. **Needs**: a decision on whether the job should pass `--gaps assume` or advised (the job's step, the submitter's), or a model of `String.format` (the exception path of `Hex.toDigit` calls it); the cleanup loop's native stream. The entry stays open.
-
-### VF-014: H1's benchmark comparison fails on 8 verdicts that changed because `lib/benchmark/results.json` is stale, not because of symbolic references
-
-- **Status**: open
-- **Raised**: 2026-11-07 on `vm-1` (run with `--memory 8G --workers 2`). Job
-  `20261107-041414-symbolic-references-in-the-own-checker-h` at `73c514ad00a7`: step 1 (the whole benchmark on the own
-  checker, 557 runs) passed; step 2 (compare with job `20261106-201041`) exited 1.
-- **Found**: 8 own-checker verdicts differ from `lib/benchmark/results.json`, all on three conformance cases whose
-  recorded verdict was `unverifiable` because of a class-initializer gap: `boom/1` (strict, advised: unverifiable ->
-  violation; assume: verified -> violation), `inherited/1` (same three), `quiet/1` (strict, advised: unverifiable ->
-  verified). The same cases account for the 4 "clauses grown" (1 -> 230) and the 3 "paths or merges changed" (paths
-  None -> 1, merges None -> 0): the recorded runs stopped at the gap and solved nothing. 201 runs are "new" (cases the
-  recording predates). The new verdicts agree with JBMC's recorded ones (`boom` violation, `quiet` verified). This reads
-  as the own checker having gained class initializers since the recording, not as an effect of H1, but the job does
-  not isolate the two: no run in the recording exercises a merge of different references, so H1's "same run as before"
-  claim is untested by it, apart from the absence of any other changed run. I did not verify the class-initializer
-  attribution against the git history of `lib/src/bmc/`.
-- **Needs**: the foundations-heap loop (or whoever owns `lib/benchmark/results.json`) regenerates the recording on the
-  current engine, so that the reference includes the 201 new runs and the class-initializer verdicts, then resubmits
-  unchanged (`pipeline.py resubmit 20261107-041414-symbolic-references-in-the-own-checker-h`). Alternatively compare
-  against a run at H1's parent commit, which isolates H1.
-- **Tracked in**: `llm-dlc/loops/foundations-heap.md` step H1 (not yet updated).
-- **Closes when**: the resubmitted job passes against a recording made at a commit without H1, or H1's parent.
-- **Isolated runs** 2026-11-07 on `vm-1`: jobs `20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm` (at H1's parent `b927e5df1be9`) and `-run-2-of-2-` (at H1 `ddbb54bac206`) both passed in 2m42s and 2m45s. Their outputs (`lib/target/benchmark-native.json`) stay in each job's `outputs/` and were not applied to the working copy (the files differ from the jobs' commits). The comparison job the descriptions name is the submitter's to queue; the entry stays open until it passes.
 
 ### VF-013: the loops' run records are never published: they are gitignored, and unredacted
 
@@ -221,9 +198,34 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md#progress) (the entry of
   2026-11-06 on `vm-1`), with every disagreement; the logs in each job's `results/ID/logs/`.
 - **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
-- **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-172721-conformance-corpus-under-jbmc-and-engine` and `20261107-172721-conformance-corpus-under-engine-auto-con` (at `a1e29ec6a2e7`) both **failed**, for the same reason, none to do with the tests: their step is `cd lib && ... cargo test ... | tee target/conformance-*.log` with no `mkdir -p target`, and in a clean checkout `lib/target` does not exist when `tee` starts. The first job's log says `tee: target/conformance-jbmc.log: No such file or directory` and the step exited 1 although the test output shows `test result: ok. 2 passed; 0 failed`, 1236 s (so both corpus tests pass at this commit); the second was killed with SIGTERM after 22 s, when `tee` was gone. A job that didn't pass doesn't close this entry. **Needs**: resubmit both with `mkdir -p target` before the pipe (as the jbmc-initializers job does), the cleanup loop's jbmc stream. Closes then, if they pass.
+- **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-172721-conformance-corpus-under-jbmc-and-engine` and `20261107-172721-conformance-corpus-under-engine-auto-con` (at `a1e29ec6a2e7`) both **failed**, for the same reason, none to do with the tests: their step is `cd lib && ... cargo test ... | tee target/conformance-*.log` with no `mkdir -p target`, and in a clean checkout `lib/target` does not exist when `tee` starts. The first job's log says `tee: target/conformance-jbmc.log: No such file or directory` and the step exited 1 although the test output shows `test result: ok. 2 passed; 0 failed`, 1236 s (so both corpus tests pass at this commit); the second was killed with SIGTERM after 22 s: not `tee`, but the runner's scope-name collision with its twin (the ids share 40 characters; see VF-021, fixed). A job that didn't pass doesn't close this entry. **Needs**: resubmit both with `mkdir -p target` before the pipe (as the jbmc-initializers job does), the cleanup loop's jbmc stream; the scope collision no longer applies. Closes then, if they pass.
 
 ## Decided and closed
+
+### VF-014: H1's benchmark comparison fails on 8 verdicts that changed because `lib/benchmark/results.json` is stale, not because of symbolic references
+
+- **Status**: closed by job `20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm` (at `7315cda22a96`, 2026-11-07, `vm-1`): the comparison of H1's own-checker verdicts with H1's parent's passed (0.2 s): 'verdicts changed: 0', the only new runs the 24 of the swaps cases H1 added. The stale `results.json` was the cause, not H1.
+- **Raised**: 2026-11-07 on `vm-1` (run with `--memory 8G --workers 2`). Job
+  `20261107-041414-symbolic-references-in-the-own-checker-h` at `73c514ad00a7`: step 1 (the whole benchmark on the own
+  checker, 557 runs) passed; step 2 (compare with job `20261106-201041`) exited 1.
+- **Found**: 8 own-checker verdicts differ from `lib/benchmark/results.json`, all on three conformance cases whose
+  recorded verdict was `unverifiable` because of a class-initializer gap: `boom/1` (strict, advised: unverifiable ->
+  violation; assume: verified -> violation), `inherited/1` (same three), `quiet/1` (strict, advised: unverifiable ->
+  verified). The same cases account for the 4 "clauses grown" (1 -> 230) and the 3 "paths or merges changed" (paths
+  None -> 1, merges None -> 0): the recorded runs stopped at the gap and solved nothing. 201 runs are "new" (cases the
+  recording predates). The new verdicts agree with JBMC's recorded ones (`boom` violation, `quiet` verified). This reads
+  as the own checker having gained class initializers since the recording, not as an effect of H1, but the job does
+  not isolate the two: no run in the recording exercises a merge of different references, so H1's "same run as before"
+  claim is untested by it, apart from the absence of any other changed run. I did not verify the class-initializer
+  attribution against the git history of `lib/src/bmc/`.
+- **Needs**: the foundations-heap loop (or whoever owns `lib/benchmark/results.json`) regenerates the recording on the
+  current engine, so that the reference includes the 201 new runs and the class-initializer verdicts, then resubmits
+  unchanged (`pipeline.py resubmit 20261107-041414-symbolic-references-in-the-own-checker-h`). Alternatively compare
+  against a run at H1's parent commit, which isolates H1.
+- **Tracked in**: `llm-dlc/loops/foundations-heap.md` step H1 (not yet updated).
+- **Closes when**: the resubmitted job passes against a recording made at a commit without H1, or H1's parent.
+- **Isolated runs** 2026-11-07 on `vm-1`: jobs `20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm` (at H1's parent `b927e5df1be9`) and `-run-2-of-2-` (at H1 `ddbb54bac206`) both passed in 2m42s and 2m45s. Their outputs (`lib/target/benchmark-native.json`) stay in each job's `outputs/` and were not applied to the working copy (the files differ from the jobs' commits). The comparison job the descriptions name is the submitter's to queue; the entry stays open until it passes.
+- **Closed** 2026-11-07 on `vm-1`, by the job above, run after runs 1 and 2 (`20261107-164450-…`) passed.
 
 ### VF-019: under `auto --confirm`, the six nullable and may-alias claims of H2 get "no engine wrote a harness", which the conformance test counts as a disagreement
 

@@ -40,6 +40,13 @@ import tomllib
 import zipfile
 from pathlib import Path
 
+
+def scope_id(job_id):
+    """A job id as a systemd scope name: the first 30 characters and a hash of the whole id, since ids that share their
+    first 40 characters (a pair of jobs submitted together) would otherwise name the same scope, and a step would stop
+    the other's as a leftover of its own name."""
+    return f"{job_id[:30]}-{hashlib.sha256(job_id.encode()).hexdigest()[:8]}"
+
 ROOT = Path(os.environ.get("VERIFY_REPO") or Path(__file__).resolve().parents[1])
 HERE = "verification"
 JOBS = f"{HERE}/jobs"
@@ -944,7 +951,7 @@ class Runner:
             run = f"{cargo} build --release --manifest-path lib/Cargo.toml"
             env = dict(os.environ, CARGO_TARGET_DIR=str(self.state / "cargo-target"))
             log = self.state / "runs" / result["id"] / "logs" / "0-build-jvmcontract.log"
-            step = Step(f"vjob-{result['id'][:40]}-build", self.isolation, max(entry["cpus"], 1),
+            step = Step(f"vjob-{scope_id(result['id'])}-build", self.isolation, max(entry["cpus"], 1),
                         max(entry["memory"], self.runner["build_memory"]), self.runner["stall_window"],
                         self.runner["max_timeout"])
             entry["steps"].append(step)
@@ -1003,7 +1010,7 @@ class Runner:
                 continue
             timeout = min(parse_seconds(spec["timeout"]) if spec.get("timeout") else result["limits"]["timeoutSeconds"],
                           result["limits"]["timeoutSeconds"])
-            step = Step(f"vjob-{job['id'][:40]}-{i}", self.isolation, result["limits"]["cpus"],
+            step = Step(f"vjob-{scope_id(job['id'])}-{i}", self.isolation, result["limits"]["cpus"],
                         result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"])
             entry["steps"].append(step)
             outcome = step.run(spec["run"], work / spec.get("cwd", "."), env, log, log.with_suffix(".stats"),

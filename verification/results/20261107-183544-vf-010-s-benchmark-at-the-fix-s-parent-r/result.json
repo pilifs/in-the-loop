@@ -1,0 +1,224 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r",
+  "title": "VF-010's benchmark at the fix's parent (run 2 of 2): the own checker's runs with wall-clock probes, recorded for comparison with the fix",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m11s, peak 1.5 GiB (estimated 15m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r.json",
+    "sha256": "c616991c9c34e138808fc082bbcb7960c29f1ffc1de19cc1aef2b1fd3780eb2a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r",
+      "title": "VF-010's benchmark at the fix's parent (run 2 of 2): the own checker's runs with wall-clock probes, recorded for comparison with the fix",
+      "description": "VF-010 (verification/findings.md): the fix budgets the own checker's branch probes in solver conflicts instead of wall-clock time. This job records the benchmark's own-checker runs at the fix's parent (c307e721, change ruvmympl, which added only the reproducer), for a later quick job to compare with run 1 of 2 at the fix, so that only the fix's effect is measured (the examples stream's pattern for VF-014). This job only records: it passes when the benchmark runs. Resubmitted for VF-021: the first pair (20261107-165544-...-run-1-of-2 and ...-s-parent-r) was stopped by SIGTERM because both ids share their first 40 characters, which the runner uses for a step's systemd scope (vjob-<id[:40]>-<step>), so each job's step stopped the other's as a leftover of the same name. These two ids differ within the first 40 characters. VF-021 closes when both pass and the comparison shows no verdict changed.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "c307e721bdc341552ea5dbfc68585bbe9b4701dc"
+        ]
+      },
+      "expected": "exit 0, with lib/target/benchmark-native-vf010-parent.json written",
+      "submitted": {
+        "at": "2026-11-07T18:35:44+00:00",
+        "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+        "by": "cleanup-native"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "15m",
+        "notes": "the fix's run of the same command reached 2m19s and 1.5 GiB before it was stopped; job 20261107-041414's step 1 took 168 s with a 1.1 GiB peak"
+      },
+      "steps": [
+        {
+          "name": "benchmark, own checker only",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native-vf010-parent.json --table lib/target/benchmark-native-vf010-parent.md",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/benchmark-native-vf010-parent.json",
+        "lib/target/benchmark-native-vf010-parent.md"
+      ],
+      "supersedes": "20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r",
+      "revision": "c307e721bdc341552ea5dbfc68585bbe9b4701dc"
+    }
+  },
+  "sourceCommit": "c307e721bdc341552ea5dbfc68585bbe9b4701dc",
+  "startedAt": "2026-11-07T18:37:31+00:00",
+  "finishedAt": "2026-11-07T18:40:43+00:00",
+  "wallSeconds": 192.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 353286,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 900.0,
+    "notes": "the fix's run of the same command reached 2m19s and 1.5 GiB before it was stopped; job 20261107-041414's step 1 took 168 s with a 1.1 GiB peak"
+  },
+  "usage": {
+    "peakMemoryBytes": 1636143104,
+    "wallSeconds": 191.5,
+    "cpuSeconds": 227.5,
+    "memoryOfEstimate": 0.76,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native-vf010-parent.json --table lib/target/benchmark-native-vf010-parent.md",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 191.493,
+      "cpuSeconds": 227.452,
+      "cpuThrottledSeconds": 2.409,
+      "peakMemoryBytes": 1636143104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-benchmark-own-checker-only.log",
+        "lines": 557,
+        "bytes": 71296,
+        "sha256": "9e067fa780ad68591d12139103f58d0fb075b6bdc22ce6095ec6d6b1dd3dfd06",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "real/checksum/fix-confined                   native assume             verified     correct                   0.45 s    42.1 MB",
+        "real/checksum/fix-confined                   native advised            verified     correct                   0.46 s    44.6 MB",
+        "held/saturating                              native strict             verified     correct                   0.05 s    32.1 MB",
+        "held/saturating                              native assume             verified     correct                   0.05 s    32.1 MB",
+        "held/saturating                              native advised            verified     correct                   0.06 s    32.7 MB",
+        "held/average/bits                            native strict             verified     correct                   0.05 s    32.1 MB",
+        "held/average/bits                            native assume             verified     correct                   0.05 s    32.1 MB",
+        "held/average/bits                            native advised            verified     correct                   0.06 s    32.5 MB",
+        "held/average/unsigned-shift                  native strict             violation    correct                   0.06 s    37.5 MB",
+        "held/average/unsigned-shift                  native assume             violation    correct                   0.06 s    37.6 MB",
+        "held/average/unsigned-shift                  native advised            violation    correct                   0.07 s    37.5 MB",
+        "held/floor-mod/wide-modulus                  native strict             violation    correct                   0.61 s    45.8 MB",
+        "held/floor-mod/wide-modulus                  native assume             violation    correct                   0.60 s    46.5 MB",
+        "held/floor-mod/wide-modulus                  native advised            violation    correct                   0.62 s    50.7 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.06 s    38.2 MB",
+        "held/floor-mod/jdk                           native assume             verified     correct                   0.06 s    38.0 MB",
+        "held/floor-mod/jdk                           native advised            verified     correct                   0.07 s    38.1 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.06 s    38.0 MB",
+        "held/ceil-div                                native assume             verified     correct                   0.06 s    37.8 MB",
+        "held/ceil-div                                native advised            verified     correct                   0.07 s    38.0 MB",
+        "held/lower-bound                             native strict             verified     correct                   0.26 s    41.3 MB",
+        "held/lower-bound                             native assume             verified     correct                   0.26 s    41.7 MB",
+        "held/lower-bound                             native advised            verified     correct                   0.26 s    45.6 MB",
+        "held/utf8-length                             native strict             verified     correct                   0.34 s    35.6 MB",
+        "held/utf8-length                             native assume             verified     correct                   0.33 s    35.4 MB",
+        "held/utf8-length                             native advised            verified     correct                   0.33 s    40.8 MB",
+        "held/reverse                                 native strict             verified     correct                   0.16 s    40.2 MB",
+        "held/reverse                                 native assume             verified     correct                   0.15 s    40.2 MB",
+        "held/reverse                                 native advised            verified     correct                   0.16 s    45.7 MB",
+        "held/prefix-sums                             native strict             verified     correct                   0.05 s    32.1 MB",
+        "held/prefix-sums                             native assume             verified     correct                   0.05 s    32.1 MB",
+        "held/prefix-sums                             native advised            verified     correct                   0.06 s    33.2 MB",
+        "held/overlap/meets                           native strict             verified     correct                   0.06 s    38.3 MB",
+        "held/overlap/meets                           native assume             verified     correct                   0.06 s    38.1 MB",
+        "held/overlap/meets                           native advised            verified     correct                   0.07 s    38.4 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.08 s    38.4 MB",
+        "held/overlap/length                          native assume             violation    correct                   0.08 s    38.4 MB",
+        "held/overlap/length                          native advised            violation    correct                   0.09 s    38.3 MB",
+        "example/141                                  native strict             verified     correct                   1.39 s    59.4 MB",
+        "example/142                                  native strict             verified     correct                   4.80 s    81.0 MB"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/benchmark-native-vf010-parent.json",
+      "change": "added",
+      "bytes": 1062346,
+      "sha256": "ad9d1ad88ea06db3558f49e650a1953a6f5650ef86102e70a8616d18095732a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/benchmark-native-vf010-parent.md",
+      "change": "added",
+      "bytes": 29919,
+      "sha256": "3d5459ed34594761ae041749ca096ae5d14b14244246809b60817401ded222a5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T18:40:49+00:00",
+    "applied": [
+      "lib/target/benchmark-native-vf010-parent.json",
+      "lib/target/benchmark-native-vf010-parent.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
