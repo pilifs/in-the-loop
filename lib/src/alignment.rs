@@ -17,7 +17,8 @@
 //! small catalogue. An object whose class changed shape is related field by field ([`fields`], step A4), from how
 //! each version's constructors route their parameters into fields. What is left a person's decision is put as a
 //! question ([`questions`], step A5), with each candidate, what approving it would mean, and the line that approves
-//! it; approving sets the intent state only.
+//! it; approving sets the intent state only, and on each rerun a decision's evidence is brought up to date with the
+//! current claim key ([`evidence`]): a proof's, kept, or stale.
 //!
 //! What this does not do: relate fields a constructor computes, or a class holding its own class; prove anything (a
 //! regression proof settles a proposal's evidence); match loops or other control flow (deferred); or match one old method to several
@@ -36,6 +37,7 @@ pub mod fields;
 pub mod proofs;
 pub mod mappings;
 pub mod questions;
+pub mod evidence;
 pub use mappings::{mapping_hints, mappings, Mapping};
 
 /// How far ahead of the second the first candidate must be to lead, and the least score with which even a candidate

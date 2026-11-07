@@ -8,7 +8,11 @@
 //! asked again, so a hints file whose decisions are all approved asks nothing.
 //!
 //! Approving sets the intent state only. The evidence stays what a proof under the current claim key showed, or
-//! unchecked; a person can approve before a proof, and an approved relation can later be refuted.
+//! unchecked; a person can approve before a proof, and an approved relation can later be refuted. Each run with a
+//! hints file brings a decision's evidence up to date ([`super::evidence`]), and a decision that isn't proved under
+//! the current claim key is listed with its evidence ([`Decision`]): not asked again, since its intent is settled,
+//! but not counted as proved either. A hints file whose decisions are all approved and proved asks nothing and lists
+//! nothing.
 
 use std::path::Path;
 
@@ -16,7 +20,7 @@ use serde::{Deserialize, Serialize};
 
 use super::tool_proposal;
 use crate::Error;
-use crate::spec::{Evidence, Hint, HintContent, Hints, Intent};
+use crate::spec::{Evidence, Hint, HintContent, Hints, Intent, Source};
 
 /// One decision that is a person's.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -39,6 +43,35 @@ pub struct Answer {
     pub evidence: Evidence,
     /// The one line that approves it.
     pub approve: String,
+}
+
+/// A decision a person made: a method or correspondence hint they approved or stated, with its evidence now.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Decision {
+    pub kind: String,
+    pub subject: String,
+    /// "approved", or "stated" for a hint a person wrote.
+    pub by: String,
+    pub evidence: Evidence,
+}
+
+impl Decision {
+    /// Whether it is proved under the current claim key. After [`super::evidence::refresh`], evidence that is still
+    /// `proved` is for a key the current builds and settings give.
+    pub fn proved(&self) -> bool {
+        matches!(self.evidence, Evidence::Proved { .. })
+    }
+}
+
+/// The decisions in `hints` a person made, of the kinds a proof gives evidence for (methods and correspondences), in
+/// file order.
+pub fn decisions(hints: &Hints) -> Vec<Decision> {
+    hints
+        .entries
+        .iter()
+        .filter(|h| decided(h) && !matches!(h.content, HintContent::ObservationChange { .. }))
+        .map(|h| Decision { kind: kind(&h.content).into(), subject: h.subject.clone(), by: if h.source == Source::Stated { "stated" } else { "approved" }.into(), evidence: h.evidence.clone() })
+        .collect()
 }
 
 /// The kind of a hint, as `approve --kind` names it.
@@ -126,11 +159,9 @@ pub fn describe(evidence: &Evidence) -> String {
 }
 
 /// The questions as text: each decision, its candidates with what they mean and their evidence, and the approval
-/// lines; or that nothing is asked.
-pub fn render(questions: &[Question]) -> String {
-    if questions.is_empty() {
-        return "questions: none, nothing here is a person's decision\n".into();
-    }
+/// lines; then each decision a person made that isn't proved under the current claim key; or that nothing is asked.
+pub fn render(questions: &[Question], decisions: &[Decision]) -> String {
+    let plural = |n: usize| if n == 1 { "" } else { "s" };
     let mut out = String::new();
     for q in questions {
         out.push_str(&format!("question  {} ({}): decide {}\n", q.subject, q.kind, q.decide));
@@ -140,6 +171,19 @@ pub fn render(questions: &[Question]) -> String {
             out.push_str(&format!("     approve:  {}\n", a.approve));
         }
     }
-    out.push_str(&format!("{} question{} for a person; approving one sets its intent only, and its evidence still comes from a proof\n", questions.len(), if questions.len() == 1 { "" } else { "s" }));
+    let unproved: Vec<&Decision> = decisions.iter().filter(|d| !d.proved()).collect();
+    for d in &unproved {
+        out.push_str(&format!("{:<9} {} ({}): not proved under the current claim key; evidence {}\n", d.by, d.subject, d.kind, describe(&d.evidence)));
+    }
+    let unproved_line = match unproved.len() {
+        0 => String::new(),
+        n => format!("; {n} of {} decision{} a person made {} not proved under the current claim key (`align --prove` checks {})", decisions.len(), plural(decisions.len()), if n == 1 { "is" } else { "are" }, if n == 1 { "it" } else { "them" }),
+    };
+    out.push_str(&match (questions.len(), decisions.len(), unproved.len()) {
+        (0, 0, _) => "questions: none, nothing here is a person's decision\n".to_string(),
+        (0, n, 0) => format!("questions: none; {n} decision{} a person made, {}proved under the current claim key\n", plural(n), if n == 1 { "" } else { "each " }),
+        (0, ..) => format!("questions: none{unproved_line}\n"),
+        (q, ..) => format!("{q} question{} for a person; approving one sets its intent only, and its evidence still comes from a proof{unproved_line}\n", plural(q)),
+    });
     out
 }

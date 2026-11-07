@@ -92,8 +92,11 @@ jvmcontract align --before base/classes --after head/classes --prove --subject '
 # align ends with its questions: each decision that is a person's (several candidates and none ahead, a lone one
 # matched on type alone, a result whose meaning changed, or what a proof left open), what to decide, each candidate
 # with what approving it would mean and its evidence (a counterexample where a proof refuted it), and the line that
-# approves it. Approving sets the intent state only; the evidence stays what a proof showed. A hints file whose
-# decisions are all approved asks nothing.
+# approves it. Approving sets the intent state only; the evidence comes from a proof under the current claim key:
+# each run with --hints gives a decision a person made the evidence of its proof in that run, keeps proved or
+# refuted evidence whose claim key the current builds and settings still give, and marks the rest stale. A decision
+# that isn't proved is listed with its evidence, not asked again. A hints file whose decisions are all approved and
+# proved asks nothing and lists nothing.
 jvmcontract approve --hints build/alignment-hints.json --kind correspondence --subject 'shop.Pricing#total' --rank 1
 
 # A property of one method, proved over every input, or refuted with a witness.
@@ -332,7 +335,8 @@ mappings (`align`, `src/alignment.rs` and `src/alignment/mappings.rs`), and what
 (`src/alignment/proofs.rs`), are scored against the hand-written mappings of
 the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md); field correspondence
 (`src/alignment/fields.rs`), which none of them needs, is checked on the joint example, through `align.rs`. The
-questions a person decides, and their approval, are `src/alignment/questions.rs`.
+questions a person decides, and their approval, are `src/alignment/questions.rs`; the evidence of a decision on a
+rerun, `src/alignment/evidence.rs`.
 
 ## Limits
 

@@ -312,6 +312,23 @@ impl Mapping {
     pub fn is_default(&self) -> bool {
         matches!(self.proposals.as_slice(), [p] if p.fields.is_empty() && p.flags == Flags { before_target: None, before_arguments: None, results_agree_when: None })
     }
+
+    /// The correspondence a proposal amounts to, as the hints file writes it: an object related field by field has
+    /// its fields' equations in place of its own.
+    pub fn correspondence(&self, p: &Proposal) -> Correspondence {
+        let mut correspondence = Correspondence::from_flags(&self.old_inputs(), Some(&p.arguments), p.relation.as_deref());
+        correspondence.inputs = self
+            .old_inputs()
+            .iter()
+            .zip(correspondence.inputs)
+            .flat_map(|(name, own)| {
+                let prefix = format!("old.{name}.");
+                let fields: Vec<Equation> = p.fields.iter().filter(|e| e.old.starts_with(&prefix)).cloned().collect();
+                if fields.is_empty() { vec![own] } else { fields }
+            })
+            .collect();
+        correspondence
+    }
 }
 
 /// The equation of one old field of the old input `input`, made from the new object `object` (an expression over the
@@ -890,18 +907,7 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
         let decide = (!parts.is_empty()).then(|| format!("{against}{}", parts.join("; ")));
         for (place, &i) in kept.iter().enumerate() {
             let p = &m.proposals[i];
-            let mut correspondence = Correspondence::from_flags(&m.old_inputs(), Some(&p.arguments), p.relation.as_deref());
-            // An object related field by field: its fields' equations in place of its own.
-            correspondence.inputs = m
-                .old_inputs()
-                .iter()
-                .zip(correspondence.inputs)
-                .flat_map(|(name, own)| {
-                    let prefix = format!("old.{name}.");
-                    let fields: Vec<Equation> = p.fields.iter().filter(|e| e.old.starts_with(&prefix)).cloned().collect();
-                    if fields.is_empty() { vec![own] } else { fields }
-                })
-                .collect();
+            let correspondence = m.correspondence(p);
             let mut why: Vec<String> = Vec::new();
             if m.before != m.after {
                 why.push(format!("against {}", m.before));

@@ -118,7 +118,7 @@ fn two_equally_good_candidates_are_a_question() {
     assert!(!m.leads, "neither leads: {}", alignment::render(&report));
     assert!(m.leading().is_none());
     let asked = alignment::questions::questions(&alignment::method_hints(&report), Some(Path::new("h.json")));
-    let [q] = asked.as_slice() else { panic!("{}", alignment::questions::render(&asked)) };
+    let [q] = asked.as_slice() else { panic!("{}", alignment::questions::render(&asked, &[])) };
     assert_eq!((q.kind.as_str(), q.subject.as_str()), ("method", "A#f"));
     assert!(q.decide.starts_with("which new method takes the place of A#f: 2 candidates"), "{}", q.decide);
     assert!(q.answers.iter().all(|a| a.means[0].contains("takes its place")));
@@ -350,10 +350,10 @@ fn two_inputs_only_their_type_ties_are_a_question() {
     assert_eq!(hints.entries.iter().map(|h| h.rank).collect::<Vec<_>>(), (1..=m.proposals.len() as u32).map(Some).collect::<Vec<_>>());
     // The question: both inputs, and what each candidate makes them.
     let asked = alignment::questions::questions(&hints, None);
-    let [q] = asked.as_slice() else { panic!("{}", alignment::questions::render(&asked)) };
+    let [q] = asked.as_slice() else { panic!("{}", alignment::questions::render(&asked, &[])) };
     assert!(q.decide.starts_with("(against C#span) what the old x is made from: 2 candidates, none ahead (this.p | this.q); what the old y is made from"), "{}", q.decide);
-    assert!(q.answers.iter().any(|a| a.means == ["x = this.p", "y = this.q", "new inputs left free: none"]), "{}", alignment::questions::render(&asked));
-    assert!(q.answers.iter().any(|a| a.means == ["x = this.p", "y = this.p", "new inputs left free: this.q"]), "what each leaves free: {}", alignment::questions::render(&asked));
+    assert!(q.answers.iter().any(|a| a.means == ["x = this.p", "y = this.q", "new inputs left free: none"]), "{}", alignment::questions::render(&asked, &[]));
+    assert!(q.answers.iter().any(|a| a.means == ["x = this.p", "y = this.p", "new inputs left free: this.q"]), "what each leaves free: {}", alignment::questions::render(&asked, &[]));
     assert_eq!(q.answers.len(), m.proposals.len());
 }
 
@@ -770,10 +770,10 @@ fn several_proved_relations_for_a_changed_result_are_a_question() {
     let asked = alignment::questions::questions(&hints, None);
     let q = asked.iter().find(|q| q.subject == "A#positive").expect("asked");
     assert!(q.decide.contains("which of the 2 relations proved is intended"), "{}", q.decide);
-    assert_eq!(q.answers.len(), m.proposals.len(), "{}", alignment::questions::render(&asked));
+    assert_eq!(q.answers.len(), m.proposals.len(), "{}", alignment::questions::render(&asked, &[]));
     assert!(q.answers.iter().all(|a| a.means.iter().any(|w| w.starts_with("result: previous == (result ")) && a.approve.contains("--subject 'A#positive' --rank")));
     assert_eq!(q.answers.iter().filter(|a| matches!(a.evidence, Evidence::Proved { .. })).count(), 2);
-    assert!(q.answers.iter().filter(|a| !matches!(a.evidence, Evidence::Proved { .. })).all(|a| matches!(&a.evidence, Evidence::Refuted { witness, .. } if witness.contains("positive("))), "{}", alignment::questions::render(&asked));
+    assert!(q.answers.iter().filter(|a| !matches!(a.evidence, Evidence::Proved { .. })).all(|a| matches!(&a.evidence, Evidence::Refuted { witness, .. } if witness.contains("positive("))), "{}", alignment::questions::render(&asked, &[]));
 }
 
 #[test]
@@ -844,7 +844,7 @@ fn a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_fre
     assert_eq!(ask.means, ["old.arg0.cents == new.arg0.amount.cents", "new fields of shop.Quote left uncompared: none"]);
     let asked = alignment::questions::questions(&hints, None);
     let subjects: Vec<&str> = asked.iter().map(|q| q.subject.as_str()).collect();
-    assert_eq!(subjects, ["shop.Pricing#total", "shop.Pricing#withQuantity", "shop.Quote#quantity"], "{}", alignment::questions::render(&asked));
+    assert_eq!(subjects, ["shop.Pricing#total", "shop.Pricing#withQuantity", "shop.Quote#quantity"], "{}", alignment::questions::render(&asked, &[]));
     let with_ask = &asked[1];
     assert!(with_ask.decide.contains("which new value the old result's cents is compared with"), "{}", with_ask.decide);
     assert!(with_ask.answers[0].means.iter().any(|m| m == "result: previous.cents == result.amount.cents && previous.quantity == result.quantity"), "{:?}", with_ask.answers[0].means);
@@ -852,7 +852,7 @@ fn a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_fre
     let (Some(nb), Some(na)) = (kernel("lone-named", "before"), kernel("lone-named", "after")) else { return };
     let named = alignment::align(&Build::load(&nb).unwrap(), &Build::load(&na).unwrap(), None);
     let none = alignment::questions::questions(&alignment::hints(&named), None);
-    assert!(none.is_empty(), "{}", alignment::questions::render(&none));
+    assert!(none.is_empty(), "{}", alignment::questions::render(&none, &[]));
 }
 
 #[test]
@@ -897,6 +897,98 @@ fn approving_sets_the_intent_only_and_a_file_whose_decisions_are_approved_asks_n
     let hints = alignment::read_hints(&path).unwrap();
     assert_eq!(hints.entries.iter().filter(|h| h.intent == Intent::Approved).count(), 3);
     assert!(hints.entries.iter().all(|h| h.evidence == Evidence::Unchecked), "approving proves nothing");
+    // Approved is not proved: each is listed, with its evidence, and not asked.
+    assert!(text.contains("approved  shop.Pricing#total (correspondence): not proved under the current claim key; evidence unchecked"), "{text}");
+    assert!(text.contains("questions: none; 3 of 3 decisions a person made are not proved under the current claim key"), "{text}");
+}
+
+#[test]
+fn an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale() {
+    if !has_javac() {
+        return;
+    }
+    let dir = scratch("approve-evidence");
+    let b = compile(&dir, "before", &[("C.java", "public class C { static long span(long x, long y) { return y - x; } }")]);
+    let a = compile(&dir, "after", &[("C.java", "public class C { }"), ("P.java", "public record P(long p, long q) { long span() { return q - p; } }")]);
+    let path = dir.join("hints.json");
+    let align = |after: &Path, extra: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(["align", "--before"]).arg(&b).arg("--after").arg(after).arg("--hints").arg(&path).args(extra).output().unwrap();
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).to_string()
+    };
+    let span = |hints: &Hints| hints.entries.iter().filter(|h| h.subject == "P#span" && matches!(h.content, HintContent::Correspondence { .. })).cloned().collect::<Vec<Hint>>();
+    let native = ["--engine", "native", "--timeout", "120"];
+
+    // Static: the two orders tie on type alone, a question. A person approves the one that holds, before any proof.
+    let text = align(&a, &native);
+    assert!(text.contains("question  P#span (correspondence)"), "{text}");
+    let right = span(&alignment::read_hints(&path).unwrap()).into_iter().find(|h| h.ask.as_ref().is_some_and(|k| k.means.iter().any(|m| m == "x = this.p") && k.means.iter().any(|m| m == "y = this.q"))).expect("the order that holds");
+    let rank = right.rank.unwrap().to_string();
+    let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).args(["approve", "--hints"]).arg(&path).args(["--kind", "correspondence", "--subject", "P#span", "--rank", &rank]).output().unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    let text = align(&a, &native);
+    assert!(!text.contains("question  P#span") && text.contains("approved  P#span (correspondence): not proved under the current claim key; evidence unchecked"), "{text}");
+
+    // A proof gives the approved relation its evidence, under the current claim key; nothing is listed for it.
+    let text = align(&a, &["--prove", "--engine", "native", "--timeout", "120"]);
+    let approved = span(&alignment::read_hints(&path).unwrap());
+    let [approved] = approved.as_slice() else { panic!("the person chose: {approved:?}") };
+    let Evidence::Proved { claim_key } = approved.evidence.clone() else { panic!("{:?}\n{text}", approved.evidence) };
+    assert_eq!(approved.intent, Intent::Approved);
+    assert!(!text.contains("approved  P#span") && text.ends_with("questions: none; 1 decision a person made, proved under the current claim key\n"), "approved and proved asks nothing and lists nothing: {text}");
+    // A static rerun under the same settings keeps it: the claim key is the same.
+    align(&a, &native);
+    assert_eq!(span(&alignment::read_hints(&path).unwrap())[0].evidence, Evidence::Proved { claim_key: claim_key.clone() });
+    // Under other settings the key differs, and the proof is no evidence for it: stale, and listed.
+    let text = align(&a, &["--engine", "native", "--timeout", "120", "--unwind", "8"]);
+    assert_eq!(span(&alignment::read_hints(&path).unwrap())[0].evidence, Evidence::Stale { claim_key: claim_key.clone() });
+    assert!(text.contains("approved  P#span (correspondence): not proved under the current claim key; evidence stale"), "{text}");
+    // A proof under the current key makes it proved again; then a change to the new build makes it stale.
+    align(&a, &["--prove", "--engine", "native", "--timeout", "120"]);
+    assert_eq!(span(&alignment::read_hints(&path).unwrap())[0].evidence, Evidence::Proved { claim_key: claim_key.clone() });
+    let changed = compile(&dir, "after-changed", &[("C.java", "public class C { }"), ("P.java", "public record P(long p, long q) { long span() { return -(p - q); } }")]);
+    align(&changed, &native);
+    assert_eq!(span(&alignment::read_hints(&path).unwrap())[0].evidence, Evidence::Stale { claim_key: claim_key.clone() }, "a change to either version");
+    // And a proof under the changed build's key: proved for a new key.
+    align(&changed, &["--prove", "--engine", "native", "--timeout", "120"]);
+    let Evidence::Proved { claim_key: again } = span(&alignment::read_hints(&path).unwrap())[0].evidence.clone() else { panic!() };
+    assert_ne!(again, claim_key);
+}
+
+#[test]
+fn an_approved_relation_a_proof_refutes_is_listed_with_its_counterexample() {
+    let Some(a) = proved(
+        "approve-refuted",
+        &[("C.java", "public class C { static long span(long x, long y) { return y - x; } }")],
+        &[("C.java", "public class C { }"), ("P.java", "public record P(long p, long q) { long span() { return q - p; } }")],
+        None,
+    ) else {
+        return;
+    };
+    let static_hints = alignment::mapping_hints(&a.mappings);
+    let wrong = static_hints.entries.iter().find(|h| h.subject == "P#span" && h.ask.as_ref().is_some_and(|k| k.means.iter().any(|m| m == "x = this.q") && k.means.iter().any(|m| m == "y = this.p"))).expect("the order that doesn't hold");
+    let (mine, _) = alignment::questions::approve(static_hints.clone(), "correspondence", "P#span", wrong.rank).unwrap();
+    let settings = Settings { engine: jvmcontract::Engine::Native, timeout_seconds: 120, ..Settings::default() };
+    let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("alignment").join("approve-refuted");
+    let now = alignment::evidence::current(&a, &proofs::Keys::new(&dir.join("before"), &dir.join("after")).unwrap(), &settings);
+    let merged = alignment::evidence::refresh(alignment::merge_hints(mine, alignment::hints(&a)), &now);
+    let approved = merged.entries.iter().find(|h| h.subject == "P#span" && h.intent == Intent::Approved).unwrap();
+    assert!(matches!(&approved.evidence, Evidence::Refuted { witness, .. } if witness.contains("span(")), "{:?}", approved.evidence);
+    let decisions = alignment::questions::decisions(&merged);
+    let text = alignment::questions::render(&alignment::questions::questions(&merged, None), &decisions);
+    assert!(text.contains("approved  P#span (correspondence): not proved under the current claim key; evidence refuted for whole-builds:sha256:"), "{text}");
+    assert!(text.contains("counterexample"), "{text}");
+    // A method correspondence has no proof of its own: an approved one takes its pair's, proved when a mapping is.
+    let methods = alignment::method_hints(&a.methods);
+    let rank = methods.entries.iter().find(|h| h.subject == "C#span").expect("a method hint").rank;
+    let (methods, _) = alignment::questions::approve(methods, "method", "C#span", rank).unwrap();
+    let methods = alignment::evidence::refresh(methods, &now);
+    let method = methods.entries.iter().find(|h| h.subject == "C#span" && h.intent == Intent::Approved).unwrap();
+    assert!(matches!(method.evidence, Evidence::Proved { .. }), "{:?}", method.evidence);
+    // A relation the run doesn't propose at all has no current key: its proof is stale.
+    let gone = Hint { content: HintContent::Correspondence { correspondence: Correspondence { inputs: Vec::new(), outputs: Vec::new() } }, evidence: Evidence::Proved { claim_key: "k".into() }, ..approved.clone() };
+    let refreshed = alignment::evidence::refresh(Hints { version: alignment::HINTS_VERSION, entries: vec![gone] }, &now);
+    assert_eq!(refreshed.entries[0].evidence, Evidence::Stale { claim_key: "k".into() });
 }
 
 #[test]

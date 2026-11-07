@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.567Z",
-  "ended": "2026-11-07T07:26:12.418Z",
-  "duration_seconds": 12293,
+  "ended": "2026-11-07T07:41:35.138Z",
+  "duration_seconds": 13216,
   "stats": {
-    "turns": 54,
-    "api_calls": 495,
-    "tool_calls": 510,
+    "turns": 59,
+    "api_calls": 540,
+    "tool_calls": 559,
     "tool_errors": 9,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 247357,
     "usage": {
-      "input_tokens": 998,
-      "output_tokens": 454112,
-      "cache_read_input_tokens": 72141742,
-      "cache_creation_input_tokens": 1852599
+      "input_tokens": 1088,
+      "output_tokens": 497551,
+      "cache_read_input_tokens": 78816107,
+      "cache_creation_input_tokens": 2031753
     }
   },
   "tools": {
-    "Bash": 413,
-    "Read": 73,
-    "Edit": 10,
-    "Write": 8,
+    "Bash": 449,
+    "Read": 82,
+    "Edit": 13,
+    "Write": 9,
     "Monitor": 3,
     "ToolSearch": 2,
     "TaskStop": 1
@@ -41,6 +41,7 @@
     "examples/tools/alignment.py",
     "examples/tools/alignment/README.md",
     "lib/src/alignment.rs",
+    "lib/src/alignment/evidence.rs",
     "lib/src/alignment/fields.rs",
     "lib/src/alignment/mappings.rs",
     "lib/src/alignment/proofs.rs",
@@ -193,24 +194,38 @@
     {
       "index": 10,
       "started": "2026-11-07T07:11:16.169Z",
-      "ended": "2026-11-07T07:26:12.418Z",
-      "turns": 4,
-      "api_calls": 50,
+      "ended": "2026-11-07T07:26:40.861Z",
+      "turns": 5,
+      "api_calls": 53,
       "usage": {
-        "input_tokens": 100,
-        "output_tokens": 53907,
-        "cache_read_input_tokens": 8311364,
-        "cache_creation_input_tokens": 209081
+        "input_tokens": 106,
+        "output_tokens": 55674,
+        "cache_read_input_tokens": 8981999,
+        "cache_creation_input_tokens": 213456
       },
-      "peak_context_tokens": 222160
+      "peak_context_tokens": 226535
+    },
+    {
+      "index": 11,
+      "started": "2026-11-07T07:27:19.850Z",
+      "ended": "2026-11-07T07:41:35.138Z",
+      "turns": 4,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 84,
+        "output_tokens": 41672,
+        "cache_read_input_tokens": 6003730,
+        "cache_creation_input_tokens": 174779
+      },
+      "peak_context_tokens": 187858
     }
   ],
   "log": {
-    "sha256": "3c1114fb0efc5bb93a56e896f622dc0fccd84a07e4607d427accac3ef740b64d",
-    "bytes": 17289130,
-    "lines": 5466,
-    "gzip_bytes": 3660145,
-    "path": "llm-dlc/traces/11f93b59-b830-4090-8775-33313957ef5c/logs/3c1114fb0efc5bb93a56e896f622dc0fccd84a07e4607d427accac3ef740b64d.jsonl.gz"
+    "sha256": "936ffea984cf467127ab9090c820b8eaf4493e365e1d582c8248c5e403a382ce",
+    "bytes": 19015432,
+    "lines": 5977,
+    "gzip_bytes": 4049770,
+    "path": "llm-dlc/traces/11f93b59-b830-4090-8775-33313957ef5c/logs/936ffea984cf467127ab9090c820b8eaf4493e365e1d582c8248c5e403a382ce.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -317,6 +332,14 @@
       "summary": "Alignment A5: each decision that is a person's put as a question, with its candidates, what each means, and a one-line approve that sets intent only",
       "body": "A hint that answers a person's decision now carries an ask (spec::Ask: what to decide, and what approving this candidate would settle, part by part), and is ranked even when it is the only candidate. What is asked: an input or field whose candidates none leads (several and none ahead, or one on type alone), a result whose meaning changed, a vanished method with no leading candidate; after align --prove, what the proof leaves open (several relations proved, or every candidate refuted), while one proved settles it. jvmcontract align now ends with its questions, read from the hints file after the merge: each decision, every candidate with what it means and its evidence (the counterexample where a proof refuted it), and the one line that approves it. The new jvmcontract approve command sets the chosen proposal's intent to approved and nothing else, drops the subject's other proposals of that kind, and refuses a decided subject, a missing one, or an unnamed choice among several. A subject a person decided is not asked again, so a hints file whose decisions are all approved asks nothing.\n\nAlso fixed, the two cases A4 left for A5 (seen on the joint example's kernel compiled without parameter names): a lone field candidate on type alone is still one proposal but now asked as a question; and a new field reached only by a question's candidate is no longer called free. free is now what no candidate reaches, and a new open list (on Mapping and FieldCorrespondence) is what only some reach, so each proposal and each result candidate names what it leaves uncompared.\n\nVerified: 31 tests in lib/tests/alignment.rs pass (3 new: the lone candidate on the nameless kernel, approve through the command then reruns asking 2 and then nothing, approve's refusals; questions asserted in 4 existing ones), and the unit (185), foundations (3), skill (1) and conformance (9, 2 ignored) suites; every test target compiles; the Python tests pass; the integration contract on this branch: 2 passed, 22 unsupported, 0 failed. Scores on examples 121-139 unchanged, re-recorded under the new tool's hash. Shared files changed: lib/src/spec/mod.rs (Hint.ask and Ask, serde-defaulted and skipped when empty; rank's doc), lib/src/main.rs (approve, and the questions in align's output), lib/README.md, lib/tests/alignment.rs. Left for A5's second step, under Progress: an approved hint's evidence going stale when the claim key changes, approved-but-unproved hints listed, and an input that separates two proved relations.",
       "log_sha256": "3c1114fb0efc5bb93a56e896f622dc0fccd84a07e4607d427accac3ef740b64d"
+    },
+    {
+      "change_id": "pomtzpnqtyvzqpxskzmqowqvvrkylzos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Alignment A5: an approved relation's evidence comes from a proof under the current claim key, goes stale when it no longer matches, and approved-but-unproved decisions are listed",
+      "body": "Every align --hints run now works out each proposed relation's claim key under the current builds and proof settings (lib/src/alignment/evidence.rs). Each hint a person approved or stated then takes the evidence of this run's proof of the same relation. Otherwise it keeps proved or refuted evidence only while that claim key is still one the current builds, flags and settings give, and is marked stale once it isn't: a change to either build, another tool binary, or other proof settings. An approved method takes its pair's proof evidence. align lists every decision a person made that isn't proved under the current key (unchecked, stale, or refuted with its counterexample) without asking it again, so a hints file whose decisions are all approved and proved asks nothing and lists nothing. main.rs builds the proof settings on every run, since they are part of every claim key.\n\nVerified: 2 new tests in lib/tests/alignment.rs, by the own checker. Through the command they go: approve before a proof (listed as unproved); --prove (proved for K, nothing listed); a static rerun with the same settings (K kept) and with --unwind 8 (stale); a proof (proved again); a change to the new build (stale), then its proof (a new key). The other test covers a refuted approval listed with its counterexample, an approved method taking its pair's proof, and a relation no longer proposed going stale. All 33 alignment tests pass, as do the unit (185), foundations (3), skill (1) and conformance (9, 2 ignored) suites and the Python tests (23). The integration contract on this branch: 2 passed, 22 unsupported, 0 failed. Scores on 121-139 are unchanged, re-recorded under the new tool hash. Left for A5: what tells two proved relations apart (see Progress).",
+      "log_sha256": "936ffea984cf467127ab9090c820b8eaf4493e365e1d582c8248c5e403a382ce"
     }
   ],
   "logs": {
@@ -354,6 +377,12 @@
       "bytes": 15269430,
       "lines": 4888,
       "gzip_bytes": 3235575,
+      "url": null
+    },
+    "936ffea984cf467127ab9090c820b8eaf4493e365e1d582c8248c5e403a382ce": {
+      "bytes": 19015432,
+      "lines": 5977,
+      "gzip_bytes": 4049770,
       "url": null
     },
     "bef92b461f51d0e67718a12d790908f09f431ec901db0bbcb27a41a3a513b2a0": {

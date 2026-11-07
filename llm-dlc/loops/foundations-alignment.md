@@ -419,7 +419,43 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   merge; `rank`'s doc now also covers a question's lone candidate); `lib/src/main.rs` (the `approve` command, and the
   questions at the end of `align`); `lib/README.md` (the `approve` example and a sentence on the hints file);
   `lib/tests/alignment.rs` (the A5 tests).
-- Next: A5's second step, the three items above.
+- **A5, second step, its first two items done** (2026-11-07): a decision's evidence on a rerun, and approved apart
+  from proved, in the new `lib/src/alignment/evidence.rs` and in `questions.rs`:
+  - **The evidence comes from a proof under the current claim key.** Every `align --hints` run now works out, for
+    every relation it proposes (collapsed or not), its claim key under the current builds and settings, and the
+    evidence of any proof it made of it (`evidence::current`). Each hint a person approved or stated then gets
+    (`evidence::refresh`, after the merge): the evidence of this run's proof of the same relation; otherwise its own,
+    kept while its claim key is one the current builds, flags and settings give, and `stale` once it isn't (a change
+    to either build, another tool binary, other proof settings). A relation the run doesn't propose at all has no
+    current key, so its proved or refuted evidence is stale. An approved method takes its pair's evidence: proved
+    when one of the pair's mappings is. Unchecked and unknown evidence stays until a proof.
+  - **Approved is not proved.** `align` lists every decision a person made that isn't proved under the current claim
+    key, with its evidence (unchecked, stale, or refuted with its counterexample), and doesn't ask it again. The last
+    line counts them; a hints file whose decisions are all approved and proved asks nothing and lists nothing
+    ("questions: none; 1 decision a person made, proved under the current claim key").
+  - **Tests:** 2 more in `lib/tests/alignment.rs`, by the own checker. Through the command: an approval before any
+    proof is listed as unproved; `--prove` gives it proved for key K and lists nothing; a static rerun under the same
+    settings keeps K; one with `--unwind 8` makes it stale; a proof makes it proved again; a change to the new build
+    makes it stale; a proof there gives a new key. And: an approved order a proof refutes is listed with its
+    counterexample; an approved method takes its pair's proof; a relation not proposed at all goes stale. The kernel
+    test now checks its three approved, unproved decisions are listed. All 33 pass, and the unit (185), foundations
+    (3), skill (1) and conformance (9, 2 ignored) suites; every test target compiles; the Python tests pass (23). The
+    integration contract on this branch: 2 passed, 22 unsupported, 0 failed.
+  - **Score:** unchanged on 121–139. Re-recorded under the new tool's hash.
+- Shared files changed: `lib/src/main.rs` (`align` builds the proof settings on every run, since they are part of
+  every claim key, refreshes the decisions' evidence after the merge, and lists the unproved ones);
+  `lib/README.md` (the `approve` comment and the module sentence); `lib/tests/alignment.rs` (the two tests, the
+  kernel test's listing, and `questions::render`'s new argument). `mappings.rs` gains `Mapping::correspondence`,
+  taken out of `checked_hints` unchanged.
+- The integration report of 07:01:39 is a merge conflict between the streams in shared files (`examples/README.md`,
+  `lib/README.md`, `equivalence.rs`, `build.py`, the `llm-dlc` indexes and traces), the script not run: for the
+  reconcile loop, and no failure in this stream's part.
+- Next: A5's last item, what tells two proved relations apart. The plan: two proved candidates with the same input
+  mapping give the old version the same inputs, and each relation holds on every input of the claim, so they give
+  the same old-side observations and are one candidate by the brief's rule (the test's `result > 0` and
+  `result != 0` are such a pair). What tells them apart is then a new result no input of the claim produces (`-1`),
+  found by evaluating the two relations (`harness::expr`). Only candidates with different input mappings and
+  different relations stay a question, with an input that separates them where one is found.
 - Status: working
 
 ## Loop settings

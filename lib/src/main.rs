@@ -869,12 +869,14 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let (before_dir, after_dir) = (before, after);
             let (before, after) = (jvmcontract::alignment::Build::load(&before_dir)?, jvmcontract::alignment::Build::load(&after_dir)?);
             let mut alignment = jvmcontract::alignment::align(&before, &after, contract.as_ref());
+            // The proof settings, part of every claim key: a static run with a hints file checks a decision's evidence
+            // against the key these settings give.
+            let gaps: jvmcontract::bmc::gaps::GapMode = gaps.parse()?;
+            let settings = jvmcontract::alignment::proofs::Settings { engine: engine.parse()?, gaps, unwind, max_array_length, timeout_seconds: timeout, jbmc, unchanged_unless, work };
             if prove {
-                let gaps: jvmcontract::bmc::gaps::GapMode = gaps.parse()?;
                 if gaps == jvmcontract::bmc::gaps::GapMode::Advised {
                     return Err(Error::new("align --prove takes --gaps strict or assume: advised stops before solving, with contracts to write"));
                 }
-                let settings = jvmcontract::alignment::proofs::Settings { engine: engine.parse()?, gaps, unwind, max_array_length, timeout_seconds: timeout, jbmc, unchanged_unless, work };
                 let subject = subject.or_else(|| contract.as_ref().map(|c| c.subject.clone()));
                 jvmcontract::alignment::prove(&mut alignment, &before_dir, &after_dir, subject.as_deref(), &settings)?;
             }
@@ -889,6 +891,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let (asked, file) = match hints {
                 Some(path) => {
                     let merged = jvmcontract::alignment::merge_hints(jvmcontract::alignment::read_hints(&path)?, proposed);
+                    let now = jvmcontract::alignment::evidence::current(&alignment, &jvmcontract::alignment::proofs::Keys::new(&before_dir, &after_dir)?, &settings);
+                    let merged = jvmcontract::alignment::evidence::refresh(merged, &now);
                     jvmcontract::alignment::write_hints(&path, &merged)?;
                     eprintln!("({} hints in {})", merged.entries.len(), path.display());
                     (merged, Some(path))
@@ -896,7 +900,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 None => (proposed, None),
             };
             if !json {
-                print!("{}", jvmcontract::alignment::questions::render(&jvmcontract::alignment::questions::questions(&asked, file.as_deref())));
+                print!("{}", jvmcontract::alignment::questions::render(&jvmcontract::alignment::questions::questions(&asked, file.as_deref()), &jvmcontract::alignment::questions::decisions(&asked)));
             }
             Ok(0)
         }
