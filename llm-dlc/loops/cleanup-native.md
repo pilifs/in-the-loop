@@ -137,6 +137,16 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
 
       The foundations streams saw the same (`foundations-alignment.md`), and the merge should resolve them.
   - Next: N2's reproducer (VF-011), and N3's unchanged resubmission (VF-015).
+  - Correction: step 2's `sync.py commit` reported 13 errors, not 4, all of the same kind (none from this session):
+    session `2df7775c`'s log `3f768f3bb246`, and commits of the sibling streams and the verification loop with no
+    manifest in this workspace (`uxvwumlz`, `lqozoovu`, `ulvlrqwu`, `pkuvkylu`, `muznwonp`, `wmuwlwkx`, `uytnkqst`,
+    `vtkypktk`, `wurnsyot`, `zykkyuuw`, `syqpoxom`).
+- **N3, step 1: the unchanged resubmission.** Job `20261107-165827-example-109-revisited-hex-todigit-s-regr`
+  supersedes `20261103-010716-…` with its steps, expectations and budget unchanged. Only its title and description
+  now name VF-015. It runs at this commit (no `--revision`). Its step 1 clones Commons Codec, so it needs the network.
+  As read, the interpreter still refuses static fields it doesn't know (`lib/src/interp/natives.rs:373`), so if JBMC
+  still refutes step 3's claim, its witness will fail to replay the same way, and the fix comes next.
+  - Next: N2's reproducer (VF-011), while this job and N1's four are pending.
 - Status: working
 
 ## Loop settings
