@@ -12,28 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.451Z",
-  "ended": "2026-11-07T16:32:00.172Z",
-  "duration_seconds": 314,
+  "ended": "2026-11-07T16:35:33.511Z",
+  "duration_seconds": 527,
   "stats": {
-    "turns": 5,
-    "api_calls": 39,
-    "tool_calls": 38,
-    "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 100640,
+    "turns": 10,
+    "api_calls": 61,
+    "tool_calls": 61,
+    "tool_errors": 1,
+    "compactions": 2,
+    "peak_context_tokens": 109851,
     "usage": {
-      "input_tokens": 76,
-      "output_tokens": 21610,
-      "cache_read_input_tokens": 2634491,
-      "cache_creation_input_tokens": 105202
+      "input_tokens": 120,
+      "output_tokens": 32538,
+      "cache_read_input_tokens": 4176402,
+      "cache_creation_input_tokens": 170269
     }
   },
   "tools": {
-    "Bash": 37,
-    "Edit": 1
+    "Bash": 55,
+    "Edit": 4,
+    "Read": 2
   },
   "files_touched": [
-    "examples/tools/test_build.py"
+    "examples/tools/test_build.py",
+    "llm-dlc/loops/cleanup-examples.md"
   ],
   "context_windows": [
     {
@@ -53,24 +55,38 @@
     {
       "index": 1,
       "started": "2026-11-07T16:26:43.700Z",
-      "ended": "2026-11-07T16:32:00.172Z",
-      "turns": 5,
-      "api_calls": 39,
+      "ended": "2026-11-07T16:32:57.547Z",
+      "turns": 6,
+      "api_calls": 46,
       "usage": {
-        "input_tokens": 76,
-        "output_tokens": 21610,
-        "cache_read_input_tokens": 2634491,
-        "cache_creation_input_tokens": 105202
+        "input_tokens": 90,
+        "output_tokens": 25432,
+        "cache_read_input_tokens": 3363700,
+        "cache_creation_input_tokens": 114413
       },
-      "peak_context_tokens": 100640
+      "peak_context_tokens": 109851
+    },
+    {
+      "index": 2,
+      "started": "2026-11-07T16:33:41.513Z",
+      "ended": "2026-11-07T16:35:33.511Z",
+      "turns": 4,
+      "api_calls": 15,
+      "usage": {
+        "input_tokens": 30,
+        "output_tokens": 7106,
+        "cache_read_input_tokens": 812702,
+        "cache_creation_input_tokens": 55856
+      },
+      "peak_context_tokens": 68935
     }
   ],
   "log": {
-    "sha256": "b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c",
-    "bytes": 1012292,
-    "lines": 402,
-    "gzip_bytes": 177062,
-    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c.jsonl.gz"
+    "sha256": "bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921",
+    "bytes": 1771725,
+    "lines": 660,
+    "gzip_bytes": 337560,
+    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -81,6 +97,14 @@
       "summary": "build.py takes a subject the patch creates or leaves alone for a helper it calls, for examples 147-149 and 160-161 (verification pending)",
       "body": "VF-002 and VF-016, item E1 of the cleanup loop's examples stream. build.py's excerpts() stopped examples 147, 148 and 149 because their patches create the subject Jitter.java, and examples 160 and 161 because their patch changes only the helper TokenBucket, not the subject RetryAfter. A created subject now has an empty before side, and the page says the patch creates the file. An unchanged subject is taken when the patch changes exactly one Java file of its source tree whose class the subject's source names; the excerpts show that file and the page says so, while the verified unit, the claim's file and the SARIF location stay the subject's. Anything else is refused as before.\n\nReproducers in test_build.py's ExcerptsTest, on the five examples' own patches and made-up ones: 5 errors before the fix, all pass after. The rest of test_build.py passes except ReplayWordingTest on example 171's page, which fails at the parent commit too and is recorded under the brief's Progress, with the 148/149 jobs' expectation of '1 proved, 2 tested' that the current tool can no longer give.\n\nJobs, resubmitted unchanged with the closing entry named: 20261107-163046-example-147-b11-advised-contracts-a-cont, 20261107-163047-example-148-b11-advised-contracts-full-j, 20261107-163049-example-149-b11-contract-library-full-ji (close VF-002), 20261107-163050-example-160-a-changed-refill-helper-prov and 20261107-163051-example-161-a-refill-helper-aligned-to-t (close VF-016).",
       "log_sha256": "b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c"
+    },
+    {
+      "change_id": "vtkypktkyosoynwtsommkvmusyqkuowz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test_build.py checks each recorded violation's replay wording against its own result, not against boxoffice alone",
+      "body": "The cleanup integration check (report of 2026-11-07 16:26, at eeb1fa29) failed on ReplayWordingTest: it held that only the Java verifier's (boxoffice) pages say a witness was replayed on the JVM. jvmcontract effects replays its witness on a JVM under recording stubs (lib/src/effects.rs:577), and its results record replay.by jvm, so the pages of examples 171, 172 and 191-194 failed the test while saying what their results record. The test now checks every recorded B9 violation's page against that result's own replay record (build.replayed_where), and that at least one page is on the JVM. No page, result or build.py code changed. Verified with python3 examples/tools/test_build.py: 185 tests pass, where one failed before.",
+      "log_sha256": "bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921"
     }
   ],
   "logs": {
@@ -88,6 +112,12 @@
       "bytes": 1012292,
       "lines": 402,
       "gzip_bytes": 177062,
+      "url": null
+    },
+    "bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921": {
+      "bytes": 1771725,
+      "lines": 660,
+      "gzip_bytes": 337560,
       "url": null
     }
   },

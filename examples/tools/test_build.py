@@ -1147,7 +1147,12 @@ class ReplayWordingTest(unittest.TestCase):
         self.assertNotIn("replayed", page)
         self.assertIn("on which the two versions do this:", page)
 
-    def test_no_recorded_tool_example_is_said_to_be_replayed_on_the_jvm(self):
+    def test_no_recorded_example_is_said_to_be_replayed_where_its_result_does_not_say(self):
+        """A recorded violation's page says "on the JVM" exactly when its result says the witness was replayed there
+        (its `replay.by`, or its proof line before there was one). The Java verifier's (boxoffice) and the effect
+        checker's (`jvmcontract effects`, which runs the witness on a JVM under recording stubs) are; the tool's
+        equivalence checks replay in its interpreter."""
+        jvm = 0
         for folder in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*")):
             ex = json.loads((folder / "example.json").read_text())
             if ex.get("origin") != "constructed" or ex["approach"]["id"] != "B9" or (folder / "result.json").exists() is False:
@@ -1156,7 +1161,11 @@ class ReplayWordingTest(unittest.TestCase):
             if res.get("verdict") != "violation":
                 continue
             page = "\n".join(build.findings_equivalence(ex, res))
-            self.assertEqual("on the JVM" in page, build.app_of(ex) == "boxoffice", folder.name)
+            on_jvm = build.replayed_where(res) == build.REPLAYED["jvm"]
+            self.assertEqual("on the JVM" in page, on_jvm, folder.name)
+            self.assertIn(build.replayed_where(res), page, folder.name)
+            jvm += on_jvm
+        self.assertGreater(jvm, 0)
 
 
 class PlanTest(unittest.TestCase):

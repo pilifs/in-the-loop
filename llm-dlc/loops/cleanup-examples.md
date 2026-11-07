@@ -136,11 +136,19 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   `Integer.numberOfLeadingZeros` is no gap (the examples' last notes), so the current tool can give only the two
   tested contracts. The verdict they expect, verified, is unaffected, and `build.py` checks only the verdict. The
   examples' titles and summaries still name three contracts.
-- **New finding, for review:** `test_build.py`'s
-  `ReplayWordingTest.test_no_recorded_tool_example_is_said_to_be_replayed_on_the_jvm` fails on example 171's page,
-  at `oqqwvmqy` as well (not this stream's change). `--render-only` also marks the pages of 170–172 stale, since the
-  Crosscut and deliveries sources changed after their runs. They're not re-rendered here: Phase 4 reruns them at the
-  merge.
+- **The integration check's failure, fixed** (its report of 16:26, at `eeb1fa29`): `test_build.py`'s
+  `ReplayWordingTest` held that only boxoffice pages say a witness was "replayed on the JVM". That predates
+  `jvmcontract effects`, which does replay its witness on a JVM (`effects.rs:577`), so the pages of 171, 172 and
+  191–194 failed it, correctly worded, with `replay.by: "jvm"` in each result. The test, renamed
+  `test_no_recorded_example_is_said_to_be_replayed_where_its_result_does_not_say`, now checks each recorded B9
+  violation's page against its own result's replay record (`replayed_where`), and that at least one is on the JVM.
+  No page or result changed. All 185 tests pass.
+- `--render-only` marks the pages of 170–172 stale, since the Crosscut and deliveries sources changed after their
+  runs. They're not re-rendered here: Phase 4 reruns them at the merge.
+- `sync.py commit`'s check reports errors that aren't this branch's: other streams' commits (`zykkyuuw`, `ruvmympl`,
+  `syqpoxom`) have no manifest in this workspace, and the planning session's log `3f768f3bb246` is only in the
+  default workspace's gitignored `llm-dlc/traces/*/logs/`, since `oqqwvmqy` isn't pushed. Left alone: the merge and
+  its push settle them.
 - Next: E1's VF-017, the `object` parameter kind in `result.schema.json`.
 - Status: working
 
