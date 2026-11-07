@@ -134,8 +134,29 @@ under Progress.
   (new), `lib/README.md` (a section, and the command under Commands). `EntryPointSpec` in `observe.rs` gained fields
   (`kind`, `declared`, `bindings`, `response`, `statuses`, `effects`, `identity`, `assumptions`, `source_line`,
   `method`), all with serde defaults; its existing fields keep their meaning.
-- Next: O1 on Box Office: every entry point of `ticketing-service`, `payment-service` and `messaging` gets a spec,
-  checked by hand against its source once and then by a test.
+- **O1, step 2 (2026-11-07): Box Office, every entry point.** The 13 routes, listeners and schedules of
+  `ticketing-service` (9), `payment-service` (3) and `messaging` (1) have specs (the boundary contracts' larger
+  entry-point counts include `@Bean` definitions). Checked by hand against the source and the boundary contracts,
+  which turned up three bugs, now fixed: the walk didn't follow sibling modules, so the outbox and inbox writes,
+  the placement inside `Transactions.run` and the guards' 500s were missing (`observations::analyse` now takes the
+  entry-point classes and the followed classes apart, as `boundaries::analyse_in` does, and the command has
+  `--base DIR`, as `verify` has); a `Class` argument was expanded into the document's fields as payload
+  (`reach.rs`'s `argument_types` now keeps a class literal's declared type); and a method inherited from the
+  library (`Enum.ordinal`, `Object.getClass`) was named unresolved (now a library call). The trace bound is now at
+  least the number of effect sites (the payment listener has five). After the fixes the specs' reads, writes, sends
+  and throws match the boundary contracts', and `verify` still passes on all three modules. Tested by two new tests in
+  `lib/tests/observations.rs`, which build Box Office offline with its own Gradle build in a copy under the target
+  folder (about 7 s): every module's specs equal golden text in `lib/tests/fixtures/boxoffice-observations/`
+  (`JVMCONTRACT_BLESS=1` rewrites it), and the facts read off the source hold (`POST /orders` writes the order and
+  the outbox entry inside one transaction, its statuses 500/409/404 and an unknown one for the `ResponseEntity`; the
+  hold route's three bindings; the payments listener's payload and inbox write; the sweep's configured schedule;
+  the relay's computed topic named as unresolved). Shared files touched, by adding: `lib/src/main.rs` (`--base`),
+  `lib/tests/observations.rs`, `lib/tests/fixtures/boxoffice-observations/` (new), `lib/README.md`. O1 is done.
+- Not this stream's to fix: `sync.py check` reports "session … has no manifest" for the alignment stream's A1 and the
+  summaries stream's S1 commits, whose manifests are on their own branches; the reconcile merge brings them together.
+- Next: O2, `observe::compare`: entry points matched across two builds, each old observation accounted for
+  (preserved, changed, new, removed, unresolved) with what its proof would need; first on the joint example's
+  defects (the integration contract's `observations compare` checks), then on Box Office examples 110–119.
 - Status: working
 
 ## Loop settings

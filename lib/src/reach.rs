@@ -570,7 +570,10 @@ impl<'a> Graph<'a> {
                     let callees = self.resolve(&member, exact);
                     if callees.is_empty() {
                         let effects = self.interface_effects(class, method, &insns, &targets, i, &member);
-                        if effects.is_empty() {
+                        // A method an application class inherits from the library (`Enum.ordinal`, `Object.getClass`)
+                        // is a library call, which the walk doesn't enter, not an unresolved one.
+                        let inherited = self.cp.find_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(c, _)| is_leaf(&c.name) || !self.cp.is_application(&c.name));
+                        if effects.is_empty() && !inherited {
                             out.unresolved.push(format!("{}.{} in {here}: nothing followed implements it", display(&member.owner), member.name));
                         } else {
                             let arguments = self.argument_types(class, method, &insns, &targets, i, &member);
@@ -960,6 +963,10 @@ impl<'a> Graph<'a> {
         (0..n)
             .map(|position| {
                 let declared = d.params[position].class_name().map(str::to_string);
+                // A class literal names a type, which `type_at` would report as the class it names.
+                if declared.as_deref() == Some("java/lang/Class") {
+                    return declared;
+                }
                 let found = pushing(class, insns, targets, at, n - 1 - position).and_then(|pushed| self.type_at(class, method, insns, pushed));
                 found.or(declared)
             })

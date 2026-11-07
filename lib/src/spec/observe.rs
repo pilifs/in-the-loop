@@ -172,7 +172,7 @@ pub fn entry_points(build: &Path) -> Result<Vec<EntryPointSpec>, Unsupported> {
     cp.add(build).map_err(fail)?;
     let local: std::collections::BTreeSet<String> = cp.application_class_names().map_err(fail)?.into_iter().collect();
     let cp = cp.with_default_jdk();
-    crate::observations::analyse(&cp, Some(&local)).map_err(fail)
+    crate::observations::analyse(&cp, Some(&local), Some(&local)).map_err(fail)
 }
 
 /// The obligations between two builds' entry points; every old observation is accounted for.

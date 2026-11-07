@@ -1,0 +1,148 @@
+GET /concerts/{id} => net.terminalvalue.boxoffice.ticketing.api.ConcertController#get
+  inputs: id: String (path variable)
+  response: Concert
+  status when returns: 200 (the default)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads ConcertDocument by MongoTemplate.findById, outside a transaction, in TicketingStore.concert(String), snapshot of id
+  reads SeatDocument by MongoTemplate.find, outside a transaction, in TicketingStore.seats(String), snapshot of query
+  observes: result, exception, status
+  identity relations: none: its consumers see serialized values
+  environment: 2 modeled calls, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in ConcertService.lambda$availability$0(String) (string concatenation: the string's value isn't modeled)
+GET /holds/{id} => net.terminalvalue.boxoffice.ticketing.api.HoldController#get
+  inputs: id: String (path variable)
+  response: Hold
+  status when returns: 200 (the default)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads HoldDocument by MongoTemplate.findById, outside a transaction, in TicketingStore.hold(String), snapshot of id
+  observes: result, exception, status
+  identity relations: none: its consumers see serialized values
+  environment: 1 modeled call, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in HoldService.lambda$get$0(String) (string concatenation: the string's value isn't modeled)
+GET /orders/{id} => net.terminalvalue.boxoffice.ticketing.api.OrderController#get
+  inputs: id: String (path variable)
+  response: Order
+  status when returns: 200 (the default)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads OrderDocument by MongoTemplate.findById, outside a transaction, in TicketingStore.order(String), snapshot of id
+  observes: result, exception, status
+  identity relations: none: its consumers see serialized values
+  environment: 1 modeled call, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderService.lambda$get$0(String) (string concatenation: the string's value isn't modeled)
+POST /concerts => net.terminalvalue.boxoffice.ticketing.api.ConcertController#create
+  inputs: request: CreateConcert (request body)
+  response: ResponseEntity<Concert>
+  status when returns: unknown (the ResponseEntity the handler builds)
+  status when IllegalStateException: 500 (nothing maps it)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads ConcertDocument by MongoTemplate.findById, outside a transaction, in TicketingStore.concert(String), snapshot of id
+  reads SeatDocument by MongoTemplate.find, outside a transaction, in TicketingStore.seats(String), snapshot of query
+  writes ConcertDocument by MongoTemplate.insert, inside its transaction, in TicketingStore.insert(ConcertDocument), snapshot of objectToSave.id, objectToSave.name, objectToSave.venue, objectToSave.startsAt, objectToSave.priceCents, objectToSave.seatLabels, objectToSave.createdAt
+  writes SeatDocument by MongoTemplate.insert, inside its transaction, in TicketingStore.insert(ConcertDocument), snapshot of batchToSave
+  observes: result, exception, status, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/util/Collection;Ljava/lang/Class;)Ljava/util/Collection;
+  identity relations: none: its consumers see serialized values
+  environment: 4 modeled calls, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in ConcertController.create(CreateConcert) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in ConcertService.lambda$availability$0(String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in ConcertService.lambda$create$1(String, int) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in SeatDocument.id(String, String) (string concatenation: the string's value isn't modeled)
+POST /concerts/{id}/holds => net.terminalvalue.boxoffice.ticketing.api.ConcertController#hold
+  inputs: id: String (path variable), Idempotency-Key: String (header), request: HoldSeats (request body)
+  response: ResponseEntity<Hold>
+  status when returns: unknown (the ResponseEntity the handler builds)
+  status when IllegalArgumentException: 500 (nothing maps it)
+  status when IllegalStateException: 500 (nothing maps it)
+  status when ConflictException: 409 (@ExceptionHandler ApiErrors.conflict)
+  status when InvalidRequestException: 400 (@ExceptionHandler ApiErrors.invalid)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads ConcertDocument by MongoTemplate.findById, inside its transaction, in TicketingStore.concert(String), snapshot of id
+  reads HoldDocument by MongoTemplate.findOne, inside its transaction, in TicketingStore.holdByIdempotencyKey(String, String), snapshot of query
+  writes HoldDocument by MongoTemplate.insert, inside its transaction, in TicketingStore.insert(HoldDocument), snapshot of objectToSave.id, objectToSave.concertId, objectToSave.seatLabels, objectToSave.customerId, objectToSave.amountCents, objectToSave.createdAt, objectToSave.expiresAt, objectToSave.idempotencyKey
+  writes SeatDocument by MongoTemplate.updateMulti, inside its transaction, in TicketingStore.hold(String, List, String, Instant, Instant), snapshot of query, update
+  observes: result, exception, status, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;, effect:org/springframework/data/mongodb/core/MongoTemplate#updateMulti(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;
+  identity relations: none: its consumers see serialized values
+  environment: 4 modeled calls, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in ConcertController.hold(String, String, HoldSeats) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in HoldPolicy.validate(List) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in HoldService.lambda$hold$0(String, String, String, List) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in HoldService.lambda$hold$1(String) (string concatenation: the string's value isn't modeled)
+POST /orders => net.terminalvalue.boxoffice.ticketing.api.OrderController#place
+  inputs: request: PlaceOrder (request body)
+  response: ResponseEntity<Order>
+  status when returns: unknown (the ResponseEntity the handler builds)
+  status when IllegalStateException: 500 (nothing maps it)
+  status when ConflictException: 409 (@ExceptionHandler ApiErrors.conflict)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads HoldDocument by MongoTemplate.findById, inside its transaction, in TicketingStore.hold(String), snapshot of id
+  reads OrderDocument by MongoTemplate.findOne, inside its transaction, in TicketingStore.orderForHold(String), snapshot of query
+  reads SeatDocument by MongoTemplate.count, inside its transaction, in TicketingStore.heldUnexpiredBy(String, Instant), snapshot of query
+  writes OrderDocument by MongoTemplate.insert, inside its transaction, in TicketingStore.insert(OrderDocument), snapshot of objectToSave.id, objectToSave.holdId, objectToSave.concertId, objectToSave.seatLabels, objectToSave.customerId, objectToSave.amountCents, objectToSave.status, objectToSave.createdAt, objectToSave.updatedAt
+  writes Outbox.Entry by MongoTemplate.insert, inside its transaction, in Outbox.enqueue(String, Message), snapshot of objectToSave.id, objectToSave.topic, objectToSave.key, objectToSave.payload, objectToSave.createdAt, objectToSave.publishedAt
+  observes: result, exception, status, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;
+  identity relations: none: its consumers see serialized values
+  environment: 4 modeled calls, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderController.place(PlaceOrder) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderService.lambda$place$0(String, String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderService.lambda$place$1(String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in Transactions.requireActive(String) (string concatenation: the string's value isn't modeled)
+POST /orders/{id}/cancellation => net.terminalvalue.boxoffice.ticketing.api.OrderController#cancel
+  inputs: id: String (path variable)
+  response: ResponseEntity<Order>
+  status when returns: unknown (the ResponseEntity the handler builds)
+  status when IllegalStateException: 500 (nothing maps it)
+  status when ConflictException: 409 (@ExceptionHandler ApiErrors.conflict)
+  status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
+  reads OrderDocument by MongoTemplate.findById, inside its transaction, in TicketingStore.order(String), snapshot of id
+  writes OrderDocument by MongoTemplate.updateFirst, inside its transaction, in TicketingStore.transition(String, OrderStatus, OrderStatus, Instant), snapshot of query, update
+  writes Outbox.Entry by MongoTemplate.insert, inside its transaction, in Outbox.enqueue(String, Message), snapshot of objectToSave.id, objectToSave.topic, objectToSave.key, objectToSave.payload, objectToSave.createdAt, objectToSave.publishedAt
+  writes SeatDocument by MongoTemplate.updateMulti, inside its transaction, in TicketingStore.release(String, String), snapshot of query, update
+  writes SeatDocument by MongoTemplate.updateMulti, inside its transaction, in TicketingStore.sell(String, String), snapshot of query, update
+  observes: result, exception, status, effect:org/springframework/data/mongodb/core/MongoTemplate#updateFirst(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;, effect:org/springframework/data/mongodb/core/MongoTemplate#updateMulti(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;
+  identity relations: none: its consumers see serialized values
+  environment: 4 modeled calls, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.CancellationRequested.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.PaymentCaptured.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.PaymentDeclined.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.PaymentRefunded.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderService.lambda$get$0(String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderTransitions.apply(OrderDocument, OrderInput) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in Transactions.requireActive(String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: SwitchBootstraps.typeSwitch in OrderLifecycle.decide(OrderStatus, OrderInput) (a pattern or enum switch)
+kafka payments.events => net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener#on
+  inputs: record: ConsumerRecord<String, String> (payload)
+  reads Inbox.Entry by MongoTemplate.exists, inside its transaction, in Inbox.firstDelivery(String, Message), snapshot of query
+  reads OrderDocument by MongoTemplate.findById, inside its transaction, in TicketingStore.order(String), snapshot of id
+  reads SeatDocument by MongoTemplate.count, inside its transaction, in TicketingStore.heldBy(String), snapshot of query
+  writes Inbox.Entry by MongoTemplate.insert, inside its transaction, in Inbox.firstDelivery(String, Message), snapshot of objectToSave.id, objectToSave.processedAt
+  writes OrderDocument by MongoTemplate.updateFirst, inside its transaction, in TicketingStore.transition(String, OrderStatus, OrderStatus, Instant), snapshot of query, update
+  writes Outbox.Entry by MongoTemplate.insert, inside its transaction, in Outbox.enqueue(String, Message), snapshot of objectToSave.id, objectToSave.topic, objectToSave.key, objectToSave.payload, objectToSave.createdAt, objectToSave.publishedAt
+  writes SeatDocument by MongoTemplate.updateMulti, inside its transaction, in TicketingStore.release(String, String), snapshot of query, update
+  writes SeatDocument by MongoTemplate.updateMulti, inside its transaction, in TicketingStore.sell(String, String), snapshot of query, update
+  observes: exception, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;, effect:org/springframework/data/mongodb/core/MongoTemplate#updateFirst(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;, effect:org/springframework/data/mongodb/core/MongoTemplate#updateMulti(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;
+  identity relations: none: its consumers see serialized values
+  environment: 6 modeled calls, trace bound 5, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.CancellationRequested.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.PaymentCaptured.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.PaymentDeclined.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: ObjectMethods.bootstrap in OrderInput.PaymentRefunded.toString() (a record's equals, hashCode or toString)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in Inbox.firstDelivery(String, Message) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderTransitions.apply(OrderDocument, OrderInput) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in Transactions.requireActive(String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: SwitchBootstraps.typeSwitch in OrderLifecycle.decide(OrderStatus, OrderInput) (a pattern or enum switch)
+  unresolved: a dynamic call site the walk doesn't follow: SwitchBootstraps.typeSwitch in PaymentEventHandler.lambda$handle$0(PaymentEvent) (a pattern or enum switch)
+schedule fixedDelayString = "${boxoffice.hold.sweep-interval:1s}" => net.terminalvalue.boxoffice.ticketing.app.HoldService#releaseExpiredHolds
+  inputs: none
+  writes SeatDocument by MongoTemplate.updateMulti, outside a transaction, in TicketingStore.releaseExpired(Instant), snapshot of query, update
+  observes: exception, effect:org/springframework/data/mongodb/core/MongoTemplate#updateMulti(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;
+  identity relations: none: nothing is returned to a caller
+  environment: 1 modeled call, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: schedule fixedDelayString = "${boxoffice.hold.sweep-interval:1s}": part of it comes from configuration

@@ -1,0 +1,11 @@
+schedule fixedDelayString = "${boxoffice.outbox.poll-interval:100ms}" => net.terminalvalue.boxoffice.messaging.OutboxRelay#publishPending
+  inputs: none
+  reads Outbox.Entry by MongoTemplate.find, outside a transaction, in OutboxRelay.publishPending(), snapshot of query
+  writes Outbox.Entry by MongoTemplate.updateFirst, outside a transaction, in OutboxRelay.publishPending(), snapshot of query, update
+  sends to Kafka by KafkaTemplate.send, outside a transaction, in OutboxRelay.send(Entry), snapshot of topic, key, data
+  observes: exception, effect:org/springframework/data/mongodb/core/MongoTemplate#updateFirst(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;, effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;
+  identity relations: none: nothing is returned to a caller
+  environment: 3 modeled calls, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: the target of KafkaTemplate.send in OutboxRelay.send(Entry): computed at run time (to Kafka)
+  unresolved: schedule fixedDelayString = "${boxoffice.outbox.poll-interval:100ms}": part of it comes from configuration

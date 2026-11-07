@@ -34,8 +34,9 @@ use crate::spec::observe::{Binding, BindingSource, EffectSite, EntryKind, EntryP
 use crate::spec::{Derivation, EnvironmentModel, ExternalInput, ModeledCall, Observation, OrderPolicy};
 use crate::Error;
 
-/// The most effects one trace records unless a caller asks for another bound: reaching it leaves a check
-/// unresolved, never a shorter trace.
+/// The fewest effects one trace records unless a caller asks for another bound: reaching it leaves a check
+/// unresolved, never a shorter trace. A spec raises it to its number of effect sites, so that one pass through
+/// each fits (a site in a loop may still reach it).
 pub const TRACE_BOUND: u32 = 4;
 
 /// What every spec's environment model assumes about the modeled calls, stated in each spec.
@@ -115,15 +116,16 @@ const PARAMETER_NAMES: &[(&str, &str, &[&str])] = &[
 /// How deep a payload's fields are followed into application classes.
 const PAYLOAD_DEPTH: usize = 4;
 
-/// The specs of the entry points in the classes under `local` (internal names), or in every application class; the
-/// whole class path resolves the types.
-pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>) -> Result<Vec<EntryPointSpec>, Error> {
+/// The specs of the entry points in the classes under `only` (internal names), or in every application class. What
+/// each reaches is followed into the `local` classes (the module and its sibling modules, as for the boundary
+/// contract), or into every application class when `local` is `None`; the whole class path resolves the types.
+pub fn analyse(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option<&BTreeSet<String>>) -> Result<Vec<EntryPointSpec>, Error> {
     let classes = cp.application_classes()?;
     let graph = reach::Graph::new(cp, &classes, local);
     let handlers = Handlers::collect(cp, &classes, local);
     let mut specs = Vec::new();
     for (name, class) in &classes {
-        if local.is_some_and(|l| !l.contains(name)) || class.access & (flags::ANNOTATION | flags::SYNTHETIC) != 0 {
+        if only.is_some_and(|l| !l.contains(name)) || class.access & (flags::ANNOTATION | flags::SYNTHETIC) != 0 {
             continue;
         }
         let class_annotations = class.annotations().map_err(|e| Error::new(format!("{name}: {e}")))?;
@@ -319,7 +321,7 @@ impl Entry<'_> {
             handler: handler_name(class, method),
             inputs,
             observations,
-            environment: EnvironmentModel { calls, trace_bound: TRACE_BOUND, order: OrderPolicy::Exact },
+            environment: EnvironmentModel { calls, trace_bound: TRACE_BOUND.max(effects.iter().filter(|e| e.kind != SiteKind::Read).count() as u32), order: OrderPolicy::Exact },
             unresolved,
             kind,
             declared: declared.to_string(),
@@ -470,11 +472,11 @@ pub fn render(specs: &[EntryPointSpec]) -> String {
             out.push_str(&format!("  status when {}: {} ({})\n", st.outcome, st.status.map_or_else(|| "unknown".to_string(), |c| c.to_string()), st.by));
         }
         for e in &s.effects {
-            out.push_str(&format!("  {} {} by {}, {}, in {}{}\n", e.kind.verb(), e.target, short_call(&e.call), e.placement.words(), e.in_method, if e.payload.is_empty() { String::new() } else { format!(", snapshot of {}", e.payload.join(", ")) }));
+            out.push_str(&format!("  {} {} by {}, {}, in {}{}\n", if e.kind == SiteKind::Send && e.target.starts_with("to ") { "sends" } else { e.kind.verb() }, e.target, short_call(&e.call), e.placement.words(), e.in_method, if e.payload.is_empty() { String::new() } else { format!(", snapshot of {}", e.payload.join(", ")) }));
         }
         out.push_str(&format!("  observes: {}\n", s.observations.iter().map(Observation::id).collect::<Vec<_>>().join(", ")));
         out.push_str(&format!("  identity relations: {}\n", s.identity));
-        out.push_str(&format!("  environment: {} modeled calls, trace bound {}, exact order\n", s.environment.calls.len(), s.environment.trace_bound));
+        out.push_str(&format!("  environment: {} modeled call{}, trace bound {}, exact order\n", s.environment.calls.len(), if s.environment.calls.len() == 1 { "" } else { "s" }, s.environment.trace_bound));
         for a in &s.assumptions {
             out.push_str(&format!("  assumes {a}\n"));
         }

@@ -129,6 +129,10 @@ enum Command {
         /// Further class path entries (repeatable, or PATH-separated).
         #[arg(long = "classpath")]
         classpath: Vec<String>,
+        /// The build's root directory: the class path entries under it are the module's sibling modules, whose
+        /// classes the walk follows as it does the module's (as `verify --base` does for the boundary contract).
+        #[arg(long)]
+        base: Option<PathBuf>,
         /// Print JSON (the shared IR's `EntryPointSpec`s) instead of text.
         #[arg(long)]
         json: bool,
@@ -731,17 +735,25 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(0)
         }
-        Command::Observations { paths, classpath, json } => {
+        Command::Observations { paths, classpath, base, json } => {
             let mut cp = ClassPath::new();
             for p in &paths {
                 cp.add(p)?;
             }
             let module_classes: std::collections::BTreeSet<String> = cp.application_class_names()?.into_iter().collect();
+            let mut followed = module_classes.clone();
             for list in &classpath {
                 cp.add_path_list(list)?;
+                if let Some(base) = &base {
+                    for entry in std::env::split_paths(list).filter(|e| e.exists() && e.starts_with(base)) {
+                        let mut sibling = ClassPath::new();
+                        sibling.add(&entry)?;
+                        followed.extend(sibling.application_class_names()?);
+                    }
+                }
             }
             let cp = cp.with_default_jdk();
-            let specs = jvmcontract::observations::analyse(&cp, Some(&module_classes))?;
+            let specs = jvmcontract::observations::analyse(&cp, Some(&module_classes), Some(&followed))?;
             if json {
                 println!("{}", serde_json::to_string_pretty(&specs).expect("serializable"));
             } else {
