@@ -78,18 +78,135 @@ pub struct Harness {
 /// A record class standing in for a value of it: the receiver, a parameter or the result of record type is made of
 /// its components, each a primitive, which the harness takes as symbolic parameters and builds the record from
 /// through its canonical constructor.
+///
+/// A parameter may also be an object of an application class made by its constructor (step H2 of
+/// `llm-dlc/loops/foundations-heap.md`): the constructor's parameters are primitives or objects made the same way
+/// in turn (`Quote(Money amount, int quantity)` of a `Money(long cents)`), and [`RecordType::components`] are the
+/// primitive leaves of that construction, named by their path (`amount.cents`, `quantity`), which the harness takes
+/// as its symbolic parameters. Such an object may be changed by the method, so [`RecordType::fields`] says what of
+/// it both versions' objects are compared on after the calls.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RecordType {
     /// The internal name (`net/example/Backoff`); the previous version's record is the same name under `before/`.
     pub class: String,
-    /// The components in declaration order, each of a primitive type.
+    /// The components in declaration order, each of a primitive type: for a class made by its constructor, the
+    /// primitive leaves of its construction in order, each named by its path through it.
     pub components: Vec<(String, Type)>,
+    /// The constructor's parameters, of primitive types or the classes of [`RecordType::inner`]; a record's are its
+    /// components.
+    pub params: Vec<(String, Type)>,
+    /// How each parameter of a class type is made, in order.
+    pub inner: Vec<RecordType>,
+    /// What of the object is observed after the calls: none for a record, whose fields the method cannot change
+    /// (its components are primitive); its instance fields, followed into the objects they refer to, for a class.
+    pub fields: Option<Fields>,
+}
+
+/// The instance fields of a class as the harness reads them back, in declaration order.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Fields {
+    /// The internal name of the class declaring them.
+    pub class: String,
+    pub fields: Vec<(String, FieldKind)>,
+}
+
+/// One field of [`Fields`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FieldKind {
+    /// A primitive, compared as the results are.
+    Value(Type),
+    /// An array of primitives (`Type::Array`): null in both, or the same length and elements.
+    Array(Type),
+    /// A reference to an object of an application class: null in both, or each of its fields as compared in turn.
+    Object(Box<Fields>),
+}
+
+impl Fields {
+    /// Each primitive or array field by its path (`amount.cents`), with its type, depth first.
+    pub fn paths(&self) -> Vec<(String, Type)> {
+        let mut out = Vec::new();
+        for (name, kind) in &self.fields {
+            match kind {
+                FieldKind::Value(t) | FieldKind::Array(t) => out.push((name.clone(), t.clone())),
+                FieldKind::Object(inner) => out.extend(inner.paths().into_iter().map(|(p, t)| (format!("{name}.{p}"), t))),
+            }
+        }
+        out
+    }
+
+    /// The classes the fields reach, this one first.
+    pub fn classes(&self) -> Vec<String> {
+        let mut out = vec![self.class.clone()];
+        for (_, kind) in &self.fields {
+            if let FieldKind::Object(inner) = kind {
+                out.extend(inner.classes());
+            }
+        }
+        out
+    }
+
+    /// Whether `other` (the previous version's) has the same fields: the same names and kinds, in the same order.
+    pub fn same_shape(&self, other: &Fields) -> bool {
+        self.fields.len() == other.fields.len()
+            && self.fields.iter().zip(&other.fields).all(|((n, a), (m, b))| {
+                n == m
+                    && match (a, b) {
+                        (FieldKind::Value(x), FieldKind::Value(y)) | (FieldKind::Array(x), FieldKind::Array(y)) => x == y,
+                        (FieldKind::Object(x), FieldKind::Object(y)) => x.same_shape(y),
+                        _ => false,
+                    }
+            })
+    }
 }
 
 impl RecordType {
-    /// The canonical constructor's descriptor: one parameter per component.
+    /// A record of primitive components, made by its canonical constructor.
+    pub fn record(class: &str, components: Vec<(String, Type)>) -> RecordType {
+        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), fields: None }
+    }
+
+    /// An object of the application class `class` made by its constructor of `params`, each parameter of a class
+    /// type made as `inner` says in order, and observed by `fields`.
+    pub fn made(class: &str, params: Vec<(String, Type)>, inner: Vec<RecordType>, fields: Fields) -> RecordType {
+        let mut components = Vec::new();
+        let mut nested = inner.iter();
+        for (name, t) in &params {
+            if t.is_primitive() {
+                components.push((name.clone(), t.clone()));
+            } else if let Some(made) = nested.next() {
+                components.extend(made.components.iter().map(|(c, t)| (format!("{name}.{c}"), t.clone())));
+            }
+        }
+        RecordType { class: class.to_string(), components, params, inner, fields: Some(fields) }
+    }
+
+    /// Whether it is a class made by its constructor, rather than a record of primitive components.
+    pub fn is_made(&self) -> bool {
+        self.fields.is_some()
+    }
+
+    /// The constructor's descriptor: one parameter per component for a record.
     pub fn constructor(&self) -> String {
-        format!("({})V", self.components.iter().map(|(_, t)| t.descriptor()).collect::<String>())
+        self.constructor_in(None)
+    }
+
+    /// [`RecordType::constructor`] for the class under the package `prefix` (`before`), whose parameters of a class
+    /// type are under it too.
+    pub fn constructor_in(&self, prefix: Option<&str>) -> String {
+        let descriptor = |t: &Type| match (t, prefix) {
+            (Type::Object(name), Some(p)) if self.inner.iter().any(|r| r.class == *name) => format!("L{p}/{name};"),
+            _ => t.descriptor(),
+        };
+        format!("({})V", self.params.iter().map(|(_, t)| descriptor(t)).collect::<String>())
+    }
+
+    /// Every constructor the harness calls to make it, this one's first, by owner and descriptor.
+    pub fn constructors(&self) -> Vec<(String, String)> {
+        let mut out = vec![(self.class.clone(), self.constructor())];
+        for r in &self.inner {
+            out.extend(r.constructors());
+        }
+        out
     }
 
     pub fn java_name(&self) -> String {
@@ -100,15 +217,50 @@ impl RecordType {
         crate::classfile::simple_name_of(&self.class)
     }
 
-    /// `Backoff(baseMillis: long, capMillis: long)`, for the domain.
+    /// `Backoff(baseMillis: long, capMillis: long)`, for the domain; a class made by its constructor shows the
+    /// constructions of its parameters, `Quote(amount: Money(cents: long), quantity: int)`.
     pub fn describe(&self) -> String {
-        format!("{}({})", self.simple_name(), self.components.iter().map(|(n, t)| format!("{n}: {}", t.java_name())).collect::<Vec<_>>().join(", "))
+        let mut nested = self.inner.iter();
+        let params = self
+            .params
+            .iter()
+            .map(|(n, t)| match t {
+                Type::Object(_) => format!("{n}: {}", nested.next().map(RecordType::describe).unwrap_or_else(|| t.java_name())),
+                _ => format!("{n}: {}", t.java_name()),
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("{}({params})", self.simple_name())
+    }
+
+    /// The domain's words for a parameter `name` of it: `name: Backoff(baseMillis: long, capMillis: long)` for a
+    /// record, and for a class made by its constructor `name: a Quote made by its constructor, Quote(amount:
+    /// Money(cents: long), quantity: int), from any arguments it accepts`, which is all a result over it claims.
+    pub fn domain_part(&self, name: &str) -> String {
+        if self.is_made() {
+            format!("{name}: a {} made by its constructor, {}, from any arguments it accepts", self.simple_name(), self.describe())
+        } else {
+            format!("{name}: {}", self.describe())
+        }
     }
 
     /// Whether the previous version's record can stand for this one: the same component types in the same order
-    /// (a renamed component is the same value).
+    /// (a renamed component is the same value); for a class made by its constructor, the same construction
+    /// (constructor parameter types, the inner constructions) and the same fields.
     pub fn same_shape(&self, other: &RecordType) -> bool {
-        self.components.len() == other.components.len() && self.components.iter().zip(&other.components).all(|((_, a), (_, b))| a == b)
+        let leaves = self.components.len() == other.components.len() && self.components.iter().zip(&other.components).all(|((_, a), (_, b))| a == b);
+        let made = match (&self.fields, &other.fields) {
+            (None, None) => true,
+            (Some(a), Some(b)) => {
+                a.same_shape(b)
+                    && self.params.len() == other.params.len()
+                    && self.params.iter().zip(&other.params).all(|((_, a), (_, b))| a == b)
+                    && self.inner.len() == other.inner.len()
+                    && self.inner.iter().zip(&other.inner).all(|(a, b)| a.same_shape(b))
+            }
+            _ => false,
+        };
+        leaves && made
     }
 }
 
@@ -244,7 +396,7 @@ impl Layout {
                     let p = &self.params[*i];
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
-                Slot::Record { name, record, .. } => (format!("{name}: {}", record.describe()), false),
+                Slot::Record { name, record, .. } => (record.domain_part(name), false),
             })
             .collect();
         domain(parts, max_array_length)
@@ -771,16 +923,10 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         for (i, slot) in records.iter().enumerate() {
             let Slot::Record { record, before: previous, first, .. } = slot else { unreachable!("records() returns records") };
             let (new_local, old_local) = object_slots(i);
-            let in_previous = previous.as_ref().map(|p| (format!("before/{}", p.class), old_local));
-            for (owner, local) in std::iter::once((record.class.clone(), new_local)).chain(in_previous) {
-                let class = writer.pool.class(&owner);
-                code.op_u16(0xbb, class); // new
-                code.op(0x59); // dup
-                for (j, (_, t)) in record.components.iter().enumerate() {
-                    code.load(kind_of(t), params[first + j].slot);
-                }
-                let init = writer.pool.method_ref(&owner, "<init>", &record.constructor());
-                code.op_u16(0xb7, init); // invokespecial
+            let in_previous = previous.as_ref().map(|p| (p, Some("before"), old_local));
+            for (made, prefix, local) in std::iter::once((record, None, new_local)).chain(in_previous) {
+                let mut next = *first;
+                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut next);
                 code.store(Kind::Ref, local);
             }
         }
@@ -1051,6 +1197,17 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     for (slot, copy, element) in &copies {
         compare_arrays(&mut code, *slot, *copy, element, Some(bound), index, fail);
     }
+    // Each object made by its constructor, as both versions leave it: its fields compared, followed into the
+    // objects they refer to, two locals a level for the pair being compared.
+    let mut scratch = code.max_locals.max(index + 1);
+    for (i, slot) in records.iter().enumerate() {
+        let Slot::Record { record, before: Some(previous), .. } = slot else { continue };
+        let (Some(fields), Some(old_fields)) = (&record.fields, &previous.fields) else { continue };
+        let (new_local, old_local) = object_slots(i);
+        let used = compare_fields(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, scratch, index, fail);
+        scratch = scratch.max(used);
+    }
+    code.max_locals = code.max_locals.max(scratch);
     code.goto(ok);
     code.bind(fail);
     emit_failure(&mut code, &mut writer.pool);
@@ -1061,6 +1218,106 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
     let source = source(class_internal, method, layout, ret, unchanged_unless, before);
     Ok(Harness { bytes: writer.to_bytes(), probe: Vec::new(), source, scope, params: params.to_vec(), before_args, relation })
+}
+
+/// Emits a jump to `fail` unless the objects in the locals `old` (of the previous version's class, under `before/`,
+/// laid out as `old_fields`) and `new` (as `fields`) have the same fields: each primitive equal, each array null in
+/// both or of the same length and elements, each object null in both or compared so in turn, through the locals from
+/// `scratch` on. `index` is the loops' counter. Returns the first local it left unused.
+#[allow(clippy::too_many_arguments)]
+fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, scratch: u16, index: u16, fail: Label) -> u16 {
+    let mut used = scratch;
+    for ((name, kind), (old_name, old_kind)) in fields.fields.iter().zip(&old_fields.fields) {
+        let descriptor = |k: &FieldKind, prefix: &str| match k {
+            FieldKind::Value(t) | FieldKind::Array(t) => t.descriptor(),
+            FieldKind::Object(f) => format!("L{prefix}{};", f.class),
+        };
+        let old_field = pool.field_ref(&format!("before/{}", old_fields.class), old_name, &descriptor(old_kind, "before/"));
+        let new_field = pool.field_ref(&fields.class, name, &descriptor(kind, ""));
+        match (kind, old_kind) {
+            (FieldKind::Value(t), _) => compare_values(code, t, fail, &|code, side| {
+                code.load(Kind::Ref, if side == 0 { old } else { new });
+                code.op_u16(0xb4, if side == 0 { old_field } else { new_field }); // getfield
+            }),
+            (FieldKind::Array(t), _) => {
+                let (x, y) = (scratch, scratch + 1);
+                for (local, object, field) in [(x, old, old_field), (y, new, new_field)] {
+                    code.load(Kind::Ref, object);
+                    code.op_u16(0xb4, field); // getfield
+                    code.store(Kind::Ref, local);
+                }
+                let element = match t {
+                    Type::Array(e) => (**e).clone(),
+                    other => other.clone(),
+                };
+                let compare = code.label();
+                let done = code.label();
+                code.load(Kind::Ref, x);
+                code.if_nonnull(compare);
+                code.load(Kind::Ref, y);
+                code.if_null(done);
+                code.goto(fail);
+                code.bind(compare);
+                code.load(Kind::Ref, y);
+                code.if_null(fail);
+                code.load(Kind::Ref, x);
+                code.op(0xbe); // arraylength
+                code.load(Kind::Ref, y);
+                code.op(0xbe); // arraylength
+                code.if_icmp(Cond::Ne, fail);
+                compare_arrays(code, x, y, &element, None, index, fail);
+                code.bind(done);
+                used = used.max(scratch + 2);
+            }
+            (FieldKind::Object(inner), FieldKind::Object(old_inner)) => {
+                let (x, y) = (scratch, scratch + 1);
+                for (local, object, field) in [(x, old, old_field), (y, new, new_field)] {
+                    code.load(Kind::Ref, object);
+                    code.op_u16(0xb4, field); // getfield
+                    code.store(Kind::Ref, local);
+                }
+                let compare = code.label();
+                let done = code.label();
+                code.load(Kind::Ref, x);
+                code.if_nonnull(compare);
+                code.load(Kind::Ref, y);
+                code.if_null(done);
+                code.goto(fail);
+                code.bind(compare);
+                code.load(Kind::Ref, y);
+                code.if_null(fail);
+                let deeper = compare_fields(code, pool, x, y, old_inner, inner, scratch + 2, index, fail);
+                code.bind(done);
+                used = used.max(deeper).max(scratch + 2);
+            }
+            (FieldKind::Object(_), _) => code.goto(fail),
+        }
+    }
+    used
+}
+
+/// Emits the making of `record` (its class under `prefix/` when given, the previous version's) from its leaves, the
+/// flat parameters from `*next` on, leaving the object on the stack: `new`, the arguments with each inner
+/// construction made in its place, and the constructor's call.
+fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, record: &RecordType, prefix: Option<&str>, params: &[Param], next: &mut usize) {
+    let owner = match prefix {
+        Some(p) => format!("{p}/{}", record.class),
+        None => record.class.clone(),
+    };
+    let class = pool.class(&owner);
+    code.op_u16(0xbb, class); // new
+    code.op(0x59); // dup
+    let mut nested = record.inner.iter();
+    for (_, t) in &record.params {
+        if t.is_primitive() {
+            code.load(kind_of(t), params[*next].slot);
+            *next += 1;
+        } else if let Some(inner) = nested.next() {
+            emit_construct(code, pool, inner, prefix, params, next);
+        }
+    }
+    let init = pool.method_ref(&owner, "<init>", &record.constructor_in(prefix));
+    code.op_u16(0xb7, init); // invokespecial
 }
 
 /// Emits a jump to `fail` unless the two values `push` loads (`push(code, 0)` the first, `push(code, 1)` the
@@ -1192,19 +1449,19 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         s.push_str(&format!("        {} {}_before = java.util.Arrays.copyOf({}, {}.length); // the version before writes into its own copy\n", p.ty.java_name(), p.name, p.name, p.name));
     }
     if !records.is_empty() {
-        s.push_str("        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
+        s.push_str("        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
         for slot in &records {
             let Slot::Record { name, record, before: previous, first } = slot else { continue };
-            let components = params[*first..*first + record.components.len()].iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
+            let leaves = &params[*first..*first + record.components.len()];
             match previous {
                 Some(previous) => {
                     let old = format!("before.{}", previous.java_name());
                     s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
-                    s.push_str(&format!("        try {{ {name}_before = new {old}({components}); {name}_after = new {}({components}); }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+                    s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(previous, "before.", &mut leaves.iter()), construction_source(record, "", &mut leaves.iter())));
                 }
                 None => {
                     s.push_str(&format!("        {} {name}_after; // the previous version takes the components\n", record.java_name()));
-                    s.push_str(&format!("        try {{ {name}_after = new {}({components}); }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+                    s.push_str(&format!("        try {{ {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(record, "", &mut leaves.iter())));
                 }
             }
         }
@@ -1269,8 +1526,55 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     for p in params.iter().filter(|p| is_array(p)) {
         s.push_str(&format!(" && java.util.Arrays.equals({}, {}_before)", p.name, p.name));
     }
+    // Each object made by its constructor, as both versions leave it.
+    for slot in &records {
+        if let Slot::Record { name, record, before: Some(previous), .. } = slot {
+            if let (Some(fields), Some(old_fields)) = (&record.fields, &previous.fields) {
+                s.push_str(&format!(" && {}", fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields)));
+            }
+        }
+    }
     s.push_str(";\n    }\n}\n");
     s
+}
+
+/// The Java for making `record` (its classes under `prefix`, `before.` for the previous version's) from the next of
+/// `leaves`: `new before.shop.Quote(new before.shop.Money(q_amount_cents), q_quantity)`.
+fn construction_source<'a>(record: &RecordType, prefix: &str, leaves: &mut impl Iterator<Item = &'a Param>) -> String {
+    let mut nested = record.inner.iter();
+    let args: Vec<String> = record
+        .params
+        .iter()
+        .map(|(_, t)| match t {
+            Type::Object(_) => nested.next().map(|r| construction_source(r, prefix, leaves)).unwrap_or_default(),
+            _ => leaves.next().map(|p| p.name.clone()).unwrap_or_default(),
+        })
+        .collect();
+    format!("new {prefix}{}({})", record.java_name(), args.join(", "))
+}
+
+/// The Java for two objects having the same fields, as [`compare_fields`] compares them.
+fn fields_source(old: &str, new: &str, old_fields: &Fields, fields: &Fields) -> String {
+    let parts: Vec<String> = fields
+        .fields
+        .iter()
+        .zip(&old_fields.fields)
+        .map(|((name, kind), (old_name, old_kind))| {
+            let (x, y) = (format!("{old}.{old_name}"), format!("{new}.{name}"));
+            match (kind, old_kind) {
+                (FieldKind::Value(Type::Float | Type::Double), _) => format!("({x} == {y} || ({x} != {x} && {y} != {y}))"),
+                (FieldKind::Value(_), _) => format!("{x} == {y}"),
+                (FieldKind::Array(_), _) => format!("java.util.Arrays.equals({x}, {y})"),
+                (FieldKind::Object(inner), FieldKind::Object(old_inner)) => format!("({x} == null ? {y} == null : {y} != null && {})", fields_source(&x, &y, old_inner, inner)),
+                (FieldKind::Object(_), _) => "false".to_string(),
+            }
+        })
+        .collect();
+    if parts.is_empty() {
+        "true".to_string()
+    } else {
+        parts.join(" && ")
+    }
 }
 
 /// `text` with each component of `record` read from `name` as an accessor call, `previous.tokens` as
@@ -1712,8 +2016,8 @@ mod tests {
 
     #[test]
     fn lays_out_a_record_receiver_argument_and_result_as_their_components() {
-        let backoff = RecordType { class: "net/example/Backoff".into(), components: vec![("baseMillis".into(), Type::Long), ("capMillis".into(), Type::Long)] };
-        let window = RecordType { class: "net/example/Window".into(), components: vec![("from".into(), Type::Int), ("open".into(), Type::Boolean)] };
+        let backoff = RecordType::record("net/example/Backoff", vec![("baseMillis".into(), Type::Long), ("capMillis".into(), Type::Long)]);
+        let window = RecordType::record("net/example/Window", vec![("from".into(), Type::Int), ("open".into(), Type::Boolean)]);
         let names = ["attempt".to_string(), "window".to_string()];
         let types = [Type::Int, Type::Object("net/example/Window".into())];
         let layout = Layout::new(Some((backoff.clone(), Some(backoff.clone()))), &names, &types, &[None, Some((window.clone(), Some(window.clone())))], (Some(window.clone()), Some(window.clone())));
@@ -1723,7 +2027,7 @@ mod tests {
         assert_eq!(layout.domain(8), "this: Backoff(baseMillis: long, capMillis: long) × attempt: int × window: Window(from: int, open: boolean)");
         assert_eq!(layout.records().len(), 2);
         assert_eq!(backoff.constructor(), "(JJ)V");
-        assert!(backoff.same_shape(&RecordType { class: "x/Y".into(), components: vec![("a".into(), Type::Long), ("b".into(), Type::Long)] }), "renamed components are the same value");
+        assert!(backoff.same_shape(&RecordType::record("x/Y", vec![("a".into(), Type::Long), ("b".into(), Type::Long)])), "renamed components are the same value");
         assert!(!backoff.same_shape(&window));
 
         let harness = generate("net/example/Backoff", "next", &layout, &Type::Object("net/example/Window".into()), Some("attempt < 0 || baseMillis > window.from"), 8, None).unwrap();
@@ -1757,7 +2061,7 @@ mod tests {
     /// is called statically with the components, by the expressions given.
     #[test]
     fn calls_a_static_previous_version_with_the_records_components() {
-        let batch = RecordType { class: "net/example/Batch".into(), components: vec![("start".into(), Type::Long), ("size".into(), Type::Int)] };
+        let batch = RecordType::record("net/example/Batch", vec![("start".into(), Type::Long), ("size".into(), Type::Int)]);
         let names = ["failedIndex".to_string()];
         let layout = Layout::new(Some((batch.clone(), None)), &names, &[Type::Int], &[None], (None, None));
         assert!(!layout.before_receiver());
@@ -1795,7 +2099,7 @@ mod tests {
     /// expressions, under before/, inside the handler that skips an input a constructor rejects.
     #[test]
     fn builds_the_previous_versions_receiver_from_the_new_parameters() {
-        let window = RecordType { class: "net/example/Window".into(), components: vec![("lo".into(), Type::Int), ("hi".into(), Type::Int)] };
+        let window = RecordType::record("net/example/Window", vec![("lo".into(), Type::Int), ("hi".into(), Type::Int)]);
         let params = params(&["lo".into(), "hi".into(), "x".into()], &[Type::Int, Type::Int, Type::Int]);
         let layout = flat(&params);
         let previous = BeforeMethod {
@@ -2097,8 +2401,8 @@ mod tests {
     #[test]
     fn generates_a_harness_relating_record_results_by_their_components() {
         // The record result gained a component: the relation names the components of both records.
-        let old = RecordType { class: "fixtures/Bucket".into(), components: vec![("tokens".into(), Type::Long), ("lastNanos".into(), Type::Long)] };
-        let new = RecordType { class: "fixtures/Bucket".into(), components: vec![("tokens".into(), Type::Long), ("lastNanos".into(), Type::Long), ("refills".into(), Type::Int)] };
+        let old = RecordType::record("fixtures/Bucket", vec![("tokens".into(), Type::Long), ("lastNanos".into(), Type::Long)]);
+        let new = RecordType::record("fixtures/Bucket", vec![("tokens".into(), Type::Long), ("lastNanos".into(), Type::Long), ("refills".into(), Type::Int)]);
         let params = params(&["tokens".into(), "earned".into()], &[Type::Long, Type::Long]);
         let layout = Layout { result: (Some(new.clone()), Some(old.clone())), ..flat(&params) };
         let before = BeforeMethod {

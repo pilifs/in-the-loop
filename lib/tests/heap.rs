@@ -204,3 +204,137 @@ fn a_witness_with_one_array_twice_or_null_runs_on_the_jvm_as_it_is() {
     assert_eq!(null.calls[0].thrown.as_deref(), Some("java/lang/NullPointerException"));
     assert_eq!(null.calls[0].arrays_after, vec![(0, vec![Value::Int(1)])], "the null leaves nothing, the array what was written before the throw");
 }
+
+// Object inputs in regression checks (H2): a parameter of an application class, made in the harness by its
+// constructor from symbolic arguments, an object argument made by its own constructor in turn. Both versions get
+// their own objects from the same arguments, and their fields after the calls are compared.
+
+const MONEY: &str = "package objects;\npublic record Money(long cents) {}\n";
+
+const LINE: &str = r#"package objects;
+public final class Line {
+    Money price;
+    int quantity;
+    public Line(Money price, int quantity) {
+        if (quantity <= 0) throw new IllegalArgumentException();
+        this.price = price;
+        this.quantity = quantity;
+    }
+}
+"#;
+
+const TAGGED: &str = r#"package objects;
+public final class Tagged {
+    String tag;
+    int n;
+    public Tagged(int n) { this.n = n; this.tag = "t"; }
+}
+"#;
+
+const KERNEL_BEFORE: &str = r#"package objects;
+public final class Kernel {
+    public static long total(Line l) { return l.price.cents() * l.quantity; }
+    public static long checked(Line l) { return l.price.cents() * l.quantity; }
+    public static void bump(Line l) { l.quantity += 1; }
+    public static int tagged(Tagged t) { return t.n; }
+}
+"#;
+
+const KERNEL_AFTER: &str = r#"package objects;
+public final class Kernel {
+    public static long total(Line l) { return l.quantity * l.price.cents(); }
+    // Wrong only for a quantity the constructor rejects.
+    public static long checked(Line l) { if (l.quantity <= 0) return -1; return l.quantity * l.price.cents(); }
+    public static void bump(Line l) { l.quantity = l.quantity + 1; }
+    public static int tagged(Tagged t) { return t.n; }
+}
+"#;
+
+const KERNEL_DEFECT: &str = r#"package objects;
+public final class Kernel {
+    public static long total(Line l) { return (l.price.cents() + 1) * l.quantity; }
+    public static long checked(Line l) { return l.price.cents() * l.quantity; }
+    // Seen only in the parameter as the call leaves it.
+    public static void bump(Line l) { l.quantity += 2; }
+    public static int tagged(Tagged t) { return t.n; }
+}
+"#;
+
+/// The three builds of the object kernel, compiled once: `before`, `after` and `defect`.
+fn object_builds() -> Option<&'static PathBuf> {
+    static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
+    DIR.get_or_init(|| {
+        compiled()?;
+        let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-objects");
+        let _ = std::fs::remove_dir_all(&root);
+        for (build, kernel) in [("before", KERNEL_BEFORE), ("after", KERNEL_AFTER), ("defect", KERNEL_DEFECT)] {
+            let src = root.join(format!("{build}-src/objects"));
+            std::fs::create_dir_all(&src).unwrap();
+            for (name, text) in [("Money", MONEY), ("Line", LINE), ("Tagged", TAGGED), ("Kernel", kernel)] {
+                std::fs::write(src.join(format!("{name}.java")), text).unwrap();
+            }
+            let files: Vec<PathBuf> = ["Money", "Line", "Tagged", "Kernel"].iter().map(|n| src.join(format!("{n}.java"))).collect();
+            let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-d"]).arg(root.join(build)).args(&files).status().expect("javac runs");
+            assert!(status.success(), "the object kernel compiles");
+        }
+        Some(root)
+    })
+    .as_ref()
+}
+
+fn regression(after: &str, method: &str) -> Option<jvmcontract::equivalence::Outcome> {
+    let root = object_builds()?;
+    let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join(after), &format!("objects.Kernel#{method}"));
+    options.engine = jvmcontract::Engine::Native;
+    let work = root.join(format!("work-{after}-{method}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    Some(jvmcontract::equivalence::run(&options).unwrap())
+}
+
+#[test]
+fn an_object_made_by_its_constructor_is_a_regression_input_and_the_domain_says_how_it_is_made() {
+    let Some(o) = regression("after", "total") else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let domain = o.domain.clone().unwrap();
+    assert!(domain.contains("l: a Line made by its constructor, Line(price: Money(cents: long), quantity: int), from any arguments it accepts"), "{domain}");
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.objects, vec!["l: price.cents, quantity".to_string()]);
+}
+
+#[test]
+fn a_changed_result_over_an_object_input_is_refuted_with_a_construction_recipe() {
+    let Some(o) = regression("defect", "total") else { return };
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().expect("a counterexample");
+    assert!(c.input.starts_with("total(l=new Line(new Money("), "{}", c.input);
+    assert_ne!(c.before, c.after, "the replays differ");
+}
+
+#[test]
+fn a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted() {
+    let Some(o) = regression("defect", "bump") else { return };
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().expect("a counterexample");
+    assert!(c.before.contains("leaving l=Line{price=Money{cents="), "{}", c.before);
+    assert_ne!(c.before, c.after, "the replays differ");
+    let Some(same) = regression("after", "bump") else { return };
+    assert_eq!(same.verdict, Verdict::Verified, "{}", same.output);
+}
+
+#[test]
+fn a_difference_only_where_the_constructor_refuses_is_outside_the_claim() {
+    let Some(o) = regression("after", "checked") else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap().contains("made by its constructor"));
+    let stated = o.stated.as_ref().unwrap();
+    assert!(stated.assumptions.iter().any(|a| a.text.contains("the objects both versions can build")), "{:?}", stated.assumptions);
+}
+
+#[test]
+fn an_object_with_a_field_outside_the_supported_kinds_is_a_named_gap() {
+    let Some(o) = regression("after", "tagged") else { return };
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    let problem = o.problem.unwrap();
+    assert!(problem.contains("the field tag of objects.Tagged has type java.lang.String"), "{problem}");
+}

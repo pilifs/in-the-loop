@@ -628,7 +628,112 @@ fn record_of(cp: &ClassPath, t: &Type) -> Result<Option<harness::RecordType>, Er
         }
         components.push((c.name, ct));
     }
-    Ok(Some(harness::RecordType { class: name.clone(), components }))
+    Ok(Some(harness::RecordType::record(name, components)))
+}
+
+/// What a parameter of type `t` is made of in a regression check: a record of primitive components
+/// ([`record_of`]); an object of an application class made by its constructor (step H2 of
+/// `llm-dlc/loops/foundations-heap.md`), whose constructor parameters are primitives or objects made the same way
+/// and whose fields are primitives, arrays of primitives, or references to objects of application classes whose
+/// fields are so in turn; or none, for a type that is not an application class. An application class outside that
+/// is a named gap: `Err` says why.
+fn object_of(cp: &ClassPath, t: &Type) -> Result<Result<Option<harness::RecordType>, String>, Error> {
+    if let Some(record) = record_of(cp, t)? {
+        return Ok(Ok(Some(record)));
+    }
+    let Type::Object(name) = t else { return Ok(Ok(None)) };
+    if cp.application(name)?.is_none() {
+        return Ok(Ok(None));
+    }
+    made_of(cp, name, &mut Vec::new()).map(|r| r.map(Some))
+}
+
+/// The construction of an object of the application class `name`, as [`object_of`] says; `within` are the classes
+/// whose construction this one is part of, which it may not need again (a cycle).
+fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::RecordType, String>, Error> {
+    let java = name.replace('/', ".");
+    let Some(cf) = cp.application(name)? else { return Ok(Err(format!("{java} is not among the application's classes"))) };
+    if within.iter().any(|w| w == name) {
+        return Ok(Err(format!("making {java} needs a {java} already: objects that contain themselves are not supported")));
+    }
+    if cf.is_interface() || cf.is_abstract() || cf.is_enum() {
+        return Ok(Err(format!("{java} is {}; only a concrete class made by its constructor is", if cf.is_interface() { "an interface" } else if cf.is_enum() { "an enum" } else { "abstract" })));
+    }
+    let expected_super = if cf.is_record() { "java/lang/Record" } else { "java/lang/Object" };
+    if cf.super_class.as_deref() != Some(expected_super) {
+        return Ok(Err(format!("{java} extends {}; a class made by its constructor must extend Object directly", cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
+    }
+    let constructors: Vec<_> = cf.methods.iter().filter(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic()).collect();
+    let constructor = match constructors.as_slice() {
+        [one] => *one,
+        [] => return Ok(Err(format!("{java} has no constructor a caller can use"))),
+        many => return Ok(Err(format!("{java} has {} constructors; an object made by one of several is not supported yet", many.len()))),
+    };
+    let descriptor = constructor.parsed_descriptor()?;
+    let names = constructor.parameter_names(&cf.pool);
+    within.push(name.to_string());
+    let mut params = Vec::new();
+    let mut inner = Vec::new();
+    for (n, pt) in names.iter().zip(&descriptor.params) {
+        match pt {
+            pt if pt.is_primitive() => {}
+            Type::Object(class) if cp.application(class)?.is_some() => match made_of(cp, class, within)? {
+                Ok(r) => inner.push(r),
+                Err(gap) => {
+                    within.pop();
+                    return Ok(Err(format!("the argument {n} of {java}'s constructor: {gap}")));
+                }
+            },
+            other => {
+                within.pop();
+                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives or objects made by their constructors", other.java_name())));
+            }
+        }
+        params.push((n.clone(), pt.clone()));
+    }
+    let fields = fields_of(cp, name, &mut vec![]);
+    within.pop();
+    match fields? {
+        Ok(fields) => Ok(Ok(harness::RecordType::made(name, params, inner, fields))),
+        Err(gap) => Ok(Err(gap)),
+    }
+}
+
+/// The instance fields of the application class `name`, followed into the application classes they refer to
+/// ([`harness::Fields`]); `within` as for [`made_of`]. A field of another type is a named gap.
+fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::Fields, String>, Error> {
+    let java = name.replace('/', ".");
+    let Some(cf) = cp.application(name)? else { return Ok(Err(format!("{java} is not among the application's classes"))) };
+    if within.iter().any(|w| w == name) {
+        return Ok(Err(format!("a {java} can refer to another {java}: objects that refer to their own class are not supported yet")));
+    }
+    let expected_super = if cf.is_record() { "java/lang/Record" } else { "java/lang/Object" };
+    if cf.super_class.as_deref() != Some(expected_super) {
+        return Ok(Err(format!("{java} extends {}; the fields of a class that extends another are not supported yet", cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
+    }
+    within.push(name.to_string());
+    let mut fields = Vec::new();
+    for f in cf.fields.iter().filter(|f| !f.is_static()) {
+        let ft = Type::parse(&f.descriptor)?;
+        let kind = match &ft {
+            ft if ft.is_primitive() => harness::FieldKind::Value(ft.clone()),
+            Type::Array(element) if element.is_primitive() => harness::FieldKind::Array(ft.clone()),
+            Type::Object(class) if cp.application(class)?.is_some() => match fields_of(cp, class, within)? {
+                Ok(inner) => harness::FieldKind::Object(Box::new(inner)),
+                Err(gap) => {
+                    within.pop();
+                    return Ok(Err(format!("the field {} of {java}: {gap}", f.name)));
+                }
+            },
+            other => {
+                within.pop();
+                return Ok(Err(format!("the field {} of {java} has type {}; the fields of an object input must be primitives, arrays of primitives, or objects of application classes", f.name, other.java_name())));
+            }
+        };
+        fields.push((f.name.clone(), kind));
+    }
+    within.pop();
+    Ok(Ok(harness::Fields { class: name.to_string(), fields }))
 }
 
 fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
@@ -718,9 +823,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let mut records = Vec::new();
     for (name, t) in names.iter().zip(&descriptor.params) {
-        let record = record_of(&after_cp, t)?;
+        let record = match object_of(&after_cp, t)? {
+            Ok(r) => r,
+            Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}, which is outside the objects a regression check makes: {gap}", t.java_name())),
+        };
         if !t.is_primitive() && harness::expr::element_ty(t).is_none() && record.is_none() {
-            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and records whose components are primitive. Finite types (enums, booleans) are covered by behavioural contracts.", t.java_name()));
+            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.", t.java_name()));
         }
         records.push(record);
     }
@@ -784,8 +892,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     for ((name, t), record) in names.iter().zip(&descriptor.params).zip(&records) {
         both_records.push(match record {
             Some(r) if components_passed => Some((r.clone(), None)),
-            Some(r) => match record_of(&before_cp, t)? {
+            Some(r) => match object_of(&before_cp, t)?.ok().flatten() {
                 Some(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
+                Some(b) if r.is_made() || b.is_made() => {
+                    return refuse(&mut out, line, format!("parameter {name} is made differently in the two versions: {} before, {} now; a correspondence between objects of different shapes is not supported yet", b.domain_part(name), r.domain_part(name)));
+                }
                 Some(b) => {
                     let example = names.iter().zip(&records).map(|(n, rec)| match rec {
                         Some(_) if n == name => format!("new {}({})", b.simple_name(), b.components.iter().map(|(c, _)| format!("{n}.{c}")).collect::<Vec<_>>().join(", ")),
@@ -924,9 +1035,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let constructors: Vec<MemberRef> = layout
             .records()
             .iter()
-            .filter_map(|s| match s {
-                harness::Slot::Record { record, .. } => Some(MemberRef::new(&record.class, "<init>", &record.constructor())),
-                harness::Slot::Plain(_) => None,
+            .flat_map(|s| match s {
+                harness::Slot::Record { record, .. } => record.constructors().into_iter().map(|(owner, d)| MemberRef::new(&owner, "<init>", &d)).collect(),
+                harness::Slot::Plain(_) => Vec::new(),
             })
             .collect();
         if !shared::identical_closure(&shared_before_cp, &shared_after_cp, &constructors) {

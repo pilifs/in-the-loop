@@ -87,6 +87,7 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
     let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| shown(a, &p.ty, &names)).collect();
     let shown = |s: &Slot| match s {
         Slot::Plain(i) => format!("{}={}", layout.params[*i].name, witnesses[*i]),
+        Slot::Record { name, record, first, .. } if record.is_made() => format!("{name}={}", recipe(record, &mut witnesses[*first..].iter())),
         Slot::Record { name, record, first, .. } => {
             let components = record.components.iter().zip(&witnesses[*first..]).map(|((c, _), w)| format!("{c}={w}")).collect::<Vec<_>>().join(", ");
             format!("{name}={}[{components}]", record.simple_name())
@@ -94,6 +95,21 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
     };
     let rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
     (rendered, witnesses)
+}
+
+/// How an object made by its constructor is made, as Java writes it, from the renderings of its leaves in order:
+/// `new Quote(new Money(5), 1)`.
+fn recipe<'a>(record: &crate::harness::RecordType, leaves: &mut impl Iterator<Item = &'a String>) -> String {
+    let mut nested = record.inner.iter();
+    let args: Vec<String> = record
+        .params
+        .iter()
+        .map(|(_, t)| match t {
+            Type::Object(_) => nested.next().map(|r| recipe(r, leaves)).unwrap_or_default(),
+            _ => leaves.next().cloned().unwrap_or_default(),
+        })
+        .collect();
+    format!("new {}({})", record.simple_name(), args.join(", "))
 }
 
 /// A witness value with its Java type, exact: enough to pass it to the method again without reading the text.
@@ -111,7 +127,8 @@ pub struct Typed {
     /// the same array as the `i`th input. Absent for a record, whose components give it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
-    /// A record's components, in declaration order: the arguments of its canonical constructor.
+    /// A record's components, in declaration order: the arguments of its canonical constructor; for an object
+    /// made by its constructor, that constructor's arguments, an object among them typed so in turn.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub components: Option<Vec<Typed>>,
     /// Where a call's argument came from: the input it is (`this.baseMillis`), or for the previous version's
@@ -195,13 +212,8 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         }
         Slot::Record { name, record, before: previous, first } => {
             let record = if before { previous.as_ref().unwrap_or(record) } else { record };
-            let components = record
-                .components
-                .iter()
-                .enumerate()
-                .map(|(k, (c, t))| Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(first + k).map(|a| exact_argument(a, t)), components: None, from: Some(source(first + k)) })
-                .collect();
-            Typed { name: name.clone(), ty: record.java_name(), value: None, components: Some(components), from: None }
+            let mut next = *first;
+            typed_made(name, record, arguments, &source, &mut next)
         }
     };
     Call {
@@ -214,6 +226,28 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         receiver: layout.receiver.as_ref().map(typed),
         arguments: layout.args.iter().map(typed).collect(),
     }
+}
+
+/// A record or an object made by its constructor, typed: its constructor's arguments in order, each primitive the
+/// next flat parameter from `*next` on, each object typed so in turn.
+fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argument], source: &dyn Fn(usize) -> String, next: &mut usize) -> Typed {
+    let mut nested = record.inner.iter();
+    let components = record
+        .params
+        .iter()
+        .map(|(c, t)| match t {
+            Type::Object(_) => match nested.next() {
+                Some(inner) => typed_made(c, inner, arguments, source, next),
+                None => Typed { name: c.clone(), ty: t.java_name(), value: None, components: None, from: None },
+            },
+            _ => {
+                let k = *next;
+                *next += 1;
+                Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(k).map(|a| exact_argument(a, t)), components: None, from: Some(source(k)) }
+            }
+        })
+        .collect();
+    Typed { name: name.to_string(), ty: record.java_name(), value: None, components: Some(components), from: None }
 }
 
 /// The method's behaviour on a counterexample, replayed in the interpreter (or run on a JVM, [`crate::jvm_witness`]).
@@ -229,6 +263,9 @@ pub struct Replayed {
     pub result_fields: Option<BTreeMap<String, Value>>,
     /// The elements of the array arguments after the call, by parameter slot.
     pub arrays_after: Vec<(u16, Vec<Value>)>,
+    /// Each object argument made by its constructor that the call changed, by name, with its fields as the call
+    /// left them: `("q", "Quote{amount=Money{cents=5}, quantity=3}")`.
+    pub objects_after: Vec<(String, String)>,
     /// The class of the exception thrown, as an internal name.
     pub thrown: Option<String>,
 }
@@ -243,6 +280,9 @@ impl Replayed {
                     outcome = format!("{outcome}, leaving {}={}", p.name, array(after, element));
                 }
             }
+        }
+        for (name, fields) in &self.objects_after {
+            outcome = format!("{outcome}, leaving {name}={fields}");
         }
         outcome
     }
@@ -305,27 +345,51 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         match slot {
             Slot::Plain(i) => Ok(flat[*i]),
             Slot::Record { record, before, first, .. } => {
-                let owner = match (prefix, before) {
-                    (Some(p), Some(before)) => format!("{p}/{}", before.class),
-                    _ => record.class.clone(),
+                let (made, prefix) = match (prefix, before) {
+                    (Some(p), Some(before)) => (before, Some(p)),
+                    _ => (record, None),
                 };
-                m.construct(&owner, &record.constructor(), flat[*first..*first + record.components.len()].to_vec())
+                let mut next = *first;
+                construct(m, made, prefix, &flat, &mut next)
             }
         }
     };
     let mut values = Vec::new();
     let mut receiver = None;
     let mut rejected = None;
+    // Each object made by its constructor, with its fields as made, to tell what the call changed.
+    let mut objects: Vec<(String, Value, crate::harness::Fields, String)> = Vec::new();
     for slot in layout.receiver.iter().chain(layout.args.iter()) {
         match build(&mut m, slot) {
-            Ok(v) if layout.receiver.as_ref() == Some(slot) => receiver = Some(v),
-            Ok(v) => values.push(v),
+            Ok(v) => {
+                if let Slot::Record { name, record, before, .. } = slot {
+                    let made = if prefix.is_some() { before.as_ref().unwrap_or(record) } else { record };
+                    if let Some(fields) = &made.fields {
+                        let shown = object_fields(&m, v, fields);
+                        objects.push((name.clone(), v, fields.clone(), shown));
+                    }
+                }
+                if layout.receiver.as_ref() == Some(slot) {
+                    receiver = Some(v);
+                } else {
+                    values.push(v);
+                }
+            }
             Err(f) => {
                 rejected = Some(f);
                 break;
             }
         }
     }
+    let changed = |m: &Machine| -> Vec<(String, String)> {
+        objects
+            .iter()
+            .filter_map(|(name, v, fields, made)| {
+                let now = object_fields(m, *v, fields);
+                (now != *made).then(|| (name.clone(), now))
+            })
+            .collect()
+    };
     let arrays: Vec<(u16, Ref)> = layout
         .args
         .iter()
@@ -346,7 +410,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             .collect()
     };
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), thrown: Some(m.class_of(r)) },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)) },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -354,7 +418,8 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         },
     };
     let after = left(&m);
-    match outcome {
+    let objects_after = changed(&m);
+    let mut replayed = match outcome {
         Ok(Some(v)) => {
             let (array, fields) = match v {
                 Value::Ref(r) => match m.heap.get(r) {
@@ -369,12 +434,61 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, thrown: None }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: None },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: Some(m.class_of(r)) },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: None },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)) },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None },
+    };
+    replayed.objects_after = objects_after;
+    replayed
+}
+
+/// Makes `record` in the interpreter (its classes under `prefix/` when given) from its leaves, the values of `flat`
+/// from `*next` on, each inner object made first.
+fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Option<&str>, flat: &[Value], next: &mut usize) -> Result<Value, Fault> {
+    let owner = match prefix {
+        Some(p) => format!("{p}/{}", record.class),
+        None => record.class.clone(),
+    };
+    let mut nested = record.inner.iter();
+    let mut args = Vec::new();
+    for (_, t) in &record.params {
+        if t.is_primitive() {
+            args.push(flat[*next]);
+            *next += 1;
+        } else if let Some(inner) = nested.next() {
+            args.push(construct(m, inner, prefix, flat, next)?);
+        }
     }
+    m.construct(&owner, &record.constructor_in(prefix), args)
+}
+
+/// The fields of the object `v` as `fields` lays them out, followed into the objects they refer to:
+/// `Quote{amount=Money{cents=5}, quantity=3}`, by simple class name, so that both versions' objects read alike.
+pub fn object_fields(m: &Machine, v: Value, fields: &crate::harness::Fields) -> String {
+    let Value::Ref(r) = v else { return "null".into() };
+    let Object::Instance { fields: values, .. } = m.heap.get(r) else { return "<not an object>".into() };
+    let shown: Vec<String> = fields
+        .fields
+        .iter()
+        .map(|(name, kind)| {
+            let value = values.get(name).copied().unwrap_or(Value::Null);
+            let text = match kind {
+                crate::harness::FieldKind::Value(t) => render::witness(value, t),
+                crate::harness::FieldKind::Array(t) => match (value, t) {
+                    (Value::Ref(a), Type::Array(element)) => match m.heap.get(a) {
+                        Object::Array { data, .. } => array(data, element),
+                        _ => "<not an array>".into(),
+                    },
+                    _ => "null".into(),
+                },
+                crate::harness::FieldKind::Object(inner) => object_fields(m, value, inner),
+            };
+            format!("{name}={text}")
+        })
+        .collect();
+    format!("{}{{{}}}", crate::classfile::simple_name_of(&fields.class), shown.join(", "))
 }
 
 /// How many smaller inputs the shrinker may try.
@@ -466,7 +580,7 @@ mod tests {
 
     #[test]
     fn a_call_maps_a_records_components_to_the_inputs_they_are() {
-        let backoff = RecordType { class: "net/example/Backoff".into(), components: vec![("baseMillis".into(), Type::Long), ("capMillis".into(), Type::Long)] };
+        let backoff = RecordType::record("net/example/Backoff", vec![("baseMillis".into(), Type::Long), ("capMillis".into(), Type::Long)]);
         let layout = Layout::new(Some((backoff.clone(), Some(backoff))), &["attempt".into()], &[Type::Int], &[None], (None, None));
         let arguments = [Argument::Scalar(Value::Long(1)), Argument::Scalar(Value::Long(1)), Argument::Scalar(Value::Int(-1))];
         let target = Target { class_internal: "net/example/Backoff", method: "delayMillis", descriptor: "(I)J", is_static: false, classes: "after" };

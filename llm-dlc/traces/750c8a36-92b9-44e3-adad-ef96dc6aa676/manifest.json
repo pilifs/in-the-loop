@@ -12,32 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T04:48:55.362Z",
-  "duration_seconds": 2856,
+  "ended": "2026-11-07T05:15:00.082Z",
+  "duration_seconds": 4421,
   "stats": {
-    "turns": 10,
-    "api_calls": 170,
-    "tool_calls": 176,
+    "turns": 19,
+    "api_calls": 240,
+    "tool_calls": 248,
     "tool_errors": 3,
-    "compactions": 2,
-    "peak_context_tokens": 324924,
+    "compactions": 3,
+    "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 342,
-      "output_tokens": 136353,
-      "cache_read_input_tokens": 33083189,
-      "cache_creation_input_tokens": 525413
+      "input_tokens": 486,
+      "output_tokens": 196476,
+      "cache_read_input_tokens": 46086661,
+      "cache_creation_input_tokens": 766099
     }
   },
   "tools": {
-    "Bash": 159,
-    "Read": 6,
-    "Edit": 4,
-    "Monitor": 2,
+    "Bash": 220,
+    "Read": 12,
+    "Edit": 7,
+    "Monitor": 3,
+    "ToolSearch": 3,
     "TaskStop": 2,
-    "ToolSearch": 2,
     "Write": 1
   },
   "files_touched": [
+    "lib/src/harness/mod.rs",
     "lib/tests/heap.rs",
     "llm-dlc/loops/foundations-heap.md"
   ],
@@ -73,24 +74,38 @@
     {
       "index": 2,
       "started": "2026-11-07T04:16:59.378Z",
-      "ended": "2026-11-07T04:48:55.362Z",
-      "turns": 4,
-      "api_calls": 108,
+      "ended": "2026-11-07T04:49:15.406Z",
+      "turns": 6,
+      "api_calls": 110,
       "usage": {
-        "input_tokens": 220,
-        "output_tokens": 83077,
-        "cache_read_input_tokens": 24872885,
-        "cache_creation_input_tokens": 311845
+        "input_tokens": 224,
+        "output_tokens": 84289,
+        "cache_read_input_tokens": 25524414,
+        "cache_creation_input_tokens": 316090
       },
-      "peak_context_tokens": 324924
+      "peak_context_tokens": 329169
+    },
+    {
+      "index": 3,
+      "started": "2026-11-07T04:50:11.233Z",
+      "ended": "2026-11-07T05:15:00.082Z",
+      "turns": 7,
+      "api_calls": 68,
+      "usage": {
+        "input_tokens": 140,
+        "output_tokens": 58911,
+        "cache_read_input_tokens": 12351943,
+        "cache_creation_input_tokens": 236441
+      },
+      "peak_context_tokens": 249520
     }
   ],
   "log": {
-    "sha256": "eebff3e85c1dae64eadc7f24516a8c30bec9e3d4937a557f66814aba00e257fd",
-    "bytes": 4782055,
-    "lines": 1798,
-    "gzip_bytes": 873639,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/eebff3e85c1dae64eadc7f24516a8c30bec9e3d4937a557f66814aba00e257fd.jsonl.gz"
+    "sha256": "258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f",
+    "bytes": 7113333,
+    "lines": 2576,
+    "gzip_bytes": 1336230,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -117,9 +132,23 @@
       "summary": "Heap stream Progress: name the check errors that belong to other sessions' traces",
       "body": "sync.py check on the heap branch reports the other streams' sessions without a manifest, and five planning-era commits pointing at session c2bd9df4's log 1f2230c9f137, which that session's manifest lists in the default workspace but not in the branch's copy from the fork. Both are under llm-dlc/traces/, which a stream may not edit, and should clear at the reconcile merge; recorded under the heap brief's Progress so the reconcile loop sees them.",
       "log_sha256": "eebff3e85c1dae64eadc7f24516a8c30bec9e3d4937a557f66814aba00e257fd"
+    },
+    {
+      "change_id": "nmrmkovpnwqynllktpnkrtqsqoooprws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Objects made by their constructor as regression inputs, compared on their fields as both versions leave them (H2, second step)",
+      "body": "A regression check now takes a parameter of an application class: the harness makes it by the class's one usable constructor from symbolic arguments, an object argument made by its own constructor in turn (Line(Money price, int quantity) of a Money(long cents)), its primitive leaves the harness's parameters by path (l.price.cents). Both versions get their own objects from the same leaves, the old one's under before/, and after the calls their fields are compared, followed into the objects they refer to. The domain says the claim covers only objects made by that constructor from arguments it accepts, so a difference only in a state the constructor never makes is outside it; the statement lists the observed field paths; a witness is a construction recipe, new Line(new Money(0), 1), and the replay shows what each version left in the object. Classes outside this (a superclass, several constructors, a String field or argument, a class reaching itself, different shapes in the two versions) are refused naming why. Identity, nullability and aliasing among objects, results of such classes and property checks over them come next. Done in regression checks before property checks, against the brief's Progress note of last step, because the integration contract's heap part is regression checks.\n\nVerified inline: lib/tests/heap.rs adds five checks on the own checker (a rewrite verified with the domain words, a changed result and a change seen only in the object as left both refuted with recipe witnesses, a difference only where the constructor rejects verified with the domain saying so, a String field refused). Unit tests (185), heap.rs (9), integration.rs (64, on a rerun; one test failed once under the other streams' load), conformance.rs and foundations.rs pass. No job.",
+      "log_sha256": "258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f"
     }
   ],
   "logs": {
+    "258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f": {
+      "bytes": 7113333,
+      "lines": 2576,
+      "gzip_bytes": 1336230,
+      "url": null
+    },
     "3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f": {
       "bytes": 1650525,
       "lines": 592,

@@ -158,6 +158,9 @@ pub enum ParameterKind {
     Array,
     /// A record of primitive components, built through its canonical constructor.
     Record,
+    /// An object of an application class made by its constructor, from primitives and objects made so in turn;
+    /// its fields after the call are observed.
+    Object,
 }
 
 /// One conjunct of A.
@@ -226,6 +229,10 @@ pub struct Observations {
     /// The array parameters whose contents after the call are compared too.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub arrays: Vec<String>,
+    /// The object parameters made by their constructors whose fields after the call are compared too, each as
+    /// `q: amount.cents, quantity`, the fields by path.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub objects: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -313,7 +320,7 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
             Slot::Record { name, record, .. } => Parameter {
                 name: name.clone(),
                 ty: record.java_name(),
-                kind: ParameterKind::Record,
+                kind: if record.is_made() { ParameterKind::Object } else { ParameterKind::Record },
                 null: false,
                 max_length: None,
                 components: record.components.iter().map(|(c, t)| format!("{c}: {}", t.java_name())).collect(),
@@ -397,9 +404,10 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
     for slot in layout.records() {
         if let Slot::Record { name, record, before, .. } = slot {
             let versions = if before.is_some() { "either version's" } else { "the new version's" };
+            let (what, built) = if record.is_made() { ("arguments", "objects") } else { ("components", "records") };
             out.push(Assumption {
                 kind: AssumptionKind::Constructible,
-                text: format!("{versions} constructor {} accepts the components of {name}: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it", record.describe()),
+                text: format!("{versions} constructor {} accepts the {what} of {name}: an input it rejects is skipped, so the statement is about the {built} both versions can build, and whether the constructors accept the same inputs is not part of it", record.describe()),
                 basis: Basis::Harness,
                 id: None,
             });
@@ -422,13 +430,21 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
         (None, None, _) => "the result, equal in both versions".into(),
     };
     let arrays = layout.params.iter().filter(|p| matches!(p.ty, Type::Array(_))).map(|p| p.name.clone()).collect();
-    Observations { result, exceptions: exception_categories("the same in both versions"), arrays }
+    let objects = layout
+        .records()
+        .iter()
+        .filter_map(|s| match s {
+            Slot::Record { name, record, before: Some(_), .. } => record.fields.as_ref().map(|f| format!("{name}: {}", f.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))),
+            _ => None,
+        })
+        .collect();
+    Observations { result, exceptions: exception_categories("the same in both versions"), arrays, objects }
 }
 
 /// What a property proof observes: the result against the assertion, and an exception against the throws clauses.
 pub fn property_observations(assertion: &str, throws_checked: &[String]) -> Observations {
     let exceptions = if throws_checked.is_empty() { "none may be thrown".to_string() } else { format!("none may be thrown but as a throws clause says: {}", throws_checked.join("; ")) };
-    Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new() }
+    Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new(), objects: Vec::new() }
 }
 
 /// How the regression harness tells exceptions apart: by class, among a fixed list.

@@ -166,10 +166,40 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   here, and five planning-era commits (`olwyzkwouyln`, `xrkxxnnuwwuq`, `nnqrnknuvslx`, `xpsxzuolnwop`,
   `kxnqrntnkztt`) point at session `c2bd9df4`'s log `1f2230c9f137`, which that session's manifest lists in the
   default workspace but not in this branch's copy from the fork. Both should clear at the reconcile merge.
-- Next: H2's object inputs: a parameter of an application class made by its constructor in the harness, with
-  symbolic arguments (as records are, through `Layout`), nullability and aliasing among such parameters, the
-  domain's label in the result; first in property checks, then regression checks with the old version's objects
-  under `before/`, then `spec::heap::check`.
+- **H2, second step (2026-11-07): objects made by their constructor as regression inputs.** Done in regression
+  checks first rather than property checks as the last Next said, since the integration contract's heap part is
+  regression checks and the record machinery (`Layout`, `Slot::Record`) was there to generalize. A parameter of an
+  application class is made in the harness by its one usable constructor, whose arguments are primitives or objects
+  made the same way ([`RecordType::made`](../../lib/src/harness/mod.rs): `params`, `inner`, and `components` the
+  primitive leaves by path, `l.price.cents`); both versions get their own objects from the same leaves, the old
+  one's under `before/`, and their fields after the calls are compared ([`Fields`](../../lib/src/harness/mod.rs):
+  primitives, primitive arrays, objects of application classes followed, nulls agreeing). The domain says
+  `l: a Line made by its constructor, Line(price: Money(cents: long), quantity: int), from any arguments it accepts`;
+  `stated.observations.objects` lists the compared paths; the witness is a recipe, `bump(l=new Line(new Money(0),
+  1))`, and the replay says what each version left in the object. Refused as named gaps, by field or argument: a
+  superclass other than `Object`, several constructors, a constructor argument or field of another type (`String`),
+  a class reaching itself, and an object made differently in the two versions (H5's).
+  - Evidence inline: `lib/tests/heap.rs`, five regression checks on the own checker over `Line(Money, int)`: a
+    rewrite verified with the domain words and the observed paths; a changed result refuted with a recipe witness;
+    a change seen only in the object as left (`l.quantity += 2` in a void method) refuted, its rewrite verified; a
+    difference only where the constructor rejects verified, the domain and the constructible assumption saying so;
+    a `String` field refused naming it. Unit tests (185), `heap.rs` (9), `integration.rs` (64), `conformance.rs` and
+    `foundations.rs` pass. A first run of `integration.rs` under the other streams' load (611 s) failed one test,
+    whose name its cut output didn't keep; the full rerun passed all 64 in 23 s, as last step's did.
+  - Not yet: identity is not observed (an alias-to-copy passes; H3), nullability and aliasing among object
+    parameters, receivers and results of such classes (a result of one is still compared with `Objects.equals`), and
+    property checks over objects. The JVM run of a regression witness (`jvm_witness.rs`, reached only for a witness
+    through a contract) runs the harness, whose `getfield` on a package-private or private field is an
+    `IllegalAccessError` on a JVM, as it already was for a record result's fields: H4 has to give it accessible
+    reads.
+  - Shared files changed: `equivalence.rs` (`object_of`, `made_of`, `fields_of`, the parameter refusal's words, the
+    identical-closure check over every constructor the harness calls), `statement.rs` (`ParameterKind::Object`,
+    `Observations.objects`, the constructible assumption's words for objects), `lib/README.md` (step 5 of the
+    regression proof, the limits, the domain's kinds), `lib/tests/heap.rs`. No job: every check is inline and small.
+- Next: H3 with H5's narrow case, toward `spec::heap::check`: results of a class made by its constructor compared by
+  their fields, identity relations within each version compared as "holds in old iff in new" (`result == q`), the
+  joint example's two shapes of `Quote` related by the correspondence's input equations (the old object made from
+  the new one's leaves), then `spec::heap::check` on the fixture; then H4's accessible field reads for the JVM run.
 - Status: working
 
 ## Loop settings
