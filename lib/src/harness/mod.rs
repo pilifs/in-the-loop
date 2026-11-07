@@ -1199,6 +1199,9 @@ pub struct Relation {
     pub previous_object: Option<Fields>,
     /// The new version's, likewise.
     pub result_object: Option<Fields>,
+    /// The previous version's objects the relation reads by their field paths as the call left them (H5's rest),
+    /// by the new version's name of the parameter and the local the object is in.
+    pub previous_objects: Vec<(String, u16)>,
 }
 
 impl Relation {
@@ -1216,6 +1219,34 @@ impl Relation {
 
 /// The name of the previous version's result in a result relation.
 pub const PREVIOUS: &str = "previous";
+
+/// The prefix of the previous version's parameters in a result relation (H5's rest): a correspondence's `old.n`
+/// is `before$n` there, `old.q.cents` `before$q.cents`. `$` keeps it apart from the new version's names, which
+/// are its parameters' as compiled.
+pub const BEFORE: &str = "before$";
+
+/// The previous version's parameters a result relation reads, by [`BEFORE`]'s names, each once in the order
+/// read, and whether it is read as a whole (not followed by a field).
+fn previous_reads(text: &str) -> Vec<(String, bool)> {
+    let mut out: Vec<(String, bool)> = Vec::new();
+    let mut rest = text;
+    while let Some(at) = rest.find(BEFORE) {
+        let starts = at == 0 || !rest[..at].ends_with(|c: char| c.is_alphanumeric() || c == '_' || c == '$' || c == '.');
+        let after = &rest[at + BEFORE.len()..];
+        let end = after.find(|c: char| !(c.is_alphanumeric() || c == '_' || c == '$')).unwrap_or(after.len());
+        rest = &after[end..];
+        if !starts || end == 0 {
+            continue;
+        }
+        let whole = !rest.trim_start().starts_with('.');
+        let name = after[..end].to_string();
+        match out.iter_mut().find(|(n, _)| *n == name) {
+            Some((_, w)) => *w |= whole,
+            None => out.push((name, whole)),
+        }
+    }
+    out
+}
 
 /// The previous version of the method, when it is not the target under the same name with the same parameters:
 /// a method renamed or moved, or whose parameters were reordered, added, removed or retyped. The arguments it
@@ -1399,7 +1430,12 @@ impl BeforeMethod {
     /// expression as its components, `result.c` and `previous.c`, in slots from `first_free_slot` on, and one that
     /// is an object of an application class (`objects`: the new version's fields, the previous one's) by its field
     /// paths. Without a relation, the return types must be the same, and the results are compared for equality.
-    pub fn parse_relation(&self, params: &[Param], ret: &Type, records: &(Option<RecordType>, Option<RecordType>), objects: &(Option<Fields>, Option<Fields>), previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
+    /// Without `--before-arguments`, the relation may also read the previous version's parameters (H5's rest), by
+    /// the names [`BEFORE`] gives them: a primitive one, `before$n`, as the new version's in its place (`args`), and
+    /// an object made by its constructor by its field paths as the call left the previous version's object,
+    /// `before$q.cents` (`previous_objects`: by the new version's name, the local it is in and its fields).
+    #[allow(clippy::too_many_arguments)]
+    pub fn parse_relation(&self, params: &[Param], args: &[Slot], previous_objects: &[(String, u16, Fields)], ret: &Type, records: &(Option<RecordType>, Option<RecordType>), objects: &(Option<Fields>, Option<Fields>), previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
         let Some(text) = &self.relation else {
             if self.ret != *ret {
                 return Err(Error::new(format!(
@@ -1444,13 +1480,43 @@ impl BeforeMethod {
         // An object result is read by its field paths, the previous version's through its classes under before/.
         let previous_object = records.1.is_none().then(|| objects.1.as_ref().map(|f| f.under("before/"))).flatten();
         let result_object = records.0.is_none().then(|| objects.0.clone()).flatten();
-        let read: Vec<(String, Fields)> = [(PREVIOUS, &previous_object), (RESULT, &result_object)].into_iter().filter_map(|(n, f)| f.clone().map(|f| (n.to_string(), f))).collect();
+        let mut read: Vec<(String, Fields)> = [(PREVIOUS, &previous_object), (RESULT, &result_object)].into_iter().filter_map(|(n, f)| f.clone().map(|f| (n.to_string(), f))).collect();
+        // The previous version's parameters it reads (H5's rest): a primitive one as the new version's in its
+        // place, an object by its field paths as the call left the previous version's.
+        let mut previous_read = Vec::new();
+        for (name, whole) in previous_reads(text) {
+            let shown = format!("old.{name}");
+            if self.arguments.is_some() {
+                return Err(Error::new(format!("the result relation reads {shown}: the previous version's parameters are read only where it gets the new version's arguments, without --before-arguments")));
+            }
+            let Some(i) = self.names.iter().position(|n| *n == name) else {
+                return Err(Error::new(format!("the result relation reads {shown}, which is not a parameter of the previous version ({})", self.names.join(", "))));
+            };
+            let at = format!("{BEFORE}{name}");
+            match args.get(i) {
+                Some(Slot::Plain(k)) if !whole => return Err(Error::new(format!("the result relation reads a field of {shown}, which is a {}, not an object", params[*k].ty.java_name()))),
+                Some(Slot::Plain(k)) if params[*k].ty.is_primitive() => names.push(Param { name: at, ty: params[*k].ty.clone(), slot: params[*k].slot }),
+                Some(Slot::Plain(k)) => return Err(Error::new(format!("the result relation reads {shown}, a {}: it reads the previous version's primitive parameters as a whole and its objects' primitive field paths", params[*k].ty.java_name()))),
+                Some(Slot::Record { name: new_name, .. }) => match previous_objects.iter().find(|(n, _, _)| n == new_name) {
+                    Some(_) if whole => return Err(Error::new(format!("the result relation reads {shown} as a whole; read a primitive field path of it, {shown}.f, as the call left it"))),
+                    Some((_, slot, fields)) => {
+                        if !names.iter().any(|p| p.name == at) {
+                            names.push(Param { name: at.clone(), ty: Type::Object(fields.class.clone()), slot: *slot });
+                            read.push((at, fields.clone()));
+                            previous_read.push((new_name.clone(), *slot));
+                        }
+                    }
+                    None => return Err(Error::new(format!("the result relation reads {shown}, which is not an object the previous version gets made by its constructor"))),
+                },
+                None => return Err(Error::new(format!("the result relation reads {shown}, which is not a parameter of the previous version ({})", self.names.join(", ")))),
+            }
+        }
         let expr = expr::parse_over_objects(text, &names, None, next, None, &read).map_err(|e| Error::new(format!("in the result relation: {e}")))?;
         if expr.ty() != expr::Ty::Boolean {
             return Err(Error::new("in the result relation: the expression must be boolean"));
         }
         let slots_end = if previous_components.is_some() || result_components.is_some() { next } else { 0 };
-        Ok(Some(Relation { expr, previous, result, previous_components, result_components, slots_end, previous_object, result_object }))
+        Ok(Some(Relation { expr, previous, result, previous_components, result_components, slots_end, previous_object, result_object, previous_objects: previous_read }))
     }
 }
 
@@ -1616,7 +1682,19 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             }
             None
         }
-        Some(bm) => bm.parse_relation(params, ret, &layout.result, &layout.result_fields, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?,
+        Some(bm) => {
+            // The previous version's objects made by their constructor, which the relation may read as the call
+            // left them (H5's rest).
+            let previous_objects: Vec<(String, u16, Fields)> = records
+                .iter()
+                .enumerate()
+                .filter_map(|(i, slot)| match slot {
+                    Slot::Record { name, before: Some(previous), .. } => previous.fields.as_ref().map(|f| (name.clone(), object_slots(i).1, f.under("before/"))),
+                    _ => None,
+                })
+                .collect();
+            bm.parse_relation(params, &layout.args, &previous_objects, ret, &layout.result, &layout.result_fields, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?
+        }
         None => None,
     };
     let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
@@ -2626,6 +2704,17 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             Some(record) => accessor_calls(&text, name, record),
             None => text,
         });
+        // The previous version's parameters it reads (H5's rest): a primitive one is the new version's in its
+        // place, an object the previous version's, `q_before`.
+        let r = previous_reads(&r).into_iter().fold(r.clone(), |text, (old, _)| {
+            let position = before.and_then(|b| b.names.iter().position(|n| *n == old));
+            let named = match position.and_then(|i| layout.args.get(i)) {
+                Some(Slot::Plain(k)) => params[*k].name.clone(),
+                Some(Slot::Record { name, .. }) => format!("{name}_before"),
+                None => return text,
+            };
+            replace_word(&text, &format!("{BEFORE}{old}"), &named)
+        });
         let read = |record: &Option<RecordType>, fields: &Option<Fields>| record.is_some() || fields.is_some();
         let null_note = match (read(&layout.result.1, &layout.result_fields.1), read(&layout.result.0, &layout.result_fields.0)) {
             _ if layout.result_fields.0.is_some() || layout.result_fields.1.is_some() => match (read(&layout.result.1, &layout.result_fields.1), read(&layout.result.0, &layout.result_fields.0)) {
@@ -2766,6 +2855,22 @@ fn fields_source(old: &str, new: &str, old_fields: &Fields, fields: &Fields) -> 
     } else {
         parts.join(" && ")
     }
+}
+
+/// `text` with each whole word `word` (not part of a longer name or after a `.`) replaced by `by`.
+fn replace_word(text: &str, word: &str, by: &str) -> String {
+    let name = |c: char| c.is_alphanumeric() || c == '_' || c == '$';
+    let mut out = String::new();
+    let mut rest = text;
+    while let Some(i) = rest.find(word) {
+        let end = i + word.len();
+        let whole = !rest[..i].ends_with(|c: char| name(c) || c == '.') && !rest[end..].starts_with(name);
+        out.push_str(&rest[..i]);
+        out.push_str(if whole { by } else { word });
+        rest = &rest[end..];
+    }
+    out.push_str(rest);
+    out
 }
 
 /// `text` with each component of `record` read from `name` as an accessor call, `previous.tokens` as
@@ -3833,6 +3938,33 @@ mod tests {
         assert!(generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&not_boolean)).unwrap_err().to_string().contains("in the result relation: the expression must be boolean"));
         let mistyped = BeforeMethod { relation: Some("previous == result".into()), ..before.clone() };
         assert!(generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&mistyped)).is_err());
+        // The previous version's parameters (H5's rest): a primitive one is the new version's in its place, here
+        // by another name, in the bytecode and in the Java.
+        let renamed = BeforeMethod { names: vec!["at".into(), "ttl".into(), "now".into()], relation: Some("previous == (result <= 0) && before$at <= now".into()), ..before.clone() };
+        let harness = generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&renamed)).unwrap();
+        assert!(harness.source.contains("(ea != 0 || (previous == (result <= 0) && writtenAt <= now))"), "{}", harness.source);
+        assert!(harness.relation.as_ref().unwrap().previous_objects.is_empty());
+        for (relation, gap) in [
+            ("before$at.cents == 0", "reads a field of old.at, which is a long, not an object"),
+            ("before$then == 0", "reads old.then, which is not a parameter of the previous version (at, ttl, now)"),
+        ] {
+            let b = BeforeMethod { relation: Some(relation.into()), ..renamed.clone() };
+            let problem = generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&b)).unwrap_err().to_string();
+            assert!(problem.contains(gap), "{relation}: {problem}");
+        }
+        // With --before-arguments, the previous version's parameters are expressions, which it does not read.
+        let computed = BeforeMethod { arguments: Some("writtenAt, ttl, now".into()), ..renamed.clone() };
+        let problem = generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&computed)).unwrap_err().to_string();
+        assert!(problem.contains("the previous version's parameters are read only where it gets the new version's arguments"), "{problem}");
+    }
+
+    #[test]
+    fn the_previous_versions_parameters_are_found_and_named_as_whole_words() {
+        assert_eq!(previous_reads("result == before$q.cents * before$n && before$q.quantity > 0"), vec![("q".to_string(), false), ("n".to_string(), true)]);
+        // Read as a whole anywhere is as a whole; part of a longer name, or after a dot, it is not a read.
+        assert_eq!(previous_reads("before$q.cents == 0 && before$q != null"), vec![("q".to_string(), true)]);
+        assert_eq!(previous_reads("xbefore$q + a.before$q + before$ == 0"), Vec::<(String, bool)>::new());
+        assert_eq!(replace_word("before$q.cents + before$qq + xbefore$q + before$q", "before$q", "q_before"), "q_before.cents + before$qq + xbefore$q + q_before");
     }
 
     #[test]

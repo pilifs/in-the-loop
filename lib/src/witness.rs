@@ -548,8 +548,9 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             if let (Some(c), Some(old)) = (&previous.corresponds, &previous.fields) {
                 views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.compared_equations(), prefix.is_some(), &flat)));
                 let fields = if prefix.is_some() { Some(old) } else { record.fields.as_ref() };
-                // A parameter its choice made null is null in both versions, and has nothing to relate.
-                if let (false, Some(fields), Value::Ref(_)) = (c.relations.is_empty(), fields, v) {
+                // A parameter its choice made null is null in both versions, and has nothing to relate. Its paths
+                // are kept for the output relations for its fields and for a result relation that reads them.
+                if let (Some(fields), Value::Ref(_)) = (fields, v) {
                     object_paths.push((name.clone(), primitive_paths(&m, *v, fields)));
                 }
             } else if let (None, Some(old), Some(new), Value::Ref(_)) = (&previous.corresponds, &previous.fields, &record.fields, v) {

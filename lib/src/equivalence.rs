@@ -1572,8 +1572,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     // Over objects, the relation reads each result's field paths as the replay left them; whether
                     // the two agree on everything else too is the harness's to say, run on the input.
                     let (locals, arrays) = locals_of(params, arguments);
+                    // And the previous version's objects it reads (H5's rest), as its replay left them.
                     let read = |f: &harness::expr::FieldPath| {
-                        let paths = if f.slot == r.previous { &b.result_paths } else if f.slot == r.result { &after.result_paths } else { return None };
+                        let object = |name: &str| b.object_paths.iter().find(|(n, _)| n == name).map(|(_, p)| p);
+                        let paths = if f.slot == r.previous {
+                            &b.result_paths
+                        } else if f.slot == r.result {
+                            &after.result_paths
+                        } else {
+                            r.previous_objects.iter().find(|(_, slot)| *slot == f.slot).and_then(|(name, _)| object(name))?
+                        };
                         f.shown.split_once('.').and_then(|(_, p)| paths.get(p).copied())
                     };
                     let note = match harness::expr::eval_reading(&r.expr, &locals, &arrays, &read) {

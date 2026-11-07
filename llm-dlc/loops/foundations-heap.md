@@ -670,9 +670,45 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Shared files changed: `equivalence.rs` (the new version's objects passed to `relate`, the refusal of a nullable
     or shared one, two comments and the `correspondence` option's doc), `lib/README.md` (step 5, `spec::heap::check`'s
     paragraph), `lib/tests/heap.rs` (the order kernel).
-- Next: H5's rest, eighth step: an output relation for the result that reads the previous version's parameters
-  (`old.n`, `old.q.cents`), refused today as "reads old.q: an output relation over the previous version's parameters
-  is not supported yet": a primitive one as the parameter in its place, an object's field path as the call left it.
+- **H5's rest, eighth step (2026-11-07): output relations for the result that read the previous version's
+  parameters.** A correspondence's output relation for the result may read the previous version's parameters: a
+  primitive one, `old.by`, as the new version's in its place, and an object's primitive field path, `old.p.cents`,
+  from the previous version's object as its call left it. A `raised(Price p, int by)` that returned whether it raised
+  the price (`Price(long cents)`) and now returns the amount it leaves (`Price(long dollars, int cents)`), which
+  callers read from the price before, is related by `new.result == old.p.cents && old.result == (old.by > 0)`.
+  [`spec::heap::output_relation`](../../lib/src/spec/heap.rs) writes them `before$by` and `before$p.cents`
+  ([`harness::BEFORE`](../../lib/src/harness/mod.rs)), and `BeforeMethod::parse_relation` resolves them by the
+  previous version's parameter names: a primitive one to the new flat parameter in its place, an object to the local
+  its previous object is kept in, read through its fields under `before/` (`Relation::previous_objects`); the Java
+  rendering says `result == p_before.cents && previous == (by > 0)`. The replay reads the previous object's paths
+  as its replay left them (`Replayed::object_paths`, now kept for every object a correspondence relates). The new
+  version's parameters stay as the call got them, so `new.p.dollars * 100 + new.p.cents` there is the amount before.
+  In `spec::heap::check` it is accounted as the other result relations are. Refused by name: an object read as a
+  whole, a field of a primitive, a name the previous version has no parameter of, an object the previous version
+  doesn't get made by its constructor, and any of them with `--before-arguments`.
+  - Evidence inline: `lib/tests/heap.rs`, a `raised` method in the price kernel's four builds and two tests:
+    `after` verified, the harness's source checked; the defect (the amount before the raise) refuted with
+    `raised(p=new Price(0, 0), by=1)`, `before: true, leaving p=Price{cents=1}` against `after: 0, …`, `differs =
+    [result]`, on the JVM; the relation written over the new version's `p` instead verifying the defect and refuting
+    `after`, on the JVM, which shows each side is read where it should be; three refusals. Through `spec::heap::check`:
+    unresolved without approval, changed with approval on `after`, the defect refuted. A harness unit test (a
+    primitive read under another name in the bytecode's relation and the Java, three refusals) and one of the
+    reads' scanning and renaming; `output_relation`'s test now rewrites the reads. Unit tests (201; the stand-in
+    script's `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed` failed once, then passed alone and
+    in a rerun of all), `heap.rs` (46), `foundations.rs`, `conformance.rs` and `integration.rs` (64, one test at a
+    time, 107 s) pass. One CLI run of the defect, to read its witness, went to JBMC inline (0.2 s) through the
+    command's default engine, by mistake: it refuted the defect as the own checker does, and is not evidence in
+    place of the job.
+  - *For review*: quick job `20261107-121516` (no runner was active), the new ignored test in `heap.rs`, `raised`
+    under `--engine jbmc` and `auto --confirm`: expected exit 0, `after` verified and `defect` refuted with its
+    witness run on a JVM.
+  - Not yet: an array parameter of the previous version read in a result relation; the receiver (`old.this`); a
+    result relation that reads the new version's object as the call left it (`new.p` reads the arguments).
+  - Shared files changed: `equivalence.rs` (the replay's reads of the previous objects), `lib/README.md` (step 5),
+    `lib/tests/heap.rs` (the `raised` method, two tests and an ignored one).
+- Next: H5's rest, ninth step: views' paths through object fields (`differs` names leaf paths only under a
+  correspondence), or a same-shape parameter with an array field beside a relation for another field; what is left
+  of H5 after them is small next to what is done, so the step after should weigh `done`.
 - Status: working
 
 ## Loop settings

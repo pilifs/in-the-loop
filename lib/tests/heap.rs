@@ -1058,6 +1058,8 @@ public final class Prices {
     public static long total(Price p, int n) { return p.cents * n; }
     public static Price doubled(Price p) { return new Price(p.cents * 2); }
     public static void raise(Price p, int by) { if (by > 0) p.cents += by; }
+    // Whether it raised the price, which the caller reads.
+    public static boolean raised(Price p, int by) { if (by <= 0) return false; p.cents += by; return true; }
 }
 "#;
 
@@ -1067,6 +1069,11 @@ public final class Prices {
     public static Price doubled(Price p) { long c = (p.dollars * 100 + p.cents) * 2; return new Price(c / 100, (int) (c % 100)); }
     public static void raise(Price p, int by) {
         if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.dollars = c / 100; p.cents = (int) (c % 100); }
+    }
+    // The amount it leaves, in cents, which the caller no longer reads from the price.
+    public static long raised(Price p, int by) {
+        if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.dollars = c / 100; p.cents = (int) (c % 100); }
+        return p.dollars * 100 + p.cents;
     }
 }
 "#;
@@ -1080,6 +1087,12 @@ public final class Prices {
     public static void raise(Price p, int by) {
         if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.cents = (int) (c % 100); }
     }
+    // The amount before the raise, in place of the one it leaves.
+    public static long raised(Price p, int by) {
+        long was = p.dollars * 100 + p.cents;
+        if (by > 0) { long c = was + by; p.dollars = c / 100; p.cents = (int) (c % 100); }
+        return was;
+    }
 }
 "#;
 
@@ -1090,6 +1103,11 @@ public final class Prices {
     // Raised, then rounded up to whole dollars: a change in what the price holds after the call.
     public static void raise(Price p, int by) {
         if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.dollars = c % 100 > 0 ? c / 100 + 1 : c / 100; p.cents = 0; }
+    }
+    // The amount it leaves, in cents, which the caller no longer reads from the price.
+    public static long raised(Price p, int by) {
+        if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.dollars = c / 100; p.cents = (int) (c % 100); }
+        return p.dollars * 100 + p.cents;
     }
 }
 "#;
@@ -1914,6 +1932,97 @@ fn the_same_shape_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm()
     for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
         for (build, expected) in cases {
             let o = related_on(engine, confirm, root, build, "objects.Kernel#bump", quantity_relation(ONE_MORE), "same-shape");
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+// Output relations for the result that read the previous version's parameters (H5's rest): `old.by`, a primitive,
+// as the new version's in its place, and `old.p.cents`, an object's field path, as the call left the previous
+// version's object. The price kernel's `raised` returned whether it raised the price and now returns the amount it
+// leaves, which the caller read from the price before.
+
+const RAISED: &str = "new.result == old.p.cents && old.result == (old.by > 0)";
+
+fn raised_relation(holds: &str) -> jvmcontract::spec::Correspondence {
+    correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")], Some(holds))
+}
+
+#[test]
+fn a_result_relation_reads_the_previous_versions_primitive_parameters_and_its_objects_as_the_call_left_them() {
+    let Some(root) = price_builds() else { return };
+    let o = related(root, "after", "prices.Prices#raised", raised_relation(RAISED), "raised");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains(&format!("the results related by {RAISED}")), "{}", o.output);
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("(ea != 0 || (result == p_before.cents && previous == (by > 0)))"), "{source}");
+    // The amount before the raise breaks it, on a witness the JVM runs too: the previous version's price is read
+    // as its call left it, raised.
+    let o = related(root, "defect", "prices.Prices#raised", raised_relation(RAISED), "raised");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert!(cx.input.starts_with("raised(p=new Price("), "{}", cx.input);
+    assert_eq!(cx.differs, ["result"], "{}", o.output);
+    assert!(o.output.contains(&format!("the results are not related by {RAISED}")), "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // The new version's parameters are read as its call got them: the amount before, which the defect returns.
+    let before = "new.result == new.p.dollars * 100 + new.p.cents && old.result == (old.by > 0)";
+    assert_eq!(related(root, "defect", "prices.Prices#raised", raised_relation(before), "raised-before").verdict, Verdict::Verified);
+    let o = related(root, "after", "prices.Prices#raised", raised_relation(before), "raised-before");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // Refused by name: the previous object as a whole, a name the previous version has no parameter of, and a field
+    // of a primitive.
+    for (holds, gap) in [
+        ("new.result == old.p.cents && old.p != null", "reads old.p as a whole; read a primitive field path of it"),
+        ("new.result == old.q.cents", "reads old.q, which is not a parameter of the previous version (p, by)"),
+        ("new.result == old.by.cents", "reads a field of old.by, which is a int, not an object"),
+    ] {
+        let o = related(root, "after", "prices.Prices#raised", raised_relation(holds), "raised-gap");
+        assert!(o.problem.as_deref().unwrap_or_default().contains(gap), "{holds}: {}", o.output);
+    }
+}
+
+#[test]
+fn a_required_result_under_a_relation_that_reads_the_previous_version_is_unresolved_until_approved() {
+    use jvmcontract::spec::{ApprovedChange, Derivation, ObservationState, Verdict as V};
+    let Some(root) = price_builds() else { return };
+    let mut claim = price_claim("prices.Prices#raised", raised_relation(RAISED));
+    claim.contract.inputs[0].derivation = Derivation::Stated { expression: "old.p.cents == new.p.dollars * 100 + new.p.cents".into() };
+    claim.contract.inputs[1].name = "by".into();
+    let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)).expect("supported");
+    // The contract requires the result as it was, a boolean: under the relation it is compared otherwise.
+    let o = check("after", &claim);
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Unresolved);
+    claim.contract.approved_changes = vec![ApprovedChange { observation: "result".into(), text: "the amount left, in place of whether it rose".into() }];
+    let o = check("after", &claim);
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::ChangedWithApproval);
+    let o = check("defect", &claim);
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Refuted);
+}
+
+/// The result relations that read the previous version's parameters under JBMC and under `auto --confirm`: the
+/// same verdicts as on the own checker, each refutation's witness run on a JVM, since JBMC checks the same harness.
+/// A pipeline job (`cargo test --release --test heap -- --ignored previous_parameter_reads`).
+#[test]
+#[ignore = "runs JBMC on the result relations over the previous version's parameters: a pipeline job"]
+fn the_previous_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = price_builds() else { return };
+    let cases = [("after", Verdict::Verified), ("defect", Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, expected) in cases {
+            let o = related_on(engine, confirm, root, build, "prices.Prices#raised", raised_relation(RAISED), "previous-reads");
             let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
             if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
                 failures.push(format!("{engine:?} confirm={confirm} {build}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));

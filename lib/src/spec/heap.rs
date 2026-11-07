@@ -373,8 +373,10 @@ pub(crate) fn is_computed(e: &super::Equation) -> bool {
 /// in it by its field paths, `old.result.cents == new.result.amount.cents`. None without an output relation for
 /// the result (those for a parameter's fields are [`relate`]'s, and those for an identity relation
 /// [`identity_relations`]'); `Err` names an output relation not supported yet: one about another observation than the
-/// result, a field path or an identity relation, several about the result, or one that reads the previous version's
-/// parameters.
+/// result, a field path or an identity relation, or several about the result. It may read the previous version's
+/// parameters (H5's rest), `old.n` and `old.q.cents`, which become `before$n` and `before$q.cents`
+/// ([`crate::harness::BEFORE`]): the harness reads a primitive one as the new version's in its place, and an object's
+/// field path as the call left the previous version's object.
 pub(crate) fn output_relation(correspondence: &Correspondence) -> Result<Option<String>, String> {
     let result = Observation::Result.id();
     if let Some(r) = correspondence.outputs.iter().find(|r| r.observation != result && !r.observation.starts_with("field:") && !r.observation.starts_with("identity:")) {
@@ -411,7 +413,12 @@ pub(crate) fn output_relation(correspondence: &Correspondence) -> Result<Option<
                     ("old", "result") => out.push_str(crate::harness::PREVIOUS),
                     ("new", "result") => out.push_str(crate::harness::RESULT),
                     ("new", n) if !n.is_empty() => out.push_str(n),
-                    _ => return Err(format!("the correspondence's output relation {} reads old.{name}: an output relation over the previous version's parameters is not supported yet, only over old.result, new.result and the new version's parameters", relation.holds)),
+                    // The previous version's parameter (H5's rest), which the harness resolves.
+                    ("old", n) if !n.is_empty() => {
+                        out.push_str(crate::harness::BEFORE);
+                        out.push_str(n);
+                    }
+                    _ => return Err(format!("the correspondence's output relation {} reads {word}. without a name: it reads old.result, new.result and the two versions' parameters", relation.holds)),
                 }
                 i = end;
                 continue;
@@ -1013,6 +1020,8 @@ mod tests {
         assert_eq!(output_relation(&with(&[("identity:result==q", "new.result != new.q")])).unwrap(), None);
         assert!(output_relation(&with(&[("array:a", "true")])).unwrap_err().contains("only one for the result"));
         assert!(output_relation(&with(&[("result", "old.result == new.result"), ("result", "true")])).unwrap_err().contains("several output relations"));
-        assert!(output_relation(&with(&[("result", "old.result == old.q.cents")])).unwrap_err().contains("reads old.q"));
+        // The previous version's parameters (H5's rest), for the harness to resolve.
+        assert_eq!(output_relation(&with(&[("result", "new.result.cents == old.q.cents * old.n")])).unwrap().as_deref(), Some("result.cents == before$q.cents * before$n"));
+        assert!(output_relation(&with(&[("result", "old. == 1")])).unwrap_err().contains("reads old. without a name"));
     }
 }
