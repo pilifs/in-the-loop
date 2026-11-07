@@ -59,6 +59,13 @@
 # check's merge is abandoned at the next; the reconcile loop forgets the
 # workspace. Neither the streams' branches nor the default workspace change.
 #
+# A brief whose Loop settings say "- verification: separate" runs without the
+# pipeline: step 3 is skipped, and nothing waits for a job. Its loops submit and
+# commit jobs and go on; their results are for a person to review after the run,
+# and a verification loop, if any, is run apart, by hand. A loop whose status
+# says it waits on jobs anyway is counted as finished, with the jobs listed for
+# that review.
+#
 # Exits 0 when the brief's own loop is finished, 1 if it is blocked or the setup
 # fails, 2 for a bad argument and 130 if interrupted.
 
@@ -101,6 +108,8 @@ project_dir() { printf '%s/%s' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects" "$
 
 PARENT=
 MODEL=$(setting "$BRIEF" model)
+VERIFICATION=$(setting "$BRIEF" verification)
+[[ -z "$VERIFICATION" || "$VERIFICATION" == separate ]] || { log "$BRIEF: '- verification: $VERIFICATION' is not a setting this knows (only separate)"; exit 1; }
 EFFORT=$(setting "$BRIEF" effort)
 declare -A DIR SESSION
 fresh=0
@@ -166,6 +175,10 @@ supervise() {
   while :; do
     # Waiting on jobs, from this run or one before it: they come back first.
     status=$(status_of "$brief")
+    if [[ "$VERIFICATION" == separate && "$status" == "waiting on jobs"* ]]; then
+      log "[$label] its brief says $status; verification is separate, so nothing waits: counted as finished, the jobs left for review"
+      exit 0
+    fi
     if [[ "$status" == "waiting on jobs"* ]]; then
       read -ra ids <<<"$(tr ',;' '  ' <<<"${status#waiting on jobs}")"
       if (( ${#ids[@]} )) && ! jobs_back "${ids[@]}"; then
@@ -192,6 +205,10 @@ supervise() {
       done*) exit 0 ;;
       blocked*) exit 3 ;;
     esac
+    if [[ "$VERIFICATION" == separate && "$status" == "waiting on jobs"* ]]; then
+      log "[$label] verification is separate, so nothing waits: counted as finished, the jobs left for review"
+      exit 0
+    fi
     if [[ "$status" == "waiting on jobs"?* ]]; then
       read -ra ids <<<"$(tr ',;' '  ' <<<"${status#waiting on jobs}")"
       if ! jobs_back "${ids[@]}"; then
@@ -315,7 +332,9 @@ verification_running() {
   done
   return 1
 }
-if verification_running; then
+if [[ "$VERIFICATION" == separate ]]; then
+  log "verification is separate for this brief: no verification loop is started, and nothing waits for a job"
+elif verification_running; then
   log "a verification loop already runs here: the loops' jobs are left to it"
 else
   log "starting verification-loop.sh, for the jobs the loops submit"

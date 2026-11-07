@@ -163,6 +163,17 @@ In addition:
   changes and environment assumptions too, so effort can't hide by moving category.
 - **Results name what they checked.** Every result records the commit of the code it checked and the configuration it
   ran with, so a stream's result can be told from another's after the merge.
+- **Jobs are submitted, never awaited.** This brief runs with verification separate (`- verification: separate` in
+  its Loop settings): `run-streams.sh` starts no verification loop, and no loop of this brief waits for a job or reads
+  its result. Heavy work (proofs over examples, benchmarks, `build.py` on B9/B11/D1 examples, anything over a minute
+  or 1 GB) is still never run inline: submit it with `verification/pipeline.py submit`, with the verdict or figure it
+  is expected to give stated in its description, commit it with the change (`(verification pending)` on the summary
+  line, the job id in a paragraph), list it under Progress as *for review*, and go on. A person may run a
+  verification loop apart and reviews the results after the run. A step is done when its code, its inline tests
+  (compiling, unit tests, the integration contract's tests, conformance cases on a real `java`) and its job
+  submission are committed; a criterion that only a job can show is met *pending review*, and the Progress line says
+  which job shows it. Nothing is decided from a job's result in this loop: where a choice would depend on one, take
+  the conservative option, and record the job that would confirm it.
 
 ## When it starts
 
@@ -224,13 +235,16 @@ closes any gaps with `examples/tools/build.py --render-only`.
 
 **Running it all** (the user, from the default workspace, in tmux): `llm-dlc/tools/run-streams.sh foundations`, as
 for [`engine-priorities`](engine-priorities.md#streams): it compacts the planning session once, adds the four
-workspaces from the latest commit, starts `verification-loop.sh`, runs the streams side by side with the integration
-check, then this brief's own loop. Four loops at 3.5 GB each leave about 30 GB of this machine's 46 GB for the runner.
+workspaces from the latest commit, runs the streams side by side with the integration check, then this brief's own
+loop. It starts no verification loop (`- verification: separate`). Four loops at 3.5 GB each, and the integration
+check's 3.5 GB, leave about 25 GB of this machine's 46 GB for a verification loop the user may run apart.
 
-**Stopped, waiting and finished are different.** A stream's scope going inactive means only that its process
-stopped. It is waiting while its status says `waiting on jobs`, and finished only when its status says `done` or
-`blocked`. `done` requires that none of its jobs is pending and that its part of the integration contract passes on
-its branch. The reconcile loop starts on finished streams, never on inactive ones alone.
+**Stopped and finished are different.** A stream's scope going inactive means only that its process stopped. It is
+finished only when its status says `done` or `blocked`. No status here says `waiting on jobs`: nothing waits for a
+job, and `run-streams.sh` counts such a status as finished, with its jobs left for review. `done` requires that its
+part of the integration contract passes on its branch and that every job it submitted is listed under its Progress
+for review; it doesn't require any job's result. The reconcile loop starts on finished streams, never on inactive ones
+alone.
 
 ### The integration check
 
@@ -241,7 +255,7 @@ produces an effect kind the harness can't record) shows up while they run, not a
   there a merge of the four streams' current `@-` commits, `jj new heap@- summaries@- observations@- alignment@-`, and
   runs `llm-dlc/tools/foundations-integration.sh` on it: the integration contract's tests, compiling and unit-level
   only (proofs stay queued). The script runs in the scope `feature-loop-foundations-integration.scope` with the loops'
-  3.5 GB cap, so the verification runner leaves it room as it does a loop's.
+  3.5 GB cap, so a verification runner, if one is run apart, leaves it room as it does a loop's.
 - It writes what it found, with the four commit ids, to `llm-dlc/loop-summaries/foundations-integration.md` in the
   default workspace. Each stream reads that file at the start of every cycle (by its absolute path) and treats a
   failure in its own part as the next piece of work. A merge conflict is reported with the files in conflict, and the
@@ -260,7 +274,11 @@ not only inactive scope) and that `feature-loop-foundations-integration.scope` i
 last turns, copy their logs, merge with
 `jj new @- heap@- summaries@- observations@- alignment@-`, commit, fold their Progress here, and forget the
 workspaces (and `integration`). Where the streams extended the shared IR in different directions, reconcile the IR
-first, then the code that uses it, and say under Progress what was chosen.
+first, then the code that uses it, and say under Progress what was chosen. Nothing waits for the streams' jobs: fold
+them, with their ids and expected results, into one *for review* list in this brief's Progress. If a verification
+loop the user runs apart has left uncommitted files in this working copy, wait for it to commit them before merging,
+rather than moving or committing them (as `engine-priorities`'s step 4 says); results it collected are evidence for
+the review, not inputs to this loop.
 
 ## The plan
 
@@ -352,7 +370,9 @@ Phase 0. The change combines a primitive amount becoming a value object, an inte
 changed pure helper, and one recorded outgoing effect. The external request's meaning and the required observations
 stay fixed.
 
-The reconcile loop makes it pass once the merge is committed. It passes when:
+The reconcile loop makes it pass once the merge is committed. Its checks are small, so they run inline, as the
+integration contract's tests and conformance cases; anything heavier (a rerun of the recorded examples with the cache,
+say) is a job submitted for review, not a condition of passing. It passes when:
 
 | Requirement | Evidence |
 |---|---|
@@ -375,13 +395,14 @@ next brief. Only a passing example counts as this loop's milestone.
 |---|---|
 | 0 | The shared IR, interfaces and integration contract are committed, documented and tested, and the existing flags are special cases of the IR |
 | 1 | Regression proofs over mutable object inputs with aliasing, with witnesses that replay on the JVM with their identities, each with planted defects refuted (the alias-to-copy one included); the joint example's correspondence part passes |
-| 2 | A cached result is reused exactly when its canonical claim is unchanged (the invalidation tests pass), the impact report is right on the recorded examples, a changed helper's proof is reused in a caller, and a job measures categorized changes |
+| 2 | A cached result is reused exactly when its canonical claim is unchanged (the invalidation tests pass), the impact report is right on the recorded examples, a changed helper's proof is reused in a caller, and a job to measure categorized changes is submitted |
 | 3 | Box Office's entry points have observation specs, two builds' specs compare into accounted obligations, and the joint example's effect obligation is discharged with a dropped effect and a duplicated one refuted |
 | 4 | Inferred mappings for examples 121–139 scored against the hand-written ones (found, asked, wrong, missed), none accepted without a proof, the offset-mapping defect never accepted, and the joint example's mapping proposed |
 | 5 | The joint example passes every row above |
 
-The pipeline jobs submitted along the way are back with their expected verdicts, or their failures are explained under
-Progress.
+Criteria that only a job can show are met pending review. Every job submitted along the way is listed under Progress,
+with its id, what it checks and the result it is expected to give, so that the person who reviews the results after
+the run can tell a pass from a failure without the session.
 
 ## Deferred: not in this loop
 
@@ -455,12 +476,13 @@ annotations or configuration, which S1 adds.
 - model: claude-opus-5-5
 - effort: high
 - integration: llm-dlc/tools/foundations-integration.sh
+- verification: separate
 
 ## Loop until
 
 The reconcile comes first; don't stop before the merge is committed unless a stream is unfinished or the merge needs
-the user. Keep the last line of Progress a status: `working`, `waiting on jobs ID ...`, `done`, or `blocked: ...` with
-what needs the user. After the merge, Phase 5 is the core: `done` only when the joint example passes every row; if a
+the user. Keep the last line of Progress a status: `working`, `done`, or `blocked: ...` with what needs the user;
+never `waiting on jobs`, since nothing waits for one. After the merge, Phase 5 is the core: `done` only when the joint example passes every row; if a
 row can't pass without the user or a later brief, stop with `blocked: Phase 5 partial: ...` naming the rows. Then go
 on while a cycle can still realize a substantial part of what is left; stop when the rest is small or speculative
 next to what is done, or needs the user and is recorded as deferred. Don't go on to polish.

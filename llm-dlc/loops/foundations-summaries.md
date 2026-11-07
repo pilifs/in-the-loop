@@ -89,11 +89,24 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 
 ## Working in a stream
 
-As in the `engine-priorities` streams ([`engine-priorities-jbmc.md`](engine-priorities-jbmc.md#working-in-a-stream)):
-commit only here with `sync.py commit`, never push, merge, rebase or move a bookmark; submit jobs as usual and read
-their results from the default workspace's `verification/`; keep the last line of Progress a status. `done` requires
-that none of your jobs is pending and that your part of the integration contract passes on this branch. Your session
-is a fork of the conversation that planned the streams; where your memory and a brief differ, the brief wins.
+- **Commit only here**, with `sync.py commit` as CLAUDE.md says. Never push, merge, rebase onto another branch, or
+  move a bookmark. The branch is this workspace's `@-` line; the reconcile loop merges it.
+- **Jobs are submitted, never awaited** (the main brief's [rule](foundations.md#how-to-work-through-it)). Heavy work
+  is still never run inline: submit it with `verification/pipeline.py submit`, stating the verdict or figure it should
+  give, commit it with the change, and list it under Progress as *for review* with its id. Then go on. Don't wait for
+  a job, poll the queue, or read results from any workspace's `verification/`: no verification loop is started for
+  this run, and a person reviews the results after it. A step is done when its code, its inline tests and its job
+  submission are committed; a criterion only a job can show is met pending review.
+- **Status.** The last line of `## Progress` is a status, kept current in every commit and read by `run-streams.sh`:
+  `- Status: working` while there is work you can do, `- Status: done` when your phases are finished, or
+  `- Status: blocked: ...` with what needs the user. Never `waiting on jobs`. `done` requires that your part of the
+  integration contract passes on this branch and that every job you submitted is listed under Progress; it doesn't
+  require any job's result.
+- **Another session is not your concern**: the other streams work in their own directories and never touch this
+  working copy.
+- **Where you started.** Your session is a fork of the conversation that planned the streams (session `ae994066`,
+  compacted), so you share its context with the other streams. What it settled is in the briefs; where your memory of
+  it and a brief differ, the brief wins.
 
 ## Progress
 
@@ -111,6 +124,6 @@ is a fork of the conversation that planned the streams; where your memory and a 
 ## Loop until
 
 Go on while one of your phases has a step that needs nothing but your own work. Your core is above: don't stop before
-it unless a step waits on a job or on the user. When everything left waits on jobs, set the status to
-`waiting on jobs ID ...` and stop. Stop with `done` when your phases are finished, or `blocked: ...` when what is left
-needs the user and is recorded under Progress. Don't go on to polish, and don't start another stream's work.
+it unless a step needs the user. When a step's evidence is a job, submit it and go on to the next step; a job is never a reason to stop or wait. Stop
+with `done` when your phases are finished, or `blocked: ...` when what is left needs the user and is recorded under
+Progress. Don't go on to polish, and don't start another stream's work.
