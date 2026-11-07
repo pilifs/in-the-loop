@@ -227,11 +227,59 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     identities), `statement.rs` (`Observations.identities`, skipped when empty; the words for a result compared
     field by field), `lib/README.md` (step 5 of the regression proof, the JSON's observations), `lib/tests/heap.rs`.
     No job: every check is inline and small.
-- Next: H5's narrow case and `spec::heap::check` on the joint example: the two shapes of `Quote` related by the
-  correspondence's input equations (the old object made from the new one's leaves), the result's fields and the
-  identity relations compared under the same correspondence where the shapes differ, the claim's domain label and the
-  accounting of each required observation, then the six heap cases of `lib/tests/foundations.rs`; then H4's
-  accessible field reads for the JVM run.
+- **H5's narrow case and `spec::heap::check` (2026-11-07): the joint example's two shapes of `Quote` related by the
+  correspondence.** A regression check takes a correspondence (`equivalence::Options::correspondence`, filled by
+  `spec::heap::check` from the claim; no command-line flag yet) whose input equations relate a field path of a
+  parameter's object in each version, `old.q.cents == new.q.amount.cents`, `old.q.quantity == new.q.quantity`
+  ([`spec::heap::relate`](../../lib/src/spec/heap.rs), [`harness::Corresponds`](../../lib/src/harness/mod.rs)). The
+  previous version's object is made from the new one's leaves as the equations name them, and an input on which the
+  two objects as made don't satisfy them is skipped (the domain, the constructible assumption and the vacuity probe
+  say so). After the calls the parameter's objects, and a result of the same pair of classes, are compared under the
+  equations, a path through null reading as absent; identity relations are those both versions have (`result == q`).
+  The replays are compared through the equations too (`Replayed::views`), each showing its own object, and a
+  counterexample names the observations it differs in (`differs`). Refused by name: an equation not between two paths
+  (the offset mapping `new.q.amount.cents + 1` included), output relations, a field of the previous version's object
+  in no equation (it would leave the count), a leaf of its construction no equation gives, and equations about a
+  parameter other than the one in its place; equations about a parameter neither version has are left out with a
+  note. Bounds are per version: `stated.domain.input_objects` counts each version's input objects (`[1, 2]`).
+  `spec::heap::check` runs the native strict check under the claim's bounds and correspondence and accounts for every
+  required observation: preserved where a proof compared it, refuted where the witness differs in it (the rest
+  unresolved), unresolved where the check doesn't compare it or the witness differs only elsewhere, and the whole
+  result unresolved where a version's inputs need more objects than its bound. A refusal is `Unsupported` with the
+  gap's words. `spec::Outcome` gained `problem`.
+  - Evidence inline: the integration contract's heap part went from 6 unsupported to 6 passed (`after` `total`,
+    `withQuantity` with `identity:result==q`, `discount`; `offset` `total` refuted, witness `total(q=new Quote(new
+    Money(0), 1)): before, 0; after, 1`; `alias-to-copy` `withQuantity` refuted; `outside-domain` `total` verified,
+    its domain saying constructor-made). `lib/tests/heap.rs`, five new tests on the fixture's kernel: the two shapes
+    proved for `total` and `withQuantity`; the offset refuted with the result refuted and the exception unresolved;
+    the alias-to-copy defect, where its copy can be made (`--unchanged-unless "quantity <= 0"`), refuted with
+    `differs` = `identity:result==q` alone, `before: Quote{cents=0, quantity=1}, with result == q` against `after:
+    Quote{amount=Money{cents=0}, quantity=1}`, and the harness source checked; a witness that differs only in an
+    observation the claim doesn't require giving unresolved; a correspondence leaving `q.cents` out, no
+    correspondence, and an input-object bound of 1 for the new version, each never proved. Two unit tests of
+    `relate`. Unit tests (187), `heap.rs` (18), `foundations.rs`, `conformance.rs` and `integration.rs` (64, 26 s at
+    load 1.7) pass.
+  - For the reconcile loop, about the fixture (not changed here): the `alias-to-copy` defect's copy is made by the
+    constructor, which rejects a quantity of 0 or less, so there the defect also throws, and the claim-level witness
+    is that exception (`withQuantity(q=new Quote(new Money(0), 1), quantity=0)`); `expected.json`'s "every field
+    agrees" holds for a quantity of 1 or more, where only `result == q` tells the versions apart. The kernel claim's
+    `allocations: 0` is not checked (the own checker follows every allocation within the unwinding bound), and the
+    alias-to-copy copy allocates one `Quote`. The kernel claim is reused for `discount`, whose parameters aren't `q`:
+    its contract's inputs (`q: shop.Quote`) don't match the method, which `check` doesn't compare.
+  - Also fixed: the harness's Java rendering wrote `before.Object` as the type of an object result (H3).
+  - Not yet: output relations and equations other than path = path, a correspondence flag on `regress`, the JVM run
+    of such a witness (H4), and examples in 150–159.
+  - Shared files changed: `equivalence.rs` (`Options::correspondence`, its reading through `spec::heap::roots` and
+    `relate`, the result's equations, the vacuity reason, the replays compared through the views, `differs`),
+    `statement.rs` (`Domain::input_objects`, the observations' and the constructible assumption's words under a
+    correspondence), `spec/mod.rs` (`Outcome::problem`), `lib/README.md` (step 5 of the regression proof, and
+    `spec::heap::check` under the foundations IR), `lib/tests/heap.rs`. No job: every check is inline and small.
+- Next: H4, witnesses with identity on the JVM: the harness reads fields with `getfield`, which a JVM refuses
+  (`IllegalAccessError`) for a package-private or private field of another package's class, so a regression witness
+  over objects can't yet run on the JVM (`jvm_witness.rs`); give the harness accessible reads, then run the H2/H3
+  witnesses and the joint example's refutations there with their identities. Then examples in 150–159 (a correct
+  change proved, the alias-to-copy defect, a bug outside the constructor-made domain); then H2's rest (nullability and
+  aliasing among object parameters, property checks over objects).
 - Status: working
 
 ## Loop settings

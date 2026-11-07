@@ -100,6 +100,59 @@ pub struct RecordType {
     /// What of the object is observed after the calls: none for a record, whose fields the method cannot change
     /// (its components are primitive); its instance fields, followed into the objects they refer to, for a class.
     pub fields: Option<Fields>,
+    /// For the previous version's object only, where a correspondence relates it to the new one's (step H5 of
+    /// `llm-dlc/loops/foundations-heap.md`): which of the new construction's leaves each of its leaves is made from,
+    /// and the equations it is compared under in place of field-by-field equality.
+    pub corresponds: Option<Corresponds>,
+}
+
+/// How the previous version's object is related to the new version's where a correspondence's input equations say
+/// so (step H5): the two may have different shapes (`Quote(long cents, int quantity)` before, `Quote(Money amount,
+/// int quantity)` now).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Corresponds {
+    /// For each leaf of the previous version's construction, in order, the index of the new construction's leaf it
+    /// is made from: the leaf the equation naming it gives.
+    pub leaves: Vec<usize>,
+    /// The equations, each between a primitive field path of the previous version's object and one of the new
+    /// one's. They are assumed of the two objects as made (an input on which one fails is outside the relation),
+    /// and compared of them as the calls leave them, and of two results of the same pair of classes.
+    pub equations: Vec<FieldEquation>,
+}
+
+/// One equation of [`Corresponds`]: `old.q.cents == new.q.amount.cents` as the paths `cents` and `amount.cents`
+/// from the two objects, of the primitive type `ty`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FieldEquation {
+    pub old: String,
+    pub new: String,
+    pub ty: Type,
+}
+
+impl FieldEquation {
+    /// `old.q.cents == new.q.amount.cents`, for the objects named `old_root` and `new_root`.
+    pub fn text(&self, old_root: &str, new_root: &str) -> String {
+        format!("old.{old_root}.{} == new.{new_root}.{}", self.old, self.new)
+    }
+}
+
+/// The fields a primitive field path reads from an object laid out by `fields`, each as its declaring class
+/// (unrelocated), name, and descriptor, and the type the last one has; none when the path is not one of them.
+pub fn field_steps(fields: &Fields, path: &str) -> Option<(Vec<(String, String, String)>, Type)> {
+    let (first, rest) = match path.split_once('.') {
+        Some((f, rest)) => (f, Some(rest)),
+        None => (path, None),
+    };
+    let (_, kind) = fields.fields.iter().find(|(n, _)| n == first)?;
+    match (kind, rest) {
+        (FieldKind::Value(t), None) => Some((vec![(fields.class.clone(), first.to_string(), t.descriptor())], t.clone())),
+        (FieldKind::Object(inner), Some(rest)) => {
+            let (mut steps, t) = field_steps(inner, rest)?;
+            steps.insert(0, (fields.class.clone(), first.to_string(), format!("L{};", inner.class)));
+            Some((steps, t))
+        }
+        _ => None,
+    }
 }
 
 /// The instance fields of a class as the harness reads them back, in declaration order.
@@ -162,7 +215,7 @@ impl Fields {
 impl RecordType {
     /// A record of primitive components, made by its canonical constructor.
     pub fn record(class: &str, components: Vec<(String, Type)>) -> RecordType {
-        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), fields: None }
+        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), fields: None, corresponds: None }
     }
 
     /// An object of the application class `class` made by its constructor of `params`, each parameter of a class
@@ -177,12 +230,26 @@ impl RecordType {
                 components.extend(made.components.iter().map(|(c, t)| (format!("{name}.{c}"), t.clone())));
             }
         }
-        RecordType { class: class.to_string(), components, params, inner, fields: Some(fields) }
+        RecordType { class: class.to_string(), components, params, inner, fields: Some(fields), corresponds: None }
     }
 
     /// Whether it is a class made by its constructor, rather than a record of primitive components.
     pub fn is_made(&self) -> bool {
         self.fields.is_some()
+    }
+
+    /// The flat parameters its leaves are taken from, in order, for an object whose leaves start at `first`: the
+    /// next ones, or under a correspondence the new construction's leaves its equations name.
+    pub fn leaf_indices(&self, first: usize) -> Vec<usize> {
+        match &self.corresponds {
+            Some(c) => c.leaves.iter().map(|i| first + i).collect(),
+            None => (first..first + self.components.len()).collect(),
+        }
+    }
+
+    /// How many objects making it takes: this one and every inner one.
+    pub fn objects(&self) -> u32 {
+        1 + self.inner.iter().map(RecordType::objects).sum::<u32>()
     }
 
     /// The constructor's descriptor: one parameter per component for a record.
@@ -242,6 +309,19 @@ impl RecordType {
         } else {
             format!("{name}: {}", self.describe())
         }
+    }
+
+    /// For the previous version's object under a correspondence, the domain's words for how it is made: `a Quote
+    /// made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the
+    /// correspondence's input equations say (old.q.cents == new.q.amount.cents, …), and satisfying them`.
+    pub fn made_from(&self, name: &str) -> String {
+        let Some(c) = &self.corresponds else { return self.domain_part(name) };
+        let sources: Vec<String> = self.components.iter().map(|(leaf, _)| c.equations.iter().find(|e| e.old == *leaf).map(|e| e.new.clone()).unwrap_or_else(|| "?".into())).collect();
+        let sources = match sources.split_last() {
+            Some((last, rest)) if !rest.is_empty() => format!("{} and {last}", rest.join(", ")),
+            _ => sources.join(""),
+        };
+        format!("a {} made by its constructor, {}, from the new {name}'s {sources} as the correspondence's input equations say ({}), and satisfying them", self.simple_name(), self.describe(), c.equations.iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", "))
     }
 
     /// Whether the previous version's record can stand for this one: the same component types in the same order
@@ -349,12 +429,15 @@ pub struct Layout {
     /// class other than a record of primitive components (step H3): compared field by field, as an object
     /// parameter is, and followed for identity relations.
     pub result_fields: (Option<Fields>, Option<Fields>),
+    /// Where the result's classes are related by a correspondence (step H5): the equations two results are compared
+    /// under, in place of field-by-field equality, as the objects of a parameter of the same pair of classes are.
+    pub result_equations: Option<Vec<FieldEquation>>,
 }
 
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None) }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None }
     }
 
     /// The references a version's identity relations are over (step H3): the result when it is an array or an object
@@ -444,7 +527,7 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None) }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None }
     }
 
     /// The flat parameters' types: the harness method's.
@@ -515,6 +598,7 @@ impl Layout {
                     let p = &self.params[*i];
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
+                Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.is_some() => (format!("{}; in the previous version, {}", record.domain_part(name), previous.made_from(name)), false),
                 Slot::Record { name, record, .. } => (record.domain_part(name), false),
             })
             .collect();
@@ -1044,8 +1128,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             let (new_local, old_local) = object_slots(i);
             let in_previous = previous.as_ref().map(|p| (p, Some("before"), old_local));
             for (made, prefix, local) in std::iter::once((record, None, new_local)).chain(in_previous) {
-                let mut next = *first;
-                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut next);
+                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut made.leaf_indices(*first).into_iter());
                 code.store(Kind::Ref, local);
             }
         }
@@ -1063,6 +1146,26 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         }
         code.bind(built);
         code.max_locals = code.max_locals.max(temps);
+        // Under a correspondence (step H5), the two objects as made must satisfy its equations: an input on which
+        // they do not is outside the relation, and skipped.
+        let outside = code.label();
+        let inside = code.label();
+        let mut related = false;
+        for (i, slot) in records.iter().enumerate() {
+            let Slot::Record { record, before: Some(previous), .. } = slot else { continue };
+            let (Some(c), Some(fields), Some(old_fields)) = (&previous.corresponds, &record.fields, &previous.fields) else { continue };
+            let (new_local, old_local) = object_slots(i);
+            let scratch = code.max_locals;
+            let used = compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, scratch, outside);
+            code.max_locals = code.max_locals.max(used);
+            related = true;
+        }
+        if related {
+            code.goto(inside);
+            code.bind(outside);
+            code.return_(None);
+            code.bind(inside);
+        }
     }
 
     // The previous version's arguments, from the new parameters; an input for which one cannot be computed (a
@@ -1302,6 +1405,14 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                     });
                 }
             }
+            Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() && layout.result_equations.is_some() => {
+                // Under a correspondence (step H5), two results agree when both are null or its equations hold of
+                // them, as of a parameter's objects of the same classes.
+                let (Some(fields), Some(old_fields), Some(equations)) = (&layout.result_fields.0, &layout.result_fields.1, &layout.result_equations) else { unreachable!("checked") };
+                let scratch = code.max_locals.max(index + 1);
+                let used = compare_corresponding(&mut code, &mut writer.pool, a, b, old_fields, fields, equations, scratch, fail);
+                code.max_locals = code.max_locals.max(used);
+            }
             Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() => {
                 // Two objects of an application class agree when both are null or their fields do, followed into
                 // the objects they refer to, as an object parameter's are.
@@ -1340,7 +1451,10 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         let Slot::Record { record, before: Some(previous), .. } = slot else { continue };
         let (Some(fields), Some(old_fields)) = (&record.fields, &previous.fields) else { continue };
         let (new_local, old_local) = object_slots(i);
-        let used = compare_fields(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, scratch, index, fail);
+        let used = match &previous.corresponds {
+            Some(c) => compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, scratch, fail),
+            None => compare_fields(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, scratch, index, fail),
+        };
         scratch = scratch.max(used);
     }
     code.max_locals = code.max_locals.max(scratch);
@@ -1509,10 +1623,82 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     used
 }
 
+/// Emits a jump to `fail` unless the previous version's object in the local `old` and the new version's in `new`
+/// agree under `equations` (step H5): both null, or neither, and each equation's two field paths reading the same,
+/// where a path through a null reads as absent and two absent agree. Uses the locals from `scratch` on and returns
+/// the first it leaves free.
+#[allow(clippy::too_many_arguments)]
+fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, equations: &[FieldEquation], scratch: u16, fail: Label) -> u16 {
+    let (link, old_value, new_value, old_present, new_present) = (scratch, scratch + 1, scratch + 3, scratch + 5, scratch + 6);
+    let compare = code.label();
+    let done = code.label();
+    code.load(Kind::Ref, old);
+    code.if_nonnull(compare);
+    code.load(Kind::Ref, new);
+    code.if_null(done);
+    code.goto(fail);
+    code.bind(compare);
+    code.load(Kind::Ref, new);
+    code.if_null(fail);
+    for equation in equations {
+        let (Some((old_steps, ty)), Some((new_steps, _))) = (field_steps(old_fields, &equation.old), field_steps(fields, &equation.new)) else {
+            // A path the layout doesn't have was refused when the correspondence was read; never agree on one.
+            code.goto(fail);
+            continue;
+        };
+        for (root, steps, prefix, value, present) in [(old, &old_steps, Some("before"), old_value, old_present), (new, &new_steps, None, new_value, new_present)] {
+            let absent = code.label();
+            let read = code.label();
+            // A zero first, so that the value's local has its type on every path, as the JVM's verifier wants.
+            match kind_of(&ty) {
+                Kind::Int => code.iconst(0),
+                Kind::Long => code.op(0x09),
+                Kind::Float => code.op(0x0b),
+                Kind::Double => code.op(0x0e),
+                Kind::Ref => code.op(0x01),
+            }
+            code.store(kind_of(&ty), value);
+            code.load(Kind::Ref, root);
+            for (k, (owner, name, descriptor)) in steps.iter().enumerate() {
+                let (owner, descriptor) = match prefix {
+                    Some(p) => (format!("{p}/{owner}"), descriptor.strip_prefix('L').map(|c| format!("L{p}/{c}")).unwrap_or_else(|| descriptor.clone())),
+                    None => (owner.clone(), descriptor.clone()),
+                };
+                let field = pool.field_ref(&owner, name, &descriptor);
+                code.op_u16(0xb4, field); // getfield
+                if k + 1 < steps.len() {
+                    code.store(Kind::Ref, link);
+                    code.load(Kind::Ref, link);
+                    code.if_null(absent);
+                    code.load(Kind::Ref, link);
+                }
+            }
+            code.store(kind_of(&ty), value);
+            code.iconst(1);
+            code.store(Kind::Int, present);
+            code.goto(read);
+            code.bind(absent);
+            code.iconst(0);
+            code.store(Kind::Int, present);
+            code.bind(read);
+        }
+        let next = code.label();
+        code.load(Kind::Int, old_present);
+        code.load(Kind::Int, new_present);
+        code.if_icmp(Cond::Ne, fail);
+        code.load(Kind::Int, old_present);
+        code.if_zero(Cond::Eq, next);
+        compare_values(code, &ty, fail, &|code, side| code.load(kind_of(&ty), if side == 0 { old_value } else { new_value }));
+        code.bind(next);
+    }
+    code.bind(done);
+    scratch + 7
+}
+
 /// Emits the making of `record` (its class under `prefix/` when given, the previous version's) from its leaves, the
-/// flat parameters from `*next` on, leaving the object on the stack: `new`, the arguments with each inner
+/// flat parameters `leaves` gives in turn, leaving the object on the stack: `new`, the arguments with each inner
 /// construction made in its place, and the constructor's call.
-fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, record: &RecordType, prefix: Option<&str>, params: &[Param], next: &mut usize) {
+fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, record: &RecordType, prefix: Option<&str>, params: &[Param], leaves: &mut dyn Iterator<Item = usize>) {
     let owner = match prefix {
         Some(p) => format!("{p}/{}", record.class),
         None => record.class.clone(),
@@ -1523,10 +1709,10 @@ fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     let mut nested = record.inner.iter();
     for (_, t) in &record.params {
         if t.is_primitive() {
-            code.load(kind_of(t), params[*next].slot);
-            *next += 1;
+            let leaf = leaves.next().expect("a leaf for each primitive argument");
+            code.load(kind_of(t), params[leaf].slot);
         } else if let Some(inner) = nested.next() {
-            emit_construct(code, pool, inner, prefix, params, next);
+            emit_construct(code, pool, inner, prefix, params, leaves);
         }
     }
     let init = pool.method_ref(&owner, "<init>", &record.constructor_in(prefix));
@@ -1669,8 +1855,12 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             match previous {
                 Some(previous) => {
                     let old = format!("before.{}", previous.java_name());
+                    let old_leaves = previous.leaf_indices(*first);
                     s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
-                    s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(previous, "before.", &mut leaves.iter()), construction_source(record, "", &mut leaves.iter())));
+                    s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(previous, "before.", &mut old_leaves.iter().map(|i| &params[*i])), construction_source(record, "", &mut leaves.iter())));
+                    if let Some(c) = &previous.corresponds {
+                        s.push_str(&format!("        if (!{}) {{ return; }} // the correspondence's input equations, of the objects as made\n", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations)));
+                    }
                 }
                 None => {
                     s.push_str(&format!("        {} {name}_after; // the previous version takes the components\n", record.java_name()));
@@ -1690,7 +1880,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         let owner = if built_receiver { "this_".to_string() } else if on_receiver { format!("this_{side}") } else { owner };
         let type_name = |t: &Type| match (if side == "before" { &layout.result.1 } else { &layout.result.0 }, if side == "before" { &layout.result_fields.1 } else { &layout.result_fields.0 }, t) {
             (Some(record), _, Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, record.java_name()),
-            (None, Some(_), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, type_name(t)),
+            (None, Some(fields), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, fields.class.replace('/', ".")),
             _ => type_name(t),
         };
         if !is_void {
@@ -1732,6 +1922,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     let components = record.components.iter().zip(&previous.components).map(|((n, _), (o, _))| format!("a.{o} == b.{n}")).collect::<Vec<_>>().join(" && ");
                     format!("(a == null ? b == null : b != null && {components})")
                 }
+                Type::Object(_) if layout.result_equations.is_some() => format!("(a == null ? b == null : b != null && {})", equations_source("a", "b", layout.result_equations.as_deref().unwrap_or_default())),
                 Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() => {
                     let (Some(fields), Some(old_fields)) = (&layout.result_fields.0, &layout.result_fields.1) else { unreachable!("checked") };
                     format!("(a == null ? b == null : b != null && {})", fields_source("a", "b", old_fields, fields))
@@ -1747,8 +1938,10 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     // Each object made by its constructor, as both versions leave it.
     for slot in &records {
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
-            if let (Some(fields), Some(old_fields)) = (&record.fields, &previous.fields) {
-                s.push_str(&format!(" && {}", fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields)));
+            match (&record.fields, &previous.fields, &previous.corresponds) {
+                (Some(_), Some(_), Some(c)) => s.push_str(&format!(" && {}", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations))),
+                (Some(fields), Some(old_fields), None) => s.push_str(&format!(" && {}", fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields))),
+                _ => {}
             }
         }
     }
@@ -1791,6 +1984,13 @@ fn construction_source<'a>(record: &RecordType, prefix: &str, leaves: &mut impl 
         })
         .collect();
     format!("new {prefix}{}({})", record.java_name(), args.join(", "))
+}
+
+/// The Java for two objects satisfying a correspondence's equations, as [`compare_corresponding`] compares them
+/// (a path through null reading as absent is left out, for brevity): `(q_before.cents == q_after.amount.cents)`.
+fn equations_source(old: &str, new: &str, equations: &[FieldEquation]) -> String {
+    let parts: Vec<String> = equations.iter().map(|e| format!("{old}.{} == {new}.{}", e.old, e.new)).collect();
+    format!("({})", if parts.is_empty() { "true".to_string() } else { parts.join(" && ") })
 }
 
 /// The Java for two objects having the same fields, as [`compare_fields`] compares them.
@@ -2251,7 +2451,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None) }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None }
     }
 
     #[test]

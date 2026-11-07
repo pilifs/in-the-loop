@@ -12,33 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T05:38:50.605Z",
-  "duration_seconds": 5851,
+  "ended": "2026-11-07T06:02:54.670Z",
+  "duration_seconds": 7295,
   "stats": {
-    "turns": 24,
-    "api_calls": 298,
-    "tool_calls": 308,
+    "turns": 29,
+    "api_calls": 389,
+    "tool_calls": 400,
     "tool_errors": 4,
-    "compactions": 4,
+    "compactions": 5,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 604,
-      "output_tokens": 242737,
-      "cache_read_input_tokens": 55459153,
-      "cache_creation_input_tokens": 984017
+      "input_tokens": 788,
+      "output_tokens": 342795,
+      "cache_read_input_tokens": 73565594,
+      "cache_creation_input_tokens": 1276613
     }
   },
   "tools": {
-    "Bash": 272,
-    "Read": 16,
+    "Bash": 358,
+    "Read": 21,
     "Edit": 11,
     "Monitor": 3,
     "ToolSearch": 3,
     "TaskStop": 2,
-    "Write": 1
+    "Write": 2
   },
   "files_touched": [
     "lib/src/harness/mod.rs",
+    "lib/src/spec/heap.rs",
     "lib/tests/heap.rs",
     "llm-dlc/loops/foundations-heap.md"
   ],
@@ -102,24 +103,38 @@
     {
       "index": 4,
       "started": "2026-11-07T05:16:13.951Z",
-      "ended": "2026-11-07T05:38:50.605Z",
-      "turns": 4,
-      "api_calls": 55,
+      "ended": "2026-11-07T05:40:12.792Z",
+      "turns": 5,
+      "api_calls": 63,
       "usage": {
-        "input_tokens": 110,
-        "output_tokens": 44747,
-        "cache_read_input_tokens": 8618409,
-        "cache_creation_input_tokens": 213497
+        "input_tokens": 128,
+        "output_tokens": 50543,
+        "cache_read_input_tokens": 10472149,
+        "cache_creation_input_tokens": 225300
       },
-      "peak_context_tokens": 226576
+      "peak_context_tokens": 238381
+    },
+    {
+      "index": 5,
+      "started": "2026-11-07T05:41:04.299Z",
+      "ended": "2026-11-07T06:02:54.670Z",
+      "turns": 4,
+      "api_calls": 83,
+      "usage": {
+        "input_tokens": 166,
+        "output_tokens": 94262,
+        "cache_read_input_tokens": 16252701,
+        "cache_creation_input_tokens": 280793
+      },
+      "peak_context_tokens": 293872
     }
   ],
   "log": {
-    "sha256": "5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3",
-    "bytes": 8982260,
-    "lines": 3214,
-    "gzip_bytes": 1685201,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3.jsonl.gz"
+    "sha256": "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a",
+    "bytes": 11659876,
+    "lines": 4193,
+    "gzip_bytes": 2162832,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -162,6 +177,14 @@
       "summary": "Results of classes made by their constructor compared by their fields, and identity relations within each version compared as holds-before-iff-holds-now (H3, first step)",
       "body": "Regression checks now compare a result of an application class (other than a record of primitive components) field by field, as object parameters are, where it was compared by Objects.equals, which across the two versions' distinct classes is identity. They also observe identity within each version: the result, array parameters, object parameters made by their constructor and the object or array fields those reach, every two of one static type under the same path in both versions compared as 'holds before iff it holds now' (result == l, result.price == l.price), never by comparing objects across versions. The statement lists them (observations.identities) and each replay states which relations hold, so the alias-to-copy defect (a copy with the same values handed back in place of the argument) is refuted with a witness whose two replays differ only there; an array filled in place and then copied likewise.\n\nVerified inline: four new checks in lib/tests/heap.rs on the own checker (an alias handed back verified; the alias-to-copy defect refuted; a Line result compared by fields, a rewrite verified and a changed quantity refuted; an array copied refuted by result == a), and the unit (185), heap (13), conformance, foundations and integration suites pass. One integration test timed out under the other streams' load in a 615 s run, as in the two earlier steps, and passed alone in 11.6 s. Next per the brief's Progress: H5's narrow case and spec::heap::check on the joint example.",
       "log_sha256": "5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3"
+    },
+    {
+      "change_id": "ntqqzttlykmyqrvvzxkwtklypmkzsmvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A correspondence's input equations relate objects of different shapes in a regression check, and spec::heap::check runs the joint example's kernel claims (H5, narrow case)",
+      "body": "The joint example's Quote holds a long before and a Money now. A regression check now takes a correspondence (equivalence::Options::correspondence, filled by spec::heap::check from the canonical claim) whose input equations relate a field path of a parameter's object in each version, old.q.cents == new.q.amount.cents and old.q.quantity == new.q.quantity. The previous version's object is made from the new one's leaves as the equations name them; an input on which the two objects as made don't satisfy the equations is skipped, as the domain, the constructible assumption and the vacuity probe say. After the calls, the parameter's objects and a result of the same pair of classes are compared under the equations, and identity relations are those both versions have (result == q). Replays are compared through the equations as well, each version showing its own object, and a counterexample lists the observations its replays differ in. Equations that are not between two paths (an offset mapping), output relations, a field of the previous object left out of every equation, and a construction leaf no equation gives are refused by name.\n\nspec::heap::check runs the own checker, strict, under the claim's bounds and correspondence. It accounts for every required observation: preserved where a proof compared it, refuted where the replayed witness differs in it, and otherwise unresolved. A witness that differs only in observations the claim doesn't require refutes nothing, and inputs needing more objects than a version's input-object bound leave the result unresolved. spec::Outcome gained a problem field, and statement Domain gained input_objects per version. The harness's Java rendering of an object result's type, which read before.Object since H3, is fixed.\n\nVerified inline: the integration contract's heap part went from 6 unsupported to 6 passed (total, withQuantity and discount verified on after; offset total and alias-to-copy withQuantity refuted with replayed witnesses; outside-domain total verified with its constructor-made domain). lib/tests/heap.rs has five new checks on the fixture's kernel, and spec::heap has two unit tests. The unit tests (187), heap.rs (18), foundations.rs, conformance.rs and integration.rs (64) pass. Findings about the fixture for the reconcile loop are under the brief's Progress: the alias-to-copy defect also throws where quantity <= 0, and the kernel claim's allocations bound of 0 is not checked. No verification job: every check is inline and small.",
+      "log_sha256": "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a"
     }
   ],
   "logs": {
@@ -181,6 +204,12 @@
       "bytes": 8982260,
       "lines": 3214,
       "gzip_bytes": 1685201,
+      "url": null
+    },
+    "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a": {
+      "bytes": 11659876,
+      "lines": 4193,
+      "gzip_bytes": 2162832,
       "url": null
     },
     "cec1ac6ca9c6ec56477a377c975e2f921f8527cca741953c4f47eda3e941aa8c": {

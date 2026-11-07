@@ -212,8 +212,7 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         }
         Slot::Record { name, record, before: previous, first } => {
             let record = if before { previous.as_ref().unwrap_or(record) } else { record };
-            let mut next = *first;
-            typed_made(name, record, arguments, &source, &mut next)
+            typed_made(name, record, arguments, &source, &mut record.leaf_indices(*first).into_iter())
         }
     };
     Call {
@@ -229,20 +228,19 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
 }
 
 /// A record or an object made by its constructor, typed: its constructor's arguments in order, each primitive the
-/// next flat parameter from `*next` on, each object typed so in turn.
-fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argument], source: &dyn Fn(usize) -> String, next: &mut usize) -> Typed {
+/// flat parameter `leaves` gives next, each object typed so in turn.
+fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argument], source: &dyn Fn(usize) -> String, leaves: &mut dyn Iterator<Item = usize>) -> Typed {
     let mut nested = record.inner.iter();
     let components = record
         .params
         .iter()
         .map(|(c, t)| match t {
             Type::Object(_) => match nested.next() {
-                Some(inner) => typed_made(c, inner, arguments, source, next),
+                Some(inner) => typed_made(c, inner, arguments, source, leaves),
                 None => Typed { name: c.clone(), ty: t.java_name(), value: None, components: None, from: None },
             },
             _ => {
-                let k = *next;
-                *next += 1;
+                let k = leaves.next().expect("a leaf for each primitive argument");
                 Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(k).map(|a| exact_argument(a, t)), components: None, from: Some(source(k)) }
             }
         })
@@ -271,6 +269,13 @@ pub struct Replayed {
     /// Each reference identity relations are over ([`crate::harness::Layout::references`]), by path, as the call
     /// left it: the result null where the method threw, a field of null null.
     pub references: Vec<(String, Value)>,
+    /// Under a correspondence (step H5), each object it relates (a parameter as the call left it, by name, and the
+    /// result, as `result`) read through its equations and labelled by the previous version's paths,
+    /// `Quote{cents=5, quantity=3}`: two versions' views read alike exactly when the harness has the objects agree.
+    pub views: Vec<(String, String)>,
+    /// The harness's category of the exception thrown: its index among [`crate::harness::EXCEPTIONS`], the first it
+    /// is an instance of, or their number for any other.
+    pub category: Option<usize>,
 }
 
 impl Replayed {
@@ -305,6 +310,31 @@ impl Replayed {
             outcome = format!("{outcome}, leaving {name}={fields}");
         }
         outcome
+    }
+
+    /// What two replays are compared on: [`Replayed::with_leftovers`] and [`Replayed::identities`], with each object
+    /// a correspondence relates in its [`Replayed::views`] instead (the result's in place of the outcome), so that
+    /// two versions of different shapes read alike when they agree under it. Without one it is the text shown.
+    pub fn compared(&self, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> String {
+        if self.views.is_empty() {
+            return format!("{}{}", self.with_leftovers(params, arguments), self.identities(pairs));
+        }
+        let view = |name: &str| self.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
+        let mut text = if self.thrown.is_none() { view("result").unwrap_or_else(|| self.outcome.clone()) } else { self.outcome.clone() };
+        for (p, a) in params.iter().zip(arguments) {
+            if let (Argument::Array(before), Type::Array(element)) = (a, &p.ty) {
+                if let Some((_, after)) = self.arrays_after.iter().find(|(slot, after)| *slot == p.slot && after != before) {
+                    text = format!("{text}, leaving {}={}", p.name, array(after, element));
+                }
+            }
+        }
+        for (name, fields) in self.objects_after.iter().filter(|(n, _)| view(n).is_none()) {
+            text = format!("{text}, leaving {name}={fields}");
+        }
+        for (name, v) in self.views.iter().filter(|(n, _)| n != "result") {
+            text = format!("{text}, {name} as left {v}");
+        }
+        format!("{text}{}", self.identities(pairs))
     }
 
     /// Whether the replay failed for a reason that is not the method's (a method the interpreter does not model).
@@ -369,8 +399,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                     (Some(p), Some(before)) => (before, Some(p)),
                     _ => (record, None),
                 };
-                let mut next = *first;
-                construct(m, made, prefix, &flat, &mut next)
+                construct(m, made, prefix, &flat, &mut made.leaf_indices(*first).into_iter())
             }
         }
     };
@@ -431,7 +460,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     };
     let arg_values = values.clone();
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new() },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -462,6 +491,22 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         };
         references.push((r.path.clone(), v));
     }
+    // Under a correspondence, the objects it relates as the call left them, read through its equations.
+    let mut views = Vec::new();
+    for (slot, v) in layout.args.iter().zip(&arg_values) {
+        if let Slot::Record { name, before: Some(previous), .. } = slot {
+            if let (Some(c), Some(old)) = (&previous.corresponds, &previous.fields) {
+                views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.equations, prefix.is_some())));
+            }
+        }
+    }
+    if let (Some(equations), Some(old), Ok(Some(v))) = (&layout.result_equations, &layout.result_fields.1, &outcome) {
+        views.push(("result".to_string(), corresponding_view(&m, *v, &old.class, equations, prefix.is_some())));
+    }
+    let category = match &outcome {
+        Err(Fault::Throw(r)) => Some(harness::EXCEPTIONS.iter().position(|e| m.is_instance(*r, e)).unwrap_or(harness::EXCEPTIONS.len())),
+        _ => None,
+    };
     let result_fields_of = if prefix.is_some() { &layout.result_fields.1 } else { &layout.result_fields.0 };
     let mut replayed = match outcome {
         Ok(Some(v)) => {
@@ -479,20 +524,93 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new() }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new() },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new() },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new() },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None },
     };
     replayed.objects_after = objects_after;
     replayed.references = references;
+    replayed.views = views;
+    replayed.category = category;
     replayed
 }
 
+/// The observations two replays of the same input differ in, by id ([`crate::spec::Observation::id`]), as the
+/// harness compares them: `exception` for the category, `result` (when both returned; through the correspondence's
+/// view under one), `array:a` for an array parameter as left, `field:q` for an object parameter as left (its view
+/// under a correspondence), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
+pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> Vec<String> {
+    let mut out = Vec::new();
+    let view = |r: &Replayed, name: &str| r.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
+    if before.category != after.category || before.thrown.is_some() != after.thrown.is_some() {
+        out.push("exception".to_string());
+    } else if before.thrown.is_none() {
+        let result = |r: &Replayed| view(r, "result").unwrap_or_else(|| r.outcome.clone());
+        if result(before) != result(after) {
+            out.push("result".to_string());
+        }
+    }
+    for (p, a) in params.iter().zip(arguments) {
+        if let Argument::Array(_) = a {
+            let left = |r: &Replayed| r.arrays_after.iter().find(|(slot, _)| *slot == p.slot).map(|(_, data)| data.clone());
+            if left(before) != left(after) {
+                out.push(format!("array:{}", p.name));
+            }
+        }
+    }
+    let mut objects: Vec<&String> = before.views.iter().chain(&after.views).map(|(n, _)| n).chain(before.objects_after.iter().chain(&after.objects_after).map(|(n, _)| n)).filter(|n| *n != "result").collect();
+    objects.sort();
+    objects.dedup();
+    for name in objects {
+        let left = |r: &Replayed| view(r, name).or_else(|| r.objects_after.iter().find(|(n, _)| n == name).map(|(_, t)| t.clone()));
+        if left(before) != left(after) {
+            out.push(format!("field:{name}"));
+        }
+    }
+    let holds = |r: &Replayed, x: &str, y: &str| {
+        let value = |path: &str| r.references.iter().find(|(p, _)| p == path).map(|(_, v)| *v);
+        matches!((value(x), value(y)), (Some(a), Some(b)) if a == b)
+    };
+    for (x, y) in pairs {
+        if holds(before, x, y) != holds(after, x, y) {
+            out.push(format!("identity:{x}=={y}"));
+        }
+    }
+    out
+}
+
+/// The object `v` read through a correspondence's `equations` (step H5): each equation's path in this version (the
+/// previous one's when `previous`), labelled by the previous version's path, `Quote{cents=5, quantity=3}` under the
+/// previous version's simple class name `class`; a path through null reads `absent`.
+fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::harness::FieldEquation], previous: bool) -> String {
+    if !matches!(v, Value::Ref(_)) {
+        return "null".into();
+    }
+    let parts: Vec<String> = equations
+        .iter()
+        .map(|e| {
+            let path = if previous { &e.old } else { &e.new };
+            let mut current = v;
+            for name in path.split('.') {
+                current = match current {
+                    Value::Ref(r) => match m.heap.get(r) {
+                        Object::Instance { fields, .. } => fields.get(name).copied().unwrap_or(Value::Null),
+                        _ => Value::Null,
+                    },
+                    _ => return format!("{}=absent", e.old),
+                };
+            }
+            format!("{}={}", e.old, render::witness(current, &e.ty))
+        })
+        .collect();
+    format!("{}{{{}}}", crate::classfile::simple_name_of(class), parts.join(", "))
+}
+
 /// Makes `record` in the interpreter (its classes under `prefix/` when given) from its leaves, the values of `flat`
-/// from `*next` on, each inner object made first.
-fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Option<&str>, flat: &[Value], next: &mut usize) -> Result<Value, Fault> {
+/// at the indices `leaves` gives in turn, each inner object made first.
+fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Option<&str>, flat: &[Value], leaves: &mut dyn Iterator<Item = usize>) -> Result<Value, Fault> {
     let owner = match prefix {
         Some(p) => format!("{p}/{}", record.class),
         None => record.class.clone(),
@@ -501,10 +619,9 @@ fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Optio
     let mut args = Vec::new();
     for (_, t) in &record.params {
         if t.is_primitive() {
-            args.push(flat[*next]);
-            *next += 1;
+            args.push(flat[leaves.next().expect("a leaf for each primitive argument")]);
         } else if let Some(inner) = nested.next() {
-            args.push(construct(m, inner, prefix, flat, next)?);
+            args.push(construct(m, inner, prefix, flat, leaves)?);
         }
     }
     m.construct(&owner, &record.constructor_in(prefix), args)

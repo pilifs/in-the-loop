@@ -392,3 +392,153 @@ fn an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation()
     let c = d.counterexample.as_ref().expect("a counterexample");
     assert!(c.before.contains("with result == a") && !c.after.contains("with result == a"), "{} / {}", c.before, c.after);
 }
+
+// H5's narrow case: the joint example's kernel (`tests/fixtures/foundations`), whose `Quote` holds a `long` before
+// and a `Money` now, related by the kernel claim's correspondence.
+
+/// The kernel of the joint example, compiled once: `before`, `after`, and each kernel defect overlaid on `after`.
+fn kernel_builds() -> Option<&'static PathBuf> {
+    static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
+    DIR.get_or_init(|| {
+        compiled()?;
+        let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations");
+        let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-kernel");
+        let _ = std::fs::remove_dir_all(&root);
+        let kernel = |dir: &Path, names: &[&str]| -> Vec<PathBuf> { names.iter().map(|n| dir.join(format!("shop/{n}.java"))).filter(|p| p.exists()).collect() };
+        let mut builds = vec![("before".to_string(), kernel(&fixture.join("before"), &["Pricing", "Quote"]))];
+        let after = kernel(&fixture.join("after"), &["Pricing", "Quote", "Money"]);
+        builds.push(("after".into(), after.clone()));
+        for defect in ["offset", "alias-to-copy", "outside-domain"] {
+            let overlay = fixture.join("defects").join(defect).join("shop/Pricing.java");
+            let mut files: Vec<PathBuf> = after.iter().filter(|p| !p.ends_with("Pricing.java")).cloned().collect();
+            files.push(overlay);
+            builds.push((defect.into(), files));
+        }
+        for (name, files) in builds {
+            let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-d"]).arg(root.join(&name)).args(&files).status().expect("javac runs");
+            assert!(status.success(), "the kernel compiles as {name}");
+        }
+        Some(root)
+    })
+    .as_ref()
+}
+
+fn kernel_claim(subject: &str, extra: &[jvmcontract::spec::Observation]) -> jvmcontract::spec::CanonicalClaim {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations/golden/kernel-claim.json");
+    let mut claim: jvmcontract::spec::CanonicalClaim = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    claim.contract.subject = subject.to_string();
+    for o in extra {
+        claim.contract.required.push(o.id());
+        claim.observations.push(o.clone());
+    }
+    claim
+}
+
+fn kernel_check(build: &str, claim: &jvmcontract::spec::CanonicalClaim) -> Option<Result<jvmcontract::spec::Outcome, jvmcontract::spec::Unsupported>> {
+    let root = kernel_builds()?;
+    Some(jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)))
+}
+
+fn identity_result_q() -> jvmcontract::spec::Observation {
+    jvmcontract::spec::Observation::Identity { left: "result".into(), right: "q".into() }
+}
+
+fn state_of(o: &jvmcontract::spec::Outcome, id: &str) -> jvmcontract::spec::ObservationState {
+    o.accounting.iter().find(|a| a.observation == id).unwrap_or_else(|| panic!("{id} is accounted for: {o:?}")).state
+}
+
+#[test]
+fn the_two_shapes_of_quote_are_related_by_the_correspondence_and_total_is_proved_over_them() {
+    use jvmcontract::spec::{ObservationState, Verdict as V};
+    let Some(r) = kernel_check("after", &kernel_claim("shop.Pricing#total", &[])) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Preserved);
+    assert_eq!(state_of(&o, "exception"), ObservationState::Preserved);
+    assert!(o.domain.starts_with("q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity)"), "{}", o.domain);
+    // The result handed back is compared under the same equations, and so is the parameter as left.
+    let Some(r) = kernel_check("after", &kernel_claim("shop.Pricing#withQuantity", &[identity_result_q()])) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert_eq!(state_of(&o, "identity:result==q"), ObservationState::Preserved);
+}
+
+#[test]
+fn an_offset_total_is_refuted_under_the_correspondence_by_a_recipe_of_the_new_shape() {
+    use jvmcontract::spec::{ObservationState, Verdict as V};
+    let Some(r) = kernel_check("offset", &kernel_claim("shop.Pricing#total", &[])) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Refuted);
+    assert_eq!(state_of(&o, "exception"), ObservationState::Unresolved, "a refutation proves nothing of the rest");
+    assert_eq!(o.witness.as_deref(), Some("total(q=new Quote(new Money(0), 1)): before, 0; after, 1"));
+}
+
+#[test]
+fn the_alias_turned_into_a_copy_is_refuted_by_result_is_q_wherever_its_copy_can_be_made() {
+    use jvmcontract::spec::{ObservationState, Verdict as V};
+    let Some(root) = kernel_builds() else { return };
+    // The fixture's copy is made by the constructor, which rejects a quantity of 0 or less: there the defect throws
+    // as well. Elsewhere only the identity relation tells the versions apart.
+    let claim = kernel_claim("shop.Pricing#withQuantity", &[]);
+    let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join("alias-to-copy"), "shop.Pricing#withQuantity");
+    options.engine = jvmcontract::Engine::Native;
+    options.correspondence = claim.correspondence.clone();
+    options.unchanged_unless = Some("quantity <= 0".into());
+    let work = root.join("work-alias-to-copy");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let o = jvmcontract::equivalence::run(&options).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.input, "withQuantity(q=new Quote(new Money(0), 1), quantity=1)");
+    assert_eq!(cx.before, "Quote{cents=0, quantity=1}, with result == q");
+    assert_eq!(cx.after, "Quote{amount=Money{cents=0}, quantity=1}");
+    assert_eq!(cx.differs, ["identity:result==q"], "the fields agree under the correspondence");
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("before.shop.Quote a = null;"), "{source}");
+    assert!(source.contains("q_before = new before.shop.Quote(q_amount_cents, q_quantity); q_after = new shop.Quote(new shop.Money(q_amount_cents), q_quantity);"), "{source}");
+    assert!(source.contains("if (!(q_before.cents == q_after.amount.cents && q_before.quantity == q_after.quantity)) { return; }"), "{source}");
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.identities, ["result == q"]);
+    assert_eq!(stated.domain.input_objects, Some((1, 2)), "a Quote before, a Quote of a Money now");
+    // As the claim has it, over every quantity: refuted, with the relation accounted for.
+    let Some(r) = kernel_check("alias-to-copy", &kernel_claim("shop.Pricing#withQuantity", &[identity_result_q()])) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert!(o.accounting.iter().any(|a| a.observation == "identity:result==q"));
+    assert_eq!(state_of(&o, "exception"), ObservationState::Refuted, "{o:?}");
+}
+
+#[test]
+fn a_witness_that_differs_only_where_the_claim_does_not_look_refutes_nothing() {
+    use jvmcontract::spec::{ObservationState, Verdict as V};
+    let mut claim = kernel_claim("shop.Pricing#withQuantity", &[]);
+    claim.contract.required = vec!["result".into()];
+    claim.observations.retain(|o| o.id() == "result");
+    let Some(r) = kernel_check("alias-to-copy", &claim) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Unresolved);
+    assert!(o.problem.as_deref().unwrap().contains("differ only in exception"), "{o:?}");
+    assert!(o.witness.is_some(), "the witness is still shown");
+}
+
+#[test]
+fn what_the_correspondence_leaves_out_and_bounds_it_exceeds_are_never_proved() {
+    use jvmcontract::spec::Verdict as V;
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.correspondence.as_mut().unwrap().inputs.retain(|e| e.old == "old.q.quantity");
+    let Some(r) = kernel_check("after", &claim) else { return };
+    let gap = r.expect_err("a correspondence that leaves out a field the previous version was held to is a gap");
+    assert!(gap.what.contains("q.cents is in no equation of the correspondence"), "{}", gap.what);
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.correspondence = None;
+    let gap = kernel_check("after", &claim).unwrap().expect_err("two shapes and no correspondence");
+    assert!(gap.what.contains("relate them with a correspondence's input equations"), "{}", gap.what);
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.domain.as_mut().unwrap().bounds.after.input_objects = 1;
+    let o = kernel_check("after", &claim).unwrap().expect("supported");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert!(o.problem.as_deref().unwrap().contains("made of 2 objects, more than the claim's bound of 1"), "{o:?}");
+}

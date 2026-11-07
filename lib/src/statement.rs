@@ -130,6 +130,11 @@ pub struct Domain {
     pub may_alias: Vec<Vec<String>>,
     /// The domain as the proof line writes it: `a: int[] of length ≤ 8, not null × n: int`.
     pub text: String,
+    /// How many input objects each version's inputs are made of, the previous version's first, where a parameter
+    /// is an object made by its constructor: every one its construction makes (a `Quote` of a `Money` is two).
+    /// Under a correspondence the two may differ (step H5 of `llm-dlc/loops/foundations-heap.md`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input_objects: Option<(u32, u32)>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -331,7 +336,16 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
             },
         })
         .collect();
-    Domain { parameters, shared_arrays: false, may_alias: Vec::new(), text: layout.domain(max_array_length) }
+    let made: Vec<(u32, u32)> = layout
+        .records()
+        .iter()
+        .filter_map(|s| match s {
+            Slot::Record { record, before, .. } if record.is_made() => Some((before.as_ref().unwrap_or(record).objects(), record.objects())),
+            _ => None,
+        })
+        .collect();
+    let input_objects = (!made.is_empty()).then(|| made.iter().fold((0, 0), |(b, a), (x, y)| (b + x, a + y)));
+    Domain { parameters, shared_arrays: false, may_alias: Vec::new(), text: layout.domain(max_array_length), input_objects }
 }
 
 /// The domain of a method of plain parameters (a property's).
@@ -344,7 +358,7 @@ pub fn plain_domain(params: &[Param], max_array_length: u32) -> Domain {
 pub fn plain_domain_of(params: &[Param], max_array_length: u32, nullable: &[String], may_alias: &[Vec<String>]) -> Domain {
     let text = harness::domain_of(params, max_array_length, nullable, may_alias);
     let parameters = params.iter().map(|p| Parameter { null: nullable.contains(&p.name), ..parameter(p, max_array_length) }).collect();
-    Domain { parameters, shared_arrays: !may_alias.is_empty(), may_alias: may_alias.to_vec(), text }
+    Domain { parameters, shared_arrays: !may_alias.is_empty(), may_alias: may_alias.to_vec(), text, input_objects: None }
 }
 
 fn parameter(p: &Param, max_array_length: u32) -> Parameter {
@@ -406,6 +420,17 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
         out.push(Assumption { kind: AssumptionKind::IntendedInputs, text: format!("!({s}): the input is not among those the change is meant for"), basis: Basis::Stated, id: None });
     }
     for slot in layout.records() {
+        if let Slot::Record { name, record, before: Some(previous), .. } = slot {
+            if let Some(c) = &previous.corresponds {
+                out.push(Assumption {
+                    kind: AssumptionKind::Constructible,
+                    text: format!("the new version's constructor {} accepts the arguments of {name}, and the previous version's {} accepts those the correspondence's input equations give it from them, the two objects as made satisfying the equations ({}): an input either constructor rejects, or on which they do not hold, is skipped, so the statement is about the pairs of objects the correspondence relates", record.describe(), previous.describe(), c.equations.iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", ")),
+                    basis: Basis::Harness,
+                    id: None,
+                });
+                continue;
+            }
+        }
         if let Slot::Record { name, record, before, .. } = slot {
             let versions = if before.is_some() { "either version's" } else { "the new version's" };
             let (what, built) = if record.is_made() { ("arguments", "objects") } else { ("components", "records") };
@@ -429,6 +454,11 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
     let result = match (relation, &layout.result.0, ret) {
         (Some(r), _, _) => format!("the results, related by {r} whenever both versions return"),
         (None, Some(record), _) => format!("the result, a {} compared component by component ({})", record.simple_name(), record.components.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>().join(", ")),
+        (None, None, Type::Object(_)) if layout.result_equations.is_some() => {
+            let fields = layout.result_fields.0.as_ref().expect("a result under a correspondence has fields");
+            let equations = layout.result_equations.as_deref().unwrap_or_default();
+            format!("the result, a {} compared under the correspondence ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), equations.iter().map(|e| e.text("result", "result")).collect::<Vec<_>>().join(", "))
+        }
         (None, None, Type::Object(_)) if layout.result_fields.0.is_some() => {
             let fields = layout.result_fields.0.as_ref().expect("checked");
             format!("the result, a {} compared field by field ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), fields.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))
@@ -442,6 +472,7 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
         .records()
         .iter()
         .filter_map(|s| match s {
+            Slot::Record { name, before: Some(previous), .. } if previous.corresponds.is_some() => previous.corresponds.as_ref().map(|c| format!("{name}: under the correspondence, {}", c.equations.iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", "))),
             Slot::Record { name, record, before: Some(_), .. } => record.fields.as_ref().map(|f| format!("{name}: {}", f.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))),
             _ => None,
         })

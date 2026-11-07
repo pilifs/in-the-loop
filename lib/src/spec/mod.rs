@@ -390,6 +390,9 @@ pub struct Outcome {
     /// A witness that replays, for a refutation.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub witness: Option<String>,
+    /// Why the result is unresolved, or what a refutation's witness shows beyond the claim's observations.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub problem: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
