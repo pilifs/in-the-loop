@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.451Z",
-  "ended": "2026-11-07T16:41:23.329Z",
-  "duration_seconds": 877,
+  "ended": "2026-11-07T16:45:13.727Z",
+  "duration_seconds": 1107,
   "stats": {
-    "turns": 15,
-    "api_calls": 107,
-    "tool_calls": 110,
+    "turns": 20,
+    "api_calls": 130,
+    "tool_calls": 133,
     "tool_errors": 1,
-    "compactions": 3,
-    "peak_context_tokens": 109851,
+    "compactions": 4,
+    "peak_context_tokens": 112388,
     "usage": {
-      "input_tokens": 212,
-      "output_tokens": 54075,
-      "cache_read_input_tokens": 7590610,
-      "cache_creation_input_tokens": 267010
+      "input_tokens": 258,
+      "output_tokens": 68045,
+      "cache_read_input_tokens": 9129039,
+      "cache_creation_input_tokens": 335095
     }
   },
   "tools": {
-    "Bash": 98,
-    "Edit": 8,
-    "Read": 4
+    "Bash": 118,
+    "Edit": 9,
+    "Read": 6
   },
   "files_touched": [
     "examples/tools/build.py",
@@ -84,24 +84,38 @@
     {
       "index": 3,
       "started": "2026-11-07T16:36:21.675Z",
-      "ended": "2026-11-07T16:41:23.329Z",
-      "turns": 4,
-      "api_calls": 44,
+      "ended": "2026-11-07T16:41:53.001Z",
+      "turns": 5,
+      "api_calls": 48,
       "usage": {
-        "input_tokens": 88,
-        "output_tokens": 20884,
-        "cache_read_input_tokens": 3275349,
-        "cache_creation_input_tokens": 94518
+        "input_tokens": 96,
+        "output_tokens": 22731,
+        "cache_read_input_tokens": 3713772,
+        "cache_creation_input_tokens": 99309
       },
-      "peak_context_tokens": 107597
+      "peak_context_tokens": 112388
+    },
+    {
+      "index": 4,
+      "started": "2026-11-07T16:42:21.893Z",
+      "ended": "2026-11-07T16:45:13.727Z",
+      "turns": 4,
+      "api_calls": 19,
+      "usage": {
+        "input_tokens": 38,
+        "output_tokens": 12123,
+        "cache_read_input_tokens": 1100006,
+        "cache_creation_input_tokens": 63294
+      },
+      "peak_context_tokens": 76373
     }
   ],
   "log": {
-    "sha256": "953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e",
-    "bytes": 2933804,
-    "lines": 1124,
-    "gzip_bytes": 536553,
-    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e.jsonl.gz"
+    "sha256": "88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a",
+    "bytes": 3750877,
+    "lines": 1399,
+    "gzip_bytes": 702666,
+    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -128,9 +142,23 @@
       "summary": "result.schema.json allows an object parameter's statement, and the page says what of the object is compared, for examples 150-152 (verification pending)",
       "body": "VF-017, item E1 of the cleanup loop's examples stream. Examples 150, 151 and 152 failed as build.py validated their results: the schema's statement domain allowed parameter kinds primitive, array and record only. Checked against lib/src/statement.rs, an object parameter made by its constructor also brings the domain's inputObjects and mayAlias and the observations' objects and identities, all of which additionalProperties refused; the job showed only the first error. The schema now has the object kind and the four fields, with descriptions that say what the code writes in place of the old 'never today'. The page's statement paragraph now says each object is made by its constructor, which of its fields are compared after the call, and which identity relations are compared within each version, so that 151's page names result == throttle, the observation that refutes it.\n\nReproducers in test_build.py's StatementTest. One records an object domain in example 151's shape through run_tool_equivalence and validates it, along with a variant with a nullable, may-alias object, and checks that malformed kinds, inputObjects and mayAlias are refused. The other checks the page's wording. Both failed before the fix and pass after it, and all 187 tests pass.\n\nJobs, resubmitted unchanged with the closing entry named: 20261107-164043-example-150-crosscut-retry-throttle-a-re (expected verified), 20261107-164043-example-151-crosscut-retry-throttle-a-re (a violation differing only in result == throttle) and 20261107-164043-example-152-crosscut-retry-throttle-a-re (verified within the constructor-made domain). Together they close VF-017 when they pass.",
       "log_sha256": "953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e"
+    },
+    {
+      "change_id": "ulvlrqwuotqlnrzwktpnmrkuvsykzuuw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-014: the benchmark's own-checker runs at H1's parent and at H1, to isolate H1's effect on the verdicts (verification pending)",
+      "body": "Job 20261107-041414 compared step H1 (symbolic references in the own checker, change uyqkxsly) with lib/benchmark/results.json. That recording is older than H1, so 8 verdicts that changed through class initializers gained since could not be told apart from H1's effect (VF-014). As the entry offers, two jobs now run that job's step 1 unchanged, one at H1's parent (rvxkytqy, b927e5df) and one at H1 (ddbb54ba, the same tree as 73c514ad, where 20261107-041414 ran). Each keeps lib/target/benchmark-native.json and its table as outputs. A third job will apply 20261107-041414's step-2 comparison script to the two outputs once both are collected, and close VF-014 when it passes. Both job files pass pipeline.py validate, and both revisions resolve in git with lib/benchmark/run.py present.\n\nJobs: 20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm (H1's parent), 20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm (H1).\n\nThe stream brief's Progress records the jobs, where collect will keep their outputs (lib/target/ is gitignored, so the third job has to read them from the runner's repository), and that the jbmc stream's uytnkqst is one more commit with no manifest in this workspace.",
+      "log_sha256": "88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a"
     }
   ],
   "logs": {
+    "88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a": {
+      "bytes": 3750877,
+      "lines": 1399,
+      "gzip_bytes": 702666,
+      "url": null
+    },
     "953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e": {
       "bytes": 2933804,
       "lines": 1124,

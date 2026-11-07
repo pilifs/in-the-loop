@@ -166,7 +166,21 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
     left alone.
   - Jobs, resubmitted unchanged, with VF-017 and each one's expected verdict added to the title and description:
     `20261107-164043-example-150-…`, `20261107-164043-example-151-…` and `20261107-164043-example-152-…`.
-- Next: E2, VF-014's two benchmark jobs at H1's parent and at H1.
+- **E2, VF-014: the two runs queued.** `20261107-041414`'s step 1, unchanged, with its two files as outputs:
+  - `20261107-164450-vf-014-h1-isolated-run-1-of-2-…` at H1's parent (`rvxkytqy`, `b927e5df`);
+  - `20261107-164450-vf-014-h1-isolated-run-2-of-2-…` at H1 (`uyqkxsly`, `ddbb54ba`). That is the same tree as
+    `73c514ad`, where `20261107-041414` ran.
+  - H1's parent has no swaps conformance cases (H1 added them to `lib/benchmark/conformance.json`). So the third
+    job's comparison lists them as new, and fails only on a changed verdict, as the script does.
+  - **Where the outputs land:** `lib/target/` is gitignored (`target/`), and so is
+    `verification/results/ID/outputs/lib/target/`. The default workspace already has a
+    `lib/target/benchmark-native.json` (03:37), so `collect` keeps each passing job's file under `outputs/` as a
+    conflict, not applied. The third job runs in a checkout without those files. It has to read them from the
+    runner's repository, which is four directories above `$VERIFY_WORKDIR`, or carry them in.
+- **Check errors that aren't this branch's:** `uytnkqst` (the jbmc stream's commit) has no manifest here either, as
+  for `zykkyuuw`, `ruvmympl` and `syqpoxom` above.
+- Next: E3, VF-013's reproducer and `sync.py`'s publishing of the run records. E2's third job follows once its two
+  runs are collected.
 - Status: working
 
 ## Loop settings
