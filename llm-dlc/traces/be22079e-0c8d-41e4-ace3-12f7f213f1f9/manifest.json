@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.542Z",
-  "ended": "2026-11-07T05:17:38.163Z",
-  "duration_seconds": 4579,
+  "ended": "2026-11-07T05:37:04.043Z",
+  "duration_seconds": 5745,
   "stats": {
-    "turns": 25,
-    "api_calls": 285,
-    "tool_calls": 293,
-    "tool_errors": 1,
-    "compactions": 5,
-    "peak_context_tokens": 274672,
+    "turns": 30,
+    "api_calls": 387,
+    "tool_calls": 398,
+    "tool_errors": 2,
+    "compactions": 6,
+    "peak_context_tokens": 277743,
     "usage": {
-      "input_tokens": 570,
-      "output_tokens": 301484,
-      "cache_read_input_tokens": 47194612,
-      "cache_creation_input_tokens": 1128608
+      "input_tokens": 774,
+      "output_tokens": 369904,
+      "cache_read_input_tokens": 65482882,
+      "cache_creation_input_tokens": 1376893
     }
   },
   "tools": {
-    "Bash": 252,
-    "Read": 27,
-    "Edit": 8,
+    "Bash": 349,
+    "Read": 33,
+    "Edit": 10,
     "Write": 6
   },
   "files_touched": [
@@ -118,24 +118,38 @@
     {
       "index": 5,
       "started": "2026-11-07T04:55:58.513Z",
-      "ended": "2026-11-07T05:17:38.163Z",
-      "turns": 4,
-      "api_calls": 75,
+      "ended": "2026-11-07T05:17:59.249Z",
+      "turns": 5,
+      "api_calls": 77,
       "usage": {
-        "input_tokens": 150,
-        "output_tokens": 88809,
-        "cache_read_input_tokens": 14656158,
-        "cache_creation_input_tokens": 261593
+        "input_tokens": 154,
+        "output_tokens": 90238,
+        "cache_read_input_tokens": 15206543,
+        "cache_creation_input_tokens": 264664
       },
-      "peak_context_tokens": 274672
+      "peak_context_tokens": 277743
+    },
+    {
+      "index": 6,
+      "started": "2026-11-07T05:18:40.788Z",
+      "ended": "2026-11-07T05:37:04.043Z",
+      "turns": 4,
+      "api_calls": 100,
+      "usage": {
+        "input_tokens": 200,
+        "output_tokens": 66991,
+        "cache_read_input_tokens": 17737885,
+        "cache_creation_input_tokens": 245214
+      },
+      "peak_context_tokens": 258293
     }
   ],
   "log": {
-    "sha256": "d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f",
-    "bytes": 9675889,
-    "lines": 3115,
-    "gzip_bytes": 1970004,
-    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f.jsonl.gz"
+    "sha256": "df67c67be1194198b18d46e77624ce78212f342f7088c9e1326464b7322591e8",
+    "bytes": 12244002,
+    "lines": 4141,
+    "gzip_bytes": 2430187,
+    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/df67c67be1194198b18d46e77624ce78212f342f7088c9e1326464b7322591e8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -202,6 +216,14 @@
       "summary": "Summaries Progress: name the 18 errors sync.py check reports after S4a, none from this branch's work",
       "body": "The 15 recorded after S3, and 4 more sessions with no manifest. They are behind the heap stream's nmrmkovpnwqy and xkutknnpsxmn and the alignment stream's vvtltnmzuwru and orvwtmzmlqts, none an ancestor of this branch. Each manifest lives on its stream's branch, so the errors clear at the merge.",
       "log_sha256": "d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f"
+    },
+    {
+      "change_id": "stvkozlttvzrnouzwxkkokyuvqssoqxs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summaries S4b: examples 160 and 161, a changed refill helper proved on its own and used in its caller, and its wrong sibling (verification pending)",
+      "body": "Examples 160 and 161 put S4's proved helpers on a recorded app. Both check Crosscut's RetryAfter#nanosUntilToken, which is unchanged, and change its helper TokenBucket.lastAfter. In 160 the helper becomes last + (now - last) / period * period. Its own regression proof holds on every input, so the caller is proved with it as one function in both versions; inline, the helper's proof took 0.19 s and the caller's 0.00 s, against 1.2 s for the caller with the helper as written. In 161 the helper aligns the credit to the clock's grid, which is wrong. Its own proof is refuted, it stays as written, and the caller's proof, scoped to the module's precondition, finds a replayed counterexample: a refused client told to wait 1 ns where it was 2. Crosscut's tests pass on both patches.\n\nbuild.py gains the cache option. An example's approach.cache passes --cache build/proof-cache, a fresh directory in the patched copy that is never kept. The claim's scope says so, only when it is set. The result records each helper the tool offered for a proof of its own (helpers), and the page says what came of it. A callee assumption reads as the helper's proof. expected.sharedHelpers makes the shared helpers part of the expectation. Seven new tests in examples/tools/test_build.py; its 168 tests pass.\n\nFound and fixed in S4a: the callee assumption's text named the run the helper's proof came from (its time and directories). The assumption is in the caller's claim, so two cold runs on the same code gave the caller different keys. It now names the helper's claim only, and a new summaries test (37 in all) checks the keys of two runs from different directories and caches are equal. It failed before the fix. The unit tests (183), conformance (9), integration (64), foundations (3) and summaries (37) pass.\n\nJobs, both quick (priority 10): 20261107-053635-example-160-a-changed-refill-helper-prov (expected verified, lastAfter shared) and 20261107-053635-example-161-a-refill-helper-aligned-to-t (expected violation, no helper shared). S4, and with it this stream's core, is done pending them; S5 is next.",
+      "log_sha256": "df67c67be1194198b18d46e77624ce78212f342f7088c9e1326464b7322591e8"
     }
   ],
   "logs": {
@@ -245,6 +267,12 @@
       "bytes": 9675889,
       "lines": 3115,
       "gzip_bytes": 1970004,
+      "url": null
+    },
+    "df67c67be1194198b18d46e77624ce78212f342f7088c9e1326464b7322591e8": {
+      "bytes": 12244002,
+      "lines": 4141,
+      "gzip_bytes": 2430187,
       "url": null
     },
     "ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25": {

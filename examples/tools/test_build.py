@@ -2231,6 +2231,99 @@ class StatementTest(unittest.TestCase):
 
 
 
+class ProofCacheTest(unittest.TestCase):
+    """S4 of llm-dlc/loops/foundations-summaries.md: a B9 example that asks for the proof cache (`approach.cache`)
+    runs with a fresh one under the build, its claim says so, and its result and page say what came of each changed
+    helper: proved first and one function in both versions, or left as written and why."""
+
+    KEY = "sha256:b5b79662a815f894366e60583cd769ba924eeb0562c169ae509d394617b279a7"
+    # The tool's notes, from runs of examples 160 and 161.
+    SHARED = (f"note: TokenBucket.lastAfter, changed: its two versions have the same outcome, result or exception, on every "
+              f"input, proved now and stored in the proof cache (claim {KEY}); one function in both versions\n")
+    REFUTED = ("note: TokenBucket.lastAfter, changed, stays as written in both versions: its two versions differ, at "
+               "lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0)\n")
+
+    def cached(self, cache=True):
+        ex = example(verdict="verified")
+        ex["approach"].update({"engine": "native", **({"cache": True} if cache else {})})
+        return ex
+
+    def proved(self, output, verdict="verified", ex=None):
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        stale = root / "examples/apps/crosscut" / build.PROOF_CACHE_DIR / "claims/aa/stale.json"
+        stale.parent.mkdir(parents=True)
+        stale.write_text("{}")
+        seen = []
+        def fake(command, **kwargs):
+            seen.append(stale.exists())
+            if verdict == "violation":  # a violation comes with its report
+                reports = root / "examples/apps/crosscut/build/reports"
+                reports.mkdir(parents=True, exist_ok=True)
+                (reports / "equivalence.sarif").write_text(json.dumps({"version": "2.1.0", "runs": []}))
+            return proc(0 if verdict == "verified" else 1, equivalence_json(root, verdict, output=output))
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", side_effect=fake):
+            result = empty_result()
+            build.run_tool_equivalence(root, ex or self.cached(), root, "crosscut", result)
+        return result, seen
+
+    def test_the_proof_runs_with_a_fresh_cache_under_the_build_when_the_example_asks(self):
+        self.assertEqual(build.plan(self.cached())["options"][-2:], ["--cache", "build/proof-cache"])
+        self.assertNotIn("--cache", build.plan(self.cached(cache=False))["options"])
+        _, seen = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        self.assertEqual(seen, [False], "what an earlier run proved is gone before the proof")
+
+    def test_the_claim_says_it_may_rest_on_helpers_proofs_and_the_claims_without_it_are_unchanged(self):
+        q = build.plan(self.cached())
+        self.assertEqual(build.claim_scope(self.cached(), q)["proofCache"], "fresh: helpers' proofs made in the run")
+        plain = self.cached(cache=False)
+        self.assertEqual(build.claim_scope(plain, build.plan(plain)), {"maxArrayLength": None, "intendedInputs": None})
+
+    def test_a_helper_proved_first_is_recorded_as_shared_and_the_page_says_so(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        self.assertEqual(result["helpers"], [{"callee": "TokenBucket.lastAfter", "shared": True, "note":
+            f"its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim {self.KEY}); one function in both versions"}])
+        lines = build.helper_lines(result)
+        self.assertIn("`TokenBucket.lastAfter` changed, and was proved first, as a check of its own: its two versions", lines[-1])
+        self.assertIn(f"(claim {self.KEY}). The caller's proof took it as one function in both versions", lines[-1])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["helpers"], {**schema["properties"]["helpers"], "$defs": schema["$defs"]})
+
+    def test_a_helper_whose_proof_fails_stays_as_written_and_the_page_says_why(self):
+        result, _ = self.proved(self.REFUTED + EQUIVALENCE_VIOLATION, verdict="violation")
+        self.assertEqual(result["helpers"], [{"callee": "TokenBucket.lastAfter", "shared": False,
+                                              "note": "its two versions differ, at lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0)"}])
+        lines = build.findings_equivalence(self.cached(), {**result, "domain": "x: int"})
+        self.assertIn("which did not hold: its two versions differ, at lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0). It stays as written", lines[-1])
+        self.assertTrue(lines[0].startswith("The two versions disagree."), lines[0])
+
+    def test_an_example_without_the_cache_records_nothing_of_helpers(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n", ex=self.cached(cache=False))
+        self.assertNotIn("helpers", result)
+        self.assertEqual(build.helper_lines(result), [])
+
+    def test_the_example_s_expected_helpers_are_part_of_its_expectation(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        self.assertEqual(build.expectation(result, {"verdict": "verified"}), "yes")
+        self.assertEqual(build.expectation(result, {"verdict": "verified", "sharedHelpers": ["TokenBucket.lastAfter"]}), "yes")
+        self.assertEqual(build.expectation(result, {"verdict": "verified", "sharedHelpers": []}), "no")
+        refuted, _ = self.proved(self.REFUTED + EQUIVALENCE_VIOLATION, verdict="violation")
+        self.assertEqual(build.expectation(refuted, {"verdict": "violation", "sharedHelpers": []}), "yes")
+        self.assertEqual(build.expectation(refuted, {"verdict": "violation", "sharedHelpers": ["TokenBucket.lastAfter"]}), "no")
+
+    def test_a_callee_assumption_reads_as_the_helper_s_proof_not_as_a_contract(self):
+        stated = json.loads(json.dumps(StatementTest.STATED))
+        stated["assumptions"].append({"kind": "callee", "basis": "proved", "id": self.KEY, "text":
+            f"TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim {self.KEY}) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain"})
+        paragraph = build.statement_paragraph(build.camel(stated))
+        self.assertIn(f"(claim {self.KEY}) shows", paragraph)
+        self.assertIn("(a changed helper's own regression proof, made by the tool's own checker before the caller's", paragraph)
+        self.assertNotIn("a contract for a gap", paragraph)
+
+
 class VacuityTest(unittest.TestCase):
     """Step 2b of llm-dlc/loops/sound-verdicts.md: a verified statement says whether it is about any input, as a
     status (non-vacuous, vacuous, unknown) the result keeps in its statement and the page and label state. A

@@ -264,6 +264,8 @@ def main(argv):
         publish(folder, out, result)
         (folder / "README.md").write_text(render_example(folder, example, result))
         expected = f"EXPECTED {example['expected']['verdict'].upper()}{' VACUOUSLY' if example['expected'].get('vacuous') else ''}"
+        if "sharedHelpers" in example["expected"]:
+            expected += f", SHARING {', '.join(example['expected']['sharedHelpers']) or 'NO HELPER'}"
         if result["verdict"] is None:
             # In the shape of an unexpected verdict, which the pipeline's `example:unexpected` signal reads.
             print(f"{folder.name}: none ({expected}; the run did not complete, {result['execution']['status']}: "
@@ -423,11 +425,17 @@ def stage_contracts(folder, example, build):
         shutil.copyfile(folder / name, target)
 
 
+# Where a B9 proof that asks for the proof cache (`approach.cache`) keeps it, relative to the app's root in the
+# patched copy: a fresh directory under the build, filled by that run alone and never committed.
+PROOF_CACHE_DIR = "build/proof-cache"
+
+
 def proof_options(example, approach=None):
     """The flags jvmcontract's proof is given for an example: the engine for B9 and B11 and, when the tool's own
     checker decides, its gap mode (gap_mode()), under advised the contracts and the most trusted contracts allowed,
-    and the unwinding and array bounds for B9. Its runners pass exactly
-    these, so the plan names what runs."""
+    the unwinding and array bounds for B9, and for a B9 example that asks for it the proof cache (PROOF_CACHE_DIR),
+    through which a changed helper is proved first and then taken as one function in its caller's two versions. Its
+    runners pass exactly these, so the plan names what runs."""
     approach = approach or example["approach"]["id"]
     if approach not in ("B9", "B11"):
         return []
@@ -444,6 +452,8 @@ def proof_options(example, approach=None):
             flags += ["--unwind", str(a["unwind"])]
         if a.get("maxArrayLength"):
             flags += ["--max-array-length", str(a["maxArrayLength"])]
+        if a.get("cache"):
+            flags += ["--cache", PROOF_CACHE_DIR]
     return flags
 
 
@@ -591,7 +601,15 @@ def expectation(result, expected):
     if (result.get("execution") or {}).get("status") != "completed" or result.get("verdict") is None:
         return "not-evaluable"
     vacuous = bool((result.get("coverage") or {}).get("vacuous"))
+    if "sharedHelpers" in expected and shared_helpers(result) != sorted(expected["sharedHelpers"]):
+        return "no"
     return "yes" if result["verdict"] == expected["verdict"] and vacuous == expected.get("vacuous", False) else "no"
+
+
+def shared_helpers(result):
+    """The changed helpers a proof with the proof cache took as one function in both versions, after a proof of
+    their own (`helpers`), by name."""
+    return sorted(h["callee"] for h in result.get("helpers") or [] if h["shared"])
 
 
 # Running
@@ -751,12 +769,16 @@ def claim_record(example, p, patch, before, after, contracts=None):
 
 
 def claim_scope(example, p):
-    """What a proof is over, besides its inputs: B9 and B11 the array bound, B9 the intended inputs."""
+    """What a proof is over, besides its inputs: B9 and B11 the array bound, B9 the intended inputs, and for a B9
+    proof with the proof cache that it may rest on helpers' proofs made in the same run (absent otherwise, so that
+    the claims recorded before it are unchanged)."""
     scope = {}
     if p["approach"] in ("B9", "B11"):
         scope["maxArrayLength"] = example["approach"].get("maxArrayLength")  # None: the tool's default bound
     if p["approach"] == "B9":
         scope["intendedInputs"] = p["claim"].get("intendedInputs")
+        if example["approach"].get("cache"):
+            scope["proofCache"] = "fresh: helpers' proofs made in the run"
     return scope
 
 
@@ -1646,12 +1668,28 @@ def stated_record(outcome):
     return camel(s) if s else None
 
 
+# The note a regression proof with the proof cache prints for each changed helper it offered for a proof of its own
+# (lib/src/proof_cache.rs, Helpers): shared after that proof, or left as written in both versions and why.
+HELPER_NOTE = re.compile(r"^note: (?P<callee>[\w.$]+), changed(?:: (?P<shared>.*)|, stays as written in both versions: (?P<why>.*))$", re.M)
+
+
+def helpers_record(output):
+    """For a B9 proof with the proof cache (`approach.cache`): each changed helper the tool proved, or tried to
+    prove, as a check of its own before the caller's, from its note: its name, whether the caller's proof took it as
+    one function in both versions, and the note's account (the claim of the helper's proof, or why it stays)."""
+    return [{"callee": m["callee"], "shared": m["shared"] is not None, "note": m["shared"] or m["why"]}
+            for m in HELPER_NOTE.finditer(output)]
+
+
 # How each basis of an assumption reads on a page (lib/src/statement.rs, Basis).
 BASIS_WORDS = {"stated": "stated by the claim", "harness": "made by how the harness builds the statement",
                "engine": "the checker's own semantics", "assumed": "a gap assumed with nothing to show for it, under --gaps assume",
                "proved": "a contract for a gap that the tool's own checker proved against the JDK's bytecode on every input it is about, under --gaps advised",
                "tested": "a contract for a gap that a JVM tested, the JDK's call on boundary and seeded random inputs, under --gaps advised",
                "trusted": "a contract for a gap that nothing has checked, under --gaps advised"}
+# How an assumption of kind `callee` reads, whatever its basis: a changed helper taken as one function in both
+# versions on the strength of its own proof, whose claim the assumption's text names.
+CALLEE_WORDS = "a changed helper's own regression proof, made by the tool's own checker before the caller's and kept in its proof cache"
 CONFIRMATION_WORDS = {"confirmed": "JBMC proved it again over every input (--confirm)",
                       "disagreed": "JBMC refuted it, so neither checker's verdict stands (--confirm)",
                       "no-verdict": "JBMC, asked to prove it again, gave no verdict, so the proof is the own checker's alone (--confirm)",
@@ -1667,8 +1705,10 @@ def statement_paragraph(s):
     text = [f"For every input in `{d['text']}`" + (f", each record ({', '.join(records)}) built from its components "
                                                   "through its canonical constructor" if records else "")]
     if s["assumptions"]:
-        text[0] += ", assuming " + "; ".join(f"{a['text']} ({BASIS_WORDS.get(a['basis'], a['basis'])}"
-                                             + (f", `{a['id']}`" if a.get("id") else "") + ")" for a in s["assumptions"])
+        text[0] += ", assuming " + "; ".join(
+            f"{a['text']} ({CALLEE_WORDS})" if a.get("kind") == "callee" else
+            f"{a['text']} ({BASIS_WORDS.get(a['basis'], a['basis'])}" + (f", `{a['id']}`" if a.get("id") else "") + ")"
+            for a in s["assumptions"])
     if s["kind"] == "regression":
         text[0] += f": the two versions agree on {o['result']}, and on exceptions: {o['exceptions']}"
         if o.get("arrays"):
@@ -1871,6 +1911,7 @@ def run_tool_equivalence(folder, example, root, module, result):
         command += ["--results-agree-when", example["change"]["resultsAgreeWhen"]]
     command += proof_options(example)
     stage_contracts(folder, example, build)
+    shutil.rmtree(build / PROOF_CACHE_DIR, ignore_errors=True)  # fresh: nothing a run before this one proved
     proc, output = tool(app, root, *command, "--json", setup=False)
     outcome = json_outcome(proc, root)
     if outcome is not None:  # the console output is the outcome's own, with what went to standard error after it
@@ -1881,6 +1922,8 @@ def run_tool_equivalence(folder, example, root, module, result):
     completed = result["verdict"] is not None
     result["search"] = search_record(outcome) if completed else None
     result["stated"] = stated_record(outcome) if completed else None
+    if example["approach"].get("cache"):
+        result["helpers"] = helpers_record(output) if completed else None
     remove_stale_templates(folder)
     result.pop("advice", None)
     if completed and (outcome or {}).get("advice"):
@@ -3562,7 +3605,25 @@ def replayed_where(res):
     return REPLAYED.get(by)
 
 
+def helper_lines(res):
+    """What came of the changed helpers a proof with the proof cache offered for proofs of their own, for its page."""
+    out = []
+    for h in res.get("helpers") or []:
+        if h["shared"]:
+            out.append(f"- `{h['callee']}` changed, and was proved first, as a check of its own: {h['note'].removesuffix('; one function in both versions')}. The "
+                       "caller's proof took it as one function in both versions, and its statement names that proof "
+                       "among its assumptions.")
+        else:
+            out.append(f"- `{h['callee']}` changed, and was offered for a proof of its own, which did not hold: "
+                       f"{h['note']}. It stays as written in both versions, and the caller's proof runs through it.")
+    return ["", "The changed helpers, each checked before the caller (`--cache`):", "", *out] if out else []
+
+
 def findings_equivalence(ex, res):
+    return findings_equivalence_body(ex, res) + helper_lines(res)
+
+
+def findings_equivalence_body(ex, res):
     intended = ex["change"].get("intendedInputs")
     domain = res.get("domain") or "all inputs"
     if res["verdict"] == "violation":

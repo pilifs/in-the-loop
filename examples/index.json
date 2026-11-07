@@ -6167,6 +6167,93 @@
         "Since item 9 of `llm-dlc/loops/engine-priorities.md` (7 November 2026) the tool's own checker computes `Integer.numberOfLeadingZeros` exactly, so it is no gap, and the contract library's contract for it was taken out with its records (`lib/models/contracts/README.md`): a run now rests on the library's two tested contracts for `java.util.Random` alone, where the summary names three. Not rerun: the example has no recorded result yet (the open note above)."
       ],
       "source": null
+    },
+    {
+      "id": "160",
+      "path": "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller",
+      "title": "A refill helper rewritten as whole periods, proved once and one function in its caller's proof",
+      "summary": "Crosscut's `TokenBucket.lastAfter`, the time up to which a refill has credited the bucket, is rewritten from `now - (now - last) % period` to `last + (now - last) / period * period`, the whole periods counted and added back. Its caller, the `Retry-After` of a refused request, is unchanged. Run with the proof cache, the regression proof of the caller first proves the helper's two versions equal on every input, as a check of its own, and stores that proof. It then takes the helper as one function in both versions of the caller, whose statement names the helper's proof by its claim key. Where example 120 shares a helper because its bytecode is identical, this one shares a helper that changed, on the strength of its own proof.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [],
+        "technique": [
+          "shared-callees",
+          "proved-helpers",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Why the proof can take the helper's new version for both: the helper's own proof is over every input of its parameter types, so every call, in either version and with any arguments, is in its domain, and the two versions have the same outcome there, a result or the same exception. Neither reads or writes state. The previous version with its calls redirected therefore behaves exactly as written, and the caller's proof is exact: a counterexample under the redirection would be a real one, and no refinement is needed. A helper proof over a narrower domain (`--unchanged-unless`, mapped arguments, a relation between results) is never used, since it would need an assertion at each call.",
+        "Measured when the example was written, on the development machine: the helper's proof took 0.19 s (2 paths, 2 solver calls), and the caller's with the helper as one function 0.00 s (3 paths, 2 solver calls). Without the cache, the caller's proof runs through both versions of the helper as written and takes 1.2 s (4 solver calls) for the same verdict. A second run with the same cache is an exact hit of the caller's claim, and a second caller of the helper would find the helper's proof in the cache. The recorded run starts from an empty cache, so its proof line says the helper was proved now.",
+        "The helper's proof is a regression proof like any other, and its key is the one a check of `TokenBucket#lastAfter` alone gets: the library's tests check both, and that a caller's key does not depend on when or where the helper's proof was made.",
+        "Without `--cache` the tool proves nothing of a changed helper, and runs the caller through both versions of it, which is what every recorded example did before this one. The cache is the proof's only source of helper evidence, and it is local: a directory under the build, filled by this run and never committed.",
+        "Example 161 is the sibling with the helper's change wrong: its own proof is refuted, the helper stays as written, and the caller's proof finds the regression."
+      ],
+      "source": null
+    },
+    {
+      "id": "161",
+      "path": "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early",
+      "title": "A refill helper aligned to the clock's grid, refuted alone, and its caller sends a client back early",
+      "summary": "Crosscut's `TokenBucket.lastAfter` is rewritten to credit the bucket up to the start of the period the clock reading falls in, `now - now % period`, as the fixed window aligns its start. A bucket's periods are counted from its last refill, not from the clock's zero, so the credited time moves whenever the last refill is off the clock's grid. Run with the proof cache, the proof first checks the helper on its own and refutes it, so the helper stays as written in both versions. The caller's proof, the `Retry-After` of a refused request, then finds a client told to wait 1 ns where the old code said 2, which comes back and is refused again. The tests pass, and so does the caller's property that the wait is never more than a period.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "proved-helpers",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The tests miss it because every refill in `TokenBucketTest` and `RetryAfterTest` starts at `lastNanos = 0`, which is on every grid, where the two forms agree. The property of `nanosUntilToken` in `properties.contract`, a wait of nothing or more than nothing and at most a period, holds of the new version too, since the wait to the end of the grid's period is within a period as well. The property of `lastAfter`, that the credited time never falls behind the last refill, does not hold of the new version (credited 0 after a refill at 1, by the arithmetic), so a property proof of the helper would find it. The regression proof of the caller finds it with no property written.",
+        "The helper's own counterexample lies outside the module's precondition, with the clock reading before the last refill, since the helper's proof covers every input and the shrinker keeps the smallest. That is enough to keep the helper out of the narrow class: a proof restricted to its callers' domain would need the caller's proof to assert, at each call, that the arguments are in that domain, which this form of sharing does not do.",
+        "With the helper refuted, the caller's proof is the one it would be without the cache: both versions of the helper as written, the regression found in a few tenths of a second when the example was written.",
+        "Example 160 is the sibling whose helper change is right: its own proof holds, and the caller is proved with the helper as one function in both versions. Example 132 is a regression on the other refill helper, `tokensAfter`, counting periods from the clock's zero."
+      ],
+      "source": null
     }
   ]
 }

@@ -683,8 +683,8 @@ impl<'a> Helpers<'a> {
         self.assumptions.push(Assumption {
             kind: AssumptionKind::Callee,
             text: format!(
-                "{name}({params}), changed, is one function in both versions: a regression proof of its own (claim {}, {}) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain",
-                key.0, record.provenance
+                "{name}({params}), changed, is one function in both versions: a regression proof of its own (claim {}) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain",
+                key.0
             ),
             basis: Basis::Proved,
             id: Some(key.0.clone()),

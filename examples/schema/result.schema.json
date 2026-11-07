@@ -798,6 +798,20 @@
         }
       }
     },
+    "helpers": {
+      "description": "For a B9 proof run with the proof cache (the example's `approach.cache`): each changed helper of the target the tool offered for a regression proof of its own before the caller's, from the tool's note about it. Null when the run reached no verdict; absent without the cache.",
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "required": ["callee", "shared", "note"],
+        "additionalProperties": false,
+        "properties": {
+          "callee": { "description": "The helper, as Class.method.", "type": "string" },
+          "shared": { "description": "Whether its own proof held, so that the caller's proof took it as one function in both versions; its statement then has an assumption of kind `callee` naming that proof's claim.", "type": "boolean" },
+          "note": { "description": "The tool's account: the helper proof's claim and whether it was proved in the run or found in the cache, or why the helper stays as written in both versions (its two versions differ, with the input; no verdict; a cycle).", "type": "string" }
+        }
+      }
+    },
     "replay": {
       "description": "For a regression proof's violation: where the checker's witness was run again on both versions, which a page says rather than assumes; for a property proof, each refuted property's own, under `properties`, the witness run on the method. Null otherwise; absent in results written before 2026-11-05, whose proof line says where.",
       "type": ["object", "null"],

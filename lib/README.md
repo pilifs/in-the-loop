@@ -336,12 +336,16 @@ own (the same builds and settings, the helper as the target, nothing restricting
 caller's time, or found in the cache under that check's key. A proof on every input makes it one function in both
 versions: under the own checker, the previous version's calls are redirected to the new version's method, so the
 proof is of the versions as they behave and needs no refinement. The caller's statement gains an assumption of
-kind `callee`, basis `proved`, whose id is the helper proof's key, so the caller's own key changes with it. Since
+kind `callee`, basis `proved`, whose id is the helper proof's key, so the caller's own key changes with it. The
+assumption names the helper's claim and not the run that proved it, so the caller's key is the same whichever run or
+cache the helper's proof came from. Since
 the helper's proof covers every input, every call in either version is in its domain; a proof with a narrower domain
 (`--unchanged-unless`, mapped arguments, a relation between results) is never used, as it would need an assertion at
 each call. A refuted or unresolved helper stays as written in both versions, with a note saying why, and the
 caller's check finds what the change does there. A helper is never proved within its own proof, directly or
-through others: the checks in progress are a stack, and a helper on it stays as written.
+through others: the checks in progress are a stack, and a helper on it stays as written. `build.py` runs a B9
+example this way when its `approach.cache` says so, with a fresh cache under the build (the examples tagged
+[`proved-helpers`](../examples/README.md#tag-proved-helpers)).
 
 `impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
 invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as

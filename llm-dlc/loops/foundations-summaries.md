@@ -354,13 +354,63 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 - `sync.py check` after S4a reports 18 errors, none from this branch's work: the 15 listed after S3, and 4 more
   sessions with no manifest, behind other streams' commits that are not ancestors of `@`. They are heap's
   `nmrmkovpnwqy` and `xkutknnpsxmn`, and alignment's `vvtltnmzuwru` and `orvwtmzmlqts`. They clear at the merge.
-- Next: S4b, examples 160 and 161.
-  - 160: a refactored pure helper on a javac app, proved once, then reused by its caller.
-  - 161: a sibling where the helper's change is wrong, and the caller's check finds it with a replayed
-    counterexample.
-  - `build.py` passes `--cache` to an example's B9 run when its `approach` asks for it, with a fresh directory under
-    the build, never committed. It also records the `callee` assumption and the helper's note.
-  - Both are B9 runs, so they go to a job.
+- **S4b done** (2026-11-07), pending the two quick jobs below: examples 160 and 161, and `build.py`'s cache option.
+  S4, and with it this stream's core, is done.
+  - **Found first, in S4a, and fixed:** the `callee` assumption's text named the run the helper's proof came from:
+    its time and its build directories. The assumption is part of the caller's claim, so two cold runs of the same
+    caller on the same code got different keys, against decision 3's portable keys. The text now names the helper's
+    claim only, and the run stays in the note and in `Proved.from`. A new test in `lib/tests/summaries.rs` (37 in
+    all) checks it: the same builds compiled into other directories, checked a second later into another cache,
+    store the same two keys. It failed before the fix, on the assumption's text.
+  - **The examples**, on Crosscut's token bucket. Both check `RetryAfter#nanosUntilToken`, which is unchanged, and
+    change its helper `TokenBucket.lastAfter`. Example 120 is the case with both helpers unchanged.
+    - 160: `now - (now - last) % period` becomes `last + (now - last) / period * period`. The helper's own proof holds
+      on every input, so the caller is proved with it as one function in both versions. Expected: verified, with
+      `lastAfter` shared. Measured inline when written: 0.19 s for the helper's proof and 0.00 s for the caller's.
+      With the helper as written in both versions, the caller's proof takes 1.2 s.
+    - 161: `now - now % period` aligns the credit to the clock's grid, which is wrong. The helper's own proof is
+      refuted, so it stays as written. The caller's proof, scoped to the module's precondition as in example 132,
+      finds the regression, replayed: `nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2,
+      capacity=1)` was 2 and is 1, so a client told to wait comes back early and is refused again. Expected:
+      violation, with no helper shared.
+    - Crosscut's 48 tests pass on both patches. Neither patch adds a file to the app, so no other example's claim
+      goes stale. The gap scan finds no gap in either.
+  - **`build.py`'s cache option.** An example's `approach.cache` adds `--cache build/proof-cache` to its B9 run, a
+    directory removed before the run in the patched copy and never kept. The claim's scope gains `proofCache`, only
+    when it is set, so the recorded claims are unchanged. The result gains `helpers`, parsed from the tool's notes:
+    each changed helper, whether it was shared, and the note. The page says what came of each, and a `callee`
+    assumption in the statement paragraph reads as the helper's proof, not as a gap's contract.
+    `expected.sharedHelpers` makes the shared helpers part of the expectation, so a run where the helper silently
+    stays as written is not "as expected".
+  - Tests: 7 more in `examples/tools/test_build.py` (168 in all, passing). They cover:
+    - the option, and that a stale cache is gone before the run;
+    - the claim's scope, with and without the cache;
+    - both kinds of note, parsed and rendered, checked against the result schema;
+    - the expectation with `sharedHelpers`;
+    - the statement's wording.
+  - The unit tests (183), `conformance.rs` (9), `integration.rs` (64), `foundations.rs` (3) and `summaries.rs`
+    (37) pass.
+  - Jobs, both quick (`--priority 10`):
+    - `20261107-053635-example-160-a-changed-refill-helper-prov`: example 160, expected verified as above;
+    - `20261107-053635-example-161-a-refill-helper-aligned-to-t`: example 161, expected violation as above.
+  - Shared files changed:
+    - `lib/tests/summaries.rs`, `lib/README.md` (key portability, and `build.py`'s option);
+    - `examples/tags.json` (`proved-helpers`), `examples/README.md` and `examples/index.json` (rendered);
+    - `examples/approaches.md` (B9: a changed helper shared on its own proof);
+    - `examples/schema/example.schema.json` (`approach.cache`, `expected.sharedHelpers`);
+    - `examples/schema/result.schema.json` (`helpers`);
+    - `examples/tools/test_build.py`;
+    - the examples 160 and 161.
+  - Own files: `proof_cache.rs` (the assumption's text) and `build.py`'s cache option.
+- The integration check of 05:01 (S3's commit for this stream) didn't run the tests. The merge conflicted in
+  `lib/README.md`, which all four streams add to, and in the generated `llm-dlc/` files: `README.md`, `index.json`,
+  `traces/README.md` and `traces/metrics.json`. A conflict in a shared file is the reconcile loop's to resolve, so
+  nothing in this stream's part failed.
+- Next: S5, refinement per callee. The memo stub of an unchanged callee is used on JBMC's class path only, since
+  the own checker never stubs (S4a), so S5 is about `--engine jbmc` and `auto`. When a counterexample under the stubs
+  doesn't replay, it replays each stubbed call against the real callee, and unstubs only the callees whose stub
+  answered differently, instead of all. Its test needs JBMC, so its evidence is a job, or a library test that skips
+  without JBMC.
 - Status: working
 
 ## Loop settings

@@ -49,7 +49,8 @@
         "contracts": { "description": "For an example whose gaps is advised: the file in its folder of contracts for the gaps its proof reaches (the tool's --contracts, lib/src/gap_contracts.rs), in the format of the template advised writes. The tool's own checker applies each at its call, and the result records each gap a contract closed with what backs it.", "type": "string" },
         "maxTrust": { "description": "For an example whose gaps is advised: the most trusted contracts (neither proved nor tested) its proof may rest on (the tool's --max-trust); 0 is what CI accepts. Without it, any number.", "type": "integer", "minimum": 0 },
         "unwind": { "description": "For a constructed B9 example on a javac app: the loop unwinding bound the tool is asked for (its --unwind), when the default of 16 does not cover a loop of the method.", "type": "integer", "minimum": 1 },
-        "maxArrayLength": { "description": "For a constructed B9 example on a javac app: the bound on the length of the array parameters the tool is asked for (its --max-array-length), when the default of 8 is not what the statement needs.", "type": "integer", "minimum": 1 }
+        "maxArrayLength": { "description": "For a constructed B9 example on a javac app: the bound on the length of the array parameters the tool is asked for (its --max-array-length), when the default of 8 is not what the statement needs.", "type": "integer", "minimum": 1 },
+        "cache": { "description": "For a constructed B9 example on a javac app checked by the tool's own checker: run the proof with a proof cache (the tool's --cache), a fresh directory under the build that is never kept. A changed pure helper of the target is then proved first, as a check of its own, and when that proof holds it is one function in both versions of the target's proof, which names it among its assumptions (kind `callee`). The result records each such helper (`helpers`).", "type": "boolean" }
       }
     },
     "source": {
@@ -79,7 +80,8 @@
       "type": "object", "required": ["verdict"], "additionalProperties": false,
       "properties": {
         "verdict": { "description": "The verdict the verifier must reach. The generator fails if it does not.", "enum": ["violation", "verified", "unverifiable"] },
-        "vacuous": { "description": "For model checking: the verdict rests on no row the change alters, because no run of the model takes one (TLC's coverage). The generator fails if this differs from what it finds; absent means false.", "type": "boolean" }
+        "vacuous": { "description": "For model checking: the verdict rests on no row the change alters, because no run of the model takes one (TLC's coverage). The generator fails if this differs from what it finds; absent means false.", "type": "boolean" },
+        "sharedHelpers": { "description": "For a B9 example with the proof cache (approach.cache): the changed helpers, as Class.method, that the proof must take as one function in both versions after a proof of their own (the result's `helpers`), and no others; an empty list when every changed helper must stay as written. The generator fails if they differ; absent means not checked.", "type": "array", "items": { "type": "string" } }
       }
     },
     "verdictLabel": { "description": "For a real-world example, whose proofs give several verdicts: the verdicts in one line, as the table of contents shows them.", "type": "string" },

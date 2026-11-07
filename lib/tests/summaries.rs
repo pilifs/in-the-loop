@@ -2,6 +2,7 @@
 //! Java builds compiled with `javac` at test time. Each case compiles a base build and a variant, and checks that the
 //! closure of a target changes exactly when something its proof reads changes, and names which part did.
 
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -938,6 +939,38 @@ fn a_changed_helper_proved_once_is_one_function_in_each_of_its_callers() {
     let rerun = check_target(&before, &after, &dir, "split-per-seat-again", "h.Split#perSeat");
     assert!(exact_key(&rerun).is_some(), "{}", rerun.output);
     assert_eq!(callee_assumptions(&rerun), assumed, "{:#?}\n{}", rerun.stated, rerun.output);
+}
+
+/// The claim keys a cache directory holds, from its entries' file names.
+fn stored_keys(dir: &Path) -> BTreeSet<String> {
+    let mut keys = BTreeSet::new();
+    for shard in std::fs::read_dir(dir.join("claims")).into_iter().flatten().flatten() {
+        for entry in std::fs::read_dir(shard.path()).into_iter().flatten().flatten() {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if let Some(hex) = name.strip_suffix(".json") {
+                keys.insert(hex.to_string());
+            }
+        }
+    }
+    keys
+}
+
+#[test]
+fn a_caller_s_key_is_the_same_whichever_run_proved_its_helper() {
+    // The same classes built in other directories, and checked a second later into another cache: the run the
+    // helper's proof came from (its time, its directories) is provenance, not part of any claim.
+    let (Some(before), Some(after)) = (split("split-before-portable", SPLIT), split("split-refactored-portable", SPLIT_REFACTORED)) else { return };
+    let (Some(before2), Some(after2)) = (split("split-before-portable-2", SPLIT), split("split-refactored-portable-2", SPLIT_REFACTORED)) else { return };
+    let (one, two) = (empty_cache("split-portable"), empty_cache("split-portable-2"));
+    let first = check_target(&before, &after, &one, "split-portable-per-seat", "h.Split#perSeat");
+    std::thread::sleep(std::time::Duration::from_millis(1100));
+    let second = check_target(&before2, &after2, &two, "split-portable-per-seat-2", "h.Split#perSeat");
+    assert_eq!(first.verdict, jvmcontract::Verdict::Verified, "{}", first.output);
+    assert_eq!(callee_assumptions(&first).len(), 1, "{}", first.output);
+    assert_eq!(callee_assumptions(&first), callee_assumptions(&second));
+    let keys = stored_keys(&one);
+    assert_eq!(keys.len(), 2, "the helper's proof and its caller's: {keys:?}");
+    assert_eq!(keys, stored_keys(&two));
 }
 
 #[test]
