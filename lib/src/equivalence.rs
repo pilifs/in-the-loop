@@ -122,7 +122,8 @@ pub struct Options {
     pub results_agree_when: Option<String>,
     /// How the previous version's objects are made from the new version's and compared with them where their
     /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations between
-    /// field paths of a parameter in each version ([`crate::spec::heap::relate`]).
+    /// field paths of a parameter in each version ([`crate::spec::heap::relate`]), and an output relation for the
+    /// result in place of [`Options::results_agree_when`] ([`crate::spec::heap::output_relation`]).
     pub correspondence: Option<crate::spec::Correspondence>,
     /// Object parameters made by their constructor that may be null (`--nullable`, step H2 of
     /// `llm-dlc/loops/foundations-heap.md`); every other is an object.
@@ -875,7 +876,22 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // The previous version: the target under the same name with the same parameters, or the method named by
     // --before-target, called with the arguments --before-arguments gives.
     let before_target = options.before_target.clone().unwrap_or_else(|| options.target.clone());
-    let plain = options.before_target.is_none() && options.before_arguments.is_none() && options.results_agree_when.is_none();
+    // The relation between the results: --results-agree-when's, or a correspondence's output relation for the
+    // result (step H5), as one over previous and result.
+    let results_agree_when = match options.correspondence.as_ref().map(crate::spec::heap::output_relation) {
+        Some(Err(gap)) => return refuse(&mut out, line, gap),
+        Some(Ok(Some(_))) if options.results_agree_when.is_some() || options.before_arguments.is_some() => {
+            return refuse(&mut out, line, "a correspondence and --before-arguments or --results-agree-when together are not supported; state the relation one way".into());
+        }
+        Some(Ok(Some(r))) => Some(r),
+        _ => options.results_agree_when.clone(),
+    };
+    // As the user wrote it, for the report.
+    let relation_shown = match &options.correspondence {
+        Some(c) if options.results_agree_when.is_none() => c.outputs.first().map(|r| r.holds.clone()).or_else(|| results_agree_when.clone()),
+        _ => results_agree_when.clone(),
+    };
+    let plain = options.before_target.is_none() && options.before_arguments.is_none() && results_agree_when.is_none();
     let (before_class_internal, before_method_name) = crate::verifier::parse_target(&before_target).ok_or_else(|| Error::new("--before-target must be <class>#<method>"))?;
     let mut before_cp = ClassPath::new();
     before_cp.add(&options.before)?;
@@ -931,9 +947,6 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if let Some(c) = correspondence {
         if components_passed || options.results_agree_when.is_some() {
             return refuse(&mut out, line, "a correspondence and --before-arguments or --results-agree-when together are not supported; state the relation one way".into());
-        }
-        if let Some(r) = c.outputs.first() {
-            return refuse(&mut out, line, format!("the correspondence's output relation for {} ({}) is not supported yet: outputs are compared under the input equations", r.observation, r.holds));
         }
         let roots = match crate::spec::heap::roots(c) {
             Ok(r) => r,
@@ -995,7 +1008,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     // The result's records: of the same shape, compared component by component; otherwise, or when the result
     // became a record or stopped being one, related by --results-agree-when over the components.
-    let relation_given = options.results_agree_when.is_some();
+    let relation_given = results_agree_when.is_some();
     let before_result = record_of(&before_cp, &before_descriptor.ret)?;
     let first_component = |r: &harness::RecordType| r.components.first().map(|(c, _)| c.clone()).unwrap_or_default();
     let relate = "say how the results are related with --results-agree-when, a boolean expression over the new parameters";
@@ -1020,7 +1033,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // `llm-dlc/loops/foundations-heap.md`): compared by its fields, as an object parameter is, and followed for the
     // identity relations. An enum, an interface or an abstract class is compared as before.
     let mut result_equations = None;
-    let result_fields = if relation_given || result.0.is_some() || result.1.is_some() {
+    let result_fields = if result.0.is_some() || result.1.is_some() {
         (None, None)
     } else {
         let fields = |cp: &ClassPath, t: &Type| -> Result<Option<Result<harness::Fields, String>>, Error> {
@@ -1038,6 +1051,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             })
         };
         match (fields(&after_cp, &descriptor.ret)?, fields(&before_cp, &before_descriptor.ret)?) {
+            // Under a relation between the results, an object result is in it by its field paths, of whatever
+            // shape in each version (step H5).
+            (Some(Err(gap)), _) if relation_given => return refuse(&mut out, line, format!("the result has type {}, which a result relation cannot read: {gap}", descriptor.ret.java_name())),
+            (_, Some(Err(gap))) if relation_given => return refuse(&mut out, line, format!("in the previous version, the result has type {}, which a result relation cannot read: {gap}", before_descriptor.ret.java_name())),
+            (new, old) if relation_given => (new.and_then(Result::ok), old.and_then(Result::ok)),
             (Some(Ok(new)), Some(Ok(old))) if related(&new, &old).is_some() => {
                 result_equations = related(&new, &old);
                 (Some(new), Some(old))
@@ -1069,7 +1087,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let params = &layout.params;
     let flat_types = layout.types();
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
-    if before_descriptor.ret != descriptor.ret && options.results_agree_when.is_none() && !(layout.result.0.is_some() && layout.result.1.is_some()) {
+    if before_descriptor.ret != descriptor.ret && results_agree_when.is_none() && !(layout.result.0.is_some() && layout.result.1.is_some()) {
         return refuse(&mut out, line, format!("the previous version returns {} and the new one {}; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result", before_descriptor.ret.java_name(), descriptor.ret.java_name()));
     }
     if plain && before_descriptor.params != descriptor.params {
@@ -1102,13 +1120,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         receiver: previous_receiver.clone(),
         records: previous_records.clone(),
         ret: before_descriptor.ret.clone(),
-        relation: options.results_agree_when.clone(),
+        relation: results_agree_when.clone(),
     });
     let previous_display = previous.as_ref().map(|b| b.display(&class_internal));
     // An object made by its constructor stands for the states its constructor makes and no others (a throttle that
     // starts full is never one that calls have drained), so where the claim says "every input" it says that too.
     let every = if made_by_constructor(&layout) { "every input of constructor-made objects" } else { "every input" };
-    let relation = match (&previous_display, &options.results_agree_when) {
+    let relation = match (&previous_display, &relation_shown) {
         (Some(p), Some(r)) => format!("agrees with the previous {p} on {every}, the results related by {r}"),
         (Some(p), None) => format!("behaves as the previous {p} on {every}"),
         (None, _) => format!("behaves as before on {every}"),
@@ -1116,7 +1134,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let domain = layout.domain(options.max_array_length);
     // The statement as data: what holds of every verdict on this harness, and what the run it comes from adds.
     let stated_domain = crate::statement::domain(&layout, options.max_array_length);
-    let mut observations = crate::statement::regression_observations(&layout, &descriptor.ret, options.results_agree_when.as_deref());
+    let mut observations = crate::statement::regression_observations(&layout, &descriptor.ret, relation_shown.as_deref());
     observations.identities = layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none()).iter().map(|(x, y)| format!("{x} == {y}")).collect();
     let observations = observations;
     let claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
@@ -1258,7 +1276,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let mut s = stated(None, None, false);
         s.checker = crate::statement::scan_checker();
         s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: previous_display.clone(), relation: relation_shown.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) })
     };
     if options.engine != crate::Engine::Jbmc {
         // Under advised, what the harness may reach first: the contract library closes only gaps it reaches.
@@ -1392,6 +1410,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // outcomes reading the same; a replay that failed never agrees.
     // The identity relations the harness compares, which the replays state where they hold.
     let identity_pairs = layout.identity_pairs(&descriptor.ret, &before_descriptor.ret, options.before_arguments.is_none());
+    // A relation that reads the results' objects is evaluated by the harness itself, run in the interpreter.
+    let relation_cp = match &harness.relation {
+        Some(r) if r.expr.reads_objects() => Some(witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models)),
+        _ => None,
+    };
     let replay_both = |arguments: &[Argument]| -> Replays {
         let after = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
         let after_text = format!("{}{}", after.with_leftovers(params, arguments), after.identities(&identity_pairs));
@@ -1423,12 +1446,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         // A side that returned: a primitive or array value, or a record (null or not).
         let returned = |x: &witness::Replayed, record: bool| if record { x.thrown.is_none() && !x.outcome.starts_with('<') && x.outcome != "void" } else { x.returned.is_some() };
         let (agree, relation_note) = match (&harness.relation, &before) {
-            (Some(r), Some(b)) if returned(b, r.previous_components.is_some()) && returned(&after, r.result_components.is_some()) => {
-                let text = options.results_agree_when.as_deref().unwrap_or_default();
+            (Some(r), Some(b)) if returned(b, r.previous_read()) && returned(&after, r.result_read()) => {
+                let text = relation_shown.as_deref().unwrap_or_default();
                 let leftovers = |t: &str| t.find(", leaving").map(|i| t[i..].to_string()).unwrap_or_default();
                 // A null record: two agree, one beside a record or a value does not, as the harness has it.
-                let null_before = r.previous_components.is_some() && b.result_fields.is_none();
-                let null_after = r.result_components.is_some() && after.result_fields.is_none();
+                let null_before = r.previous_read() && b.result_fields.is_none();
+                let null_after = r.result_read() && after.result_fields.is_none();
                 if null_before || null_after {
                     let (agree, note) = match (null_before, null_after) {
                         (true, true) => (leftovers(&before_text) == leftovers(&after_text), None),
@@ -1439,6 +1462,27 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                         differs.push("result".into());
                     }
                     return Replays { before: before_text, after: after_text, agree, relation_note: note, differs };
+                }
+                if let Some(cp) = &relation_cp {
+                    // Over objects, the relation reads each result's field paths as the replay left them; whether
+                    // the two agree on everything else too is the harness's to say, run on the input.
+                    let (locals, arrays) = locals_of(params, arguments);
+                    let read = |f: &harness::expr::FieldPath| {
+                        let paths = if f.slot == r.previous { &b.result_paths } else if f.slot == r.result { &after.result_paths } else { return None };
+                        f.shown.split_once('.').and_then(|(_, p)| paths.get(p).copied())
+                    };
+                    let note = match harness::expr::eval_reading(&r.expr, &locals, &arrays, &read) {
+                        Ok(Value::Int(1)) => None,
+                        Ok(_) => Some(format!("the results are not related by {text}")),
+                        Err(e) => Some(format!("the relation {text} cannot be evaluated on these results: {e}")),
+                    };
+                    let holds = witness::fails_in_harness(cp, harness::CLASS, &flat_types, arguments) == Some(false);
+                    // The results of two shapes read differently as text: they differ only where the relation fails.
+                    differs.retain(|d| d != "result");
+                    if note.is_some() {
+                        differs.push("result".into());
+                    }
+                    return Replays { before: before_text, after: after_text, agree: holds && note.is_none(), relation_note: note, differs };
                 }
                 let (mut locals, mut arrays) = locals_of(params, arguments);
                 locals.resize(usize::from(r.previous.max(r.result).max(r.slots_end)) + 2, Value::Int(0));
@@ -1586,7 +1630,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call, differs: replays.differs, jvm: None });
         let replay = Some(Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
         let stated = Some(stated(Some(&last), search.as_ref(), false));
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: relation_shown.clone(), vacuous: None, search, replay, stated, advice: None });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -1696,7 +1740,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
                 let stated = Some(stated(Some(&last), search.as_ref(), false));
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: relation_shown.clone(), vacuous: None, search, replay, stated, advice: None });
             }
             // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
             // result to a method it had no bytecode for (one outside its models and the class path it was given).
@@ -1713,7 +1757,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
                 let stated = Some(stated(Some(&last), search.as_ref(), false));
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: relation_shown.clone(), vacuous: None, search, replay, stated, advice: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -1757,7 +1801,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                             sarif::write(&report.join("equivalence.sarif"), &findings)?;
                         }
                         let stated = Some(stated(Some(&last), search.as_ref(), false));
-                        return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
+                        return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: relation_shown.clone(), vacuous: None, search, replay, stated, advice: None });
                     }
                     Ok(run) => jvm_note = Some(format!("not confirmed on a JVM, where the harness threw {}", match run.check { crate::jvm_witness::Check::Threw(c) => c, _ => unreachable!() })),
                     Err(e) => jvm_note = Some(format!("not run on a JVM: {e}")),
@@ -1828,7 +1872,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut stated = stated(Some(&last), search.as_ref(), verdict == Verdict::Verified);
     stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
     let stated = Some(stated);
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay, stated, advice: None })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: relation_shown.clone(), vacuous, search, replay, stated, advice: None })
 }
 
 /// Both versions replayed on one input.

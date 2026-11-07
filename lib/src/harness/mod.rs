@@ -198,6 +198,16 @@ impl Fields {
         out
     }
 
+    /// The same fields with every class under `prefix` (`before/`), as the previous version's classes are in the
+    /// harness.
+    pub fn under(&self, prefix: &str) -> Fields {
+        let kind = |k: &FieldKind| match k {
+            FieldKind::Object(inner) => FieldKind::Object(Box::new(inner.under(prefix))),
+            other => other.clone(),
+        };
+        Fields { class: format!("{prefix}{}", self.class), fields: self.fields.iter().map(|(n, k)| (n.clone(), kind(k))).collect() }
+    }
+
     /// Whether `other` (the previous version's) has the same fields: the same names and kinds, in the same order.
     pub fn same_shape(&self, other: &Fields) -> bool {
         self.fields.len() == other.fields.len()
@@ -852,7 +862,10 @@ pub fn domain_of(params: &[Param], max_array_length: u32, nullable: &[String], g
 /// `result` (the new version's, in the slot `result`), which must hold whenever both versions return. A result
 /// that is a record of primitive components is in the expression as its components, `previous.c` and `result.c`,
 /// each read from the record into a slot of its own; two record results that are both null agree, and one null
-/// alone does not.
+/// alone does not. A result that is an object of an application class (step H5 of
+/// `llm-dlc/loops/foundations-heap.md`) is in it by its field paths, `previous.cents` and `result.amount.cents`,
+/// read through the object where the harness evaluates it; two null objects agree, one alone does not, and a path
+/// through a null field does not hold.
 #[derive(Debug, Clone)]
 pub struct Relation {
     pub expr: Expr,
@@ -864,6 +877,23 @@ pub struct Relation {
     pub result_components: Option<(RecordType, Vec<u16>)>,
     /// The first slot after those the components take, or 0 when neither result is a record.
     pub slots_end: u16,
+    /// The previous version's result, when it is an object read by its field paths: its fields (under `before/`).
+    pub previous_object: Option<Fields>,
+    /// The new version's, likewise.
+    pub result_object: Option<Fields>,
+}
+
+impl Relation {
+    /// Whether the previous version's result is a reference the relation reads (a record or an object), so that a
+    /// null one agrees only with a null one.
+    pub fn previous_read(&self) -> bool {
+        self.previous_components.is_some() || self.previous_object.is_some()
+    }
+
+    /// Likewise for the new version's result.
+    pub fn result_read(&self) -> bool {
+        self.result_components.is_some() || self.result_object.is_some()
+    }
 }
 
 /// The name of the previous version's result in a result relation.
@@ -959,9 +989,17 @@ impl BeforeMethod {
     /// Parses the arguments against the new version's parameters: each must have the type of the parameter it is
     /// passed as (an `int` expression for a `byte`, `short` or `char` parameter is narrowed as a cast is), and an
     /// array parameter is passed by name. `first_free_slot` is for a quantifier's variable.
-    pub fn parse_arguments(&self, params: &[Param], first_free_slot: u16) -> Result<Option<Vec<CallArg>>, Error> {
+    pub fn parse_arguments(&self, params: &[Param], args: &[Slot], first_free_slot: u16) -> Result<Option<Vec<CallArg>>, Error> {
         let Some(text) = &self.arguments else {
-            let new: Vec<Type> = params.iter().map(|p| p.ty.clone()).collect();
+            // Passed through as the new version's are: each plain parameter, and each object the layout makes in
+            // both versions as the previous version's class.
+            let new: Vec<Type> = args
+                .iter()
+                .map(|a| match a {
+                    Slot::Plain(i) => params[*i].ty.clone(),
+                    Slot::Record { record, before, .. } => Type::Object(before.as_ref().unwrap_or(record).class.clone()),
+                })
+                .collect();
             if new != self.params {
                 return Err(Error::new(format!(
                     "the previous version takes ({}) and the new one ({}); give the previous version's arguments as expressions over the new parameters with --before-arguments",
@@ -1040,9 +1078,10 @@ impl BeforeMethod {
     /// Parses the result relation, if one was given, over the new parameters, `previous` (the previous version's
     /// result of type `self.ret`, in slot `previous`) and `result` (the new version's of type `ret`, in slot
     /// `result`). A result that is a record (`records`: the new version's, the previous one's) is in the
-    /// expression as its components, `result.c` and `previous.c`, in slots from `first_free_slot` on. Without a
-    /// relation, the return types must be the same, and the results are compared for equality.
-    pub fn parse_relation(&self, params: &[Param], ret: &Type, records: &(Option<RecordType>, Option<RecordType>), previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
+    /// expression as its components, `result.c` and `previous.c`, in slots from `first_free_slot` on, and one that
+    /// is an object of an application class (`objects`: the new version's fields, the previous one's) by its field
+    /// paths. Without a relation, the return types must be the same, and the results are compared for equality.
+    pub fn parse_relation(&self, params: &[Param], ret: &Type, records: &(Option<RecordType>, Option<RecordType>), objects: &(Option<Fields>, Option<Fields>), previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
         let Some(text) = &self.relation else {
             if self.ret != *ret {
                 return Err(Error::new(format!(
@@ -1053,9 +1092,9 @@ impl BeforeMethod {
             }
             return Ok(None);
         };
-        for (side, t, record) in [("previous", &self.ret, &records.1), ("new", ret, &records.0)] {
-            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() && record.is_none() {
-                return Err(Error::new(format!("the {side} version returns {}; a relation can be given between integral, boolean and array results, and records of primitive components", t.java_name())));
+        for (side, t, record, object) in [("previous", &self.ret, &records.1, &objects.1), ("new", ret, &records.0, &objects.0)] {
+            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() && record.is_none() && object.is_none() {
+                return Err(Error::new(format!("the {side} version returns {}; a relation can be given between integral, boolean and array results, records of primitive components, and objects of application classes", t.java_name())));
             }
         }
         for p in params {
@@ -1084,9 +1123,16 @@ impl BeforeMethod {
         };
         let previous_components = components(PREVIOUS, &self.ret, previous, &records.1);
         let result_components = components(RESULT, ret, result, &records.0);
-        let expr = expr::parse_in(text, &names, None, next).map_err(|e| Error::new(format!("in the result relation: {e}")))?;
+        // An object result is read by its field paths, the previous version's through its classes under before/.
+        let previous_object = records.1.is_none().then(|| objects.1.as_ref().map(|f| f.under("before/"))).flatten();
+        let result_object = records.0.is_none().then(|| objects.0.clone()).flatten();
+        let read: Vec<(String, Fields)> = [(PREVIOUS, &previous_object), (RESULT, &result_object)].into_iter().filter_map(|(n, f)| f.clone().map(|f| (n.to_string(), f))).collect();
+        let expr = expr::parse_over_objects(text, &names, None, next, None, &read).map_err(|e| Error::new(format!("in the result relation: {e}")))?;
+        if expr.ty() != expr::Ty::Boolean {
+            return Err(Error::new("in the result relation: the expression must be boolean"));
+        }
         let slots_end = if previous_components.is_some() || result_components.is_some() { next } else { 0 };
-        Ok(Some(Relation { expr, previous, result, previous_components, result_components, slots_end }))
+        Ok(Some(Relation { expr, previous, result, previous_components, result_components, slots_end, previous_object, result_object }))
     }
 }
 
@@ -1242,7 +1288,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     // quantifier's variable after those.
     let temps = objects + 2 * records.len() as u16;
     let before_args = match before {
-        Some(b) => b.parse_arguments(params, temps + b.argument_types().iter().map(Type::slots).sum::<u16>())?,
+        Some(b) => b.parse_arguments(params, &layout.args, temps + b.argument_types().iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let relation = match before {
@@ -1252,7 +1298,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             }
             None
         }
-        Some(bm) => bm.parse_relation(params, ret, &layout.result, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?,
+        Some(bm) => bm.parse_relation(params, ret, &layout.result, &layout.result_fields, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
@@ -1531,10 +1577,10 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         code.load(Kind::Int, ea);
         code.if_zero(Cond::Ne, arrays);
         if let Some(r) = &relation {
-            // A record result: two null records agree, a null beside a record or a primitive does not, and
-            // otherwise the components are read into the relation's slots.
-            match (&r.previous_components, &r.result_components) {
-                (Some(_), Some(_)) => {
+            // A record or object result: two null ones agree, a null beside one or a primitive does not, and
+            // otherwise a record's components are read into the relation's slots.
+            match (r.previous_read(), r.result_read()) {
+                (true, true) => {
                     let both = code.label();
                     code.load(Kind::Ref, a);
                     code.if_nonnull(both);
@@ -1545,15 +1591,15 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                     code.load(Kind::Ref, b);
                     code.if_null(fail);
                 }
-                (Some(_), None) => {
+                (true, false) => {
                     code.load(Kind::Ref, a);
                     code.if_null(fail);
                 }
-                (None, Some(_)) => {
+                (false, true) => {
                     code.load(Kind::Ref, b);
                     code.if_null(fail);
                 }
-                (None, None) => {}
+                (false, false) => {}
             }
             for (side, components) in [(0, &r.previous_components), (1, &r.result_components)] {
                 let Some((record, slots)) = components else { continue };
@@ -2130,20 +2176,26 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     }
     if let Some(r) = relation {
         // A record result's type, and its components as accessor calls, `previous.c()`.
-        let typed = |t: &Type, record: &Option<RecordType>, prefix: &str| match (record, t) {
-            (Some(record), Type::Object(_)) => format!("{prefix}{}", record.java_name()),
+        let typed = |t: &Type, record: &Option<RecordType>, fields: &Option<Fields>, prefix: &str| match (record, fields, t) {
+            (Some(record), _, Type::Object(_)) => format!("{prefix}{}", record.java_name()),
+            (None, Some(fields), Type::Object(_)) => format!("{prefix}{}", fields.class.replace('/', ".")),
             _ => type_name(t),
         };
         let r = [(PREVIOUS, &layout.result.1), (RESULT, &layout.result.0)].into_iter().fold(r.to_string(), |text, (name, record)| match record {
             Some(record) => accessor_calls(&text, name, record),
             None => text,
         });
-        let null_note = match (&layout.result.1, &layout.result.0) {
-            (Some(_), Some(_)) => " (two null records agree, one alone does not)",
-            (Some(_), None) | (None, Some(_)) => " (a null record does not)",
-            (None, None) => "",
+        let read = |record: &Option<RecordType>, fields: &Option<Fields>| record.is_some() || fields.is_some();
+        let null_note = match (read(&layout.result.1, &layout.result_fields.1), read(&layout.result.0, &layout.result_fields.0)) {
+            _ if layout.result_fields.0.is_some() || layout.result_fields.1.is_some() => match (read(&layout.result.1, &layout.result_fields.1), read(&layout.result.0, &layout.result_fields.0)) {
+                (true, true) => " (two null results agree, one alone does not)",
+                _ => " (a null result does not)",
+            },
+            (true, true) => " (two null records agree, one alone does not)",
+            (true, false) | (false, true) => " (a null record does not)",
+            (false, false) => "",
         };
-        s.push_str(&format!("        // The results agree when the stated relation holds: previous is the previous version's, result the new one's{null_note}.\n        {} previous = a; {} result = b;\n", typed(before_ret, &layout.result.1, "before."), typed(ret, &layout.result.0, "")));
+        s.push_str(&format!("        // The results agree when the stated relation holds: previous is the previous version's, result the new one's{null_note}.\n        {} previous = a; {} result = b;\n", typed(before_ret, &layout.result.1, &layout.result_fields.1, "before."), typed(ret, &layout.result.0, &layout.result_fields.0, "")));
         s.push_str(&format!("        assert ea == eb && (ea != 0 || ({r}))"));
     } else {
         s.push_str("        assert ea == eb");

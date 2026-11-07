@@ -1093,17 +1093,23 @@ pub fn eval(expr: &Expr, locals: &[Value]) -> Result<Value, Error> {
 /// As [`eval`], with the elements of the array parameters by slot. A quantifier's variable is written into its
 /// slot, so the locals are extended as needed.
 pub fn eval_with(expr: &Expr, locals: &[Value], arrays: &[(u16, Vec<Value>)]) -> Result<Value, Error> {
-    let mut locals = locals.to_vec();
-    locals.resize(locals.len().max(usize::from(expr.slots_used())), Value::Int(0));
-    eval_in(expr, &mut locals, arrays)
+    eval_reading(expr, locals, arrays, &|_| None)
 }
 
-fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -> Result<Value, Error> {
+/// As [`eval_with`], with a field path's value read by `fields` (the value it reads in a replay, none where it
+/// goes through null); a comparison of objects is still the harness's alone.
+pub fn eval_reading(expr: &Expr, locals: &[Value], arrays: &[(u16, Vec<Value>)], fields: &dyn Fn(&FieldPath) -> Option<Value>) -> Result<Value, Error> {
+    let mut locals = locals.to_vec();
+    locals.resize(locals.len().max(usize::from(expr.slots_used())), Value::Int(0));
+    eval_in(expr, &mut locals, arrays, fields)
+}
+
+fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)], fields: &dyn Fn(&FieldPath) -> Option<Value>) -> Result<Value, Error> {
     let array = |name: &str, slot: u16| arrays.iter().find(|(s, _)| *s == slot).map(|(_, data)| data).ok_or_else(|| Error::new(format!("no elements for the array {name}")));
     Ok(match expr {
         Expr::Length(name, slot) => Value::Int(array(name, *slot)?.len() as i32),
         Expr::Index(name, slot, t, index) => {
-            let i = eval_in(index, locals, arrays)?.as_int();
+            let i = eval_in(index, locals, arrays, fields)?.as_int();
             let data = array(name, *slot)?;
             let v = *usize::try_from(i).ok().and_then(|i| data.get(i)).ok_or_else(|| Error::new(format!("{name}[{i}] is out of bounds for length {}", data.len())))?;
             match (t, v) {
@@ -1112,8 +1118,8 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
             }
         }
         Expr::Quantifier(q) => {
-            let lo = eval_in(&q.lo, locals, arrays)?.as_int();
-            let hi = eval_in(&q.hi, locals, arrays)?.as_int();
+            let lo = eval_in(&q.lo, locals, arrays, fields)?.as_int();
+            let hi = eval_in(&q.hi, locals, arrays, fields)?.as_int();
             let end = if q.inclusive { i64::from(hi) + 1 } else { i64::from(hi) };
             let wide = q.ty() == Ty::Long;
             let wrap = |v: i64| if wide { Value::Long(v) } else { Value::Int(v as i32) };
@@ -1128,11 +1134,11 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
             while i < end {
                 locals[usize::from(q.slot)] = Value::Int(i as i32);
                 let selected = match &q.filter {
-                    Some(f) => eval_in(f, locals, arrays)?.as_int() != 0,
+                    Some(f) => eval_in(f, locals, arrays, fields)?.as_int() != 0,
                     None => true,
                 };
                 if selected {
-                    let v = as_i64(eval_in(&q.body, locals, arrays)?);
+                    let v = as_i64(eval_in(&q.body, locals, arrays, fields)?);
                     match q.kind {
                         Quant::Forall | Quant::Exists => {
                             if (v != 0) != forall {
@@ -1174,37 +1180,38 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
                 _ => v,
             }
         }
-        Expr::Neg(e) => match eval_in(e, locals, arrays)? {
+        Expr::Neg(e) => match eval_in(e, locals, arrays, fields)? {
             Value::Int(x) => Value::Int(x.wrapping_neg()),
             Value::Long(x) => Value::Long(x.wrapping_neg()),
             v => v,
         },
-        Expr::Not(e) => Value::Int((eval_in(e, locals, arrays)?.as_int() == 0) as i32),
+        Expr::Not(e) => Value::Int((eval_in(e, locals, arrays, fields)?.as_int() == 0) as i32),
         Expr::Call(callee, _) => return Err(Error::new(format!("a call of {} can only be evaluated in the harness", callee.name))),
-        Expr::Field(f) | Expr::OldField(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
+        Expr::Field(f) => return fields(f).ok_or_else(|| Error::new(format!("{} reads an object, which only the harness can, or goes through null", f.shown))),
+        Expr::OldField(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
         Expr::Refs(..) => return Err(Error::new("a comparison of objects can only be evaluated in the harness")),
-        Expr::BitNot(e) => match eval_in(e, locals, arrays)? {
+        Expr::BitNot(e) => match eval_in(e, locals, arrays, fields)? {
             Value::Int(x) => Value::Int(!x),
             Value::Long(x) => Value::Long(!x),
             v => v,
         },
-        Expr::Cast(Ty::Int, e) => Value::Int(as_i64(eval_in(e, locals, arrays)?) as i32),
-        Expr::Cast(_, e) => Value::Long(as_i64(eval_in(e, locals, arrays)?)),
+        Expr::Cast(Ty::Int, e) => Value::Int(as_i64(eval_in(e, locals, arrays, fields)?) as i32),
+        Expr::Cast(_, e) => Value::Long(as_i64(eval_in(e, locals, arrays, fields)?)),
         Expr::Ternary(c, t, e) => {
-            if eval_in(c, locals, arrays)?.as_int() != 0 {
-                eval_in(t, locals, arrays)?
+            if eval_in(c, locals, arrays, fields)?.as_int() != 0 {
+                eval_in(t, locals, arrays, fields)?
             } else {
-                eval_in(e, locals, arrays)?
+                eval_in(e, locals, arrays, fields)?
             }
         }
         Expr::Binary(op, l, r) => {
             if *op == BinOp::LogAnd {
-                return Ok(Value::Int((eval_in(l, locals, arrays)?.as_int() != 0 && eval_in(r, locals, arrays)?.as_int() != 0) as i32));
+                return Ok(Value::Int((eval_in(l, locals, arrays, fields)?.as_int() != 0 && eval_in(r, locals, arrays, fields)?.as_int() != 0) as i32));
             }
             if *op == BinOp::LogOr {
-                return Ok(Value::Int((eval_in(l, locals, arrays)?.as_int() != 0 || eval_in(r, locals, arrays)?.as_int() != 0) as i32));
+                return Ok(Value::Int((eval_in(l, locals, arrays, fields)?.as_int() != 0 || eval_in(r, locals, arrays, fields)?.as_int() != 0) as i32));
             }
-            let (a, b) = (eval_in(l, locals, arrays)?, eval_in(r, locals, arrays)?);
+            let (a, b) = (eval_in(l, locals, arrays, fields)?, eval_in(r, locals, arrays, fields)?);
             let wide = expr.ty() == Ty::Long || (matches!(op, BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge | BinOp::Eq | BinOp::Ne) && promote(l.ty(), r.ty()) == Ty::Long);
             let (x, y) = (as_i64(a), as_i64(b));
             let wrap = |v: i64| if wide { Value::Long(v) } else { Value::Int(v as i32) };

@@ -408,7 +408,46 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     witness checked in the harness and on a JVM), `equivalence.rs` (`made_of`, `fields_of` and
     `made_by_constructor` made `pub(crate)`), `statement.rs` (`property_assumptions`), `main.rs` (the two flags'
     help), `lib/README.md` (a paragraph under the property proof, the limits), `lib/tests/heap.rs`.
-- Next: H5's rest (output relations, equations other than path = path, a correspondence flag on `regress`).
+- **H5's rest, first step (2026-11-07): output relations for the result, and `--correspondence FILE`.** A
+  correspondence's output relation for the result takes the place of `--results-agree-when`: a boolean over
+  `old.result`, `new.result` and the new parameters, rewritten to one over `previous` and `result`
+  ([`spec::heap::output_relation`](../../lib/src/spec/heap.rs)), so a result that became a value object is related
+  by `old.result == new.result.cents`. A result that is an object of an application class is in a result relation
+  (either kind) by its field paths, of whatever shape in each version, `old.result.cents == new.result.amount.cents
+  && …`, read through the objects in the harness ([`harness::Relation`](../../lib/src/harness/mod.rs)'s
+  `previous_object`, `result_object`; `Fields::under`); two nulls agree, one alone does not, a path through null
+  doesn't hold. Identity relations are still compared, so the alias-to-copy defect is refuted under such a relation
+  by `result == q`. A replay evaluates it on each result's field paths as the call left them
+  (`Replayed::result_paths`, [`expr::eval_reading`](../../lib/src/harness/expr.rs)), the harness run in the
+  interpreter deciding the rest; a witness the relation fails on differs in `result`, and the JVM runs it.
+  `jvmcontract equivalence --correspondence FILE` reads the IR's JSON (`golden/correspondence.json` as it is). In
+  `spec::heap::check`, a required observation under an output relation is compared under it, not for equality, so
+  it is unresolved whatever the check finds (`true` would otherwise hide the offset defect) until the contract's
+  `approved_changes` has it, then changed with approval if proved, refuted if the witness breaks the relation. Also
+  fixed: the previous version called without `--before-arguments` compared its parameter types with the flat leaves,
+  so a result relation with an object parameter was refused; it compares with the layout's types now.
+  - Evidence inline: `lib/tests/heap.rs`, four new tests: `objects.Kernel#price` (a `long` that became a `Money`)
+    verified under `old.result == new.result.cents`, refused without it, and a cent too much refuted with
+    `price(l=new Line(new Money(0), 1))`, `0` against `Money[cents=1]`, on the JVM too; the fixture's `withQuantity`
+    between the two `Quote`s with its result related by field paths verified, the alias-to-copy defect refuted by
+    `identity:result==q` and never by `result`, and a relation the versions break refuted with the note and
+    `differs = [result]`, on the JVM; the claim's accounting (`true` on the offset build unresolved, approved changed
+    with approval; a broken relation unresolved); the CLI with the golden file (verified on `after`, exit 1 on
+    `offset`, a malformed file named). A unit test of `output_relation` (renaming, words left alone, three
+    refusals). Unit tests (191), `heap.rs` (32), `foundations.rs` and `conformance.rs` pass; `integration.rs` passed
+    63 of 64 in 612 s under load, failing `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` as in every
+    earlier step, which passed alone in 8.2 s (a primitive check this change doesn't reach).
+  - *For review*: quick job `20261107-080218` (no runner was active), the new ignored test in `heap.rs`, the five
+    checks under `--engine jbmc` and `auto --confirm`: expected exit 0, the two correct ones verified and the three
+    others refuted with witnesses run on a JVM.
+  - Not yet: output relations for other observations (a parameter's field, an identity relation) or over the
+    previous version's parameters; equations other than path = path; a result relation's object paths through an
+    array field.
+  - Shared files changed: `equivalence.rs` (the result relation taken from the correspondence, an object result's
+    fields under a relation, the replay's evaluation of it), `main.rs` (`--correspondence`), `lib/README.md` (step
+    5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (a `price` method in the object kernel's three builds).
+- Next: H5's rest, second step: input equations other than path = path (an expression over the new version's
+  leaves giving a previous leaf, refused where the preservation contract anchors the input).
 - Status: working
 
 ## Loop settings

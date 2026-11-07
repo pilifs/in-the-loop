@@ -242,6 +242,7 @@ public final class Kernel {
     public static int[] filled(int[] a) { for (int i = 0; i < a.length; i++) a[i] = 7; return a; }
     public static void move(Line from, Line to) { from.quantity -= 1; to.quantity += 1; }
     public static int size(Line l) { return l == null ? 0 : l.quantity; }
+    public static long price(Line l) { return l.price.cents() * l.quantity; }
 }
 "#;
 
@@ -258,6 +259,8 @@ public final class Kernel {
     // In the other order, which is the same when from and to are one line too.
     public static void move(Line from, Line to) { to.quantity += 1; from.quantity -= 1; }
     public static int size(Line l) { return l != null ? l.quantity : 0; }
+    // The amount became a value object.
+    public static Money price(Line l) { return new Money(l.quantity * l.price.cents()); }
 }
 "#;
 
@@ -278,6 +281,8 @@ public final class Kernel {
     public static void move(Line from, Line to) { int f = from.quantity - 1; int t = to.quantity + 1; from.quantity = f; to.quantity = t; }
     // The null check dropped.
     public static int size(Line l) { return l.quantity; }
+    // A cent too much in the value object.
+    public static Money price(Line l) { return new Money(l.price.cents() * l.quantity + 1); }
 }
 "#;
 
@@ -647,6 +652,136 @@ fn what_the_correspondence_leaves_out_and_bounds_it_exceeds_are_never_proved() {
     assert!(o.problem.as_deref().unwrap().contains("made of 2 objects, more than the claim's bound of 1"), "{o:?}");
 }
 
+// Output relations (H5's rest): a correspondence's relation for the result, in place of equality, over a result
+// that changed type (a value object in place of a primitive) or shape (an object read by its field paths), and
+// how a claim accounts for a required observation compared under one.
+
+fn correspondence(inputs: &[(&str, &str)], result: Option<&str>) -> jvmcontract::spec::Correspondence {
+    jvmcontract::spec::Correspondence {
+        inputs: inputs.iter().map(|(o, n)| jvmcontract::spec::Equation { old: (*o).into(), new: (*n).into() }).collect(),
+        outputs: result.map(|h| jvmcontract::spec::Relation { observation: "result".into(), holds: h.into() }).into_iter().collect(),
+    }
+}
+
+/// A regression check of `pkg.Class#method` between `before` and `after` under the root `root`, on the own
+/// checker, under `correspondence`.
+fn related(root: &Path, after: &str, target: &str, c: jvmcontract::spec::Correspondence, tag: &str) -> jvmcontract::equivalence::Outcome {
+    related_on(jvmcontract::Engine::Native, false, root, after, target, c, tag)
+}
+
+/// [`related`] on the engine `engine`, under `--confirm` if `confirm`.
+fn related_on(engine: jvmcontract::Engine, confirm: bool, root: &Path, after: &str, target: &str, c: jvmcontract::spec::Correspondence, tag: &str) -> jvmcontract::equivalence::Outcome {
+    let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join(after), target);
+    options.engine = engine;
+    options.confirm = confirm;
+    options.correspondence = Some(c);
+    let work = root.join(format!("work-related-{after}-{tag}-{engine:?}-{confirm}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    jvmcontract::equivalence::run(&options).unwrap()
+}
+
+#[test]
+fn a_result_that_became_a_value_object_is_related_by_the_correspondences_output_relation() {
+    let Some(root) = object_builds() else { return };
+    let relation = correspondence(&[], Some("old.result == new.result.cents"));
+    let o = related(root, "after", "objects.Kernel#price", relation.clone(), "price");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("the results related by old.result == new.result.cents"), "{}", o.output);
+    assert_eq!(o.relation.as_deref(), Some("old.result == new.result.cents"));
+    // Without it the two return types are refused, as they were.
+    let o = regression("after", "price").unwrap();
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().contains("say how the results are related"), "{}", o.output);
+    // A cent too much in the value object breaks it, on a witness the JVM runs too.
+    let o = related(root, "defect", "objects.Kernel#price", relation, "price");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.input, "price(l=new Line(new Money(0), 1))");
+    assert_eq!((cx.before.as_str(), cx.after.as_str()), ("0", "Money[cents=1]"));
+    assert_eq!(cx.differs, ["result"]);
+    confirmed_on_the_jvm(&o);
+    // Refused by name: a relation for another observation, and one with --results-agree-when too.
+    let mut gap = correspondence(&[], None);
+    gap.outputs.push(jvmcontract::spec::Relation { observation: "field:l.quantity".into(), holds: "old.l.quantity == new.l.quantity".into() });
+    let o = related(root, "after", "objects.Kernel#price", gap, "gap");
+    assert!(o.problem.as_deref().unwrap().contains("only one for the result"), "{}", o.output);
+}
+
+#[test]
+fn an_object_result_of_another_shape_is_related_by_its_field_paths_and_identity_is_still_compared() {
+    let Some(root) = kernel_builds() else { return };
+    let inputs = [("old.q.cents", "new.q.amount.cents"), ("old.q.quantity", "new.q.quantity")];
+    let relation = "old.result.cents == new.result.amount.cents && old.result.quantity == new.result.quantity";
+    let o = related(root, "after", "shop.Pricing#withQuantity", correspondence(&inputs, Some(relation)), "fields");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(o.stated.as_ref().unwrap().observations.identities, ["result == q"], "identity relations are observed under a relation too");
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("before.shop.Quote previous = a; shop.Quote result = b;"), "{source}");
+    // The relation holds of the alias-to-copy defect's copy, and result == q still tells the versions apart.
+    let o = related(root, "alias-to-copy", "shop.Pricing#withQuantity", correspondence(&inputs, Some(relation)), "fields");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    // The copy's constructor rejects a quantity of 0, so a witness may differ in the exception too, never in the
+    // result, whose two shapes the relation relates.
+    assert!(cx.differs.iter().any(|d| d == "identity:result==q") && !cx.differs.iter().any(|d| d == "result"), "{:?}", cx.differs);
+    confirmed_on_the_jvm(&o);
+    // A relation the versions don't satisfy is refuted, the harness deciding it in the interpreter and on a JVM.
+    let wrong = "old.result.quantity == new.result.quantity + 1";
+    let o = related(root, "after", "shop.Pricing#withQuantity", correspondence(&inputs, Some(wrong)), "wrong");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["result"], "{}", o.output);
+    assert!(o.output.contains(&format!("the results are not related by {wrong}")), "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // A path the result doesn't have is named.
+    let o = related(root, "after", "shop.Pricing#withQuantity", correspondence(&inputs, Some("old.result.amount == new.result.quantity")), "unknown");
+    assert!(o.problem.as_deref().unwrap().contains("Quote has no field amount"), "{}", o.output);
+}
+
+#[test]
+fn a_required_observation_under_an_output_relation_is_unresolved_until_a_person_approves_the_change() {
+    use jvmcontract::spec::{ApprovedChange, ObservationState, Verdict as V};
+    // `true` relates any two totals: it would hide the offset defect, and the claim says it can't be the contract.
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.correspondence.as_mut().unwrap().outputs.push(jvmcontract::spec::Relation { observation: "result".into(), holds: "true".into() });
+    let Some(r) = kernel_check("offset", &claim) else { return };
+    let o = r.expect("supported");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Unresolved);
+    assert_eq!(state_of(&o, "exception"), ObservationState::Preserved);
+    assert!(o.problem.as_deref().unwrap().contains("compares result in place of equality, which the preservation contract requires and no person approved as changed"), "{o:?}");
+    // Approved, the relation is the claim: changed with approval, and the offset is then what it allows.
+    claim.contract.approved_changes.push(ApprovedChange { observation: "result".into(), text: "any total".into() });
+    let o = kernel_check("offset", &claim).unwrap().expect("supported");
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::ChangedWithApproval);
+    // A relation the versions don't satisfy refutes nothing the contract requires until it is approved.
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.correspondence.as_mut().unwrap().outputs.push(jvmcontract::spec::Relation { observation: "result".into(), holds: "old.result == new.result + 1".into() });
+    let o = kernel_check("after", &claim).unwrap().expect("supported");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Unresolved);
+    assert!(o.problem.as_deref().unwrap().contains("differ under the correspondence's output relation for result"), "{o:?}");
+}
+
+#[test]
+fn the_equivalence_command_takes_a_correspondence_file_in_the_irs_form() {
+    let Some(root) = kernel_builds() else { return };
+    let golden = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations/golden/correspondence.json");
+    let run = |file: &Path, after: &str| Command::new(env!("CARGO_BIN_EXE_jvmcontract")).arg("equivalence").arg("--before").arg(root.join("before")).arg("--after").arg(root.join(after)).args(["--target", "shop.Pricing#total", "--engine", "native", "--correspondence"]).arg(file).output().unwrap();
+    let out = run(&golden, "after");
+    let text = String::from_utf8_lossy(&out.stdout);
+    assert_eq!(out.status.code(), Some(0), "{text}{}", String::from_utf8_lossy(&out.stderr));
+    assert!(text.contains("as the correspondence's input equations say"), "{text}");
+    let out = run(&golden, "offset");
+    assert_eq!(out.status.code(), Some(1), "{}", String::from_utf8_lossy(&out.stdout));
+    let bad = root.join("not-a-correspondence.json");
+    std::fs::write(&bad, "{\"inputs\": 3}").unwrap();
+    let out = run(&bad, "after");
+    assert!(String::from_utf8_lossy(&out.stderr).contains("not a correspondence"), "{}", String::from_utf8_lossy(&out.stderr));
+}
+
 // Object inputs in property checks (H2's rest): `jvmcontract prove` over a parameter of an application class, made
 // in the harness by its constructor from symbolic arguments, which the property reads by its field paths, before
 // the call under `\old`, and compares by identity; null and one object where the domain lets them be.
@@ -812,6 +947,39 @@ fn the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
             let jvm = o.replay.as_ref().is_some_and(|r| r.by == "jvm" && r.reproduced);
             if o.verdict != *expected || (*expected == Verdict::Violation && !jvm) {
                 failures.push(format!("{engine:?} confirm={confirm} {build} {method}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+/// The output relations under JBMC and under `auto --confirm`: the same verdicts as on the own checker, each
+/// refutation's witness run on a JVM, since JBMC checks the same harness (the relation read through the results'
+/// fields in its bytecode). A pipeline job (`cargo test --release --test heap -- --ignored output_relations`).
+#[test]
+#[ignore = "runs JBMC on the output relations: a pipeline job"]
+fn the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let (Some(objects), Some(kernel)) = (object_builds(), kernel_builds()) else { return };
+    let inputs = [("old.q.cents", "new.q.amount.cents"), ("old.q.quantity", "new.q.quantity")];
+    let fields = "old.result.cents == new.result.amount.cents && old.result.quantity == new.result.quantity";
+    let wrong = "old.result.quantity == new.result.quantity + 1";
+    let cases: [(&Path, &str, &str, jvmcontract::spec::Correspondence, Verdict); 5] = [
+        (objects, "after", "objects.Kernel#price", correspondence(&[], Some("old.result == new.result.cents")), Verdict::Verified),
+        (objects, "defect", "objects.Kernel#price", correspondence(&[], Some("old.result == new.result.cents")), Verdict::Violation),
+        (kernel, "after", "shop.Pricing#withQuantity", correspondence(&inputs, Some(fields)), Verdict::Verified),
+        (kernel, "alias-to-copy", "shop.Pricing#withQuantity", correspondence(&inputs, Some(fields)), Verdict::Violation),
+        (kernel, "after", "shop.Pricing#withQuantity", correspondence(&inputs, Some(wrong)), Verdict::Violation),
+    ];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (i, (root, build, target, c, expected)) in cases.iter().enumerate() {
+            let o = related_on(engine, confirm, root, build, target, c.clone(), &format!("case{i}"));
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != *expected || (*expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build} {target}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
             }
         }
     }

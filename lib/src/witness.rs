@@ -289,6 +289,9 @@ pub struct Replayed {
     /// The harness's category of the exception thrown: its index among [`crate::harness::EXCEPTIONS`], the first it
     /// is an instance of, or their number for any other.
     pub category: Option<usize>,
+    /// Each primitive field path of a returned object the layout reads by its fields, as the call left it
+    /// (`amount.cents`), for a relation between the results (step H5); a path through null is absent.
+    pub result_paths: BTreeMap<String, Value>,
 }
 
 impl Replayed {
@@ -485,7 +488,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     };
     let arg_values = values.clone();
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -533,6 +536,10 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         _ => None,
     };
     let result_fields_of = if prefix.is_some() { &layout.result_fields.1 } else { &layout.result_fields.0 };
+    let result_value = match &outcome {
+        Ok(Some(v)) => Some(*v),
+        _ => None,
+    };
     let mut replayed = match outcome {
         Ok(Some(v)) => {
             let (array, fields) = match v {
@@ -549,12 +556,15 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
     };
+    if let (Some(v), Some(fields)) = (result_value, result_fields_of) {
+        replayed.result_paths = primitive_paths(&m, v, fields);
+    }
     replayed.objects_after = objects_after;
     replayed.references = references;
     replayed.views = views;
@@ -677,6 +687,25 @@ pub fn object_fields(m: &Machine, v: Value, fields: &crate::harness::Fields) -> 
         })
         .collect();
     format!("{}{{{}}}", crate::classfile::simple_name_of(&fields.class), shown.join(", "))
+}
+
+/// Each primitive field path of the object `v` by `fields`, as it reads now, `amount.cents`; a path through null is
+/// absent.
+fn primitive_paths(m: &Machine, v: Value, fields: &crate::harness::Fields) -> BTreeMap<String, Value> {
+    let mut out = BTreeMap::new();
+    let Value::Ref(r) = v else { return out };
+    let Object::Instance { fields: values, .. } = m.heap.get(r) else { return out };
+    for (name, kind) in &fields.fields {
+        let value = values.get(name).copied().unwrap_or(Value::Null);
+        match kind {
+            crate::harness::FieldKind::Value(_) => {
+                out.insert(name.clone(), value);
+            }
+            crate::harness::FieldKind::Object(inner) => out.extend(primitive_paths(m, value, inner).into_iter().map(|(p, v)| (format!("{name}.{p}"), v))),
+            crate::harness::FieldKind::Array(_) => {}
+        }
+    }
+    out
 }
 
 /// How many smaller inputs the shrinker may try.

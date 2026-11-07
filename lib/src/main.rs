@@ -285,6 +285,15 @@ struct EquivalenceArgs {
     /// for a boolean that became a remaining time; required when the return types differ.
     #[arg(long = "results-agree-when")]
     results_agree_when: Option<String>,
+    /// How the two versions' internal states correspond where their classes differ: a JSON file in the form of the
+    /// foundations IR's correspondence, `{"inputs": [{"old": "old.q.cents", "new": "new.q.amount.cents"}, ...],
+    /// "outputs": [{"observation": "result", "holds": "old.result == new.result.cents"}]}`. The input equations
+    /// say how the previous version's object for a parameter is made from the new one's, between field paths of
+    /// the two; an output relation for the result takes the place of --results-agree-when, over old.result,
+    /// new.result (an object by its field paths) and the new parameters. Not together with --before-arguments or
+    /// --results-agree-when.
+    #[arg(long)]
+    correspondence: Option<PathBuf>,
     /// An object parameter made by its constructor that may be null; may be repeated. Both versions are given null
     /// together. Every other object parameter is an object.
     #[arg(long)]
@@ -607,6 +616,10 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.before_target = args.before_target;
             options.before_arguments = args.before_arguments;
             options.results_agree_when = args.results_agree_when;
+            if let Some(file) = &args.correspondence {
+                let text = std::fs::read_to_string(file).map_err(|e| Error::new(format!("--correspondence {}: {e}", file.display())))?;
+                options.correspondence = Some(serde_json::from_str(&text).map_err(|e| Error::new(format!("--correspondence {}: not a correspondence ({{\"inputs\": [...], \"outputs\": [...]}}): {e}", file.display())))?);
+            }
             options.nullable = args.nullable.clone();
             options.may_alias = args.may_alias.iter().map(|pair| pair.split_once(',').map(|(a, b)| (a.trim().to_string(), b.trim().to_string())).ok_or_else(|| Error::new(format!("--may-alias {pair}: give two parameters, `a,b`")))).collect::<Result<_, _>>()?;
             let outcome = equivalence::run(&options)?;

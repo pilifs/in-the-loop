@@ -20,7 +20,9 @@ const DEADLINE_SECONDS: u64 = 300;
 /// accounted for: preserved by a proof that compared it; refuted where the replayed witness differs in it; and
 /// otherwise unresolved, as is every observation the check does not compare, so that none leaves the count. A
 /// witness that differs only in observations the claim does not require refutes nothing, and the result is
-/// unresolved, as it is when no JVM has run the witness too (step H4). A construction that needs more input objects than a version's bound leaves the result unresolved
+/// unresolved, as it is when no JVM has run the witness too (step H4). A required observation under one of the
+/// correspondence's output relations is compared under it rather than for equality, so it stays unresolved until a
+/// person approves the change in the contract. A construction that needs more input objects than a version's bound leaves the result unresolved
 /// rather than proving something outside the claim. Claims about effects (an environment model) are the
 /// observations stream's, and refused.
 pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
@@ -81,12 +83,32 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
     }
     let compared = compared_observations(stated);
     let is_compared = |id: &str| compared.iter().any(|c| same_id(c, id));
+    // A required observation an output relation compares in place of equality is held to something else than the
+    // contract says: only a person's approved change makes that the claim. Without one it is unresolved, whatever
+    // the check finds, so that no relation can make a difference disappear (`old.result == new.result - 1`) or
+    // stand in for one.
+    let related: Vec<&str> = claim.correspondence.iter().flat_map(|c| &c.outputs).map(|r| r.observation.as_str()).collect();
+    let approved = |id: &str| claim.contract.approved_changes.iter().any(|a| same_id(&a.observation, id));
+    let unapproved = |id: &str| related.iter().any(|r| same_id(r, id)) && !approved(id);
     match checked.verdict {
         crate::Verdict::Verified if checked.vacuous.is_some() => Ok(unresolved_all(domain, format!("vacuous: {}", checked.vacuous.unwrap_or_default()))),
         crate::Verdict::Verified => {
-            let accounting: Vec<Accounted> = required.iter().map(|r| Accounted { observation: r.clone(), state: if is_compared(r) { ObservationState::Preserved } else { ObservationState::Unresolved } }).collect();
-            let missing: Vec<&str> = accounting.iter().filter(|a| a.state == ObservationState::Unresolved).map(|a| a.observation.as_str()).collect();
-            let (verdict, problem) = if missing.is_empty() { (Verdict::Verified, None) } else { (Verdict::Unresolved, Some(format!("the check does not compare {}", missing.join(", ")))) };
+            let state = |r: &str| match () {
+                _ if !is_compared(r) || unapproved(r) => ObservationState::Unresolved,
+                _ if related.iter().any(|x| same_id(x, r)) => ObservationState::ChangedWithApproval,
+                _ => ObservationState::Preserved,
+            };
+            let accounting: Vec<Accounted> = required.iter().map(|r| Accounted { observation: r.clone(), state: state(r) }).collect();
+            let unrelated: Vec<&str> = accounting.iter().filter(|a| a.state == ObservationState::Unresolved && !unapproved(&a.observation)).map(|a| a.observation.as_str()).collect();
+            let relating: Vec<&str> = required.iter().map(String::as_str).filter(|r| unapproved(r)).collect();
+            let mut problems = Vec::new();
+            if !unrelated.is_empty() {
+                problems.push(format!("the check does not compare {}", unrelated.join(", ")));
+            }
+            if !relating.is_empty() {
+                problems.push(format!("the correspondence's output relation compares {} in place of equality, which the preservation contract requires and no person approved as changed", relating.join(", ")));
+            }
+            let (verdict, problem) = if problems.is_empty() { (Verdict::Verified, None) } else { (Verdict::Unresolved, Some(problems.join("; "))) };
             Ok(Outcome { verdict, domain, accounting, witness: None, problem })
         }
         crate::Verdict::Violation => {
@@ -97,9 +119,12 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
                 let how = checked.proof.clone().unwrap_or_default();
                 return Ok(Outcome { verdict: Verdict::Unresolved, domain, accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: Some(witness), problem: Some(format!("the witness replays in the interpreter but was not confirmed on a JVM ({how})")) });
             }
-            let refuted: Vec<&String> = required.iter().filter(|r| cx.differs.iter().any(|d| same_id(d, r))).collect();
+            let refuted: Vec<&String> = required.iter().filter(|r| cx.differs.iter().any(|d| same_id(d, r)) && !unapproved(r)).collect();
             let accounting: Vec<Accounted> = required.iter().map(|r| Accounted { observation: r.clone(), state: if refuted.contains(&r) { ObservationState::Refuted } else { ObservationState::Unresolved } }).collect();
             if refuted.is_empty() {
+                if let Some(r) = required.iter().find(|r| unapproved(r) && cx.differs.iter().any(|d| same_id(d, r))) {
+                    return Ok(Outcome { verdict: Verdict::Unresolved, domain, accounting, witness: Some(witness), problem: Some(format!("the versions differ under the correspondence's output relation for {r}, which takes the place of the equality the preservation contract requires and which no person approved as changed")) });
+                }
                 let differs = if cx.differs.is_empty() { "observations the check does not tell apart".to_string() } else { cx.differs.join(", ") };
                 return Ok(Outcome { verdict: Verdict::Unresolved, domain, accounting, witness: Some(witness), problem: Some(format!("the versions differ only in {differs}, which the claim does not require")) });
             }
@@ -160,6 +185,60 @@ pub(crate) fn roots(correspondence: &Correspondence) -> Result<Vec<(String, Stri
         }
     }
     Ok(out)
+}
+
+/// The correspondence's output relation as a result relation of the regression check (`--results-agree-when`'s
+/// form): a boolean over `old.result` (the previous version's result), `new.result` (the new one's) and the new
+/// version's parameters, `new.n` or `n`, which becomes one over `previous`, `result` and `n`. An object result is
+/// in it by its field paths, `old.result.cents == new.result.amount.cents`. None without output relations; `Err`
+/// names an output relation not supported yet: one about another observation than the result, several about it,
+/// or one that reads the previous version's parameters.
+pub(crate) fn output_relation(correspondence: &Correspondence) -> Result<Option<String>, String> {
+    let result = Observation::Result.id();
+    if let Some(r) = correspondence.outputs.iter().find(|r| r.observation != result) {
+        return Err(format!("the correspondence's output relation for {} ({}) is not supported yet: only one for the result, over old.result, new.result and the new version's parameters", r.observation, r.holds));
+    }
+    let mut relations = correspondence.outputs.iter();
+    let Some(relation) = relations.next() else { return Ok(None) };
+    if relations.next().is_some() {
+        return Err("the correspondence has several output relations for the result: state them as one, joined by &&".into());
+    }
+    let chars: Vec<char> = relation.holds.chars().collect();
+    let identifier = |c: char| c.is_alphanumeric() || c == '_';
+    let mut out = String::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let c = chars[i];
+        let after_dot = out.trim_end().ends_with('.');
+        if (c.is_alphabetic() || c == '_') && !after_dot && (i == 0 || !identifier(chars[i - 1])) {
+            let start = i;
+            while i < chars.len() && identifier(chars[i]) {
+                i += 1;
+            }
+            let word: String = chars[start..i].iter().collect();
+            if (word == "old" || word == "new") && chars.get(i) == Some(&'.') {
+                let next = i + 1;
+                let mut end = next;
+                while end < chars.len() && identifier(chars[end]) {
+                    end += 1;
+                }
+                let name: String = chars[next..end].iter().collect();
+                match (word.as_str(), name.as_str()) {
+                    ("old", "result") => out.push_str(crate::harness::PREVIOUS),
+                    ("new", "result") => out.push_str(crate::harness::RESULT),
+                    ("new", n) if !n.is_empty() => out.push_str(n),
+                    _ => return Err(format!("the correspondence's output relation {} reads old.{name}: an output relation over the previous version's parameters is not supported yet, only over old.result, new.result and the new version's parameters", relation.holds)),
+                }
+                i = end;
+                continue;
+            }
+            out.push_str(&word);
+            continue;
+        }
+        out.push(c);
+        i += 1;
+    }
+    Ok(Some(out))
 }
 
 /// How the previous version's object for the parameter `old_name` (the new version's `new_name`) is made from the
@@ -247,5 +326,17 @@ mod tests {
         assert!(gap(&[("old.q.cents", "new.q.quantity"), ("old.q.quantity", "new.q.quantity")]).contains("of type long to one of type int"));
         assert!(gap(&[("old.q.cents", "new.q.price"), ("old.q.quantity", "new.q.quantity")]).contains("not a primitive field path of the new version's Quote"));
         assert!(roots(&correspondence(&[("old.q.cents", "new.q.amount.cents + 1")])).unwrap_err().contains("not one between two paths"));
+    }
+
+    #[test]
+    fn an_output_relation_becomes_one_between_previous_and_result() {
+        let with = |outputs: &[(&str, &str)]| Correspondence { inputs: Vec::new(), outputs: outputs.iter().map(|(o, h)| super::super::Relation { observation: (*o).into(), holds: (*h).into() }).collect() };
+        assert_eq!(output_relation(&with(&[])).unwrap(), None);
+        assert_eq!(output_relation(&with(&[("result", "old.result == new.result.amount.cents && new.n > 0")])).unwrap().as_deref(), Some("previous == result.amount.cents && n > 0"));
+        // A word that only ends in old, a member after a dot, and a bare parameter are left alone.
+        assert_eq!(output_relation(&with(&[("result", "Math.abs(old.result - new.result.cents) <= gold.length")])).unwrap().as_deref(), Some("Math.abs(previous - result.cents) <= gold.length"));
+        assert!(output_relation(&with(&[("field:q.cents", "old.q.cents == new.q.amount.cents")])).unwrap_err().contains("only one for the result"));
+        assert!(output_relation(&with(&[("result", "old.result == new.result"), ("result", "true")])).unwrap_err().contains("several output relations"));
+        assert!(output_relation(&with(&[("result", "old.result == old.q.cents")])).unwrap_err().contains("reads old.q"));
     }
 }
