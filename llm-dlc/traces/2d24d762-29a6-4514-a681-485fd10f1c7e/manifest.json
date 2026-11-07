@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T23:23:09.956Z",
-  "duration_seconds": 6807,
+  "ended": "2026-11-07T23:23:57.561Z",
+  "duration_seconds": 6854,
   "stats": {
     "turns": 29,
-    "api_calls": 282,
-    "tool_calls": 283,
-    "tool_errors": 9,
+    "api_calls": 289,
+    "tool_calls": 289,
+    "tool_errors": 10,
     "compactions": 4,
-    "peak_context_tokens": 336406,
+    "peak_context_tokens": 342410,
     "usage": {
-      "input_tokens": 578,
-      "output_tokens": 173613,
-      "cache_read_input_tokens": 41422841,
-      "cache_creation_input_tokens": 629167
+      "input_tokens": 592,
+      "output_tokens": 176850,
+      "cache_read_input_tokens": 43801196,
+      "cache_creation_input_tokens": 635171
     }
   },
   "tools": {
-    "Bash": 255,
+    "Bash": 261,
     "Read": 12,
     "Edit": 5,
     "AskUserQuestion": 3,
@@ -103,24 +103,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T23:23:09.956Z",
+      "ended": "2026-11-07T23:23:57.561Z",
       "turns": 11,
-      "api_calls": 178,
+      "api_calls": 185,
       "usage": {
-        "input_tokens": 364,
-        "output_tokens": 126204,
-        "cache_read_input_tokens": 34110867,
-        "cache_creation_input_tokens": 323327
+        "input_tokens": 378,
+        "output_tokens": 129441,
+        "cache_read_input_tokens": 36489222,
+        "cache_creation_input_tokens": 329331
       },
-      "peak_context_tokens": 336406
+      "peak_context_tokens": 342410
     }
   ],
   "log": {
-    "sha256": "4f0e72b91718c903203ab3d2422aeed01b35c7826f312779e792aee9760ae223",
-    "bytes": 7627196,
-    "lines": 2652,
-    "gzip_bytes": 1410413,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/4f0e72b91718c903203ab3d2422aeed01b35c7826f312779e792aee9760ae223.jsonl.gz"
+    "sha256": "8f86071b8d3317f8d2a51dc12241bf103bc597c5af5cb5ff40d44168c968eb97",
+    "bytes": 7752764,
+    "lines": 2697,
+    "gzip_bytes": 1434964,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/8f86071b8d3317f8d2a51dc12241bf103bc597c5af5cb5ff40d44168c968eb97.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -307,6 +307,14 @@
       "summary": "stub-reachability.md: status working, since the cleanup loop's merge is committed and pushed",
       "body": "The brief waited on the cleanup merge, which changes lib/src/jbmc_gaps.rs too. That merge (lpvnwkuz) is committed and pushed, and the cleanup loop finished done, so, as the brief's Loop until says, its status is set to working before it starts. Only its Progress changed. The loop runs alone in the default workspace, with verification-loop.sh beside it to clear the queued jobs.",
       "log_sha256": "4f0e72b91718c903203ab3d2422aeed01b35c7826f312779e792aee9760ae223"
+    },
+    {
+      "change_id": "ymkkuxqkvtmvwozxuulnrnwwmkuzwqpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Stub reachability, step 1: an experiment job that has JBMC's solver decide whether VF-015's proof enters the String.format stub (verification pending)",
+      "body": "llm-dlc/loops/stub-reachability.md's step 1. The gap preflight counts a stub as entered when JBMC's symbolic execution alone keeps a step of it. For VF-015's proof (prove Hex#toDigit --assume 'ch == 1632' on commons-codec's old Hex), that counts String.format(String, Object[]) as entered on toDigit's exception path, which the assumption makes infeasible. The new verification/triage/stub-reachability.sh reruns that proof unchanged, with JBMC behind a wrapper that records each command and its time. On the proof's harness and command it then tries two methods. (A) --cover location in place of --unwinding-assertions, reading the goals of DecoderException's constructor, of the stub and of toDigit, and once more with --property on one goal. (B) The proof as given, with a rewritten DecoderException whose String.format call first calls a probe that fails an assertion of its own (throw new AssertionError(), as GapIntrinsics.open). Both also run on a control, the same prove without --assume, where the call is reachable. The job's description gives the outcome each method is expected to have.\n\nChecked inline: the script's syntax, its argv rewriting on made-up commands, and its recording wrapper with echo in place of JBMC. No JBMC was run. The brief's Progress records why the probe is a rewritten caller and not a rewritten goto program: jbmc 6.11 can't write a goto binary for goto-instrument. jbmc --help lists --cover only in --unwinding-assertions' line, so whether --cover is accepted is for the job to show.\n\nVerification pending: job 20261107-233000-stub-reachability-step-1-can-jbmc-s-solv (verification/jobs/). Step 2, choosing the method, waits on its result.",
+      "log_sha256": "8f86071b8d3317f8d2a51dc12241bf103bc597c5af5cb5ff40d44168c968eb97"
     }
   ],
   "logs": {
@@ -381,6 +389,12 @@
       "lines": 1009,
       "gzip_bytes": 743922,
       "url": "https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/82fa6b53c402b109c968508a96f8a9c42bb3440e4becaf5b1695a5a02ca587c2.jsonl.gz"
+    },
+    "8f86071b8d3317f8d2a51dc12241bf103bc597c5af5cb5ff40d44168c968eb97": {
+      "bytes": 7752764,
+      "lines": 2697,
+      "gzip_bytes": 1434964,
+      "url": null
     },
     "8f991c89ffc44cbfcd50422dd2d72ec8e3789da87bd375f645076d7b317427bc": {
       "bytes": 2655445,

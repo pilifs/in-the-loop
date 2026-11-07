@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "3da21514-fe46-49d5-8200-08d3cf89ea17",
-  "status": "ended",
+  "status": "open",
   "title": "Multi agent feature stream run",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -67,11 +67,11 @@
     }
   ],
   "log": {
-    "sha256": "7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609",
-    "bytes": 3079791,
-    "lines": 961,
-    "gzip_bytes": 585370,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz"
+    "sha256": "c89857e12644a23cc777e3841b8a4981268142869d06e8fddef662c1c72bff79",
+    "bytes": 3084509,
+    "lines": 965,
+    "gzip_bytes": 586181,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/c89857e12644a23cc777e3841b8a4981268142869d06e8fddef662c1c72bff79.jsonl.gz"
   },
   "subagents": [
     {
@@ -254,6 +254,14 @@
       "summary": "The foundations streams' four run records published, and run-streams.sh copies a stream's records into the default workspace itself",
       "body": "feature-loop.sh writes a run's record in llm-dlc/loop-summaries/ of the workspace it runs in, and sync.py publishes only the default workspace's (VF-013). A stream's records were to be copied in when the streams were merged, but nothing did it: the cleanup loop copied its streams' records by hand, and the foundations streams' four (2026-11-07-040118-foundations-alignment, -heap, -observations and -summaries, sessions 11f93b59, 750c8a36, e65240e3 and be22079e) were left only in the forgotten workspaces ../in-the-loop-alignment, -heap, -observations and -summaries, never published. They are copied in, unchanged, and this commit publishes them under their sessions' traces. Before that, each redacted copy was scanned with sync.py's Redactor: no leak, nothing to review, no home path. The originals stay where they were.\n\nSo that a later stream's records aren't left behind, llm-dlc/tools/run_records.py collect STREAM DEFAULT copies a workspace's run records into the default workspace: only feature-loop records (not integration reports), a copy replaced only by the record it is a start of (records only grow; one that diverged is left and reported), each written atomically. run-streams.sh calls it at its start (records from an interrupted run), after each of a stream's runs (an interrupted one too), and before the merge, whose commit publishes them. test_runs.py's 5 new tests cover it (they errored before run_records.py existed), and the shell function was run against made-up workspaces: one copy, then nothing on a second call or from the default workspace itself. Run over every workspace directory on disk, it found nothing else missing. test_runs (13), test_streams_status, test_review and test_performance pass. sync.py's comment, llm-dlc/README.md and specification.md say how the records come in.",
       "log_sha256": "7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609"
+    },
+    {
+      "change_id": "ymkkuxqkvtmvwozxuulnrnwwmkuzwqpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Stub reachability, step 1: an experiment job that has JBMC's solver decide whether VF-015's proof enters the String.format stub (verification pending)",
+      "body": "llm-dlc/loops/stub-reachability.md's step 1. The gap preflight counts a stub as entered when JBMC's symbolic execution alone keeps a step of it. For VF-015's proof (prove Hex#toDigit --assume 'ch == 1632' on commons-codec's old Hex), that counts String.format(String, Object[]) as entered on toDigit's exception path, which the assumption makes infeasible. The new verification/triage/stub-reachability.sh reruns that proof unchanged, with JBMC behind a wrapper that records each command and its time. On the proof's harness and command it then tries two methods. (A) --cover location in place of --unwinding-assertions, reading the goals of DecoderException's constructor, of the stub and of toDigit, and once more with --property on one goal. (B) The proof as given, with a rewritten DecoderException whose String.format call first calls a probe that fails an assertion of its own (throw new AssertionError(), as GapIntrinsics.open). Both also run on a control, the same prove without --assume, where the call is reachable. The job's description gives the outcome each method is expected to have.\n\nChecked inline: the script's syntax, its argv rewriting on made-up commands, and its recording wrapper with echo in place of JBMC. No JBMC was run. The brief's Progress records why the probe is a rewritten caller and not a rewritten goto program: jbmc 6.11 can't write a goto binary for goto-instrument. jbmc --help lists --cover only in --unwinding-assertions' line, so whether --cover is accepted is for the job to show.\n\nVerification pending: job 20261107-233000-stub-reachability-step-1-can-jbmc-s-solv (verification/jobs/). Step 2, choosing the method, waits on its result.",
+      "log_sha256": "c89857e12644a23cc777e3841b8a4981268142869d06e8fddef662c1c72bff79"
     }
   ],
   "logs": {
@@ -316,6 +324,12 @@
       "lines": 880,
       "gzip_bytes": 546759,
       "url": "https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/b81598af7e4c4bf00b76c8bdcc788bf6dc00ef601a54872ad5eb9ef73bf967ea.jsonl.gz"
+    },
+    "c89857e12644a23cc777e3841b8a4981268142869d06e8fddef662c1c72bff79": {
+      "bytes": 3084509,
+      "lines": 965,
+      "gzip_bytes": 586181,
+      "url": null
     }
   },
   "redaction_policy": 4,

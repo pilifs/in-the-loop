@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 60, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 23:23 UTC |
-| Prompts | 1,560 |
-| Model calls | 15,422 |
-| Tool calls | 16,396 (298 failed) |
+| Sessions | 62, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 23:30 UTC |
+| Prompts | 1,562 |
+| Model calls | 15,477 |
+| Tool calls | 16,451 (300 failed) |
 | Compactions | 230 |
 | Subagents | 10 |
-| Tokens written | 17,046,531 |
-| Tokens read | 2,510,179,782 (97.9% from cache) |
-| Commits with a trace | 462 |
-| Log snapshots | 559 (1327.9 MB gzipped, 558 uploaded) |
+| Tokens written | 17,083,638 |
+| Tokens read | 2,515,894,646 (97.9% from cache) |
+| Commits with a trace | 463 |
+| Log snapshots | 563 (1330.2 MB gzipped, 558 uploaded) |
 
 ## Sessions
 
@@ -83,10 +83,12 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 16:26 UTC | [b65d132b-4eb4-46fd-8556-f4cba3311ad1](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | ended | 3 h 59 min | `claude-opus-5-5` | 67 | 452 | 459 | 3 | 13 | 171,947 | 12 |
 | 2026-11-07 16:26 UTC | [367bd874-02ec-44ea-8935-70e651fad013](367bd874-02ec-44ea-8935-70e651fad013/summary.md) | ended | 1 min | `claude-sonnet-5-5` | 1 | 7 | 6 | 1 | 0 | 34,945 | 2 |
 | 2026-11-07 16:31 UTC | [ed84ffdf-8f6d-4b88-815e-d0f713e92faf](ed84ffdf-8f6d-4b88-815e-d0f713e92faf/summary.md) | ended | 3 h 49 min | `claude-sonnet-5-5` | 4 | 65 | 60 | 2 | 0 | 144,965 | 25 |
-| 2026-11-07 18:55 UTC | [Multi agent feature stream run](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | ended | 3 h 0 min | `claude-opus-5-5` | 15 | 114 | 114 | 1 | 0 | 293,158 | 19 |
-| 2026-11-07 21:29 UTC | [2d24d762-29a6-4514-a681-485fd10f1c7e](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | open | 1 h 53 min | `claude-opus-5-5` | 29 | 282 | 283 | 9 | 4 | 336,406 | 23 |
+| 2026-11-07 18:55 UTC | [Multi agent feature stream run](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | open | 3 h 0 min | `claude-opus-5-5` | 15 | 114 | 114 | 1 | 0 | 293,158 | 20 |
+| 2026-11-07 21:29 UTC | [2d24d762-29a6-4514-a681-485fd10f1c7e](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | open | 1 h 54 min | `claude-opus-5-5` | 29 | 289 | 289 | 10 | 4 | 342,410 | 24 |
 | 2026-11-07 21:50 UTC | [00316fc7-52d4-4009-9502-48e1d40764a8](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 9 | 9 | 0 | 0 | 45,314 | 4 |
 | 2026-11-07 21:51 UTC | [VM disk space and jj workspaces](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | ended | 0 min | `claude-opus-5-5` | 1 | 2 | 1 | 0 | 0 | 43,566 | 4 |
+| 2026-11-07 23:23 UTC | [807d6ed2-a98d-4f93-8dbb-28d70736eff7](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | open | 6 min | `claude-opus-5-5` | 1 | 43 | 44 | 1 | 0 | 111,351 | 1 |
+| 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | open | 0 min | `claude-sonnet-5-5` | 1 | 5 | 5 | 0 | 0 | 32,519 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -153,23 +155,25 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`367bd874`](367bd874-02ec-44ea-8935-70e651fad013/summary.md) | 1,470 | 14 | 23,561 | 191,348 | 89.0% | 146 |
 | [`ed84ffdf`](ed84ffdf-8f6d-4b88-815e-d0f713e92faf/summary.md) | 37,573 | 142 | 260,900 | 5,629,763 | 95.6% | 157 |
 | [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | 123,290 | 254 | 385,128 | 21,058,814 | 98.2% | 174 |
-| [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 173,613 | 578 | 629,167 | 41,422,841 | 98.5% | 242 |
+| [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 176,850 | 592 | 635,171 | 43,801,196 | 98.6% | 251 |
 | [`00316fc7`](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | 2,014 | 18 | 33,930 | 292,928 | 89.6% | 162 |
 | [`a76492ce`](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | 530 | 4 | 14,069 | 72,353 | 83.7% | 163 |
+| [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 33,218 | 88 | 100,082 | 3,081,754 | 96.9% | 96 |
+| [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 652 | 10 | 21,135 | 127,422 | 85.8% | 228 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,334 | 87.4% | 60 |
+| `Bash` | 14,385 | 87.4% | 62 |
 | `Read` | 773 | 4.7% | 32 |
-| `Edit` | 619 | 3.8% | 31 |
-| `Write` | 393 | 2.4% | 28 |
-| `ToolSearch` | 98 | 0.6% | 24 |
+| `Edit` | 620 | 3.8% | 32 |
+| `Write` | 394 | 2.4% | 29 |
+| `ToolSearch` | 99 | 0.6% | 25 |
 | `Monitor` | 63 | 0.4% | 20 |
 | `AskUserQuestion` | 30 | 0.2% | 9 |
 | `TaskStop` | 28 | 0.2% | 12 |
-| `WebFetch` | 26 | 0.2% | 6 |
+| `WebFetch` | 27 | 0.2% | 7 |
 | `Agent` | 10 | 0.1% | 5 |
 | `ScheduleWakeup` | 8 | 0.0% | 2 |
 | `Skill` | 7 | 0.0% | 4 |
@@ -634,17 +638,18 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 449 | [`10be49c8`](https://github.com/pilifs/in-the-loop/commit/10be49c860c94cfc564624a7fb510117f597e703) | prune_workspaces.py only reports, and prints the delete command for a person to run | [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) ([log](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/43e422b6896ef5a064148e5a0e2598da559402272bf65fef75d1ee3ac7771ab1.jsonl.gz)), [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/719632e3f1363999e9a66b6986979d3d1bca086c1090fe86c365cda4aae230e9.jsonl.gz)), [`00316fc7`](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) ([log](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)), [`a76492ce`](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) ([log](https://terminalvalue.net/raw-traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/b39051c7278b2a67321ecf7ff268386755e79d6a0842e7fe39aadf994b428e4d.jsonl.gz)) |
 | 450 | [`49d2979e`](https://github.com/pilifs/in-the-loop/commit/49d2979e3dee1b255ebd84f050a8e95067b36228) | Cleanup Phase 4, step 4: the merge's four jobs passed, and the for-review list names every entry's state: the cleanup loop is done | [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) ([log](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)), [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/82fa6b53c402b109c968508a96f8a9c42bb3440e4becaf5b1695a5a02ca587c2.jsonl.gz)), [`00316fc7`](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) ([log](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)), [`a76492ce`](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) ([log](https://terminalvalue.net/raw-traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/b39051c7278b2a67321ecf7ff268386755e79d6a0842e7fe39aadf994b428e4d.jsonl.gz)) |
 | 451 | [`b6598742`](https://github.com/pilifs/in-the-loop/commit/b65987421c02661f8215e02a40ed3e61342d733d) | The foundations streams' four run records published, and run-streams.sh copies a stream's records into the default workspace itself | [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) ([log](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)), [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/3a56aa25d5b35a200da5eb466a884f953aaa39f8b8c5e3ed310ddb7a8497498f.jsonl.gz)) |
-| 452 | [`9354e85a`](https://github.com/pilifs/in-the-loop/commit/9354e85a024ed8d3adb1e3db90fecc6bf02227a3) | The cleanup loop's for-review list reviewed with the user: decisions on VF-001, VF-002, VF-018 and VF-020 recorded, VF-011 and VF-013 closed | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/27db6b4cd8852ce90179aae8ab0095b8d2144ebea4104c7351d8480f24d6ee43.jsonl.gz)) |
-| 453 | [`35357650`](https://github.com/pilifs/in-the-loop/commit/35357650955a48245a669a81ae53e62382e81177) | coverage.md and jbmc-upstream.md brought up to date: extension 2 (the unwinding count per entry of a loop) is done, and VF-009 is closed | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea.jsonl.gz)) |
-| 454 | [`f2b9a0ce`](https://github.com/pilifs/in-the-loop/commit/f2b9a0ce37a3834f0488c3ff5d2906b5fc0222a9) | An interrupted push starts no other upload, and the integration scripts run sync.py's run-record and performance suites | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb.jsonl.gz)) |
-| 455 | [`8567d9d9`](https://github.com/pilifs/in-the-loop/commit/8567d9d918df7adc675d54c26764dc1b1511b257) | collect keeps a changes.diff over jj's 1 MiB limit gzipped, or as a summary of the files it changes, for VF-020 | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e.jsonl.gz)) |
-| 456 | [`1e430db1`](https://github.com/pilifs/in-the-loop/commit/1e430db14391a4919d7eb59a9e064f6d9205c71a) | VF-001's two conformance jobs resubmitted with mkdir -p target before the tee (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/7dc0324030eef0b89f4e79e810a73762ed46e5f1a5aa3bcdb1e5851cf18df071.jsonl.gz)) |
-| 457 | [`a8b76de9`](https://github.com/pilifs/in-the-loop/commit/a8b76de9c96f9bdf50650245789f440c22b22a67) | VF-002: examples 147 and 148 resubmitted, and 149's wording corrected to the two contracts its proof rests on (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/2c26267add2e466014e55aa1aba37f89dbc4fc2d3cbc09f84d5f17c1a56acd22.jsonl.gz)) |
-| 458 | [`d95f8780`](https://github.com/pilifs/in-the-loop/commit/d95f87804f44c65748387b9f30843b239a84725b) | The own checker's search for a smaller witness is bounded by work, not time, so the witness is the same on every machine (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57.jsonl.gz)) |
-| 459 | [`8aac1961`](https://github.com/pilifs/in-the-loop/commit/8aac19618c9d1dfdc8312f400315f33496678c15) | VF-018: a triage job that records what JBMC is given for H5's objects.Kernel#price and measures where its time goes (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/acfc726b62365c2af79b2c4dda4ce8da095978683feb1f7f5f2dd4affd987337.jsonl.gz)) |
-| 460 | [`b521d26a`](https://github.com/pilifs/in-the-loop/commit/b521d26a73ab289b3e080d4b257b689d2f4cca2d) | Example 148's resubmitted job no longer names three contracts in its title | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419.jsonl.gz)) |
-| 461 | [`4339ed8a`](https://github.com/pilifs/in-the-loop/commit/4339ed8a3f25707322a5016ec1221f55a6feaf9b) | Record session traces | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/f14a46a46dd5b96f997a99b215ec37a8a59baaa471a18c9b458ef3ce3f2f6403.jsonl.gz)) |
-| 462 | change `spluzozx` | stub-reachability.md: status working, since the cleanup loop's merge is committed and pushed | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/4f0e72b91718c903203ab3d2422aeed01b35c7826f312779e792aee9760ae223.jsonl.gz)) |
+| 452 | change `ymkkuxqk` | Stub reachability, step 1: an experiment job that has JBMC's solver decide whether VF-015's proof enters the String.format stub (verification pending) | [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) ([log](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/c89857e12644a23cc777e3841b8a4981268142869d06e8fddef662c1c72bff79.jsonl.gz)), [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/8f86071b8d3317f8d2a51dc12241bf103bc597c5af5cb5ff40d44168c968eb97.jsonl.gz)), [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/3ef513ae0efd9ae9135b00377ac2b5198e817600261ea030c169c48db8ebce83.jsonl.gz)), [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/5d1d2dc9431566af7c767d8bfc314956926367eae2e591975e4f10dd90cf95ca.jsonl.gz)) |
+| 453 | [`9354e85a`](https://github.com/pilifs/in-the-loop/commit/9354e85a024ed8d3adb1e3db90fecc6bf02227a3) | The cleanup loop's for-review list reviewed with the user: decisions on VF-001, VF-002, VF-018 and VF-020 recorded, VF-011 and VF-013 closed | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/27db6b4cd8852ce90179aae8ab0095b8d2144ebea4104c7351d8480f24d6ee43.jsonl.gz)) |
+| 454 | [`35357650`](https://github.com/pilifs/in-the-loop/commit/35357650955a48245a669a81ae53e62382e81177) | coverage.md and jbmc-upstream.md brought up to date: extension 2 (the unwinding count per entry of a loop) is done, and VF-009 is closed | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea.jsonl.gz)) |
+| 455 | [`f2b9a0ce`](https://github.com/pilifs/in-the-loop/commit/f2b9a0ce37a3834f0488c3ff5d2906b5fc0222a9) | An interrupted push starts no other upload, and the integration scripts run sync.py's run-record and performance suites | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb.jsonl.gz)) |
+| 456 | [`8567d9d9`](https://github.com/pilifs/in-the-loop/commit/8567d9d918df7adc675d54c26764dc1b1511b257) | collect keeps a changes.diff over jj's 1 MiB limit gzipped, or as a summary of the files it changes, for VF-020 | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e.jsonl.gz)) |
+| 457 | [`1e430db1`](https://github.com/pilifs/in-the-loop/commit/1e430db14391a4919d7eb59a9e064f6d9205c71a) | VF-001's two conformance jobs resubmitted with mkdir -p target before the tee (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/7dc0324030eef0b89f4e79e810a73762ed46e5f1a5aa3bcdb1e5851cf18df071.jsonl.gz)) |
+| 458 | [`a8b76de9`](https://github.com/pilifs/in-the-loop/commit/a8b76de9c96f9bdf50650245789f440c22b22a67) | VF-002: examples 147 and 148 resubmitted, and 149's wording corrected to the two contracts its proof rests on (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/2c26267add2e466014e55aa1aba37f89dbc4fc2d3cbc09f84d5f17c1a56acd22.jsonl.gz)) |
+| 459 | [`d95f8780`](https://github.com/pilifs/in-the-loop/commit/d95f87804f44c65748387b9f30843b239a84725b) | The own checker's search for a smaller witness is bounded by work, not time, so the witness is the same on every machine (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57.jsonl.gz)) |
+| 460 | [`8aac1961`](https://github.com/pilifs/in-the-loop/commit/8aac19618c9d1dfdc8312f400315f33496678c15) | VF-018: a triage job that records what JBMC is given for H5's objects.Kernel#price and measures where its time goes (verification pending) | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/acfc726b62365c2af79b2c4dda4ce8da095978683feb1f7f5f2dd4affd987337.jsonl.gz)) |
+| 461 | [`b521d26a`](https://github.com/pilifs/in-the-loop/commit/b521d26a73ab289b3e080d4b257b689d2f4cca2d) | Example 148's resubmitted job no longer names three contracts in its title | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419.jsonl.gz)) |
+| 462 | [`4339ed8a`](https://github.com/pilifs/in-the-loop/commit/4339ed8a3f25707322a5016ec1221f55a6feaf9b) | Record session traces | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/f14a46a46dd5b96f997a99b215ec37a8a59baaa471a18c9b458ef3ce3f2f6403.jsonl.gz)) |
+| 463 | change `spluzozx` | stub-reachability.md: status working, since the cleanup loop's merge is committed and pushed | [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) ([log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/4f0e72b91718c903203ab3d2422aeed01b35c7826f312779e792aee9760ae223.jsonl.gz)) |
 
 ## Logs
 
@@ -708,10 +713,12 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 13 | 13 | 17.9 MB | [`6318b2422f4f`](https://terminalvalue.net/raw-traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/6318b2422f4fed40c2854d55edd46a274bf2c823ed52331d859955a8e6705ba4.jsonl.gz) |
 | [`367bd874`](367bd874-02ec-44ea-8935-70e651fad013/summary.md) | 2 | 2 | 0.1 MB | [`74cdaf871d27`](https://terminalvalue.net/raw-traces/367bd874-02ec-44ea-8935-70e651fad013/74cdaf871d27648a3ab992bb32db4cad7b63717df13ad70befed0726cc5d474e.jsonl.gz) |
 | [`ed84ffdf`](ed84ffdf-8f6d-4b88-815e-d0f713e92faf/summary.md) | 6 | 6 | 1.0 MB | [`6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz) |
-| [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | 10 | 10 | 4.4 MB | [`7ae46b0c5ffe`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz) |
-| [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 18 | 17 | 17.7 MB | `4f0e72b91718`, not uploaded |
+| [`3da21514`](3da21514-fe46-49d5-8200-08d3cf89ea17/summary.md) | 11 | 10 | 5.0 MB | `c89857e12644`, not uploaded |
+| [`2d24d762`](2d24d762-29a6-4514-a681-485fd10f1c7e/summary.md) | 19 | 17 | 19.2 MB | `8f86071b8d33`, not uploaded |
 | [`00316fc7`](00316fc7-52d4-4009-9502-48e1d40764a8/summary.md) | 3 | 3 | 0.2 MB | [`ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz) |
 | [`a76492ce`](a76492ce-f5f9-4f7c-b595-2a44802e60bf/summary.md) | 2 | 2 | 0.2 MB | [`b39051c7278b`](https://terminalvalue.net/raw-traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/b39051c7278b2a67321ecf7ff268386755e79d6a0842e7fe39aadf994b428e4d.jsonl.gz) |
+| [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) | 1 | 0 | 0.2 MB | `3ef513ae0efd`, not uploaded |
+| [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 1 | 0 | 0.1 MB | `5d1d2dc94315`, not uploaded |
 
 ## Session notes
 

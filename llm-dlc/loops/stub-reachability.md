@@ -108,7 +108,23 @@ Settled by the user on 2026-11-07:
 
 - Drafted 2026-11-07 by session `3da21514`, while the cleanup run was still going.
 - 2026-11-07: the cleanup loop's merge is committed (`lpvnwkuz`) and pushed, and the loop is done, so this brief starts.
-- Status: working
+- **Step 1: the experiment is queued.** Job `20261107-233000-stub-reachability-step-1-can-jbmc-s-solv` runs
+  [`verification/triage/stub-reachability.sh`](../../verification/triage/stub-reachability.sh). Checked against the
+  code first:
+  - VF-015's step 3 already keeps `--work`, but a work directory doesn't record JBMC's command. So the script puts
+    JBMC behind a wrapper that records each command, its exit and its time, as `vf018.sh` does.
+  - The proof takes about 0.1 s (VF-015's `jbmc.log`), so the budget is no concern here.
+  - The second method is a probe at the call site. `jbmc --help` (6.11) names `--cover` only in `--unwinding-assertions`'
+    line, and JBMC can't write a goto binary for `goto-instrument`, so the probe is a rewritten caller, not a
+    rewritten goto program: `DecoderException`'s `String.format` call first calls `Reach.reach`, which does
+    `throw new AssertionError()`. That is the assertion jvmcontract's `GapIntrinsics.open` already relies on
+    (`jbmc_contracts.rs`), and `shared::redirect_calls` already rewrites call sites for `--gaps advised`. So step 3
+    could build the probe from existing parts.
+  - Both methods also run on a control, the same prove without `--assume`, where the call is reachable. A method
+    that says "unreached" there is wrong.
+  - Next: step 2, once the job is collected. Choose by `lib/target/stub-reach/summary.txt` (it comes back in the
+    result's outputs), or stop with `blocked:` and the measurements.
+- Status: waiting on jobs 20261107-233000-stub-reachability-step-1-can-jbmc-s-solv
 
 ## Loop settings
 

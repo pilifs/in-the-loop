@@ -1,0 +1,65 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-233000-stub-reachability-step-1-can-jbmc-s-solv",
+  "title": "Stub reachability, step 1: can JBMC's solver show VF-015's String.format stub unentered (--cover location, or a probe assertion), and at what cost next to the proof",
+  "description": "Step 1 of llm-dlc/loops/stub-reachability.md. JBMC's gap preflight (lib/src/jbmc_gaps.rs) counts a stub as entered when JBMC's symbolic execution alone (--program-only) keeps a step of it, and symbolic execution keeps every branch it cannot simplify to false. In VF-015 (verification/findings.md) that refuses a JBMC proof under --gaps strict: 'prove Hex#toDigit --assume ch == 1632 --assert result == 0' on commons-codec's old Hex (87f6aa28) is proved, but the preflight names JBMC's stub of String.format(String, Object[]), called by DecoderException(String, Object...) at DecoderException.java:64 on toDigit's exception path, which ch == 1632 makes infeasible (Character.digit, the model, returns 0). This job measures two ways to have the solver decide it, on the harness and the last proof command (--trace) the run recorded, with any input-interval stage dropped. verification/triage/stub-reachability.sh clones and compiles the old commons-codec, and a copy of DecoderException whose String.format call first calls a probe Reach.reach that does 'throw new AssertionError()' (an assertion of its own under JBMC, as jvmcontract's GapIntrinsics.open). It runs VF-015's step 3 unchanged with --work kept and JBMC behind a wrapper that records each command, its exit and its time (listing, symbolic run, proof), and a control: the same prove without --assume, where the exception path is open. Then for each: (A) the proof command with --cover location in place of --unwinding-assertions and --trace (JBMC 6.11 refuses the two together; with --unwind alone a path past the bound is cut, which loses nothing here because the proof's unwinding assertions held), reading the goals of DecoderException's constructor, String.format's stub (it may have none, being generated) and toDigit, then the same with --property on the constructor's first goal alone; (B) the proof command as given with the probe's classes second on the class path. Expected: the case's proof is refused under strict as in VF-015 (jvmcontract exit 1), its JBMC proof well under a second; on the case, A reports the constructor's goals (and the stub's, if any) not covered and toDigit's return path covered, and B gives VERIFICATION SUCCESSFUL with the probe's assertion SUCCESS; on the control, A reports the constructor's goals covered and B the probe's assertion FAILURE; each method costs about the proof's own time. If --cover is not accepted by jbmc, A's lines say so. The script exits 0 when it ran to the end; the outcomes are read from lib/target/stub-reach/summary.txt by the session that chooses the method (step 2).",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc",
+    "jbmc:gaps",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "verification/triage/stub-reachability.sh",
+      "lib/src/jbmc_gaps.rs"
+    ],
+    "examples": [
+      "109"
+    ],
+    "jobs": [
+      "20261107-165827-example-109-revisited-hex-todigit-s-regr"
+    ]
+  },
+  "expected": "exits 0; summary.txt shows the case refused under strict, A: the constructor's goals not covered on the case and covered on the control, B: the probe's assertion SUCCESS on the case and FAILURE on the control, each in about the proof's time",
+  "submitted": {
+    "at": "2026-11-07T23:30:00+00:00"
+  },
+  "requires": [
+    "git",
+    "javac",
+    "jbmc",
+    "jvmcontract",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "VF-015's job ran its clone, compile and this proof in 10 s at 100 MiB peak; here two more jvmcontract proofs and six JBMC runs of about a second each, --cover perhaps a few"
+  },
+  "steps": [
+    {
+      "name": "stub reachability experiment",
+      "run": "bash verification/triage/stub-reachability.sh",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/stub-reach/summary.txt",
+    "lib/target/stub-reach/case.log",
+    "lib/target/stub-reach/control.log",
+    "lib/target/stub-reach/case-proof-command.txt",
+    "lib/target/stub-reach/control-proof-command.txt",
+    "lib/target/stub-reach/case-cover.txt",
+    "lib/target/stub-reach/case-cover-one.txt",
+    "lib/target/stub-reach/case-probe.txt",
+    "lib/target/stub-reach/control-cover.txt",
+    "lib/target/stub-reach/control-cover-one.txt",
+    "lib/target/stub-reach/control-probe.txt",
+    "lib/target/stub-reach/argv",
+    "lib/target/stub-reach/probe-src"
+  ]
+}
