@@ -224,7 +224,7 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
             match made.iter().find(|(n, _)| n == name).map(|(_, m)| m) {
                 Some(harness::Made::Null) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::Value::Null), components: None, from: None },
                 Some(harness::Made::Same(other)) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::json!({ "same": other })), components: None, from: None },
-                _ => typed_made(name, record, arguments, &source, &mut record.leaf_indices(*first).into_iter()),
+                _ => typed_made(name, record, arguments, &source, &mut record.leaves(*first).into_iter()),
             }
         }
     };
@@ -242,7 +242,7 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
 
 /// A record or an object made by its constructor, typed: its constructor's arguments in order, each primitive the
 /// flat parameter `leaves` gives next, each object typed so in turn.
-fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argument], source: &dyn Fn(usize) -> String, leaves: &mut dyn Iterator<Item = usize>) -> Typed {
+fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argument], source: &dyn Fn(usize) -> String, leaves: &mut dyn Iterator<Item = crate::harness::Leaf>) -> Typed {
     let mut nested = record.inner.iter();
     let components = record
         .params
@@ -252,10 +252,18 @@ fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argu
                 Some(inner) => typed_made(c, inner, arguments, source, leaves),
                 None => Typed { name: c.clone(), ty: t.java_name(), value: None, components: None, from: None },
             },
-            _ => {
-                let k = leaves.next().expect("a leaf for each primitive argument");
-                Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(k).map(|a| exact_argument(a, t)), components: None, from: Some(source(k)) }
-            }
+            _ => match leaves.next().expect("a leaf for each primitive argument") {
+                crate::harness::Leaf::Flat(k) => Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(k).map(|a| exact_argument(a, t)), components: None, from: Some(source(k)) },
+                // The previous version's argument an expression gives (H5's rest): its value, from the expression
+                // over what its reads came from.
+                crate::harness::Leaf::Computed(e, at) => {
+                    let values: Option<Vec<Value>> = at.iter().map(|k| match arguments.get(*k) { Some(Argument::Scalar(v)) => Some(*v), _ => None }).collect();
+                    let value = values.and_then(|v| e.eval(&v).ok()).map(|v| exact(v, t));
+                    let names: Vec<(String, String)> = e.reads.iter().zip(&at).map(|(r, k)| (r.path.clone(), source(*k))).collect();
+                    let from = e.text(&|p| names.iter().find(|(q, _)| q == p).map(|(_, n)| n.clone()).unwrap_or_default());
+                    Typed { name: c.clone(), ty: t.java_name(), value, components: None, from: Some(from.trim().to_string()) }
+                }
+            },
         })
         .collect();
     Typed { name: name.to_string(), ty: record.java_name(), value: None, components: Some(components), from: None }
@@ -424,7 +432,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                     (Some(p), Some(before)) => (before, Some(p)),
                     _ => (record, None),
                 };
-                construct(m, made, prefix, &flat, &mut made.leaf_indices(*first).into_iter())
+                construct(m, made, prefix, &flat, &mut made.leaves(*first).into_iter())
             }
         }
     };
@@ -623,21 +631,32 @@ fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::ha
     if !matches!(v, Value::Ref(_)) {
         return "null".into();
     }
+    let read = |path: &str| -> Option<Value> {
+        let mut current = v;
+        for name in path.split('.') {
+            current = match current {
+                Value::Ref(r) => match m.heap.get(r) {
+                    Object::Instance { fields, .. } => fields.get(name).copied().unwrap_or(Value::Null),
+                    _ => Value::Null,
+                },
+                _ => return None,
+            };
+        }
+        Some(current)
+    };
     let parts: Vec<String> = equations
         .iter()
         .map(|e| {
-            let path = if previous { &e.old } else { &e.new };
-            let mut current = v;
-            for name in path.split('.') {
-                current = match current {
-                    Value::Ref(r) => match m.heap.get(r) {
-                        Object::Instance { fields, .. } => fields.get(name).copied().unwrap_or(Value::Null),
-                        _ => Value::Null,
-                    },
-                    _ => return format!("{}=absent", e.old),
-                };
+            // The new side an expression over the new object's paths gives (H5's rest), absent where one is.
+            let value = match (&e.computed, previous) {
+                (Some(c), false) => c.reads.iter().map(|r| read(&r.path)).collect::<Option<Vec<_>>>().map(|values| c.eval(&values).unwrap_or(Value::Null)),
+                (_, true) => read(&e.old),
+                (None, false) => read(&e.new),
+            };
+            match value {
+                Some(current) => format!("{}={}", e.old, render::witness(current, &e.ty)),
+                None => format!("{}=absent", e.old),
             }
-            format!("{}={}", e.old, render::witness(current, &e.ty))
         })
         .collect();
     format!("{}{{{}}}", crate::classfile::simple_name_of(class), parts.join(", "))
@@ -645,7 +664,7 @@ fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::ha
 
 /// Makes `record` in the interpreter (its classes under `prefix/` when given) from its leaves, the values of `flat`
 /// at the indices `leaves` gives in turn, each inner object made first.
-fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Option<&str>, flat: &[Value], leaves: &mut dyn Iterator<Item = usize>) -> Result<Value, Fault> {
+fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Option<&str>, flat: &[Value], leaves: &mut dyn Iterator<Item = crate::harness::Leaf>) -> Result<Value, Fault> {
     let owner = match prefix {
         Some(p) => format!("{p}/{}", record.class),
         None => record.class.clone(),
@@ -654,7 +673,15 @@ fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Optio
     let mut args = Vec::new();
     for (_, t) in &record.params {
         if t.is_primitive() {
-            args.push(flat[leaves.next().expect("a leaf for each primitive argument")]);
+            args.push(match leaves.next().expect("a leaf for each primitive argument") {
+                crate::harness::Leaf::Flat(i) => flat[i],
+                // An expression over the new version's leaves (H5's rest), as the harness computes it; one that
+                // divides by zero throws, and the input is skipped as one a constructor rejects.
+                crate::harness::Leaf::Computed(e, at) => {
+                    let values: Vec<Value> = at.iter().map(|i| flat[*i]).collect();
+                    e.eval(&values).map_err(|_| m.throw("java/lang/ArithmeticException", Some("/ by zero")))?
+                }
+            });
         } else if let Some(inner) = nested.next() {
             args.push(construct(m, inner, prefix, flat, leaves)?);
         }

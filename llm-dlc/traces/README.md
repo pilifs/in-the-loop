@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 08:11 UTC |
-| Prompts | 1,126 |
-| Model calls | 11,377 |
-| Tool calls | 12,260 (248 failed) |
-| Compactions | 155 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 08:34 UTC |
+| Prompts | 1,131 |
+| Model calls | 11,438 |
+| Tool calls | 12,324 (248 failed) |
+| Compactions | 156 |
 | Subagents | 5 |
-| Tokens written | 13,840,397 |
-| Tokens read | 1,888,418,775 (97.9% from cache) |
-| Commits with a trace | 341 |
-| Log snapshots | 418 (1099.6 MB gzipped, 404 uploaded) |
+| Tokens written | 13,903,885 |
+| Tokens read | 1,899,126,882 (97.9% from cache) |
+| Commits with a trace | 342 |
+| Log snapshots | 419 (1104.5 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 4 h 9 min | `claude-opus-5-5` | 55 | 766 | 795 | 6 | 10 | 329,169 | 13 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 4 h 33 min | `claude-opus-5-5` | 60 | 827 | 859 | 6 | 11 | 329,169 | 14 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,15 +127,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 633,808 | 1,548 | 2,499,851 | 143,449,258 | 98.3% | 230 |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 697,296 | 1,670 | 2,728,675 | 153,928,419 | 98.3% | 225 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,749 | 87.7% | 46 |
-| `Edit` | 496 | 4.0% | 22 |
-| `Read` | 454 | 3.7% | 23 |
+| `Bash` | 10,804 | 87.7% | 46 |
+| `Edit` | 500 | 4.1% | 22 |
+| `Read` | 459 | 3.7% | 23 |
 | `Write` | 346 | 2.8% | 20 |
 | `ToolSearch` | 77 | 0.6% | 18 |
 | `Monitor` | 47 | 0.4% | 13 |
@@ -496,6 +496,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 339 | change `ttrwlzny` | Object parameters in property checks, made by their constructor, read by field paths now and under \old, compared by identity, and null or one object by the harness's flags (H2's rest; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819.jsonl.gz)) |
 | 340 | change `vnrpwzkx` | Propose a false long-token finding for the allow list: a test's work directory name | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/d3b3bdd48cf65f6a6458b3a57bb5ca161874d1639bc421968052c3f40a99e845.jsonl.gz)) |
 | 341 | change `nywxuwqr` | Output relations for the result under a correspondence, object results related by their field paths, and --correspondence FILE on equivalence (H5's rest, first step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a.jsonl.gz)) |
+| 342 | change `ryyzlszo` | Input equations that compute: a previous field given by an expression over the new object's leaves, and refused where the preservation contract anchors the input (H5's rest, second step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7.jsonl.gz)) |
 
 ## Logs
 
@@ -548,7 +549,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 13 | 0 | 31.1 MB | `faffd3e2931a`, not uploaded |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 14 | 0 | 36.0 MB | `b7e899438760`, not uploaded |
 
 ## Session notes
 

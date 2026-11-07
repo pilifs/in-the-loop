@@ -111,28 +111,138 @@ pub struct RecordType {
 /// int quantity)` now).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Corresponds {
-    /// For each leaf of the previous version's construction, in order, the index of the new construction's leaf it
-    /// is made from: the leaf the equation naming it gives.
-    pub leaves: Vec<usize>,
+    /// For each leaf of the previous version's construction, in order, what it is made from: the new
+    /// construction's leaf the equation naming it gives, or the expression over the new construction's leaves it
+    /// gives.
+    pub leaves: Vec<Source>,
     /// The equations, each between a primitive field path of the previous version's object and one of the new
-    /// one's. They are assumed of the two objects as made (an input on which one fails is outside the relation),
-    /// and compared of them as the calls leave them, and of two results of the same pair of classes.
+    /// one's, or an expression over the new one's. They are assumed of the two objects as made (an input on which
+    /// one fails is outside the relation), and compared of them as the calls leave them, and of two results of the
+    /// same pair of classes.
     pub equations: Vec<FieldEquation>,
 }
 
+/// What a leaf of the previous version's construction is made from, under a correspondence (step H5).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Source {
+    /// The new construction's leaf of this index.
+    Leaf(usize),
+    /// An expression over the new construction's leaves, each read named by its index among them.
+    Computed(Computed),
+}
+
+/// An expression over primitive field paths of the new version's object, giving a field of the previous
+/// version's (H5's rest): `old.p.cents == new.p.dollars * 100 + new.p.cents` has `dollars * 100 + cents`. Kept as
+/// pieces of text and reads, so that it can be written over any root, compiled over any locals and evaluated over
+/// any values. Each path it reads is both a field path of the new object and a leaf of its construction, so that it
+/// gives the previous leaf before the call and is compared after it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Computed {
+    pub pieces: Vec<Piece>,
+    /// The paths read, each once, in order of first reading.
+    pub reads: Vec<Read>,
+    /// The type it gives: the previous version's field's, `int`, `long` or `boolean`.
+    pub ty: Type,
+}
+
+/// A piece of a [`Computed`] expression: text as written, or the read of this index.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Piece {
+    Text(String),
+    Read(usize),
+}
+
+/// A field path a [`Computed`] expression reads: `dollars`, of the type `ty`, which is the new construction's leaf of
+/// index `leaf`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Read {
+    pub path: String,
+    pub ty: Type,
+    pub leaf: usize,
+}
+
+impl Computed {
+    /// The expression written with each read as `name(path)`: `q.dollars * 100 + q.cents` for `|p|
+    /// format!("q.{p}")`.
+    pub fn text(&self, name: &dyn Fn(&str) -> String) -> String {
+        self.pieces.iter().map(|p| match p {
+            Piece::Text(t) => t.clone(),
+            Piece::Read(i) => name(&self.reads[*i].path),
+        }).collect()
+    }
+
+    /// The expression compiled over locals: read `i` in the local `slots[i]`, of its type. Its type promotes to the
+    /// field's, as [`Computed::ty`] was checked to when the correspondence was read.
+    pub fn parse(&self, slots: &[u16]) -> Result<expr::Expr, Error> {
+        let params: Vec<Param> = self.reads.iter().zip(slots).enumerate().map(|(i, (r, s))| Param { name: format!("read__{i}"), ty: r.ty.clone(), slot: *s }).collect();
+        let text = self.text_over_reads();
+        let e = expr::parse_value(&text, &params, None, slots.iter().map(|s| s + 2).max().unwrap_or(0))?;
+        let fits = match (expr::ty_of(&self.ty), e.ty()) {
+            (Some(expr::Ty::Long), expr::Ty::Int | expr::Ty::Long) | (Some(expr::Ty::Int), expr::Ty::Int) | (Some(expr::Ty::Boolean), expr::Ty::Boolean) => true,
+            _ => false,
+        };
+        if !fits || !matches!(self.ty, Type::Int | Type::Long | Type::Boolean) {
+            return Err(Error::new(format!("{} is {}, and the field it gives is {}", self.text(&|p| p.to_string()), match e.ty() { expr::Ty::Int => "an int", expr::Ty::Long => "a long", expr::Ty::Boolean => "a boolean" }, self.ty.java_name())));
+        }
+        Ok(e)
+    }
+
+    fn text_over_reads(&self) -> String {
+        self.pieces.iter().map(|p| match p {
+            Piece::Text(t) => t.clone(),
+            Piece::Read(i) => format!("read__{i}"),
+        }).collect()
+    }
+
+    /// The value it gives over the values of its reads, in order, widened to [`Computed::ty`]; `Err` where it
+    /// divides by zero.
+    pub fn eval(&self, values: &[crate::interp::Value]) -> Result<crate::interp::Value, Error> {
+        let slots: Vec<u16> = (0..self.reads.len() as u16).map(|i| 2 * i).collect();
+        let e = self.parse(&slots)?;
+        let mut locals = vec![crate::interp::Value::Int(0); 2 * self.reads.len()];
+        for (i, v) in values.iter().enumerate() {
+            locals[2 * i] = *v;
+        }
+        let v = expr::eval(&e, &locals)?;
+        Ok(match (v, &self.ty) {
+            (crate::interp::Value::Int(x), Type::Long) => crate::interp::Value::Long(i64::from(x)),
+            (v, _) => v,
+        })
+    }
+}
+
+/// A leaf of a construction as the harness passes it: the flat parameter of this index, or an expression over
+/// flat parameters (the previous version's object under a correspondence, H5's rest), each read the parameter of
+/// the index `at` gives in turn.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Leaf {
+    Flat(usize),
+    Computed(Computed, Vec<usize>),
+}
+
 /// One equation of [`Corresponds`]: `old.q.cents == new.q.amount.cents` as the paths `cents` and `amount.cents`
-/// from the two objects, of the primitive type `ty`.
+/// from the two objects, of the primitive type `ty`; or, where the new side is an expression over the new object's
+/// paths (`computed`), `new` is that expression over bare paths, `dollars * 100 + cents`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FieldEquation {
     pub old: String,
     pub new: String,
     pub ty: Type,
+    pub computed: Option<Computed>,
 }
 
 impl FieldEquation {
     /// `old.q.cents == new.q.amount.cents`, for the objects named `old_root` and `new_root`.
     pub fn text(&self, old_root: &str, new_root: &str) -> String {
-        format!("old.{old_root}.{} == new.{new_root}.{}", self.old, self.new)
+        format!("old.{old_root}.{} == {}", self.old, self.new_side(&format!("new.{new_root}")))
+    }
+
+    /// The new side over the object `root`: `root.amount.cents`, or `root.dollars * 100 + root.cents`.
+    pub fn new_side(&self, root: &str) -> String {
+        match &self.computed {
+            Some(c) => c.text(&|p| format!("{root}.{p}")),
+            None => format!("{root}.{}", self.new),
+        }
     }
 }
 
@@ -251,9 +361,23 @@ impl RecordType {
     /// The flat parameters its leaves are taken from, in order, for an object whose leaves start at `first`: the
     /// next ones, or under a correspondence the new construction's leaves its equations name.
     pub fn leaf_indices(&self, first: usize) -> Vec<usize> {
+        self.leaves(first).into_iter().map(|l| match l {
+            Leaf::Flat(i) => i,
+            // Only the previous version's object under a correspondence has computed leaves, and its callers ask
+            // for `leaves`.
+            Leaf::Computed(_, at) => at.first().copied().unwrap_or(first),
+        }).collect()
+    }
+
+    /// As [`RecordType::leaf_indices`], with a leaf an expression gives (H5's rest) as that expression over the
+    /// flat parameters it reads.
+    pub fn leaves(&self, first: usize) -> Vec<Leaf> {
         match &self.corresponds {
-            Some(c) => c.leaves.iter().map(|i| first + i).collect(),
-            None => (first..first + self.components.len()).collect(),
+            Some(c) => c.leaves.iter().map(|s| match s {
+                Source::Leaf(i) => Leaf::Flat(first + i),
+                Source::Computed(e) => Leaf::Computed(e.clone(), e.reads.iter().map(|r| first + r.leaf).collect()),
+            }).collect(),
+            None => (first..first + self.components.len()).map(Leaf::Flat).collect(),
         }
     }
 
@@ -1388,7 +1512,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                         code.bind(next);
                     }
                 }
-                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut made.leaf_indices(*first).into_iter());
+                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut made.leaves(*first).into_iter());
                 code.store(Kind::Ref, local);
                 code.bind(done);
             }
@@ -1897,7 +2021,8 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
 /// the first it leaves free.
 #[allow(clippy::too_many_arguments)]
 fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, equations: &[FieldEquation], scratch: u16, fail: Label) -> u16 {
-    let (link, old_value, new_value, old_present, new_present) = (scratch, scratch + 1, scratch + 3, scratch + 5, scratch + 6);
+    let (link, old_value, new_value, old_present, new_present, read_present, reads) = (scratch, scratch + 1, scratch + 3, scratch + 5, scratch + 6, scratch + 7, scratch + 8);
+    let mut used = scratch + 8;
     let compare = code.label();
     let done = code.label();
     code.load(Kind::Ref, old);
@@ -1909,46 +2034,47 @@ fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::wr
     code.load(Kind::Ref, new);
     code.if_null(fail);
     for equation in equations {
-        let (Some((old_steps, ty)), Some((new_steps, _))) = (field_steps(old_fields, &equation.old), field_steps(fields, &equation.new)) else {
+        let Some((old_steps, ty)) = field_steps(old_fields, &equation.old) else {
             // A path the layout doesn't have was refused when the correspondence was read; never agree on one.
             code.goto(fail);
             continue;
         };
-        for (root, steps, prefix, value, present) in [(old, &old_steps, Some("before"), old_value, old_present), (new, &new_steps, None, new_value, new_present)] {
-            let absent = code.label();
-            let read = code.label();
-            // A zero first, so that the value's local has its type on every path, as the JVM's verifier wants.
-            match kind_of(&ty) {
-                Kind::Int => code.iconst(0),
-                Kind::Long => code.op(0x09),
-                Kind::Float => code.op(0x0b),
-                Kind::Double => code.op(0x0e),
-                Kind::Ref => code.op(0x01),
-            }
-            code.store(kind_of(&ty), value);
-            code.load(Kind::Ref, root);
-            for (k, (owner, name, descriptor)) in steps.iter().enumerate() {
-                let (owner, descriptor) = match prefix {
-                    Some(p) => (format!("{p}/{owner}"), descriptor.strip_prefix('L').map(|c| format!("L{p}/{c}")).unwrap_or_else(|| descriptor.clone())),
-                    None => (owner.clone(), descriptor.clone()),
+        emit_read_path(code, pool, old, &old_steps, Some("before"), &ty, old_value, old_present, link);
+        match &equation.computed {
+            None => {
+                let Some((new_steps, _)) = field_steps(fields, &equation.new) else {
+                    code.goto(fail);
+                    continue;
                 };
-                let field = pool.field_ref(&owner, name, &descriptor);
-                code.op_u16(0xb4, field); // getfield
-                if k + 1 < steps.len() {
-                    code.store(Kind::Ref, link);
-                    code.load(Kind::Ref, link);
-                    code.if_null(absent);
-                    code.load(Kind::Ref, link);
-                }
+                emit_read_path(code, pool, new, &new_steps, None, &ty, new_value, new_present, link);
             }
-            code.store(kind_of(&ty), value);
-            code.iconst(1);
-            code.store(Kind::Int, present);
-            code.goto(read);
-            code.bind(absent);
-            code.iconst(0);
-            code.store(Kind::Int, present);
-            code.bind(read);
+            // An expression over the new object's paths (H5's rest): absent where one of them is, else its value.
+            Some(c) => {
+                let slots: Vec<u16> = (0..c.reads.len() as u16).map(|j| reads + 2 * j).collect();
+                used = used.max(reads + 2 * c.reads.len() as u16);
+                let (Ok(compiled), Some(steps)) = (c.parse(&slots), c.reads.iter().map(|r| field_steps(fields, &r.path).map(|(s, _)| s)).collect::<Option<Vec<_>>>()) else {
+                    code.goto(fail);
+                    continue;
+                };
+                let absent = code.label();
+                let read = code.label();
+                for ((r, steps), slot) in c.reads.iter().zip(&steps).zip(&slots) {
+                    emit_read_path(code, pool, new, steps, None, &r.ty, *slot, read_present, link);
+                    code.load(Kind::Int, read_present);
+                    code.if_zero(Cond::Eq, absent);
+                }
+                expr::emit_promoted(&compiled, expr::ty_of(&ty).unwrap_or(expr::Ty::Int), code, pool);
+                code.store(kind_of(&ty), new_value);
+                code.iconst(1);
+                code.store(Kind::Int, new_present);
+                code.goto(read);
+                code.bind(absent);
+                zero_of(code, &ty);
+                code.store(kind_of(&ty), new_value);
+                code.iconst(0);
+                code.store(Kind::Int, new_present);
+                code.bind(read);
+            }
         }
         let next = code.label();
         code.load(Kind::Int, old_present);
@@ -1960,13 +2086,59 @@ fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::wr
         code.bind(next);
     }
     code.bind(done);
-    scratch + 7
+    used
+}
+
+/// Pushes the zero of the primitive type `ty`.
+fn zero_of(code: &mut CodeBuilder, ty: &Type) {
+    match kind_of(ty) {
+        Kind::Int => code.iconst(0),
+        Kind::Long => code.op(0x09),
+        Kind::Float => code.op(0x0b),
+        Kind::Double => code.op(0x0e),
+        Kind::Ref => code.op(0x01),
+    }
+}
+
+/// Emits the read of the primitive field path `steps` of type `ty` from the object in the local `root` (its classes
+/// under `prefix/` when given) into the local `value`, with 1 in the local `present`, or 0 there (and the type's
+/// zero in `value`) where the path goes through null; `link` holds each object on the way.
+#[allow(clippy::too_many_arguments)]
+fn emit_read_path(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, root: u16, steps: &[(String, String, String)], prefix: Option<&str>, ty: &Type, value: u16, present: u16, link: u16) {
+    let absent = code.label();
+    let read = code.label();
+    // A zero first, so that the value's local has its type on every path, as the JVM's verifier wants.
+    zero_of(code, ty);
+    code.store(kind_of(ty), value);
+    code.load(Kind::Ref, root);
+    for (k, (owner, name, descriptor)) in steps.iter().enumerate() {
+        let (owner, descriptor) = match prefix {
+            Some(p) => (format!("{p}/{owner}"), descriptor.strip_prefix('L').map(|c| format!("L{p}/{c}")).unwrap_or_else(|| descriptor.clone())),
+            None => (owner.clone(), descriptor.clone()),
+        };
+        let field = pool.field_ref(&owner, name, &descriptor);
+        code.op_u16(0xb4, field); // getfield
+        if k + 1 < steps.len() {
+            code.store(Kind::Ref, link);
+            code.load(Kind::Ref, link);
+            code.if_null(absent);
+            code.load(Kind::Ref, link);
+        }
+    }
+    code.store(kind_of(ty), value);
+    code.iconst(1);
+    code.store(Kind::Int, present);
+    code.goto(read);
+    code.bind(absent);
+    code.iconst(0);
+    code.store(Kind::Int, present);
+    code.bind(read);
 }
 
 /// Emits the making of `record` (its class under `prefix/` when given, the previous version's) from its leaves, the
 /// flat parameters `leaves` gives in turn, leaving the object on the stack: `new`, the arguments with each inner
 /// construction made in its place, and the constructor's call.
-fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, record: &RecordType, prefix: Option<&str>, params: &[Param], leaves: &mut dyn Iterator<Item = usize>) {
+fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, record: &RecordType, prefix: Option<&str>, params: &[Param], leaves: &mut dyn Iterator<Item = Leaf>) {
     let owner = match prefix {
         Some(p) => format!("{p}/{}", record.class),
         None => record.class.clone(),
@@ -1977,8 +2149,16 @@ fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     let mut nested = record.inner.iter();
     for (_, t) in &record.params {
         if t.is_primitive() {
-            let leaf = leaves.next().expect("a leaf for each primitive argument");
-            code.load(kind_of(t), params[leaf].slot);
+            match leaves.next().expect("a leaf for each primitive argument") {
+                Leaf::Flat(leaf) => code.load(kind_of(t), params[leaf].slot),
+                // An expression over the new version's leaves (H5's rest), compiled over their locals; one that
+                // divides by zero throws here, and the input is skipped as one a constructor rejects.
+                Leaf::Computed(e, at) => {
+                    let slots: Vec<u16> = at.iter().map(|i| params[*i].slot).collect();
+                    let compiled = e.parse(&slots).expect("checked when the correspondence was read");
+                    expr::emit_promoted(&compiled, expr::ty_of(t).unwrap_or(expr::Ty::Int), code, pool);
+                }
+            }
         } else if let Some(inner) = nested.next() {
             emit_construct(code, pool, inner, prefix, params, leaves);
         }
@@ -2123,9 +2303,17 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             match previous {
                 Some(previous) => {
                     let old = format!("before.{}", previous.java_name());
-                    let old_leaves = previous.leaf_indices(*first);
+                    // A leaf an expression gives (H5's rest) is that expression over the parameters it reads.
+                    let old_leaves: Vec<String> = previous.leaves(*first).into_iter().map(|l| match l {
+                        Leaf::Flat(i) => params[i].name.clone(),
+                        Leaf::Computed(e, at) => {
+                            let names: Vec<(String, String)> = e.reads.iter().zip(&at).map(|(r, i)| (r.path.clone(), params[*i].name.clone())).collect();
+                            let text = e.text(&|p| names.iter().find(|(q, _)| q == p).map(|(_, n)| n.clone()).unwrap_or_default());
+                            match e.ty { Type::Long => format!("(long) ({})", text.trim()), _ => format!("({})", text.trim()) }
+                        }
+                    }).collect();
                     s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
-                    let (old_made, new_made) = (construction_source(previous, "before.", &mut old_leaves.iter().map(|i| &params[*i])), construction_source(record, "", &mut leaves.iter()));
+                    let (old_made, new_made) = (construction_source_of(previous, "before.", &mut old_leaves.into_iter()), construction_source(record, "", &mut leaves.iter()));
                     // A choice (step H2): null, or the same object as an earlier parameter that is not null.
                     let chosen = |side: &str, made: String| -> String {
                         let Some(c) = layout.choice(name) else { return made };
@@ -2267,13 +2455,18 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
 /// The Java for making `record` (its classes under `prefix`, `before.` for the previous version's) from the next of
 /// `leaves`: `new before.shop.Quote(new before.shop.Money(q_amount_cents), q_quantity)`.
 fn construction_source<'a>(record: &RecordType, prefix: &str, leaves: &mut impl Iterator<Item = &'a Param>) -> String {
+    construction_source_of(record, prefix, &mut leaves.map(|p| p.name.clone()))
+}
+
+/// As [`construction_source`], with each leaf's Java given: a parameter's name, or an expression over them.
+fn construction_source_of(record: &RecordType, prefix: &str, leaves: &mut dyn Iterator<Item = String>) -> String {
     let mut nested = record.inner.iter();
     let args: Vec<String> = record
         .params
         .iter()
         .map(|(_, t)| match t {
-            Type::Object(_) => nested.next().map(|r| construction_source(r, prefix, leaves)).unwrap_or_default(),
-            _ => leaves.next().map(|p| p.name.clone()).unwrap_or_default(),
+            Type::Object(_) => nested.next().map(|r| construction_source_of(r, prefix, leaves)).unwrap_or_default(),
+            _ => leaves.next().unwrap_or_default(),
         })
         .collect();
     format!("new {prefix}{}({})", record.java_name(), args.join(", "))
@@ -2282,7 +2475,7 @@ fn construction_source<'a>(record: &RecordType, prefix: &str, leaves: &mut impl 
 /// The Java for two objects satisfying a correspondence's equations, as [`compare_corresponding`] compares them
 /// (a path through null reading as absent is left out, for brevity): `(q_before.cents == q_after.amount.cents)`.
 fn equations_source(old: &str, new: &str, equations: &[FieldEquation]) -> String {
-    let parts: Vec<String> = equations.iter().map(|e| format!("{old}.{} == {new}.{}", e.old, e.new)).collect();
+    let parts: Vec<String> = equations.iter().map(|e| format!("{old}.{} == {}", e.old, e.computed.as_ref().map(|_| format!("({})", e.new_side(new).trim())).unwrap_or_else(|| e.new_side(new)))).collect();
     format!("({})", if parts.is_empty() { "true".to_string() } else { parts.join(" && ") })
 }
 
@@ -2522,7 +2715,7 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
                     code.bind(next);
                 }
             }
-            emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaf_indices(*first).into_iter());
+            emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaves(*first).into_iter());
             code.store(Kind::Ref, local);
             code.bind(done);
         }

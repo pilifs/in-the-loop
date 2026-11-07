@@ -985,3 +985,189 @@ fn the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
+
+// Input equations that compute (H5's rest): the previous version's field given by an expression over the new
+// version's leaves, `old.p.cents == new.p.dollars * 100 + new.p.cents`, made into the previous object before the
+// call and compared after it; refused by a claim whose preservation contract anchors the input.
+
+const PRICE_BEFORE: &str = r#"package prices;
+public final class Price {
+    long cents;
+    public Price(long cents) {
+        if (cents < 0) throw new IllegalArgumentException();
+        this.cents = cents;
+    }
+}
+"#;
+
+const PRICE_AFTER: &str = r#"package prices;
+public final class Price {
+    long dollars;
+    int cents;
+    public Price(long dollars, int cents) {
+        if (dollars < 0 || cents < 0 || cents >= 100) throw new IllegalArgumentException();
+        this.dollars = dollars;
+        this.cents = cents;
+    }
+}
+"#;
+
+const PRICES_BEFORE: &str = r#"package prices;
+public final class Prices {
+    public static long total(Price p, int n) { return p.cents * n; }
+    public static Price doubled(Price p) { return new Price(p.cents * 2); }
+    public static void raise(Price p, int by) { if (by > 0) p.cents += by; }
+}
+"#;
+
+const PRICES_AFTER: &str = r#"package prices;
+public final class Prices {
+    public static long total(Price p, int n) { return (p.dollars * 100 + p.cents) * n; }
+    public static Price doubled(Price p) { long c = (p.dollars * 100 + p.cents) * 2; return new Price(c / 100, (int) (c % 100)); }
+    public static void raise(Price p, int by) {
+        if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.dollars = c / 100; p.cents = (int) (c % 100); }
+    }
+}
+"#;
+
+const PRICES_DEFECT: &str = r#"package prices;
+public final class Prices {
+    // A cent too much on each item.
+    public static long total(Price p, int n) { return (p.dollars * 100 + p.cents + 1) * n; }
+    public static Price doubled(Price p) { long c = (p.dollars * 100 + p.cents) * 2; return new Price(c / 100, (int) (c % 100)); }
+    // The carry into the dollars dropped: seen only in the price as the call leaves it.
+    public static void raise(Price p, int by) {
+        if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.cents = (int) (c % 100); }
+    }
+}
+"#;
+
+/// The price kernel's builds, compiled once: `before` (`Price(long cents)`), and `after` and `defect`
+/// (`Price(long dollars, int cents)`).
+fn price_builds() -> Option<&'static PathBuf> {
+    static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
+    DIR.get_or_init(|| {
+        compiled()?;
+        let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-prices");
+        let _ = std::fs::remove_dir_all(&root);
+        for (build, price, prices) in [("before", PRICE_BEFORE, PRICES_BEFORE), ("after", PRICE_AFTER, PRICES_AFTER), ("defect", PRICE_AFTER, PRICES_DEFECT)] {
+            let src = root.join(format!("{build}-src/prices"));
+            std::fs::create_dir_all(&src).unwrap();
+            std::fs::write(src.join("Price.java"), price).unwrap();
+            std::fs::write(src.join("Prices.java"), prices).unwrap();
+            let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-d"]).arg(root.join(build)).arg(src.join("Price.java")).arg(src.join("Prices.java")).status().expect("javac runs");
+            assert!(status.success(), "the price kernel compiles");
+        }
+        Some(root)
+    })
+    .as_ref()
+}
+
+fn dollars_and_cents() -> jvmcontract::spec::Correspondence {
+    correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")], None)
+}
+
+/// The kernel claim made over the price kernel: `subject`, with `p` anchored (identity) and `correspondence`.
+fn price_claim(subject: &str, c: jvmcontract::spec::Correspondence) -> jvmcontract::spec::CanonicalClaim {
+    use jvmcontract::spec::{Derivation, ExternalInput};
+    let mut claim = kernel_claim(subject, &[]);
+    claim.contract.inputs = vec![ExternalInput { name: "p".into(), ty: "prices.Price".into(), derivation: Derivation::Identity }, ExternalInput { name: "n".into(), ty: "int".into(), derivation: Derivation::Identity }];
+    let domain = claim.domain.as_mut().unwrap();
+    domain.classes = vec!["prices.Price".into()];
+    domain.bounds.after.input_objects = 1;
+    claim.correspondence = Some(c);
+    claim
+}
+
+#[test]
+fn a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_of_a_price() {
+    let Some(root) = price_builds() else { return };
+    let o = related(root, "after", "prices.Prices#total", dollars_and_cents(), "total");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let domain = o.domain.as_deref().unwrap_or_default();
+    assert!(domain.contains("in the previous version, a Price made by its constructor, Price(cents: long), from the new p's dollars * 100 + cents as the correspondence's input equations say (old.p.cents == new.p.dollars * 100 + new.p.cents)"), "{domain}");
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("p_before = new before.prices.Price((long) (p_dollars * 100 + p_cents));"), "{source}");
+    assert!(source.contains("if (!(p_before.cents == (p_after.dollars * 100 + p_after.cents))) { return; }"), "{source}");
+    // A result of the same pair of classes is compared under the equation, and so is the parameter as left.
+    for method in ["doubled", "raise"] {
+        let o = related(root, "after", &format!("prices.Prices#{method}"), dollars_and_cents(), method);
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+    }
+    // A cent too much is refuted, the previous object made from the witness's leaves, on a JVM too.
+    let o = related(root, "defect", "prices.Prices#total", dollars_and_cents(), "total");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert!(cx.input.starts_with("total(p=new Price("), "{}", cx.input);
+    assert_eq!(cx.differs, ["result"], "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // A carry dropped is seen in the price as the call leaves it, through the equation.
+    let o = related(root, "defect", "prices.Prices#raise", dollars_and_cents(), "raise");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["field:p"], "{}", o.output);
+    // The new version's price as left reads, through the equation, as it was made: only the previous one moved.
+    assert!(cx.before.starts_with("void, leaving p=Price{cents=") && cx.after == "void", "{} / {}", cx.before, cx.after);
+    confirmed_on_the_jvm(&o);
+}
+
+#[test]
+fn an_offset_in_a_computed_equation_hides_a_changed_total_and_a_claim_that_anchors_the_input_refuses_it() {
+    use jvmcontract::spec::{Derivation, ObservationState, Verdict as V};
+    let Some(root) = price_builds() else { return };
+    // The model case: an equation one cent off makes the defect's totals agree. Stated by hand with no contract, it
+    // is the user's, and the check proves what it was given.
+    let offset = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents + 1")], None);
+    let o = related(root, "defect", "prices.Prices#total", offset.clone(), "offset");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    // A claim whose contract anchors p refuses it by name: both versions receive the same p, and an equation that
+    // computes may change what it means. So is the right equation, which the tool can't tell from the offset.
+    let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build));
+    for c in [offset.clone(), dollars_and_cents()] {
+        let gap = check("defect", &price_claim("prices.Prices#total", c)).expect_err("an anchored input");
+        assert!(gap.what.contains("the preservation contract anchors p (its derivation is identity)"), "{gap:?}");
+    }
+    // A derivation a person stated has it: then it is theirs. The right one refutes the defect and proves the
+    // rewrite; the offset, stated, is what the check proves the defect against, and a stated derivation that says
+    // something else refuses the equation.
+    let stated = |c: jvmcontract::spec::Correspondence, expression: &str| {
+        let mut claim = price_claim("prices.Prices#total", c);
+        claim.contract.inputs[0].derivation = Derivation::Stated { expression: expression.into() };
+        claim
+    };
+    let right = stated(dollars_and_cents(), "old.p.cents == new.p.dollars * 100 + new.p.cents");
+    let o = check("defect", &right).expect("stated by a person");
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Refuted);
+    let o = check("after", &right).expect("stated by a person");
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert_eq!(state_of(&o, "result"), ObservationState::Preserved);
+    let o = check("defect", &stated(offset.clone(), "old.p.cents == new.p.dollars * 100 + new.p.cents + 1")).expect("stated by a person");
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    let gap = check("defect", &stated(offset, "old.p.cents == new.p.dollars * 100 + new.p.cents")).expect_err("not what the person stated");
+    assert!(gap.what.contains("does not say"), "{gap:?}");
+}
+
+/// The computed input equations under JBMC and under `auto --confirm`: the same verdicts as on the own checker,
+/// each refutation's witness run on a JVM, since JBMC checks the same harness (the previous leaf computed in its
+/// bytecode). A pipeline job (`cargo test --release --test heap -- --ignored computed_equations`).
+#[test]
+#[ignore = "runs JBMC on the computed equations: a pipeline job"]
+fn the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = price_builds() else { return };
+    let cases = [("after", "total", Verdict::Verified), ("after", "doubled", Verdict::Verified), ("after", "raise", Verdict::Verified), ("defect", "total", Verdict::Violation), ("defect", "raise", Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, method, expected) in cases {
+            let o = related_on(engine, confirm, root, build, &format!("prices.Prices#{method}"), dollars_and_cents(), method);
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build} {method}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}

@@ -121,8 +121,9 @@ pub struct Options {
     /// meaning of the result changed.
     pub results_agree_when: Option<String>,
     /// How the previous version's objects are made from the new version's and compared with them where their
-    /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations between
-    /// field paths of a parameter in each version ([`crate::spec::heap::relate`]), and an output relation for the
+    /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations giving
+    /// field paths of the previous version's parameter from the new one's, or an expression over them
+    /// ([`crate::spec::heap::relate`]), and an output relation for the
     /// result in place of [`Options::results_agree_when`] ([`crate::spec::heap::output_relation`]).
     pub correspondence: Option<crate::spec::Correspondence>,
     /// Object parameters made by their constructor that may be null (`--nullable`, step H2 of
@@ -942,7 +943,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             return refuse(&mut out, line, format!("the previous version is a static method and the new one a method of the record {}; give the previous version's arguments as expressions over the record's components and the parameters with --before-arguments, such as \"{example}\"", r.simple_name()));
         }
     };
-    // A correspondence's input equations (step H5): each between two paths, about parameters the versions share.
+    // A correspondence's input equations (step H5): each giving a field path of the previous version's parameter, from
+    // a path or an expression over the same parameter's (H5's rest).
     let correspondence = options.correspondence.as_ref().filter(|c| !c.inputs.is_empty() || !c.outputs.is_empty());
     if let Some(c) = correspondence {
         if components_passed || options.results_agree_when.is_some() {

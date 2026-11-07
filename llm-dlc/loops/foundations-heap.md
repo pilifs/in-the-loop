@@ -446,8 +446,42 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Shared files changed: `equivalence.rs` (the result relation taken from the correspondence, an object result's
     fields under a relation, the replay's evaluation of it), `main.rs` (`--correspondence`), `lib/README.md` (step
     5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (a `price` method in the object kernel's three builds).
-- Next: H5's rest, second step: input equations other than path = path (an expression over the new version's
-  leaves giving a previous leaf, refused where the preservation contract anchors the input).
+- **H5's rest, second step (2026-11-07): input equations that compute.** An input equation's new side may be an
+  expression over primitive field paths of one parameter's new object that are leaves of its construction, giving
+  the previous version's field (`int`, `long`, `boolean`): `Price(long cents)` before and `Price(long dollars, int
+  cents)` now are related by `old.p.cents == new.p.dollars * 100 + new.p.cents`
+  ([`harness::Computed`](../../lib/src/harness/mod.rs), `Source`, `Leaf`; `FieldEquation::computed`). The harness
+  computes the previous constructor's argument from the new leaves before the calls (`new
+  before.prices.Price((long) (p_dollars * 100 + p_cents))`), and after them compares the expression over the new
+  object's paths with the previous field, for the parameter as left and a result of the same pair of classes, absent
+  where a path goes through null; a division by zero skips the input as a constructor's rejection does, in the
+  harness and the replay alike. The interpreter's replay and the `--json` call compute it too, and the replays'
+  views read through it. In `spec::heap::check`, an equation that computes a field of an input the preservation
+  contract anchors (derivation `identity`) is `Unsupported`, the right expression as well as an offset one, which the
+  tool can't tell apart; under a derivation a person stated, an equation among its `&&` conjuncts stands, and one it
+  doesn't have is refused ([`spec::heap::anchored`](../../lib/src/spec/heap.rs)). An input the contract doesn't name
+  is internal, and the correspondence's to state. Refused by name: an old side that is not a path, a new side that
+  reads the previous version's input, a parameter as a whole, several parameters, a path that is no leaf, or has a
+  type that doesn't fit the field.
+  - Evidence inline: `lib/tests/heap.rs`, a price kernel (`prices.Price`, `prices.Prices`) and two tests:
+    `total`, `doubled` and `raise` verified between the two shapes, the harness's source checked; a cent too much in
+    `total` refuted (`differs = [result]`) and a carry into the dollars dropped in `raise` refuted (`differs =
+    [field:p]`), both on the JVM; the offset equation `… + 1` proving the defect equivalent where no contract anchors
+    `p` (the model case), refused by a claim that anchors `p`, as is the right one, and under a stated derivation the
+    right one refuting the defect and proving the rewrite, the offset one stated proving the defect, and an equation
+    the statement doesn't have refused. Three unit tests (`relate` with an expression, seven refusals, the anchoring
+    rule). Unit tests (194), `heap.rs` (34), `foundations.rs`, `conformance.rs` and `integration.rs` (64, 22 s at
+    load 1.2) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-083358`, the new ignored test in `heap.rs`,
+    the five checks under `--engine jbmc` and `auto --confirm`: expected exit 0, the three correct ones verified and
+    the two defects refuted with witnesses run on a JVM.
+  - Not yet: an expression over several parameters (`old.q.total == new.q.price * new.n`), or over fields that are
+    not leaves of the construction; a computed equation whose field is of another primitive type (`short`, a float);
+    an old side that is an expression.
+  - Shared files changed: `equivalence.rs` (two comments, the `correspondence` option's doc), `lib/README.md` (step
+    5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (the price kernel).
+- Next: H5's rest, third step: output relations for other observations, a parameter's field as the call leaves it
+  (`field:q.cents`, compared under the relation in place of the input equations), accounted as the result's are.
 - Status: working
 
 ## Loop settings

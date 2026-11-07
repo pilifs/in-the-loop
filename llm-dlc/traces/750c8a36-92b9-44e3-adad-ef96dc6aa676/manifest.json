@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T08:11:09.081Z",
-  "duration_seconds": 14990,
+  "ended": "2026-11-07T08:34:25.436Z",
+  "duration_seconds": 16386,
   "stats": {
-    "turns": 55,
-    "api_calls": 766,
-    "tool_calls": 795,
+    "turns": 60,
+    "api_calls": 827,
+    "tool_calls": 859,
     "tool_errors": 6,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 1548,
-      "output_tokens": 633808,
-      "cache_read_input_tokens": 143449258,
-      "cache_creation_input_tokens": 2499851
+      "input_tokens": 1670,
+      "output_tokens": 697296,
+      "cache_read_input_tokens": 153928419,
+      "cache_creation_input_tokens": 2728675
     }
   },
   "tools": {
-    "Bash": 681,
-    "Read": 62,
-    "Edit": 35,
+    "Bash": 736,
+    "Read": 67,
+    "Edit": 39,
     "Monitor": 5,
     "ToolSearch": 5,
     "Write": 5,
@@ -193,24 +193,38 @@
     {
       "index": 10,
       "started": "2026-11-07T07:27:22.866Z",
-      "ended": "2026-11-07T08:11:09.081Z",
-      "turns": 5,
-      "api_calls": 103,
+      "ended": "2026-11-07T08:11:46.466Z",
+      "turns": 6,
+      "api_calls": 107,
       "usage": {
-        "input_tokens": 210,
-        "output_tokens": 74549,
-        "cache_read_input_tokens": 19433886,
-        "cache_creation_input_tokens": 258496
+        "input_tokens": 218,
+        "output_tokens": 76764,
+        "cache_read_input_tokens": 20528858,
+        "cache_creation_input_tokens": 264168
       },
-      "peak_context_tokens": 271575
+      "peak_context_tokens": 277247
+    },
+    {
+      "index": 11,
+      "started": "2026-11-07T08:12:22.156Z",
+      "ended": "2026-11-07T08:34:25.436Z",
+      "turns": 4,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 114,
+        "output_tokens": 61273,
+        "cache_read_input_tokens": 9384189,
+        "cache_creation_input_tokens": 223152
+      },
+      "peak_context_tokens": 236231
     }
   ],
   "log": {
-    "sha256": "faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a",
-    "bytes": 23234819,
-    "lines": 8181,
-    "gzip_bytes": 4450511,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a.jsonl.gz"
+    "sha256": "b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7",
+    "bytes": 25380790,
+    "lines": 8871,
+    "gzip_bytes": 4875711,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -317,6 +331,14 @@
       "summary": "Output relations for the result under a correspondence, object results related by their field paths, and --correspondence FILE on equivalence (H5's rest, first step; verification pending)",
       "body": "A regression check's correspondence may now give an output relation for the result in place of --results-agree-when: a boolean over old.result, new.result and the new parameters, rewritten to one over previous and result (spec::heap::output_relation), so a long result that became a Money value object is related by old.result == new.result.cents. A result that is an object of an application class is in a result relation of either kind by its field paths, of whatever shape in each version, read through the objects in the harness's bytecode; two null results agree, one alone does not. Identity relations are still compared, so the alias-to-copy defect stays refuted by result == q under such a relation. A replay evaluates the relation on each result's field paths as the call left them (Replayed::result_paths, expr::eval_reading), with the harness run in the interpreter deciding the rest; a witness the relation fails on differs in result and is run on a JVM. jvmcontract equivalence reads a correspondence as JSON in the IR's form with --correspondence FILE. In spec::heap::check, a required observation under an output relation is compared under it rather than for equality, so it stays unresolved whatever the check finds (a relation like true would otherwise hide the offset defect) until the preservation contract's approved_changes has it. Also fixed: without --before-arguments, the previous version's parameter types were compared with the flat leaves, which refused a result relation over an object parameter.\n\nVerified inline: four new tests in lib/tests/heap.rs (a value-object result related, refused without the relation, a defect refuted on the JVM; the fixture's withQuantity across the two Quote shapes related by field paths, the alias-to-copy defect refuted by identity alone, a broken relation refuted; the claim's accounting with and without an approved change; the CLI with the golden correspondence file), and a unit test of output_relation. Unit tests (191), heap.rs (32), foundations.rs and conformance.rs pass; integration.rs passed 63 of 64 under load, its known flaky the_tools_own_checker_agrees_with_jbmc_on_integer_proofs passing alone in 8.2 s.\n\nJob 20261107-080218-output-relations-under-a-correspondence (quick, priority 10, for review: no runner was active) runs the new ignored test, the five checks under --engine jbmc and auto --confirm.",
       "log_sha256": "faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a"
+    },
+    {
+      "change_id": "ryyzlszonrxulsvrwwlxmvovqtrnxrmo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Input equations that compute: a previous field given by an expression over the new object's leaves, and refused where the preservation contract anchors the input (H5's rest, second step; verification pending)",
+      "body": "A correspondence's input equation may now give the previous version's field by an expression over primitive field paths of the same parameter's new object that are leaves of its construction: Price(long cents) before and Price(long dollars, int cents) now are related by old.p.cents == new.p.dollars * 100 + new.p.cents. The harness computes the previous constructor's argument from the new leaves before the calls and compares the expression over the new object's paths with the previous field after them (the parameter as left, and a result of the same pair of classes), a path through null reading as absent and a division by zero skipping the input; the interpreter's replay, the --json call and the replays' views compute it the same way (harness::Computed, Source, Leaf; FieldEquation::computed). Since such an equation can change what an input means (an offset of one cent makes a changed total agree), spec::heap::check refuses one about an input the claim's preservation contract anchors (derivation identity), the right expression as well as the offset, unless a person stated it among the input's derivation's conjuncts (spec::heap::anchored).\n\nVerified inline: a price kernel in lib/tests/heap.rs (total, doubled and raise verified between the two shapes; a cent too much in total and a dropped carry in raise refuted, on the JVM too; the offset equation proving the defect equivalent without a contract, refused by a claim anchoring p, and the stated derivations accepted or refused as they say), three unit tests in spec::heap, and the unit tests (194), heap.rs (34), foundations.rs, conformance.rs and integration.rs (64). Quick job 20261107-083358-computed-input-equations-under-a-corresp runs the ignored test with the five checks under --engine jbmc and auto --confirm: expected exit 0, three verified and two refuted with witnesses run on a JVM.",
+      "log_sha256": "b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7"
     }
   ],
   "logs": {
@@ -354,6 +376,12 @@
       "bytes": 11659876,
       "lines": 4193,
       "gzip_bytes": 2162832,
+      "url": null
+    },
+    "b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7": {
+      "bytes": 25380790,
+      "lines": 8871,
+      "gzip_bytes": 4875711,
       "url": null
     },
     "ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d": {
