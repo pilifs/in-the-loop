@@ -151,7 +151,7 @@ Nothing to do: the refactor is safe to ship. The proof assumes what it says: the
 
 How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over status: int × idempotent: boolean × attempts: int in 0.0 s; loops unwound 16 times with unwinding assertions.
 
-This page renders attempt `20261107T152515Z-e67070a4` at claim `43a5a1b9d05493a0`, in pipeline job `20261107-065648-example-170-a-retry-route-and-its-crossc`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215246Z-0a267420` at claim `e5539e714f9cf51b`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

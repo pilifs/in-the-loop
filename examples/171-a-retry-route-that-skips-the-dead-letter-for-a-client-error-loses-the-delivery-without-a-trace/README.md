@@ -161,7 +161,7 @@ Dead-letter what is given up, whatever the reason: keep the shortcut if the poli
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
 
-This page renders attempt `20261107T152515Z-459dad0d` at claim `9bfabfad2ab31e29`, in pipeline job `20261107-065648-example-171-a-retry-route-that-skips-the`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215253Z-cd4384bb` at claim `80e0489a725654a4`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

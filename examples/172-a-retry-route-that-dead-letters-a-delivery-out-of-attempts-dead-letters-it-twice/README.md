@@ -158,7 +158,7 @@ Return after the dead letter in the new branch, or drop the branch: the policy a
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as observe(status=20, idempotent=true, attempts=20), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
 
-This page renders attempt `20261107T152515Z-6250bac6` at claim `53fb155b7552eaa5`, in pipeline job `20261107-065648-example-172-a-retry-route-that-dead-lett`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215301Z-855f3916` at claim `00652edb34f94096`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

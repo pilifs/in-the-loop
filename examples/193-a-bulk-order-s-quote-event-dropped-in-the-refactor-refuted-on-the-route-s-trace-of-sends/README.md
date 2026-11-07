@@ -202,9 +202,9 @@ Send the event for every positive total, as before.
 
 ## Evidence
 
-How the verdict was reached: reused from the proof cache (claim sha256:1c38f6606503285961f824bbef075e01c6c986384a3aa47103b317d9e82b382e, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:34:03Z, on /tmp/jvmcontract-effects-3979172-1794065643844621690-0/before and /tmp/jvmcontract-effects-3979172-1794065643844621690-0/after): found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
+How the verdict was reached: reused from the proof cache (claim sha256:97e9847fa2781f7fa984347aa6898182175b0a1e3a015946efe3ef5160341eb4, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:12Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
 
-This page renders attempt `20261107T153359Z-ab122657` at claim `510031c58e443bcc`, in pipeline job `20261107-140010-example-193-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215308Z-be37c839` at claim `510031c58e443bcc`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -216,7 +216,7 @@ The entry points (no mapping: their inputs are anchored by the observation specs
 POST /quotes: refuted
   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
   witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
-  search: found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+  search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
   assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
@@ -238,12 +238,12 @@ shop.Pricing#discount: verified
   observations: result preserved, exception preserved
   domain: gross: long × quantity: int
 shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
   observations: result preserved, exception preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
 shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
   observations: result preserved, exception preserved, identity:result==q preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
 shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money

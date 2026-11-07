@@ -124,14 +124,14 @@ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1
 
 **What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
 
-This page renders attempt `20261107T174959Z-27a8531f` at claim `3d3ef9120b641e17`, in pipeline job `20261107-165153-example-161-a-refill-helper-aligned-to-t`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215311Z-3b95d0d9` at claim `3d3ef9120b641e17`, in pipeline job `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-note: TokenBucket.lastAfter's own check took 0.241 s
+note: TokenBucket.lastAfter's own check took 0.226 s
 note: TokenBucket.lastAfter, changed, stays as written in both versions: its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)
-note: the proof cache has no result for this claim (sha256:7f5919f00e4ca18cc2bb3b3498135f0f160df464ad50f4ce999cf6e418aa4587); proving
+note: the proof cache has no result for this claim (sha256:c8506152342bf5f54fdb41ac5fea27931813316de35d05d2b3bc43aa9e918f78); proving
 note: the proof cache took 0.000 s to compute this claim's key (both versions' closures, the harness's digest and the tools') and 0.000 s to look it up
 ✗ Behaviour of net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken changed outside the intended inputs (!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)):
   nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1)
@@ -140,7 +140,7 @@ note: the proof cache took 0.000 s to compute this claim's key (both versions' c
   (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
-note: stored in the proof cache as claim sha256:7f5919f00e4ca18cc2bb3b3498135f0f160df464ad50f4ce999cf6e418aa4587
+note: stored in the proof cache as claim sha256:c8506152342bf5f54fdb41ac5fea27931813316de35d05d2b3bc43aa9e918f78
 ```
 
 </details>

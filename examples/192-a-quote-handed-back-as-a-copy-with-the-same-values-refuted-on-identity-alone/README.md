@@ -236,7 +236,7 @@ Hand back `q`, as before, or make the copy the intended change and tell its call
 
 ## Evidence
 
-This page renders attempt `20261107T153352Z-69f5940d` at claim `0bdc5b62767fa0c6`, in pipeline job `20261107-140010-example-192-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215301Z-461041c6` at claim `0bdc5b62767fa0c6`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -269,12 +269,12 @@ shop.Pricing#discount: verified
   observations: result preserved, exception preserved
   domain: gross: long × quantity: int
 shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
   observations: result preserved, exception preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
 shop.Pricing#withQuantity: refuted
-  correspondence (inferred, proposed; refuted for sha256:43c5a96540cf99761c6d9cde8f94ca032662debb0e5034c5307610b9bd0e3bab): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  correspondence (inferred, proposed; refuted for sha256:b8d0f4e806590aae7cfe2b73976ed7f08de6f527292c4c375121db4833dd060d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
   observations: result unresolved, exception unresolved, identity:result==q refuted
   witness: withQuantity(q=new Quote(new Money(0), 1), quantity=0): before, Quote{cents=0, quantity=0}, leaving q=Quote{cents=0, quantity=0}, with result == q; after, Quote{amount=Money{cents=0}, quantity=0}, leaving q=Quote{amount=Money{cents=0}, quantity=0}
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int

@@ -78,6 +78,12 @@ llm-dlc/tools/prune_workspaces.py considers every workspace but the default: tho
 
 Verified by test_prune_workspaces.py, 12 cases on throwaway colocated jj repos: merged and deleted; an unmerged commit, an unsnapshotted edit, a unique gitignored .env (and --archive keeping it), a tracked dir named build, a forgotten dir with a unique file, a process inside, a .git directory, and an unfinished loop's workspace all block; a run record copied into the default under another name and ignored target/ are clear. A report-only run here (13 s) finds 3 of 13 clear (the engine-priorities leftovers examples, jbmc, native). The four cleanup-* are kept while cleanup.md waits on jobs. Blocked: the foundations streams' gitignored run records in loop-summaries/ (alignment, heap, observations, summaries), three trace logs only in the foundations directory, and the integration directory's merge files. Nothing was deleted.
 
+### Record verification results for the cleanup merge's 4 jobs, all passed
+
+change `xlsmwprlkmpz` · [log `719632e3f136`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/719632e3f1363999e9a66b6986979d3d1bca086c1090fe86c365cda4aae230e9.jsonl.gz)
+
+Ran the four jobs queued at b6cc7ceb0c96 on vm-1: examples 150-152 and 160-161, 170-172 and 190-196 each gave their recorded verdict (as expected), and lib/tests/integration.rs passed unchanged. Collect applied 40 example output files (README, result.json, verifier-output) and regenerated the examples table. Only attention: 1-CPU quotas held the example steps back a few seconds; estimates were far over (minutes against under a minute). No findings added.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/719632e3f1363999e9a66b6986979d3d1bca086c1090fe86c365cda4aae230e9.jsonl.gz) has every step in between: reasoning, tool calls and their results.

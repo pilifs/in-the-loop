@@ -1,0 +1,213 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-215001-cleanup-merge-lib-tests-integration-rs-a",
+  "title": "Cleanup merge: lib/tests/integration.rs at the merge, unchanged",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m37s, peak 2.0 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "step 1 (integration tests) was held back 2m49s by its 2-CPU quota in 2m37s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-215001-cleanup-merge-lib-tests-integration-rs-a.json",
+    "sha256": "6d7419a083c3ebf3b2a83a04da3908ccb86f1c5deeb6aaf7fd3fcb444e76211f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-215001-cleanup-merge-lib-tests-integration-rs-a",
+      "title": "Cleanup merge: lib/tests/integration.rs at the merge, unchanged",
+      "description": "Runs lib/tests/integration.rs as it is, at the cleanup merge. VF-010's integration job (20261107-165544-vf-010-s-integration-tests-at-the-fix-li) passed at the native stream's commit, before the merge, so nothing has run these tests (several of which run JBMC) on the combined code of the three cleanup streams and the default line. Expected: every non-ignored test passes. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Cleanup brief, Phase 4 step 3.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "native:probes"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/integration.rs"
+        ],
+        "commits": [
+          "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-07T21:50:01+00:00",
+        "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+        "by": "cleanup"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "as VF-010's integration job: a clean debug build of lib's tests with 4 jobs, then the suite (about 31 s after the build)"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+  "startedAt": "2026-11-07T21:50:51+00:00",
+  "finishedAt": "2026-11-07T21:53:30+00:00",
+  "wallSeconds": 159.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 825082,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 38654705664,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "as VF-010's integration job: a clean debug build of lib's tests with 4 jobs, then the suite (about 31 s after the build)"
+  },
+  "usage": {
+    "peakMemoryBytes": 2147495936,
+    "wallSeconds": 158.0,
+    "cpuSeconds": 292.4,
+    "memoryOfEstimate": 0.67,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 157.96,
+      "cpuSeconds": 292.36,
+      "cpuThrottledSeconds": 169.722,
+      "peakMemoryBytes": 2147495936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 123,
+        "bytes": 6508,
+        "sha256": "47941d1997899e00b2ddd52b914b47ea0510b544f6e8ec74b697b6ec2d3d0414",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 122,
+          "text": "test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 103.31s",
+          "groups": [
+            "ok",
+            "64",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "test a_target_identical_in_both_versions_needs_no_proof ... ok",
+        "test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok",
+        "test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok",
+        "test an_overloaded_method_is_named_by_its_parameter_types ... ok",
+        "test a_witness_through_contracts_is_run_on_a_jvm ... ok",
+        "test arrays_are_quantified_over_and_witnessed ... ok",
+        "test capability_contracts_list_each_entry_point_with_its_call_site ... ok",
+        "test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok",
+        "test details_print_the_statement_and_where_the_time_went ... ok",
+        "test draws_the_state_machine_of_a_contract ... ok",
+        "test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok",
+        "test generates_the_tla_operator_the_python_generator_wrote ... ok",
+        "test generalized_quantifiers_fold_and_counterexamples_shrink ... ok",
+        "test impure_or_unbounded_methods_are_refused_with_the_reason ... ok",
+        "test identity_and_initialization_agree_with_the_jvm ... ok",
+        "test jbmc_applies_the_contracts_for_its_gaps ... ok",
+        "test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok",
+        "test old_reads_an_array_as_the_call_received_it ... ok",
+        "test relocation_renames_the_class_and_its_references ... ok",
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test results_of_two_types_need_a_relation ... ok",
+        "test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_gap_scan_gives_each_class_initializer_a_shape ... ok",
+        "test the_gap_scan_names_what_the_own_checker_approximates ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 103.31s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T21:53:57+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

@@ -1,0 +1,1179 @@
+--- a/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md
++++ b/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md
+@@ -198,9 +198,9 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: reused from the proof cache (claim sha256:ae191a19f8279066b7de12bf4fad3af4e377edc54dfc307f1206a2305a2eb98f, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:33:55Z, on /tmp/jvmcontract-effects-3978393-1794065635615643632-0/before and /tmp/jvmcontract-effects-3978393-1794065635615643632-0/after): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions.
+-
+-This page renders attempt `20261107T153350Z-21e595e7` at claim `84e0cefa8773f7c4`, in pipeline job `20261107-140010-example-190-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: reused from the proof cache (claim sha256:2745ff1837465d10677f6aa14153b4f1d6e441d7099e8867e63ddbb60c8926a7, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:52:50Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions.
++
++This page renders attempt `20261107T215246Z-f6a51786` at claim `84e0cefa8773f7c4`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -233,12 +233,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json
++++ b/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153350Z-21e595e7",
++    "id": "20261107T215246Z-f6a51786",
+     "claim": "84e0cefa8773f7c4",
+-    "startedAt": "2026-11-07T15:33:50+00:00",
+-    "seconds": 5.5,
++    "startedAt": "2026-11-07T21:52:46+00:00",
++    "seconds": 4.9,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140010-example-190-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-190-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.9,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 1.1,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.8,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.6,
++        "seconds": 0.5,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-8g1c42ma/attempts/190/attempt-cc01s5xy"
++    "workspace": ".build-py/examples-7oakjyzj/attempts/190/attempt-f876whlp"
+   },
+   "conclusion": {
+     "claim": "84e0cefa8773f7c4",
+-    "attempt": "20261107T153350Z-21e595e7",
++    "attempt": "20261107T215246Z-f6a51786",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -191,7 +191,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "reused from the proof cache (claim sha256:ae191a19f8279066b7de12bf4fad3af4e377edc54dfc307f1206a2305a2eb98f, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:33:55Z, on /tmp/jvmcontract-effects-3978393-1794065635615643632-0/before and /tmp/jvmcontract-effects-3978393-1794065635615643632-0/after): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions",
++    "proof": "reused from the proof cache (claim sha256:2745ff1837465d10677f6aa14153b4f1d6e441d7099e8867e63ddbb60c8926a7, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:52:50Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions",
+     "problem": null,
+     "statement": null,
+     "trace": null,
+@@ -303,7 +303,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "26c3c7b52f046115d0e4a07f968251cb7421b7c5b2fe0face81e039b0210986e",
++        "sha256": "50deb1fc25ac29161e73842ffeb7191f3ca48fd0c20f5df26d6cd21cb1dde1e9",
+         "bytes": 5950
+       }
+     ]
+--- a/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt
++++ b/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt
+@@ -26,12 +26,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md
+@@ -204,7 +204,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T153350Z-05e9c4a9` at claim `425c9099c70d895d`, in pipeline job `20261107-140010-example-191-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215253Z-abddd4b2` at claim `425c9099c70d895d`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -216,7 +216,7 @@
+ POST /quotes: refuted
+   observations: result refuted, exception unresolved, status unresolved, KafkaTemplate.send refuted
+   witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+-  search: found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
++  search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+   assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+@@ -238,13 +238,13 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: refuted
+-  correspondence (inferred, proposed; refuted for sha256:3f7bdb454e471e963785b1b8453c2c65819d7ab6bf32b9349469bb0c4164c12c): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; refuted for sha256:85836ed5dcf6e6481e4d6590608105256c5e460e51c5a748ed645cb09c3e53e7): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result refuted, exception unresolved
+   witness: total(q=new Quote(new Money(0), 1)): before, 0; after, 1
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.json
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153350Z-05e9c4a9",
++    "id": "20261107T215253Z-abddd4b2",
+     "claim": "425c9099c70d895d",
+-    "startedAt": "2026-11-07T15:33:50+00:00",
+-    "seconds": 7.0,
++    "startedAt": "2026-11-07T21:52:53+00:00",
++    "seconds": 6.5,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140010-example-191-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-191-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.9,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.7,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.8,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 1.9,
++        "seconds": 2.2,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.3,
++        "seconds": 0.2,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -157,11 +157,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-qv260i_a/attempts/191/attempt-r6l00gtn"
++    "workspace": ".build-py/examples-h2m2tp12/attempts/191/attempt-qs038lj_"
+   },
+   "conclusion": {
+     "claim": "425c9099c70d895d",
+-    "attempt": "20261107T153350Z-05e9c4a9",
++    "attempt": "20261107T215253Z-abddd4b2",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -317,7 +317,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "0e6b57cb55da9a0b30ad3cf851db3a87fcc2a044e6e07cfc0583ee4d69c5dac1",
++        "sha256": "b896cc6d250d8b738281e32da5c3b08f94828d32f3f0015e659008c1423895d9",
+         "bytes": 6341
+       }
+     ]
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/verifier-output.txt
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/verifier-output.txt
+@@ -5,7 +5,7 @@
+ POST /quotes: refuted
+   observations: result refuted, exception unresolved, status unresolved, KafkaTemplate.send refuted
+   witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+-  search: found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
++  search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+   assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+@@ -27,13 +27,13 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: refuted
+-  correspondence (inferred, proposed; refuted for sha256:3f7bdb454e471e963785b1b8453c2c65819d7ab6bf32b9349469bb0c4164c12c): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; refuted for sha256:85836ed5dcf6e6481e4d6590608105256c5e460e51c5a748ed645cb09c3e53e7): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result refuted, exception unresolved
+   witness: total(q=new Quote(new Money(0), 1)): before, 0; after, 1
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md
++++ b/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md
+@@ -236,7 +236,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T153352Z-69f5940d` at claim `0bdc5b62767fa0c6`, in pipeline job `20261107-140010-example-192-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215301Z-461041c6` at claim `0bdc5b62767fa0c6`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -269,12 +269,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: refuted
+-  correspondence (inferred, proposed; refuted for sha256:43c5a96540cf99761c6d9cde8f94ca032662debb0e5034c5307610b9bd0e3bab): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; refuted for sha256:b8d0f4e806590aae7cfe2b73976ed7f08de6f527292c4c375121db4833dd060d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result unresolved, exception unresolved, identity:result==q refuted
+   witness: withQuantity(q=new Quote(new Money(0), 1), quantity=0): before, Quote{cents=0, quantity=0}, leaving q=Quote{cents=0, quantity=0}, with result == q; after, Quote{amount=Money{cents=0}, quantity=0}, leaving q=Quote{amount=Money{cents=0}, quantity=0}
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+--- a/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/result.json
++++ b/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153352Z-69f5940d",
++    "id": "20261107T215301Z-461041c6",
+     "claim": "0bdc5b62767fa0c6",
+-    "startedAt": "2026-11-07T15:33:52+00:00",
+-    "seconds": 5.7,
++    "startedAt": "2026-11-07T21:53:01+00:00",
++    "seconds": 4.7,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140010-example-192-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-192-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 1.0,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.6,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.8,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.6,
++        "seconds": 0.5,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -157,11 +157,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-c5cc97nw/attempts/192/attempt-lk5yzg8c"
++    "workspace": ".build-py/examples-hhd6i4wp/attempts/192/attempt-pl2tpit7"
+   },
+   "conclusion": {
+     "claim": "0bdc5b62767fa0c6",
+-    "attempt": "20261107T153352Z-69f5940d",
++    "attempt": "20261107T215301Z-461041c6",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -312,7 +312,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "c9e778043e5b1702bb5145cb5becad8a3238a0188022d3c6a8da686f47a60cf8",
++        "sha256": "fafe676c04fff0dad35e5b53498a695b13ce24ffba80603348699001734f85cb",
+         "bytes": 6092
+       }
+     ]
+--- a/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/verifier-output.txt
++++ b/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/verifier-output.txt
+@@ -26,12 +26,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: refuted
+-  correspondence (inferred, proposed; refuted for sha256:43c5a96540cf99761c6d9cde8f94ca032662debb0e5034c5307610b9bd0e3bab): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; refuted for sha256:b8d0f4e806590aae7cfe2b73976ed7f08de6f527292c4c375121db4833dd060d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result unresolved, exception unresolved, identity:result==q refuted
+   witness: withQuantity(q=new Quote(new Money(0), 1), quantity=0): before, Quote{cents=0, quantity=0}, leaving q=Quote{cents=0, quantity=0}, with result == q; after, Quote{amount=Money{cents=0}, quantity=0}, leaving q=Quote{amount=Money{cents=0}, quantity=0}
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md
+@@ -202,9 +202,9 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: reused from the proof cache (claim sha256:1c38f6606503285961f824bbef075e01c6c986384a3aa47103b317d9e82b382e, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:34:03Z, on /tmp/jvmcontract-effects-3979172-1794065643844621690-0/before and /tmp/jvmcontract-effects-3979172-1794065643844621690-0/after): found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
+-
+-This page renders attempt `20261107T153359Z-ab122657` at claim `510031c58e443bcc`, in pipeline job `20261107-140010-example-193-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: reused from the proof cache (claim sha256:97e9847fa2781f7fa984347aa6898182175b0a1e3a015946efe3ef5160341eb4, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:12Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
++
++This page renders attempt `20261107T215308Z-be37c839` at claim `510031c58e443bcc`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -216,7 +216,7 @@
+ POST /quotes: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+   witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+-  search: found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
++  search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+   assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+@@ -238,12 +238,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.json
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153359Z-ab122657",
++    "id": "20261107T215308Z-be37c839",
+     "claim": "510031c58e443bcc",
+-    "startedAt": "2026-11-07T15:33:59+00:00",
+-    "seconds": 5.3,
++    "startedAt": "2026-11-07T21:53:08+00:00",
++    "seconds": 4.7,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140010-example-193-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-193-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.6,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.7,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.8,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.7,
++        "seconds": 0.5,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.3,
++        "seconds": 0.2,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -157,11 +157,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-veq84squ/attempts/193/attempt-ofdq5q3h"
++    "workspace": ".build-py/examples-3elk0rk2/attempts/193/attempt-yrht_u0y"
+   },
+   "conclusion": {
+     "claim": "510031c58e443bcc",
+-    "attempt": "20261107T153359Z-ab122657",
++    "attempt": "20261107T215308Z-be37c839",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -197,7 +197,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "reused from the proof cache (claim sha256:1c38f6606503285961f824bbef075e01c6c986384a3aa47103b317d9e82b382e, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:34:03Z, on /tmp/jvmcontract-effects-3979172-1794065643844621690-0/before and /tmp/jvmcontract-effects-3979172-1794065643844621690-0/after): found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
++    "proof": "reused from the proof cache (claim sha256:97e9847fa2781f7fa984347aa6898182175b0a1e3a015946efe3ef5160341eb4, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:12Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
+     "problem": null,
+     "statement": null,
+     "trace": null,
+@@ -312,7 +312,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "becccc6fb4a2d961a4ebab331c313c1c790e1cc5c80ace7bcac16139a804343b",
++        "sha256": "6de2b33568516dfff927ed47e5f5709a3cc8d65c8a221abf203b006df90487c5",
+         "bytes": 6422
+       }
+     ]
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/verifier-output.txt
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/verifier-output.txt
+@@ -5,7 +5,7 @@
+ POST /quotes: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+   witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+-  search: found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
++  search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+   assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+@@ -27,12 +27,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md
+@@ -208,9 +208,9 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: reused from the proof cache (claim sha256:d10b45d2d0c50788e28dca4a6703a0e596c93aaebe1b348e2404585d4e7e203d, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:34:04Z, on /tmp/jvmcontract-effects-3979174-1794065644002984579-0/before and /tmp/jvmcontract-effects-3979174-1794065644002984579-0/after): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
+-
+-This page renders attempt `20261107T153359Z-42fc847e` at claim `6f022296e888596a`, in pipeline job `20261107-140010-example-194-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: reused from the proof cache (claim sha256:b3e1850b1bdf48689034a8f7ac7785ad3e5c4f82f093b7c4f2c90f6ba1a959bc, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:19Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
++
++This page renders attempt `20261107T215315Z-0e258e02` at claim `6f022296e888596a`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -244,12 +244,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153359Z-42fc847e",
++    "id": "20261107T215315Z-0e258e02",
+     "claim": "6f022296e888596a",
+-    "startedAt": "2026-11-07T15:33:59+00:00",
+-    "seconds": 5.3,
++    "startedAt": "2026-11-07T21:53:15+00:00",
++    "seconds": 4.7,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140010-example-194-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-194-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.1,
++        "seconds": 1.0,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -104,7 +104,7 @@
+         "name": "the shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/05-the-shop-tests.stdout",
+         "stderr": "logs/05-the-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.7,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.8,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.6,
++        "seconds": 0.5,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.3,
++        "seconds": 0.2,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-y97lv309/attempts/194/attempt-xl2s6kd5"
++    "workspace": ".build-py/examples-kx_wrdvz/attempts/194/attempt-2ot8cdwi"
+   },
+   "conclusion": {
+     "claim": "6f022296e888596a",
+-    "attempt": "20261107T153359Z-42fc847e",
++    "attempt": "20261107T215315Z-0e258e02",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -197,7 +197,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "reused from the proof cache (claim sha256:d10b45d2d0c50788e28dca4a6703a0e596c93aaebe1b348e2404585d4e7e203d, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:34:04Z, on /tmp/jvmcontract-effects-3979174-1794065644002984579-0/before and /tmp/jvmcontract-effects-3979174-1794065644002984579-0/after): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
++    "proof": "reused from the proof cache (claim sha256:b3e1850b1bdf48689034a8f7ac7785ad3e5c4f82f093b7c4f2c90f6ba1a959bc, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:19Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
+     "problem": null,
+     "statement": null,
+     "trace": null,
+@@ -312,7 +312,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "44203a02024df5bcb31b7fc1096facd8770fb026905334e927feba3035cb7b19",
++        "sha256": "b634275f16a4be220f766237527f7f2a37881001e323e5ffa001866d4af0ec6d",
+         "bytes": 6523
+       }
+     ]
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt
+@@ -27,12 +27,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md
++++ b/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md
+@@ -203,7 +203,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T153359Z-91ed1c01` at claim `760ab91febc74e46`, in pipeline job `20261107-140011-example-195-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215322Z-741a2975` at claim `760ab91febc74e46`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -236,12 +236,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:acaf3ed652d038f9acc3ec16375c2575bcad12cc48ceba7db936463af7e02861): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:4ff37cdbf556bec7ce11be330b2da7392b0c850d2b8a014339ddbd338a464f88): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/result.json
++++ b/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153359Z-91ed1c01",
++    "id": "20261107T215322Z-741a2975",
+     "claim": "760ab91febc74e46",
+-    "startedAt": "2026-11-07T15:33:59+00:00",
+-    "seconds": 5.3,
++    "startedAt": "2026-11-07T21:53:22+00:00",
++    "seconds": 4.6,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140011-example-195-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140011-example-195-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 1.0,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -104,7 +104,7 @@
+         "name": "the shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/05-the-shop-tests.stdout",
+         "stderr": "logs/05-the-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.7,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.3,
++        "seconds": 0.2,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -157,11 +157,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-f2rcw6wu/attempts/195/attempt-py8d32c6"
++    "workspace": ".build-py/examples-4oo0moes/attempts/195/attempt-emmqaw4u"
+   },
+   "conclusion": {
+     "claim": "760ab91febc74e46",
+-    "attempt": "20261107T153359Z-91ed1c01",
++    "attempt": "20261107T215322Z-741a2975",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -303,7 +303,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "9a7b9cfaf91ade4ed32f22966d40453a9035dec1298714e920d9c25efa6dfd37",
++        "sha256": "2b163907016b62de997090efbfc9892a5d91007cd1b23aa334439eccd7325b3f",
+         "bytes": 5950
+       }
+     ]
+--- a/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/verifier-output.txt
++++ b/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/verifier-output.txt
+@@ -26,12 +26,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:acaf3ed652d038f9acc3ec16375c2575bcad12cc48ceba7db936463af7e02861): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:4ff37cdbf556bec7ce11be330b2da7392b0c850d2b8a014339ddbd338a464f88): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md
++++ b/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md
+@@ -209,7 +209,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T153359Z-3d87af5d` at claim `7f8e12fd189a27b5`, in pipeline job `20261107-140011-example-196-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215328Z-882f9feb` at claim `7f8e12fd189a27b5`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -242,12 +242,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+--- a/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/result.json
++++ b/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T153359Z-3d87af5d",
++    "id": "20261107T215328Z-882f9feb",
+     "claim": "7f8e12fd189a27b5",
+-    "startedAt": "2026-11-07T15:33:59+00:00",
+-    "seconds": 4.9,
++    "startedAt": "2026-11-07T21:53:28+00:00",
++    "seconds": 4.2,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-140011-example-196-through-build-py-the-joint-e",
+-      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140011-example-196-through-build-py-the-joint-e"
++      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+     },
+     "execution": {
+       "status": "completed",
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.7,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.9,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.6,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.4,
++        "seconds": 0.3,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-ykvhamxy/attempts/196/attempt-i_75none"
++    "workspace": ".build-py/examples-_0kujdf1/attempts/196/attempt-5p4oa4o_"
+   },
+   "conclusion": {
+     "claim": "7f8e12fd189a27b5",
+-    "attempt": "20261107T153359Z-3d87af5d",
++    "attempt": "20261107T215328Z-882f9feb",
+     "status": "unresolved",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -326,7 +326,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "6db4bce4869435a4f7d50a6f5b6754cdda24863dbc3b10df359830b4af363b70",
++        "sha256": "de19c7b7642b361403bce42a3010a9ee95fa84e99e583d86da46c31a6535fcd8",
+         "bytes": 6580
+       }
+     ]
+--- a/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/verifier-output.txt
++++ b/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/verifier-output.txt
+@@ -26,12 +26,12 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money

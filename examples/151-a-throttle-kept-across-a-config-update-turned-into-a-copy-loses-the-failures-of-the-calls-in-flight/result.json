@@ -28,10 +28,10 @@
     }
   },
   "attempt": {
-    "id": "20261107T164230Z-2681a013",
+    "id": "20261107T215252Z-96af230c",
     "claim": "5ba7f71fbb0d72d6",
-    "startedAt": "2026-11-07T16:42:30+00:00",
-    "seconds": 4.1,
+    "startedAt": "2026-11-07T21:52:52+00:00",
+    "seconds": 4.2,
     "engine": "native",
     "options": [
       "--engine",
@@ -42,7 +42,7 @@
     "tools": {
       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
       "javac": "javac 25.0.5",
-      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
+      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
     },
     "bytecode": {
       "before": {
@@ -55,9 +55,9 @@
       }
     },
     "pipeline": {
-      "jobId": "20261107-164043-example-151-crosscut-retry-throttle-a-re",
-      "sourceCommit": "e7270fd858905a69a215d667981075f9ff78e7a4",
-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-164043-example-151-crosscut-retry-throttle-a-re"
+      "jobId": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-crosscut-s-examples-150-15"
     },
     "execution": {
       "status": "completed",
@@ -90,7 +90,7 @@
         "name": "javac patched crosscut tests",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 1.2,
+        "seconds": 1.3,
         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
       },
@@ -106,7 +106,7 @@
         "name": "javac unpatched crosscut main",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 1.3,
+        "seconds": 1.4,
         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
       },
@@ -114,7 +114,7 @@
         "name": "jvmcontract equivalence",
         "status": "exited",
         "exitCode": 1,
-        "seconds": 0.2,
+        "seconds": 0.1,
         "stdout": "logs/06-jvmcontract-equivalence.stdout",
         "stderr": "logs/06-jvmcontract-equivalence.stderr"
       },
@@ -130,16 +130,16 @@
         "name": "version of javac",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.1,
+        "seconds": 0.2,
         "stdout": "logs/08-version-of-javac.stdout",
         "stderr": "logs/08-version-of-javac.stderr"
       }
     ],
-    "workspace": ".build-py/examples-ql3ie4m0/attempts/151/attempt-zz9pce47"
+    "workspace": ".build-py/examples-87klcht_/attempts/151/attempt-ozkb09ey"
   },
   "conclusion": {
     "claim": "5ba7f71fbb0d72d6",
-    "attempt": "20261107T164230Z-2681a013",
+    "attempt": "20261107T215252Z-96af230c",
     "status": "refuted",
     "vacuous": false,
     "expectation": "yes",
@@ -343,7 +343,7 @@
     "search": {
       "engine": "native",
       "checker": "jvmcontract's own checker (CaDiCaL)",
-      "seconds": 0.029,
+      "seconds": 0.028,
       "properties": 1,
       "unwind": 16,
       "maxArrayLength": 8,
@@ -355,7 +355,7 @@
           "purpose": "proof",
           "stage": null,
           "budgetSeconds": 600.0,
-          "seconds": 0.003,
+          "seconds": 0.004,
           "ended": "violation",
           "ending": "counterexample",
           "phases": {
@@ -377,20 +377,20 @@
         "paths": 9,
         "merges": 0,
         "solverCalls": 12,
-        "solvingSeconds": 0.000715808,
+        "solvingSeconds": 0.000783257,
         "gatesEvaluated": 205,
-        "evaluatingSeconds": 1.8695e-05,
+        "evaluatingSeconds": 1.7871e-05,
         "divisions": 0,
         "divisionsBuilt": 0,
         "multiplications": 0,
         "multiplicationsBuilt": 0,
         "variables": 2228,
         "clauses": 7198,
-        "seconds": 0.003436767,
-        "loadingSeconds": 0.000371423,
-        "decodingSeconds": 6.0543e-05,
-        "encodingSeconds": 0.00171038,
-        "witnessSeconds": 1.6421e-05
+        "seconds": 0.003918464,
+        "loadingSeconds": 0.000408215,
+        "decodingSeconds": 5.2017e-05,
+        "encodingSeconds": 0.00200709,
+        "witnessSeconds": 1.6461e-05
       },
       "gapMode": "strict"
     },
@@ -477,7 +477,8 @@
           "configuration": [
             "CaDiCaL's default options",
             "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
-            "the run's deadline through CaDiCaL's terminate callback"
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
           ]
         }
       },

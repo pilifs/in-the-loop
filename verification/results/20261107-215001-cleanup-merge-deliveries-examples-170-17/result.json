@@ -1,0 +1,448 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
+  "title": "Cleanup merge: Deliveries' examples 170-172 rerun at the merge, each with its recorded verdict",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 22.7s, peak 105.4 MiB (estimated 10m00s, 2.0 GiB); 6 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 170 (B9)) was held back 5.9s by its 1-CPU quota in 7.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (example 171 (B9)) was held back 5.8s by its 1-CPU quota in 7.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (example 172 (B9)) was held back 5.8s by its 1-CPU quota in 7.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-215001-cleanup-merge-deliveries-examples-170-17.json",
+    "sha256": "96b04b34fb242fdefd08370a213ae7542f4ad3f03b02751134acfa06bcc9536c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
+      "title": "Cleanup merge: Deliveries' examples 170-172 rerun at the merge, each with its recorded verdict",
+      "description": "build.py on examples 170, 171 and 172 (a retry route refactored over Crosscut's kernels, checked with jvmcontract effects). Expected: 170 verified, 171 violation, 172 violation, each step printing 'as expected'. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Each example ran before at a stream's or the foundations loop's commit; this checks them on the combined code, since the merge brought VF-016's and VF-017's fixes in beside the foundations merge's changes to equivalence.rs. Every step runs even if one fails. Cleanup brief, Phase 4 step 3.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:effects",
+        "B9"
+      ],
+      "links": {
+        "commits": [
+          "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+        ],
+        "examples": [
+          "170",
+          "171",
+          "172"
+        ]
+      },
+      "expected": "example 170 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 171 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 172 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-07T21:50:01+00:00",
+        "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+        "by": "cleanup"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "as jobs 20261107-065648-example-17*: two compiles of the deliveries app and two effects runs each, plus a release build of jvmcontract if the runner has none"
+      },
+      "steps": [
+        {
+          "name": "example 170 (B9)",
+          "run": "python3 examples/tools/build.py 170",
+          "cwd": "."
+        },
+        {
+          "name": "example 171 (B9)",
+          "run": "python3 examples/tools/build.py 171",
+          "cwd": "."
+        },
+        {
+          "name": "example 172 (B9)",
+          "run": "python3 examples/tools/build.py 172",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent",
+        "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace",
+        "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice"
+      ]
+    }
+  },
+  "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+  "startedAt": "2026-11-07T21:50:51+00:00",
+  "finishedAt": "2026-11-07T21:53:08+00:00",
+  "wallSeconds": 137.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 825082,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 38654705664,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "as jobs 20261107-065648-example-17*: two compiles of the deliveries app and two effects runs each, plus a release build of jvmcontract if the runner has none"
+  },
+  "usage": {
+    "peakMemoryBytes": 110526464,
+    "wallSeconds": 22.7,
+    "cpuSeconds": 22.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 113.869,
+      "cpuSeconds": 113.73,
+      "cpuThrottledSeconds": 0.195,
+      "peakMemoryBytes": 1957900288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "85c3456a208cb017149255fc4f4da64f850275b9a2a97d973625a5ce1104b332",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 53s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 170 (B9)",
+      "run": "python3 examples/tools/build.py 170",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 7.42,
+      "cpuSeconds": 7.325,
+      "cpuThrottledSeconds": 5.898,
+      "peakMemoryBytes": 110358528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-170-b9.log",
+        "lines": 24,
+        "bytes": 1005,
+        "sha256": "67a6836fd12d9a286bdd7c5bc1b7b9e7ec53a7b7602d686f903c6f63c7e90bcc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent: verified (as expected)",
+          "groups": [
+            "170",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.7 s",
+        "  · javac patched deliveries main",
+        "  · javac patched deliveries main: exited 0, 1.3 s",
+        "  · javac patched deliveries tests",
+        "  · javac patched deliveries tests: exited 0, 1.0 s",
+        "  · the deliveries tests",
+        "  · the deliveries tests: exited 0, 0.1 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.7 s",
+        "  · javac unpatched deliveries main",
+        "  · javac unpatched deliveries main: exited 0, 1.4 s",
+        "  · jvmcontract effects",
+        "  · jvmcontract effects: exited 0, 0.1 s",
+        "  · jvmcontract effects --json",
+        "  · jvmcontract effects --json: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 171 (B9)",
+      "run": "python3 examples/tools/build.py 171",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 7.416,
+      "cpuSeconds": 7.328,
+      "cpuThrottledSeconds": 5.787,
+      "peakMemoryBytes": 107675648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-171-b9.log",
+        "lines": 24,
+        "bytes": 1046,
+        "sha256": "06c0852f9e415b5246d1fe3727f5cf142225acfd887d67a48e039f1f971b950d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace: violation (as expected)",
+          "groups": [
+            "171",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.6 s",
+        "  · javac patched deliveries main",
+        "  · javac patched deliveries main: exited 0, 1.4 s",
+        "  · javac patched deliveries tests",
+        "  · javac patched deliveries tests: exited 0, 0.9 s",
+        "  · the deliveries tests",
+        "  · the deliveries tests: exited 0, 0.1 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.6 s",
+        "  · javac unpatched deliveries main",
+        "  · javac unpatched deliveries main: exited 0, 1.4 s",
+        "  · jvmcontract effects",
+        "  · jvmcontract effects: exited 1, 0.2 s",
+        "  · jvmcontract effects --json",
+        "  · jvmcontract effects --json: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 172 (B9)",
+      "run": "python3 examples/tools/build.py 172",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 7.82,
+      "cpuSeconds": 7.642,
+      "cpuThrottledSeconds": 5.8,
+      "peakMemoryBytes": 110526464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-172-b9.log",
+        "lines": 24,
+        "bytes": 1018,
+        "sha256": "25d1a7905f52cb58f801b4d9c2a016a51578530d87c27c47b8817e48d94c0893",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice: violation (as expected)",
+          "groups": [
+            "172",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.7 s",
+        "  · javac patched deliveries main",
+        "  · javac patched deliveries main: exited 0, 1.4 s",
+        "  · javac patched deliveries tests",
+        "  · javac patched deliveries tests: exited 0, 1.0 s",
+        "  · the deliveries tests",
+        "  · the deliveries tests: exited 0, 0.1 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.7 s",
+        "  · javac unpatched deliveries main",
+        "  · javac unpatched deliveries main: exited 0, 1.5 s",
+        "  · jvmcontract effects",
+        "  · jvmcontract effects: exited 1, 0.2 s",
+        "  · jvmcontract effects --json",
+        "  · jvmcontract effects --json: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md",
+      "change": "modified",
+      "bytes": 14948,
+      "sha256": "bc98a179ee027e223a4ac9d29d43daab850a2d6ff04f53b91d4c90c57f3a2aca",
+      "sourceSha256": "2c18428b5683ebe086101bc977f82dd6f8c7bac04f7d08938bef968ade5db970"
+    },
+    {
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json",
+      "change": "modified",
+      "bytes": 8022,
+      "sha256": "77ca45c3652634d91c625d8f76fa74822c1b736ea661e429ad895ceb0e1e1794",
+      "sourceSha256": "1d7ae5a7e9dce96ff3a0fa7790c9e60e5240a7d96644b1b47d17688acfa819e9"
+    },
+    {
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md",
+      "change": "modified",
+      "bytes": 17205,
+      "sha256": "1a4c2754e4165597cb0ff1b880c5cecd28649d99d1ac69f47ef8097fc57dad78",
+      "sourceSha256": "f32bd578ba8ea9d3f2cba669a33917f348cdcdb0695eba804a0f1aa2066aad6b"
+    },
+    {
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json",
+      "change": "modified",
+      "bytes": 8682,
+      "sha256": "f875e481bb541079aee733464aad4ac72f59f854b2ef254e37b3466763313e7f",
+      "sourceSha256": "cfe34072727ed05670881d5b6327686a5bea8abe56ac631bea50586df7df07be"
+    },
+    {
+      "path": "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/README.md",
+      "change": "modified",
+      "bytes": 17102,
+      "sha256": "1d9ed872693a41c0e4ac07c1985961e6e0f21e3d22ae7bfe0052fece6318efec",
+      "sourceSha256": "8c2888884e8bd6fc5a9a1c543e37b48f527e4d47cd5ce04f5ddcfd094442b50d"
+    },
+    {
+      "path": "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.json",
+      "change": "modified",
+      "bytes": 8902,
+      "sha256": "22e10abfb46124f152eb119979fc387dbf357568ecff730fc301ae4e10cf5bda",
+      "sourceSha256": "a71e55be87c33654c2f132850a5d1166a4095649682f99d76e07ea7b1d045f9f"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T21:53:57+00:00",
+    "applied": [
+      "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md",
+      "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json",
+      "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md",
+      "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json",
+      "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/README.md",
+      "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e72fb5943826977c23c960cc9199a2dec468b536",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e72fb5943826977c23c960cc9199a2dec468b536/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

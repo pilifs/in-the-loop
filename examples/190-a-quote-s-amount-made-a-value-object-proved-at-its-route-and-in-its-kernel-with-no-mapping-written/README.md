@@ -198,9 +198,9 @@ Nothing to do: the refactor is safe to ship, within what the claims state. The r
 
 ## Evidence
 
-How the verdict was reached: reused from the proof cache (claim sha256:ae191a19f8279066b7de12bf4fad3af4e377edc54dfc307f1206a2305a2eb98f, jvmcontract 0.1.0 (sha256:a160795f1fb8), --engine native, at 2026-11-07T15:33:55Z, on /tmp/jvmcontract-effects-3978393-1794065635615643632-0/before and /tmp/jvmcontract-effects-3978393-1794065635615643632-0/after): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions.
+How the verdict was reached: reused from the proof cache (claim sha256:2745ff1837465d10677f6aa14153b4f1d6e441d7099e8867e63ddbb60c8926a7, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:52:50Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions.
 
-This page renders attempt `20261107T153350Z-21e595e7` at claim `84e0cefa8773f7c4`, in pipeline job `20261107-140010-example-190-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215246Z-f6a51786` at claim `84e0cefa8773f7c4`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -233,12 +233,12 @@ shop.Pricing#discount: verified
   observations: result preserved, exception preserved
   domain: gross: long × quantity: int
 shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
   observations: result preserved, exception preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
 shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
   observations: result preserved, exception preserved, identity:result==q preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
 shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money

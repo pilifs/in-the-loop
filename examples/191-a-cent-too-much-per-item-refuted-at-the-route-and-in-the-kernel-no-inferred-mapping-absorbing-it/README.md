@@ -204,7 +204,7 @@ Remove the extra cent. The app's tests catch this one too (four of five fail): t
 
 ## Evidence
 
-This page renders attempt `20261107T153350Z-05e9c4a9` at claim `425c9099c70d895d`, in pipeline job `20261107-140010-example-191-through-build-py-the-joint-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T215253Z-abddd4b2` at claim `425c9099c70d895d`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -216,7 +216,7 @@ The entry points (no mapping: their inputs are anchored by the observation specs
 POST /quotes: refuted
   observations: result refuted, exception unresolved, status unresolved, KafkaTemplate.send refuted
   witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
-  search: found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+  search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
   assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
@@ -238,13 +238,13 @@ shop.Pricing#discount: verified
   observations: result preserved, exception preserved
   domain: gross: long × quantity: int
 shop.Pricing#total: refuted
-  correspondence (inferred, proposed; refuted for sha256:3f7bdb454e471e963785b1b8453c2c65819d7ab6bf32b9349469bb0c4164c12c): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  correspondence (inferred, proposed; refuted for sha256:85836ed5dcf6e6481e4d6590608105256c5e460e51c5a748ed645cb09c3e53e7): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
   observations: result refuted, exception unresolved
   witness: total(q=new Quote(new Money(0), 1)): before, 0; after, 1
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
 shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
   observations: result preserved, exception preserved, identity:result==q preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
 shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money

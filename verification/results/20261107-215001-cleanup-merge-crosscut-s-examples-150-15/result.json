@@ -1,0 +1,600 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+  "title": "Cleanup merge: Crosscut's examples 150-152 and 160-161 rerun at the merge, each with its recorded verdict",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 32.1s, peak 102.4 MiB (estimated 12m00s, 2.0 GiB); 13 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 150 (B9)) was held back 5.5s by its 1-CPU quota in 6.6s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (example 151 (B9)) was held back 5.3s by its 1-CPU quota in 6.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (example 152 (B9)) was held back 5.1s by its 1-CPU quota in 6.2s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 4 (example 160 (B9)) was held back 5.1s by its 1-CPU quota in 6.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 5 (example 161 (B9)) was held back 5.1s by its 1-CPU quota in 6.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-215001-cleanup-merge-crosscut-s-examples-150-15.json",
+    "sha256": "75a28daa8f8068f6feeb2c2e02313ff1cc78fd36d8920da9f08aec91c42c0452",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+      "title": "Cleanup merge: Crosscut's examples 150-152 and 160-161 rerun at the merge, each with its recorded verdict",
+      "description": "build.py on examples 150, 151 and 152 (a retry throttle's object parameter, VF-017's schema fix) and 160 and 161 (a refill helper the patch changes under an unchanged caller, VF-016's fix). Expected: 150 verified, 151 violation, 152 verified, 160 verified, 161 violation, each step printing 'as expected'. The code is the cleanup merge's (lpvnwkuz, git 1d77fbf2): the commits after it change only generated trace files and the cleanup brief's Progress. Each example ran before at a stream's or the foundations loop's commit; this checks them on the combined code, since the merge brought VF-016's and VF-017's fixes in beside the foundations merge's changes to equivalence.rs. Every step runs even if one fails. Cleanup brief, Phase 4 step 3.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9"
+      ],
+      "links": {
+        "commits": [
+          "1d77fbf2fb5af748289e7d1aa40ac531265e8ba2"
+        ],
+        "examples": [
+          "150",
+          "151",
+          "152",
+          "160",
+          "161"
+        ]
+      },
+      "expected": "example 150 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 151 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 152 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 160 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 161 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-07T21:50:01+00:00",
+        "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+        "by": "cleanup"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "12m",
+        "notes": "each example passed alone in 1 to 3 minutes (jobs 20261107-164043-* and -165152-*); the first may build jvmcontract's release binary"
+      },
+      "steps": [
+        {
+          "name": "example 150 (B9)",
+          "run": "python3 examples/tools/build.py 150",
+          "cwd": "."
+        },
+        {
+          "name": "example 151 (B9)",
+          "run": "python3 examples/tools/build.py 151",
+          "cwd": "."
+        },
+        {
+          "name": "example 152 (B9)",
+          "run": "python3 examples/tools/build.py 152",
+          "cwd": "."
+        },
+        {
+          "name": "example 160 (B9)",
+          "run": "python3 examples/tools/build.py 160",
+          "cwd": "."
+        },
+        {
+          "name": "example 161 (B9)",
+          "run": "python3 examples/tools/build.py 161",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes",
+        "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight",
+        "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ",
+        "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller",
+        "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early"
+      ]
+    }
+  },
+  "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+  "startedAt": "2026-11-07T21:50:51+00:00",
+  "finishedAt": "2026-11-07T21:53:18+00:00",
+  "wallSeconds": 147.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 825082,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 38654705664,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2880.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": "each example passed alone in 1 to 3 minutes (jobs 20261107-164043-* and -165152-*); the first may build jvmcontract's release binary"
+  },
+  "usage": {
+    "peakMemoryBytes": 107372544,
+    "wallSeconds": 32.1,
+    "cpuSeconds": 31.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 150 (B9)",
+      "run": "python3 examples/tools/build.py 150",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 6.62,
+      "cpuSeconds": 6.38,
+      "cpuThrottledSeconds": 5.536,
+      "peakMemoryBytes": 105222144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-150-b9.log",
+        "lines": 18,
+        "bytes": 814,
+        "sha256": "87cfdea379d1b87f75413f47dcd8259909f580394d51353eab375fc74b452f39",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes: verified (as expected)",
+          "groups": [
+            "150",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.6 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.3 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.3 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 151 (B9)",
+      "run": "python3 examples/tools/build.py 151",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 6.412,
+      "cpuSeconds": 6.172,
+      "cpuThrottledSeconds": 5.327,
+      "peakMemoryBytes": 105164800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-151-b9.log",
+        "lines": 18,
+        "bytes": 821,
+        "sha256": "e6e471ba9eab91b8beb00b2046ef2f798c0bd1640eb5fe6211e6f9592f22d5b7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: violation (as expected)",
+          "groups": [
+            "151",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.3 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.3 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 6.214,
+      "cpuSeconds": 6.068,
+      "cpuThrottledSeconds": 5.094,
+      "peakMemoryBytes": 104517632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-152-b9.log",
+        "lines": 18,
+        "bytes": 812,
+        "sha256": "a4cb151601203d2842c52f25df84b25c10e291b719701b56160dcf1dace0cc51",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: verified (as expected)",
+          "groups": [
+            "152",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.2 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.3 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.3 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 160 (B9)",
+      "run": "python3 examples/tools/build.py 160",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 6.412,
+      "cpuSeconds": 6.263,
+      "cpuThrottledSeconds": 5.12,
+      "peakMemoryBytes": 107372544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-160-b9.log",
+        "lines": 18,
+        "bytes": 792,
+        "sha256": "d7e43cc5e043dbff3cfeeb36eac62e0326250faea4c60cfddb560deb69a0c8b0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller: verified (as expected)",
+          "groups": [
+            "160",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.3 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.2 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.3 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 161 (B9)",
+      "run": "python3 examples/tools/build.py 161",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 6.415,
+      "cpuSeconds": 6.31,
+      "cpuThrottledSeconds": 5.125,
+      "peakMemoryBytes": 107085824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-161-b9.log",
+        "lines": 18,
+        "bytes": 819,
+        "sha256": "815a6f3db1e43e5cdd050a26b0249dfba15bf6fa2a8f040177cb304b3ec82de3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: violation (as expected)",
+          "groups": [
+            "161",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.3 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.3 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/README.md",
+      "change": "modified",
+      "bytes": 17648,
+      "sha256": "01ea38370231ab6d95f9c1503b6d8c107edd9660640a5ec832dbdec1fa660170",
+      "sourceSha256": "93e8b4e6cbd4d9cac0fc0ede0439171a149fc7d61096b915272705dbbac35756"
+    },
+    {
+      "path": "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/result.json",
+      "change": "modified",
+      "bytes": 12654,
+      "sha256": "3bda529e9c339825f3497ed942cb5af967e46b8fba386ddb95ae1b9e67edcd2e",
+      "sourceSha256": "1191e4c107bac8fb0d56f8471bcb020e099395234d5b802c426362dcf41f009b"
+    },
+    {
+      "path": "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/README.md",
+      "change": "modified",
+      "bytes": 20776,
+      "sha256": "c82b54a3c2a9171ab7ec031aa78d6ec4aae22111b2d8b2fb0b0ca136cc73807b",
+      "sourceSha256": "b4e78b97e4dc82e2733e67b9711f4238c44d989a0969b17167c296df1953487c"
+    },
+    {
+      "path": "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/result.json",
+      "change": "modified",
+      "bytes": 18679,
+      "sha256": "261472098650280f587026db6a277c5c3c191787541d8efe83fb37cdccadb117",
+      "sourceSha256": "1255341d602983be81bfdd620a08e4045bcd57cc96585c39bd0315f8786cc091"
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/README.md",
+      "change": "modified",
+      "bytes": 17352,
+      "sha256": "d892c2a9dfa8c9c5ae667a3526c33b0c0aed9fa9f7b9061ca5ee580d6f0c89e7",
+      "sourceSha256": "b51e1040a685f2f95b7bb78b17b7b829aa4e3024516f9e83c25910959e0348e4"
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.json",
+      "change": "modified",
+      "bytes": 12642,
+      "sha256": "9d14639b9b5d7d44633414c1f7653ca7fdbc5012abe59a36df8ef8c7cf299bff",
+      "sourceSha256": "27f4f6fe5a625cd9cdc2fc7f41b9a6b384e1ec78bfc045c206e6f0228d6d132d"
+    },
+    {
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/verifier-output.txt",
+      "change": "modified",
+      "bytes": 835,
+      "sha256": "c23400027cf7b9e7caf69e8223680ab91e9e3f0a8299059aae552e30c9503de5",
+      "sourceSha256": "4bb1c88af6fff80f9c4de205aaab2c255cb0c3f23e4732d565283b79f4e7afda"
+    },
+    {
+      "path": "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/README.md",
+      "change": "modified",
+      "bytes": 20846,
+      "sha256": "0372d014ab098464abeb312b36d7183dc81d96f0e1dcd0c207f00cffe5410289",
+      "sourceSha256": "ce8f4cf1563433741c061e9f825caea3950000fa95aa2dd0e92f425e24565e5d"
+    },
+    {
+      "path": "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/result.json",
+      "change": "modified",
+      "bytes": 12968,
+      "sha256": "afa1a5288f17ea245fcbcc6e23c0858687237a990d851f00e6071713a5b7de45",
+      "sourceSha256": "334a5a809a12cbe845a6c614a821b65b383add4322b680be7dc38f146669a6ae"
+    },
+    {
+      "path": "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1243,
+      "sha256": "6001d1b03fa44783e220202cb656eea109c182dc4e5b8fc695e9e8c9a5832bf4",
+      "sourceSha256": "f009fecf27eef6d476ff0cb9510927481f9cb49c004a10295e4d5967d5e136e5"
+    },
+    {
+      "path": "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/README.md",
+      "change": "modified",
+      "bytes": 22564,
+      "sha256": "22f695a483d22c0fdf092d72378eaacb84466e96803e106d1e9ecd47389f201b",
+      "sourceSha256": "aeaec9fe3bb96de124cdc11f6b521d211149e832bbf3b5fb539c26b5119076c5"
+    },
+    {
+      "path": "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/result.json",
+      "change": "modified",
+      "bytes": 16958,
+      "sha256": "cb61757977a63bf2e6d52277a974536589e29d9c17d22bb0412702bad218e4dd",
+      "sourceSha256": "f0536d48aaea929e95225170f52e81074865048464892f8b8762422d8149e9a4"
+    },
+    {
+      "path": "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1546,
+      "sha256": "08c1132e071e8db5b8991fd949a9749a2403ad1714c58dba1f77dc1ffaadc1ff",
+      "sourceSha256": "5042c7c25ccf9a5251c1b42850393dc461da768a59715be261f04c65d31d15ef"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T21:53:57+00:00",
+    "applied": [
+      "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/README.md",
+      "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/result.json",
+      "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/README.md",
+      "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/result.json",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/README.md",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.json",
+      "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/verifier-output.txt",
+      "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/README.md",
+      "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/result.json",
+      "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/verifier-output.txt",
+      "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/README.md",
+      "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/result.json",
+      "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e72fb5943826977c23c960cc9199a2dec468b536",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e72fb5943826977c23c960cc9199a2dec468b536/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

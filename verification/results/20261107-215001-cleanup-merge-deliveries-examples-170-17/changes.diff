@@ -1,0 +1,441 @@
+--- a/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md
++++ b/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md
+@@ -151,7 +151,7 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over status: int × idempotent: boolean × attempts: int in 0.0 s; loops unwound 16 times with unwinding assertions.
+ 
+-This page renders attempt `20261107T152515Z-e67070a4` at claim `43a5a1b9d05493a0`, in pipeline job `20261107-065648-example-170-a-retry-route-and-its-crossc`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215246Z-0a267420` at claim `e5539e714f9cf51b`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json
++++ b/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "43a5a1b9d05493a0",
++    "id": "e5539e714f9cf51b",
+     "format": 1,
+     "example": "170",
+     "statement": {
+@@ -17,42 +17,42 @@
+     "inputs": {
+       "patch": "171d3d3a8a109713ee70300e0059a0abba948744e503ee00a1daa49b63a5c9ca",
+       "before": {
+-        "sha256": "48563da18b646756c33e9752b172647ddc15e856b3d618c24a5968c130011ef8",
+-        "files": 64
++        "sha256": "2766221d5f1c63494b9957b63debe5103bfe52f700c9d1c7304281e5ebb73550",
++        "files": 68
+       },
+       "after": {
+-        "sha256": "03df0269c88537fb0c24dd2a4de9e4bac659cf8ac2a3d1e7a6ba834e3f91c501",
+-        "files": 64
++        "sha256": "b006c5093f4f8a800f3f81708ac1a76fb96fb645894106948835bc863f467c42",
++        "files": 68
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261107T152515Z-e67070a4",
+-    "claim": "43a5a1b9d05493a0",
+-    "startedAt": "2026-11-07T15:25:15+00:00",
+-    "seconds": 6.5,
++    "id": "20261107T215246Z-0a267420",
++    "claim": "e5539e714f9cf51b",
++    "startedAt": "2026-11-07T21:52:46+00:00",
++    "seconds": 5.4,
+     "engine": "native",
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "e72a2590499c166aaa667f9b927eebadad0dd505d9d529e7e41288582dcaa2dc"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "8ab6105f295ca17124d0a4d48e7f96bcab72d7fa38036d40f2631fa92afd1541",
+-        "files": 42
++        "sha256": "0f88d91840506d443a4aabfe09256bef1f4c8798ee87501cfbd274683fd399ad",
++        "files": 45
+       },
+       "after": {
+-        "sha256": "44e7ea0d4a16f17d8cb1a72369119fa491881fc4721256ba39d97ee0749379be",
+-        "files": 42
++        "sha256": "32cddd71e67e468e17b5befc2af0756377daec31de6a948a178086c525f16b6d",
++        "files": 45
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-065648-example-170-a-retry-route-and-its-crossc",
+-      "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-065648-example-170-a-retry-route-and-its-crossc"
++      "jobId": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17"
+     },
+     "execution": {
+       "status": "completed",
+@@ -77,7 +77,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/02-javac-deliveries-stubs.stdout",
+         "stderr": "logs/02-javac-deliveries-stubs.stderr"
+       },
+@@ -85,7 +85,7 @@
+         "name": "javac patched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.7,
++        "seconds": 1.3,
+         "stdout": "logs/03-javac-patched-deliveries-main.stdout",
+         "stderr": "logs/03-javac-patched-deliveries-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 1.0,
+         "stdout": "logs/04-javac-patched-deliveries-tests.stdout",
+         "stderr": "logs/04-javac-patched-deliveries-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/06-javac-deliveries-stubs.stdout",
+         "stderr": "logs/06-javac-deliveries-stubs.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "javac unpatched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.6,
++        "seconds": 1.4,
+         "stdout": "logs/07-javac-unpatched-deliveries-main.stdout",
+         "stderr": "logs/07-javac-unpatched-deliveries-main.stderr"
+       },
+@@ -154,11 +154,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-hlph1uc3/attempts/170/attempt-hrhyz1ig"
++    "workspace": ".build-py/examples-7u5snkng/attempts/170/attempt-ucwzn74u"
+   },
+   "conclusion": {
+-    "claim": "43a5a1b9d05493a0",
+-    "attempt": "20261107T152515Z-e67070a4",
++    "claim": "e5539e714f9cf51b",
++    "attempt": "20261107T215246Z-0a267420",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+--- a/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md
++++ b/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md
+@@ -161,7 +161,7 @@
+ 
+ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
+ 
+-This page renders attempt `20261107T152515Z-459dad0d` at claim `9bfabfad2ab31e29`, in pipeline job `20261107-065648-example-171-a-retry-route-that-skips-the`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215253Z-cd4384bb` at claim `80e0489a725654a4`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json
++++ b/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "9bfabfad2ab31e29",
++    "id": "80e0489a725654a4",
+     "format": 1,
+     "example": "171",
+     "statement": {
+@@ -17,42 +17,42 @@
+     "inputs": {
+       "patch": "4b502249360dcd2c9e7a9191383b8a284cb274c4d12f2e953dd2a9d3ccab0075",
+       "before": {
+-        "sha256": "48563da18b646756c33e9752b172647ddc15e856b3d618c24a5968c130011ef8",
+-        "files": 64
++        "sha256": "2766221d5f1c63494b9957b63debe5103bfe52f700c9d1c7304281e5ebb73550",
++        "files": 68
+       },
+       "after": {
+-        "sha256": "58ce6887e527e0393524777d35fb22c08735d32ae8f8c172698fb83c146acf46",
+-        "files": 64
++        "sha256": "a2d8f243d2e2c48256ab202f2e80396f0e94ede24bb0fb6ab683ce5eed54de25",
++        "files": 68
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261107T152515Z-459dad0d",
+-    "claim": "9bfabfad2ab31e29",
+-    "startedAt": "2026-11-07T15:25:15+00:00",
+-    "seconds": 6.6,
++    "id": "20261107T215253Z-cd4384bb",
++    "claim": "80e0489a725654a4",
++    "startedAt": "2026-11-07T21:52:53+00:00",
++    "seconds": 5.4,
+     "engine": "native",
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "e72a2590499c166aaa667f9b927eebadad0dd505d9d529e7e41288582dcaa2dc"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "8ab6105f295ca17124d0a4d48e7f96bcab72d7fa38036d40f2631fa92afd1541",
+-        "files": 42
++        "sha256": "0f88d91840506d443a4aabfe09256bef1f4c8798ee87501cfbd274683fd399ad",
++        "files": 45
+       },
+       "after": {
+-        "sha256": "a203fc83d7ec9e692d165d941cdfd5e09366e6fb395bffd8f2571d932c8e21dc",
+-        "files": 42
++        "sha256": "5b952cb32c4a0bcda9e186f5a8b4b88603454abf2845197851c9ea1b7d3d65df",
++        "files": 45
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-065648-example-171-a-retry-route-that-skips-the",
+-      "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-065648-example-171-a-retry-route-that-skips-the"
++      "jobId": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17"
+     },
+     "execution": {
+       "status": "completed",
+@@ -77,7 +77,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.6,
+         "stdout": "logs/02-javac-deliveries-stubs.stdout",
+         "stderr": "logs/02-javac-deliveries-stubs.stderr"
+       },
+@@ -85,7 +85,7 @@
+         "name": "javac patched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.7,
++        "seconds": 1.4,
+         "stdout": "logs/03-javac-patched-deliveries-main.stdout",
+         "stderr": "logs/03-javac-patched-deliveries-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 0.9,
+         "stdout": "logs/04-javac-patched-deliveries-tests.stdout",
+         "stderr": "logs/04-javac-patched-deliveries-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.6,
+         "stdout": "logs/06-javac-deliveries-stubs.stdout",
+         "stderr": "logs/06-javac-deliveries-stubs.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "javac unpatched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.6,
++        "seconds": 1.4,
+         "stdout": "logs/07-javac-unpatched-deliveries-main.stdout",
+         "stderr": "logs/07-javac-unpatched-deliveries-main.stderr"
+       },
+@@ -133,7 +133,7 @@
+         "name": "jvmcontract effects --json",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-effects-json.stdout",
+         "stderr": "logs/09-jvmcontract-effects-json.stderr"
+       },
+@@ -154,11 +154,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-zaqsipp5/attempts/171/attempt-6sllfqew"
++    "workspace": ".build-py/examples-69zos4rr/attempts/171/attempt-3urbxw0p"
+   },
+   "conclusion": {
+-    "claim": "9bfabfad2ab31e29",
+-    "attempt": "20261107T152515Z-459dad0d",
++    "claim": "80e0489a725654a4",
++    "attempt": "20261107T215253Z-cd4384bb",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+--- a/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/README.md
++++ b/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/README.md
+@@ -158,7 +158,7 @@
+ 
+ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as observe(status=20, idempotent=true, attempts=20), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
+ 
+-This page renders attempt `20261107T152515Z-6250bac6` at claim `53fb155b7552eaa5`, in pipeline job `20261107-065648-example-172-a-retry-route-that-dead-lett`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261107T215301Z-855f3916` at claim `00652edb34f94096`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.json
++++ b/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "53fb155b7552eaa5",
++    "id": "00652edb34f94096",
+     "format": 1,
+     "example": "172",
+     "statement": {
+@@ -17,42 +17,42 @@
+     "inputs": {
+       "patch": "5a4e4bfda026ab307628d80a4ee29aa36e5b839cd34ceeb61392b5bdb14a1c03",
+       "before": {
+-        "sha256": "48563da18b646756c33e9752b172647ddc15e856b3d618c24a5968c130011ef8",
+-        "files": 64
++        "sha256": "2766221d5f1c63494b9957b63debe5103bfe52f700c9d1c7304281e5ebb73550",
++        "files": 68
+       },
+       "after": {
+-        "sha256": "8e104b313e980974a3e22ea182bbf46a3abc7d51323e19b9794ee9dab374d42f",
+-        "files": 64
++        "sha256": "542556ec2da9d21986f4160f1a5300f0a3f99fff82481770e6d6ee78bcbe4d37",
++        "files": 68
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261107T152515Z-6250bac6",
+-    "claim": "53fb155b7552eaa5",
+-    "startedAt": "2026-11-07T15:25:15+00:00",
+-    "seconds": 6.6,
++    "id": "20261107T215301Z-855f3916",
++    "claim": "00652edb34f94096",
++    "startedAt": "2026-11-07T21:53:01+00:00",
++    "seconds": 5.7,
+     "engine": "native",
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "e72a2590499c166aaa667f9b927eebadad0dd505d9d529e7e41288582dcaa2dc"
++      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "8ab6105f295ca17124d0a4d48e7f96bcab72d7fa38036d40f2631fa92afd1541",
+-        "files": 42
++        "sha256": "0f88d91840506d443a4aabfe09256bef1f4c8798ee87501cfbd274683fd399ad",
++        "files": 45
+       },
+       "after": {
+-        "sha256": "fe65321fa96466653c3f4d33357c29a30eb552780f4568fe41f2cb4306c9dab4",
+-        "files": 42
++        "sha256": "866ee022fa73cdc286b5771ba9b8493a23afac2caf7d339a43c7d5a83846abb9",
++        "files": 45
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-065648-example-172-a-retry-route-that-dead-lett",
+-      "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-065648-example-172-a-retry-route-that-dead-lett"
++      "jobId": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
++      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17"
+     },
+     "execution": {
+       "status": "completed",
+@@ -77,7 +77,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/02-javac-deliveries-stubs.stdout",
+         "stderr": "logs/02-javac-deliveries-stubs.stderr"
+       },
+@@ -85,7 +85,7 @@
+         "name": "javac patched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.6,
++        "seconds": 1.4,
+         "stdout": "logs/03-javac-patched-deliveries-main.stdout",
+         "stderr": "logs/03-javac-patched-deliveries-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 1.0,
+         "stdout": "logs/04-javac-patched-deliveries-tests.stdout",
+         "stderr": "logs/04-javac-patched-deliveries-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.7,
+         "stdout": "logs/06-javac-deliveries-stubs.stdout",
+         "stderr": "logs/06-javac-deliveries-stubs.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "javac unpatched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.7,
++        "seconds": 1.5,
+         "stdout": "logs/07-javac-unpatched-deliveries-main.stdout",
+         "stderr": "logs/07-javac-unpatched-deliveries-main.stderr"
+       },
+@@ -133,7 +133,7 @@
+         "name": "jvmcontract effects --json",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/09-jvmcontract-effects-json.stdout",
+         "stderr": "logs/09-jvmcontract-effects-json.stderr"
+       },
+@@ -154,11 +154,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-bp0jh265/attempts/172/attempt-qiil8pts"
++    "workspace": ".build-py/examples-5enjumgc/attempts/172/attempt-r4nxyu8t"
+   },
+   "conclusion": {
+-    "claim": "53fb155b7552eaa5",
+-    "attempt": "20261107T152515Z-6250bac6",
++    "claim": "00652edb34f94096",
++    "attempt": "20261107T215301Z-855f3916",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
