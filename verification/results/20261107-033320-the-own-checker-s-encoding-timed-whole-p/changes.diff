@@ -1,0 +1,276 @@
+File lib/target/benchmark-native.json changed: 0 -> 44848 lines, too long to diff here
+--- /dev/null
++++ b/lib/target/benchmark-native.md
+@@ -0,0 +1,272 @@
++# Benchmark results
++
++Written by `lib/benchmark/run.py` on 2026-11-07T03:37:17+0000, as pipeline job `20261107-033320-the-own-checker-s-encoding-timed-whole-p`, at commit `dc03b87fb961`, on 28 × AMD RYZEN AI MAX+ 395 w/ Radeon 8060S (x86_64), with jvmcontract 0.1.0, JBMC 6.11.0 (cbmc-6.11.0) and openjdk version "25.0.5" 2026-10-20 LTS. Every run had a deadline of 120 s, loops unwound 16 times and arrays of up to 8 elements, on both engines. What the columns mean is in [README.md](README.md).
++
++SAT solvers: the own checker on CaDiCaL 1.9.5, bundled by the Rust crate cadical 0.1.16. Their configuration is under `environment.sat` in `results.json`.
++
++## Correctness and coverage
++
++| group | engine | mode | cases | correct | of them assuming a gap | unsupported | false success | false alarm | total s | median s | max s | peak MB |
++|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
++| 1 semantic conformance | native | strict | 152 | 122 | 0 | 30 | 0 | 0 | 5.5 | 0.03 | 0.11 | 39.6 |
++| 1 semantic conformance | native | assume | 152 | 122 | 0 | 25 | 5 (5 naming a gap) | 0 | 5.4 | 0.03 | 0.06 | 39.4 |
++| 1 semantic conformance | native | advised | 152 | 127 | 0 | 25 | 0 | 0 | 6.4 | 0.04 | 0.12 | 45.3 |
++| 2 real regressions | native | strict | 13 | 13 | 0 | 0 | 0 | 0 | 2.8 | 0.05 | 1.75 | 70.4 |
++| 2 real regressions | native | assume | 13 | 13 | 0 | 0 | 0 | 0 | 2.8 | 0.05 | 1.75 | 69.5 |
++| 2 real regressions | native | advised | 13 | 13 | 0 | 0 | 0 | 0 | 2.9 | 0.06 | 1.76 | 75.4 |
++| 3 held-out performance cases | native | strict | 12 | 12 | 0 | 0 | 0 | 0 | 1.8 | 0.06 | 0.6 | 45.9 |
++| 3 held-out performance cases | native | assume | 12 | 12 | 0 | 0 | 0 | 0 | 1.8 | 0.06 | 0.6 | 45.9 |
++| 3 held-out performance cases | native | advised | 12 | 12 | 0 | 0 | 0 | 0 | 1.8 | 0.06 | 0.61 | 49.7 |
++| 4 recorded examples | native | strict | 2 | 2 | 0 | 0 | 0 | 0 | 6.2 | 3.08 | 4.83 | 82.3 |
++
++Why the unsupported cases had no verdict:
++
++- group 1, native, strict: 27 gap, 3 refused
++- group 1, native, assume: 22 gap, 3 refused
++- group 1, native, advised: 23 needs contracts, 2 refused
++
++## By workload, under strict
++
++| workload | engine | cases | correct | unsupported | wrong | median s (decided) | max s | peak MB |
++|---|---|---:|---:|---:|---:|---:|---:|---:|
++| array-bounds | native | 3 | 3 | 0 | 0 | 0.05 | 0.44 | 40.8 |
++| array-mutation | native | 2 | 2 | 0 | 0 | 0.1 | 0.15 | 39.6 |
++| binary-search | native | 3 | 3 | 0 | 0 | 1.33 | 1.75 | 70.4 |
++| div-rem | native | 9 | 9 | 0 | 0 | 0.06 | 0.6 | 45.9 |
++| records | native | 2 | 2 | 0 | 0 | 0.07 | 0.07 | 37.4 |
++| scalar-arithmetic | native | 6 | 6 | 0 | 0 | 0.05 | 0.12 | 37.0 |
++| semantics | native | 152 | 122 | 30 | 0 | 0.04 | 0.11 | 39.6 |
++| utf8 | native | 2 | 2 | 0 | 0 | 2.57 | 4.83 | 82.3 |
++
++## Where the time goes, by workload, under strict
++
++Each engine's seconds over every run of the workload, decided or not, as shares of the phases of `lib/src/phases.rs`: the checker's own (`loading` to `trace`, and `checker-other`, JBMC starting and printing), then the driver's (`gaps` and JBMC's preflight, `contracts`, `replay` and shrinking, the `jvm` witness run, the `harness`, the `setup` of the work directory with the JDK's classes and the models, and the rest of the process as `driver`). Step 5b of the sound-verdicts brief.
++
++| workload | engine | runs | s | loading | lowering | symbolic | encoding | solving | trace | checker-other | gaps | contracts | replay | jvm | harness | setup | driver | dominant | largest formula (clauses) |
++|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|
++| array-bounds | native | 3 | 0.52 | · | · | 4% | 5% | 68% | · | · | · | · | 0% | · | · | 4% | 19% | **solving** 68% | 45662 |
++| array-mutation | native | 2 | 0.2 | · | · | 1% | 6% | 41% | · | · | · | · | · | · | · | 6% | 46% | **driver** 46% | 59707 |
++| binary-search | native | 2 | 2.0 | · | · | 2% | 4% | 88% | · | · | · | · | · | · | · | 1% | 6% | **solving** 88% | 240144 |
++| div-rem | native | 9 | 0.99 | · | · | · | 2% | 54% | · | · | · | · | 0% | · | · | 6% | 37% | **solving** 54% | 55638 |
++| records | native | 2 | 0.13 | · | · | · | 1% | 1% | · | · | · | · | 10% | · | · | 11% | 78% | **driver** 78% | 7451 |
++| scalar-arithmetic | native | 6 | 0.38 | · | · | · | 2% | 23% | · | · | · | · | 0% | · | · | 10% | 65% | **driver** 65% | 20540 |
++| semantics | native | 152 (30 undecided) | 5.48 | · | · | 0% | 1% | 1% | · | · | · | · | 0% | · | · | 18% | 80% | **driver** 80% | 100555 |
++| utf8 | native | 1 | 0.32 | · | · | 6% | 11% | 68% | · | · | · | · | · | · | · | 2% | 13% | **solving** 68% | 23224 |
++
++### The recorded examples
++
++| id | engine | runs | s | loading | lowering | symbolic | encoding | solving | trace | checker-other | gaps | contracts | replay | jvm | harness | setup | driver | dominant | largest formula (clauses) |
++|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|
++| example/141 | native | 1 | 1.33 | · | · | 2% | 3% | 88% | · | · | · | · | · | · | · | 0% | 6% | **solving** 88% | 137013 |
++| example/142 | native | 1 | 4.83 | · | · | 1% | 1% | 96% | · | · | · | · | · | · | · | 0% | 1% | **solving** 96% | 161165 |
++
++## Group 1: semantic conformance, case by case
++
++The JVM's answer is the conformance test's (`lib/tests/conformance.rs`), on the calls the corpus lists.
++
++<details><summary>All 152 claims</summary>
++
++| case | expected | the JVM | native strict | native assume | native advised |
++|---|---|---|---|---|---|
++| `conformance/capacity/1` | violation | conformance test | – gap 0.0 s | ✗ₐ verified 0.03 s | ✓ violation 0.05 s |
++| `conformance/builderCapacity/1` | violation | conformance test | – gap 0.0 s | ✗ₐ verified 0.03 s | ✓ violation 0.05 s |
++| `conformance/mapCapacity/1` | violation | conformance test | – gap 0.0 s | ✗ₐ verified 0.03 s | ✓ violation 0.05 s |
++| `conformance/setCapacity/1` | violation | conformance test | – gap 0.0 s | ✗ₐ verified 0.03 s | ✓ violation 0.05 s |
++| `conformance/loadFactor/1` | violation | conformance test | – refused 0.0 s | – refused 0.0 s | – needs contracts 0.0 s |
++| `conformance/nullMonitor/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.07 s |
++| `conformance/monitor/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/firstByte/1` | violation | conformance test | – gap 0.0 s | ✗ₐ verified 0.03 s | ✓ violation 0.07 s |
++| `conformance/hiding/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/hiding/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/hidden/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.02 s | ✓ verified 0.03 s |
++| `conformance/hidden/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/sameLiteral/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/sameLiteral/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/otherLiteral/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/otherLiteral/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/sameClass/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/sameClass/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/concatenated/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.02 s | ✓ verified 0.03 s |
++| `conformance/concatenated/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/boom/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/inherited/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/quiet/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.02 s | ✓ verified 0.03 s |
++| `conformance/counter/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/counter/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/constructed/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/constructed/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/superFirst/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/superFirst/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/cycle/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/cycle/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/declaring/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/declaring/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/defaults/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/defaults/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/defaults/3` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/fatal/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/fatal/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/boomTwice/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/boomTwice/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/enumState/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/enumState/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/enumValues/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/enumValues/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/enumSwitch/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/enumSwitch/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/enumBodies/1` | verified | conformance test | ✓ verified 0.04 s | ✓ verified 0.04 s | ✓ verified 0.12 s |
++| `conformance/enumBodies/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/enumBroken/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/enumBroken/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/enumValueOf/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/enumValueOf/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listSizes/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listSizes/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listNull/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listNull/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listChange/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listChange/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listCopySame/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listCopySame/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listCopyMutable/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listCopyMutable/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listGet/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listGet/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listSearch/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listSearch/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listEquals/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listEquals/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listIterate/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listIterate/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listOfArray/1` | verified | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/listOfArray/2` | violation | conformance test | – gap 0.0 s | – gap 0.0 s | – needs contracts 0.0 s |
++| `conformance/finallyWins/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/finallyWins/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/caught/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/caught/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/caught/3` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/caughtAsRuntime/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/caughtAsRuntime/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/nestedHandler/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/nestedHandler/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/element/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/element/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/cast/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/cast/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/throwNull/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/throwNull/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.06 s |
++| `conformance/rethrown/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.05 s |
++| `conformance/rethrown/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.06 s |
++| `conformance/aliasedLocals/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/aliasedLocals/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/aliasedObjects/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/aliasedObjects/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.04 s |
++| `conformance/twoArrays/1` | verified | conformance test | ✓ verified 0.11 s | ✓ verified 0.04 s | ✓ verified 0.04 s |
++| `conformance/writeThrough/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/length/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/lengthOrMinusOne/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/nullLocal/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.04 s | ✓ verified 0.03 s |
++| `conformance/nullLocal/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/width/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/width/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/width/3` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/clamp/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/clamp/2` | violation | conformance test | ✓ violation 0.05 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/pairsEqual/1` | verified | conformance test | – refused 0.0 s | – refused 0.0 s | – refused 0.1 s |
++| `conformance/pairsEqual/2` | violation | conformance test | – refused 0.0 s | – refused 0.0 s | – refused 0.0 s |
++| `conformance/sides/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/sides/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/code/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/code/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/divide/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/divide/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/divide/3` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/divide/4` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/divideLong/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/divideLong/2` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.04 s | ✓ verified 0.04 s |
++| `conformance/remainder/1` | verified | conformance test | ✓ verified 0.04 s | ✓ verified 0.04 s | ✓ verified 0.05 s |
++| `conformance/remainder/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.05 s | ✓ violation 0.06 s |
++| `conformance/remainder/3` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/remainderLong/1` | verified | conformance test | ✓ verified 0.04 s | ✓ verified 0.04 s | ✓ verified 0.04 s |
++| `conformance/remainderLong/2` | violation | conformance test | ✓ violation 0.06 s | ✓ violation 0.06 s | ✓ violation 0.07 s |
++| `conformance/shiftLeft/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/shiftLeft/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/shiftLeft/3` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/shiftLeftLong/1` | verified | conformance test | ✓ verified 0.04 s | ✓ verified 0.04 s | ✓ verified 0.04 s |
++| `conformance/shiftLeftLong/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/shiftLeftLong/3` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/shiftRight/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/shiftRight/2` | violation | conformance test | ✓ violation 0.05 s | ✓ violation 0.05 s | ✓ violation 0.05 s |
++| `conformance/shiftRight/3` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/shiftUnsigned/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/shiftUnsigned/2` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/shiftUnsigned/3` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/square/1` | violation | conformance test | ✓ violation 0.05 s | ✓ violation 0.05 s | ✓ violation 0.05 s |
++| `conformance/negate/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/toByte/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/toByte/2` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.02 s | ✓ verified 0.03 s |
++| `conformance/toChar/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.03 s |
++| `conformance/toChar/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/toShort/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/fromLong/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/nextChar/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/nextChar/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/absolute/1` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/increment/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/byteSum/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/byteSum/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/leadingZeros/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/leadingZeros/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/leadingZeros/3` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `conformance/leadingZerosLong/1` | verified | conformance test | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `conformance/leadingZerosLong/2` | violation | conformance test | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++
++</details>
++
++## Group 2: real regressions, case by case
++
++| case | expected | the JVM | native strict | native assume | native advised |
++|---|---|---|---|---|---|
++| `real/midpoint/broken-property` | violation | refuted returns -1073741824 | ✓ violation 0.12 s | ✓ violation 0.12 s | ✓ violation 0.13 s |
++| `real/midpoint/fixed-property` | verified | held 40579 | ✓ verified 0.04 s | ✓ verified 0.04 s | ✓ verified 0.04 s |
++| `real/midpoint/fix-confined` | verified | held 121136 | ✓ verified 0.06 s | ✓ verified 0.06 s | ✓ verified 0.07 s |
++| `real/midpoint/search-within-bound` | verified | held 200000 | ✓ verified 1.75 s | ✓ verified 1.75 s | ✓ verified 1.76 s |
++| `real/bucket/broken-property` | violation | refuted returns -2 | ✓ violation 0.05 s | ✓ violation 0.05 s | ✓ violation 0.06 s |
++| `real/bucket/fixed-property` | verified | held 122010 | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `real/bucket/fix-confined` | verified | held 127354 | ✓ verified 0.06 s | ✓ verified 0.06 s | ✓ verified 0.06 s |
++| `real/oddity/broken-property` | violation | refuted returns false | ✓ violation 0.04 s | ✓ violation 0.04 s | ✓ violation 0.05 s |
++| `real/oddity/fixed-property` | verified | held 200017 | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `real/oddity/fix-confined` | verified | held 127076 | ✓ verified 0.06 s | ✓ verified 0.06 s | ✓ verified 0.06 s |
++| `real/checksum/broken-property` | violation | refuted returns 0 | ✓ violation 0.05 s | ✓ violation 0.05 s | ✓ violation 0.06 s |
++| `real/checksum/fixed-property` | verified | held 200000 | ✓ verified 0.03 s | ✓ verified 0.03 s | ✓ verified 0.04 s |
++| `real/checksum/fix-confined` | verified | held 190209 | ✓ verified 0.44 s | ✓ verified 0.44 s | ✓ verified 0.45 s |
++
++## Group 3: held-out performance cases, case by case
++
++| case | expected | the JVM | native strict | native assume | native advised |
++|---|---|---|---|---|---|
++| `held/saturating` | verified | held 200289 | ✓ verified 0.05 s | ✓ verified 0.05 s | ✓ verified 0.05 s |
++| `held/average/bits` | verified | held 200289 | ✓ verified 0.05 s | ✓ verified 0.05 s | ✓ verified 0.05 s |
++| `held/average/unsigned-shift` | violation | refuted before: returns -1; after: returns 2147483647 | ✓ violation 0.05 s | ✓ violation 0.06 s | ✓ violation 0.06 s |
++| `held/floor-mod/wide-modulus` | violation | refuted before: returns -3; after: returns 2147483646 | ✓ violation 0.60 s | ✓ violation 0.60 s | ✓ violation 0.61 s |
++| `held/floor-mod/jdk` | verified | held 122010 | ✓ verified 0.06 s | ✓ verified 0.06 s | ✓ verified 0.06 s |
++| `held/ceil-div` | verified | held 122010 | ✓ verified 0.06 s | ✓ verified 0.06 s | ✓ verified 0.06 s |
++| `held/lower-bound` | verified | held 130860 | ✓ verified 0.25 s | ✓ verified 0.25 s | ✓ verified 0.26 s |
++| `held/utf8-length` | verified | held 200000 | ✓ verified 0.32 s | ✓ verified 0.32 s | ✓ verified 0.32 s |
++| `held/reverse` | verified | held 200000 | ✓ verified 0.15 s | ✓ verified 0.15 s | ✓ verified 0.16 s |
++| `held/prefix-sums` | verified | held 200000 | ✓ verified 0.05 s | ✓ verified 0.05 s | ✓ verified 0.06 s |
++| `held/overlap/meets` | verified | held 52777 | ✓ verified 0.06 s | ✓ verified 0.06 s | ✓ verified 0.06 s |
++| `held/overlap/length` | violation | refuted before: returns 0; after: returns 2147483647 | ✓ violation 0.07 s | ✓ violation 0.07 s | ✓ violation 0.08 s |
++
++## Group 4: recorded examples, case by case
++
++| case | expected | the JVM | native strict | native assume | native advised |
++|---|---|---|---|---|---|
++| `example/141` | verified | recorded example | ✓ verified 1.33 s |  |  |
++| `example/142` | verified | recorded example | ✓ verified 4.83 s |  |  |
++
++## The JVM against the corpus
++
++Every expected answer of groups 2 and 3 is borne out on the JVM.
++
++Every witness an engine reported reproduces on the JVM.

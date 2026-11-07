@@ -34,6 +34,12 @@ The job's own check, run by hand on its saved lib/target/benchmark-native.json, 
 
 Housekeeping, at the user's request: the six loop run records only the two stream workspaces held were copied into llm-dlc/loop-summaries/ (checked identical), and ../in-the-loop-jbmc and ../in-the-loop-native were deleted. Before that, every file in each directory was compared by git blob hash with its stream's final commit (lukovtll, ulsslrtx). All 3,108 and 3,117 tracked files were identical, and none was missing. Of the untracked files, the 28 session logs were already here byte for byte. The rest was lib/target and __pycache__, which builds regenerate. engine-priorities.md's Progress flags for later that the run records, which are gitignored and unredacted, should be published through the redaction pipeline rather than by removing them from .gitignore. Its status is waiting on job -033320.
 
+### Record verification result for the own checker's encoding-timing job: it passes after the benchmark's witness fix, closing VF-012
+
+change `puwvxpolnvts` · [log `3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)
+
+Job 20261107-033320 (rerun of the VF-012 job at dc03b87fb961, vm-1) passed both steps in 2m20s: no false alarm on leadingZerosLong/2, 0 of 533 own-checker runs flagged phasesExcess (reference job: 1 of 356), median seconds ratio 0.974 against job 20261106-201041 over 29 runs of 0.1 s or more. VF-012 is closed in verification/findles.md.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) has every step in between: reasoning, tool calls and their results.

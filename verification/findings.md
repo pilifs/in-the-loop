@@ -18,36 +18,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
-### VF-012: the own checker raises a false alarm on `conformance/leadingZerosLong/2`, so the benchmark step exits 1 and the encoding-timing check never ran
-
-- **Status**: open
-- **Raised**: 2026-11-07 on `vm-1` (run with `--memory 7G --workers 3`). Job
-  `20261107-032249-the-own-checker-s-encoding-timed-whole-p` at `58b89dd9ce1c`.
-- **Found**: step 1 (`lib/benchmark/run.py --engines native`) ran all 533 own-checker runs in 143 s and exited 1,
-  because three runs are classed `false-alarm`: `conformance/leadingZerosLong/2` under strict, assume and advised. The
-  own checker reports `violation` with witness `48` in 0.04 s (610 variables, 2114 clauses), and the JVM replay says
-  `witnessOnTheJvm: holds`, i.e. the witness is spurious. The case is not in the committed `lib/benchmark/results.json`
-  (new since that run, probably from the numberOfLeadingZeros change), so this is not a regression of the encoding
-  timing. Step 2 (no run flagged `phasesExcess`; median seconds ratio against job `20261106-201041` at most 1.10) was
-  skipped. Read from the saved JSON in the work directory: 0 of 533 runs carry `phasesExcess`, which is promising but
-  is not the check the job names, and the ratio was not computed. No other reference disagreement.
-- **Needs**: whoever owns the `Long.numberOfLeadingZeros` modelling in the own checker (the engine-priorities loop)
-  fixes the encoding behind case `leadingZerosLong/2` or marks the case as expected-unsupported; then the job is
-  resubmitted unchanged (`pipeline.py resubmit 20261107-032249-the-own-checker-s-encoding-timed-whole-p`).
-- **Update 2026-11-07 (cause found, fixed in the benchmark runner)**: the own checker's witness is right, and the JVM
-  replay misread it. Run inline, `jvmcontract prove ... 'conformance.Conformance#leadingZerosLong' --assert
-  'result < 64' --engine native --gaps strict` reports `leadingZerosLong(arg0=0)`, outcome 64, which the JVM bears out.
-  The tool writes a `long` input as a decimal string (`"0"`), and `lib/benchmark/run.py`'s `token()` took any
-  one-character string for a `char` and passed its code unit: `ord('0')`, 48, where `numberOfLeadingZeros(48)` is 58.
-  Every single-digit `long`, `float` or `double` witness, alone or in an array, was misread that way. This case is the
-  first in the corpus whose witness is one. `witness_arguments` now reads an input as a `char` only if its declared
-  type is one. `test_a_long_or_a_double_witness_of_one_digit_is_its_value_not_a_char` failed before the fix
-  (`48;[48,-2,55];53`) and passes after it. Step 2's check run by hand on the job's saved
-  `lib/target/benchmark-native.json`: 0 of 533 runs flagged, median ratio 0.963 (quartiles 0.871 to 1.006) over the 29
-  runs of 0.1 s or more, 31.5 s against 32.0 s over the 356 paired runs. Resubmitted unchanged.
-- **Tracked in**: the job's `logs/1-benchmark-own-checker-only.log`.
-- **Closes when**: the resubmitted job passes (no false alarm, no `phasesExcess`, median ratio at most 1.10).
-
 ### VF-011: the own checker counts a loop's unwinding over the whole path, so example 052 is left to JBMC
 
 - **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)
@@ -150,6 +120,37 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
 
 ## Decided and closed
+
+### VF-012: the own checker raises a false alarm on `conformance/leadingZerosLong/2`, so the benchmark step exits 1 and the encoding-timing check never ran
+
+- **Status**: closed by job `20261107-033320-the-own-checker-s-encoding-timed-whole-p` (at `dc03b87fb961`, `vm-1`, 2026-11-07): both steps passed, so no false alarm and the timing comparison ran and passed
+- **Raised**: 2026-11-07 on `vm-1` (run with `--memory 7G --workers 3`). Job
+  `20261107-032249-the-own-checker-s-encoding-timed-whole-p` at `58b89dd9ce1c`.
+- **Found**: step 1 (`lib/benchmark/run.py --engines native`) ran all 533 own-checker runs in 143 s and exited 1,
+  because three runs are classed `false-alarm`: `conformance/leadingZerosLong/2` under strict, assume and advised. The
+  own checker reports `violation` with witness `48` in 0.04 s (610 variables, 2114 clauses), and the JVM replay says
+  `witnessOnTheJvm: holds`, i.e. the witness is spurious. The case is not in the committed `lib/benchmark/results.json`
+  (new since that run, probably from the numberOfLeadingZeros change), so this is not a regression of the encoding
+  timing. Step 2 (no run flagged `phasesExcess`; median seconds ratio against job `20261106-201041` at most 1.10) was
+  skipped. Read from the saved JSON in the work directory: 0 of 533 runs carry `phasesExcess`, which is promising but
+  is not the check the job names, and the ratio was not computed. No other reference disagreement.
+- **Needs**: whoever owns the `Long.numberOfLeadingZeros` modelling in the own checker (the engine-priorities loop)
+  fixes the encoding behind case `leadingZerosLong/2` or marks the case as expected-unsupported; then the job is
+  resubmitted unchanged (`pipeline.py resubmit 20261107-032249-the-own-checker-s-encoding-timed-whole-p`).
+- **Update 2026-11-07 (cause found, fixed in the benchmark runner)**: the own checker's witness is right, and the JVM
+  replay misread it. Run inline, `jvmcontract prove ... 'conformance.Conformance#leadingZerosLong' --assert
+  'result < 64' --engine native --gaps strict` reports `leadingZerosLong(arg0=0)`, outcome 64, which the JVM bears out.
+  The tool writes a `long` input as a decimal string (`"0"`), and `lib/benchmark/run.py`'s `token()` took any
+  one-character string for a `char` and passed its code unit: `ord('0')`, 48, where `numberOfLeadingZeros(48)` is 58.
+  Every single-digit `long`, `float` or `double` witness, alone or in an array, was misread that way. This case is the
+  first in the corpus whose witness is one. `witness_arguments` now reads an input as a `char` only if its declared
+  type is one. `test_a_long_or_a_double_witness_of_one_digit_is_its_value_not_a_char` failed before the fix
+  (`48;[48,-2,55];53`) and passes after it. Step 2's check run by hand on the job's saved
+  `lib/target/benchmark-native.json`: 0 of 533 runs flagged, median ratio 0.963 (quartiles 0.871 to 1.006) over the 29
+  runs of 0.1 s or more, 31.5 s against 32.0 s over the 356 paired runs. Resubmitted unchanged.
+- **Tracked in**: the job's `logs/1-benchmark-own-checker-only.log`.
+- **Closes when**: the resubmitted job passes (no false alarm, no `phasesExcess`, median ratio at most 1.10).
+- **Result**: 533 own-checker runs, 0 flagged `phasesExcess` (reference job: 1 of 356); median seconds ratio 0.974 over 29 runs of 0.1 s or more (quartiles 0.872 to 1.002).
 
 ### VF-008: the conformance corpus under JBMC and auto: JBMC says `Verified` on `declaring`, which the JVM refutes
 
