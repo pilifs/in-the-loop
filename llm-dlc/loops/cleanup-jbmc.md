@@ -142,6 +142,20 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
   It fails with `refused` left None (checked inline), and the conformance suite's 10 tests pass. Shared files, by
   adding: `lib/README.md` (one clause naming the refusal), and `Outcome`'s new field in `property.rs`. The closing
   resubmission of `20261107-043420-…` waits on VF-009's fix, since the same test carries VF-009's 8 disagreements.
+- **J3, VF-018: the longer limit queued** (2026-11-07). The four failed jobs each ran 21 to 23 minutes (peak
+  1.2 GiB): two JBMC runs of 600 s, the claim's under `--engine jbmc` and again under `auto --confirm` (whose own
+  checker's `Verified` stood), and about 2 minutes for the rest. The JBMC tests in `lib/tests/heap.rs` now take each
+  run's limit from `JVMCONTRACT_HEAP_TIME_LIMIT`, in seconds. It is 600 s when unset, and a value that isn't a
+  positive number stops the test. Only the runs on an engine other than the own checker read it, since
+  `timeout_seconds` is also the own checker's deadline. This is in `related_on` and `property_on`, so the tests
+  that aren't ignored are unchanged. Shared file, by adding: `heap.rs`, the constant `TIME_LIMIT_VARIABLE`, the
+  functions `time_limit` and `time_limit_from`, the two assignments, and the test
+  `the_jbmc_tests_take_their_time_limit_from_the_environment`, which doesn't compile without them. heap's 47
+  non-ignored tests pass. The four tests run unchanged with the variable at 1800, one job each (2 CPUs, 4 GiB,
+  about 70 min, a timeout of 100 min): `20261107-164356-vf-018-objects-kernel-price-s-output-rel`,
+  `-164356-vf-018-prices-prices-total-s-computed-in`, `-164356-vf-018-lines-lines-reprice-s-equations-t` and
+  `-164356-vf-018-orders-orders-reprice-s-equations`. If any fails, VF-018 is deferred to the user, with no second
+  attempt. Next: J2's recheck, then VF-009 once its triage is back.
 - Not this stream's: `sync.py commit`'s check in this workspace reports 4 errors, none on this branch's own commits.
   They are the planning session's base commit `oqqwvmqy`, whose log `3f768f3bb246` is stored only in the default
   workspace, and other workspaces' commits (`ruvmymplmmoo`, native; `syqpoxomnynk`, the verification loop) whose

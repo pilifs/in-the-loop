@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-164356-vf-018-lines-lines-reprice-s-equations-t",
+  "title": "VF-018: lines.Lines#reprice's equations that read a primitive parameter under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+  "description": "Closes VF-018 (verification/findings.md) when this job and its three siblings pass. The ignored test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm in lib/tests/heap.rs failed in job 20261107-092158 because JBMC did not finish lines.Lines#reprice's equations that read a primitive parameter within the test's own 600 s limit (the default timeout_seconds of the options), where the own checker proves it. By the user's decision 6 of llm-dlc/loops/cleanup.md, the only change is a longer limit: the JBMC tests in heap.rs now take it from JVMCONTRACT_HEAP_TIME_LIMIT (600 s when unset; the own checker's runs keep 600), and this job sets it to 1800. The test and its expectations are unchanged. If it fails, VF-018 is deferred to the user with no second attempt. In 20261107-092158, two runs timed out (lines.Lines#reprice's equations that read a primitive parameter under --engine jbmc and under auto --confirm) and the rest took about 2 minutes, so the worst case here is about 2 x 30 min + 5 min, plus the release build.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/heap.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/property.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm passes unchanged with JVMCONTRACT_HEAP_TIME_LIMIT=1800. Under both engines: after discounted and after reprice Verified, defect discounted and defect reprice Violation, each violation's witness run on a JVM.",
+  "submitted": {
+    "at": "2026-11-07T16:43:56+00:00"
+  },
+  "priority": 5,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "70m",
+    "timeout": "100m",
+    "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-092158 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+  },
+  "steps": [
+    {
+      "name": "the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm with a 1800 s limit",
+      "run": "cd lib && JVMCONTRACT_HEAP_TIME_LIMIT=1800 cargo test --release --test heap -- --ignored the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --exact",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

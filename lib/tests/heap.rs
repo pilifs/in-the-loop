@@ -706,11 +706,52 @@ fn related(root: &Path, after: &str, target: &str, c: jvmcontract::spec::Corresp
     related_on(jvmcontract::Engine::Native, false, root, after, target, c, tag)
 }
 
+/// The variable that sets each run's time limit, in seconds, for the tests that run JBMC (the ignored ones, under
+/// `--engine jbmc` and `auto --confirm`): a pipeline job may give JBMC longer than the options' default of 600 s
+/// (VF-018). The own checker's runs keep the default, so the tests that are not ignored don't read it.
+const TIME_LIMIT_VARIABLE: &str = "JVMCONTRACT_HEAP_TIME_LIMIT";
+
+/// The time limit for a run on `engine`: [`TIME_LIMIT_VARIABLE`]'s value if it is set and the engine runs JBMC,
+/// else `default`.
+fn time_limit(engine: jvmcontract::Engine, default: u64) -> u64 {
+    if engine == jvmcontract::Engine::Native {
+        return default;
+    }
+    time_limit_from(std::env::var(TIME_LIMIT_VARIABLE).ok().as_deref(), default)
+}
+
+/// [`time_limit`] for the variable's value `value`. A value that is not a positive number of seconds stops the test
+/// rather than falling back to the default, so a job that asks for a longer limit never runs with the shorter one.
+fn time_limit_from(value: Option<&str>, default: u64) -> u64 {
+    match value.map(str::trim) {
+        None | Some("") => default,
+        Some(v) => match v.parse::<u64>() {
+            Ok(seconds) if seconds > 0 => seconds,
+            _ => panic!("{TIME_LIMIT_VARIABLE}={v:?} is not a positive number of seconds"),
+        },
+    }
+}
+
+#[test]
+fn the_jbmc_tests_take_their_time_limit_from_the_environment() {
+    assert_eq!(time_limit_from(None, 600), 600);
+    assert_eq!(time_limit_from(Some(""), 600), 600);
+    assert_eq!(time_limit_from(Some("1800"), 600), 1800);
+    assert_eq!(time_limit_from(Some(" 1800 "), 600), 1800);
+    for bad in ["0", "-5", "30m", "1800s"] {
+        assert!(std::panic::catch_unwind(|| time_limit_from(Some(bad), 600)).is_err(), "{bad}");
+    }
+    // The own checker keeps the options' default whatever the variable says.
+    assert_eq!(time_limit(jvmcontract::Engine::Native, 600), 600);
+    assert_eq!(jvmcontract::equivalence::Options::new(Path::new("a"), Path::new("b"), "p.C#m").timeout_seconds, 600);
+}
+
 /// [`related`] on the engine `engine`, under `--confirm` if `confirm`.
 fn related_on(engine: jvmcontract::Engine, confirm: bool, root: &Path, after: &str, target: &str, c: jvmcontract::spec::Correspondence, tag: &str) -> jvmcontract::equivalence::Outcome {
     let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join(after), target);
     options.engine = engine;
     options.confirm = confirm;
+    options.timeout_seconds = time_limit(engine, options.timeout_seconds);
     options.correspondence = Some(c);
     let work = root.join(format!("work-related-{after}-{tag}-{engine:?}-{confirm}"));
     let _ = std::fs::remove_dir_all(&work);
@@ -840,6 +881,7 @@ fn property_on(engine: jvmcontract::Engine, confirm: bool, build: &str, method: 
     let mut options = jvmcontract::property::Options::new(&[root.join(build)], &format!("objects.Kernel#{method}"));
     options.engine = engine;
     options.confirm = confirm;
+    options.timeout_seconds = time_limit(engine, options.timeout_seconds);
     options.assume = assume.map(str::to_string);
     options.assert = Some(assert.to_string());
     options.nullable = nullable.iter().map(|n| n.to_string()).collect();
