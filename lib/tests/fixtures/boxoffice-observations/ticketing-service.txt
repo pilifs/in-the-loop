@@ -34,7 +34,15 @@ GET /orders/{id} => net.terminalvalue.boxoffice.ticketing.api.OrderController#ge
   unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in OrderService.lambda$get$0(String) (string concatenation: the string's value isn't modeled)
 POST /concerts => net.terminalvalue.boxoffice.ticketing.api.ConcertController#create
   inputs: request: CreateConcert (request body)
+  request on the wire: CreateConcert: record
+  request on the wire: CreateConcert: name: @NotBlank String
+  request on the wire: CreateConcert: venue: @NotBlank String
+  request on the wire: CreateConcert: startsAt: @NotNull Instant
+  request on the wire: CreateConcert: priceCents: @PositiveOrZero long
+  request on the wire: CreateConcert: rows: @NotEmpty List<@Pattern(regexp = "[A-Z]") String>
+  request on the wire: CreateConcert: seatsPerRow: @Min(1) @Max(50) int
   response: ResponseEntity<Concert>
+  status when MethodArgumentNotValidException: 400 (the framework's default: Bean Validation of the request), before the handler runs, for a body that fails one of @NotBlank on CreateConcert.name, @NotBlank on CreateConcert.venue, @NotNull on CreateConcert.startsAt, @PositiveOrZero on CreateConcert.priceCents, @NotEmpty on CreateConcert.rows, @Pattern(regexp = "[A-Z]") on CreateConcert.rows, @Min(1) on CreateConcert.seatsPerRow, @Max(50) on CreateConcert.seatsPerRow
   status when returns: unknown (the ResponseEntity the handler builds)
   status when IllegalStateException: 500 (nothing maps it)
   status when NotFoundException: 404 (@ExceptionHandler ApiErrors.notFound)
@@ -52,7 +60,11 @@ POST /concerts => net.terminalvalue.boxoffice.ticketing.api.ConcertController#cr
   unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in SeatDocument.id(String, String) (string concatenation: the string's value isn't modeled)
 POST /concerts/{id}/holds => net.terminalvalue.boxoffice.ticketing.api.ConcertController#hold
   inputs: id: String (path variable), Idempotency-Key: String (header), request: HoldSeats (request body)
+  request on the wire: HoldSeats: record
+  request on the wire: HoldSeats: customerId: @NotBlank String
+  request on the wire: HoldSeats: seats: @NotEmpty List<@NotBlank String>
   response: ResponseEntity<Hold>
+  status when MethodArgumentNotValidException: 400 (the framework's default: Bean Validation of the request), before the handler runs, for a body that fails one of @NotBlank on HoldSeats.customerId, @NotEmpty on HoldSeats.seats, @NotBlank on HoldSeats.seats
   status when returns: unknown (the ResponseEntity the handler builds)
   status when IllegalArgumentException: 500 (nothing maps it)
   status when IllegalStateException: 500 (nothing maps it)
@@ -73,7 +85,11 @@ POST /concerts/{id}/holds => net.terminalvalue.boxoffice.ticketing.api.ConcertCo
   unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in HoldService.lambda$hold$1(String) (string concatenation: the string's value isn't modeled)
 POST /orders => net.terminalvalue.boxoffice.ticketing.api.OrderController#place
   inputs: request: PlaceOrder (request body)
+  request on the wire: PlaceOrder: record
+  request on the wire: PlaceOrder: holdId: @NotBlank String
+  request on the wire: PlaceOrder: paymentToken: @NotBlank String
   response: ResponseEntity<Order>
+  status when MethodArgumentNotValidException: 400 (the framework's default: Bean Validation of the request), before the handler runs, for a body that fails one of @NotBlank on PlaceOrder.holdId, @NotBlank on PlaceOrder.paymentToken
   status when returns: unknown (the ResponseEntity the handler builds)
   status when IllegalStateException: 500 (nothing maps it)
   status when ConflictException: 409 (@ExceptionHandler ApiErrors.conflict)

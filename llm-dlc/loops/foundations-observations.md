@@ -178,12 +178,41 @@ under Progress.
   `lib/src/main.rs` (`--against`), `lib/tests/observations.rs`, `lib/README.md` (a paragraph and the command).
   `Obligation` in `observe.rs` gained `new_entry`, `differences` and `needs`, with serde defaults, and `Change`
   derives `PartialOrd`/`Ord`; their existing meaning is unchanged.
-- Next: O2, step 2: Box Office examples 110–119, each example's before and after compared, against its recorded
-  boundary diff. Expected gaps to close in the spec where the diff shows them: request validation as an outcome
-  (110's dropped `@Valid`, 113's missing cascade: a 400 that disappears), a path variable that no longer matches the
-  route (118: a 500 on every request), an effect replaced by another (117: the outbox write replaced by a send inside
-  the transaction). Some (111's JSON subtypes, 112's configuration, 114's caching, 115's stored field) are outside
-  the entry-point spec and should be named as not observed there.
+- **O2, step 2 (2026-11-07): Box Office examples 110–119, each compared with Box Office as it is.** A new test in
+  `lib/tests/observations.rs` applies each example's patch to a copy of the sources, compiles the modules it changes
+  with `javac -parameters` (as the Gradle build does) against the base build's class path, compares every module's
+  specs with the base's, and holds every obligation that isn't preserved-to-prove or unresolved to what the example's
+  recorded boundary diff says changed at the entry points, with the differences that say it. The gaps it showed are
+  closed in the spec: an outcome the framework takes before the handler runs, with the requests it is for
+  (`StatusOutcome::when`): Bean Validation of a `@Valid` or `@Validated` body (`MethodArgumentNotValidException`, 400
+  unless an `@ExceptionHandler` takes it, for a body that fails one of the constraints it runs), and a parameter that
+  can't bind, from `binding::check` (`MissingPathVariableException`, a 500 on every request); and a body's wire shape
+  as the input domain (`Binding::shape`, the wire block's lines with their `!` lines). The comparison gained: such an
+  outcome only one build has, or for other requests, is changed (110's dropped `@Valid`, 113's new `@NotNull billing`
+  with `! constraints on Billing are not checked` named in `inputs`); a build that fails every request before the
+  handler changes every observation of the handler (118); a status one build answers for an exception and no
+  exception of the other does is changed even beside a normal return whose status is unknown (119: the 409 is gone);
+  beside an effect attempt that is gone, what the new build attempts instead is named (117); a new effect in an entry
+  point the old build has needs approval or a proof it's never reached, and the count says how many (116, 117). 111,
+  112 and 114 change no spec at all: what no entry-point spec observes (configuration values, what an encoded payload
+  holds beyond its snapshot paths, advice such as caching, field names in query strings) is printed under every
+  comparison (`observations::NOT_OBSERVED`). 115 is a changed insert payload path. Also fixed: `observations --base .`
+  (relative) followed no sibling module, since the class path entries are absolute; the base is now compared
+  canonically, as `verify` does. Each example's `notes` says what its comparison gives. The two lines O1 step 2 added
+  to `examples/apps/boxoffice/README.md` are removed again: `build.py` digests the whole tree into its claim records,
+  so they marked the recorded results of 006, 012, 110 and 111 stale; `lib/README.md` says the same. Full `cargo
+  test` passes; the observations suite takes about a minute (the Gradle build and ten javac builds). Shared files
+  touched, by adding: `lib/src/main.rs` (`--base` canonical), `lib/tests/observations.rs`, `lib/README.md`,
+  `examples/index.json` (rendered notes). `observe.rs` gained `Binding::shape` and `StatusOutcome::when`, with serde
+  defaults. O2 is done.
+- Also not this stream's to fix: `sync.py check` reports five old `main` commits whose trailers point at session
+  `c2bd9df4`'s log `1f2230c9f137`, which their manifest doesn't list; the verification loop rewrote them at 04:44
+  in a change (`uvmurzwkyukn`) whose manifest lists it, and that change isn't in this branch.
+- Next: O3, narrow case: the effect-log hook (`observe::effect_log`) and `observe::check` for the joint example's
+  `POST /quotes`, with recording stubs for its one outgoing send, one environment model for both versions, exact
+  order and a visible bound, through `equivalence.rs` as a new caller of the harness; the dropped and the duplicated
+  effect refuted with witnesses replayed under the modeled dependencies, and the refactor proved (a quick job if it
+  needs a proof run).
 - Status: working
 
 ## Loop settings

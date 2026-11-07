@@ -12,29 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.473Z",
-  "ended": "2026-11-07T04:46:54.552Z",
-  "duration_seconds": 2735,
+  "ended": "2026-11-07T05:24:25.305Z",
+  "duration_seconds": 4986,
   "stats": {
-    "turns": 15,
-    "api_calls": 158,
-    "tool_calls": 160,
+    "turns": 21,
+    "api_calls": 258,
+    "tool_calls": 264,
     "tool_errors": 2,
-    "compactions": 3,
-    "peak_context_tokens": 242494,
+    "compactions": 4,
+    "peak_context_tokens": 295917,
     "usage": {
-      "input_tokens": 314,
-      "output_tokens": 128122,
-      "cache_read_input_tokens": 22959980,
-      "cache_creation_input_tokens": 613635
+      "input_tokens": 518,
+      "output_tokens": 225697,
+      "cache_read_input_tokens": 43028722,
+      "cache_creation_input_tokens": 908701
     }
   },
   "tools": {
-    "Bash": 140,
-    "Read": 15,
-    "Edit": 3,
-    "Write": 2
+    "Bash": 227,
+    "Read": 23,
+    "Edit": 10,
+    "Write": 2,
+    "Monitor": 1,
+    "ToolSearch": 1
   },
   "files_touched": [
+    "lib/src/main.rs",
     "lib/src/observations.rs",
     "lib/src/spec/observe.rs",
     "lib/tests/observations.rs",
@@ -86,24 +89,38 @@
     {
       "index": 3,
       "started": "2026-11-07T04:34:06.399Z",
-      "ended": "2026-11-07T04:46:54.552Z",
-      "turns": 4,
-      "api_calls": 36,
+      "ended": "2026-11-07T04:48:04.320Z",
+      "turns": 5,
+      "api_calls": 44,
       "usage": {
-        "input_tokens": 72,
-        "output_tokens": 39508,
-        "cache_read_input_tokens": 4531469,
-        "cache_creation_input_tokens": 166239
+        "input_tokens": 88,
+        "output_tokens": 44703,
+        "cache_read_input_tokens": 6006327,
+        "cache_creation_input_tokens": 178467
       },
-      "peak_context_tokens": 179318
+      "peak_context_tokens": 191546
+    },
+    {
+      "index": 4,
+      "started": "2026-11-07T04:48:47.048Z",
+      "ended": "2026-11-07T05:24:25.305Z",
+      "turns": 5,
+      "api_calls": 92,
+      "usage": {
+        "input_tokens": 188,
+        "output_tokens": 92380,
+        "cache_read_input_tokens": 18593884,
+        "cache_creation_input_tokens": 282838
+      },
+      "peak_context_tokens": 295917
     }
   ],
   "log": {
-    "sha256": "fc77552d2be43ed25a2dc85f04f7a4c2cbc07394fe45fa6a93c331c47e9e4264",
-    "bytes": 5536173,
-    "lines": 1722,
-    "gzip_bytes": 1130240,
-    "path": "llm-dlc/traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/logs/fc77552d2be43ed25a2dc85f04f7a4c2cbc07394fe45fa6a93c331c47e9e4264.jsonl.gz"
+    "sha256": "770eecbafff5e07c9891fd4db76e4f23ec3cd67cc9c1a232faa8186739cacabd",
+    "bytes": 8349474,
+    "lines": 2758,
+    "gzip_bytes": 1646983,
+    "path": "llm-dlc/traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/logs/770eecbafff5e07c9891fd4db76e4f23ec3cd67cc9c1a232faa8186739cacabd.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -130,6 +147,14 @@
       "summary": "Two builds' observation specs compared into accounted obligations (foundations O2, step 1): observations::compare and observations --against",
       "body": "observe::compare, which returned a named Unsupported since Phase 0, now matches the entry points of two builds by what their consumers address: verb and route with path variable names erased, topic or queue, schedule. A renamed handler is the same entry point. A renamed route is one entry point removed and one new, with the handler that now serves the new route named, because only a person can say the route change is intended. Every observation of every old entry point gets exactly one obligation: preserved (to prove; the shapes agree, which discharges nothing), changed (a status mapping, a payload path, an effect moved into or out of a transaction or to another target, the response type), removed, or unresolved (an unknown status, or entry points a key can't tell apart). Two more obligations sit beside them: 'inputs', for a change to the external inputs, which belong to the preservation contract, and 'unresolved', for what the analysis can't see. Each obligation says what discharging it needs. observations::unaccounted checks that the accounting is complete. New option: jvmcontract observations ... --against OLD.json. Obligation gained new_entry, differences and needs, all with serde defaults.",
       "log_sha256": "fc77552d2be43ed25a2dc85f04f7a4c2cbc07394fe45fa6a93c331c47e9e4264"
+    },
+    {
+      "change_id": "yvpqmlqtoqzvsowsrwnylnopwzkpurtx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Box Office examples 110-119 compared into accounted obligations (foundations O2, step 2): outcomes before the handler, body wire shapes, and what no spec observes",
+      "body": "Each of Box Office's examples 110-119 is now compared with Box Office as it is, and lib/tests/observations.rs checks the result against what the example's recorded boundary diff says changed at the entry points. The test applies each patch to a copy of the sources, recompiles only the modules the patch changes with javac -parameters, as the Gradle build compiles them, and compares every module's specs with the base build's. Every obligation that is not preserved-to-prove or unresolved has to match a per-example table, along with the differences that say why.\n\nThe gaps the examples showed are closed in the spec. Each route's statuses now start with the outcomes the framework takes before the handler runs, and each names the requests it applies to (new field StatusOutcome::when). There are two such outcomes. Bean Validation of a @Valid or @Validated body gives a MethodArgumentNotValidException, answered 400 unless an @ExceptionHandler takes it, for a body that fails one of the constraints it runs. A parameter that can't bind, as binding::check finds it, gives a MissingPathVariableException, a 500 on every request. A body's wire shape, with the wire block's ! lines, is now part of the input domain (new field Binding::shape).\n\nThe comparison changed in six ways. An outcome taken before the handler that only one build has, or that applies to other requests, is changed: 110 drops @Valid, and 113 adds a @NotNull billing whose unchecked constraints are named in its inputs obligation. A build that fails every request before the handler changes every observation of that handler (118). A status one build answers for an exception, with no exception of the other answered with it, is changed even when the normal return's status is unknown (119: the 409 is gone). Where an effect attempt is gone, what the new build attempts instead is named (117). A new effect in an existing entry point needs a person's approval or a proof that it is never reached, and the count says how many there are (116, 117). 111, 112 and 114 change no spec at all; what no entry-point spec observes is now printed under every comparison (observations::NOT_OBSERVED). 115 shows up as a changed payload path on an insert.\n\nTwo smaller changes. observations --base with a relative path followed no sibling module, because class path entries are absolute; the base is now compared canonically, as verify does. And O1 step 2's two-line addition to examples/apps/boxoffice/README.md is removed again: build.py digests the whole tree into its claim records, so those lines made the recorded results of examples 006, 012, 110 and 111 look stale, and lib/README.md already says the same thing. Each example's notes now say what its comparison gives, and the pages are re-rendered.\n\nVerified: the full cargo test passes (183 unit, 64 integration, 9 conformance with 2 ignored, 3 foundations, 12 observations). rustfmt and clippy are not installed here, so neither was run. Brief Progress: O2 is done; next is O3's narrow case for the joint example.",
+      "log_sha256": "770eecbafff5e07c9891fd4db76e4f23ec3cd67cc9c1a232faa8186739cacabd"
     }
   ],
   "logs": {
@@ -137,6 +162,12 @@
       "bytes": 3923388,
       "lines": 1248,
       "gzip_bytes": 793585,
+      "url": null
+    },
+    "770eecbafff5e07c9891fd4db76e4f23ec3cd67cc9c1a232faa8186739cacabd": {
+      "bytes": 8349474,
+      "lines": 2758,
+      "gzip_bytes": 1646983,
       "url": null
     },
     "a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107": {

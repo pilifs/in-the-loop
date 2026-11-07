@@ -747,10 +747,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             let module_classes: std::collections::BTreeSet<String> = cp.application_class_names()?.into_iter().collect();
             let mut followed = module_classes.clone();
+            // Compared canonically, as `verify` does: a relative `--base .` names the same siblings as an absolute one.
+            let base = base.map(|b| std::fs::canonicalize(&b).unwrap_or(b));
             for list in &classpath {
                 cp.add_path_list(list)?;
                 if let Some(base) = &base {
-                    for entry in std::env::split_paths(list).filter(|e| e.exists() && e.starts_with(base)) {
+                    for entry in std::env::split_paths(list).filter(|e| e.exists() && std::fs::canonicalize(e).unwrap_or_else(|_| e.clone()).starts_with(base)) {
                         let mut sibling = ClassPath::new();
                         sibling.add(&entry)?;
                         followed.extend(sibling.application_class_names()?);

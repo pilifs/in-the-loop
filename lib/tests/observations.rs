@@ -2,11 +2,13 @@
 //! loop (`lib/tests/fixtures/foundations/`), checked field by field, and on every entry point of Box Office
 //! (`examples/apps/boxoffice/`), checked against golden text and the facts read off its source.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::{Mutex, OnceLock};
 
-use jvmcontract::observations::{compare, unaccounted};
+use jvmcontract::classpath::ClassPath;
+use jvmcontract::observations::{analyse, compare, unaccounted, NOT_OBSERVED};
 use jvmcontract::spec::observe::{self, Binding, BindingSource, Change, EntryKind, EntryPointSpec, Obligation, Placement, SiteKind, StatusOutcome};
 use jvmcontract::spec::{Derivation, ExternalInput, Observation, OrderPolicy};
 
@@ -247,21 +249,21 @@ fn a_changed_shape_is_changed_not_preserved() {
     };
     // A status mapping: the guard's exception now answers 400.
     let mut new = old.clone();
-    new.statuses[1] = StatusOutcome { outcome: "IllegalArgumentException".into(), status: Some(400), by: "@ExceptionHandler Errors.invalid".into() };
+    new.statuses[1] = StatusOutcome { outcome: "IllegalArgumentException".into(), status: Some(400), by: "@ExceptionHandler Errors.invalid".into(), when: Vec::new() };
     let o = check(new, "status", Change::Changed, "IllegalArgumentException: 500 (nothing maps it), now 400");
     assert!(o.needs.contains("approval"));
     // An outcome replaced by another with the same status is preserved, the difference left to the proof.
     let mut new = old.clone();
     new.statuses[1].outcome = "IllegalStateException".into();
     check(new, "status", Change::Preserved, "a new outcome IllegalStateException");
-    // A status no outcome answered before.
+    // A status no exception was answered with before.
     let mut new = old.clone();
-    new.statuses.push(StatusOutcome { outcome: "ConflictException".into(), status: Some(409), by: "@ExceptionHandler Errors.conflict".into() });
-    check(new, "status", Change::Changed, "the new build may answer 409, the old one never does");
-    // A status the analysis can't tell leaves it unresolved, even where a known one is gone: it may be the unknown one.
+    new.statuses.push(StatusOutcome { outcome: "ConflictException".into(), status: Some(409), by: "@ExceptionHandler Errors.conflict".into(), when: Vec::new() });
+    check(new, "status", Change::Changed, "the new build answers 409 for an exception it throws; no exception of the old build is answered 409");
+    // A normal return whose status the analysis can't tell leaves it unresolved: it may be the one it was.
     let mut new = old.clone();
     new.statuses[0].status = None;
-    check(new, "status", Change::Unresolved, "the old build may answer 200");
+    check(new, "status", Change::Unresolved, "returns: 200 (the default), now unknown");
     let mut new = old.clone();
     new.statuses[0].status = None;
     new.statuses[1].status = Some(400);
@@ -302,7 +304,7 @@ fn a_changed_shape_is_changed_not_preserved() {
     check(new, "result", Change::Changed, "the response was long, now shop.Money");
     let mut new = old.clone();
     new.inputs.push(ExternalInput { name: "Idempotency-Key".into(), ty: "String".into(), derivation: Derivation::Identity });
-    new.bindings.push(Binding { input: "Idempotency-Key".into(), source: BindingSource::Header, wire_type: "java.lang.String".into() });
+    new.bindings.push(Binding { input: "Idempotency-Key".into(), source: BindingSource::Header, wire_type: "java.lang.String".into(), shape: Vec::new() });
     let o = check(new, "inputs", Change::Changed, "a new input Idempotency-Key: String (header)");
     assert!(o.needs.contains("approved by a person"));
 }
@@ -349,7 +351,7 @@ fn the_command_compares_against_an_earlier_builds_specs() {
     assert!(text.starts_with(&format!("POST /quotes\n  removed: result, exception, status, effect:{SEND}\n    - no entry point of the new build is POST /quotes\n")), "{text}");
     assert!(text.contains("POST /quotes/text\n  preserved, to prove: result\n"), "{text}");
     assert!(text.contains("  unresolved: what the analysis can't see\n"), "{text}");
-    assert!(text.ends_with("7 observations of 2 entry points: 3 to prove preserved, 0 changed and 4 removed (each preserved only with a person's approval), 0 unresolved; 4 new\n"), "{text}");
+    assert!(text.ends_with(&format!("7 observations of 2 entry points: 3 to prove preserved, 0 changed and 4 removed (each preserved only with a person's approval), 0 unresolved; 4 new\n{NOT_OBSERVED}\n")), "{text}");
     let parsed: Vec<Obligation> = serde_json::from_str(&run(&["--json"])).unwrap();
     assert_eq!(parsed, observe::compare(&specs("before"), &specs("route-change")).unwrap());
 }
@@ -481,8 +483,12 @@ fn box_office_specs_say_what_its_source_does() {
     let writes: Vec<(&str, Placement)> = place.effects.iter().filter(|e| e.kind == SiteKind::Write).map(|e| (e.target.as_str(), e.placement)).collect();
     assert_eq!(writes, [("OrderDocument", Placement::Inside), ("Outbox.Entry", Placement::Inside)]);
     let statuses: Vec<(&str, Option<u16>)> = place.statuses.iter().map(|s| (s.outcome.as_str(), s.status)).collect();
-    assert_eq!(statuses, [("returns", None), ("IllegalStateException", Some(500)), ("ConflictException", Some(409)), ("NotFoundException", Some(404))]);
-    assert!(place.statuses[0].by.contains("ResponseEntity"), "a status the handler builds is unknown, and says why");
+    assert_eq!(statuses, [("MethodArgumentNotValidException", Some(400)), ("returns", None), ("IllegalStateException", Some(500)), ("ConflictException", Some(409)), ("NotFoundException", Some(404))]);
+    // A body that fails validation is answered 400 before the handler runs: by Spring's default, ApiErrors doesn't take it.
+    assert_eq!(place.statuses[0].when, ["@NotBlank on PlaceOrder.holdId", "@NotBlank on PlaceOrder.paymentToken"]);
+    assert!(place.statuses[0].by.starts_with("the framework's default"), "{:?}", place.statuses[0]);
+    assert!(place.statuses[1].by.contains("ResponseEntity"), "a status the handler builds is unknown, and says why");
+    assert_eq!(place.bindings[0].shape, ["PlaceOrder: record", "PlaceOrder: holdId: @NotBlank String", "PlaceOrder: paymentToken: @NotBlank String"]);
     // The hold route binds a path variable, a header and a body.
     let hold = find(&ticketing, "POST /concerts/{id}/holds");
     assert_eq!(hold.bindings.iter().map(|b| b.source).collect::<Vec<_>>(), [BindingSource::PathVariable, BindingSource::Header, BindingSource::Body]);
@@ -503,4 +509,169 @@ fn box_office_specs_say_what_its_source_does() {
     let send = relay.effects.iter().find(|e| e.kind == SiteKind::Send).expect("the relay sends");
     assert_eq!((send.placement, send.payload.clone()), (Placement::Outside, vec!["topic".to_string(), "key".into(), "data".into()]));
     assert!(relay.unresolved.iter().any(|u| u.contains("KafkaTemplate.send") && u.contains("computed at run time")), "{:?}", relay.unresolved);
+}
+
+// Box Office examples 110–119: each example's change, applied to Box Office, compared with Box Office as it is, against
+// what the example's recorded boundary diff says changed at the entry points.
+
+const INSERT: &str = "effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;";
+const UPDATE_FIRST: &str = "effect:org/springframework/data/mongodb/core/MongoTemplate#updateFirst(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;";
+const UPDATE_MULTI: &str = "effect:org/springframework/data/mongodb/core/MongoTemplate#updateMulti(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;";
+const KAFKA_SEND: &str = "effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;";
+
+/// Box Office's modules in the order they depend on each other: the first three are the jars of the others.
+const BUILD_ORDER: [&str; 5] = ["contracts", "messaging", "ticketing-domain", "ticketing-service", "payment-service"];
+
+/// The specs of Box Office's modules with entry points, with `patch` applied (none: as it is). The patched copy is
+/// the sources alone; each module whose Java sources the patch changes is compiled again with javac, as its Gradle
+/// build compiles it (`-parameters`), in dependency order, against the base build's class path with the recompiled
+/// modules' classes in place of their jars. Every other module is as the base build left it. The walk follows the
+/// sibling modules, as `observations --base` does. `None`, after `missing`, when the base build can't run here.
+fn patched_specs(name: &str, patch: Option<&Path>) -> Option<BTreeMap<&'static str, Vec<EntryPointSpec>>> {
+    let (root, classpath) = boxoffice()?;
+    let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("observations-examples").join(name);
+    let _ = std::fs::remove_dir_all(&dir);
+    let sources = dir.join("examples/apps/boxoffice");
+    let mut touched = Vec::new();
+    if let Some(patch) = patch {
+        copy_tree(&Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice"), &sources);
+        let text = std::fs::read_to_string(patch).unwrap();
+        let applied = Command::new("patch").args(["-p1", "--batch", "--silent", "--input"]).arg(patch).current_dir(&dir).status();
+        let Ok(applied) = applied else {
+            missing("patch (GNU patch)");
+            return None;
+        };
+        assert!(applied.success(), "{} does not apply to examples/apps/boxoffice", patch.display());
+        touched = BUILD_ORDER.iter().copied().filter(|m| text.lines().any(|l| l.starts_with(&format!("+++ b/examples/apps/boxoffice/{m}/src/main/java/")))).collect();
+    }
+    let classes = |m: &str| if touched.contains(&m) { dir.join(m).join("classes") } else { root.join(m).join("build/classes/java/main") };
+    let mut entries: Vec<PathBuf> = std::env::split_paths(classpath).collect();
+    for m in BUILD_ORDER {
+        if touched.contains(&m) {
+            for e in entries.iter_mut().filter(|e| e.starts_with(root.join(m))) {
+                *e = classes(m);
+            }
+            let files = java_files(&sources.join(m).join("src/main/java"));
+            let cp = std::env::join_paths(&entries).unwrap();
+            let out = Command::new("javac").args(["-parameters", "-proc:none", "-nowarn", "-encoding", "UTF-8", "-d"]).arg(classes(m)).arg("-cp").arg(&cp).args(&files).output().unwrap();
+            assert!(out.status.success(), "{name}: javac {m}: {}", String::from_utf8_lossy(&out.stderr));
+        }
+    }
+    let siblings: Vec<&PathBuf> = entries.iter().filter(|e| e.starts_with(root) || e.starts_with(&dir)).collect();
+    let mut out = BTreeMap::new();
+    for (module, _) in MODULES {
+        let mut cp = ClassPath::new();
+        cp.add(&classes(module)).unwrap();
+        let own: std::collections::BTreeSet<String> = cp.application_class_names().unwrap().into_iter().collect();
+        let mut followed = own.clone();
+        for e in &entries {
+            cp.add(e).unwrap();
+        }
+        for e in &siblings {
+            let mut sibling = ClassPath::new();
+            sibling.add(e).unwrap();
+            followed.extend(sibling.application_class_names().unwrap());
+        }
+        out.insert(module, analyse(&cp.with_default_jdk(), Some(&own), Some(&followed)).unwrap());
+    }
+    Some(out)
+}
+
+/// What each example's change does at the entry points, by its recorded boundary diff: every obligation that is not
+/// preserved-to-prove or unresolved, as module, entry point, observation and change. Every other observation of
+/// every module stays preserved-to-prove or unresolved.
+const EXPECTED: [(&str, &[(&str, &str, &str, Change)]); 10] = [
+    // An Idempotency-Key header added to POST /orders and @Valid dropped: a new input, and the 400 for a body that
+    // fails validation gone.
+    ("110", &[("ticketing-service", "POST /orders", "inputs", Change::Changed), ("ticketing-service", "POST /orders", "status", Change::Changed)]),
+    // A new event with no @JsonSubTypes entry: its type id is inside the encoded string the outbox stores, a payload
+    // value, which no entry-point spec observes statically (the boundary contract's wire block does). The effect
+    // stays to prove, which needs the payload values.
+    ("111", &[]),
+    // A configuration key nothing reads: configuration values are not observed by an entry-point spec.
+    ("112", &[]),
+    // A nested Billing record without @Valid: the body's wire shape changes (with the unchecked constraints named),
+    // and a body without billing is now answered 400.
+    ("113", &[("ticketing-service", "POST /orders", "inputs", Changed), ("ticketing-service", "POST /orders", "status", Changed)]),
+    // @Cacheable with no @EnableCaching: inert, so every read still happens, and a read is a modeled call, not an
+    // observation. Nothing changes, which is right: the defect is a cache that doesn't work, not a regression.
+    ("114", &[]),
+    // A stored field renamed: the hold's insert snapshots another path. (The query strings that still name the old
+    // field are reads, which the spec models as calls, not observations: the stored-types block checks them.)
+    ("115", &[("ticketing-service", "POST /concerts/{id}/holds", INSERT, Changed)]),
+    // GET /holds/{id} now writes the hold and its seats: two attempts the old trace never makes.
+    ("116", &[("ticketing-service", "GET /holds/{id}", UPDATE_FIRST, New), ("ticketing-service", "GET /holds/{id}", UPDATE_MULTI, New)]),
+    // The outbox write replaced by a send inside the order's transaction.
+    ("117", &[("ticketing-service", "POST /orders", INSERT, Changed), ("ticketing-service", "POST /orders", KAFKA_SEND, New)]),
+    // The route's variable renamed and the parameter not: a 500 on every request, so nothing the handler does shows.
+    ("118", &[("ticketing-service", "GET /holds/{id}", "result", Changed), ("ticketing-service", "GET /holds/{id}", "exception", Changed), ("ticketing-service", "GET /holds/{id}", "status", Changed)]),
+    // A new exception no handler maps in place of the ConflictException: the route's 409 is gone.
+    ("119", &[("ticketing-service", "POST /orders", "status", Changed)]),
+];
+use Change::{Changed, New};
+
+fn differences<'a>(obligations: &'a [Obligation], entry: &str, observation: &str) -> &'a [String] {
+    &of(obligations, entry, observation).differences
+}
+
+fn has(lines: &[String], text: &str) -> bool {
+    lines.iter().any(|l| l.contains(text))
+}
+
+#[test]
+fn box_office_examples_compare_as_their_boundary_diffs_say() {
+    let Some(base) = patched_specs("base", None) else { return };
+    // The base as this test builds it is the base as the command analyses it.
+    for (module, _) in MODULES {
+        let Some((_, specs)) = boxoffice_specs(module) else { return };
+        assert_eq!(base[module], specs, "{module}");
+    }
+    let examples = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples");
+    for (number, expected) in EXPECTED {
+        let folder = std::fs::read_dir(&examples).unwrap().map(|e| e.unwrap().path()).find(|p| p.file_name().unwrap().to_string_lossy().starts_with(&format!("{number}-"))).unwrap();
+        let Some(after) = patched_specs(number, Some(&folder.join("change.patch"))) else { return };
+        let mut found = Vec::new();
+        let mut all = BTreeMap::new();
+        for (module, _) in MODULES {
+            let obligations = compare(&base[module], &after[module]);
+            assert!(unaccounted(&base[module], &obligations).is_empty(), "{number} {module}: {:?}", unaccounted(&base[module], &obligations));
+            found.extend(obligations.iter().filter(|o| !matches!(o.change, Change::Preserved | Change::Unresolved)).map(|o| (module, o.entry.clone(), o.observation.clone(), o.change)));
+            all.insert(module, obligations);
+        }
+        let want: Vec<(&str, String, String, Change)> = expected.iter().map(|(m, e, o, c)| (*m, e.to_string(), o.to_string(), *c)).collect();
+        assert_eq!(found, want, "{number}: {:#?}", all);
+        let t = &all["ticketing-service"];
+        match number {
+            "110" => {
+                assert!(has(differences(t, "POST /orders", "inputs"), "a new input Idempotency-Key: String (header)"));
+                assert!(has(differences(t, "POST /orders", "inputs"), "! constraints on PlaceOrder are not checked: no @Valid on request"));
+                assert!(has(differences(t, "POST /orders", "status"), "the old build answers MethodArgumentNotValidException with 400"), "{t:#?}");
+            }
+            "111" | "112" | "114" => assert_eq!(base, after, "{number}: nothing an entry-point spec observes changed"),
+            "113" => {
+                assert!(has(differences(t, "POST /orders", "inputs"), "PlaceOrder: billing: ! constraints on Billing are not checked: no @Valid on billing"));
+                assert!(has(differences(t, "POST /orders", "status"), "now also for a body that fails @NotNull on PlaceOrder.billing"), "{t:#?}");
+            }
+            "115" => {
+                let d = differences(t, "POST /concerts/{id}/holds", INSERT);
+                assert!(has(d, "no longer snapshots objectToSave.idempotencyKey") && has(d, "now also snapshots objectToSave.requestKey"), "{d:?}");
+            }
+            "116" => {
+                let new = of(t, "GET /holds/{id}", UPDATE_FIRST);
+                assert!(has(&new.differences, "writes HoldDocument, outside a transaction") && new.needs.contains("the old build's ordered trace has no such attempt"), "{new:#?}");
+            }
+            "117" => {
+                let d = differences(t, "POST /orders", INSERT);
+                assert!(has(d, "the old build writes Outbox.Entry by it (inside its transaction), the new one doesn't"), "{d:?}");
+                assert!(has(d, "attempts instead, which the old one doesn't: it sends to payments.commands, inside its transaction"), "{d:?}");
+            }
+            "118" => {
+                let result = of(t, "GET /holds/{id}", "result");
+                assert_eq!(result.new_entry.as_deref(), Some("GET /holds/{holdId}"));
+                assert!(result.differences[0].contains("answers every request before the handler runs, MissingPathVariableException with 500"), "{result:#?}");
+            }
+            "119" => assert!(has(differences(t, "POST /orders", "status"), "the old build answers 409 for an exception it throws; no exception of the new build is answered 409"), "{t:#?}"),
+            _ => {}
+        }
+    }
 }

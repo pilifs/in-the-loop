@@ -26,18 +26,21 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 
 use crate::boundaries::{is_framework, mapping_verb, routes, type_names};
-use crate::classfile::{flags, Annotation, ClassFile, Method, MethodDescriptor, Type};
+use crate::classfile::{flags, simple_name_of, Annotation, ClassFile, Method, MethodDescriptor, Type, TypeTarget};
 use crate::classpath::ClassPath;
 use crate::failures::{self, status_code, Handlers, Outcome as Failure};
 use crate::reach::{self, display, method_label, Placed, Placement, SiteKind};
 use crate::spec::observe::{Binding, BindingSource, Change, EffectSite, EntryKind, EntryPointSpec, Obligation, StatusOutcome};
 use crate::spec::{Derivation, EnvironmentModel, ExternalInput, ModeledCall, Observation, OrderPolicy};
-use crate::Error;
+use crate::{binding, validation, wire, Error};
 
 /// The fewest effects one trace records unless a caller asks for another bound: reaching it leaves a check
 /// unresolved, never a shorter trace. A spec raises it to its number of effect sites, so that one pass through
 /// each fits (a site in a loop may still reach it).
 pub const TRACE_BOUND: u32 = 4;
+
+/// The condition of an outcome the framework takes before the handler runs, whatever the request.
+pub const EVERY_REQUEST: &str = "every request";
 
 /// What every spec's environment model assumes about the modeled calls, stated in each spec.
 pub const RETURNS_NORMALLY: &str = "every modeled call returns normally: a failure of a store, broker or client call is outside this environment model";
@@ -138,7 +141,7 @@ pub fn analyse(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option<&B
             }
             let annotations: Vec<Annotation> = method.annotations(&class.pool).map_err(|e| Error::new(format!("{name}: {e}")))?.into_iter().filter(is_framework).collect();
             let Ok(d) = MethodDescriptor::parse(&method.descriptor) else { continue };
-            let entry = Entry { cp, graph: &graph, handlers: &handlers, class, method, d: &d, class_annotations: &class_annotation_names };
+            let entry = Entry { cp, local, graph: &graph, handlers: &handlers, class, method, d: &d, class_annotations: &class_annotation_names };
             for a in &annotations {
                 if mapping_verb(a).is_some() {
                     for route in routes(&class_mappings, a) {
@@ -202,6 +205,7 @@ fn handler_name(class: &ClassFile, method: &Method) -> String {
 
 struct Entry<'a> {
     cp: &'a ClassPath,
+    local: Option<&'a BTreeSet<String>>,
     graph: &'a reach::Graph<'a>,
     handlers: &'a Handlers,
     class: &'a Rc<ClassFile>,
@@ -217,7 +221,9 @@ impl Entry<'_> {
         let (param_types, ret) = type_names(method, &class.pool, d);
         let names = method.parameter_names(&class.pool);
         let reflective = method.reflective_parameter_names(&class.pool);
-        let parameter_annotations: Vec<Vec<Annotation>> = method.parameter_annotations(&class.pool).unwrap_or_default().into_iter().map(|l| l.into_iter().filter(is_framework).collect()).collect();
+        let list_all: Vec<Vec<Annotation>> = method.parameter_annotations(&class.pool).unwrap_or_default();
+        let parameter_annotations: Vec<Vec<Annotation>> = list_all.iter().map(|l| l.iter().filter(|a| is_framework(a)).cloned().collect()).collect();
+        let (param_refs, _) = wire::method_refs(class, method);
         let mut unresolved = Vec::new();
         let mut inputs = Vec::new();
         let mut bindings = Vec::new();
@@ -249,9 +255,13 @@ impl Entry<'_> {
                 EntryKind::Schedule => None,
             };
             let Some((source, explicit)) = source else { continue };
-            let name = explicit.or_else(|| reflective.as_ref().and_then(|r| r.get(i).cloned())).unwrap_or(pname);
+            let name = explicit.or_else(|| reflective.as_ref().and_then(|r| r.get(i).cloned())).unwrap_or_else(|| pname.clone());
             inputs.push(ExternalInput { name: name.clone(), ty: shown.clone(), derivation: Derivation::Identity });
-            bindings.push(Binding { input: name, source, wire_type: t.class_name().map(|c| c.replace('/', ".")).unwrap_or_else(|| shown.clone()) });
+            let shape = match source {
+                BindingSource::Body | BindingSource::Part | BindingSource::Payload | BindingSource::ModelAttribute | BindingSource::Event => self.wire_shape(&param_refs[i], list_all.get(i).map(Vec::as_slice).unwrap_or(&[]), i, &pname),
+                _ => Vec::new(),
+            };
+            bindings.push(Binding { input: name, source, wire_type: t.class_name().map(|c| c.replace('/', ".")).unwrap_or_else(|| shown.clone()), shape });
         }
 
         let reached = self.graph.reach(&class.name, &method.name, &method.descriptor);
@@ -264,6 +274,8 @@ impl Entry<'_> {
         let mut statuses = Vec::new();
         if kind == EntryKind::Route {
             observations.push(Observation::Status);
+            statuses.extend(self.binding_failures(declared, &param_types, &names, reflective.as_deref(), &parameter_annotations));
+            statuses.extend(self.validation(&param_refs, &list_all));
             statuses.push(self.normal_status(&ret));
             for e in &thrown {
                 let base = reach::base_type(e);
@@ -277,7 +289,7 @@ impl Entry<'_> {
                 if status.is_none() {
                     unresolved.push(format!("the status for {}: {by}", display(base)));
                 }
-                statuses.push(StatusOutcome { outcome: display(e), status, by });
+                statuses.push(StatusOutcome { outcome: display(e), status, by, when: Vec::new() });
             }
         }
         let mut effects = Vec::new();
@@ -336,20 +348,123 @@ impl Entry<'_> {
         }
     }
 
+    /// The wire shape of a body, a part or a payload ([`Binding::shape`]): each application type it reaches, one
+    /// property a line, with the boundary contract's details and `!` lines; for a route's body whose constraints no
+    /// `@Valid` runs, that line too, since the validation outcome isn't there to say it.
+    fn wire_shape(&self, refs: &[String], annotations: &[Annotation], i: usize, pname: &str) -> Vec<String> {
+        let roots: Vec<String> = refs.iter().filter(|c| wire::local_class(self.cp, self.local, c).is_some()).cloned().collect();
+        if roots.is_empty() {
+            return Vec::new();
+        }
+        let mut out = Vec::new();
+        for (name, bean) in wire::analyse(self.cp, self.local, &roots).unwrap_or_default() {
+            let simple = simple_name_of(&name.replace('.', "/"));
+            if !bean.annotations.is_empty() {
+                out.push(format!("{simple}: {}", bean.annotations));
+            }
+            for m in &bean.members {
+                out.push(format!("{simple}: {}", m.line));
+                let property = m.line.split(':').next().unwrap_or(&m.line);
+                out.extend(m.details.iter().map(|d| format!("{simple}: {property}: {d}")));
+            }
+        }
+        if annotations.iter().any(|a| matches!(a.simple_name().as_str(), "RequestBody" | "RequestPart")) && self.validated_groups(annotations, i).is_none() {
+            let constrained: Vec<String> = roots.iter().filter(|c| validation::constrained(self.cp, self.local, c)).map(|c| simple_name_of(c)).collect();
+            if !constrained.is_empty() {
+                out.push(format!("! constraints on {} are not checked: no @Valid on {pname}", constrained.join(", ")));
+            }
+        }
+        out
+    }
+
+    /// Whether the parameter is validated: `Some(None)` for `@Valid` (the `Default` group), `Some(groups)` for
+    /// `@Validated(groups)`, `None` when nothing validates it.
+    fn validated_groups(&self, annotations: &[Annotation], i: usize) -> Option<Option<Vec<String>>> {
+        if let Some(v) = annotations.iter().find(|a| a.simple_name() == "Validated") {
+            return Some(validation::validated_groups(v));
+        }
+        let typed = self.method.type_annotations(&self.class.pool).unwrap_or_default();
+        let valid = annotations.iter().any(validation::is_valid) || typed.iter().any(|t| t.target == TypeTarget::Parameter(i as u8) && validation::is_valid(&t.annotation));
+        valid.then_some(None)
+    }
+
+    /// The outcome Bean Validation of a route's body or part gives, before the handler runs: a
+    /// `MethodArgumentNotValidException`, answered 400 unless an `@ExceptionHandler` takes it, for each request
+    /// that fails one of the constraints it runs ([`StatusOutcome::when`]).
+    fn validation(&self, refs: &[Vec<String>], annotations: &[Vec<Annotation>]) -> Vec<StatusOutcome> {
+        let mut out = Vec::new();
+        for (i, list) in annotations.iter().enumerate() {
+            if !list.iter().any(|a| matches!(a.simple_name().as_str(), "RequestBody" | "RequestPart")) {
+                continue;
+            }
+            let constrained: Vec<&String> = refs.get(i).into_iter().flatten().filter(|c| validation::constrained(self.cp, self.local, c)).collect();
+            let Some(groups) = self.validated_groups(list, i) else { continue };
+            if constrained.is_empty() {
+                continue;
+            }
+            let mut when: Vec<String> = constrained.iter().flat_map(|c| constraints_reached(self.cp, self.local, c)).collect();
+            match &groups {
+                None => {
+                    let unchecked: Vec<String> = constrained.iter().flat_map(|c| validation::unchecked(self.cp, self.local, c, None)).collect();
+                    when.retain(|w| !unchecked.contains(w));
+                }
+                Some(g) => when.push(format!("in the groups {} only", g.iter().map(|c| format!("{}.class", simple_name_of(c))).collect::<Vec<_>>().join(", "))),
+            }
+            let (status, by) = self.framework_outcome("org/springframework/web/bind/MethodArgumentNotValidException", 400, "Bean Validation of the request");
+            out.push(StatusOutcome { outcome: "MethodArgumentNotValidException".into(), status, by, when });
+        }
+        out
+    }
+
+    /// The outcomes of parameters that can't bind to the request ([`binding::check`]): each fails before the
+    /// handler runs, most of them on every request.
+    fn binding_failures(&self, route: &str, types: &[String], names: &[String], reflective: Option<&[String]>, annotations: &[Vec<Annotation>]) -> Vec<StatusOutcome> {
+        let mut out = Vec::new();
+        for line in binding::check(&[route.to_string()], self.d, types, names, reflective, annotations) {
+            let text = line.trim_start_matches("! ").to_string();
+            let (exception, default, when) = if text.contains("MissingPathVariableException") {
+                ("org/springframework/web/bind/MissingPathVariableException", 500, EVERY_REQUEST)
+            } else if text.contains("not in the bytecode") {
+                ("java/lang/IllegalArgumentException", 500, EVERY_REQUEST)
+            } else if text.contains("a primitive cannot be null") {
+                ("java/lang/IllegalStateException", 500, "a request without it")
+            } else if text.contains("two @RequestBody") {
+                ("org/springframework/http/converter/HttpMessageNotReadableException", 400, EVERY_REQUEST)
+            } else {
+                out.push(StatusOutcome { outcome: text.clone(), status: None, by: text, when: vec![EVERY_REQUEST.into()] });
+                continue;
+            };
+            let (status, by) = self.framework_outcome(exception, default, &text);
+            out.push(StatusOutcome { outcome: display(exception), status, by, when: vec![when.into()] });
+        }
+        out
+    }
+
+    /// The status of an exception the framework throws before the handler runs: an `@ExceptionHandler` that takes
+    /// it, or the framework's default (`DefaultHandlerExceptionResolver`'s).
+    fn framework_outcome(&self, exception: &str, default: u16, why: &str) -> (Option<u16>, String) {
+        match self.handlers.outcome(self.cp, &self.class.name, self.class_annotations, exception) {
+            Failure::Handled { status, by } => (status, format!("@ExceptionHandler {by}: {why}")),
+            Failure::Marked(s) => (Some(s), format!("its @ResponseStatus: {why}")),
+            Failure::Carried(s) => (s.as_deref().and_then(status_code), format!("the status it carries: {why}")),
+            Failure::Unmapped => (Some(default), format!("the framework's default: {why}")),
+        }
+    }
+
     /// The status of a normal return: the method's `@ResponseStatus`, the one a `ResponseEntity` is built with
     /// (chosen by the handler), or 200.
     fn normal_status(&self, ret: &str) -> StatusOutcome {
         let annotations = self.method.annotations(&self.class.pool).unwrap_or_default();
         if let Some(s) = annotations.iter().find(|a| a.simple_name() == "ResponseStatus").and_then(failures::response_status) {
-            return StatusOutcome { outcome: "returns".into(), status: Some(s), by: "its @ResponseStatus".into() };
+            return StatusOutcome { outcome: "returns".into(), status: Some(s), by: "its @ResponseStatus".into(), when: Vec::new() };
         }
         if ret.starts_with("ResponseEntity") {
-            return StatusOutcome { outcome: "returns".into(), status: None, by: "the ResponseEntity the handler builds".into() };
+            return StatusOutcome { outcome: "returns".into(), status: None, by: "the ResponseEntity the handler builds".into(), when: Vec::new() };
         }
         if self.d.ret == Type::Void {
-            return StatusOutcome { outcome: "returns".into(), status: Some(200), by: "no body".into() };
+            return StatusOutcome { outcome: "returns".into(), status: Some(200), by: "no body".into(), when: Vec::new() };
         }
-        StatusOutcome { outcome: "returns".into(), status: Some(200), by: "the default".into() }
+        StatusOutcome { outcome: "returns".into(), status: Some(200), by: "the default".into(), when: Vec::new() }
     }
 
     /// The names of a modeled call's parameters: from its class on the class path when it records them, else from
@@ -370,6 +485,29 @@ impl Entry<'_> {
         }
         (0..arity).map(|i| format!("arg{i}")).collect()
     }
+}
+
+/// The built-in constraints validating `class` runs, on its properties and on those `@Valid` steps into, as
+/// `@NotBlank on PlaceOrder.holdId` (the form of [`validation::unchecked`]).
+fn constraints_reached(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut seen = BTreeSet::new();
+    let mut work = vec![class.to_string()];
+    while let Some(name) = work.pop() {
+        if !seen.insert(name.clone()) {
+            continue;
+        }
+        let Some(class) = wire::local_class(cp, local, &name) else { continue };
+        let simple = simple_name_of(&class.name);
+        for p in wire::properties(cp, local, &class) {
+            let all = p.constraints.iter().chain(p.type_constraints.iter().map(|t| &t.annotation)).filter(|a| validation::is_constraint(a));
+            out.extend(all.map(|a| format!("{} on {simple}.{}", a.render(), p.implicit)));
+            if p.cascades() {
+                work.extend(p.referenced());
+            }
+        }
+    }
+    out
 }
 
 fn explicit_name(a: &Annotation) -> Option<String> {
@@ -465,11 +603,17 @@ pub fn render(specs: &[EntryPointSpec]) -> String {
         out.push_str(&format!("{} => {}\n", s.id, s.handler));
         let inputs: Vec<String> = s.inputs.iter().zip(&s.bindings).map(|(i, b)| format!("{}: {} ({})", i.name, i.ty, b.source.words())).collect();
         out.push_str(&format!("  inputs: {}\n", if inputs.is_empty() { "none".to_string() } else { inputs.join(", ") }));
+        for (i, b) in s.inputs.iter().zip(&s.bindings) {
+            for line in &b.shape {
+                out.push_str(&format!("  {} on the wire: {line}\n", i.name));
+            }
+        }
         if let Some(r) = &s.response {
             out.push_str(&format!("  response: {r}\n"));
         }
         for st in &s.statuses {
-            out.push_str(&format!("  status when {}: {} ({})\n", st.outcome, st.status.map_or_else(|| "unknown".to_string(), |c| c.to_string()), st.by));
+            let before = if st.when.is_empty() { String::new() } else { format!(", before the handler runs, for {}", all_when_words(st)) };
+            out.push_str(&format!("  status when {}: {} ({}){before}\n", st.outcome, st.status.map_or_else(|| "unknown".to_string(), |c| c.to_string()), st.by));
         }
         for e in &s.effects {
             out.push_str(&format!("  {} {} by {}, {}, in {}{}\n", if e.kind == SiteKind::Send && e.target.starts_with("to ") { "sends" } else { e.kind.verb() }, e.target, short_call(&e.call), e.placement.words(), e.in_method, if e.payload.is_empty() { String::new() } else { format!(", snapshot of {}", e.payload.join(", ")) }));
@@ -519,9 +663,13 @@ const NEEDS_OTHER: &str = "a proof that both versions agree on it for each input
 const NEEDS_CHANGED: &str = "a person's approval of the change, recorded in the preservation contract, or a proof that the difference never shows (then it is preserved)";
 const NEEDS_REMOVED: &str = "a person's approval that it is gone, recorded in the preservation contract; there is nothing to prove preserved";
 const NEEDS_NEW: &str = "nothing to preserve: an intended-behaviour contract, or a person's approval";
+const NEEDS_NEW_EFFECT: &str = "a person's approval of the new attempt, recorded in the preservation contract, or a proof that it is never reached: the old build's ordered trace has no such attempt, so wherever the new build makes it the trace differs";
 const NEEDS_INPUTS: &str = "a stated derivation of each version's inputs from one logical request, approved by a person: the preservation contract's input domain isn't inferred";
 const NEEDS_UNRESOLVED: &str = "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter";
 const NEEDS_AMBIGUOUS: &str = "a person to say which entry point of the new build this one is";
+
+/// What no entry-point spec observes, so that no comparison of specs counts it: said under every comparison.
+pub const NOT_OBSERVED: &str = "not observed by an entry-point spec, so in no count above: configuration values (the boundary contract's configuration block checks the keys), what an encoded payload holds beyond its snapshot paths (a JSON type id: the wire block checks those), advice such as caching, whose effect on the calls the bytecode makes isn't modeled, and field names in query strings (the stored-types block checks them)";
 
 /// The obligations between two builds' entry points ([`crate::spec::observe::compare`]). Entry points correspond
 /// by what their consumers address, not by handler: the same verb and route (path variable names aside), the same
@@ -659,12 +807,24 @@ fn pair_obligations(o: &EntryPointSpec, n: &EntryPointSpec, out: &mut Vec<Obliga
             _ => obligation(&o.id, id, Change::Preserved, Vec::new(), NEEDS_OTHER),
         });
     }
+    // A build that fails every request before the handler runs observes nothing the handler does: each of the
+    // handler's observations changes with it, whatever its shape.
+    if let Some(why) = every_request_differs(o, n) {
+        for ob in out[start..].iter_mut().filter(|ob| ob.observation != "inputs" && ob.observation != Observation::Status.id() && ob.change == Change::Preserved) {
+            ob.change = Change::Changed;
+            ob.differences.insert(0, why.clone());
+            ob.needs = NEEDS_CHANGED.to_string();
+        }
+    }
     for obs in n.observations.iter().filter(|x| !o.observations.iter().any(|y| y.id() == x.id())) {
         let mut why = vec![format!("only the new build's {} observes it", n.id)];
-        if let Observation::Effect { call, .. } = obs {
+        let needs = if let Observation::Effect { call, .. } = obs {
             why.extend(n.effects.iter().filter(|e| &e.call == call).map(|e| format!("it {}", site_words(e))));
-        }
-        out.push(obligation(&o.id, obs.id(), Change::New, why, NEEDS_NEW));
+            NEEDS_NEW_EFFECT
+        } else {
+            NEEDS_NEW
+        };
+        out.push(obligation(&o.id, obs.id(), Change::New, why, needs));
     }
     if !o.unresolved.is_empty() || !n.unresolved.is_empty() {
         let mut why: Vec<String> = o.unresolved.iter().map(|u| format!("before: {u}")).collect();
@@ -678,57 +838,116 @@ fn pair_obligations(o: &EntryPointSpec, n: &EntryPointSpec, out: &mut Vec<Obliga
     }
 }
 
+/// When one build answers every request before the handler runs and the other doesn't, what it answers.
+fn every_request_differs(o: &EntryPointSpec, n: &EntryPointSpec) -> Option<String> {
+    let fails = |s: &EntryPointSpec| s.statuses.iter().find(|st| st.when.iter().any(|w| w == EVERY_REQUEST)).map(|st| format!("{} with {}", st.outcome, status_words(st)));
+    match (fails(o), fails(n)) {
+        (None, Some(f)) => Some(format!("the new build answers every request before the handler runs, {f}: nothing the handler does is observed")),
+        (Some(f), None) => Some(format!("the old build answered every request before the handler ran, {f}; the new build runs the handler")),
+        _ => None,
+    }
+}
+
 fn input_differences(o: &EntryPointSpec, n: &EntryPointSpec) -> Vec<String> {
     let describe = |s: &EntryPointSpec| -> Vec<String> { s.inputs.iter().zip(&s.bindings).map(|(i, b)| format!("{}: {} ({})", i.name, i.ty, b.source.words())).collect() };
     let (a, b) = (describe(o), describe(n));
     let mut out: Vec<String> = a.iter().filter(|x| !b.contains(x)).map(|x| format!("the input {x} is gone")).collect();
     out.extend(b.iter().filter(|x| !a.contains(x)).map(|x| format!("a new input {x}")));
+    // The same input decoded into another shape takes other requests: a property gone, added or constrained otherwise.
+    for (input, old) in &o.bindings.iter().map(|x| (&x.input, &x.shape)).collect::<Vec<_>>() {
+        let Some(new) = n.bindings.iter().find(|x| &x.input == *input).map(|x| &x.shape) else { continue };
+        out.extend(old.iter().filter(|l| !new.contains(l)).map(|l| format!("{input} on the wire, gone: {l}")));
+        out.extend(new.iter().filter(|l| !old.contains(l)).map(|l| format!("{input} on the wire, new: {l}")));
+    }
     out
 }
 
 fn thrown_differences(o: &EntryPointSpec, n: &EntryPointSpec) -> Vec<String> {
-    let thrown = |s: &EntryPointSpec| -> BTreeSet<String> { s.statuses.iter().filter(|st| st.outcome != "returns").map(|st| st.outcome.clone()).collect() };
+    // What the framework throws before the handler runs is the status obligation's, not the handler's.
+    let thrown = |s: &EntryPointSpec| -> BTreeSet<String> { s.statuses.iter().filter(|st| st.outcome != "returns" && st.when.is_empty()).map(|st| st.outcome.clone()).collect() };
     let (a, b) = (thrown(o), thrown(n));
     let mut out: Vec<String> = a.difference(&b).map(|e| format!("the new build no longer throws {e}")).collect();
     out.extend(b.difference(&a).map(|e| format!("the new build may throw {e}, the old one doesn't")));
     out
 }
 
+/// The requests an outcome the framework takes before the handler runs is for: `every request`, `a body that fails
+/// @NotBlank on PlaceOrder.holdId`.
+fn when_words(st: &StatusOutcome, condition: &str) -> String {
+    if st.outcome == "MethodArgumentNotValidException" && !condition.starts_with("in the groups") {
+        format!("a body that fails {condition}")
+    } else {
+        condition.to_string()
+    }
+}
+
+fn all_when_words(st: &StatusOutcome) -> String {
+    let (constraints, rest): (Vec<&String>, Vec<&String>) = st.when.iter().partition(|w| st.outcome == "MethodArgumentNotValidException" && !w.starts_with("in the groups"));
+    let mut out: Vec<String> = match constraints.as_slice() {
+        [] => Vec::new(),
+        [one] => vec![format!("a body that fails {one}")],
+        all => vec![format!("a body that fails one of {}", all.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "))],
+    };
+    out.extend(rest.into_iter().cloned());
+    out.join(", ")
+}
+
 fn status_words(st: &StatusOutcome) -> String {
     format!("{} ({})", st.status.map_or_else(|| "unknown".to_string(), |c| c.to_string()), st.by)
 }
 
-/// A route's status for each outcome. Changed when an outcome both have maps to another known status, or, with
-/// every status known, one build can answer with a status the other never does; otherwise unresolved when a status
-/// is unknown, and preserved when none is, with any outcome only one build has as a difference its proof must cover.
+/// A route's status for each outcome. Changed when:
+/// - an outcome the framework takes before the handler runs (validation, a parameter that can't bind) is only in
+///   one build, or takes other requests, or answers another known status: it is decided by the request alone, so
+///   the requests it names are answered differently;
+/// - an outcome both have maps to another known status;
+/// - one build can answer a known status by throwing that no exception of the other answers: an outcome mapping
+///   gone or added (a status the normal return builds is unknown, but it is not an exception's mapping).
+///
+/// Otherwise unresolved when a status is unknown, and preserved when none is, with any outcome only one build has
+/// as a difference its proof must cover.
 fn status_obligation(o: &EntryPointSpec, n: &EntryPointSpec) -> Obligation {
     let mut changed = Vec::new();
     let mut notes = Vec::new();
-    for a in &o.statuses {
-        match n.statuses.iter().find(|b| b.outcome == a.outcome) {
+    let early = |s: &StatusOutcome| !s.when.is_empty();
+    for a in o.statuses.iter().filter(|s| early(s)) {
+        match n.statuses.iter().find(|b| early(b) && b.outcome == a.outcome) {
+            None => changed.push(format!("before the handler runs, the old build answers {} with {} for {}; the new build runs the handler", a.outcome, status_words(a), all_when_words(a))),
+            Some(b) => {
+                if a.status.is_some() && b.status.is_some() && a.status != b.status {
+                    changed.push(format!("{}: {}, now {}", a.outcome, status_words(a), status_words(b)));
+                }
+                changed.extend(a.when.iter().filter(|w| !b.when.contains(w)).map(|w| format!("{} no longer for {}: the new build runs the handler", a.outcome, when_words(a, w))));
+                changed.extend(b.when.iter().filter(|w| !a.when.contains(w)).map(|w| format!("{} now also for {}, before the handler runs", a.outcome, when_words(b, w))));
+            }
+        }
+    }
+    for b in n.statuses.iter().filter(|b| early(b) && !o.statuses.iter().any(|a| early(a) && a.outcome == b.outcome)) {
+        changed.push(format!("before the handler runs, the new build answers {} with {} for {}; the old build ran the handler", b.outcome, status_words(b), all_when_words(b)));
+    }
+    let (old, new): (Vec<&StatusOutcome>, Vec<&StatusOutcome>) = (o.statuses.iter().filter(|x| !early(x)).collect(), n.statuses.iter().filter(|x| !early(x)).collect());
+    for a in &old {
+        match new.iter().find(|b| b.outcome == a.outcome) {
             Some(b) if a.status.is_some() && b.status.is_some() && b.status != a.status => changed.push(format!("{}: {}, now {}", a.outcome, status_words(a), status_words(b))),
             Some(b) if b.status != a.status => notes.push(format!("{}: {}, now {}", a.outcome, status_words(a), status_words(b))),
             Some(_) => {}
             None => notes.push(format!("the outcome {} ({}) is gone", a.outcome, status_words(a))),
         }
     }
-    for b in n.statuses.iter().filter(|b| !o.statuses.iter().any(|a| a.outcome == b.outcome)) {
+    for b in new.iter().filter(|b| !old.iter().any(|a| a.outcome == b.outcome)) {
         notes.push(format!("a new outcome {} ({})", b.outcome, status_words(b)));
     }
-    let codes = |s: &EntryPointSpec| -> BTreeSet<Option<u16>> { s.statuses.iter().map(|st| st.status).collect() };
-    let (a, b) = (codes(o), codes(n));
-    let unknown = a.contains(&None) || b.contains(&None);
-    // With a status unknown on either side, a code only one side lists may be the unknown one.
-    let differs = if unknown { &mut notes } else { &mut changed };
-    for c in a.difference(&b).flatten() {
-        differs.push(format!("the old build may answer {c}, the new one never does"));
-    }
-    for c in b.difference(&a).flatten() {
-        differs.push(format!("the new build may answer {c}, the old one never does"));
-    }
+    let thrown = |l: &[&StatusOutcome]| -> BTreeSet<u16> { l.iter().filter(|x| x.outcome != "returns").filter_map(|x| x.status).collect() };
+    let (a, b) = (thrown(&old), thrown(&new));
+    changed.extend(a.difference(&b).map(|c| format!("the old build answers {c} for an exception it throws; no exception of the new build is answered {c}")));
+    changed.extend(b.difference(&a).map(|c| format!("the new build answers {c} for an exception it throws; no exception of the old build is answered {c}")));
+    let unknown = old.iter().chain(&new).any(|x| x.status.is_none());
     let id = Observation::Status.id();
     if !changed.is_empty() {
         changed.extend(notes);
+        if unknown {
+            changed.push("also a status the analysis can't tell, which the proof would need modeled".into());
+        }
         obligation(&o.id, id, Change::Changed, changed, NEEDS_CHANGED)
     } else if unknown {
         notes.push("a status the analysis can't tell: the proof needs it modeled".into());
@@ -765,6 +984,11 @@ fn effect_obligation(o: &EntryPointSpec, n: &EntryPointSpec, call: &str, payload
         if placements(&a, *k, t).is_empty() {
             changed.push(format!("the new build {} {t} by it ({}), the old one doesn't", k.verb(), p.words()));
         }
+    }
+    // An attempt gone: what the new build attempts that the old doesn't, which may be what replaced it.
+    if a.difference(&b).any(|(k, t, _)| placements(&b, *k, t).is_empty()) {
+        let old_sites: BTreeSet<(SiteKind, &str)> = o.effects.iter().map(|e| (e.kind, e.target.as_str())).collect();
+        changed.extend(n.effects.iter().filter(|e| e.kind != SiteKind::Read && !old_sites.contains(&(e.kind, e.target.as_str()))).map(|e| format!("what the new build attempts instead, which the old one doesn't: it {}", site_words(e))));
     }
     let count = |s: &EntryPointSpec| s.effects.iter().filter(|e| e.call == call).count();
     let notes: Vec<String> = if count(o) != count(n) { vec![format!("{} call sites in the old build, {} in the new", count(o), count(n))] } else { Vec::new() };
@@ -812,14 +1036,17 @@ pub fn render_obligations(before: &[EntryPointSpec], obligations: &[Obligation])
     let old: usize = before.iter().map(|s| s.observations.len()).sum();
     let count = |c: Change| obligations.iter().filter(|o| o.change == c && before.iter().any(|s| s.id == o.entry && s.observations.iter().any(|x| x.id() == o.observation))).count();
     let new = obligations.iter().filter(|o| o.change == Change::New).count();
+    let in_old = obligations.iter().filter(|o| o.change == Change::New && before.iter().any(|s| s.id == o.entry)).count();
+    let new = if in_old == 0 { format!("{new} new") } else { format!("{new} new, {in_old} of them in an entry point the old build has (each a change to it unless a person approves it or it is never reached)") };
     out.push_str(&format!(
-        "{old} observations of {} entry points: {} to prove preserved, {} changed and {} removed (each preserved only with a person's approval), {} unresolved; {new} new\n",
+        "{old} observations of {} entry points: {} to prove preserved, {} changed and {} removed (each preserved only with a person's approval), {} unresolved; {new}\n",
         before.len(),
         count(Change::Preserved),
         count(Change::Changed),
         count(Change::Removed),
         count(Change::Unresolved),
     ));
+    out.push_str(&format!("{NOT_OBSERVED}\n"));
     let gaps = unaccounted(before, obligations);
     if !gaps.is_empty() {
         out.push_str(&format!("not accounted for: {}\n", gaps.join("; ")));

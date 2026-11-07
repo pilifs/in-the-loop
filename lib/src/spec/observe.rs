@@ -76,6 +76,12 @@ pub struct Binding {
     pub source: BindingSource,
     /// The type the value is decoded into, dotted.
     pub wire_type: String,
+    /// For a body, a part or a payload of an application type: its wire shape, as the boundary contract renders it,
+    /// one property a line under its type (`PlaceOrder: holdId: @NotBlank String`), with the types it reaches and
+    /// their `!` lines (`PlaceOrder: billing: ! constraints on Billing are not checked: no @Valid on billing`).
+    /// Part of the input domain: two builds that decode different shapes don't take the same requests.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub shape: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -121,6 +127,11 @@ pub struct StatusOutcome {
     pub status: Option<u16>,
     /// What decides it: `@ExceptionHandler ApiErrors.notFound`, `the default`.
     pub by: String,
+    /// For an outcome the framework decides before the handler runs (the body's validation, a parameter that can't
+    /// bind), which requests take it, one condition each (`@NotBlank on PlaceOrder.holdId`, `every request`). Empty
+    /// for the handler's own outcomes.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub when: Vec<String>,
 }
 
 /// One call site that gives an effect.
