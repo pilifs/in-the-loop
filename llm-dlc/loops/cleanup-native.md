@@ -219,7 +219,26 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
       `…-conformance-corpus-under-jbmc-and-engine` started), whose first 40 characters are the same. Any two jobs
       submitted in the same second with titles alike in their first 24 characters can collide.
     - Making the unit name unique, by the full id or a hash of it, is a one-line fix for whoever keeps the pipeline.
-- Status: waiting on jobs 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r
+- **N1, step 3: the benchmark pair passed, and its comparison queued.** Both resubmitted jobs passed on `vm-1`
+  (`-183538-…-run-1-of-2` at f606b0d8 and `-183544-…-s-parent-r` at c307e721, 3m11s each, with no unit-name
+  collision this time). Their outputs were applied to the runner's `lib/target/` (gitignored).
+  - Job `20261107-184603-vf-010-s-benchmark-compared-the-own-chec` is the comparison. It finds each output by the
+    sha256 its run recorded, in the runner's `lib/target/` or under `verification/results/ID/outputs/`, and compares
+    every own-checker run by (case, mode), as the examples stream's VF-014 comparison does. It exits 1 if a verdict
+    differs or a case is in one run only, and 2 if an output is missing or not the recorded one. It closes VF-021
+    when it passes.
+  - Tried here on the same files: 557 own-checker runs, none new or gone, 0 verdicts changed, 0 formulas grown past
+    10%, 0 paths or merges changed. So on the benchmark, the conflict budget decides the same sides as the old
+    wall-clock one did on `vm-1`. The step was also run in a mock runner tree, where it gave exit 0, and exit 2 with
+    the outputs removed.
+  - The unit-name collision listed for review above is fixed in the runner, by the verification agent: a scope is
+    now named by the first 30 characters of the id and a hash of the whole id (`scope_id`, per VF-021 in
+    `findings.md`).
+  - The integration check's latest report (18:28) is a conflict in generated trace files (`llm-dlc/README.md`,
+    `index.json`, `traces/README.md`, `traces/metrics.json`), not in this stream's files.
+  - Left: N1 waits on this job. N2 is done. N3 waits on a `String.format` model (the jbmc stream's) or the user's
+    decision on step 3's gap mode, as recorded above.
+- Status: waiting on jobs 20261107-184603-vf-010-s-benchmark-compared-the-own-chec
 
 ## Loop settings
 
