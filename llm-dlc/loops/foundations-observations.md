@@ -236,12 +236,37 @@ under Progress.
   (`CallArgument`), `EffectLogPlan::stubs` and `assumptions` (`RecordingStub`), with serde defaults. The core (O1,
   O2, O3's narrow case) is done. The last integration report (05:01) was a merge conflict in shared docs and trace
   files (`lib/README.md` four-sided among them), not a failing check: the reconcile loop's to merge.
-- Next: the rest of O3, from examples 170–179: an entry point refactored correctly and proved, with a dropped and a
-  duplicated effect in siblings. Box Office's handlers take strings and objects, which the narrow case refuses, so
-  the first is likely a Crosscut kernel behind a thin route with integral parameters. It needs the check from the
-  command line first (an `observations` option or command over two builds), then the examples and their runner.
-  Two narrowings to lift for Box Office: the scan for a used result covers the whole build rather than the handler's
-  reach, and a modeled call's result can't be used yet.
+- **O3, the rest, step 1 (2026-11-07): the effect check from the command line.** New command `jvmcontract effects
+  BEFORE AFTER [--entry ID]... [--trace-bound N] [--unwind N] [--max-array-length N] [--json]`: every entry point of
+  the old build's class directory (or those named) is matched to its counterpart in the new one as `observations
+  --against` matches them, and checked by the effect trace under the claim its own spec makes
+  (`effects::claim_for`: its inputs, every observation it has as required, its environment model, the bounds, no
+  change approved; the closures and tools named, not digested, since the cache is the summaries stream's). Printed
+  per entry point: the verdict, what each required observation became, why it is unresolved, the replayed witness
+  with both builds' attempts, the proof (or the refutation's search) line, the domain and the assumptions; then the
+  count. An entry point with no counterpart is unresolved; one the narrow case refuses (a used result, string
+  inputs) is reported as unsupported while the others are still checked; an `--entry` the old build lacks is an
+  error. Exits 0 only when every entry point checked is verified. In `effects.rs`: `claim_for`, `check_builds`
+  (`EntryCheck`), `render_checks`; `Checked` and `Trace` derive `Serialize`. On the joint example: `before` against
+  `after` verifies `POST /quotes` and leaves `POST /quotes/text` unresolved; against `dropped-effect` and
+  `duplicated-effect` it refutes `POST /quotes` with the witnesses of the narrow case (cents=1, quantity=100; cents=1,
+  quantity=10), replayed on JDK 25. Tested by five new tests in `lib/tests/effects.rs` (14 now): the claim a spec makes
+  equals the joint example's golden claim in its subject, inputs, required observations, observations and
+  environment; the command over every entry point, one, and an unknown one; a refutation in text and, under
+  `--trace-bound 1`, unresolved in JSON; a refused handler reported as unsupported. Full `cargo test` passes. Shared
+  files touched, by adding: `lib/src/main.rs` (the command), `lib/tests/effects.rs`, `lib/README.md` (the command
+  under Commands, a sentence in the effect-trace paragraph).
+- Next: the rest of O3, step 2, from examples 170–179: an entry point refactored correctly and proved (`jvmcontract
+  effects` verified), with a dropped and a duplicated effect in siblings (refuted, witnesses replayed). Box Office's
+  13 entry points all take strings or objects, or read a store and use the result, which the narrow case refuses,
+  and a new route there would change its boundary contracts, its golden specs and the digests that `build.py`'s
+  recorded results of 006, 012, 110 and 111 hang on; so the subject is a Crosscut kernel behind a thin annotated
+  route with integral parameters. Crosscut compiles with plain `javac` and has no Spring on its class path (its
+  design rule leaves the framework glue out), so the route needs a home: a small app beside it in
+  `examples/apps/` holding the route and the Spring annotation stubs it compiles against (as
+  `lib/tests/fixtures/spring/` does), with an entry in `build.py`'s `TOOL_APPS` and a runner calling `jvmcontract
+  effects`, both added beside the others. Two narrowings to lift for Box Office remain: the scan for a used result
+  covers the whole build rather than the handler's reach, and a modeled call's result can't be used yet.
 - Status: working
 
 ## Loop settings

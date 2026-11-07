@@ -142,6 +142,32 @@ enum Command {
         #[arg(long, value_name = "SPECS.json")]
         against: Option<PathBuf>,
     },
+    /// Check that each entry point of a build preserves, in a later build, what its observation spec observes: the
+    /// ordered trace of modeled boundary-call attempts (each with its payload snapshotted at the call), the result,
+    /// the exception and the status, under one environment model for both, by the tool's own checker. Recording
+    /// stubs replace the modeled calls, every call returns normally, and a counterexample is replayed on a JVM under
+    /// those stubs, not against real infrastructure. Exits 0 when every entry point checked is verified, else 1.
+    Effects {
+        /// The old build's classes (one directory).
+        before: PathBuf,
+        /// The new build's classes (one directory).
+        after: PathBuf,
+        /// Only this entry point of the old build, by its id (`POST /quotes`; repeatable). Default: every one.
+        #[arg(long = "entry")]
+        entries: Vec<String>,
+        /// The most attempts a trace records; past it, the result is unresolved. Default: the spec's.
+        #[arg(long)]
+        trace_bound: Option<u32>,
+        /// The unwinding bound of the proof.
+        #[arg(long, default_value_t = 16)]
+        unwind: u32,
+        /// The longest array the proof considers.
+        #[arg(long, default_value_t = 8)]
+        max_array_length: u32,
+        /// Print JSON (one check per entry point, with its outcome, assumptions and traces) instead of text.
+        #[arg(long)]
+        json: bool,
+    },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
         /// The contract file (`OrderLifecycle.decide.contract`).
@@ -778,6 +804,17 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 print!("{}", jvmcontract::observations::render(&specs));
             }
             Ok(0)
+        }
+        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, json } => {
+            let bounds = jvmcontract::spec::ClaimBounds { unwind, max_array_length };
+            let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds).map_err(|u| Error::new(u.to_string()))?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&checks).expect("serializable"));
+            } else {
+                print!("{}", jvmcontract::effects::render_checks(&checks));
+            }
+            let all = checks.iter().all(|c| c.checked.as_ref().is_some_and(|k| k.outcome.verdict == jvmcontract::spec::Verdict::Verified));
+            Ok(if all { 0 } else { 1 })
         }
         Command::Tla { contract, output, module, operator } => {
             let contract = jvmcontract::contract::Contract::read(&contract)?;

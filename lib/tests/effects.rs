@@ -264,3 +264,76 @@ fn the_effect_log_plan_names_its_stubs_and_assumptions() {
     assert!(plan.stubs[0].returns.starts_with("null"), "{:?}", plan.stubs[0]);
     assert!(plan.assumptions.iter().any(|a| a.contains("not a delivery")), "{:?}", plan.assumptions);
 }
+
+#[test]
+fn the_claim_a_spec_makes_is_the_joint_examples_claim() {
+    let Some(before) = build("before") else { return };
+    let golden = claim();
+    let made = effects::claim_for(&quotes(&before, "POST /quotes"), None, golden.bounds.clone());
+    assert_eq!(made.contract.subject, golden.contract.subject);
+    assert_eq!(made.contract.inputs, golden.contract.inputs);
+    assert_eq!(made.contract.required, golden.contract.required);
+    assert!(made.contract.approved_changes.is_empty(), "nothing is approved by a claim made from the spec");
+    assert_eq!(made.observations, golden.observations);
+    assert_eq!(made.environment, golden.environment);
+    let bounded = effects::claim_for(&quotes(&before, "POST /quotes"), Some(1), golden.bounds.clone());
+    assert_eq!(bounded.environment.unwrap().trace_bound, 1);
+}
+
+/// `jvmcontract effects BEFORE AFTER ARGS`: its exit code and what it printed.
+fn effects_command(before: &Path, after: &Path, args: &[&str]) -> (i32, String, String) {
+    let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).arg("effects").arg(before).arg(after).args(args).output().expect("the command runs");
+    (out.status.code().unwrap_or(-1), String::from_utf8_lossy(&out.stdout).into_owned(), String::from_utf8_lossy(&out.stderr).into_owned())
+}
+
+#[test]
+fn the_command_checks_every_entry_point_of_two_builds() {
+    let Some(after) = build("after") else { return };
+    let before = build("before").unwrap();
+    let (code, text, err) = effects_command(&before, &after, &[]);
+    assert_eq!(code, 1, "one entry point is unresolved, so not every one is verified: {text}{err}");
+    assert!(text.contains("POST /quotes: verified\n"), "{text}");
+    assert!(text.contains("  observations: result preserved, exception preserved, status preserved, KafkaTemplate.send preserved\n"), "{text}");
+    assert!(text.contains("  proof: ") && text.contains("over cents: long × quantity: int"), "{text}");
+    assert!(text.contains("  assumes: KafkaTemplate.send is a recording stub"), "{text}");
+    assert!(text.contains("POST /quotes/text: unresolved\n") && text.contains("string concatenation"), "{text}");
+    assert!(text.ends_with("2 entry points: 1 verified, 0 refuted, 1 unresolved, 0 unsupported\n"), "{text}");
+
+    let (code, text, _) = effects_command(&before, &after, &["--entry", "POST /quotes"]);
+    assert_eq!(code, 0, "{text}");
+    assert!(text.ends_with("1 entry points: 1 verified, 0 refuted, 0 unresolved, 0 unsupported\n"), "{text}");
+
+    let (code, _, err) = effects_command(&before, &after, &["--entry", "GET /nothing"]);
+    assert_eq!(code, 2, "an entry point the old build doesn't have is an error");
+    assert!(err.contains("no entry point GET /nothing") && err.contains("POST /quotes"), "{err}");
+}
+
+#[test]
+fn the_command_reports_a_refutation_with_both_builds_attempts() {
+    let Some(duplicated) = build("duplicated-effect") else { return };
+    let before = build("before").unwrap();
+    let (code, text, err) = effects_command(&before, &duplicated, &["--entry", "POST /quotes"]);
+    assert_eq!(code, 1, "{text}{err}");
+    assert!(text.contains("POST /quotes: refuted\n"), "{text}");
+    assert!(text.contains("KafkaTemplate.send refuted"), "{text}");
+    assert!(text.contains("  witness: ") && text.contains(", then KafkaTemplate.send(topic=\"quotes\"") && text.contains("under the modeled dependencies"), "{text}");
+    assert!(text.contains("  search: "), "a refutation's checker line is no proof: {text}");
+
+    let (code, json, _) = effects_command(&before, &duplicated, &["--entry", "POST /quotes", "--trace-bound", "1", "--json"]);
+    assert_eq!(code, 1);
+    let checks: serde_json::Value = serde_json::from_str(&json).expect("JSON");
+    let c = &checks[0]["checked"];
+    assert_eq!(checks[0]["entry"], "POST /quotes");
+    assert_eq!(c["outcome"]["verdict"], "unresolved", "past the bound given on the command line: {json}");
+    assert!(c["reason"].as_str().unwrap().contains("more attempts than the trace bound, 1"), "{json}");
+}
+
+#[test]
+fn the_command_reports_what_the_narrow_case_refuses_and_checks_the_rest() {
+    let Some(uses) = build_with("uses-the-result", Some(USES_THE_RESULT)) else { return };
+    let before = build("before").unwrap();
+    let (code, text, err) = effects_command(&before, &uses, &[]);
+    assert_eq!(code, 1, "{text}{err}");
+    assert!(text.contains("POST /quotes: unsupported: ") && text.contains("uses the result of KafkaTemplate.send"), "{text}");
+    assert!(text.ends_with("0 verified, 0 refuted, 1 unresolved, 1 unsupported\n"), "{text}");
+}

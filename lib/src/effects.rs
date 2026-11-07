@@ -38,7 +38,8 @@ use crate::interp::Value;
 use crate::jbmc::Argument;
 use crate::shared::Invoke;
 use crate::spec::observe::{Change, EffectLogPlan, EntryPointSpec, RecordingStub};
-use crate::spec::{Accounted, CanonicalClaim, EnvironmentModel, ModeledCall, Observation, ObservationState, Outcome, Part, Unsupported, Verdict};
+use crate::spec::{Accounted, CanonicalClaim, ClaimBounds, EnvironmentModel, ModeledCall, Observation, ObservationState, Outcome, Part, PreservationContract, ToolIdentity, Unsupported, VersionDigests, Verdict};
+use serde::Serialize;
 
 /// The generated classes, in the handler's package so that what it reaches package-privately stays reachable.
 const ENTRY: &str = "JvmcontractEffects";
@@ -54,7 +55,7 @@ const UNMODELED: i64 = 8;
 const NULL_THROWN: i64 = 16;
 
 /// What a check of an entry point established, with what it rests on and what each build did on a witness.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Checked {
     pub outcome: Outcome,
     /// Why the result is unresolved, when it is.
@@ -69,7 +70,7 @@ pub struct Checked {
 }
 
 /// One build's log on one input, decoded.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Trace {
     /// `returns 1000`, `throws java.lang.IllegalArgumentException`.
     pub outcome: String,
@@ -181,14 +182,162 @@ pub fn check(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec,
     checked
 }
 
+/// The claim an entry point's own spec holds a new build to: its inputs, every observation it has, its environment
+/// model (the trace bound replaced when `trace_bound` is given), and `bounds`. No change is approved. The closures and
+/// the tools are named, not digested: that is the cache's (`spec::cache::key`), and this check doesn't consult it.
+pub fn claim_for(spec: &EntryPointSpec, trace_bound: Option<u32>, bounds: ClaimBounds) -> CanonicalClaim {
+    let mut environment = spec.environment.clone();
+    if let Some(bound) = trace_bound {
+        environment.trace_bound = bound;
+    }
+    let assumptions = assumptions(&environment, spec.handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or(""));
+    CanonicalClaim {
+        contract: PreservationContract { subject: spec.id.clone(), inputs: spec.inputs.clone(), required: spec.observations.iter().map(Observation::id).collect(), approved_changes: Vec::new() },
+        closures: VersionDigests { before: "not digested".into(), after: "not digested".into() },
+        domain: None,
+        observations: spec.observations.clone(),
+        correspondence: None,
+        environment: Some(environment),
+        bounds,
+        assumptions,
+        tools: ToolIdentity { models: "not digested".into(), jdk: "the default JDK".into(), checker: "native strict".into(), binary: "not digested".into() },
+    }
+}
+
+/// One entry point of the old build, checked against its counterpart in the new one.
+#[derive(Debug, Clone, Serialize)]
+pub struct EntryCheck {
+    pub entry: String,
+    /// The counterpart's id, when it differs (a path variable renamed).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub new_entry: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checked: Option<Checked>,
+    /// Why the narrow case can't check it, when it can't (string or object inputs, a used result, modeled failures).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unsupported: Option<String>,
+}
+
+/// Every entry point of the classes under `before` (or those of `only`, by id), each checked against its
+/// counterpart under `after`, matched as `observations --against` matches them, under the claim its own spec makes
+/// ([`claim_for`]). An entry point with no counterpart is unresolved; one the narrow case can't model is reported
+/// as unsupported, and the others are still checked.
+pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds) -> Result<Vec<EntryCheck>, Unsupported> {
+    let old = crate::spec::observe::entry_points(before)?;
+    let new = crate::spec::observe::entry_points(after)?;
+    for id in only {
+        if !old.iter().any(|s| &s.id == id) {
+            return Err(unsupported(format!("no entry point {id} in {}; it has {}", before.display(), old.iter().map(|s| s.id.as_str()).collect::<Vec<_>>().join(", "))));
+        }
+    }
+    let obligations = crate::observations::compare(&old, &new);
+    let mut out = Vec::new();
+    for spec in old.iter().filter(|s| only.is_empty() || only.contains(&s.id)) {
+        let claim = claim_for(spec, trace_bound, bounds.clone());
+        let matched = obligations.iter().find(|o| o.entry == spec.id && o.change != Change::Removed && o.change != Change::New).map(|o| o.new_entry.clone().unwrap_or_else(|| spec.id.clone()));
+        let counterpart = matched.as_ref().and_then(|id| new.iter().find(|s| &s.id == id));
+        let new_entry = matched.clone().filter(|id| id != &spec.id);
+        let Some(counterpart) = counterpart else {
+            let domain = domain_of(spec);
+            let checked = Checked {
+                outcome: Outcome { verdict: Verdict::Unresolved, domain, accounting: claim.contract.required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: None },
+                reason: Some(format!("{} has no counterpart in {}: removed, renamed, or not told apart from another", spec.id, after.display())),
+                assumptions: claim.assumptions.clone(),
+                proof: None,
+                before: None,
+                after: None,
+            };
+            out.push(EntryCheck { entry: spec.id.clone(), new_entry, checked: Some(checked), unsupported: None });
+            continue;
+        };
+        match check(&claim, spec, counterpart, before, after) {
+            Ok(checked) => out.push(EntryCheck { entry: spec.id.clone(), new_entry, checked: Some(checked), unsupported: None }),
+            Err(u) => out.push(EntryCheck { entry: spec.id.clone(), new_entry, checked: None, unsupported: Some(u.what.clone()) }),
+        }
+    }
+    Ok(out)
+}
+
+/// The text `jvmcontract effects` prints: per entry point its verdict, what each required observation became, the
+/// proof or the witness (with each build's attempts) or why it is unresolved, the domain and the assumptions; then
+/// the count.
+pub fn render_checks(checks: &[EntryCheck]) -> String {
+    let mut s = String::new();
+    let mut counts = [0usize; 4];
+    for c in checks {
+        let name = match &c.new_entry {
+            Some(n) => format!("{} (now {n})", c.entry),
+            None => c.entry.clone(),
+        };
+        let Some(k) = &c.checked else {
+            counts[3] += 1;
+            s.push_str(&format!("{name}: unsupported: {}\n", c.unsupported.as_deref().unwrap_or("")));
+            continue;
+        };
+        let verdict = match k.outcome.verdict {
+            Verdict::Verified => {
+                counts[0] += 1;
+                "verified"
+            }
+            Verdict::Refuted => {
+                counts[1] += 1;
+                "refuted"
+            }
+            Verdict::Unresolved => {
+                counts[2] += 1;
+                "unresolved"
+            }
+        };
+        s.push_str(&format!("{name}: {verdict}\n"));
+        let accounting = k
+            .outcome
+            .accounting
+            .iter()
+            .map(|a| {
+                let id = a.observation.strip_prefix("effect:").map(short).unwrap_or_else(|| a.observation.clone());
+                let state = match a.state {
+                    ObservationState::Preserved => "preserved",
+                    ObservationState::ChangedWithApproval => "changed with approval",
+                    ObservationState::Unresolved => "unresolved",
+                    ObservationState::Refuted => "refuted",
+                };
+                format!("{id} {state}")
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
+        s.push_str(&format!("  observations: {accounting}\n"));
+        if let Some(r) = &k.reason {
+            s.push_str(&format!("  why: {r}\n"));
+        }
+        if let Some(w) = &k.outcome.witness {
+            s.push_str(&format!("  witness: {w}\n"));
+        } else if let (Some(b), Some(a)) = (&k.before, &k.after) {
+            s.push_str(&format!("  the old build: {}\n  the new build: {}\n", b.words(), a.words()));
+        }
+        if let Some(p) = &k.proof {
+            s.push_str(&format!("  {}: {p}\n", if k.outcome.verdict == Verdict::Verified { "proof" } else { "search" }));
+        }
+        s.push_str(&format!("  domain: {}\n", k.outcome.domain));
+        for a in &k.assumptions {
+            s.push_str(&format!("  assumes: {a}\n"));
+        }
+    }
+    s.push_str(&format!("{} entry points: {} verified, {} refuted, {} unresolved, {} unsupported\n", checks.len(), counts[0], counts[1], counts[2], counts[3]));
+    s
+}
+
+fn domain_of(spec: &EntryPointSpec) -> String {
+    let domain = spec.inputs.iter().map(|i| format!("{}: {}", i.name, i.ty)).collect::<Vec<_>>().join(" × ");
+    format!("{} (the request's inputs, the same in both builds)", if domain.is_empty() { "no inputs".to_string() } else { domain })
+}
+
 /// [`check`], with the builds, the proof and the JVM run under `work`.
 fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path) -> Result<Checked, Unsupported> {
     let required = claim.contract.required.clone();
     let environment = claim.environment.clone().unwrap_or_else(|| old.environment.clone());
     let handler = old.handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or("").to_string();
     let assumed = assumptions(&environment, &handler);
-    let domain = old.inputs.iter().map(|i| format!("{}: {}", i.name, i.ty)).collect::<Vec<_>>().join(" × ");
-    let domain = format!("{} (the request's inputs, the same in both builds)", if domain.is_empty() { "no inputs".to_string() } else { domain });
+    let domain = domain_of(old);
     let unresolved = |reason: String| Checked {
         outcome: Outcome { verdict: Verdict::Unresolved, domain: domain.clone(), accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: None },
         reason: Some(reason),
