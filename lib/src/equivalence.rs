@@ -1022,16 +1022,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         classpath.push(models_dir.clone());
     }
     let mut shared_classpath = None;
+    let shared_versions = [options.after.as_path(), before_dir.as_path()];
     if !plan.callees.is_empty() {
         let dir = work.join("shared-classes");
-        std::fs::create_dir_all(&dir)?;
-        std::fs::write(dir.join(format!("{}.class", shared::CLASS)), shared::stub(&shared_after_cp, &plan.callees)?)?;
-        let lookup = |m: &MemberRef| -> Option<String> {
-            let owner = shared::original_owner(&m.owner, "before");
-            plan.callees.iter().position(|c| c.owner == owner && c.name == m.name && c.descriptor == m.descriptor).map(|i| plan.callees[i].stub_method(i))
-        };
-        shared::redirect_directory(&options.after, &dir, &lookup)?;
-        shared::redirect_directory(&before_dir, &dir, &lookup)?;
+        shared::stub_directory(&shared_after_cp, &plan.callees, &shared_versions, &dir)?;
         let mut cp = classpath.clone();
         cp.insert(1, dir);
         shared_classpath = Some(cp);
@@ -1198,17 +1192,17 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // Both versions replayed on an input: what each did, and whether the two agree, which under a relation between
     // the results is the relation holding when both return (with the arrays left the same), and otherwise the two
     // outcomes reading the same; a replay that failed never agrees.
-    let replay_both = |arguments: &[Argument]| -> Replays {
-        let after = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
+    let replay_on = |replay_cp: &ClassPath, arguments: &[Argument]| -> Replays {
+        let after = witness::replay_in(replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
         let after_text = after.with_leftovers(params, arguments);
         let (before, before_text) = match map_arguments(arguments) {
             Ok(mapped) => {
                 // With the previous version's arguments as expressions, each is a primitive or an array; otherwise
                 // the previous version's records are built from the same components.
                 let replayed = if harness.before_args.is_some() {
-                    witness::replay_in(&replay_cp, &before_layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
+                    witness::replay_in(replay_cp, &before_layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
                 } else {
-                    witness::replay_in(&replay_cp, &layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
+                    witness::replay_in(replay_cp, &layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
                 };
                 let text = if harness.before_args.is_some() { replayed.with_leftovers(before_params, &mapped) } else { replayed.with_leftovers(params, &mapped) };
                 (Some(replayed), text)
@@ -1260,24 +1254,56 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         };
         Replays { before: before_text, after: after_text, agree, relation_note }
     };
+    let replay_both = |arguments: &[Argument]| replay_on(&replay_cp, arguments);
     // With the shared callees first: a proof with them is a proof, and a counterexample with them is one when it
-    // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are
-    // proved as written.
+    // reproduces through the bytecode as written. Otherwise the abstraction was too coarse: the callees whose stubs
+    // the counterexample rests on are computed as written, and the rest stay one function, until a run's verdict
+    // stands or none is left ([`shared::spurious`]).
     let mut shared_used = if last.as_ref().is_some_and(|l: &JbmcResult| l.native.is_some()) { native_shared } else { Vec::new() };
     let mut jbmc_notes = String::new();
     if last.is_none() {
-        if let Some(cp) = &shared_classpath {
-            if let Some(result) = run_stages(cp, "-shared", "shared", &mut runs, &mut jbmc_notes)? {
-                let keep = match result.verdict {
-                    Verdict::Violation => !replay_both(&result.arguments(&flat_types)?).agree,
-                    _ => true,
-                };
-                if keep {
-                    shared_used = shared_names.clone();
+        if let Some(first) = &shared_classpath {
+            let marker = format!("{}.{}", harness::CLASS, harness::METHOD);
+            let mut stubbed: Vec<usize> = (0..plan.callees.len()).collect();
+            let mut cp = first.clone();
+            let mut round = 0;
+            while let Some(result) = run_stages(&cp, &if round == 0 { "-shared".to_string() } else { format!("-shared-{round}") }, "shared", &mut runs, &mut jbmc_notes)? {
+                let names: Vec<String> = stubbed.iter().map(|&i| shared_names[i].clone()).collect();
+                let found = if result.verdict == Verdict::Violation { Some(result.arguments(&flat_types)?) } else { None };
+                let Some(found) = found.filter(|a| replay_both(a).agree) else {
+                    shared_used = names;
                     last = Some(result);
-                } else {
-                    let _ = writeln!(out, "note: the counterexample found with {} taken as one function in both versions does not reproduce once computed as written; proving with the callees' bytecode", shared_names.join(", "));
+                    break;
+                };
+                let subset: Vec<shared::Callee> = stubbed.iter().map(|&i| plan.callees[i].clone()).collect();
+                let answers = std::fs::read_to_string(&result.log).ok().and_then(|o| shared::answers(&o, &subset, &marker));
+                let redirected = cp[1].clone();
+                let blamed = match answers {
+                    Some(answers) => shared::spurious(&shared_after_cp, &subset, &answers, &work.join(format!("shared-replay-{round}")), &mut |entry| {
+                        let entries = [entry, redirected.as_path(), options.after.as_path(), before_dir.as_path()];
+                        witness::classpath(entries.into_iter().chain(options.classpath.iter().map(PathBuf::as_path))).map(|c| !replay_on(&c.with_models(options.models), &found).agree).unwrap_or(true)
+                    })?,
+                    None => None,
+                };
+                let kept: Vec<usize> = match &blamed {
+                    Some(b) if b.len() < subset.len() => (0..subset.len()).filter(|k| !b.contains(k)).map(|k| stubbed[k]).collect(),
+                    _ => Vec::new(),
+                };
+                if kept.is_empty() {
+                    let _ = writeln!(out, "note: the counterexample found with {} taken as one function in both versions does not reproduce once computed as written; proving with the callees' bytecode", names.join(", "));
+                    break;
                 }
+                let blamed: Vec<String> = blamed.unwrap_or_default().iter().map(|&k| names[k].clone()).collect();
+                let left: Vec<String> = kept.iter().map(|&i| shared_names[i].clone()).collect();
+                let (rests, them) = if blamed.len() == 1 { ("stub", "it") } else { ("stubs", "them") };
+                let _ = writeln!(out, "note: the counterexample found with {} taken as one function in both versions does not reproduce once computed as written; it rests on the answers of {}'s {rests} (with {them} as written, the two versions agree on its input), so the proof runs again with {} as written and {} still one function in both", names.join(", "), blamed.join(", "), blamed.join(", "), left.join(", "));
+                stubbed = kept;
+                round += 1;
+                let dir = work.join(format!("shared-classes-{round}"));
+                let subset: Vec<shared::Callee> = stubbed.iter().map(|&i| plan.callees[i].clone()).collect();
+                shared::stub_directory(&shared_after_cp, &subset, &shared_versions, &dir)?;
+                cp = classpath.clone();
+                cp.insert(1, dir);
             }
         }
         if last.is_none() {

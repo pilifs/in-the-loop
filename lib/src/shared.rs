@@ -11,9 +11,10 @@
 //! The abstraction is sound for a proof: the stub behaves as every function the callee could be, the callee
 //! itself included, so what holds of the two versions with the stub holds of them as written. It can be too
 //! coarse for a counterexample, which is why one found with it is replayed through the bytecode as written and,
-//! when it does not reproduce, the proof is run again with the callees as written. A callee of a few instructions
-//! without a loop, a multiplication, a division or a remainder (`Math.min`, `Math.abs`) is left as written: it costs
-//! the solver less than the rerun a counterexample through its stub usually brings ([`trivial`]).
+//! when it does not reproduce, the proof is run again with the callees whose stubs it rests on as written, and the
+//! others still one function ([`spurious`], refinement per callee). A callee of a few instructions without a loop, a
+//! multiplication, a division or a remainder (`Math.min`, `Math.abs`) is left as written: it costs the solver less
+//! than the rerun a counterexample through its stub usually brings ([`trivial`]).
 //!
 //! The same comparison of the two versions' bytecode settles a prior question: when the target and everything it
 //! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]).
@@ -1057,4 +1058,224 @@ mod tests {
         let insns = code.instructions().unwrap();
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::AThrow)).count(), 2);
     }
+}
+
+/// Writes into `dir` the stub class for `callees` and the classes of each of `versions` (the new version's
+/// directory, and the previous version's relocated one) that call one of them, with those calls redirected to the
+/// stub: the class path entry that goes ahead of the versions as written when the callees are shared under JBMC.
+pub fn stub_directory(cp: &ClassPath, callees: &[Callee], versions: &[&Path], dir: &Path) -> Result<(), Error> {
+    std::fs::create_dir_all(dir)?;
+    std::fs::write(dir.join(format!("{CLASS}.class")), stub(cp, callees)?)?;
+    let lookup = |m: &MemberRef| -> Option<String> {
+        let owner = original_owner(&m.owner, "before");
+        callees.iter().position(|c| c.owner == owner && c.name == m.name && c.descriptor == m.descriptor).map(|i| callees[i].stub_method(i))
+    };
+    for version in versions {
+        redirect_directory(version, dir, &lookup)?;
+    }
+    Ok(())
+}
+
+// Refinement per callee (`llm-dlc/loops/foundations-summaries.md`, S5). A counterexample JBMC finds with the callees
+// as stubs is one to the versions as written only if it reproduces through their bytecode; when it doesn't, some
+// stub gave an answer its callee never gives. Which one is read off the counterexample itself: the stubs' memo
+// tables, as the trace leaves them, are what each stub answered and on which arguments ([`answers`]). The two
+// versions are replayed on the counterexample's input with a stub that gives those answers again ([`replay_stub`]),
+// once with every callee so, which must show the disagreement JBMC found, and then once per callee with that one
+// computed as written instead. A callee whose real answers make the disagreement vanish is one the counterexample
+// rests on ([`spurious`]), and only those are computed as written in the next run; the others stay one function.
+// Whichever callees are blamed, the next run is still sound for a proof (any subset of the stubs over-approximates
+// the callees), and its counterexample is replayed as written in turn, so the blame decides only how much of the
+// proof is computed again, never a verdict.
+
+/// What a stub answered on one call, as a counterexample's trace leaves its memo table.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Answer {
+    pub arguments: Vec<crate::interp::Value>,
+    pub outcome: Answered,
+}
+
+/// A stub's answer: a result (`None` for a `void` callee), or an exception of the class named.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Answered {
+    Returned(Option<crate::interp::Value>),
+    Threw(String),
+}
+
+/// The answers each of `callees` gave in the counterexample of the JBMC run whose `--json-ui` output is `output`, in
+/// the order of `callees` (the stub's own, by index). `marker` is the harness's `Class.method`, which names the
+/// assertion whose trace is read. `None` when the output holds no such trace or a memo table can't be read from it:
+/// then nothing can be told about the stubs.
+pub fn answers(output: &str, callees: &[Callee], marker: &str) -> Option<Vec<Vec<Answer>>> {
+    let items = crate::jbmc::json_items(output);
+    let results = items.iter().find_map(|i| i.get("result").and_then(|r| r.as_array()))?;
+    let failed = results.iter().find(|p| {
+        let id = p.get("property").and_then(|s| s.as_str()).unwrap_or_default();
+        p.get("status").and_then(|s| s.as_str()) == Some("FAILURE") && id.contains(marker) && id.contains("assertion")
+    })?;
+    let steps = failed.get("trace")?.as_array()?;
+    // The memo fields' last values, assigned in the stub's own methods (its locals are anonymous, and a field of the
+    // application's assigned elsewhere is not one of its).
+    let mut fields: BTreeMap<String, serde_json::Value> = BTreeMap::new();
+    let mut stack: Vec<String> = Vec::new();
+    let prefix = format!("java::{CLASS}.");
+    for step in steps {
+        match step.get("stepType").and_then(|t| t.as_str()) {
+            Some("function-call") => stack.push(step.get("function").and_then(|f| f.get("identifier")).and_then(|i| i.as_str()).unwrap_or_default().to_string()),
+            Some("function-return") => {
+                stack.pop();
+            }
+            Some("assignment") if stack.last().is_some_and(|f| f.starts_with(&prefix)) => {
+                if let (Some(lhs), Some(value)) = (step.get("lhs").and_then(|l| l.as_str()), step.get("value")) {
+                    fields.insert(lhs.to_string(), value.clone());
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut out = Vec::new();
+    for (index, callee) in callees.iter().enumerate() {
+        let descriptor = crate::classfile::MethodDescriptor::parse(&callee.descriptor).ok()?;
+        let count = match fields.get(&format!("n{index}")) {
+            Some(v) => trace_value(&Type::Int, v)?.as_int(),
+            None => 0,
+        };
+        let mut entries = Vec::new();
+        for e in 0..count.clamp(0, i32::from(ENTRIES)) {
+            let arguments = descriptor.params.iter().enumerate().map(|(j, p)| trace_value(p, fields.get(&format!("a{index}_{e}_{j}"))?)).collect::<Option<Vec<_>>>()?;
+            let kind = trace_value(&Type::Int, fields.get(&format!("t{index}_{e}"))?)?.as_int();
+            let outcome = if kind == 0 {
+                Answered::Returned(if descriptor.ret == Type::Void { None } else { Some(trace_value(&descriptor.ret, fields.get(&format!("r{index}_{e}"))?)?) })
+            } else {
+                Answered::Threw(callee.throws.get(usize::try_from(kind - 1).ok()?)?.clone())
+            };
+            entries.push(Answer { arguments, outcome });
+        }
+        out.push(entries);
+    }
+    Some(out)
+}
+
+/// A primitive of a trace, from its bits.
+fn trace_value(t: &Type, value: &serde_json::Value) -> Option<crate::interp::Value> {
+    use crate::interp::Value;
+    let bits = value.get("binary")?.as_str()?;
+    let raw = u64::from_str_radix(bits, 2).ok()?;
+    let width = bits.len() as u32;
+    let signed = |w: u32| -> i64 { if w == 0 || w >= 64 { raw as i64 } else { ((raw << (64 - w)) as i64) >> (64 - w) } };
+    Some(match t {
+        Type::Long => Value::Long(raw as i64),
+        Type::Float => Value::Float(f32::from_bits(raw as u32)),
+        Type::Double => Value::Double(f64::from_bits(raw)),
+        Type::Boolean | Type::Char => Value::Int(raw as i32),
+        Type::Int | Type::Short | Type::Byte => Value::Int(signed(width) as i32),
+        _ => return None,
+    })
+}
+
+/// A stub class for replaying a counterexample: each of `callees` (by the index the stub JBMC ran with gave it)
+/// gives the answers `answers` holds for it on those arguments, compared as the stub compares them, and on any
+/// other arguments, or with no answers given, is the callee as written.
+pub fn replay_stub(cp: &ClassPath, callees: &[Callee], answers: &[Option<&[Answer]>]) -> Result<Vec<u8>, Error> {
+    use crate::interp::Value;
+    let mut w = ClassWriter::new(CLASS);
+    w.source_file = Some("SharedCallees.java".into());
+    for (index, callee) in callees.iter().enumerate() {
+        let descriptor = crate::classfile::MethodDescriptor::parse(&callee.descriptor).map_err(|e| Error::new(format!("{}: {e}", callee.display())))?;
+        let mut slots = Vec::new();
+        let mut slot = 0u16;
+        for p in &descriptor.params {
+            slots.push(slot);
+            slot += p.slots();
+        }
+        let ret = (descriptor.ret != Type::Void).then(|| kind_of(&descriptor.ret));
+        let mut code = CodeBuilder::new();
+        code.max_locals = slot;
+        let push = |w: &mut ClassWriter, code: &mut CodeBuilder, v: &Value| match *v {
+            Value::Int(i) if (-32768..=32767).contains(&i) => code.iconst(i),
+            Value::Int(i) => code.ldc(w.pool.integer(i)),
+            Value::Long(l) => code.ldc2(w.pool.long(l)),
+            Value::Float(f) => code.ldc(w.pool.float(f)),
+            Value::Double(d) => code.ldc2(w.pool.double(d)),
+            _ => code.op(0x01),
+        };
+        for answer in answers.get(index).copied().flatten().unwrap_or(&[]) {
+            let next = code.label();
+            for (j, p) in descriptor.params.iter().enumerate() {
+                code.load(kind_of(p), slots[j]);
+                push(&mut w, &mut code, &answer.arguments[j]);
+                match kind_of(p) {
+                    Kind::Int => code.if_icmp(Cond::Ne, next),
+                    Kind::Long => {
+                        code.op(0x94);
+                        code.if_zero(Cond::Ne, next);
+                    }
+                    Kind::Float => {
+                        code.op(0x95);
+                        code.if_zero(Cond::Ne, next);
+                    }
+                    Kind::Double => {
+                        code.op(0x97);
+                        code.if_zero(Cond::Ne, next);
+                    }
+                    Kind::Ref => return Err(Error::new("a shared callee takes primitives only")),
+                }
+            }
+            match &answer.outcome {
+                Answered::Returned(value) => {
+                    if let Some(v) = value {
+                        push(&mut w, &mut code, v);
+                    }
+                    code.return_(ret);
+                }
+                Answered::Threw(exception) => {
+                    let class = w.pool.class(exception);
+                    let ctor = constructor(cp, exception).ok_or_else(|| Error::new(format!("{exception} has no constructor the stub can call")))?;
+                    let init = w.pool.method_ref(exception, "<init>", ctor);
+                    code.op_u16(0xbb, class);
+                    code.op(0x59);
+                    if ctor != "()V" {
+                        code.op(0x01);
+                    }
+                    code.op_u16(0xb7, init);
+                    code.op(0xbf);
+                }
+            }
+            code.bind(next);
+        }
+        for (j, p) in descriptor.params.iter().enumerate() {
+            code.load(kind_of(p), slots[j]);
+        }
+        let real = w.pool.method_ref(&callee.owner, &callee.name, &callee.descriptor);
+        code.op_u16(0xb8, real);
+        code.return_(ret);
+        w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: callee.stub_method(index), descriptor: callee.descriptor.clone(), code: Some(code) });
+    }
+    Ok(w.to_bytes())
+}
+
+/// Which of `callees` a counterexample found with all of them as stubs rests on, by index: those whose answers as
+/// written, in place of the stub's, make the two versions agree on its input (the notes above [`Answer`]). `disagrees`
+/// replays the two versions on that input with the class path entry it is given (a directory holding a replay
+/// stub) ahead of the redirected classes, and says whether they still differ. Each replay stub is written under
+/// `dir`. `None` when the stubs' answers, given again, don't reproduce the disagreement (the trace was not read
+/// whole, or a stub's table overflowed), or when no one callee's answers undo it: then nothing is told apart.
+pub fn spurious(cp: &ClassPath, callees: &[Callee], answers: &[Vec<Answer>], dir: &Path, disagrees: &mut dyn FnMut(&Path) -> bool) -> Result<Option<Vec<usize>>, Error> {
+    let write = |name: &str, real: Option<usize>| -> Result<std::path::PathBuf, Error> {
+        let given: Vec<Option<&[Answer]>> = answers.iter().enumerate().map(|(i, a)| (Some(i) != real).then_some(a.as_slice())).collect();
+        let entry = dir.join(name);
+        std::fs::create_dir_all(&entry)?;
+        std::fs::write(entry.join(format!("{CLASS}.class")), replay_stub(cp, callees, &given)?)?;
+        Ok(entry)
+    };
+    if !disagrees(&write("as-found", None)?) {
+        return Ok(None);
+    }
+    let mut blamed = Vec::new();
+    for i in 0..callees.len() {
+        if !disagrees(&write(&format!("real-{i}"), Some(i))?) {
+            blamed.push(i);
+        }
+    }
+    Ok((!blamed.is_empty()).then_some(blamed))
 }

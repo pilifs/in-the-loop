@@ -1074,3 +1074,106 @@ fn a_helper_s_proof_never_rests_on_the_proof_it_is_used_in() {
     let rests: Vec<&Value> = detail["statement"]["assumptions"].as_array().unwrap().iter().filter(|a| a["kind"] == "callee").collect();
     assert!(rests.is_empty(), "{rests:?}");
 }
+
+// S5: refinement per callee. A counterexample JBMC finds with the shared callees as stubs that doesn't reproduce
+// once computed as written is put down to the callees whose stubs it rests on, and only those are computed as
+// written in the next run.
+
+fn has_jbmc() -> bool {
+    let found = Command::new("jbmc").arg("--version").output().is_ok_and(|o| o.status.success());
+    if !found {
+        let skip = std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1");
+        assert!(skip, "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip the tests that need it");
+    }
+    found
+}
+
+/// Two callees identical in both versions, both shared: `twice`'s results are always even, which the two versions'
+/// uses of it (`& 1` and `% 2`) need to agree, and `third`'s value cancels out, whatever it is.
+const PAIR: &str = r#"package fixtures;
+public final class Shares {
+    static int twice(int x) { return x * 2; }
+    static int third(int x) { return x / 3; }
+    public static long split(long total, int seats, int fee) { return third(seats) + (twice(fee) & 1); }
+}
+"#;
+
+fn pair(name: &str, source: &str) -> Option<PathBuf> {
+    compile(name, &[("fixtures/Shares.java", source)])
+}
+
+/// A regression check of `fixtures.Shares#split` under JBMC, in a work directory of its own.
+fn jbmc_check(before: &Path, after: &Path, name: &str) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, "fixtures.Shares#split");
+    options.engine = jvmcontract::Engine::Jbmc;
+    options.timeout_seconds = 120;
+    let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("summaries-refinement").join(name);
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    equivalence::run(&options).unwrap()
+}
+
+fn shares_callee(name: &str) -> shared::Callee {
+    shared::Callee { owner: "fixtures/Shares".into(), name: name.into(), descriptor: "(I)I".into(), throws: Vec::new(), proved: None }
+}
+
+/// Needs no JBMC: the replay stub gives the answers it is given on their arguments, and is the callee as written
+/// on any others, or when it is given none.
+#[test]
+fn the_replay_stub_gives_the_stub_s_answers_again_and_is_the_callee_elsewhere() {
+    use jvmcontract::interp::{Machine, Value as V};
+    let Some(classes) = pair("replay-stub", PAIR) else { return };
+    let callees = [shares_callee("third"), shares_callee("twice")];
+    let answered = [shared::Answer { arguments: vec![V::Int(5)], outcome: shared::Answered::Returned(Some(V::Int(-1))) }, shared::Answer { arguments: vec![V::Int(100_000)], outcome: shared::Answered::Returned(Some(V::Int(70_000))) }];
+    let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("summaries").join("replay-stub-class");
+    std::fs::create_dir_all(&dir).unwrap();
+    let after_cp = cp(&classes);
+    std::fs::write(dir.join("SharedCallees.class"), shared::replay_stub(&after_cp, &callees, &[None, Some(&answered)]).unwrap()).unwrap();
+    let mut both = cp(&classes);
+    both.add(&dir).unwrap();
+    let mut m = Machine::new(&both);
+    let mut call = |method: &str, x: i32| m.call_static("SharedCallees", method, "(I)I", vec![V::Int(x)]).ok().flatten();
+    assert_eq!(call("m1_twice", 5), Some(V::Int(-1)), "the answer given");
+    assert_eq!(call("m1_twice", 100_000), Some(V::Int(70_000)), "a constant beyond a short's range");
+    assert_eq!(call("m1_twice", 6), Some(V::Int(12)), "other arguments: as written");
+    assert_eq!(call("m0_third", 9), Some(V::Int(3)), "no answers: as written");
+}
+
+/// With both callees as stubs, JBMC finds a counterexample in which `twice` returns an odd number, which it never
+/// does. Replayed with `twice` as written, the versions agree on it; with `third` as written, they still differ.
+/// So only `twice` is computed as written in the next run, and `third` stays one function: the proof needs no
+/// division bit-blasted.
+#[test]
+fn only_the_callee_a_spurious_counterexample_rests_on_is_computed_as_written() {
+    if !has_jbmc() {
+        return;
+    }
+    let after = PAIR.replace("(twice(fee) & 1)", "(twice(fee) % 2)");
+    let (Some(before), Some(after)) = (pair("pair-before", PAIR), pair("pair-after", &after)) else { return };
+    let outcome = jbmc_check(&before, &after, "pair");
+    assert_eq!(outcome.verdict, jvmcontract::Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.shared, vec!["Shares.third".to_string()], "{}", outcome.output);
+    assert!(outcome.output.contains("note: the counterexample found with Shares.third, Shares.twice taken as one function in both versions does not reproduce once computed as written; it rests on the answers of Shares.twice's stub (with it as written, the two versions agree on its input), so the proof runs again with Shares.twice as written and Shares.third still one function in both"), "{}", outcome.output);
+    assert!(outcome.proof.as_deref().unwrap().ends_with("; Shares.third unchanged in both versions and taken as one function in both"), "{:?}", outcome.proof);
+    let work = &outcome.work;
+    assert!(work.join("jbmc-shared-1.log").exists(), "the second run, with third's stub alone");
+    assert!(!work.join("jbmc.log").exists(), "no run with every callee as written");
+    let purposes: Vec<&str> = outcome.search.as_ref().unwrap().runs.iter().map(|r| r.purpose.as_str()).collect();
+    assert_eq!(purposes, ["shared", "shared"]);
+}
+
+/// Refinement never makes a real regression disappear: whichever counterexample the stubs give first, the one
+/// reported reproduces as written.
+#[test]
+fn a_real_regression_is_still_found_through_the_refinement() {
+    if !has_jbmc() {
+        return;
+    }
+    let after = PAIR.replace("(twice(fee) & 1)", "(twice(fee) % 2) + (fee == 7 ? 1 : 0)");
+    let (Some(before), Some(after)) = (pair("pair-wrong-before", PAIR), pair("pair-wrong-after", &after)) else { return };
+    let outcome = jbmc_check(&before, &after, "pair-wrong");
+    assert_eq!(outcome.verdict, jvmcontract::Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.as_ref().unwrap();
+    assert!(witness.input.contains("fee=7"), "{}", witness.input);
+    assert!(outcome.replay.as_ref().is_some_and(|r| r.reproduced), "{:?}", outcome.replay);
+}
