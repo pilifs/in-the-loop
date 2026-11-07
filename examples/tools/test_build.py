@@ -2334,6 +2334,21 @@ class ProofCacheTest(unittest.TestCase):
         plain = self.cached(cache=False)
         self.assertEqual(build.claim_scope(plain, build.plan(plain)), {"maxArrayLength": None, "intendedInputs": None})
 
+    def test_a_claim_that_may_rest_on_helpers_proofs_validates_against_the_schema(self):
+        # VF-016: jobs 20261107-163050 and -163051 (examples 160, 161) failed validating result.json, "Additional
+        # properties are not allowed ('proofCache' was unexpected)", in the claim's scope.
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        claim = {**schema["properties"]["claim"], "$defs": schema["$defs"]}
+        for ex in (self.cached(), self.cached(cache=False)):
+            with self.subTest(cache=ex["approach"].get("cache", False)):
+                scope = build.claim_scope(ex, build.plan(ex))
+                body = {"format": build.CLAIM_FORMAT, "example": "160", "statement": {}, "scope": scope,
+                        "inputs": {"patch": "0" * 64, "before": None, "after": None, "dependencies": "the JDK"}}
+                jsonschema.validate({"id": "0" * 16, **body}, claim)
+        with self.assertRaises(jsonschema.ValidationError):  # still only what claim_scope writes
+            jsonschema.validate({"id": "0" * 16, **body, "scope": {"proofCache": 1}}, claim)
+
     def test_a_helper_proved_first_is_recorded_as_shared_and_the_page_says_so(self):
         result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
         self.assertEqual(result["helpers"], [{"callee": "TokenBucket.lastAfter", "shared": True, "note":
@@ -2375,6 +2390,25 @@ class ProofCacheTest(unittest.TestCase):
         self.assertIn(f"(claim {self.KEY}) shows", paragraph)
         self.assertIn("(a changed helper's own regression proof, made by the tool's own checker before the caller's", paragraph)
         self.assertNotIn("a contract for a gap", paragraph)
+
+
+class PatchesApplyTest(unittest.TestCase):
+    """Every example's patch applies to its app as the repository has it now, as the stage "apply the patch" applies
+    it. An app changed under an example (a test class added to the suite list, say) leaves the patch's context stale,
+    and the job fails in its first stage: VF-002's jobs 20261107-163046, -163047 and -163049 (examples 147-149),
+    whose `Tests.java` hunk predates `RetryThrottlingTest` in the list."""
+
+    def test_every_example_s_patch_applies_to_the_current_tree(self):
+        stale = []
+        for path in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*/example.json")):
+            patch = (json.loads(path.read_text()).get("change") or {}).get("patch")
+            if not patch:
+                continue
+            proc = subprocess.run(["git", "apply", "--check", "-p1", str(path.parent / patch)], cwd=build.REPO,
+                                  capture_output=True, text=True)
+            if proc.returncode != 0:
+                stale.append(f"{path.parent.name[:3]}: {proc.stderr.strip().splitlines()[-1]}")
+        self.assertEqual(stale, [])
 
 
 class VacuityTest(unittest.TestCase):

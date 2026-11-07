@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-165152-example-149-b11-contract-library-full-ji",
+  "title": "Example 149 (B11, contract library): full jitter proved on the contract library's contracts alone, applied on the records of their checks under --max-trust 0 (closes VF-002 when it passes)",
+  "description": "New example for step 3d of llm-dlc/loops/sound-verdicts.md (contracts kept and reused). The Crosscut change of examples 147/148 (Jitter#fullJitterMillis) with no contracts file of the agent's: under --engine native --gaps advised --max-trust 0 the tool's built-in contract library (lib/models/contracts) closes the three gaps (Integer.numberOfLeadingZeros, Random(long), Random.nextInt(int)), each applied on its record in checked.json (proved against java.lang.Integer's bytecode, or tested on the JVM, on JDK 25.0.4.1) without a proof or JVM test in the run, and the property (result in [0, capMillis), IllegalArgumentException for an invalid policy) is proved on every input. The page should name the library's files and say each contract was checked once. Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-002: build.py's excerpts() now takes a subject the patch creates, with an empty before side. The earlier job, 20261106-061323-example-149-b11-contract-library-full-ji, stopped before any proof with 'the patch does not change the subject file'. Closes VF-002 in verification/findings.md when it passes with the expected verdict.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "149"
+    ],
+    "paths": [
+      "lib/src/contract_library.rs",
+      "lib/models/contracts"
+    ]
+  },
+  "expected": "verdict verified, relying on 3 contracts for gaps of the tool's own checker, 1 proved, 2 tested; each contract in result.search.gaps has file lib/models/contracts/<class>.contracts and recorded 'checked once, on JDK 25.0.4.1 ...'; the label says (1 proved, 2 tested)",
+  "submitted": {
+    "at": "2026-11-07T16:51:52+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "as the job resubmitted; the earlier run stopped within a second"
+  },
+  "steps": [
+    {
+      "name": "example 149 (B11)",
+      "run": "python3 examples/tools/build.py 149",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/149-full-jitter-proved-on-the-contract-library-s-contracts-alone-checked-once-and-not-again-by-the-run"
+  ],
+  "supersedes": "20261107-163049-example-149-b11-contract-library-full-ji"
+}

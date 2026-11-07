@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.451Z",
-  "ended": "2026-11-07T16:45:13.727Z",
-  "duration_seconds": 1107,
+  "ended": "2026-11-07T16:52:21.518Z",
+  "duration_seconds": 1535,
   "stats": {
-    "turns": 20,
-    "api_calls": 130,
-    "tool_calls": 133,
+    "turns": 25,
+    "api_calls": 183,
+    "tool_calls": 188,
     "tool_errors": 1,
-    "compactions": 4,
-    "peak_context_tokens": 112388,
+    "compactions": 5,
+    "peak_context_tokens": 117264,
     "usage": {
-      "input_tokens": 258,
-      "output_tokens": 68045,
-      "cache_read_input_tokens": 9129039,
-      "cache_creation_input_tokens": 335095
+      "input_tokens": 364,
+      "output_tokens": 91770,
+      "cache_read_input_tokens": 13489830,
+      "cache_creation_input_tokens": 449226
     }
   },
   "tools": {
-    "Bash": 118,
-    "Edit": 9,
+    "Bash": 170,
+    "Edit": 12,
     "Read": 6
   },
   "files_touched": [
@@ -98,24 +98,38 @@
     {
       "index": 4,
       "started": "2026-11-07T16:42:21.893Z",
-      "ended": "2026-11-07T16:45:13.727Z",
-      "turns": 4,
-      "api_calls": 19,
+      "ended": "2026-11-07T16:45:57.287Z",
+      "turns": 5,
+      "api_calls": 25,
       "usage": {
-        "input_tokens": 38,
-        "output_tokens": 12123,
-        "cache_read_input_tokens": 1100006,
-        "cache_creation_input_tokens": 63294
+        "input_tokens": 50,
+        "output_tokens": 14616,
+        "cache_read_input_tokens": 1583310,
+        "cache_creation_input_tokens": 73240
       },
-      "peak_context_tokens": 76373
+      "peak_context_tokens": 86319
+    },
+    {
+      "index": 5,
+      "started": "2026-11-07T16:46:28.660Z",
+      "ended": "2026-11-07T16:52:21.518Z",
+      "turns": 4,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 94,
+        "output_tokens": 21232,
+        "cache_read_input_tokens": 3877487,
+        "cache_creation_input_tokens": 104185
+      },
+      "peak_context_tokens": 117264
     }
   ],
   "log": {
-    "sha256": "88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a",
-    "bytes": 3750877,
-    "lines": 1399,
-    "gzip_bytes": 702666,
-    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a.jsonl.gz"
+    "sha256": "6221a7a7d693ef747963164a6150dc5645da6c24dd8ea255c8aa3b1dec737f7c",
+    "bytes": 5059498,
+    "lines": 1904,
+    "gzip_bytes": 921355,
+    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/6221a7a7d693ef747963164a6150dc5645da6c24dd8ea255c8aa3b1dec737f7c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -150,9 +164,23 @@
       "summary": "VF-014: the benchmark's own-checker runs at H1's parent and at H1, to isolate H1's effect on the verdicts (verification pending)",
       "body": "Job 20261107-041414 compared step H1 (symbolic references in the own checker, change uyqkxsly) with lib/benchmark/results.json. That recording is older than H1, so 8 verdicts that changed through class initializers gained since could not be told apart from H1's effect (VF-014). As the entry offers, two jobs now run that job's step 1 unchanged, one at H1's parent (rvxkytqy, b927e5df) and one at H1 (ddbb54ba, the same tree as 73c514ad, where 20261107-041414 ran). Each keeps lib/target/benchmark-native.json and its table as outputs. A third job will apply 20261107-041414's step-2 comparison script to the two outputs once both are collected, and close VF-014 when it passes. Both job files pass pipeline.py validate, and both revisions resolve in git with lib/benchmark/run.py present.\n\nJobs: 20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm (H1's parent), 20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm (H1).\n\nThe stream brief's Progress records the jobs, where collect will keep their outputs (lib/target/ is gitignored, so the third job has to read them from the runner's repository), and that the jbmc stream's uytnkqst is one more commit with no manifest in this workspace.",
       "log_sha256": "88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a"
+    },
+    {
+      "change_id": "uxvwumlzonomtpmmpxksmzznrowtxzln",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 147-149's patches rebased onto the crosscut suite list, and result.schema.json allows a claim's proofCache scope, for VF-002 and VF-016 (verification pending)",
+      "body": "The jobs resubmitted after the excerpts() fix got past the subject check and each stopped on a second defect. VF-002 (147-149, jobs 20261107-163046/163047/163049): git apply refused the patches, whose Tests.java hunk predates RetryThrottlingTest in the crosscut suite list. The hunk is rebased onto the current list and the rest of each patch is unchanged; each patched app compiles and its 56 tests pass. A new test_build.py test, PatchesApplyTest, checks that every example's patch applies to the current tree; it failed on exactly 147-149 before the fix. VF-016 (160-161, jobs 20261107-163050/163051): build.py writes scope.proofCache in the claim of a B9 proof with the proof cache, and the schema didn't allow it. It now does, with a test that failed before the fix. The jobs' recorded jvmcontract output, replayed through run_tool_equivalence with the subprocess mocked, gives 160 verified with lastAfter shared and 161 a violation with it not shared, and the fields validate. All 189 test_build.py tests pass. The examples' notes record the second run, and examples/index.json is re-rendered.\n\nJobs, resubmitted unchanged as the timebox's second attempt: 20261107-165152-example-147-b11-advised-contracts-a-cont, 20261107-165152-example-148-b11-advised-contracts-full-j, 20261107-165152-example-149-b11-contract-library-full-ji (closing VF-002), 20261107-165152-example-160-a-changed-refill-helper-prov and 20261107-165153-example-161-a-refill-helper-aligned-to-t (closing VF-016).",
+      "log_sha256": "6221a7a7d693ef747963164a6150dc5645da6c24dd8ea255c8aa3b1dec737f7c"
     }
   ],
   "logs": {
+    "6221a7a7d693ef747963164a6150dc5645da6c24dd8ea255c8aa3b1dec737f7c": {
+      "bytes": 5059498,
+      "lines": 1904,
+      "gzip_bytes": 921355,
+      "url": null
+    },
     "88145330e3d4cd1e2d931fd1621c27d9744d897b221e929e1c28851fdfa18d0a": {
       "bytes": 3750877,
       "lines": 1399,

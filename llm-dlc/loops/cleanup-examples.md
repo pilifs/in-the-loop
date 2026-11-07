@@ -178,7 +178,33 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
     conflict, not applied. The third job runs in a checkout without those files. It has to read them from the
     runner's repository, which is four directories above `$VERIFY_WORKDIR`, or carry them in.
 - **Check errors that aren't this branch's:** `uytnkqst` (the jbmc stream's commit) has no manifest here either, as
-  for `zykkyuuw`, `ruvmympl` and `syqpoxom` above.
+  for `zykkyuuw`, `ruvmympl` and `syqpoxom` above. So have `pkuvkyln` (the verification loop's results commit) and
+  `muznwonp`.
+- **VF-017 passed:** jobs `20261107-164043-example-150-…`, `-151-…` and `-152-…` (at `e7270fd8`), each
+  `example:as-expected`. The verification loop closed the entry in `findings.md`.
+- **E1, VF-002 and VF-016: first failures after the fix, both fixed, jobs resubmitted.** Both jobs got past the
+  subject check, so the `excerpts()` fix holds. Each then stopped on a second, independent defect:
+  - **VF-002** (`20261107-163046/163047/163049`): "apply the patch" failed. The three patches' `Tests.java` hunk
+    predates `RetryThrottlingTest` in the crosscut suite list (added with 150–152), so its context no longer
+    matched. The hunk is rebased onto the list as it is now, with `JitterTest` still added after `BackoffTest` and the
+    rest of each patch unchanged. Each patched app compiles and its 56 tests pass (javac, inline). The reproducer is
+    `test_build.py`'s new `PatchesApplyTest`: every example's patch (159) must apply to the current tree with
+    `git apply --check -p1`. It failed on exactly 147–149 before and passes now.
+  - **VF-016** (`20261107-163050/163051`): result validation failed. `claim_scope` writes `scope.proofCache` for a
+    B9 proof with the proof cache, and the claim's `scope` in `result.schema.json` didn't list it. It's added, as
+    the one value `claim_scope` writes. Reproducer:
+    `ProofCacheTest.test_a_claim_that_may_rest_on_helpers_proofs_validates_against_the_schema`, which failed
+    before and passes now.
+  - To catch any further schema error the jobs would hit, I replayed their recorded `jvmcontract` output (in the
+    runner's work directories) through `run_tool_equivalence` with the subprocess mocked. 160 comes out verified
+    with `TokenBucket.lastAfter` shared, and 161 a violation with it not shared. Every field the run sets
+    validates, with all errors listed. The only remaining errors come from fields the stub left empty, which the
+    real run fills in later.
+  - All 189 tests in `test_build.py` pass. Each example's notes record the second run, and `examples/index.json` is
+    re-rendered (it had fallen behind on the notes of the earlier commits).
+  - Resubmitted unchanged, as the second and last attempt under the timebox:
+    `20261107-165152-example-147-…`, `20261107-165152-example-148-…`, `20261107-165152-example-149-…` (VF-002), and
+    `20261107-165152-example-160-…`, `20261107-165153-example-161-…` (VF-016).
 - Next: E3, VF-013's reproducer and `sync.py`'s publishing of the run records. E2's third job follows once its two
   runs are collected.
 - Status: working

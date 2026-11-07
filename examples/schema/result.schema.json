@@ -1202,12 +1202,13 @@
         "example": { "type": "string", "pattern": "^\\d{3}$" },
         "statement": { "description": "What is checked, as build.py's plan() states it: the approach, the target and its file, behaviourChangeIntended, and for B9 the intended inputs, previous symbol and arguments, and result relation.", "type": "object" },
         "scope": {
-          "description": "What a symbolic proof's statement is over (B9, B11): the array bound (null: the tool's default) and, for B9, the intended inputs the proof leaves out. Narrowing them is another claim.",
+          "description": "What a symbolic proof's statement is over (B9, B11): the array bound (null: the tool's default) and, for B9, the intended inputs the proof leaves out and, for a B9 proof run with the proof cache (approach.cache), that it may rest on helpers' proofs made in the same run (absent otherwise). Narrowing them is another claim.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "maxArrayLength": { "type": ["integer", "null"] },
-            "intendedInputs": { "type": ["string", "null"] }
+            "intendedInputs": { "type": ["string", "null"] },
+            "proofCache": { "description": "Written by build.py's claim_scope: the cache starts empty, so a helper's proof the caller rests on was made in this run.", "const": "fresh: helpers' proofs made in the run" }
           }
         },
         "inputs": {
