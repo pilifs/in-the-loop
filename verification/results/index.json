@@ -2,6 +2,897 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261107-043420-nullable-and-one-array-parameters-in-pro",
+      "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 22m46s, peak 1.2 GiB (estimated 1h00m, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [
+        "step 1 (conformance under JBMC, auto and auto --confirm) exited 101, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/property.rs",
+          "lib/src/bmc/mod.rs",
+          "lib/tests/conformance.rs"
+        ]
+      },
+      "sourceCommit": "d404b15cbac6084b0d53c40cca9a5b4e5e11bc6d",
+      "finishedAt": "2026-11-07T15:56:47+00:00",
+      "wallSeconds": 1366.8,
+      "peakMemoryBytes": 1261076480,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 3600.0,
+        "notes": "the corpus has about 90 claims, each run by JBMC once or more; earlier runs of these tests were pipeline jobs of comparable size"
+      },
+      "host": "vm-1",
+      "result": "20261107-043420-nullable-and-one-array-parameters-in-pro/result.json"
+    },
+    {
+      "id": "20261107-115201-input-equations-that-read-another-object",
+      "title": "Input equations that read another object parameter's fields (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 23m45s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (other-object reads under JBMC and auto --confirm) exited 101, expected 0",
+        "took 23m45s, 2.38× the estimate"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/spec/heap.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "0348f57c2201d3d1e70c056dfe929c97f4b31aee",
+      "finishedAt": "2026-11-07T15:49:45+00:00",
+      "wallSeconds": 1425.6,
+      "peakMemoryBytes": 1337110528,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 8 small JBMC runs over a long times an int"
+      },
+      "host": "vm-1",
+      "result": "20261107-115201-input-equations-that-read-another-object/result.json"
+    },
+    {
+      "id": "20261107-092158-input-equations-that-read-a-primitive-pa",
+      "title": "Input equations that read a primitive parameter (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 23m40s, peak 1.3 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (parameter reads under JBMC and auto --confirm) exited 101, expected 0",
+        "took 23m40s, 2.37× the estimate"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "e7e61dbd6bb60a5762713a4890ca43f448cf77a7",
+      "finishedAt": "2026-11-07T15:49:04+00:00",
+      "wallSeconds": 1420.2,
+      "peakMemoryBytes": 1353551872,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 8 small JBMC runs over 64-bit arithmetic"
+      },
+      "host": "vm-1",
+      "result": "20261107-092158-input-equations-that-read-a-primitive-pa/result.json"
+    },
+    {
+      "id": "20261107-083358-computed-input-equations-under-a-corresp",
+      "title": "Computed input equations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 24m55s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (computed equations under JBMC and auto --confirm) exited 101, expected 0",
+        "took 24m55s, 2.49× the estimate"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "a405b89ae8130a0d18306c74b50c9b333708a277",
+      "finishedAt": "2026-11-07T15:48:53+00:00",
+      "wallSeconds": 1495.2,
+      "peakMemoryBytes": 1302282240,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 10 small JBMC runs; the harnesses divide 64-bit values by 100, which may make JBMC's formulas larger than the earlier jobs'"
+      },
+      "host": "vm-1",
+      "result": "20261107-083358-computed-input-equations-under-a-corresp/result.json"
+    },
+    {
+      "id": "20261107-080218-output-relations-under-a-correspondence",
+      "title": "Output relations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 22m02s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (output relations under JBMC and auto --confirm) exited 101, expected 0",
+        "took 22m02s, 2.2× the estimate"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/equivalence.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "9b9c3a34448c40c5a49d2e6b4c92031a14a8d1cb",
+      "finishedAt": "2026-11-07T15:46:01+00:00",
+      "wallSeconds": 1323.0,
+      "peakMemoryBytes": 1308573696,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 10 small JBMC runs (loop-free harnesses of a few dozen instructions)"
+      },
+      "host": "vm-1",
+      "result": "20261107-080218-output-relations-under-a-correspondence/result.json"
+    },
+    {
+      "id": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
+      "title": "Crosscut's nine examples with claims, rerun after the retry-throttle kernel was added to the app",
+      "status": "passed",
+      "summary": "passed: 9 passed step(s) in 53.1s, peak 457.6 MiB (estimated 30m00s, 3.0 GiB); 30 output file(s) changed; signals: example:as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "B8",
+        "B9",
+        "D1"
+      ],
+      "links": {},
+      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+      "finishedAt": "2026-11-07T15:39:48+00:00",
+      "wallSeconds": 53.1,
+      "peakMemoryBytes": 479854592,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 1800.0,
+        "notes": null
+      },
+      "host": "vm-1",
+      "result": "20261107-064838-crosscut-s-nine-examples-with-claims-rer/result.json"
+    },
+    {
+      "id": "20261107-064135-the-proof-cache-s-economics-on-the-recor",
+      "title": "The proof cache's economics on the recorded B9 and B11 examples: cold, warm, and four kinds of change (S6)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 3m07s, peak 296.1 MiB (estimated 30m00s, 2.0 GiB); 2 output file(s) changed",
+      "attention": [],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence",
+        "jvmcontract:proof-cache"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/economics.py",
+          "lib/src/proof_cache.rs"
+        ]
+      },
+      "sourceCommit": "697b9a646564d3e06e2f7dde3c0e2f15afc63882",
+      "finishedAt": "2026-11-07T15:38:54+00:00",
+      "wallSeconds": 188.0,
+      "peakMemoryBytes": 310444032,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 1800.0,
+        "notes": "about 280 native checks in sequence, most an exact hit or nothing to prove (under a second), the rest proved again in 0.1 to 6 s as the recorded native examples took (2.2 to 5.8 s); the trees take about 55 s of javac CPU"
+      },
+      "host": "vm-1",
+      "result": "20261107-064135-the-proof-cache-s-economics-on-the-recor/result.json"
+    },
+    {
+      "id": "20261107-140010-example-193-through-build-py-the-joint-e",
+      "title": "Example 193 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.4s, peak 108.2 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 193 (B9)) was held back 4.1s by its 1-CPU quota in 7.4s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "193"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:34:06+00:00",
+      "wallSeconds": 7.4,
+      "peakMemoryBytes": 113487872,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140010-example-193-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-140010-example-194-through-build-py-the-joint-e",
+      "title": "Example 194 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.6s, peak 105.5 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 194 (B9)) was held back 4.6s by its 1-CPU quota in 7.6s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "194"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:34:06+00:00",
+      "wallSeconds": 7.6,
+      "peakMemoryBytes": 110600192,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140010-example-194-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-140011-example-195-through-build-py-the-joint-e",
+      "title": "Example 195 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.4s, peak 90.1 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 195 (B9)) was held back 4.8s by its 1-CPU quota in 7.4s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "195"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:34:06+00:00",
+      "wallSeconds": 7.4,
+      "peakMemoryBytes": 94527488,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140011-example-195-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-140011-example-196-through-build-py-the-joint-e",
+      "title": "Example 196 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.2s, peak 86.6 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 196 (B9)) was held back 4.5s by its 1-CPU quota in 7.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "196"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:34:06+00:00",
+      "wallSeconds": 7.2,
+      "peakMemoryBytes": 90832896,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140011-example-196-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-140010-example-191-through-build-py-the-joint-e",
+      "title": "Example 191 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 9.2s, peak 130.2 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 191 (B9)) was held back 5.5s by its 1-CPU quota in 9.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "191"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:33:59+00:00",
+      "wallSeconds": 9.2,
+      "peakMemoryBytes": 136482816,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140010-example-191-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-140010-example-192-through-build-py-the-joint-e",
+      "title": "Example 192 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.8s, peak 99.6 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 192 (B9)) was held back 5.1s by its 1-CPU quota in 7.8s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "192"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:33:59+00:00",
+      "wallSeconds": 7.8,
+      "peakMemoryBytes": 104427520,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140010-example-192-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-140010-example-190-through-build-py-the-joint-e",
+      "title": "Example 190 through build.py: the joint example's run by jvmcontract compare",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.6s, peak 87.3 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 190 (B9)) was held back 5.0s by its 1-CPU quota in 7.6s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "190"
+        ]
+      },
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "finishedAt": "2026-11-07T15:33:58+00:00",
+      "wallSeconds": 7.6,
+      "peakMemoryBytes": 91549696,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "host": "vm-1",
+      "result": "20261107-140010-example-190-through-build-py-the-joint-e/result.json"
+    },
+    {
+      "id": "20261107-121516-result-relations-that-read-the-previous",
+      "title": "Result relations that read the previous version's parameters (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 4m31s, peak 1.3 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/spec/heap.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/witness.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "f92fc77c0303f887f0a67eed46a7cda5e3174bbb",
+      "finishedAt": "2026-11-07T15:32:10+00:00",
+      "wallSeconds": 271.3,
+      "peakMemoryBytes": 1347391488,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 4 small JBMC runs over a long and an int"
+      },
+      "host": "vm-1",
+      "result": "20261107-121516-result-relations-that-read-the-previous/result.json"
+    },
+    {
+      "id": "20261107-085410-output-relations-for-an-object-parameter",
+      "title": "Output relations for an object parameter's field (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 6m12s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "8e9e24a6b235698faf0df2779794afdf2212a005",
+      "finishedAt": "2026-11-07T15:31:37+00:00",
+      "wallSeconds": 372.5,
+      "peakMemoryBytes": 1323298816,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 8 small JBMC runs over 64-bit arithmetic"
+      },
+      "host": "vm-1",
+      "result": "20261107-085410-output-relations-for-an-object-parameter/result.json"
+    },
+    {
+      "id": "20261107-104658-output-relations-for-identity-relations",
+      "title": "Output relations for identity relations (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m15s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "dfca6c383eba1339ad4fe4c4e6314040a644b1db",
+      "finishedAt": "2026-11-07T15:27:39+00:00",
+      "wallSeconds": 135.1,
+      "peakMemoryBytes": 1333374976,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 6 small JBMC runs over reference comparisons"
+      },
+      "host": "vm-1",
+      "result": "20261107-104658-output-relations-for-identity-relations/result.json"
+    },
+    {
+      "id": "20261107-112033-output-relations-for-a-field-of-a-parame",
+      "title": "Output relations for a field of a parameter of the same shape (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m12s, peak 1.3 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/spec/heap.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "9aebe18f626fb374a293f2e9702460a77689f15e",
+      "finishedAt": "2026-11-07T15:27:37+00:00",
+      "wallSeconds": 132.9,
+      "peakMemoryBytes": 1344741376,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 4 small JBMC runs over one int field"
+      },
+      "host": "vm-1",
+      "result": "20261107-112033-output-relations-for-a-field-of-a-parame/result.json"
+    },
+    {
+      "id": "20261107-072431-object-parameters-in-property-checks-h2",
+      "title": "Object parameters in property checks (H2's rest): the object properties have the own checker's verdicts under JBMC and auto --confirm",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1m59s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/property.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/harness/expr.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "sourceCommit": "f0a47ca9d2991fe80d7dd811a439ec357e6ea61c",
+      "finishedAt": "2026-11-07T15:25:58+00:00",
+      "wallSeconds": 119.9,
+      "peakMemoryBytes": 1299021824,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "a release build of the crate, then 16 small JBMC runs (harnesses of a few dozen instructions, no loops)"
+      },
+      "host": "vm-1",
+      "result": "20261107-072431-object-parameters-in-property-checks-h2/result.json"
+    },
+    {
+      "id": "20261107-065648-example-170-a-retry-route-and-its-crossc",
+      "title": "Example 170: a retry route and its Crosscut retry policy refactored, the effect trace proved preserved",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 8.4s, peak 104.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 170 (B9)) was held back 7.7s by its 1-CPU quota in 8.4s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:effects"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/effects.rs",
+          "examples/apps/deliveries"
+        ],
+        "examples": [
+          "170"
+        ]
+      },
+      "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+      "finishedAt": "2026-11-07T15:25:23+00:00",
+      "wallSeconds": 8.4,
+      "peakMemoryBytes": 109420544,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 300.0,
+        "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+      },
+      "host": "vm-1",
+      "result": "20261107-065648-example-170-a-retry-route-and-its-crossc/result.json"
+    },
+    {
+      "id": "20261107-065648-example-171-a-retry-route-that-skips-the",
+      "title": "Example 171: a retry route that skips the dead letter for a client error, refuted by the effect trace",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 8.6s, peak 104.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 171 (B9)) was held back 7.5s by its 1-CPU quota in 8.6s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:effects"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/effects.rs",
+          "examples/apps/deliveries"
+        ],
+        "examples": [
+          "171"
+        ]
+      },
+      "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+      "finishedAt": "2026-11-07T15:25:23+00:00",
+      "wallSeconds": 8.6,
+      "peakMemoryBytes": 109449216,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 300.0,
+        "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+      },
+      "host": "vm-1",
+      "result": "20261107-065648-example-171-a-retry-route-that-skips-the/result.json"
+    },
+    {
+      "id": "20261107-065648-example-172-a-retry-route-that-dead-lett",
+      "title": "Example 172: a retry route that dead-letters a delivery out of attempts twice, refuted by the effect trace",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 8.6s, peak 103.3 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 172 (B9)) was held back 7.4s by its 1-CPU quota in 8.6s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:effects"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/effects.rs",
+          "examples/apps/deliveries"
+        ],
+        "examples": [
+          "172"
+        ]
+      },
+      "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+      "finishedAt": "2026-11-07T15:25:23+00:00",
+      "wallSeconds": 8.6,
+      "peakMemoryBytes": 108339200,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 300.0,
+        "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+      },
+      "host": "vm-1",
+      "result": "20261107-065648-example-172-a-retry-route-that-dead-lett/result.json"
+    },
+    {
+      "id": "20261107-064330-example-150-crosscut-retry-throttle-a-re",
+      "title": "Example 150: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 5.0s, peak 101.1 MiB (estimated 2m00s, 1.0 GiB)",
+      "attention": [
+        "step 1 (example 150 (B9)) exited 1, expected 0",
+        "step 1 (example 150 (B9)) was held back 5.2s by its 1-CPU quota in 5.0s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "150"
+        ]
+      },
+      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+      "finishedAt": "2026-11-07T15:23:57+00:00",
+      "wallSeconds": 5.0,
+      "peakMemoryBytes": 106045440,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 120.0,
+        "notes": null
+      },
+      "host": "vm-1",
+      "result": "20261107-064330-example-150-crosscut-retry-throttle-a-re/result.json"
+    },
+    {
+      "id": "20261107-064331-example-151-crosscut-retry-throttle-a-re",
+      "title": "Example 151: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 5.0s, peak 101.6 MiB (estimated 2m00s, 1.0 GiB)",
+      "attention": [
+        "step 1 (example 151 (B9)) exited 1, expected 0",
+        "step 1 (example 151 (B9)) was held back 5.0s by its 1-CPU quota in 5.0s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "151"
+        ]
+      },
+      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+      "finishedAt": "2026-11-07T15:23:57+00:00",
+      "wallSeconds": 5.0,
+      "peakMemoryBytes": 106545152,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 120.0,
+        "notes": null
+      },
+      "host": "vm-1",
+      "result": "20261107-064331-example-151-crosscut-retry-throttle-a-re/result.json"
+    },
+    {
+      "id": "20261107-064331-example-152-crosscut-retry-throttle-a-re",
+      "title": "Example 152: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 5.0s, peak 102.6 MiB (estimated 2m00s, 1.0 GiB)",
+      "attention": [
+        "step 1 (example 152 (B9)) exited 1, expected 0",
+        "step 1 (example 152 (B9)) was held back 5.2s by its 1-CPU quota in 5.0s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "152"
+        ]
+      },
+      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+      "finishedAt": "2026-11-07T15:23:57+00:00",
+      "wallSeconds": 5.0,
+      "peakMemoryBytes": 107630592,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 120.0,
+        "notes": null
+      },
+      "host": "vm-1",
+      "result": "20261107-064331-example-152-crosscut-retry-throttle-a-re/result.json"
+    },
+    {
+      "id": "20261107-053635-example-160-a-changed-refill-helper-prov",
+      "title": "Example 160: a changed refill helper proved on its own first, then one function in its caller's regression proof",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 0.2s, peak 28.5 MiB (estimated 3m00s, 2.0 GiB)",
+      "attention": [
+        "step 1 (example 160 (B9)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "160"
+        ],
+        "paths": [
+          "lib/src/proof_cache.rs",
+          "lib/src/shared.rs",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "85ee8db14dfb8b12140baa49e15ceac7cbb60e04",
+      "finishedAt": "2026-11-07T15:23:52+00:00",
+      "wallSeconds": 0.2,
+      "peakMemoryBytes": 29925376,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 180.0,
+        "notes": "Two native proofs of a few tenths of a second each on a 64-bit division, measured inline when the example was written; most of the time is building Crosscut and the tool."
+      },
+      "host": "vm-1",
+      "result": "20261107-053635-example-160-a-changed-refill-helper-prov/result.json"
+    },
+    {
+      "id": "20261107-053635-example-161-a-refill-helper-aligned-to-t",
+      "title": "Example 161: a refill helper aligned to the clock's grid, refuted on its own, and its caller's Retry-After found to change",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 0.2s, peak 28.6 MiB (estimated 3m00s, 2.0 GiB)",
+      "attention": [
+        "step 1 (example 161 (B9)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "161",
+          "160"
+        ],
+        "paths": [
+          "lib/src/proof_cache.rs",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "85ee8db14dfb8b12140baa49e15ceac7cbb60e04",
+      "finishedAt": "2026-11-07T15:22:46+00:00",
+      "wallSeconds": 0.2,
+      "peakMemoryBytes": 29999104,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 180.0,
+        "notes": "A native refutation of the helper and of the caller, a few tenths of a second each, measured inline when the example was written; most of the time is building Crosscut and the tool."
+      },
+      "host": "vm-1",
+      "result": "20261107-053635-example-161-a-refill-helper-aligned-to-t/result.json"
+    },
+    {
+      "id": "20261107-053806-alignment-a3-second-half-every-proposal",
+      "title": "Alignment A3, second half: every proposal for examples 121-139 checked by the regression proof, and scored",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 45.5s, peak 477.2 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+      "attention": [
+        "step 1 (proofs over 121-139) was held back 29.8s by its 1-CPU quota in 45.5s: it would run faster with more CPUs (a JVM needs 2)",
+        "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:align",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/alignment/proofs.rs",
+          "examples/tools/alignment.py"
+        ]
+      },
+      "sourceCommit": "a642100437d36f883f5a00a30545dc4bd6fdae10",
+      "finishedAt": "2026-11-07T15:22:17+00:00",
+      "wallSeconds": 45.5,
+      "peakMemoryBytes": 500363264,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 300.0,
+        "notes": "19 javac compiles (about 40 s inline) and one proof per proposal, about 35 proofs; the recorded proofs of these examples take 0.1 s to 15 s each"
+      },
+      "host": "vm-1",
+      "result": "20261107-053806-alignment-a3-second-half-every-proposal/result.json"
+    },
+    {
       "id": "20261107-041414-symbolic-references-in-the-own-checker-h",
       "title": "Symbolic references in the own checker (H1): the benchmark's own-checker runs keep every verdict, with paths, merges and formula sizes against job 20261106-201041",
       "status": "failed",

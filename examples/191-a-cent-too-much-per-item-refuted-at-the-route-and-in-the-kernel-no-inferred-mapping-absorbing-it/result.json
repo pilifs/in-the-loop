@@ -1,0 +1,325 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "425c9099c70d895d",
+    "format": 1,
+    "example": "191",
+    "statement": {
+      "approach": "B9",
+      "target": "shop.Pricing#total",
+      "file": "examples/apps/shop/src/main/java/shop/Pricing.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": "5663be8fc7a2ec69f7bcf7759042fd5b3d4829d0b13ea5ced1cd36dfd9fd909a",
+      "before": {
+        "sha256": "b36b893061fec0c205c851c8dc97a015a435afd7f6e5df3062db82c6429b23e8",
+        "files": 11
+      },
+      "after": {
+        "sha256": "2979e25f09da44c2a9d48cef1ff2d0703ec1e84d5c3ca9ece6a716e71e843259",
+        "files": 12
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T153350Z-05e9c4a9",
+    "claim": "425c9099c70d895d",
+    "startedAt": "2026-11-07T15:33:50+00:00",
+    "seconds": 7.0,
+    "engine": "native",
+    "options": [
+      "--cache",
+      "build/proof-cache"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "4ec839b2f46a475fa68dea3f300c18f7572bcbee45d536aa234b4ff13988d2f8",
+        "files": 4
+      },
+      "after": {
+        "sha256": "cd792380752a54677d3ed1fa670b95d200d95ff2ada18fc6ed8c0a4ac37c99bf",
+        "files": 5
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-140010-example-191-through-build-py-the-joint-e",
+      "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-191-through-build-py-the-joint-e"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": null,
+      "maxArrayLength": null,
+      "complete": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac shop stubs",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.8,
+        "stdout": "logs/02-javac-shop-stubs.stdout",
+        "stderr": "logs/02-javac-shop-stubs.stderr"
+      },
+      {
+        "name": "javac patched shop main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.9,
+        "stdout": "logs/03-javac-patched-shop-main.stdout",
+        "stderr": "logs/03-javac-patched-shop-main.stderr"
+      },
+      {
+        "name": "javac patched shop tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.3,
+        "stdout": "logs/04-javac-patched-shop-tests.stdout",
+        "stderr": "logs/04-javac-patched-shop-tests.stderr"
+      },
+      {
+        "name": "the shop tests",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.1,
+        "stdout": "logs/05-the-shop-tests.stdout",
+        "stderr": "logs/05-the-shop-tests.stderr"
+      },
+      {
+        "name": "javac shop stubs",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.9,
+        "stdout": "logs/06-javac-shop-stubs.stdout",
+        "stderr": "logs/06-javac-shop-stubs.stderr"
+      },
+      {
+        "name": "javac unpatched shop main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.0,
+        "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+        "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+      },
+      {
+        "name": "jvmcontract compare",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 1.9,
+        "stdout": "logs/08-jvmcontract-compare.stdout",
+        "stderr": "logs/08-jvmcontract-compare.stderr"
+      },
+      {
+        "name": "jvmcontract compare --json, rerun on the same cache",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.3,
+        "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+        "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/10-version-of-java.stdout",
+        "stderr": "logs/10-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.2,
+        "stdout": "logs/11-version-of-javac.stdout",
+        "stderr": "logs/11-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-qv260i_a/attempts/191/attempt-r6l00gtn"
+  },
+  "conclusion": {
+    "claim": "425c9099c70d895d",
+    "attempt": "20261107T153350Z-05e9c4a9",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✗ Violation: counterexample found",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea shop.Tests",
+      "passed": false,
+      "failures": [
+        "QuotesControllerTest.answersTheTextRouteWithTheTotal",
+        "QuotesControllerTest.quotesASmallOrderAtFullPrice",
+        "QuotesControllerTest.sendsNothingForAFreeQuote",
+        "QuotesControllerTest.takesATenthOffTenItemsOrMore"
+      ]
+    },
+    "before": {
+      "file": "examples/apps/shop/src/main/java/shop/Pricing.java",
+      "startLine": 1,
+      "code": "package shop;\n\n/** The pricing kernel. */\npublic final class Pricing {\n    private Pricing() {}\n\n    /** A tenth off an order of ten items or more. */\n    static long discount(long gross, int quantity) {\n        return quantity >= 10 ? gross / 10 : 0;\n    }\n\n    public static long total(Quote q) {\n        long gross = q.cents * q.quantity;\n        return gross - discount(gross, q.quantity);\n    }\n\n"
+    },
+    "after": {
+      "file": "examples/apps/shop/src/main/java/shop/Pricing.java",
+      "startLine": 1,
+      "code": "package shop;\n\n/** The pricing kernel, over money. */\npublic final class Pricing {\n    private Pricing() {}\n\n    /** A tenth off an order of ten items or more, written the other way round: the changed pure helper. */\n    static long discount(long gross, int quantity) {\n        if (quantity < 10) return 0;\n        return gross / 10;\n    }\n\n    public static long total(Quote q) {\n        long gross = (q.amount.cents() + 1) * q.quantity;\n        return gross - discount(gross, q.quantity);\n    }\n\n"
+    },
+    "casesTotal": null,
+    "domain": "q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them",
+    "counterexamples": [
+      {
+        "input": "total(q=new Quote(new Money(0), 1))",
+        "contract": "0",
+        "actual": "1"
+      }
+    ],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": null,
+    "problem": null,
+    "statement": null,
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": null,
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "search": null,
+    "stated": null,
+    "joint": {
+      "parts": [
+        {
+          "kind": "entry point",
+          "subject": "POST /quotes",
+          "symbol": "shop.QuotesController#quote",
+          "verdict": "violation",
+          "why": null,
+          "reused": true,
+          "callees": []
+        },
+        {
+          "kind": "entry point",
+          "subject": "POST /quotes/text",
+          "symbol": "shop.QuotesController#quoteText",
+          "verdict": "unverifiable",
+          "why": "what the analysis can't see stays unresolved: the old build: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in QuotesController.quoteText(long, int) (string concatenation: the string's value isn't modeled); the new build: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in QuotesController.quoteText(long, int) (string concatenation: the string's value isn't modeled)",
+          "reused": false,
+          "callees": []
+        },
+        {
+          "kind": "kernel",
+          "subject": "shop.Pricing#discount",
+          "symbol": "shop.Pricing#discount",
+          "verdict": "verified",
+          "why": null,
+          "reused": true,
+          "callees": []
+        },
+        {
+          "kind": "kernel",
+          "subject": "shop.Pricing#total",
+          "symbol": "shop.Pricing#total",
+          "verdict": "violation",
+          "why": null,
+          "reused": true,
+          "callees": [
+            "Pricing.discount"
+          ]
+        },
+        {
+          "kind": "kernel",
+          "subject": "shop.Pricing#withQuantity",
+          "symbol": "shop.Pricing#withQuantity",
+          "verdict": "verified",
+          "why": null,
+          "reused": true,
+          "callees": []
+        },
+        {
+          "kind": "kernel",
+          "subject": "shop.Money#cents (was shop.Quote#cents)",
+          "symbol": "shop.Money#cents",
+          "verdict": "unverifiable",
+          "why": "class not found in the previous version: shop.Money",
+          "reused": false,
+          "callees": []
+        },
+        {
+          "kind": "kernel",
+          "subject": "shop.Quote#quantity",
+          "symbol": "shop.Quote#quantity",
+          "verdict": "unverifiable",
+          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
+          "reused": false,
+          "callees": []
+        }
+      ],
+      "obligations": {
+        "preserved": 7,
+        "unresolved": 1
+      },
+      "decisions": {
+        "approved exclusion": 0,
+        "domain restriction": 0,
+        "environment assumption": 0,
+        "mapping": 0,
+        "observation change": 0
+      },
+      "questions": [],
+      "assumed": [
+        "KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit",
+        "every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim",
+        "QuotesController is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default",
+        "a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved",
+        "at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved"
+      ]
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "c09ac843080f9e33cb9b6dd29237df2997cb1091d53f342a001ee200ab8a9529",
+        "bytes": 3741
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "0e6b57cb55da9a0b30ad3cf851db3a87fcc2a044e6e07cfc0583ee4d69c5dac1",
+        "bytes": 6341
+      }
+    ]
+  }
+}

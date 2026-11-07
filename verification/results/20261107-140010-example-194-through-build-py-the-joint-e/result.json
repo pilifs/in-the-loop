@@ -1,0 +1,233 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-140010-example-194-through-build-py-the-joint-e",
+  "title": "Example 194 through build.py: the joint example's run by jvmcontract compare",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.6s, peak 105.5 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 194 (B9)) was held back 4.6s by its 1-CPU quota in 7.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-140010-example-194-through-build-py-the-joint-e.json",
+    "sha256": "b97e1f0eaa67eb9c4db547425b2287e6459165053d9c52722c868252a952c0ef",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-140010-example-194-through-build-py-the-joint-e",
+      "title": "Example 194 through build.py: the joint example's run by jvmcontract compare",
+      "description": "Runs example 194 (Phase 5 of llm-dlc/loops/foundations.md: the joint example made an example on the new shop app) through build.py's new runner run_tool_compare: the app compiled unpatched and patched, its tests run, then jvmcontract compare twice under one fresh proof cache, the verdict read from the rerun's JSON and the page from the first run's text and SARIF. The same verdicts came inline from jvmcontract compare on the app's builds; this run is build.py's first on the runner, so it checks the runner and the page too. Expected: violation: POST /quotes refuted on a quote of ten items or more, the old build sending one QuoteEvent and the new two; every part of the rerun an exact hit apart from the unresolved ones; matchesExpected true.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "194"
+        ]
+      },
+      "expected": "build.py exits 0 and the result matches the example's expected verdict: violation: POST /quotes refuted on a quote of ten items or more, the old build sending one QuoteEvent and the new two",
+      "submitted": {
+        "at": "2026-11-07T14:00:10+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "steps": [
+        {
+          "name": "example 194 (B9)",
+          "run": "python3 examples/tools/build.py 194",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order"
+      ]
+    }
+  },
+  "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+  "startedAt": "2026-11-07T15:33:58+00:00",
+  "finishedAt": "2026-11-07T15:34:06+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+  },
+  "usage": {
+    "peakMemoryBytes": 110600192,
+    "wallSeconds": 7.6,
+    "cpuSeconds": 7.4,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 7.615,
+      "cpuSeconds": 7.365,
+      "cpuThrottledSeconds": 4.555,
+      "peakMemoryBytes": 110600192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-194-b9.log",
+        "lines": 24,
+        "bytes": 998,
+        "sha256": "a6e7168559464ac329d4cc95524be23d25643a0670c66b312168df92b4ca9e4c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)",
+          "groups": [
+            "194",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.7 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.9 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 1.1 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.6 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.9 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.6 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md",
+      "change": "added",
+      "bytes": 24568,
+      "sha256": "5e280d842da925488aed5b2250452c99c4781f5c48705a116ca719bf332fe7f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json",
+      "change": "added",
+      "bytes": 12360,
+      "sha256": "502031295b1ea447860a7a05e4028a00ce7be03bd6612024cee8b183634cecd9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.sarif",
+      "change": "added",
+      "bytes": 3223,
+      "sha256": "b2604f2ded7d166d1a4cc307add1021387b295d11fa35a293cdc5b80ccf75614",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt",
+      "change": "added",
+      "bytes": 6523,
+      "sha256": "44203a02024df5bcb31b7fc1096facd8770fb026905334e927feba3035cb7b19",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.sarif",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "33ed1f9046abb0a4c091cce531f2c6d61ffba3e9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/33ed1f9046abb0a4c091cce531f2c6d61ffba3e9/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

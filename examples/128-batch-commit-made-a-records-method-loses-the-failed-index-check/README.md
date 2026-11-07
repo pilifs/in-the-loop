@@ -9,8 +9,6 @@
 
 > The offset a batch listener commits after a batch was a static function of the batch's start, its size and the index of the record that failed. The start and the size become a record, `Batch(start, size)`, with the function as its method and the guard on the batch in the record's compact constructor; the part of the guard about the failed index, which is no component, goes with it, and the tests pass. The regression proof, which relates the record's method to the static function called with the components, finds an index past the batch committing past it: records the listener never processed are never read again.
 
-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 128` runs it again.
-
 Tags: [messaging](../README.md#tag-messaging), [dropped-case](../README.md#tag-dropped-case), [record-components](../README.md#tag-record-components), [signature-change](../README.md#tag-signature-change)
 
 ## The change
@@ -254,11 +252,11 @@ Keep the check on the index in the method (example 129), since the index is no c
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int.
 
-**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
 
-This page renders attempt `20261106T181324Z-aec296cc` at claim `cb63cad56915b8db`, in pipeline job `20261106-181101-example-128-b9-jbmc-violation-with-its-w`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
+This page renders attempt `20261107T153918Z-62032ed2` at claim `9c9db0c338a4a8d6`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -267,7 +265,7 @@ This page renders attempt `20261106T181324Z-aec296cc` at claim `cb63cad56915b8db
   offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)
     before: throws IllegalArgumentException("batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required")
     after:  1
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
+  (found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -280,7 +278,7 @@ If the change is intended, say for which inputs with --unchanged-unless, and the
 /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
 public final class EquivalenceHarness {
     public static void check(long this_start, int this_size, int failedIndex) {
-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
+        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
         net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components
         try { this_after = new net.terminalvalue.crosscut.kafka.Batch(this_start, this_size); } catch (Throwable t) { return; }
         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.

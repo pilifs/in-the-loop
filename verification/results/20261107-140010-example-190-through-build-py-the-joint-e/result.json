@@ -1,0 +1,267 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-140010-example-190-through-build-py-the-joint-e",
+  "title": "Example 190 through build.py: the joint example's run by jvmcontract compare",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.6s, peak 87.3 MiB (estimated 3m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 190 (B9)) was held back 5.0s by its 1-CPU quota in 7.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-140010-example-190-through-build-py-the-joint-e.json",
+    "sha256": "b72c7b1df32f01ddfe9f689a575a63ce19f3ec0067bea205a91205f5fd164e6d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-140010-example-190-through-build-py-the-joint-e",
+      "title": "Example 190 through build.py: the joint example's run by jvmcontract compare",
+      "description": "Runs example 190 (Phase 5 of llm-dlc/loops/foundations.md: the joint example made an example on the new shop app) through build.py's new runner run_tool_compare: the app compiled unpatched and patched, its tests run, then jvmcontract compare twice under one fresh proof cache, the verdict read from the rerun's JSON and the page from the first run's text and SARIF. The same verdicts came inline from jvmcontract compare on the app's builds; this run is build.py's first on the runner, so it checks the runner and the page too. Expected: verified: POST /quotes preserved, its rerun an exact hit; total, withQuantity and discount verified, discount taken as one function in total; every part of the rerun an exact hit apart from the unresolved ones; matchesExpected true.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:compare"
+      ],
+      "links": {
+        "examples": [
+          "190"
+        ]
+      },
+      "expected": "build.py exits 0 and the result matches the example's expected verdict: verified: POST /quotes preserved, its rerun an exact hit; total, withQuantity and discount verified, discount taken as one function in total",
+      "submitted": {
+        "at": "2026-11-07T14:00:10+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+      },
+      "steps": [
+        {
+          "name": "example 190 (B9)",
+          "run": "python3 examples/tools/build.py 190",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written"
+      ]
+    }
+  },
+  "sourceCommit": "53d8fa214362573b3cbcad797673324326aca328",
+  "startedAt": "2026-11-07T15:31:38+00:00",
+  "finishedAt": "2026-11-07T15:33:58+00:00",
+  "wallSeconds": 140.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+  },
+  "usage": {
+    "peakMemoryBytes": 91549696,
+    "wallSeconds": 7.6,
+    "cpuSeconds": 7.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 131.962,
+      "cpuSeconds": 131.645,
+      "cpuThrottledSeconds": 0.176,
+      "peakMemoryBytes": 1940815872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "29bb5c876694c67a328ccee17972173c671b0ebb5d0d8d4eb90c3a3775329e13",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-140010-example-190-through-build-py-the-joint-e/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 11s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 7.623,
+      "cpuSeconds": 7.463,
+      "cpuThrottledSeconds": 4.953,
+      "peakMemoryBytes": 91549696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-190-b9.log",
+        "lines": 24,
+        "bytes": 1031,
+        "sha256": "3317f3962e70950dff249f1d45704f244cfdb67c71a361affc0eacbbbbeff9cc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)",
+          "groups": [
+            "190",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.8 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 1.0 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 1.2 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.7 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.9 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.6 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md",
+      "change": "added",
+      "bytes": 24695,
+      "sha256": "bd73ab73bf66c33ea139429f3f79874b78fbed2c1caa4ca2708e2153f26e25a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json",
+      "change": "added",
+      "bytes": 11844,
+      "sha256": "9fa01fd93f145fc0921a37e6c18947a21c53708416ffe6f8f194d49964072fad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.sarif",
+      "change": "added",
+      "bytes": 2174,
+      "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt",
+      "change": "added",
+      "bytes": 5950,
+      "sha256": "26c3c7b52f046115d0e4a07f968251cb7421b7c5b2fe0face81e039b0210986e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md",
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json",
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.sarif",
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "33ed1f9046abb0a4c091cce531f2c6d61ffba3e9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/33ed1f9046abb0a4c091cce531f2c6d61ffba3e9/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

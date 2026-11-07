@@ -1,0 +1,225 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-092158-input-equations-that-read-a-primitive-pa",
+  "title": "Input equations that read a primitive parameter (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 23m40s, peak 1.3 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+  "attention": [
+    "step 1 (parameter reads under JBMC and auto --confirm) exited 101, expected 0",
+    "took 23m40s, 2.37× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-092158-input-equations-that-read-a-primitive-pa.json",
+    "sha256": "e1f820f6bbec271e37b53702afbc087362a388c332d505548d77268dca385835",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-092158-input-equations-that-read-a-primitive-pa",
+      "title": "Input equations that read a primitive parameter (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an input equation whose expression reads the new version's primitive parameters as well as the object's fields: over the line kernel in lib/tests/heap.rs (Line(long total) before, Line(long price) now, a count n taken by both versions), old.l.total == new.l.price * new.n. The harness makes the previous object from the new leaves and the parameter before the calls, and compares the expression over the new object's paths and n with the previous field after them. Inline on the own checker: discounted and reprice verified; a discount from the eleventh item refuted in the result and a unit price set to the line's amount refuted in field:l.total, both witnesses run on a JVM. This job runs the ignored test that repeats the four under --engine jbmc and under --engine auto --confirm, where JBMC checks the same harness (the previous leaf computed from the parameter in its bytecode).",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test passes. Under both engines: after discounted and after reprice Verified, defect discounted and defect reprice Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+      "submitted": {
+        "at": "2026-11-07T09:21:58+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a release build of the crate, then 8 small JBMC runs over 64-bit arithmetic"
+      },
+      "steps": [
+        {
+          "name": "parameter reads under JBMC and auto --confirm",
+          "run": "cd lib && cargo test --release --test heap -- --ignored parameter_reads",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "e7e61dbd6bb60a5762713a4890ca43f448cf77a7",
+  "startedAt": "2026-11-07T15:25:24+00:00",
+  "finishedAt": "2026-11-07T15:49:04+00:00",
+  "wallSeconds": 1420.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a release build of the crate, then 8 small JBMC runs over 64-bit arithmetic"
+  },
+  "usage": {
+    "peakMemoryBytes": 1353551872,
+    "wallSeconds": 1420.2,
+    "cpuSeconds": 1494.3,
+    "memoryOfEstimate": 0.42,
+    "durationOfEstimate": 2.37
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "parameter reads under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored parameter_reads",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 1420.217,
+      "cpuSeconds": 1494.337,
+      "cpuThrottledSeconds": 1.048,
+      "peakMemoryBytes": 1353551872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-parameter-reads-under-jbmc-and.log",
+        "lines": 79,
+        "bytes": 2902,
+        "sha256": "48c0e3aca536da8e4bc461ee7431e9cecf96c6ddf7dfc5fc17eb3c127fd8a4c9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1,
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 69,
+          "text": "✗ lines.Lines#reprice cannot be verified: JBMC did not finish within 600 s",
+          "groups": [
+            "lines.Lines#reprice cannot be verified: JBMC did not finish within 600 s"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 77,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 1296.52s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-092158-input-equations-that-read-a-primitive-pa/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 03s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "---- the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm' (3975290) panicked at tests/heap.rs:1472:5:",
+        "Jbmc confirm=false after reprice: Unverifiable (expected Verified, on a JVM false)",
+        "✗ lines.Lines#reprice cannot be verified: JBMC did not finish within 600 s",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 1296.52s",
+        "",
+        "error: test failed, to rerun pass `--test heap`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-092158-input-equations-that-read-a-primitive-pa"
+}

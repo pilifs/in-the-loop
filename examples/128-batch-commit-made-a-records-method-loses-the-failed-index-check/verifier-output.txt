@@ -2,6 +2,6 @@
   offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)
     before: throws IllegalArgumentException("batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required")
     after:  1
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
+  (found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

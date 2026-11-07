@@ -1,0 +1,181 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-064331-example-152-crosscut-retry-throttle-a-re",
+  "title": "Example 152: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.0s, peak 102.6 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [
+    "step 1 (example 152 (B9)) exited 1, expected 0",
+    "step 1 (example 152 (B9)) was held back 5.2s by its 1-CPU quota in 5.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-064331-example-152-crosscut-retry-throttle-a-re.json",
+    "sha256": "75a65635ca68eb1e2f8fa8763b9fc8766b49b14782e1fe34f2e62a58058af934",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-064331-example-152-crosscut-retry-throttle-a-re",
+      "title": "Example 152: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker)",
+      "description": "Runs example 152 through build.py: a B9 regression proof by jvmcontract's own checker of Crosscut's RetryThrottling, whose Throttle parameter is made in the harness by its constructor from symbolic limits (step H2-H4 of llm-dlc/loops/foundations-heap.md). 150 is a correct rewrite of recorded, 151 the alias-to-copy defect in reconfigured, 152 a rewrite of recorded wrong only on drained throttles, which the constructor never makes. Checked inline on the same classes before submitting; the job records result.json and the page.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "152"
+        ]
+      },
+      "expected": "verified, as 150 (the defect is only on drained throttles, outside the constructor-made domain): behaves as before on every input of constructor-made objects; existing tests passing",
+      "submitted": {
+        "at": "2026-11-07T06:43:31+00:00",
+        "by": "foundations-heap"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "example 152 (B9)",
+          "run": "python3 examples/tools/build.py 152",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ"
+      ]
+    }
+  },
+  "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+  "startedAt": "2026-11-07T15:22:17+00:00",
+  "finishedAt": "2026-11-07T15:23:57+00:00",
+  "wallSeconds": 100.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 107630592,
+    "wallSeconds": 5.0,
+    "cpuSeconds": 4.8,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.012,
+      "cpuSeconds": 4.831,
+      "cpuThrottledSeconds": 5.241,
+      "peakMemoryBytes": 107630592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-152-b9.log",
+        "lines": 18,
+        "bytes": 926,
+        "sha256": "dd92ba0577bfce7b8e3717c43a32d7dc45d2fdca2fbaf110306a200d7c01c224",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.3 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261107-064331-example-152-crosscut-retry-throttle-a-re/.build-py/examples-dv52etzy/attempts/152/attempt-nqipytpl/result.json: 'object' is not one of ['primitive', 'array', 'record']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "38aa201cbf5a60d809320eb5a464e2b74fbc9bdc",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/38aa201cbf5a60d809320eb5a464e2b74fbc9bdc/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064331-example-152-crosscut-retry-throttle-a-re"
+}

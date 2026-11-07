@@ -1,0 +1,11 @@
+POST /deliveries/failures: refuted
+  observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+  search: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int
+  domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
+  assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+  assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+  assumes: DeliveryFailures is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default
+  assumes: a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved
+  assumes: at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved
+1 entry points: 0 verified, 1 refuted, 0 unresolved, 0 unsupported

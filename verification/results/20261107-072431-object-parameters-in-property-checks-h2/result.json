@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-072431-object-parameters-in-property-checks-h2",
+  "title": "Object parameters in property checks (H2's rest): the object properties have the own checker's verdicts under JBMC and auto --confirm",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m59s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-072431-object-parameters-in-property-checks-h2.json",
+    "sha256": "bde69812f2ff5c67db7bfc50cdd3b1dcb8def1e48fcb9102274621f1d1fc4204",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-072431-object-parameters-in-property-checks-h2",
+      "title": "Object parameters in property checks (H2's rest): the object properties have the own checker's verdicts under JBMC and auto --confirm",
+      "description": "jvmcontract prove now takes static methods with parameters of application classes, each made in the harness by its constructor from symbolic primitive leaves (step H2 of llm-dlc/loops/foundations-heap.md); --nullable and --may-alias on such a parameter are boolean inputs of the harness's own, so JBMC is given the same harness. The property reads field paths (l.price.cents, \\old(l.quantity)) and compares references (result == l, from == to). lib/tests/heap.rs checks eight such properties on the own checker inline (bump, withQuantity, size under --nullable l, move under --may-alias from,to; a correct version verified and a defective one refuted, each witness run on a JVM). This job runs its ignored test, which runs the same eight under --engine jbmc and under --engine auto --confirm (JBMC proving again what the own checker proved).",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/property.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/harness/expr.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test passes. Under both, the four after-build properties are Verified and the four defect-build ones Violation, each violation's witness confirmed on a JVM (replay by jvm, reproduced).",
+      "submitted": {
+        "at": "2026-11-07T07:24:31+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a release build of the crate, then 16 small JBMC runs (harnesses of a few dozen instructions, no loops)"
+      },
+      "steps": [
+        {
+          "name": "object properties under JBMC and auto --confirm",
+          "run": "cd lib && cargo test --release --test heap -- --ignored",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "f0a47ca9d2991fe80d7dd811a439ec357e6ea61c",
+  "startedAt": "2026-11-07T15:23:58+00:00",
+  "finishedAt": "2026-11-07T15:25:58+00:00",
+  "wallSeconds": 120.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a release build of the crate, then 16 small JBMC runs (harnesses of a few dozen instructions, no loops)"
+  },
+  "usage": {
+    "peakMemoryBytes": 1299021824,
+    "wallSeconds": 119.9,
+    "cpuSeconds": 186.8,
+    "memoryOfEstimate": 0.4,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "object properties under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 119.885,
+      "cpuSeconds": 186.802,
+      "cpuThrottledSeconds": 1.024,
+      "peakMemoryBytes": 1299021824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-object-properties-under-jbmc-a.log",
+        "lines": 60,
+        "bytes": 2024,
+        "sha256": "c52ae06b0546eadae0be8c1c4563f44604eeaefe3601396bca05f228777b7380",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 59,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 28 filtered out; finished in 4.27s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling anstyle v1.0.14",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling zmij v1.0.23",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling heck v0.5.0",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-072431-object-parameters-in-property-checks-h2/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 55s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 28 filtered out; finished in 4.27s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

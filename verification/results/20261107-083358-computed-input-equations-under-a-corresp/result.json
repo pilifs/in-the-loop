@@ -1,0 +1,224 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-083358-computed-input-equations-under-a-corresp",
+  "title": "Computed input equations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 24m55s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+  "attention": [
+    "step 1 (computed equations under JBMC and auto --confirm) exited 101, expected 0",
+    "took 24m55s, 2.49× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-083358-computed-input-equations-under-a-corresp.json",
+    "sha256": "16ac77a2056df0f23353d11743a2f6959f730dc85deabbbcc5f1bbc95b1b1809",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-083358-computed-input-equations-under-a-corresp",
+      "title": "Computed input equations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give the previous version's field by an expression over the new version's object's leaves rather than a path: Price(long cents) before and Price(long dollars, int cents) now are related by old.p.cents == new.p.dollars * 100 + new.p.cents. The harness computes the previous constructor's argument from the new leaves in its bytecode before the calls, and compares the expression over the new object's paths with the previous field after them (parameters as left, and results of the same pair of classes). lib/tests/heap.rs checks a price kernel inline on the own checker: prices.Prices#total, #doubled and #raise verified between the two shapes; a cent too much in total refuted (differs: result); a carry into the dollars dropped in raise refuted (differs: field:p); each witness run on a JVM. This job runs the ignored test that repeats the five under --engine jbmc and under --engine auto --confirm.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test passes. Under both engines, the three after-build checks are Verified and the two defect-build checks Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+      "submitted": {
+        "at": "2026-11-07T08:33:58+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a release build of the crate, then 10 small JBMC runs; the harnesses divide 64-bit values by 100, which may make JBMC's formulas larger than the earlier jobs'"
+      },
+      "steps": [
+        {
+          "name": "computed equations under JBMC and auto --confirm",
+          "run": "cd lib && cargo test --release --test heap -- --ignored computed_equations",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "a405b89ae8130a0d18306c74b50c9b333708a277",
+  "startedAt": "2026-11-07T15:23:58+00:00",
+  "finishedAt": "2026-11-07T15:48:53+00:00",
+  "wallSeconds": 1495.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a release build of the crate, then 10 small JBMC runs; the harnesses divide 64-bit values by 100, which may make JBMC's formulas larger than the earlier jobs'"
+  },
+  "usage": {
+    "peakMemoryBytes": 1302282240,
+    "wallSeconds": 1495.2,
+    "cpuSeconds": 1564.1,
+    "memoryOfEstimate": 0.4,
+    "durationOfEstimate": 2.49
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "computed equations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored computed_equations",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 1495.243,
+      "cpuSeconds": 1564.149,
+      "cpuThrottledSeconds": 1.0,
+      "peakMemoryBytes": 1302282240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-computed-equations-under-jbmc.log",
+        "lines": 76,
+        "bytes": 2759,
+        "sha256": "52d8172c4af57619a61f5ff132b17a744976f3d3a4fa3bc54165b3bd175817f4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1,
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 66,
+          "text": "✗ prices.Prices#total cannot be verified: JBMC did not finish within 600 s",
+          "groups": [
+            "prices.Prices#total cannot be verified: JBMC did not finish within 600 s"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 74,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 36 filtered out; finished in 1378.59s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-083358-computed-input-equations-under-a-corresp/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 56s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "---- the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm' (3971881) panicked at tests/heap.rs:1172:5:",
+        "Jbmc confirm=false after total: Unverifiable (expected Verified, on a JVM false)",
+        "✗ prices.Prices#total cannot be verified: JBMC did not finish within 600 s",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 36 filtered out; finished in 1378.59s",
+        "",
+        "error: test failed, to rerun pass `--test heap`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-083358-computed-input-equations-under-a-corresp"
+}

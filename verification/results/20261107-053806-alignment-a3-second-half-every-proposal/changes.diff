@@ -1,0 +1,217 @@
+--- /dev/null
++++ b/examples/tools/alignment/scores/A3-proofs.json
+@@ -0,0 +1,193 @@
++{
++  "step": "A3-proofs",
++  "date": "2026-11-07",
++  "tool": "sha256:c0afd45cfc2fed9121feb34e3e8d85c43def29f459ad0f0b890799eaa7e44c17",
++  "wrongAndAccepted": [],
++  "counts": {
++    "proof, verified": {
++      "found": 10,
++      "asked": 0,
++      "wrong": 0,
++      "missed": 0
++    },
++    "proof, violation": {
++      "found": 9,
++      "asked": 0,
++      "wrong": 0,
++      "missed": 0
++    }
++  },
++  "rows": [
++    {
++      "example": "121",
++      "part": "proof, verified",
++      "table": "{\"previousArguments\": \"tsA, nodeA, tsB, nodeB\"}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {\"before_arguments\": \"tsA, nodeA, tsB, nodeB\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.quorum.replication.LastWriterWins#winner -> net.terminalvalue.quorum.replication.LastWriterWins#winner: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "122",
++      "part": "proof, violation",
++      "table": "{\"previousSymbol\": \"net.terminalvalue.crosscut.cache.Expiry#isExpired\", \"resultsAgreeWhen\": \"previous == (result <= 0)\"}",
++      "outcome": "found",
++      "proposed": "none of 6 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.cache.Expiry#isExpired -> net.terminalvalue.crosscut.cache.Expiry#remainingMillis: no mapping proved, 6 tried: #1 refuted by remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0) (before false, after 0); #2 refuted by remainingMillis(writtenAtNanos=3472487282229296577, ttlNanos=4423799993996410880, nowNanos=7896287276226707456) (before true, after 0); #3 refuted by remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0) (before false, after 0); #4 refuted by remainingMillis(writtenAtNanos=0, ttlNanos=1000000, nowNanos=0) (before false, after 1); #5 refuted by remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=1) (before true, after 0); #6 refuted by remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0) (before false, after 0)"
++    },
++    {
++      "example": "123",
++      "part": "proof, verified",
++      "table": "{\"previousSymbol\": \"net.terminalvalue.crosscut.cache.Expiry#isExpired\", \"resultsAgreeWhen\": \"previous == (result <= 0)\"}",
++      "outcome": "found",
++      "proposed": "#1 of 6 proved: {\"before_target\": \"net.terminalvalue.crosscut.cache.Expiry#isExpired\", \"results_agree_when\": \"previous == (result <= 0)\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.cache.Expiry#isExpired -> net.terminalvalue.crosscut.cache.Expiry#remainingNanos: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "124",
++      "part": "proof, violation",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor -> net.terminalvalue.crosscut.kafka.Partitioner#partitionFor: no mapping proved, 1 tried: #1 refuted by partitionFor(hash=-1, numPartitions=3) (before 1, after 2)"
++    },
++    {
++      "example": "125",
++      "part": "proof, verified",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.security.JwtTimestamps#valid -> net.terminalvalue.crosscut.security.JwtTimestamps#valid: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "126",
++      "part": "proof, violation",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: no mapping proved, 1 tried: #1 refuted by delayMillis(this=Backoff[baseMillis=8192, capMillis=8192], attempt=50) (before 8192, after -9223372036854775808)"
++    },
++    {
++      "example": "127",
++      "part": "proof, verified",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "128",
++      "part": "proof, violation",
++      "table": "{\"previousSymbol\": \"net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit\", \"previousArguments\": \"this.start, this.size, failedIndex\"}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit -> net.terminalvalue.crosscut.kafka.Batch#offsetToCommit: no mapping proved, 1 tried: #1 refuted by offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1) (before throws IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\"), after 1)"
++    },
++    {
++      "example": "129",
++      "part": "proof, verified",
++      "table": "{\"previousSymbol\": \"net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit\", \"previousArguments\": \"this.start, this.size, failedIndex\"}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {\"before_target\": \"net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit\", \"before_arguments\": \"this.start, this.size, failedIndex\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit -> net.terminalvalue.crosscut.kafka.Batch#offsetToCommit: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "130",
++      "part": "proof, violation",
++      "table": "{\"previousArguments\": \"new Backoff(this.baseMillis, this.capMillis), attempt\"}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: no mapping proved, 1 tried: #1 refuted by delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1) (before 1, after 2)"
++    },
++    {
++      "example": "131",
++      "part": "proof, verified",
++      "table": "{\"previousArguments\": \"new Backoff(this.baseMillis, this.capMillis), attempt\"}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {\"before_arguments\": \"new Backoff(this.baseMillis, this.capMillis), attempt\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "132",
++      "part": "proof, violation",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter -> net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter: no mapping proved, 1 tried: #1 refuted by tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1) (before 0, after 1)"
++    },
++    {
++      "example": "133",
++      "part": "proof, verified",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter -> net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "134",
++      "part": "proof, violation",
++      "table": "{\"previousArguments\": \"new Window(this.startNanos, this.count), nowNanos, windowNanos\", \"resultsAgreeWhen\": \"previous.startNanos == result.startNanos && previous.count == result.count\"}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: no mapping proved, 1 tried: #1 refuted by counted(this=Window[startNanos=0, count=0, previousCount=0], nowNanos=2, windowNanos=1), previously counted(this=Window[startNanos=0, count=0], nowNanos=2, windowNanos=1) (before Window[startNanos=2, count=1], after Window[startNanos=1, count=1, previousCount=0])"
++    },
++    {
++      "example": "135",
++      "part": "proof, verified",
++      "table": "{\"previousArguments\": \"new Window(this.startNanos, this.count), nowNanos, windowNanos\", \"resultsAgreeWhen\": \"previous.startNanos == result.startNanos && previous.count == result.count\"}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {\"before_arguments\": \"new Window(this.startNanos, this.count), nowNanos, windowNanos\", \"results_agree_when\": \"previous.startNanos == result.startNanos && previous.count == result.count\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "136",
++      "part": "proof, violation",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: no mapping proved, 1 tried: #1 refuted by counted(this=Window[startNanos=0, count=0], nowNanos=1, windowNanos=3) (before Window[startNanos=0, count=1], after Window[startNanos=1, count=1])"
++    },
++    {
++      "example": "137",
++      "part": "proof, verified",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "138",
++      "part": "proof, verified",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "#1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)"
++    },
++    {
++      "example": "139",
++      "part": "proof, violation",
++      "table": "{}",
++      "outcome": "found",
++      "proposed": "none of 1 proved",
++      "accepted": false,
++      "summary": "net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: no mapping proved, 1 tried: #1 refuted by counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1) (before Window[startNanos=2147483648, count=1], after throws IllegalArgumentException(\"the start and the count must not be negative\"))"
++    }
++  ]
++}
+--- a/examples/tools/alignment/README.md
++++ b/examples/tools/alignment/README.md
+@@ -138,6 +138,18 @@
+ | 122 | result changed | `previous == (result <= 0)` | asked | changed, a question: previous == (result <= 0) \| previous == (result < 0) \| previous == (result == 0) \| previous == (result != 0) \| previous == (result > 0) \| previous == (result >= 0) |
+ | 123 | result changed | `previous == (result <= 0)` | asked | changed, a question: previous == (result <= 0) \| previous == (result < 0) \| previous == (result == 0) \| previous == (result != 0) \| previous == (result > 0) \| previous == (result >= 0) |
+ 
++**A3-proofs** (2026-11-07, `jvmcontract` sha256:c0afd45cfc2f…; [A3-proofs.json](scores/A3-proofs.json)). Wrong and accepted: none.
++
++| Part | found | asked | wrong | missed |
++|---|---|---|---|---|
++| proof, verified | 10 | 0 | 0 | 0 |
++| proof, violation | 9 | 0 | 0 | 0 |
++
++Every part that isn't found:
++
++| Example | Part | Table | Score | Proposed |
++|---|---|---|---|---|
++
+ <!-- scores:end -->
+ 
+ ## The table

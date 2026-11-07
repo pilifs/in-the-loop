@@ -1,0 +1,1031 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
+  "title": "Crosscut's nine examples with claims, rerun after the retry-throttle kernel was added to the app",
+  "status": "passed",
+  "summary": "passed: 9 passed step(s) in 53.1s, peak 457.6 MiB (estimated 30m00s, 3.0 GiB); 30 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-064838-crosscut-s-nine-examples-with-claims-rer.json",
+    "sha256": "a02a022b2eb778f17c15a79f9eca7582768e3da9baec8c2fc44c506968d2b51e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
+      "title": "Crosscut's nine examples with claims, rerun after the retry-throttle kernel was added to the app",
+      "description": "Adding the retry-throttle kernel (retry.Throttle, ThrottleLimits, RetryThrottling, for the heap examples 150-152) and regenerating api.contract changed Crosscut's sources, which every Crosscut example's claim fingerprints, so the nine examples whose results record a claim (025 B8, 076 D1, 120, 127-130 B9 by JBMC, 132-133 B9 by the own checker) render as stale. Nothing they prove reaches the new classes: the job reruns them through build.py at this commit to make their results current again.",
+      "kind": "example",
+      "capabilities": [
+        "B8",
+        "B9",
+        "D1"
+      ],
+      "links": {},
+      "expected": "every example gives the verdict it recorded before (025 violation, 076 verified, 120 verified, 127 verified, 128 violation, 129 verified, 130 violation, 132 violation, 133 verified), each with the expected result, and none is stale afterwards (build.py --render-only lists none of them as stale)",
+      "submitted": {
+        "at": "2026-11-07T06:48:38+00:00",
+        "by": "foundations-heap"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "example 025",
+          "run": "python3 examples/tools/build.py 025",
+          "cwd": "."
+        },
+        {
+          "name": "example 076",
+          "run": "python3 examples/tools/build.py 076",
+          "cwd": "."
+        },
+        {
+          "name": "example 120",
+          "run": "python3 examples/tools/build.py 120",
+          "cwd": "."
+        },
+        {
+          "name": "example 127",
+          "run": "python3 examples/tools/build.py 127",
+          "cwd": "."
+        },
+        {
+          "name": "example 128",
+          "run": "python3 examples/tools/build.py 128",
+          "cwd": "."
+        },
+        {
+          "name": "example 129",
+          "run": "python3 examples/tools/build.py 129",
+          "cwd": "."
+        },
+        {
+          "name": "example 130",
+          "run": "python3 examples/tools/build.py 130",
+          "cwd": "."
+        },
+        {
+          "name": "example 132",
+          "run": "python3 examples/tools/build.py 132",
+          "cwd": "."
+        },
+        {
+          "name": "example 133",
+          "run": "python3 examples/tools/build.py 133",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/025-transaction-that-commits-after-an-error",
+        "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live",
+        "examples/120-retry-after-rewritten-around-unchanged-refill-helpers",
+        "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components",
+        "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check",
+        "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components",
+        "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap",
+        "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond",
+        "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+      ]
+    }
+  },
+  "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
+  "startedAt": "2026-11-07T15:38:54+00:00",
+  "finishedAt": "2026-11-07T15:39:48+00:00",
+  "wallSeconds": 54.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 479854592,
+    "wallSeconds": 53.1,
+    "cpuSeconds": 73.5,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 025",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.607,
+      "cpuSeconds": 5.126,
+      "cpuThrottledSeconds": 0.649,
+      "peakMemoryBytes": 121286656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-025.log",
+        "lines": 20,
+        "bytes": 796,
+        "sha256": "b1882a684d54cf33512e2f7c2da7eb7609cb55bfde574140d58a1770a01ea9a5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "025-transaction-that-commits-after-an-error: violation (as expected)",
+          "groups": [
+            "025",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "025-transaction-that-commits-after-an-error: running (B8)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.8 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.8 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · jvmcontract verify",
+        "  · jvmcontract verify: exited 1, 0.0 s",
+        "  · jvmcontract derive TransactionBoundary#exit",
+        "  · jvmcontract derive TransactionBoundary#exit: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 2, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "025-transaction-that-commits-after-an-error: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 076",
+      "run": "python3 examples/tools/build.py 076",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.215,
+      "cpuSeconds": 8.587,
+      "cpuThrottledSeconds": 1.268,
+      "peakMemoryBytes": 157847552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-076.log",
+        "lines": 30,
+        "bytes": 1288,
+        "sha256": "310d6dce38774a55b470bb150fbaf804421cf0e024d6efbaa929feba20a3d624",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 30,
+          "text": "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: verified (as expected)",
+          "groups": [
+            "076",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: running (D1)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.9 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.9 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · jvmcontract update",
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive CircuitBreaker#decide",
+        "  · jvmcontract derive CircuitBreaker#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc CircuitBreaker.cfg",
+        "  · jvmcontract tlc CircuitBreaker.cfg: exited 0, 1.0 s",
+        "  · jvmcontract tlc CircuitBreakerLive.cfg",
+        "  · jvmcontract tlc CircuitBreakerLive.cfg: exited 0, 1.3 s",
+        "  · jvmcontract derive CircuitBreaker#decide",
+        "  · jvmcontract derive CircuitBreaker#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 120",
+      "run": "python3 examples/tools/build.py 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.21,
+      "cpuSeconds": 7.333,
+      "cpuThrottledSeconds": 0.793,
+      "peakMemoryBytes": 123101184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-120.log",
+        "lines": 20,
+        "bytes": 787,
+        "sha256": "1cec6d3fa83111c0b0dee753678fb588489c48127c21de17da1ec2116f0542b4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "120-retry-after-rewritten-around-unchanged-refill-helpers: verified (as expected)",
+          "groups": [
+            "120",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "120-retry-after-rewritten-around-unchanged-refill-helpers: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.9 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.8 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.8 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "120-retry-after-rewritten-around-unchanged-refill-helpers: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 127",
+      "run": "python3 examples/tools/build.py 127",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 8.017,
+      "cpuSeconds": 10.372,
+      "cpuThrottledSeconds": 1.048,
+      "peakMemoryBytes": 132481024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-127.log",
+        "lines": 20,
+        "bytes": 839,
+        "sha256": "202d34fef9112fb77d576ba406311ec18cd44a0a26013549330c64bb87e42950",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)",
+          "groups": [
+            "127",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.9 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.8 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.9 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 3.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 128",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.809,
+      "cpuSeconds": 7.181,
+      "cpuThrottledSeconds": 0.904,
+      "peakMemoryBytes": 123232256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-128.log",
+        "lines": 20,
+        "bytes": 808,
+        "sha256": "5cc485e985db26aa9e1032a92b545c7e082ba4181de90f73d4752840b8dbca48",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)",
+          "groups": [
+            "128",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.9 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.8 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.8 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 129",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.811,
+      "cpuSeconds": 7.202,
+      "cpuThrottledSeconds": 1.015,
+      "peakMemoryBytes": 124215296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-129.log",
+        "lines": 20,
+        "bytes": 825,
+        "sha256": "6aa410f6358bdc27248ab077341eb8fda0100e0dc8339481a7440416cb1dd4c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)",
+          "groups": [
+            "129",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.9 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.9 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.9 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 130",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 10.625,
+      "cpuSeconds": 13.03,
+      "cpuThrottledSeconds": 0.978,
+      "peakMemoryBytes": 479854592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-130.log",
+        "lines": 20,
+        "bytes": 816,
+        "sha256": "7c6ebeefa5eb06d5443ca49272abeffcedea80ac69e1b9cb93c1dde864ab4b10",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)",
+          "groups": [
+            "130",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.8 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.8 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.8 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 6.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "example 132",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.012,
+      "cpuSeconds": 7.499,
+      "cpuThrottledSeconds": 0.904,
+      "peakMemoryBytes": 123150336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-example-132.log",
+        "lines": 18,
+        "bytes": 775,
+        "sha256": "2bd614d734f1ec25a6c1a374ffc6535ffd57a50510d2460b6b023439ad214d7b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)",
+          "groups": [
+            "132",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.9 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.8 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.8 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.5 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 9,
+      "name": "example 133",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.81,
+      "cpuSeconds": 7.194,
+      "cpuThrottledSeconds": 0.853,
+      "peakMemoryBytes": 124858368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/9-example-133.log",
+        "lines": 18,
+        "bytes": 776,
+        "sha256": "756e39ba271b2886de12aa3643c170ee30ce089aff15b0425e20ad4445b9e2d3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)",
+          "groups": [
+            "133",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.8 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.9 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.8 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/README.md",
+      "change": "modified",
+      "bytes": 11897,
+      "sha256": "2cdff6768e17d1e91002f98a9b7dfa107d75afafe25068b591f691cef136bdc9",
+      "sourceSha256": "1bc6246f0a2fa3115acaaf374c4e6e1bb67a78c3385d419751dff2927435fc6f"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.json",
+      "change": "modified",
+      "bytes": 7207,
+      "sha256": "fbdfd466c102089fde76ef87a0f7365d4b792af1c1c349740849badb67087515",
+      "sourceSha256": "dd1cbaa38fa961565f952a9817a8199e9a68e0c937fba6fcb8fa2770de5dbe5c"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.sarif",
+      "change": "modified",
+      "bytes": 2611,
+      "sha256": "a6b5b180efa756ff046d061c716ea1fd4d3b5ab7c571aed268ffaedd54d71a94",
+      "sourceSha256": "9325aeb11434fc12ea13a001628184c6445728c169557b11f289cc45d14da9bf"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1628,
+      "sha256": "dd4ce5ba741c9c520e9125f2e51619ee64cd24006ab77621bc3b6b10fef57482",
+      "sourceSha256": "7a030e25707e7aa9b03efbbfee9776acd243cbc46bc0b4ce857a2e54e2a1f210"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md",
+      "change": "modified",
+      "bytes": 29144,
+      "sha256": "5b82a32dd48526993abcd94cf995909bbc90953d2b8218b2f5dc5df73a668dba",
+      "sourceSha256": "ba8335e1c8c2a3e90c92a3e0e4fc646d4df0839ba055d97c4bbd4546f5be24ec"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json",
+      "change": "modified",
+      "bytes": 24655,
+      "sha256": "6bd2730e33fc807257873752d495307c7fbc7a70f261befd3bc0ecbea3b47698",
+      "sourceSha256": "68611c26ac47da6d2d0a7d93fd8ae73adecd8a6a27434a0f9985e502b36f7b61"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6950,
+      "sha256": "5ddb4b2daa7b9ecb614d4f1e50668a5082635fe6e3600698823f28c850fd51bc",
+      "sourceSha256": "8e411f1da1e3f90c1f1eb4085aede0c470edd4cb30f56c67ca82e103f88bc513"
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md",
+      "change": "modified",
+      "bytes": 17571,
+      "sha256": "3cbb4f4d5d43d8cfc1cf2a3f3a00a9fb74b7f9f0f557a11df9ecfc88558efd80",
+      "sourceSha256": "69c0e1c07f1cfc81bab4119cf30862399390193b69fbde4676d61991f0879057"
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json",
+      "change": "modified",
+      "bytes": 12082,
+      "sha256": "fd388cd4d52262f63ba875df3d1bf6159a7391a7d27e7cf3457b6c950a5a1c5c",
+      "sourceSha256": "eca845b3c0dd41dd09c4585a0c83bcd968a2de0db0ac670706a949fa63d37c7e"
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt",
+      "change": "modified",
+      "bytes": 409,
+      "sha256": "dd8f770647e628b39ac215d9a06a2eed45b01e6f5d4341dc3d5798be3e3a7264",
+      "sourceSha256": "6ea27fe4ef93f5ebeb8df6efa1410997675d0047e986c06b17bddaaba3ff06c5"
+    },
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md",
+      "change": "modified",
+      "bytes": 16766,
+      "sha256": "c94d806cc9b26cdf5de7546d35f730da1ad02069466b04403e4d8498f3169cef",
+      "sourceSha256": "d865b209d7fba28b74908b2ab89c04de24f98a4f84ead672e020e11f7416d3a3"
+    },
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json",
+      "change": "modified",
+      "bytes": 12153,
+      "sha256": "1c90ac3be4a788a33f4dbebb40b0e35c43b90e8b0da49d50a12a7f1960765777",
+      "sourceSha256": "daddc91c37cc35c89fd45002d19bf6064241f142ea75ce65f96827f23ad91bd0"
+    },
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/statement.java",
+      "change": "modified",
+      "bytes": 2713,
+      "sha256": "5b86afaf23ace38a760e8e689596d195077d86e5bcd99049c1175e2c3a5b7afa",
+      "sourceSha256": "f3b5b98759563c44a9bf69c727c997f6534cffd242acd206ced05352be696d1f"
+    },
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt",
+      "change": "modified",
+      "bytes": 639,
+      "sha256": "0a1684989663a6aea5328e010e90ff3939278b6059840912cb660f3ae13157c4",
+      "sourceSha256": "29f9c25f87e92f2610e3acd065f099ec22559d00471ee928df46259eabf6b93e"
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md",
+      "change": "modified",
+      "bytes": 27741,
+      "sha256": "f708fed73ff75b43a36fb106820e6da5b979d7e5b82391a7e2389c31a90661c3",
+      "sourceSha256": "74b3b567234c90ea9c2a0fcd4013dbea6fd5af1c00bf2d6991eb75eac39b2f83"
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json",
+      "change": "modified",
+      "bytes": 16481,
+      "sha256": "5e4953571200e93a3cdb9c49e598e658ff534066c2031e5cb3dff8e7e04e904d",
+      "sourceSha256": "2a9eee24761ca15d83a027906f0be25c4f7509565f0e71615909c837d8f6ccfd"
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/statement.java",
+      "change": "modified",
+      "bytes": 2915,
+      "sha256": "289b9cb39ebcec87b3c80e3316a6159442454b9f02d20524f7013324013933a5",
+      "sourceSha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb"
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/verifier-output.txt",
+      "change": "modified",
+      "bytes": 895,
+      "sha256": "9d06fc0d5a96d24c9440c44c44a6253ec8e761319d0d0c515698ebdfe7f8e37c",
+      "sourceSha256": "9cd3c8ab2c9d1dfb0f8a2bdeb9511c66dab6cbeeadbcdb1cecf5afe7b9cf66be"
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md",
+      "change": "modified",
+      "bytes": 24893,
+      "sha256": "342e107d030b6144acee7d8a1f656ebd629312c1a2df7f4abac8adbbcecf576c",
+      "sourceSha256": "8683f3a49ae8ab83187c0d0d13351b0ba894ff917d05b3530b721dc0e6c52ebd"
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json",
+      "change": "modified",
+      "bytes": 13921,
+      "sha256": "fdd68eff5b4a113a63fcf3d494543c691bc2d8a6ca164d4f815df955dea72be5",
+      "sourceSha256": "12d62860b3b8cd08f0b2540f9b88442cbc08ddeb539a5f8f0a2c37e44ef96982"
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/statement.java",
+      "change": "modified",
+      "bytes": 2915,
+      "sha256": "289b9cb39ebcec87b3c80e3316a6159442454b9f02d20524f7013324013933a5",
+      "sourceSha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb"
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt",
+      "change": "modified",
+      "bytes": 716,
+      "sha256": "2e59435ba73c33752da8de623fe3ce5e3f582f8cd9dca612e9be4819d8ab3a54",
+      "sourceSha256": "ffe379f06ee963b0ac087cbf202d4c2205b5c92302e6ec0a761ca76cc66bd29f"
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md",
+      "change": "modified",
+      "bytes": 26855,
+      "sha256": "107f4a53d0dedd0506d535a4aca79fb8ace581d807fa7cc9cc6c798997ab7b85",
+      "sourceSha256": "cb341a9a668d5326099cf82def2cf76083075b0b6e80a2179178157f50570286"
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json",
+      "change": "modified",
+      "bytes": 18256,
+      "sha256": "95a270a14e507e4aec85fc399d82dbc7c85d2a5ba16ac4184676968d79add20d",
+      "sourceSha256": "877e19991a525a91162e4e8aad592ecd147aa17e663b378abb682ca788ad4f4c"
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/statement.java",
+      "change": "modified",
+      "bytes": 3054,
+      "sha256": "b24c3efa157a043835efbce0dcd3bee068ebb7db378e5840d630dca05256138c",
+      "sourceSha256": "15be4d0029c4a439aad5ffc7a278add8306f121f1a9da63064606a6724a42036"
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt",
+      "change": "modified",
+      "bytes": 868,
+      "sha256": "111fbe5ac54cc166cb1ca3f203a8fcd0a8d47d8fec8ceb363d0000607612f289",
+      "sourceSha256": "851a0a9d19c6c3109289646648fdc0e1912db0ca78b9da003d560c1acd7957c6"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "change": "modified",
+      "bytes": 20016,
+      "sha256": "239ced2bca4a537d4af29839a6016749b4b441381d7dfbada0a7b869a41267c9",
+      "sourceSha256": "18a01516217a91b176f10e4b6823ec05231b40f67352dc5d3d62f4c23afaaffa"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "change": "modified",
+      "bytes": 16290,
+      "sha256": "39ac2866191da49941b844f6c4dffed01f57434f77e6fb24ef66d7af02566485",
+      "sourceSha256": "415bb6c56b7802615c4323612c9726ab2e17713dc4b04a1863e6adb6186d43e7"
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "change": "modified",
+      "bytes": 17886,
+      "sha256": "6f40a8ccdb781187b8194500b19f9bc3096bf25d37435a2d88d31c1c3721670a",
+      "sourceSha256": "3fe7a5346c113abaa9c4f480721ad4c9d3d71354f1e27dec3be63465dc858018"
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json",
+      "change": "modified",
+      "bytes": 12792,
+      "sha256": "5dac125ee99b13196eacc72b73b8d6198b9c931a065544f6a8c3acec62500107",
+      "sourceSha256": "62f11774296879ad88625ddd5036622ea7d8a24b3e6ee850a1052e1c3c154bf2"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [
+      "examples/025-transaction-that-commits-after-an-error/README.md",
+      "examples/025-transaction-that-commits-after-an-error/result.json",
+      "examples/025-transaction-that-commits-after-an-error/result.sarif",
+      "examples/025-transaction-that-commits-after-an-error/verifier-output.txt",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt",
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md",
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json",
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/statement.java",
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/statement.java",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/verifier-output.txt",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/statement.java",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/statement.java",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "38aa201cbf5a60d809320eb5a464e2b74fbc9bdc",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/38aa201cbf5a60d809320eb5a464e2b74fbc9bdc/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

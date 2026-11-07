@@ -1,0 +1,2693 @@
+--- a/examples/025-transaction-that-commits-after-an-error/README.md
++++ b/examples/025-transaction-that-commits-after-an-error/README.md
+@@ -8,8 +8,6 @@
+ | **✗ Violation: 1 of 22 cases changed** | functional | high | refactor, behaviour change not intended | [`TransactionBoundary#exit`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java) | [B8: Behavioural contracts](../../lib/README.md) |
+ 
+ > Spring's default rollback rule is that a `RuntimeException` or an `Error` rolls the transaction back and a checked exception does not. The kernel writes it as "anything but a checked exception", and a developer rewrites it in the positive, as "a runtime exception", which is how most people remember the rule. The behavioural contract of the transaction boundary, 22 cases derived from the bytecode, changes in exactly one: a method that dies with an `Error` now commits whatever it had written.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 025` runs it again.
+ 
+ Tags: [transactions](../README.md#tag-transactions), [dropped-case](../README.md#tag-dropped-case), [exceptions](../README.md#tag-exceptions)
+ 
+@@ -113,30 +111,13 @@
+ 
+ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
+ 
+-This page renders attempt `20261106T181224Z-3160b2c0` at claim `35164c1aff042c68`, in pipeline job `20261106-181059-example-025-b8-under-build-py-s-strict-s`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++This page renders attempt `20261107T153855Z-c566bec3` at claim `ea2923ba75330214`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ module crosscut matches its capability contract (39 classes, 143 methods, 0 capability uses, 0 libraries)
+-✗ Public API of module crosscut differs from its contract:
+-  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final record
+-  added net.terminalvalue.crosscut.ratelimit.Window: public long count()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
+-  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)
+-  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)
+-  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()
+-  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()
+-  added net.terminalvalue.crosscut.retry.Backoff: public final record
+-  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()
+-  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()
+-  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)
+-  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long
++✓ module crosscut matches its capability contract (42 classes, 155 methods, 0 capability uses, 0 libraries)
++✓ module crosscut matches its API contract (39 public types, 151 members)
+ ✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
+@@ -147,8 +128,6 @@
+   (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
+ 
+ If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.
+-
+-If the API change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff is the API change, for reviewers.
+ ```
+ 
+ </details>
+@@ -213,13 +192,6 @@
+       },
+       "results": [
+         {
+-          "ruleId": "api-changed",
+-          "level": "error",
+-          "message": {
+-            "text": "Public API of module crosscut differs from its contract:\n  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final record\n  added net.terminalvalue.crosscut.ratelimit.Window: public long count()\n  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()\n  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()\n  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.retry.Backoff: public final record\n  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)\n  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long"
+-          }
+-        },
+-        {
+           "ruleId": "behaviour-changed",
+           "level": "error",
+           "message": {
+--- a/examples/025-transaction-that-commits-after-an-error/result.json
++++ b/examples/025-transaction-that-commits-after-an-error/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "35164c1aff042c68",
++    "id": "ea2923ba75330214",
+     "format": 1,
+     "example": "025",
+     "statement": {
+@@ -14,39 +14,39 @@
+     "inputs": {
+       "patch": "57ff03d5128b313c75fa321b2580c2946d8d1c8d6b5034a9bdc74ccc2949350f",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "e988fed852a05001abe0431681ea41aacd10e7b8e32f38808fbbee3e4e93a4f3",
+-        "files": 54
++        "sha256": "f16e7de61029737014ca5ead7477f822c608edb510a60e964e4c66fdd005ce4d",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181224Z-3160b2c0",
+-    "claim": "35164c1aff042c68",
+-    "startedAt": "2026-11-06T18:12:24+00:00",
+-    "seconds": 1.6,
++    "id": "20261107T153855Z-c566bec3",
++    "claim": "ea2923ba75330214",
++    "startedAt": "2026-11-07T15:38:55+00:00",
++    "seconds": 1.7,
+     "engine": null,
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f"
+     },
+     "bytecode": {
+       "before": null,
+       "after": {
+-        "sha256": "fc60cfc3effd12f5d14adf2a01ce7647e5168df0401eff024dc96fadd711fc38",
+-        "files": 39
++        "sha256": "78485c2568e64a5bfdc04d5df34cababfab750954472cfec47ff7bb4682f0a82",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181059-example-025-b8-under-build-py-s-strict-s",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181059-example-025-b8-under-build-py-s-strict-s"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -74,7 +74,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -127,11 +127,11 @@
+         "stderr": "logs/09-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-fji189np/attempts/025/attempt-j172jwb5"
++    "workspace": ".build-py/examples-gvuejtsl/attempts/025/attempt-88x51j4e"
+   },
+   "conclusion": {
+-    "claim": "35164c1aff042c68",
+-    "attempt": "20261106T181224Z-3160b2c0",
++    "claim": "ea2923ba75330214",
++    "attempt": "20261107T153855Z-c566bec3",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -191,13 +191,13 @@
+     "artifacts": [
+       {
+         "path": "result.sarif",
+-        "sha256": "9325aeb11434fc12ea13a001628184c6445728c169557b11f289cc45d14da9bf",
+-        "bytes": 4258
++        "sha256": "a6b5b180efa756ff046d061c716ea1fd4d3b5ab7c571aed268ffaedd54d71a94",
++        "bytes": 2611
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "7a030e25707e7aa9b03efbbfee9776acd243cbc46bc0b4ce857a2e54e2a1f210",
+-        "bytes": 3193
++        "sha256": "dd4ce5ba741c9c520e9125f2e51619ee64cd24006ab77621bc3b6b10fef57482",
++        "bytes": 1628
+       }
+     ]
+   }
+--- a/examples/025-transaction-that-commits-after-an-error/result.sarif
++++ b/examples/025-transaction-that-commits-after-an-error/result.sarif
+@@ -55,13 +55,6 @@
+       },
+       "results": [
+         {
+-          "ruleId": "api-changed",
+-          "level": "error",
+-          "message": {
+-            "text": "Public API of module crosscut differs from its contract:\n  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final record\n  added net.terminalvalue.crosscut.ratelimit.Window: public long count()\n  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()\n  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()\n  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.retry.Backoff: public final record\n  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)\n  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long"
+-          }
+-        },
+-        {
+           "ruleId": "behaviour-changed",
+           "level": "error",
+           "message": {
+--- a/examples/025-transaction-that-commits-after-an-error/verifier-output.txt
++++ b/examples/025-transaction-that-commits-after-an-error/verifier-output.txt
+@@ -1,22 +1,5 @@
+-✓ module crosscut matches its capability contract (39 classes, 143 methods, 0 capability uses, 0 libraries)
+-✗ Public API of module crosscut differs from its contract:
+-  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public final record
+-  added net.terminalvalue.crosscut.ratelimit.Window: public long count()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()
+-  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
+-  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)
+-  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)
+-  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()
+-  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()
+-  added net.terminalvalue.crosscut.retry.Backoff: public final record
+-  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()
+-  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()
+-  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)
+-  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long
++✓ module crosscut matches its capability contract (42 classes, 155 methods, 0 capability uses, 0 libraries)
++✓ module crosscut matches its API contract (39 public types, 151 members)
+ ✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
+@@ -27,5 +10,3 @@
+   (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
+ 
+ If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.
+-
+-If the API change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff is the API change, for reviewers.
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md
+@@ -8,8 +8,6 @@
+ | **✓ Verified: all invariants hold in 98 states, and under 1 more configuration** | functional, no-false-positive | none | feature, behaviour change intended | [`CircuitBreaker#decide`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java) | [D1: Protocol model checking](../../examples/apps/crosscut/spec/README.md) |
+ 
+ > A half-open circuit breaker used to reopen on the first probe that failed. A developer makes it judge the probes together once the last has completed, as Resilience4j does: a failed probe is recorded like any other outcome, and the failure rate of the probes decides between closing and reopening. The contract changes in three rows, the test that expected the first failure to reopen is rewritten, and the model verifies the change under both configurations: every safety invariant in every state, and every liveness property under fairness, the three that say an open breaker probes again, a dependency that comes back is used again, and a dependency that stays down gets its wait between rounds of probes. The verdict comes with what it rests on: runs of the model take one of the three rows the change alters, a failed probe before the window is complete with the failure rate at the threshold, and the other two, a failed probe with the rate below the threshold, are rows the model's two probes and threshold of one in two can never produce.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 076` runs it again.
+ 
+ Tags: [resilience](../README.md#tag-resilience), [liveness](../README.md#tag-liveness), [tla-liveness](../README.md#tag-tla-liveness), [generated-operator](../README.md#tag-generated-operator), [multiple-configurations](../README.md#tag-multiple-configurations)
+ 
+@@ -230,14 +228,14 @@
+ 
+ How the verdict was reached: two calls in flight: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2.
+ 
+-This page renders attempt `20261106T181235Z-0708aa74` at claim `3f26abff8d62e787`, in pipeline job `20261106-181100-example-076-d1-circuit-breaker-with-its`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++This page renders attempt `20261107T153858Z-8c25076f` at claim `0ccfd07b2f18d334`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 80426] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 3985922] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -248,9 +246,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-06 18:12:37)
++Starting... (2026-11-07 15:39:01)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-06 18:12:37.
++Finished computing initial states: 2 distinct states generated at 2026-11-07 15:39:01.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -275,11 +273,11 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-06 18:12:37)
++Finished in 00s at (2026-11-07 15:39:01)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 80475] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 3985963] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -290,12 +288,12 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-06 18:12:38)
++Starting... (2026-11-07 15:39:02)
+ Implied-temporal checking--satisfiability problem has 2 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-06 18:12:38.
+-Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-06 18:12:38)
+-Finished checking temporal properties in 00s at 2026-11-06 18:12:38
++Finished computing initial states: 2 distinct states generated at 2026-11-07 15:39:02.
++Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-07 15:39:02)
++Finished checking temporal properties in 00s at 2026-11-07 15:39:02
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -320,7 +318,7 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-06 18:12:38)
++Finished in 00s at (2026-11-07 15:39:02)
+ ```
+ 
+ </details>
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "3f26abff8d62e787",
++    "id": "0ccfd07b2f18d334",
+     "format": 1,
+     "example": "076",
+     "statement": {
+@@ -14,12 +14,12 @@
+     "inputs": {
+       "patch": "0f7f4d78b72505c00d0fda9715fb9e19720b1fdec5ba9d0cecd94390c35e1cba",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "4d6938b3e0606cba7c6e63fc509d874e989b939485662766b4be3cf3255c3eca",
+-        "files": 54
++        "sha256": "d75c3f9ffb3562cc45c0466baae0135b357677e0416831bbb6f3b8cdb4a423b0",
++        "files": 58
+       },
+       "dependencies": "the JDK",
+       "model": {
+@@ -30,29 +30,29 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181235Z-0708aa74",
+-    "claim": "3f26abff8d62e787",
+-    "startedAt": "2026-11-06T18:12:35+00:00",
+-    "seconds": 3.5,
++    "id": "20261107T153858Z-8c25076f",
++    "claim": "0ccfd07b2f18d334",
++    "startedAt": "2026-11-07T15:38:58+00:00",
++    "seconds": 4.2,
+     "engine": null,
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f",
+       "tlc": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+     },
+     "bytecode": {
+       "before": null,
+       "after": {
+-        "sha256": "30313058ab7f8f56cf3a1166d035802e869166c0eec313b070980cdf2e98e01f",
+-        "files": 39
++        "sha256": "6af9d08b57347d8a81720c1eabd94d909c8352188fa938c92a91686ea77f0f99",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181100-example-076-d1-circuit-breaker-with-its",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181100-example-076-d1-circuit-breaker-with-its"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -72,7 +72,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -80,7 +80,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.9,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract tlc CircuitBreaker.cfg",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 1.0,
+         "stdout": "logs/09-jvmcontract-tlc-circuitbreaker-cfg.stdout",
+         "stderr": "logs/09-jvmcontract-tlc-circuitbreaker-cfg.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract tlc CircuitBreakerLive.cfg",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.1,
++        "seconds": 1.3,
+         "stdout": "logs/10-jvmcontract-tlc-circuitbreakerlive-cfg.stdout",
+         "stderr": "logs/10-jvmcontract-tlc-circuitbreakerlive-cfg.stderr"
+       },
+@@ -168,16 +168,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/14-version-of-javac.stdout",
+         "stderr": "logs/14-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-_jxv39w0/attempts/076/attempt-dvhrqdq3"
++    "workspace": ".build-py/examples-u3shx4t6/attempts/076/attempt-7ca0ut1a"
+   },
+   "conclusion": {
+-    "claim": "3f26abff8d62e787",
+-    "attempt": "20261106T181235Z-0708aa74",
++    "claim": "0ccfd07b2f18d334",
++    "attempt": "20261107T153858Z-8c25076f",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -264,7 +264,7 @@
+     "counterexamples": [],
+     "purityViolations": [],
+     "trustedCalls": [],
+-    "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n--- a/examples/apps/crosscut/src/contract/api.contract\n+++ b/examples/apps/crosscut/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: crosscut, 34 public types, 125 members\n+module: crosscut, 36 public types, 140 members\n \n net.terminalvalue.crosscut.Decision: public sealed interface permits net.terminalvalue.crosscut.Decision$Transition, net.terminalvalue.crosscut.Decision$Unchanged, net.terminalvalue.crosscut.Decision$Rejected\n   public static net.terminalvalue.crosscut.Decision rejected(java.lang.String)\n@@ -94,6 +94,15 @@\n   public static long lastAfter(long, long, long, long, long)\n   public static long tokensAfter(long, long, long, long, long)\n \n+net.terminalvalue.crosscut.ratelimit.Window: public final record\n+  public Window(long, long)\n+  public final boolean equals(java.lang.Object)\n+  public final int hashCode()\n+  public final java.lang.String toString()\n+  public long count()\n+  public long startNanos()\n+  public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n+\n net.terminalvalue.crosscut.resilience.BreakerEffect: public final enum\n   public static final PERMIT: net.terminalvalue.crosscut.resilience.BreakerEffect\n   public static final RESET_METRICS: net.terminalvalue.crosscut.resilience.BreakerEffect\n@@ -128,6 +137,16 @@\n \n net.terminalvalue.crosscut.resilience.CircuitBreaker: public final class\n   public static net.terminalvalue.crosscut.Decision decide(net.terminalvalue.crosscut.resilience.BreakerState, net.terminalvalue.crosscut.resilience.BreakerEvent)\n+\n+net.terminalvalue.crosscut.retry.Backoff: public final record\n+  public Backoff(long, long)\n+  public final boolean equals(java.lang.Object)\n+  public final int hashCode()\n+  public final java.lang.String toString()\n+  public long baseMillis()\n+  public long capMillis()\n+  public long delayMillis(int)\n+  public static final MAX_CAP_MILLIS: long\n \n net.terminalvalue.crosscut.retry.RetryPolicy: public final class\n   public static boolean shouldRetry(int, boolean, int, int)\n",
++    "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n",
+     "proof": "two calls in flight: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+     "problem": null,
+     "statement": null,
+@@ -395,13 +395,13 @@
+       {
+         "label": "two calls in flight",
+         "cfg": "spec/CircuitBreaker.cfg",
+-        "fingerprint": "2d4548a53b7b4be1590e55c5e444bddb61a785a738337e0b933ff4a85052e4d3",
++        "fingerprint": "d7818cb43f7126b1d847f72b5bb6d20da6175287e15027a4b48a8ba2999ee2a2",
+         "reused": false
+       },
+       {
+         "label": "fairness",
+         "cfg": "spec/CircuitBreakerLive.cfg",
+-        "fingerprint": "95b96f1e4691d8ef09319ba2ddb0419ebdb831eb7866124855af389b8f2d0665",
++        "fingerprint": "5cb7ba9c5b4a331e79289f8f598435e65ac3f94425dc26ff145df23772cade54",
+         "reused": false
+       }
+     ],
+@@ -419,8 +419,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "8e411f1da1e3f90c1f1eb4085aede0c470edd4cb30f56c67ca82e103f88bc513",
+-        "bytes": 6946
++        "sha256": "5ddb4b2daa7b9ecb614d4f1e50668a5082635fe6e3600698823f28c850fd51bc",
++        "bytes": 6950
+       }
+     ]
+   }
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 80426] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 3985922] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-06 18:12:37)
++Starting... (2026-11-07 15:39:01)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-06 18:12:37.
++Finished computing initial states: 2 distinct states generated at 2026-11-07 15:39:01.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -38,11 +38,11 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-06 18:12:37)
++Finished in 00s at (2026-11-07 15:39:01)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 80475] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 3985963] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -53,12 +53,12 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-06 18:12:38)
++Starting... (2026-11-07 15:39:02)
+ Implied-temporal checking--satisfiability problem has 2 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-06 18:12:38.
+-Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-06 18:12:38)
+-Finished checking temporal properties in 00s at 2026-11-06 18:12:38
++Finished computing initial states: 2 distinct states generated at 2026-11-07 15:39:02.
++Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-07 15:39:02)
++Finished checking temporal properties in 00s at 2026-11-07 15:39:02
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -83,4 +83,4 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-06 18:12:38)
++Finished in 00s at (2026-11-07 15:39:02)
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
+@@ -8,8 +8,6 @@
+ | **✓ Verified: equivalent on every input** | functional, no-false-positive | none | refactor, behaviour change not intended | [`RetryAfter#nanosUntilToken`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > The wait a refused request is told to make is rewritten from `credited + period - now` to `period - (now - credited)`, around the two refill helpers it calls and leaves alone. Each helper holds a 64-bit division, and relating two copies of each across the versions is more than the solver settles in a minute. The proof takes the unchanged helpers as one function in both versions, never sees their arithmetic, and is done in a second.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 120` runs it again.
+ 
+ Tags: [resilience](../README.md#tag-resilience), [clocks-and-time](../README.md#tag-clocks-and-time), [shared-callees](../README.md#tag-shared-callees)
+ 
+@@ -116,16 +114,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
+-
+-**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
+-
+-This page renders attempt `20261106T181225Z-2f4bd5aa` at claim `a5f4b0f7606a99f2`, in pipeline job `20261106-181059-example-120-b9-jbmc-shared-callees-read`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
++
++**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
++
++This page renders attempt `20261107T153905Z-ae74d3d0` at claim `a0150341167c7614`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
+ ```
+ 
+ </details>
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "a5f4b0f7606a99f2",
++    "id": "a0150341167c7614",
+     "format": 1,
+     "example": "120",
+     "statement": {
+@@ -17,21 +17,21 @@
+     "inputs": {
+       "patch": "36a3484b519164c8e5911ae3b9864ced8ec326d07399334e328d2c1456355ef1",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "411dfb4ad657c364a5fc7519d980b004d06a5b9477fd2bb3b8618d8c047a2020",
+-        "files": 54
++        "sha256": "dfc267bbdffb083ce9bfe27959d960e81f4ee8439f72dbf05d27be1257803e0c",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181225Z-2f4bd5aa",
+-    "claim": "a5f4b0f7606a99f2",
+-    "startedAt": "2026-11-06T18:12:25+00:00",
+-    "seconds": 3.5,
++    "id": "20261107T153905Z-ae74d3d0",
++    "claim": "a0150341167c7614",
++    "startedAt": "2026-11-07T15:39:05+00:00",
++    "seconds": 3.2,
+     "engine": "jbmc",
+     "options": [
+       "--gaps",
+@@ -40,23 +40,23 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f",
+       "jbmc": "6.11.0 (cbmc-6.11.0)"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "e2607dc09764697a2cd0301b7614517f2bfa53bfc7d54369ef9df0c651927e0f",
+-        "files": 39
++        "sha256": "abed21038b78eac4c17bae2a78bc1f6434245b21e99e32f91c767aa043d2f7f2",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181059-example-120-b9-jbmc-shared-callees-read",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181059-example-120-b9-jbmc-shared-callees-read"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -81,7 +81,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.9,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -105,7 +105,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -113,7 +113,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 0.8,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -129,7 +129,7 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       },
+@@ -142,11 +142,11 @@
+         "stderr": "logs/09-version-of-jbmc.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-gfl0qiqh/attempts/120/attempt-h2l7tzu1"
++    "workspace": ".build-py/examples-3yrd7ujh/attempts/120/attempt-ae854maj"
+   },
+   "conclusion": {
+-    "claim": "a5f4b0f7606a99f2",
+-    "attempt": "20261106T181225Z-2f4bd5aa",
++    "claim": "a0150341167c7614",
++    "attempt": "20261107T153905Z-ae74d3d0",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -176,7 +176,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
++    "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -190,7 +190,7 @@
+     "search": {
+       "engine": "jbmc",
+       "checker": "JBMC 6.11.0",
+-      "seconds": 1.147,
++      "seconds": 0.691,
+       "properties": 2,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -204,67 +204,19 @@
+         {
+           "checker": "jbmc",
+           "purpose": "shared",
+-          "stage": "[0:20]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 0.151,
++          "stage": null,
++          "budgetSeconds": 599.915,
++          "seconds": 0.602,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+-            "loading": 0.014,
+-            "lowering": 0.004,
+-            "symbolic": 0.01,
+-            "encoding": 0.013,
+-            "solving": 0.091,
++            "loading": 0.024,
++            "lowering": 0.006,
++            "symbolic": 0.012,
++            "encoding": 0.014,
++            "solving": 0.522,
+             "trace": 0.0,
+-            "other": 0.02
+-          },
+-          "formula": {
+-            "steps": 1109,
+-            "conditions": 1,
+-            "variables": 30836,
+-            "clauses": 88819
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "shared",
+-          "stage": "[-100000:100000]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 0.351,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.018,
+-            "lowering": 0.004,
+-            "symbolic": 0.01,
+-            "encoding": 0.011,
+-            "solving": 0.257,
+-            "trace": 0.0,
+-            "other": 0.051
+-          },
+-          "formula": {
+-            "steps": 1109,
+-            "conditions": 1,
+-            "variables": 30836,
+-            "clauses": 88819
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "shared",
+-          "stage": null,
+-          "budgetSeconds": 599.408,
+-          "seconds": 0.552,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.014,
+-            "lowering": 0.004,
+-            "symbolic": 0.011,
+-            "encoding": 0.012,
+-            "solving": 0.479,
+-            "trace": 0.0,
+-            "other": 0.032
++            "other": 0.024
+           },
+           "formula": {
+             "steps": 1096,
+@@ -332,15 +284,31 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "jbmc",
+         "name": "JBMC 6.11.0",
+         "solver": "cadical",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null,
+@@ -366,7 +334,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "6ea27fe4ef93f5ebeb8df6efa1410997675d0047e986c06b17bddaaba3ff06c5",
++        "sha256": "dd8f770647e628b39ac215d9a06a2eed45b01e6f5d4341dc3d5798be3e3a7264",
+         "bytes": 409
+       }
+     ]
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md
+@@ -8,8 +8,6 @@
+ | **✓ Verified: equivalent on every input** | functional, no-false-positive | none | refactor, behaviour change not intended | [`Backoff#delayMillis`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > The same rewrite as example 126, done right: the delay is `baseMillis << attempt` with the shift distance kept below the leading zeros of the base, so that a shift that would leave the range of a `long` is replaced by one that is already past the cap, and a non-positive attempt returns the base. The regression proof on the record's components shows the closed form equal to the loop for every base, cap and attempt the constructor admits, in six seconds.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 127` runs it again.
+ 
+ Tags: [resilience](../README.md#tag-resilience), [numeric-code](../README.md#tag-numeric-code), [record-components](../README.md#tag-record-components)
+ 
+@@ -115,16 +113,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions.
+-
+-**What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20).
+-
+-This page renders attempt `20261106T181350Z-684dd73b` at claim `268579010ba48ec0`, in pipeline job `20261106-181102-example-127-b9-re-run-its-statement-says`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++How the verdict was reached: JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 3.2 s; loops unwound 32 times with unwinding assertions.
++
++**What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20).
++
++This page renders attempt `20261107T153910Z-abc7b807` at claim `705495b1f3cc78b8`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 3.2 s; loops unwound 32 times with unwinding assertions)
+   not vacuous: delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20) reaches the calls
+   constructors: either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
+ ```
+@@ -137,7 +135,7 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(long this_baseMillis, long this_capMillis, int attempt) {
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         before.net.terminalvalue.crosscut.retry.Backoff this_before; net.terminalvalue.crosscut.retry.Backoff this_after;
+         try { this_before = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); this_after = new net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { return; }
+         long a = 0;
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "268579010ba48ec0",
++    "id": "705495b1f3cc78b8",
+     "format": 1,
+     "example": "127",
+     "statement": {
+@@ -17,21 +17,21 @@
+     "inputs": {
+       "patch": "81483d81869819afab56dcd1e24414803f0398f711bec893b8b315f7f5027780",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "50a99592e7d5b6ad7ea4115ce5c68e231f574e86f7c806f8fdff9b1229d0baab",
+-        "files": 54
++        "sha256": "7c2ea8254cfad0dc4130dbe2e7b884e1079438a6ada1f733407e47e263fc2dd0",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181350Z-684dd73b",
+-    "claim": "268579010ba48ec0",
+-    "startedAt": "2026-11-06T18:13:50+00:00",
+-    "seconds": 7.3,
++    "id": "20261107T153910Z-abc7b807",
++    "claim": "705495b1f3cc78b8",
++    "startedAt": "2026-11-07T15:39:10+00:00",
++    "seconds": 6.0,
+     "engine": "jbmc",
+     "options": [
+       "--gaps",
+@@ -42,23 +42,23 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f",
+       "jbmc": "6.11.0 (cbmc-6.11.0)"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "c9fb8f2b70a227d5e1b42c615e368bdbe70c1909d807977b3e091cc2c8c48af8",
+-        "files": 39
++        "sha256": "b12ab7f23457ce6ed3803debc76fba8a6fb39ca8ee9f432af11763961093850a",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181102-example-127-b9-re-run-its-statement-says",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181102-example-127-b9-re-run-its-statement-says"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -83,7 +83,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.9,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -91,7 +91,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -107,7 +107,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -115,7 +115,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 5.0,
++        "seconds": 3.3,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -131,7 +131,7 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       },
+@@ -144,11 +144,11 @@
+         "stderr": "logs/09-version-of-jbmc.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-l9duqn76/attempts/127/attempt-v_fgwg9i"
++    "workspace": ".build-py/examples-qqt_a6yj/attempts/127/attempt-jfdluiwa"
+   },
+   "conclusion": {
+-    "claim": "268579010ba48ec0",
+-    "attempt": "20261106T181350Z-684dd73b",
++    "claim": "705495b1f3cc78b8",
++    "attempt": "20261107T153910Z-abc7b807",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -178,7 +178,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions",
++    "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 3.2 s; loops unwound 32 times with unwinding assertions",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -192,7 +192,7 @@
+     "search": {
+       "engine": "jbmc",
+       "checker": "JBMC 6.11.0",
+-      "seconds": 5.001,
++      "seconds": 3.248,
+       "properties": 3,
+       "unwind": 32,
+       "maxArrayLength": 8,
+@@ -202,67 +202,19 @@
+         {
+           "checker": "jbmc",
+           "purpose": "proof",
+-          "stage": "[0:20]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 0.552,
++          "stage": null,
++          "budgetSeconds": 599.916,
++          "seconds": 3.16,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+-            "loading": 0.016,
+-            "lowering": 0.006,
+-            "symbolic": 0.035,
+-            "encoding": 0.031,
+-            "solving": 0.432,
++            "loading": 0.026,
++            "lowering": 0.014,
++            "symbolic": 0.039,
++            "encoding": 0.035,
++            "solving": 2.983,
+             "trace": 0.0,
+-            "other": 0.032
+-          },
+-          "formula": {
+-            "steps": 2570,
+-            "conditions": 2,
+-            "variables": 48395,
+-            "clauses": 147366
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "proof",
+-          "stage": "[-100000:100000]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 1.304,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.015,
+-            "lowering": 0.005,
+-            "symbolic": 0.03,
+-            "encoding": 0.027,
+-            "solving": 1.19,
+-            "trace": 0.0,
+-            "other": 0.038
+-          },
+-          "formula": {
+-            "steps": 2570,
+-            "conditions": 2,
+-            "variables": 48395,
+-            "clauses": 147366
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "proof",
+-          "stage": null,
+-          "budgetSeconds": 598.062,
+-          "seconds": 3.059,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.02,
+-            "lowering": 0.007,
+-            "symbolic": 0.047,
+-            "encoding": 0.033,
+-            "solving": 2.904,
+-            "trace": 0.0,
+-            "other": 0.048
++            "other": 0.064
+           },
+           "formula": {
+             "steps": 2563,
+@@ -275,15 +227,15 @@
+           "checker": "native",
+           "purpose": "probe",
+           "stage": null,
+-          "budgetSeconds": 594.999,
+-          "seconds": 0.001,
++          "budgetSeconds": 596.752,
++          "seconds": 0.002,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+-            "symbolic": 0.001,
+-            "encoding": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.001,
+             "solving": 0.0,
+             "trace": 0.0,
+             "other": 0.0
+@@ -343,15 +295,31 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "jbmc",
+         "name": "JBMC 6.11.0",
+         "solver": "cadical",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null,
+@@ -373,12 +341,12 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "f3b5b98759563c44a9bf69c727c997f6534cffd242acd206ced05352be696d1f",
+-        "bytes": 2701
++        "sha256": "5b86afaf23ace38a760e8e689596d195077d86e5bcd99049c1175e2c3a5b7afa",
++        "bytes": 2713
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "29f9c25f87e92f2610e3acd065f099ec22559d00471ee928df46259eabf6b93e",
++        "sha256": "0a1684989663a6aea5328e010e90ff3939278b6059840912cb660f3ae13157c4",
+         "bytes": 639
+       }
+     ]
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/statement.java
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/statement.java
+@@ -1,7 +1,7 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(long this_baseMillis, long this_capMillis, int attempt) {
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         before.net.terminalvalue.crosscut.retry.Backoff this_before; net.terminalvalue.crosscut.retry.Backoff this_after;
+         try { this_before = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); this_after = new net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { return; }
+         long a = 0;
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt
+@@ -1,3 +1,3 @@
+-✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 3.2 s; loops unwound 32 times with unwinding assertions)
+   not vacuous: delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20) reaches the calls
+   constructors: either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md
+@@ -8,8 +8,6 @@
+ | **✗ Violation: counterexample found** | functional | high | refactor, behaviour change not intended | [`Batch#offsetToCommit`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > The offset a batch listener commits after a batch was a static function of the batch's start, its size and the index of the record that failed. The start and the size become a record, `Batch(start, size)`, with the function as its method and the guard on the batch in the record's compact constructor; the part of the guard about the failed index, which is no component, goes with it, and the tests pass. The regression proof, which relates the record's method to the static function called with the components, finds an index past the batch committing past it: records the listener never processed are never read again.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 128` runs it again.
+ 
+ Tags: [messaging](../README.md#tag-messaging), [dropped-case](../README.md#tag-dropped-case), [record-components](../README.md#tag-record-components), [signature-change](../README.md#tag-signature-change)
+ 
+@@ -254,11 +252,11 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int.
+-
+-**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+-
+-This page renders attempt `20261106T181324Z-aec296cc` at claim `cb63cad56915b8db`, in pipeline job `20261106-181101-example-128-b9-jbmc-violation-with-its-w`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++How the verdict was reached: found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int.
++
++**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
++
++This page renders attempt `20261107T153918Z-62032ed2` at claim `9c9db0c338a4a8d6`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -267,7 +265,7 @@
+   offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)
+     before: throws IllegalArgumentException("batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required")
+     after:  1
+-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
++  (found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+@@ -280,7 +278,7 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(long this_start, int this_size, int failedIndex) {
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components
+         try { this_after = new net.terminalvalue.crosscut.kafka.Batch(this_start, this_size); } catch (Throwable t) { return; }
+         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "cb63cad56915b8db",
++    "id": "9c9db0c338a4a8d6",
+     "format": 1,
+     "example": "128",
+     "statement": {
+@@ -19,21 +19,21 @@
+     "inputs": {
+       "patch": "36ecdfcfa043e06d2d413e636afa0532025c1206e32a2371d955d1675c0b3b61",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "c5b2695f55abb7d1bb8666cc132376834068365be0a0bd0d4e7114d849ec4872",
+-        "files": 54
++        "sha256": "5bd1024646bd5486879b292ea6a9e2ae2aa7c20b4495d56e56541ebda071f1b9",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181324Z-aec296cc",
+-    "claim": "cb63cad56915b8db",
+-    "startedAt": "2026-11-06T18:13:24+00:00",
+-    "seconds": 2.6,
++    "id": "20261107T153918Z-62032ed2",
++    "claim": "9c9db0c338a4a8d6",
++    "startedAt": "2026-11-07T15:39:18+00:00",
++    "seconds": 2.9,
+     "engine": "jbmc",
+     "options": [
+       "--gaps",
+@@ -42,23 +42,23 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f",
+       "jbmc": "6.11.0 (cbmc-6.11.0)"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "591af38b0dc5c739fcee290fb9b39be8c0e2d57a9991ec4f4eef7d621af15904",
+-        "files": 39
++        "sha256": "6abe1e8b33aa65e30df0972ef0b00198e176b5d242045133df887bc9da8de46b",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181101-example-128-b9-jbmc-violation-with-its-w",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-128-b9-jbmc-violation-with-its-w"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -83,7 +83,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -91,7 +91,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -107,7 +107,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -131,7 +131,7 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       },
+@@ -144,11 +144,11 @@
+         "stderr": "logs/09-version-of-jbmc.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-cm7e5fbl/attempts/128/attempt-hw72tzas"
++    "workspace": ".build-py/examples-qgyprtbe/attempts/128/attempt-bu_jjjeu"
+   },
+   "conclusion": {
+-    "claim": "cb63cad56915b8db",
+-    "attempt": "20261106T181324Z-aec296cc",
++    "claim": "9c9db0c338a4a8d6",
++    "attempt": "20261107T153918Z-62032ed2",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -179,8 +179,8 @@
+         "input": "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)",
+         "contract": "throws IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\")",
+         "actual": "1",
+-        "found": "offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)",
+-        "shrinkRuns": 19,
++        "found": "offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647)",
++        "shrinkRuns": 154,
+         "witness": {
+           "inputs": [
+             {
+@@ -203,17 +203,17 @@
+             {
+               "name": "this.start",
+               "type": "long",
+-              "value": "15"
++              "value": "9223372036854775807"
+             },
+             {
+               "name": "this.size",
+               "type": "int",
+-              "value": 15
++              "value": 2147483647
+             },
+             {
+               "name": "failedIndex",
+               "type": "int",
+-              "value": 15
++              "value": 2147483647
+             }
+           ],
+           "call": {
+@@ -286,7 +286,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int",
++    "proof": "found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -300,35 +300,35 @@
+     "search": {
+       "engine": "jbmc",
+       "checker": "JBMC 6.11.0",
+-      "seconds": 0.129,
++      "seconds": 0.134,
+       "properties": 2,
+       "unwind": 16,
+       "maxArrayLength": 8,
+-      "stage": "[0:20]",
++      "stage": null,
+       "deadlineSeconds": 600.0,
+       "runs": [
+         {
+           "checker": "jbmc",
+           "purpose": "proof",
+-          "stage": "[0:20]",
+-          "budgetSeconds": 75.0,
++          "stage": null,
++          "budgetSeconds": 599.921,
+           "seconds": 0.051,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+             "loading": 0.003,
+             "lowering": 0.002,
+-            "symbolic": 0.003,
++            "symbolic": 0.005,
+             "encoding": 0.002,
+             "solving": 0.0,
+-            "trace": 0.001,
+-            "other": 0.04
++            "trace": 0.002,
++            "other": 0.037
+           },
+           "formula": {
+-            "steps": 254,
++            "steps": 251,
+             "conditions": 1,
+-            "variables": 4077,
+-            "clauses": 8225
++            "variables": 3818,
++            "clauses": 7698
+           }
+         }
+       ],
+@@ -386,15 +386,31 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "jbmc",
+         "name": "JBMC 6.11.0",
+         "solver": "cadical",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null
+@@ -413,13 +429,13 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
+-        "bytes": 2903
++        "sha256": "289b9cb39ebcec87b3c80e3316a6159442454b9f02d20524f7013324013933a5",
++        "bytes": 2915
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "9cd3c8ab2c9d1dfb0f8a2bdeb9511c66dab6cbeeadbcdb1cecf5afe7b9cf66be",
+-        "bytes": 888
++        "sha256": "9d06fc0d5a96d24c9440c44c44a6253ec8e761319d0d0c515698ebdfe7f8e37c",
++        "bytes": 895
+       }
+     ]
+   }
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/statement.java
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/statement.java
+@@ -1,7 +1,7 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(long this_start, int this_size, int failedIndex) {
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components
+         try { this_after = new net.terminalvalue.crosscut.kafka.Batch(this_start, this_size); } catch (Throwable t) { return; }
+         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/verifier-output.txt
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/verifier-output.txt
+@@ -2,6 +2,6 @@
+   offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)
+     before: throws IllegalArgumentException("batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required")
+     after:  1
+-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
++  (found by JBMC 6.11.0 in 0.1 s as offsetToCommit(this=Batch[start=9223372036854775807, size=2147483647], failedIndex=2147483647), shrunk to the input above in 154 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md
+@@ -8,8 +8,6 @@
+ | **✓ Verified: equivalent on every input** | functional, no-false-positive | none | refactor, behaviour change not intended | [`Batch#offsetToCommit`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > The same refactor as example 128, the batch's start and size gathered into a record `Batch(start, size)` with the commit arithmetic as its method and the guard on the batch in its compact constructor, with the check on the failed index kept in the method, since the index is no component. The regression proof relates the record's method to the static function called with the components and proves them equal on every batch the constructor accepts and every index, in half a second.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 129` runs it again.
+ 
+ Tags: [messaging](../README.md#tag-messaging), [dropped-case](../README.md#tag-dropped-case), [record-components](../README.md#tag-record-components), [signature-change](../README.md#tag-signature-change)
+ 
+@@ -259,16 +257,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions.
+-
+-**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found offsetToCommit(this=Batch[start=20, size=20], failedIndex=20).
+-
+-This page renders attempt `20261106T181329Z-9b9168da` at claim `cbd6a2297f9727b5`, in pipeline job `20261106-181101-example-129-b9-jbmc-verified-recorded-as`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.1 s; loops unwound 16 times with unwinding assertions.
++
++**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found offsetToCommit(this=Batch[start=20, size=20], failedIndex=20).
++
++This page renders attempt `20261107T153923Z-b1a97e09` at claim `0a3b079672a2faae`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.1 s; loops unwound 16 times with unwinding assertions)
+   not vacuous: offsetToCommit(this=Batch[start=20, size=20], failedIndex=20) reaches the calls
+   constructors: the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
+ ```
+@@ -281,7 +279,7 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(long this_start, int this_size, int failedIndex) {
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components
+         try { this_after = new net.terminalvalue.crosscut.kafka.Batch(this_start, this_size); } catch (Throwable t) { return; }
+         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "cbd6a2297f9727b5",
++    "id": "0a3b079672a2faae",
+     "format": 1,
+     "example": "129",
+     "statement": {
+@@ -19,21 +19,21 @@
+     "inputs": {
+       "patch": "f58e0df25f2d2dad471bfac3e955ca06616492416324bc39b385be2fedcad6c6",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "50c0bf3424c2f03753c29055d20c50c61aa0a5091777cc8f7895d72d57c70667",
+-        "files": 54
++        "sha256": "d9991535ca5f3a9abb9e88a5d156e833a5b2a995b4e7a2809744fc8219c820fb",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181329Z-9b9168da",
+-    "claim": "cbd6a2297f9727b5",
+-    "startedAt": "2026-11-06T18:13:29+00:00",
+-    "seconds": 2.6,
++    "id": "20261107T153923Z-b1a97e09",
++    "claim": "0a3b079672a2faae",
++    "startedAt": "2026-11-07T15:39:23+00:00",
++    "seconds": 2.9,
+     "engine": "jbmc",
+     "options": [
+       "--gaps",
+@@ -42,23 +42,23 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f",
+       "jbmc": "6.11.0 (cbmc-6.11.0)"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "937853d5faac0cbddcf57328b6a5bcdf96d7c401fb800bd8088ef3a4f80ff63a",
+-        "files": 39
++        "sha256": "b29560af8f728277d6d166c06308890a9039240e48bc2df05b7ffc545f82eab8",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181101-example-129-b9-jbmc-verified-recorded-as",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-129-b9-jbmc-verified-recorded-as"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -83,7 +83,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -91,7 +91,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -107,7 +107,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -115,7 +115,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.3,
++        "seconds": 0.2,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -144,11 +144,11 @@
+         "stderr": "logs/09-version-of-jbmc.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-dgdvxhb6/attempts/129/attempt-f1yc3y_q"
++    "workspace": ".build-py/examples-qv8szweg/attempts/129/attempt-84oz4drx"
+   },
+   "conclusion": {
+-    "claim": "cbd6a2297f9727b5",
+-    "attempt": "20261106T181329Z-9b9168da",
++    "claim": "0a3b079672a2faae",
++    "attempt": "20261107T153923Z-b1a97e09",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -178,7 +178,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions",
++    "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.1 s; loops unwound 16 times with unwinding assertions",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -192,7 +192,7 @@
+     "search": {
+       "engine": "jbmc",
+       "checker": "JBMC 6.11.0",
+-      "seconds": 0.288,
++      "seconds": 0.131,
+       "properties": 2,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -202,67 +202,19 @@
+         {
+           "checker": "jbmc",
+           "purpose": "proof",
+-          "stage": "[0:20]",
+-          "budgetSeconds": 75.0,
++          "stage": null,
++          "budgetSeconds": 599.924,
+           "seconds": 0.051,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+-            "loading": 0.006,
++            "loading": 0.004,
+             "lowering": 0.002,
+-            "symbolic": 0.005,
+-            "encoding": 0.004,
+-            "solving": 0.005,
++            "symbolic": 0.004,
++            "encoding": 0.002,
++            "solving": 0.023,
+             "trace": 0.0,
+-            "other": 0.029
+-          },
+-          "formula": {
+-            "steps": 309,
+-            "conditions": 1,
+-            "variables": 4555,
+-            "clauses": 8959
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "proof",
+-          "stage": "[-100000:100000]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 0.051,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.003,
+-            "lowering": 0.002,
+-            "symbolic": 0.005,
+-            "encoding": 0.002,
+-            "solving": 0.026,
+-            "trace": 0.0,
+-            "other": 0.012
+-          },
+-          "formula": {
+-            "steps": 309,
+-            "conditions": 1,
+-            "variables": 4555,
+-            "clauses": 8959
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "proof",
+-          "stage": null,
+-          "budgetSeconds": 599.816,
+-          "seconds": 0.101,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.005,
+-            "lowering": 0.003,
+-            "symbolic": 0.006,
+-            "encoding": 0.003,
+-            "solving": 0.035,
+-            "trace": 0.0,
+-            "other": 0.049
++            "other": 0.015
+           },
+           "formula": {
+             "steps": 306,
+@@ -275,7 +227,7 @@
+           "checker": "native",
+           "purpose": "probe",
+           "stage": null,
+-          "budgetSeconds": 599.712,
++          "budgetSeconds": 599.869,
+           "seconds": 0.001,
+           "ended": "violation",
+           "ending": "counterexample",
+@@ -348,15 +300,31 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "jbmc",
+         "name": "JBMC 6.11.0",
+         "solver": "cadical",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null,
+@@ -378,12 +346,12 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
+-        "bytes": 2903
++        "sha256": "289b9cb39ebcec87b3c80e3316a6159442454b9f02d20524f7013324013933a5",
++        "bytes": 2915
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "ffe379f06ee963b0ac087cbf202d4c2205b5c92302e6ec0a761ca76cc66bd29f",
++        "sha256": "2e59435ba73c33752da8de623fe3ce5e3f582f8cd9dca612e9be4819d8ab3a54",
+         "bytes": 716
+       }
+     ]
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/statement.java
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/statement.java
+@@ -1,7 +1,7 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(long this_start, int this_size, int failedIndex) {
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components
+         try { this_after = new net.terminalvalue.crosscut.kafka.Batch(this_start, this_size); } catch (Throwable t) { return; }
+         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt
+@@ -1,3 +1,3 @@
+-✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.1 s; loops unwound 16 times with unwinding assertions)
+   not vacuous: offsetToCommit(this=Batch[start=20, size=20], failedIndex=20) reaches the calls
+   constructors: the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md
+@@ -8,8 +8,6 @@
+ | **✗ Violation: counterexample found** | functional | medium | feature, behaviour change intended | [`Backoff#delayMillis`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > Crosscut's `Backoff` record, the retry filter's wait between attempts, gains a `multiplier` component (Spring Retry's `ExponentialBackOffPolicy` has one, 2 by default) and the doubling loop is rewritten around it, counting the attempt down to zero instead of up to it. An attempt below zero, which the old loop treated as zero and answered with the base, now counts down past zero and multiplies until the cap. The tests pass, none of them passing a negative attempt. The regression proof relates the new record to the old one by building the old `Backoff` from the new components, `new Backoff(this.baseMillis, this.capMillis)`, with the multiplier of two as the scope of what should not have changed, and finds the attempt of minus one in nine seconds.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 130` runs it again.
+ 
+ Tags: [resilience](../README.md#tag-resilience), [special-values](../README.md#tag-special-values), [record-components](../README.md#tag-record-components), [signature-change](../README.md#tag-signature-change)
+ 
+@@ -246,11 +244,11 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 9.6 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
+-
+-**What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming !(this.multiplier != 2): the input is not among those the change is meant for (stated by the claim); the new version's constructor Backoff(baseMillis: long, capMillis: long, multiplier: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments new Backoff(this.baseMillis, this.capMillis), attempt are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+-
+-This page renders attempt `20261106T181329Z-6e81271d` at claim `59efb61448e02a72`, in pipeline job `20261106-181101-example-130-b9-own-checker-violation-wit`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++How the verdict was reached: found by JBMC 6.11.0 in 5.9 s as delayMillis(this=Backoff[baseMillis=86398477, capMillis=86398729, multiplier=2], attempt=-2147483647), shrunk to the input above in 281 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
++
++**What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming !(this.multiplier != 2): the input is not among those the change is meant for (stated by the claim); the new version's constructor Backoff(baseMillis: long, capMillis: long, multiplier: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments new Backoff(this.baseMillis, this.capMillis), attempt are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
++
++This page renders attempt `20261107T153928Z-87106d0e` at claim `bfcffccbde746e49`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -259,7 +257,7 @@
+   delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)
+     before: 1
+     after:  2
+-  (found by JBMC 6.11.0 in 9.6 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
++  (found by JBMC 6.11.0 in 5.9 s as delayMillis(this=Backoff[baseMillis=86398477, capMillis=86398729, multiplier=2], attempt=-2147483647), shrunk to the input above in 281 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+@@ -273,7 +271,7 @@
+ public final class EquivalenceHarness {
+     public static void check(long this_baseMillis, long this_capMillis, int this_multiplier, int attempt) {
+         if (this.multiplier != 2) { return; } // the inputs the developer meant to change
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         net.terminalvalue.crosscut.retry.Backoff this_after; // the previous version takes the components
+         try { this_after = new net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis, this_multiplier); } catch (Throwable t) { return; }
+         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "59efb61448e02a72",
++    "id": "bfcffccbde746e49",
+     "format": 1,
+     "example": "130",
+     "statement": {
+@@ -19,21 +19,21 @@
+     "inputs": {
+       "patch": "8d8b34a956301dfe6c8ab3d1f731ee03a0590a96ef27a83f313de4d023eded56",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "601ed8ffef7c5335dca2e565b92c4b56226c5b9fb1454598ab7bd666c763c640",
+-        "files": 54
++        "sha256": "22f36b5e0be0d8f7006a875a3647de777f5e67a17690eaa1297ed54d5b57caff",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181329Z-6e81271d",
+-    "claim": "59efb61448e02a72",
+-    "startedAt": "2026-11-06T18:13:29+00:00",
+-    "seconds": 11.8,
++    "id": "20261107T153928Z-87106d0e",
++    "claim": "bfcffccbde746e49",
++    "startedAt": "2026-11-07T15:39:28+00:00",
++    "seconds": 8.6,
+     "engine": "jbmc",
+     "options": [
+       "--gaps",
+@@ -44,23 +44,23 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f",
+       "jbmc": "6.11.0 (cbmc-6.11.0)"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "bca9e574b179fd9e49427bd1356dc4b5d3b5a6944221db5fa3094f5c0b1cca19",
+-        "files": 39
++        "sha256": "53f97489336a8de37fcc9665c3243adf39837e18c578954d832080f49c91039d",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181101-example-130-b9-own-checker-violation-wit",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-130-b9-own-checker-violation-wit"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -85,7 +85,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.8,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 9.6,
++        "seconds": 6.0,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -133,7 +133,7 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       },
+@@ -146,11 +146,11 @@
+         "stderr": "logs/09-version-of-jbmc.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-4s3dbf8p/attempts/130/attempt-a3x74shw"
++    "workspace": ".build-py/examples-a7x0scvg/attempts/130/attempt-32xemhax"
+   },
+   "conclusion": {
+-    "claim": "59efb61448e02a72",
+-    "attempt": "20261106T181329Z-6e81271d",
++    "claim": "bfcffccbde746e49",
++    "attempt": "20261107T153928Z-87106d0e",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -181,8 +181,8 @@
+         "input": "delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)",
+         "contract": "1",
+         "actual": "2",
+-        "found": "delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583)",
+-        "shrinkRuns": 110,
++        "found": "delayMillis(this=Backoff[baseMillis=86398477, capMillis=86398729, multiplier=2], attempt=-2147483647)",
++        "shrinkRuns": 281,
+         "witness": {
+           "inputs": [
+             {
+@@ -210,12 +210,12 @@
+             {
+               "name": "this.baseMillis",
+               "type": "long",
+-              "value": "544"
++              "value": "86398477"
+             },
+             {
+               "name": "this.capMillis",
+               "type": "long",
+-              "value": "1886"
++              "value": "86398729"
+             },
+             {
+               "name": "this.multiplier",
+@@ -225,7 +225,7 @@
+             {
+               "name": "attempt",
+               "type": "int",
+-              "value": -99583
++              "value": -2147483647
+             }
+           ],
+           "call": {
+@@ -310,7 +310,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "found by JBMC 6.11.0 in 9.6 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int",
++    "proof": "found by JBMC 6.11.0 in 5.9 s as delayMillis(this=Backoff[baseMillis=86398477, capMillis=86398729, multiplier=2], attempt=-2147483647), shrunk to the input above in 281 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -324,59 +324,35 @@
+     "search": {
+       "engine": "jbmc",
+       "checker": "JBMC 6.11.0",
+-      "seconds": 9.559,
++      "seconds": 5.858,
+       "properties": 4,
+       "unwind": 32,
+       "maxArrayLength": 8,
+-      "stage": "[-100000:100000]",
++      "stage": null,
+       "deadlineSeconds": 600.0,
+       "runs": [
+         {
+           "checker": "jbmc",
+           "purpose": "proof",
+-          "stage": "[0:20]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 4.762,
+-          "ended": "verified",
+-          "ending": "verified",
+-          "phases": {
+-            "loading": 0.014,
+-            "lowering": 0.004,
+-            "symbolic": 0.039,
+-            "encoding": 0.199,
+-            "solving": 4.454,
+-            "trace": 0.0,
+-            "other": 0.052
+-          },
+-          "formula": {
+-            "steps": 2712,
+-            "conditions": 3,
+-            "variables": 285492,
+-            "clauses": 1386425
+-          }
+-        },
+-        {
+-          "checker": "jbmc",
+-          "purpose": "proof",
+-          "stage": "[-100000:100000]",
+-          "budgetSeconds": 75.0,
+-          "seconds": 4.712,
++          "stage": null,
++          "budgetSeconds": 599.914,
++          "seconds": 5.767,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+-            "loading": 0.015,
+-            "lowering": 0.005,
+-            "symbolic": 0.042,
+-            "encoding": 0.206,
+-            "solving": 4.392,
+-            "trace": 0.004,
+-            "other": 0.048
++            "loading": 0.02,
++            "lowering": 0.006,
++            "symbolic": 0.043,
++            "encoding": 0.229,
++            "solving": 5.369,
++            "trace": 0.005,
++            "other": 0.096
+           },
+           "formula": {
+-            "steps": 2712,
++            "steps": 2704,
+             "conditions": 3,
+-            "variables": 285493,
+-            "clauses": 1386426
++            "variables": 284710,
++            "clauses": 1384826
+           }
+         }
+       ],
+@@ -440,15 +416,31 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "jbmc",
+         "name": "JBMC 6.11.0",
+         "solver": "cadical",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null
+@@ -467,13 +459,13 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "15be4d0029c4a439aad5ffc7a278add8306f121f1a9da63064606a6724a42036",
+-        "bytes": 3042
++        "sha256": "b24c3efa157a043835efbce0dcd3bee068ebb7db378e5840d630dca05256138c",
++        "bytes": 3054
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "851a0a9d19c6c3109289646648fdc0e1912db0ca78b9da003d560c1acd7957c6",
+-        "bytes": 891
++        "sha256": "111fbe5ac54cc166cb1ca3f203a8fcd0a8d47d8fec8ceb363d0000607612f289",
++        "bytes": 868
+       }
+     ]
+   }
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/statement.java
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/statement.java
+@@ -2,7 +2,7 @@
+ public final class EquivalenceHarness {
+     public static void check(long this_baseMillis, long this_capMillis, int this_multiplier, int attempt) {
+         if (this.multiplier != 2) { return; } // the inputs the developer meant to change
+-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
++        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+         net.terminalvalue.crosscut.retry.Backoff this_after; // the previous version takes the components
+         try { this_after = new net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis, this_multiplier); } catch (Throwable t) { return; }
+         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt
+@@ -2,6 +2,6 @@
+   delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)
+     before: 1
+     after:  2
+-  (found by JBMC 6.11.0 in 9.6 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
++  (found by JBMC 6.11.0 in 5.9 s as delayMillis(this=Backoff[baseMillis=86398477, capMillis=86398729, multiplier=2], attempt=-2147483647), shrunk to the input above in 281 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+--- a/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md
++++ b/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md
+@@ -8,8 +8,6 @@
+ | **✗ Violation: counterexample found** | functional | medium | refactor, behaviour change not intended | [`TokenBucket#tokensAfter`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > A token bucket's refill, `(nowNanos - lastNanos) / periodNanos` whole periods, is rewritten as `nowNanos / periodNanos - lastNanos / periodNanos`, so that two clock readings are never subtracted. The tests pass, every refill in them starting at time zero, and the module's property holds. The regression proof, run by the tool's own checker within the module's precondition, finds a refill one nanosecond into a period that credits a whole token: a client that polls at each period boundary earns two tokens a period, and the limiter admits twice its rate.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 132` runs it again.
+ 
+ Tags: [resilience](../README.md#tag-resilience), [clocks-and-time](../README.md#tag-clocks-and-time), [rounding](../README.md#tag-rounding), [own-checker](../README.md#tag-own-checker)
+ 
+@@ -115,9 +113,9 @@
+ 
+ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
+ 
+-**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+-
+-This page renders attempt `20261106T181229Z-25cbf8ce` at claim `b45ee83e7f2a5292`, in pipeline job `20261106-181059-example-132-b9-own-checker-violation-wit`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
++
++This page renders attempt `20261107T153938Z-2ab61a39` at claim `a246786e6cf3f9a7`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json
++++ b/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "b45ee83e7f2a5292",
++    "id": "a246786e6cf3f9a7",
+     "format": 1,
+     "example": "132",
+     "statement": {
+@@ -18,21 +18,21 @@
+     "inputs": {
+       "patch": "92fb3cb2738234696662d90cfa52cbb3aec0d554f7d3249dc5441e840f4add76",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "0d06dfef45f01329907238e442e711561c6ac4b00d1b8ee0b93a427dfaddd33b",
+-        "files": 54
++        "sha256": "b172fb7b7858895f9e8e4d8cdd9b448530804e615c93f4e7b4e4759a41d030f5",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181229Z-25cbf8ce",
+-    "claim": "b45ee83e7f2a5292",
+-    "startedAt": "2026-11-06T18:12:29+00:00",
+-    "seconds": 2.8,
++    "id": "20261107T153938Z-2ab61a39",
++    "claim": "a246786e6cf3f9a7",
++    "startedAt": "2026-11-07T15:39:38+00:00",
++    "seconds": 3.1,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -43,22 +43,22 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "70d2f422b0a32401c327b47c460d766fa568173f2885d54c775c0c5f2f66e4ca",
+-        "files": 39
++        "sha256": "10116f586be865fa9533287be7e415167b1ebf3a2852ae5532e653db89d41df3",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181059-example-132-b9-own-checker-violation-wit",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181059-example-132-b9-own-checker-violation-wit"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -83,7 +83,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -91,7 +91,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -131,16 +131,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-sff_tj0c/attempts/132/attempt-tlnasqli"
++    "workspace": ".build-py/examples-o1dp7vv_/attempts/132/attempt-llg36rxj"
+   },
+   "conclusion": {
+-    "claim": "b45ee83e7f2a5292",
+-    "attempt": "20261106T181229Z-25cbf8ce",
++    "claim": "a246786e6cf3f9a7",
++    "attempt": "20261107T153938Z-2ab61a39",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -330,7 +330,7 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.418,
++      "seconds": 0.431,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -342,16 +342,16 @@
+           "purpose": "proof",
+           "stage": null,
+           "budgetSeconds": 600.0,
+-          "seconds": 0.376,
++          "seconds": 0.388,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+             "loading": 0.001,
+             "lowering": 0.0,
+-            "symbolic": 0.048,
+-            "encoding": 0.0,
+-            "solving": 0.326,
+-            "trace": 0.001,
++            "symbolic": 0.001,
++            "encoding": 0.049,
++            "solving": 0.337,
++            "trace": 0.0,
+             "other": 0.0
+           },
+           "formula": {
+@@ -364,20 +364,20 @@
+         "paths": 1,
+         "merges": 0,
+         "solverCalls": 14,
+-        "solvingSeconds": 0.326171669,
++        "solvingSeconds": 0.337491939,
+         "gatesEvaluated": 3031,
+-        "evaluatingSeconds": 5.7676e-05,
++        "evaluatingSeconds": 5.2791e-05,
+         "divisions": 3,
+         "divisionsBuilt": 2,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 62779,
+         "clauses": 217128,
+-        "seconds": 0.375654197,
+-        "loadingSeconds": 0.000615476,
+-        "decodingSeconds": 2.9805e-05,
+-        "encodingSeconds": 1.2224e-05,
+-        "witnessSeconds": 0.001254208
++        "seconds": 0.388453408,
++        "loadingSeconds": 0.000644478,
++        "decodingSeconds": 2.8554e-05,
++        "encodingSeconds": 0.049146177,
++        "witnessSeconds": 0.000113152
+       },
+       "gapMode": "strict"
+     },
+@@ -442,15 +442,25 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "native",
+         "name": "jvmcontract's own checker (CaDiCaL)",
+         "solver": "CaDiCaL 1.9.5 (bundled)",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null
+--- a/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md
++++ b/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md
+@@ -8,8 +8,6 @@
+ | **✓ Verified: equivalent on every input outside the declared change** | functional, no-false-positive | none | refactor, behaviour change not intended | [`TokenBucket#tokensAfter`](../../examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java) | [B9: Regression verification](../../lib/README.md) |
+ 
+ > A token bucket's refill, `Math.min(capacity, tokens + earned)`, is rewritten as `tokens + Math.min(earned, capacity - tokens)`, the tokens earned but no more than the bucket has room for, so that the sum can never overflow. Within the module's precondition the two are the same arithmetic, and the tool's own checker proves it in half a second, with no JBMC; outside it they differ where a sum overflows a `long`, which the checker also shows when run without the scope.
+-
+-> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 133` runs it again.
+ 
+ Tags: [resilience](../README.md#tag-resilience), [clocks-and-time](../README.md#tag-clocks-and-time), [integer-overflow](../README.md#tag-integer-overflow), [confined-change](../README.md#tag-confined-change), [own-checker](../README.md#tag-own-checker)
+ 
+@@ -115,9 +113,9 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.2 s; loops unwound 16 times with unwinding assertions.
+ 
+-**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20).
+-
+-This page renders attempt `20261106T181332Z-30b97f0a` at claim `0e64b4f98f709e23`, in pipeline job `20261106-181101-example-133-b9-own-checker-renders-its-o`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
++**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20).
++
++This page renders attempt `20261107T153943Z-77b092a5` at claim `10606bf279b00b39`, in pipeline job `20261107-064838-crosscut-s-nine-examples-with-claims-rer`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json
++++ b/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json
+@@ -1,7 +1,7 @@
+ {
+   "format": 2,
+   "claim": {
+-    "id": "0e64b4f98f709e23",
++    "id": "10606bf279b00b39",
+     "format": 1,
+     "example": "133",
+     "statement": {
+@@ -18,21 +18,21 @@
+     "inputs": {
+       "patch": "1d1838432bdbd7409185ac64b679ec282773afcec5f08ee1333c7fa7dd5ffc2a",
+       "before": {
+-        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+-        "files": 54
++        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
++        "files": 58
+       },
+       "after": {
+-        "sha256": "3d42aa8625df7e3341d7a6b785630e3c4e7a5eefa0291fbc6761ca98d2e48d00",
+-        "files": 54
++        "sha256": "507d74449396add182b548756ea421be317e0d5f49f7678bd4afc08d6e5cd3e1",
++        "files": 58
+       },
+       "dependencies": "the JDK"
+     }
+   },
+   "attempt": {
+-    "id": "20261106T181332Z-30b97f0a",
+-    "claim": "0e64b4f98f709e23",
+-    "startedAt": "2026-11-06T18:13:32+00:00",
+-    "seconds": 2.4,
++    "id": "20261107T153943Z-77b092a5",
++    "claim": "10606bf279b00b39",
++    "startedAt": "2026-11-07T15:39:43+00:00",
++    "seconds": 2.9,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -43,22 +43,22 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++      "jvmcontract": "38d9e298396eda0ce04041b7c57ae2c8b8a8c0299d9691825c3224f28de7938f"
+     },
+     "bytecode": {
+       "before": {
+-        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+-        "files": 39
++        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
++        "files": 42
+       },
+       "after": {
+-        "sha256": "1c781053992cc859ec9f5eda43376f36541aeb65bc17377c491314beff2f03a7",
+-        "files": 39
++        "sha256": "e05b9d558e27574e6204af9518efeddd1f3f114e704d2d6e96d69045b700fe35",
++        "files": 42
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261106-181101-example-133-b9-own-checker-renders-its-o",
+-      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-133-b9-own-checker-renders-its-o"
++      "jobId": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
++      "sourceCommit": "224431e7bb68592e79419bbd2ae235a13902e337",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-064838-crosscut-s-nine-examples-with-claims-rer"
+     },
+     "execution": {
+       "status": "completed",
+@@ -83,7 +83,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -91,7 +91,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.9,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -107,7 +107,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.8,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -136,11 +136,11 @@
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-8wsue273/attempts/133/attempt-gi8hfshv"
++    "workspace": ".build-py/examples-4rssozcy/attempts/133/attempt-w8eos1v3"
+   },
+   "conclusion": {
+-    "claim": "0e64b4f98f709e23",
+-    "attempt": "20261106T181332Z-30b97f0a",
++    "claim": "10606bf279b00b39",
++    "attempt": "20261107T153943Z-77b092a5",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -184,7 +184,7 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.153,
++      "seconds": 0.164,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -196,15 +196,15 @@
+           "purpose": "proof",
+           "stage": null,
+           "budgetSeconds": 600.0,
+-          "seconds": 0.131,
++          "seconds": 0.139,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+-            "symbolic": 0.003,
+-            "encoding": 0.0,
+-            "solving": 0.127,
++            "symbolic": 0.0,
++            "encoding": 0.004,
++            "solving": 0.135,
+             "trace": 0.0,
+             "other": 0.0
+           },
+@@ -217,16 +217,16 @@
+           "checker": "native",
+           "purpose": "probe",
+           "stage": null,
+-          "budgetSeconds": 599.847,
++          "budgetSeconds": 599.836,
+           "seconds": 0.002,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+-            "symbolic": 0.001,
+-            "encoding": 0.0,
+-            "solving": 0.001,
++            "symbolic": 0.0,
++            "encoding": 0.001,
++            "solving": 0.0,
+             "trace": 0.0,
+             "other": 0.0
+           },
+@@ -240,19 +240,19 @@
+         "paths": 9,
+         "merges": 0,
+         "solverCalls": 10,
+-        "solvingSeconds": 0.127035498,
++        "solvingSeconds": 0.135048277,
+         "gatesEvaluated": 3029,
+-        "evaluatingSeconds": 4.4855e-05,
++        "evaluatingSeconds": 4.8511e-05,
+         "divisions": 1,
+         "divisionsBuilt": 0,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 7369,
+         "clauses": 23526,
+-        "seconds": 0.130786118,
+-        "loadingSeconds": 0.000193132,
+-        "decodingSeconds": 2.4367e-05,
+-        "encodingSeconds": 9.0432e-05,
++        "seconds": 0.139381512,
++        "loadingSeconds": 0.000268262,
++        "decodingSeconds": 2.6981e-05,
++        "encodingSeconds": 0.003585199,
+         "witnessSeconds": 0.0
+       },
+       "gapMode": "strict"
+@@ -318,15 +318,25 @@
+       },
+       "models": {
+         "used": true,
+-        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+-        "classes": 10,
++        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++        "classes": 17,
+         "jdk": "25.0.5"
+       },
+       "checker": {
+         "engine": "native",
+         "name": "jvmcontract's own checker (CaDiCaL)",
+         "solver": "CaDiCaL 1.9.5 (bundled)",
+-        "fallback": null
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback"
++          ]
++        }
+       },
+       "gapMode": "strict",
+       "confirmation": null,

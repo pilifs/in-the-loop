@@ -1,0 +1,224 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-115201-input-equations-that-read-another-object",
+  "title": "Input equations that read another object parameter's fields (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 23m45s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+  "attention": [
+    "step 1 (other-object reads under JBMC and auto --confirm) exited 101, expected 0",
+    "took 23m45s, 2.38× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-115201-input-equations-that-read-another-object.json",
+    "sha256": "35543068c7383f92e737ba09480dbf9769327da886169f8b29f3e9dcb711b525",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-115201-input-equations-that-read-another-object",
+      "title": "Input equations that read another object parameter's fields (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "description": "A regression check's correspondence may now give the previous version's field from an expression that reads another object parameter's field, a leaf of that object's construction read as the argument it was made from: old.l.total == new.l.price * new.o.count, for a Line(long total) that became Line(long price) beside an Order(int count) both versions take. The harness makes the previous line from the order's leaf before the calls and compares the expression after them. On the own checker the new tests in lib/tests/heap.rs pass inline; this job runs the ignored one, which checks the order kernel's four cases (after and defect builds of Orders.discounted and Orders.reprice) under --engine jbmc and under auto --confirm, since JBMC checks the same harness bytecode.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/spec/heap.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test passes. Under both engines: after discounted and after reprice Verified; defect discounted and defect reprice Violation, each witness run on a JVM (counterexample.jvm set).",
+      "submitted": {
+        "at": "2026-11-07T11:52:01+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a release build of the crate, then 8 small JBMC runs over a long times an int"
+      },
+      "steps": [
+        {
+          "name": "other-object reads under JBMC and auto --confirm",
+          "run": "cd lib && cargo test --release --test heap -- --ignored the_other_object_reads",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "0348f57c2201d3d1e70c056dfe929c97f4b31aee",
+  "startedAt": "2026-11-07T15:25:59+00:00",
+  "finishedAt": "2026-11-07T15:49:45+00:00",
+  "wallSeconds": 1426.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a release build of the crate, then 8 small JBMC runs over a long times an int"
+  },
+  "usage": {
+    "peakMemoryBytes": 1337110528,
+    "wallSeconds": 1425.6,
+    "cpuSeconds": 1502.4,
+    "memoryOfEstimate": 0.42,
+    "durationOfEstimate": 2.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "other-object reads under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored the_other_object_reads",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 1425.649,
+      "cpuSeconds": 1502.411,
+      "cpuThrottledSeconds": 1.237,
+      "peakMemoryBytes": 1337110528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-other-object-reads-under-jbmc.log",
+        "lines": 76,
+        "bytes": 2763,
+        "sha256": "228c006d5a03d87d2cefbb1740c8f586d20f8ed7c59adf591f1f6569c5267063",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1,
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 66,
+          "text": "✗ orders.Orders#reprice cannot be verified: JBMC did not finish within 600 s",
+          "groups": [
+            "orders.Orders#reprice cannot be verified: JBMC did not finish within 600 s"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 74,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 51 filtered out; finished in 1291.72s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-115201-input-equations-that-read-another-object/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 13s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "---- the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm' (3977198) panicked at tests/heap.rs:1685:5:",
+        "Jbmc confirm=false after reprice: Unverifiable (expected Verified, on a JVM false)",
+        "✗ orders.Orders#reprice cannot be verified: JBMC did not finish within 600 s",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 51 filtered out; finished in 1291.72s",
+        "",
+        "error: test failed, to rerun pass `--test heap`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-115201-input-equations-that-read-another-object"
+}

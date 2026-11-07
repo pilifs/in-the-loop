@@ -1,0 +1,273 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-065648-example-170-a-retry-route-and-its-crossc",
+  "title": "Example 170: a retry route and its Crosscut retry policy refactored, the effect trace proved preserved",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.4s, peak 104.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 170 (B9)) was held back 7.7s by its 1-CPU quota in 8.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-065648-example-170-a-retry-route-and-its-crossc.json",
+    "sha256": "d70e1a55f616b76a1652517401b81e6aec5618824d1256efa33b6fdea131ff69",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-065648-example-170-a-retry-route-and-its-crossc",
+      "title": "Example 170: a retry route and its Crosscut retry policy refactored, the effect trace proved preserved",
+      "description": "build.py runs example 170 end to end (foundations O3, the rest, step 2): it applies the patch, which rewrites Crosscut's RetryPolicy.shouldRetry over two helpers and reorganises the deliveries route POST /deliveries/failures with each Kafka send in a method of its own, runs the app's tests, and runs jvmcontract effects between the unpatched and the patched builds: the ordered trace of modeled boundary calls (KafkaTemplate.send, payloads snapshotted at the call, with their class), the answer and the outcome, under recording stubs and one environment model. Inline on 2026-11-07 the command verified it in 0.4 s.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:effects"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/effects.rs",
+          "examples/apps/deliveries"
+        ],
+        "examples": [
+          "170"
+        ]
+      },
+      "expected": "verdict verified, matchesExpected true; the page says the trace, the response and the outcome are preserved on every input",
+      "submitted": {
+        "at": "2026-11-07T06:56:48+00:00",
+        "session": "e65240e3-5cf7-41e9-b648-0b36ce9f1129",
+        "by": "claude (foundations-observations)"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+      },
+      "steps": [
+        {
+          "name": "example 170 (B9)",
+          "run": "python3 examples/tools/build.py 170",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent"
+      ]
+    }
+  },
+  "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+  "startedAt": "2026-11-07T15:22:46+00:00",
+  "finishedAt": "2026-11-07T15:25:23+00:00",
+  "wallSeconds": 157.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+  },
+  "usage": {
+    "peakMemoryBytes": 109420544,
+    "wallSeconds": 8.4,
+    "cpuSeconds": 8.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 82.834,
+      "cpuSeconds": 82.64,
+      "cpuThrottledSeconds": 0.165,
+      "peakMemoryBytes": 1398853632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "59ac7cb93b3fa53d7d0ce96c6b54a0fb283488542ca1780ef11d1a770541108e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-065648-example-170-a-retry-route-and-its-crossc/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 22s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 170 (B9)",
+      "run": "python3 examples/tools/build.py 170",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 8.422,
+      "cpuSeconds": 8.303,
+      "cpuThrottledSeconds": 7.722,
+      "peakMemoryBytes": 109420544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-170-b9.log",
+        "lines": 24,
+        "bytes": 1005,
+        "sha256": "e789d02d871d11571362d5625960157b5c223b9d7738bc1a4d60a74e68a13a0d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent: verified (as expected)",
+          "groups": [
+            "170",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.8 s",
+        "  · javac patched deliveries main",
+        "  · javac patched deliveries main: exited 0, 1.7 s",
+        "  · javac patched deliveries tests",
+        "  · javac patched deliveries tests: exited 0, 1.2 s",
+        "  · the deliveries tests",
+        "  · the deliveries tests: exited 0, 0.1 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.8 s",
+        "  · javac unpatched deliveries main",
+        "  · javac unpatched deliveries main: exited 0, 1.6 s",
+        "  · jvmcontract effects",
+        "  · jvmcontract effects: exited 0, 0.1 s",
+        "  · jvmcontract effects --json",
+        "  · jvmcontract effects --json: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md",
+      "change": "added",
+      "bytes": 14948,
+      "sha256": "2c18428b5683ebe086101bc977f82dd6f8c7bac04f7d08938bef968ade5db970",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json",
+      "change": "added",
+      "bytes": 8022,
+      "sha256": "1d7ae5a7e9dce96ff3a0fa7790c9e60e5240a7d96644b1b47d17688acfa819e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.sarif",
+      "change": "added",
+      "bytes": 2174,
+      "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/verifier-output.txt",
+      "change": "added",
+      "bytes": 1308,
+      "sha256": "2fbbbe6eaf88c83fbe95664953199837e06787a26783de00e5b4c9c850ff266b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [
+      "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md",
+      "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json",
+      "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.sarif",
+      "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f9eb538903ec6b7400ffa59321ffd40ea4e283c0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f9eb538903ec6b7400ffa59321ffd40ea4e283c0/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

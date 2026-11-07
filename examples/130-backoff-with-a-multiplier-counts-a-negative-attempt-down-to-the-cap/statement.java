@@ -2,7 +2,7 @@
 public final class EquivalenceHarness {
     public static void check(long this_baseMillis, long this_capMillis, int this_multiplier, int attempt) {
         if (this.multiplier != 2) { return; } // the inputs the developer meant to change
-        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.
+        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
         net.terminalvalue.crosscut.retry.Backoff this_after; // the previous version takes the components
         try { this_after = new net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis, this_multiplier); } catch (Throwable t) { return; }
         // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.

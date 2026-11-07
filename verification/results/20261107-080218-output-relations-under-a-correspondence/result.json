@@ -1,0 +1,224 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-080218-output-relations-under-a-correspondence",
+  "title": "Output relations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 22m02s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+  "attention": [
+    "step 1 (output relations under JBMC and auto --confirm) exited 101, expected 0",
+    "took 22m02s, 2.2× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-080218-output-relations-under-a-correspondence.json",
+    "sha256": "3e962649a58dbd1d1435b639283164022ef0e5b3f265ee9a94bf9bcffd2e23c9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-080218-output-relations-under-a-correspondence",
+      "title": "Output relations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an output relation for the result in place of --results-agree-when: a boolean over old.result, new.result and the new parameters. A result that is an object of an application class is in it, or in --results-agree-when, by its field paths of whatever shape in each version, read through the objects in the harness's bytecode; identity relations are still compared. jvmcontract equivalence takes the correspondence as JSON with --correspondence FILE. lib/tests/heap.rs checks five such checks on the own checker inline: objects.Kernel#price, whose long result became a Money value object, related by old.result == new.result.cents (verified; a cent too much refuted); the foundations fixture's shop.Pricing#withQuantity between Quote(long, int) and Quote(Money, int), its result related by its field paths (verified; the alias-to-copy defect refuted by result == q; a relation the versions break refuted). This job runs the ignored test that repeats the five under --engine jbmc and under --engine auto --confirm.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/equivalence.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test passes. Under both engines, the two after-build checks are Verified and the three others Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+      "submitted": {
+        "at": "2026-11-07T08:02:18+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a release build of the crate, then 10 small JBMC runs (loop-free harnesses of a few dozen instructions)"
+      },
+      "steps": [
+        {
+          "name": "output relations under JBMC and auto --confirm",
+          "run": "cd lib && cargo test --release --test heap -- --ignored output_relations",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "9b9c3a34448c40c5a49d2e6b4c92031a14a8d1cb",
+  "startedAt": "2026-11-07T15:23:58+00:00",
+  "finishedAt": "2026-11-07T15:46:01+00:00",
+  "wallSeconds": 1323.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a release build of the crate, then 10 small JBMC runs (loop-free harnesses of a few dozen instructions)"
+  },
+  "usage": {
+    "peakMemoryBytes": 1308573696,
+    "wallSeconds": 1323.0,
+    "cpuSeconds": 1393.8,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 2.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "output relations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored output_relations",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 1322.995,
+      "cpuSeconds": 1393.823,
+      "cpuThrottledSeconds": 1.248,
+      "peakMemoryBytes": 1308573696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-output-relations-under-jbmc-an.log",
+        "lines": 76,
+        "bytes": 2763,
+        "sha256": "7b6334f814afe5459a478d2fbbeff84a466578743d50a9446323bd7bc20f3ead",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1,
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 66,
+          "text": "✗ objects.Kernel#price cannot be verified: JBMC did not finish within 600 s",
+          "groups": [
+            "objects.Kernel#price cannot be verified: JBMC did not finish within 600 s"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 74,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 33 filtered out; finished in 1205.84s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-080218-output-relations-under-a-correspondence/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 57s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "---- the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm stdout ----",
+        "",
+        "thread 'the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm' (3971976) panicked at tests/heap.rs:986:5:",
+        "Jbmc confirm=false after objects.Kernel#price: Unverifiable (expected Verified, on a JVM false)",
+        "✗ objects.Kernel#price cannot be verified: JBMC did not finish within 600 s",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 33 filtered out; finished in 1205.84s",
+        "",
+        "error: test failed, to rerun pass `--test heap`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-080218-output-relations-under-a-correspondence"
+}

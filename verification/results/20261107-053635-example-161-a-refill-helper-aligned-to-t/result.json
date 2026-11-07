@@ -1,0 +1,205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-053635-example-161-a-refill-helper-aligned-to-t",
+  "title": "Example 161: a refill helper aligned to the clock's grid, refuted on its own, and its caller's Retry-After found to change",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 28.6 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "step 1 (example 161 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-053635-example-161-a-refill-helper-aligned-to-t.json",
+    "sha256": "31a39c22e27aa19290a60dd81e635b67a264d5d358cb02745ee93acc4576783d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-053635-example-161-a-refill-helper-aligned-to-t",
+      "title": "Example 161: a refill helper aligned to the clock's grid, refuted on its own, and its caller's Retry-After found to change",
+      "description": "New example 161 (S4b of llm-dlc/loops/foundations-summaries.md), the sibling of 160 with a planted defect. Crosscut's TokenBucket.lastAfter is rewritten to now - now % period, aligning the credited time to the clock's grid instead of counting periods from the last refill; its caller RetryAfter#nanosUntilToken is unchanged, and the proof is scoped to the module's precondition (intendedInputs). build.py runs the B9 proof with the tool's own checker and --cache build/proof-cache (approach.cache). The tool should try to prove lastAfter on its own, refute it, leave it as written in both versions, and then find the caller's regression with a counterexample replayed on both versions. The tests pass, and the caller's property contract holds of the new version.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "161",
+          "160"
+        ],
+        "paths": [
+          "lib/src/proof_cache.rs",
+          "examples/tools/build.py"
+        ]
+      },
+      "expected": "Verdict violation, as expected (build.py prints 'as expected'; the example expects sharedHelpers []). result.json's helpers lists TokenBucket.lastAfter with shared false and the note 'its two versions differ, at lastAfter(...)'. stated has no assumption of kind callee. The counterexample, replayed in the interpreter (replay.reproduced true), was nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1): before 2, after 1, when written; another shrunk input within the precondition is as good.",
+      "submitted": {
+        "at": "2026-11-07T05:36:35+00:00",
+        "session": "be22079e-0c8d-41e4-ace3-12f7f213f1f9",
+        "by": "foundations-summaries loop"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "3m",
+        "notes": "A native refutation of the helper and of the caller, a few tenths of a second each, measured inline when the example was written; most of the time is building Crosscut and the tool."
+      },
+      "steps": [
+        {
+          "name": "example 161 (B9)",
+          "run": "python3 examples/tools/build.py 161",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early"
+      ]
+    }
+  },
+  "sourceCommit": "85ee8db14dfb8b12140baa49e15ceac7cbb60e04",
+  "startedAt": "2026-11-07T15:20:19+00:00",
+  "finishedAt": "2026-11-07T15:22:46+00:00",
+  "wallSeconds": 147.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": "A native refutation of the helper and of the caller, a few tenths of a second each, measured inline when the example was written; most of the time is building Crosscut and the tool."
+  },
+  "usage": {
+    "peakMemoryBytes": 29999104,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.1,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 74.392,
+      "cpuSeconds": 74.252,
+      "cpuThrottledSeconds": 0.111,
+      "peakMemoryBytes": 1475141632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "2445cb471127ae474ecda23dbcbeb5112d178f34b63704663ba23d7b4278a710",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-053635-example-161-a-refill-helper-aligned-to-t/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 14s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 161 (B9)",
+      "run": "python3 examples/tools/build.py 161",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.116,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 29999104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-161-b9.log",
+        "lines": 2,
+        "bytes": 250,
+        "sha256": "89df5c0f1de0893d22d6b84477a3c32769c30199ac62ea5bba2d7a018b8adb31",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early: running (B9)",
+        "the patch does not change the subject file examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "27e8169a772c0e0ce402de0822dcbc77e6fa47f1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/27e8169a772c0e0ce402de0822dcbc77e6fa47f1/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-053635-example-161-a-refill-helper-aligned-to-t"
+}

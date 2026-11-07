@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-104658-output-relations-for-identity-relations",
+  "title": "Output relations for identity relations (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m15s, peak 1.2 GiB (estimated 10m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-104658-output-relations-for-identity-relations.json",
+    "sha256": "763e08554989361ff91c22aaf3690ccf62a315fea72264d876b92e63494571b5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-104658-output-relations-for-identity-relations",
+      "title": "Output relations for identity relations (H5's rest): the same verdicts under JBMC and auto --confirm",
+      "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an output relation for an identity relation the check observes, identity:result==q, a boolean over whether it holds in each version (old.result == old.q, new.result == new.q), compared in the harness in place of 'holds before iff it holds now'. Over the joint example's two shapes of Quote (lib/tests/fixtures/foundations, with two more builds of withQuantity written by lib/tests/heap.rs), under old.result == old.q && new.result != new.q: a build that hands back a copy with the same values on purpose (copied) is verified; the build that hands back the quote itself (after) and one that does so only when the quantity is unchanged (sometimes-copied) are refuted in identity:result==q, their witnesses run on a JVM. Inline on the own checker all three pass. This job runs the ignored test that repeats the three under --engine jbmc and under --engine auto --confirm, where JBMC checks the same harness (the relation compiled over two booleans from if_acmp).",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/spec/heap.rs",
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/tests/heap.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test passes. Under both engines: copied Verified, after and sometimes-copied Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+      "submitted": {
+        "at": "2026-11-07T10:46:58+00:00"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a release build of the crate, then 6 small JBMC runs over reference comparisons"
+      },
+      "steps": [
+        {
+          "name": "identity relations under JBMC and auto --confirm",
+          "run": "cd lib && cargo test --release --test heap -- --ignored the_identity_relations_have",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "dfca6c383eba1339ad4fe4c4e6314040a644b1db",
+  "startedAt": "2026-11-07T15:25:24+00:00",
+  "finishedAt": "2026-11-07T15:27:39+00:00",
+  "wallSeconds": 135.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a release build of the crate, then 6 small JBMC runs over reference comparisons"
+  },
+  "usage": {
+    "peakMemoryBytes": 1333374976,
+    "wallSeconds": 135.1,
+    "cpuSeconds": 205.8,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "identity relations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored the_identity_relations_have",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 135.096,
+      "cpuSeconds": 205.818,
+      "cpuThrottledSeconds": 1.052,
+      "peakMemoryBytes": 1333374976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-identity-relations-under-jbmc.log",
+        "lines": 61,
+        "bytes": 2077,
+        "sha256": "ab6fe1db205b9a5d7eb08653d5e80223367dc2bf1d89ea1c8ac91347d6f61978",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 60,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 45 filtered out; finished in 5.08s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling heck v0.5.0",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-104658-output-relations-for-identity-relations/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 09s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_identity_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 45 filtered out; finished in 5.08s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

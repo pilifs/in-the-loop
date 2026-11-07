@@ -1,0 +1,239 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-065648-example-171-a-retry-route-that-skips-the",
+  "title": "Example 171: a retry route that skips the dead letter for a client error, refuted by the effect trace",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.6s, peak 104.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 171 (B9)) was held back 7.5s by its 1-CPU quota in 8.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-065648-example-171-a-retry-route-that-skips-the.json",
+    "sha256": "45d7bc837fb5dcdc36dc67a4173f574b142344683c68395858dc3556d9f243e0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-065648-example-171-a-retry-route-that-skips-the",
+      "title": "Example 171: a retry route that skips the dead letter for a client error, refuted by the effect trace",
+      "description": "build.py runs example 171 end to end (foundations O3, the rest, step 2): the refactor of example 170 with a shortcut that answers 200 for a 4xx other than 408 and 429 without dead-lettering. The answer is unchanged and the tests pass; jvmcontract effects must refute the send trace with a witness replayed on a JVM under the recording stubs. Inline on 2026-11-07: refuted at status=400, idempotent=false, attempts=0 (old: one dead letter; new: no modeled call).",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:effects"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/effects.rs",
+          "examples/apps/deliveries"
+        ],
+        "examples": [
+          "171"
+        ]
+      },
+      "expected": "verdict violation, matchesExpected true; one counterexample with the old build's dead-letter send and the new build's no modeled call; replay by jvm",
+      "submitted": {
+        "at": "2026-11-07T06:56:48+00:00",
+        "session": "e65240e3-5cf7-41e9-b648-0b36ce9f1129",
+        "by": "claude (foundations-observations)"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+      },
+      "steps": [
+        {
+          "name": "example 171 (B9)",
+          "run": "python3 examples/tools/build.py 171",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace"
+      ]
+    }
+  },
+  "sourceCommit": "d48855706c2029f8daf7a40c032d287298074572",
+  "startedAt": "2026-11-07T15:23:52+00:00",
+  "finishedAt": "2026-11-07T15:25:23+00:00",
+  "wallSeconds": 91.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+  },
+  "usage": {
+    "peakMemoryBytes": 109449216,
+    "wallSeconds": 8.6,
+    "cpuSeconds": 8.4,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 171 (B9)",
+      "run": "python3 examples/tools/build.py 171",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 8.622,
+      "cpuSeconds": 8.367,
+      "cpuThrottledSeconds": 7.461,
+      "peakMemoryBytes": 109449216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-171-b9.log",
+        "lines": 24,
+        "bytes": 1046,
+        "sha256": "f8b97d13755f4bdfa011bf11b12d94ba5291b0c1ded6c5ab8b27d389c02c2603",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace: violation (as expected)",
+          "groups": [
+            "171",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.8 s",
+        "  · javac patched deliveries main",
+        "  · javac patched deliveries main: exited 0, 1.7 s",
+        "  · javac patched deliveries tests",
+        "  · javac patched deliveries tests: exited 0, 1.2 s",
+        "  · the deliveries tests",
+        "  · the deliveries tests: exited 0, 0.1 s",
+        "  · javac deliveries stubs",
+        "  · javac deliveries stubs: exited 0, 0.9 s",
+        "  · javac unpatched deliveries main",
+        "  · javac unpatched deliveries main: exited 0, 1.6 s",
+        "  · jvmcontract effects",
+        "  · jvmcontract effects: exited 1, 0.2 s",
+        "  · jvmcontract effects --json",
+        "  · jvmcontract effects --json: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md",
+      "change": "added",
+      "bytes": 17205,
+      "sha256": "f32bd578ba8ea9d3f2cba669a33917f348cdcdb0695eba804a0f1aa2066aad6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json",
+      "change": "added",
+      "bytes": 8682,
+      "sha256": "cfe34072727ed05670881d5b6327686a5bea8abe56ac631bea50586df7df07be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.sarif",
+      "change": "added",
+      "bytes": 3267,
+      "sha256": "80e35352137f633165dcc25c14063d380b925250e9513c1f0541b949d63c113f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/verifier-output.txt",
+      "change": "added",
+      "bytes": 1914,
+      "sha256": "52b557f50f3ee8bad85ac5cf913506d1d28907a3e93942300a8d9e84b3e09896",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [
+      "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md",
+      "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json",
+      "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.sarif",
+      "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f9eb538903ec6b7400ffa59321ffd40ea4e283c0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f9eb538903ec6b7400ffa59321ffd40ea4e283c0/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

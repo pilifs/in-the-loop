@@ -1,0 +1,257 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-064135-the-proof-cache-s-economics-on-the-recor",
+  "title": "The proof cache's economics on the recorded B9 and B11 examples: cold, warm, and four kinds of change (S6)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m07s, peak 296.1 MiB (estimated 30m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-064135-the-proof-cache-s-economics-on-the-recor.json",
+    "sha256": "236997bb4ed6cebaad2455402af2a1cecf4717029382ea95840590287c36d1c6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-064135-the-proof-cache-s-economics-on-the-recor",
+      "title": "The proof cache's economics on the recorded B9 and B11 examples: cold, warm, and four kinds of change (S6)",
+      "description": "S6 of llm-dlc/loops/foundations-summaries.md: what the proof cache saves on the recorded examples. examples/tools/economics.py runs `jvmcontract equivalence --cache` (as build.py runs a B9 example with approach.cache) over the 61 recorded B9 and B11 examples of the javac apps. 8 more are left out: real-world, or Box Office's Gradle build. The cache serves the 17 B9 examples the tool's own checker proves (Crosscut 124, 125, 132, 133, 135-139, 160, 161; Mica 140-145). It doesn't serve the other 44: B9 under JBMC, whose identity is not in the key, and B11 (`prove`), which has no cache. The script lists them with the reason and runs nothing for them.\n\nThe runs, every check a process of its own, sequentially:\n1. cold: the 17 claims on an empty cache;\n2. warm: the same again on that cache;\n3. for Crosscut and Mica, four changes in examples/tools/economics/ (an unrelated edit, a behaviour-preserving helper rewrite, a representation change, a real regression). Each gets a \"rebased\" set (each served example with the change beneath it on both sides; an example whose patch conflicts with the change is listed as not run) and an \"own\" set (the change itself on the served targets). Each set runs cold, on an empty cache, and warm, on the cache the runs so far filled.\n\nFor each claim it reports how it was served: exact hit, nothing to prove, changed helper's proof found in the cache or proved in the run, proved/refuted again, unresolved. It also reports the time: wall, checker (search.seconds), the cache's key and lookup (a new note in lib/src/proof_cache.rs), the changed helpers' own checks, and the rest. Inline when written: --plan builds all trees (17 s, 55 s of javac CPU), and `jvmcontract impact` names exactly the own claims each change is meant to reach. Both helper rewrites' own proofs hold, in 0.06 s and 0.22 s.",
+      "kind": "other",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence",
+        "jvmcontract:proof-cache"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/economics.py",
+          "lib/src/proof_cache.rs"
+        ]
+      },
+      "expected": "Exits 0. Every expectation in examples/tools/economics/report.md has a check mark:\n- every check ran;\n- every warm verdict equals the cold run's (the soundness check);\n- the warm rerun is an exact hit for every claim the cold run stored, with its verdict;\n- for each app, under the unrelated edit, every rebased claim the cold run stored is an exact hit and the own claims have nothing to prove;\n- under the helper rewrite, an own claim shares the rewritten helper (TokenBucket.lastAfter, LookupSwitch.midpoint) and a later one finds its proof in the cache;\n- under the representation change, no helper is shared and a claim is proved again (verified);\n- under the regression, an own claim is refuted with a replayed witness (TokenBucket#tokensAfter / RetryAfter#nanosUntilToken; ModifiedUtf8#encodeInto).\nA check mark missing from the warm-equals-cold line would be a cache soundness bug. One missing from the others means the cache misses where it should hit, or a change does not do what examples/tools/economics/README.md says.",
+      "submitted": {
+        "at": "2026-11-07T06:41:35+00:00",
+        "session": "be22079e-0c8d-41e4-ace3-12f7f213f1f9",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "30m",
+        "notes": "about 280 native checks in sequence, most an exact hit or nothing to prove (under a second), the rest proved again in 0.1 to 6 s as the recorded native examples took (2.2 to 5.8 s); the trees take about 55 s of javac CPU"
+      },
+      "steps": [
+        {
+          "name": "economics",
+          "run": "python3 examples/tools/economics.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/tools/economics/report.md",
+        "examples/tools/economics/report.json"
+      ]
+    }
+  },
+  "sourceCommit": "697b9a646564d3e06e2f7dde3c0e2f15afc63882",
+  "startedAt": "2026-11-07T15:34:07+00:00",
+  "finishedAt": "2026-11-07T15:38:54+00:00",
+  "wallSeconds": 287.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 1800.0,
+    "notes": "about 280 native checks in sequence, most an exact hit or nothing to prove (under a second), the rest proved again in 0.1 to 6 s as the recorded native examples took (2.2 to 5.8 s); the trees take about 55 s of javac CPU"
+  },
+  "usage": {
+    "peakMemoryBytes": 310444032,
+    "wallSeconds": 188.0,
+    "cpuSeconds": 248.7,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 98.026,
+      "cpuSeconds": 98.167,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1142743040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "dbbb7305506e298853a0079f414c3685c64c49314bb640d4b2ce00a292338707",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-064135-the-proof-cache-s-economics-on-the-recor/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 37s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "economics",
+      "run": "python3 examples/tools/economics.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 187.991,
+      "cpuSeconds": 248.694,
+      "cpuThrottledSeconds": 20.9,
+      "peakMemoryBytes": 310444032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-economics.log",
+        "lines": 773,
+        "bytes": 61183,
+        "sha256": "dcd8b8d03dabede22388eae17f11bc12aa3bf02a736e93e3cb4bed66073317d5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "",
+        "| Claim | Verdict | How served | Wall | Checker | Cache | Helpers |",
+        "|---|---|---|---|---|---|---|",
+        "| 140 | violation | refuted | 0.13 | 0.03 | 0.042 |  |",
+        "| 141 | verified | proved | 2.10 | 2.01 | 0.032 |  |",
+        "| 142 | — | not run: patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply | | | | |",
+        "| 143 | — | not run: patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply | | | | |",
+        "| 144 | verified | proved | 0.11 | 0.02 | 0.032 |  |",
+        "| 145 | verified | proved | 3.62 | 3.52 | 0.032 |  |",
+        "",
+        "### mica, a real regression, rebased, warm",
+        "",
+        "| Claim | Verdict | How served | Wall | Checker | Cache | Helpers |",
+        "|---|---|---|---|---|---|---|",
+        "| 140 | violation | exact hit | 0.07 | 0.00 | 0.043 |  |",
+        "| 141 | verified | exact hit | 0.06 | 0.00 | 0.032 |  |",
+        "| 142 | — | not run: patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply | | | | |",
+        "| 143 | — | not run: patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply | | | | |",
+        "| 144 | verified | exact hit | 0.06 | 0.00 | 0.032 |  |",
+        "| 145 | verified | exact hit | 0.06 | 0.00 | 0.032 |  |",
+        "",
+        "### mica, a real regression, own, cold",
+        "",
+        "| Claim | Verdict | How served | Wall | Checker | Cache | Helpers |",
+        "|---|---|---|---|---|---|---|",
+        "| mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140) | verified | nothing to prove | 0.03 | 0.00 | 0.000 |  |",
+        "| mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142) | violation | refuted | 1.13 | 1.03 | 0.032 |  |",
+        "| mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144) | verified | nothing to prove | 0.02 | 0.00 | 0.000 |  |",
+        "| mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145) | verified | nothing to prove | 0.03 | 0.00 | 0.000 |  |",
+        "",
+        "### mica, a real regression, own, warm",
+        "",
+        "| Claim | Verdict | How served | Wall | Checker | Cache | Helpers |",
+        "|---|---|---|---|---|---|---|",
+        "| mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140) | verified | nothing to prove | 0.03 | 0.00 | 0.000 |  |",
+        "| mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142) | violation | refuted | 1.12 | 1.03 | 0.032 |  |",
+        "| mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144) | verified | nothing to prove | 0.02 | 0.00 | 0.000 |  |",
+        "| mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145) | verified | nothing to prove | 0.03 | 0.00 | 0.000 |  |",
+        "",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/tools/economics/report.md",
+      "change": "added",
+      "bytes": 35559,
+      "sha256": "b3ed70c5ab2a119f0fc31aef877533be1698db5fd55730bbb8993da6dc270546",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/tools/economics/report.json",
+      "change": "added",
+      "bytes": 183384,
+      "sha256": "e5fbb07d2ba41f6ac3a7a47a3efdabbf5dedcce71a2b093eac1f2efa87b48f7b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [
+      "examples/tools/economics/report.md",
+      "examples/tools/economics/report.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "32874500b68b2accfd91204ed4d88e660193a9e1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/32874500b68b2accfd91204ed4d88e660193a9e1/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

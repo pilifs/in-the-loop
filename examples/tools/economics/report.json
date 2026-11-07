@@ -1,0 +1,6917 @@
+{
+ "when": "2026-11-07T15:38:53+0000",
+ "jvmcontract": "jvmcontract 0.1.0 (sha256:c91e1fc06484fbff)",
+ "counts": {
+  "recorded": 69,
+  "served": 17,
+  "unserved": 44
+ },
+ "excluded": [
+  {
+   "id": "006",
+   "why": "a Box Office example, built with Gradle"
+  },
+  {
+   "id": "007",
+   "why": "a Box Office example, built with Gradle"
+  },
+  {
+   "id": "008",
+   "why": "a Box Office example, built with Gradle"
+  },
+  {
+   "id": "105",
+   "why": "a real-world example: its classes are not in the repository"
+  },
+  {
+   "id": "106",
+   "why": "a real-world example: its classes are not in the repository"
+  },
+  {
+   "id": "107",
+   "why": "a real-world example: its classes are not in the repository"
+  },
+  {
+   "id": "108",
+   "why": "a real-world example: its classes are not in the repository"
+  },
+  {
+   "id": "109",
+   "why": "a real-world example: its classes are not in the repository"
+  }
+ ],
+ "unserved": {
+  "a regression proof under --engine jbmc, which JBMC may decide: JBMC's identity is not part of the claim's key, so the tool doesn't cache it": [
+   "013",
+   "027",
+   "035",
+   "036",
+   "037",
+   "120",
+   "121",
+   "122",
+   "123",
+   "126",
+   "127",
+   "128",
+   "129",
+   "130",
+   "131",
+   "134"
+  ],
+  "a property proof (`prove`), which has no proof cache: the cache is in `equivalence` only": [
+   "015",
+   "016",
+   "017",
+   "018",
+   "022",
+   "023",
+   "024",
+   "031",
+   "032",
+   "033",
+   "034",
+   "044",
+   "045",
+   "046",
+   "047",
+   "048",
+   "049",
+   "050",
+   "051",
+   "052",
+   "053",
+   "054",
+   "055",
+   "056",
+   "071",
+   "147",
+   "148",
+   "149"
+  ]
+ },
+ "changes": [
+  {
+   "app": "crosscut",
+   "kind": "unrelated",
+   "patch": "examples/tools/economics/crosscut-unrelated.patch"
+  },
+  {
+   "app": "crosscut",
+   "kind": "helper-rewrite",
+   "patch": "examples/tools/economics/crosscut-helper-rewrite.patch"
+  },
+  {
+   "app": "crosscut",
+   "kind": "representation",
+   "patch": "examples/tools/economics/crosscut-representation.patch"
+  },
+  {
+   "app": "crosscut",
+   "kind": "regression",
+   "patch": "examples/tools/economics/crosscut-regression.patch"
+  },
+  {
+   "app": "mica",
+   "kind": "unrelated",
+   "patch": "examples/tools/economics/mica-unrelated.patch"
+  },
+  {
+   "app": "mica",
+   "kind": "helper-rewrite",
+   "patch": "examples/tools/economics/mica-helper-rewrite.patch"
+  },
+  {
+   "app": "mica",
+   "kind": "representation",
+   "patch": "examples/tools/economics/mica-representation.patch"
+  },
+  {
+   "app": "mica",
+   "kind": "regression",
+   "patch": "examples/tools/economics/mica-regression.patch"
+  }
+ ],
+ "javacSeconds": 64.0,
+ "runs": [
+  {
+   "name": "cold",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.167,
+     "checker": 0.044,
+     "hashing": 0.033,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.09,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.247,
+     "checker": 0.154,
+     "hashing": 0.038,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.055,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.563,
+     "checker": 0.462,
+     "hashing": 0.033,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.068,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.276,
+     "checker": 0.177,
+     "hashing": 0.042,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.057,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.163,
+     "checker": 0.076,
+     "hashing": 0.033,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.054,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.192,
+     "checker": 0.099,
+     "hashing": 0.032,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.061,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.608,
+     "checker": 0.525,
+     "hashing": 0.032,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.051,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.156,
+     "checker": 0.057,
+     "hashing": 0.043,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.056,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 3.431,
+     "checker": 3.316,
+     "hashing": 0.032,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.083,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.123,
+     "checker": 0.027,
+     "hashing": 0.037,
+     "key": "sha256:1f450262468a91aea744f405e4039cd5b1fdcf7154dfe7971389b48fd11fd3dc",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.059,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 1.895,
+     "checker": 1.784,
+     "hashing": 0.032,
+     "key": "sha256:3f1ff2d4f8bb7d86bbbc5df076b2be3a3bad61e28e5fe6d7cac6410987fdc0b9",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.079,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 6.112,
+     "checker": 6.035,
+     "hashing": 0.033,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.044,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.14,
+     "checker": 1.042,
+     "hashing": 0.033,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.065,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.135,
+     "checker": 0.032,
+     "hashing": 0.046,
+     "key": "sha256:835597d8c336cd3c3595825ec7eed6c1dd3d647c66384a072a6b7b6449167893",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.057,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 3.507,
+     "checker": 3.417,
+     "hashing": 0.032,
+     "key": "sha256:e41001317dca0ba513e097f0166413066563fbc30376dd29c47314a79f9ff280",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.058,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.411,
+     "checker": 0.027,
+     "hashing": 0.0,
+     "key": "sha256:97fb09a13df454136dec47af7c0c94f7cb99aac103de42352140f3add12609f7",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": false,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.338
+      }
+     ],
+     "helperSeconds": 0.338,
+     "other": 0.046,
+     "replayed": null,
+     "served": "helper proved in the run"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.416,
+     "checker": 0.067,
+     "hashing": 0.001,
+     "key": "sha256:4b94bd30ae779127a069a3bf5a350badfd016ce5ca0ad4e56eb581d0fc95d977",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": false,
+       "why": "its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.287
+      }
+     ],
+     "helperSeconds": 0.287,
+     "other": 0.061,
+     "replayed": true,
+     "served": "refuted"
+    }
+   ],
+   "totals": {
+    "wall": 19.542,
+    "checker": 17.341,
+    "hashing": 0.532,
+    "helperSeconds": 0.625,
+    "other": 1.044,
+    "claims": 17,
+    "served": {
+     "helper proved in the run": 1,
+     "proved": 9,
+     "refuted": 7
+    },
+    "helperChecks": 2
+   }
+  },
+  {
+   "name": "warm",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.041,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.061,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.066,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.062,
+     "checker": 0.0,
+     "hashing": 0.036,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.062,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.068,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.072,
+     "checker": 0.0,
+     "hashing": 0.047,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.058,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.068,
+     "checker": 0.0,
+     "hashing": 0.041,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.064,
+     "checker": 0.0,
+     "hashing": 0.041,
+     "key": "sha256:1f450262468a91aea744f405e4039cd5b1fdcf7154dfe7971389b48fd11fd3dc",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.054,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:3f1ff2d4f8bb7d86bbbc5df076b2be3a3bad61e28e5fe6d7cac6410987fdc0b9",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.022,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.055,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.069,
+     "checker": 0.0,
+     "hashing": 0.045,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.058,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:835597d8c336cd3c3595825ec7eed6c1dd3d647c66384a072a6b7b6449167893",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.057,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e41001317dca0ba513e097f0166413066563fbc30376dd29c47314a79f9ff280",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.08,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": "sha256:97fb09a13df454136dec47af7c0c94f7cb99aac103de42352140f3add12609f7",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.08,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.098,
+     "checker": 0.0,
+     "hashing": 0.01,
+     "key": "sha256:4b94bd30ae779127a069a3bf5a350badfd016ce5ca0ad4e56eb581d0fc95d977",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.088,
+     "replayed": true,
+     "served": "exact hit"
+    }
+   ],
+   "totals": {
+    "wall": 1.119,
+    "checker": 0.0,
+    "hashing": 0.57,
+    "helperSeconds": 0,
+    "other": 0.549,
+    "claims": 17,
+    "served": {
+     "exact hit": 17
+    },
+    "helperChecks": 0
+   },
+   "against": "cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, an unrelated edit, rebased, cold",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.126,
+     "checker": 0.04,
+     "hashing": 0.031,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.055,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.234,
+     "checker": 0.151,
+     "hashing": 0.032,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.051,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.521,
+     "checker": 0.425,
+     "hashing": 0.033,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.26,
+     "checker": 0.167,
+     "hashing": 0.031,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.062,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.177,
+     "checker": 0.083,
+     "hashing": 0.032,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.062,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.207,
+     "checker": 0.095,
+     "hashing": 0.031,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.081,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.601,
+     "checker": 0.514,
+     "hashing": 0.032,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.055,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.151,
+     "checker": 0.059,
+     "hashing": 0.034,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.058,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 3.849,
+     "checker": 3.72,
+     "hashing": 0.042,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.087,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.386,
+     "checker": 0.028,
+     "hashing": 0.0,
+     "key": "sha256:97fb09a13df454136dec47af7c0c94f7cb99aac103de42352140f3add12609f7",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": false,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.308
+      }
+     ],
+     "helperSeconds": 0.308,
+     "other": 0.05,
+     "replayed": null,
+     "served": "helper proved in the run"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.422,
+     "checker": 0.079,
+     "hashing": 0.0,
+     "key": "sha256:4b94bd30ae779127a069a3bf5a350badfd016ce5ca0ad4e56eb581d0fc95d977",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": false,
+       "why": "its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.276
+      }
+     ],
+     "helperSeconds": 0.276,
+     "other": 0.067,
+     "replayed": true,
+     "served": "refuted"
+    }
+   ],
+   "totals": {
+    "wall": 6.934,
+    "checker": 5.361,
+    "hashing": 0.298,
+    "helperSeconds": 0.584,
+    "other": 0.691,
+    "claims": 11,
+    "served": {
+     "helper proved in the run": 1,
+     "proved": 5,
+     "refuted": 5
+    },
+    "helperChecks": 2
+   },
+   "app": "crosscut",
+   "kind": "unrelated",
+   "set": "rebased"
+  },
+  {
+   "name": "crosscut, an unrelated edit, rebased, warm",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.061,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.072,
+     "checker": 0.0,
+     "hashing": 0.044,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.06,
+     "checker": 0.0,
+     "hashing": 0.031,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.056,
+     "checker": 0.0,
+     "hashing": 0.031,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.066,
+     "checker": 0.0,
+     "hashing": 0.04,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.058,
+     "checker": 0.0,
+     "hashing": 0.031,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.059,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.069,
+     "checker": 0.0,
+     "hashing": 0.043,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.089,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": "sha256:97fb09a13df454136dec47af7c0c94f7cb99aac103de42352140f3add12609f7",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.089,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.103,
+     "checker": 0.0,
+     "hashing": 0.01,
+     "key": "sha256:4b94bd30ae779127a069a3bf5a350badfd016ce5ca0ad4e56eb581d0fc95d977",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.093,
+     "replayed": true,
+     "served": "exact hit"
+    }
+   ],
+   "totals": {
+    "wall": 0.76,
+    "checker": 0.0,
+    "hashing": 0.338,
+    "helperSeconds": 0,
+    "other": 0.422,
+    "claims": 11,
+    "served": {
+     "exact hit": 11
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "unrelated",
+   "set": "rebased",
+   "against": "crosscut, an unrelated edit, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, an unrelated edit, own, cold",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.033,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.033,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 0.155,
+    "checker": 0.0,
+    "hashing": 0.0,
+    "helperSeconds": 0,
+    "other": 0.155,
+    "claims": 6,
+    "served": {
+     "nothing to prove": 6
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "unrelated",
+   "set": "own"
+  },
+  {
+   "name": "crosscut, an unrelated edit, own, warm",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.027,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.029,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.031,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.031,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 0.159,
+    "checker": 0.0,
+    "hashing": 0.0,
+    "helperSeconds": 0,
+    "other": 0.159,
+    "claims": 6,
+    "served": {
+     "nothing to prove": 6
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "unrelated",
+   "set": "own",
+   "against": "crosscut, an unrelated edit, own, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, a behaviour-preserving helper rewrite, rebased, cold",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.152,
+     "checker": 0.044,
+     "hashing": 0.036,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.072,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.246,
+     "checker": 0.16,
+     "hashing": 0.032,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.054,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.545,
+     "checker": 0.451,
+     "hashing": 0.031,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.293,
+     "checker": 0.174,
+     "hashing": 0.042,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.077,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.145,
+     "checker": 0.052,
+     "hashing": 0.043,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.05,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.205,
+     "checker": 0.1,
+     "hashing": 0.042,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.594,
+     "checker": 0.507,
+     "hashing": 0.034,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.053,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.154,
+     "checker": 0.049,
+     "hashing": 0.033,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.072,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 3.779,
+     "checker": 3.669,
+     "hashing": 0.03,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.08,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    }
+   ],
+   "totals": {
+    "wall": 6.113,
+    "checker": 5.206,
+    "hashing": 0.323,
+    "helperSeconds": 0,
+    "other": 0.584,
+    "claims": 11,
+    "served": {
+     "not run": 2,
+     "proved": 5,
+     "refuted": 4
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "helper-rewrite",
+   "set": "rebased"
+  },
+  {
+   "name": "crosscut, a behaviour-preserving helper rewrite, rebased, warm",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.072,
+     "checker": 0.0,
+     "hashing": 0.043,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.068,
+     "checker": 0.0,
+     "hashing": 0.036,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.032,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.069,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.062,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.03,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.062,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.03,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.056,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.056,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.068,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    }
+   ],
+   "totals": {
+    "wall": 0.58,
+    "checker": 0.0,
+    "hashing": 0.333,
+    "helperSeconds": 0,
+    "other": 0.247,
+    "claims": 11,
+    "served": {
+     "exact hit": 9,
+     "not run": 2
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "helper-rewrite",
+   "set": "rebased",
+   "against": "crosscut, a behaviour-preserving helper rewrite, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, a behaviour-preserving helper rewrite, own, cold",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.029,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.035,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.035,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.028,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.357,
+     "checker": 0.026,
+     "hashing": 0.0,
+     "key": "sha256:97fb09a13df454136dec47af7c0c94f7cb99aac103de42352140f3add12609f7",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": false,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.291
+      }
+     ],
+     "helperSeconds": 0.291,
+     "other": 0.04,
+     "replayed": null,
+     "served": "helper proved in the run"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.133,
+     "checker": 0.029,
+     "hashing": 0.0,
+     "key": "sha256:5658f1bf0d1167a245e48f9e46fa7022438a62df9a4f586ba480ddabe992abf5",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": true,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.053
+      }
+     ],
+     "helperSeconds": 0.053,
+     "other": 0.051,
+     "replayed": null,
+     "served": "helper evidence found"
+    }
+   ],
+   "totals": {
+    "wall": 0.605,
+    "checker": 0.055,
+    "hashing": 0.0,
+    "helperSeconds": 0.344,
+    "other": 0.206,
+    "claims": 6,
+    "served": {
+     "helper evidence found": 1,
+     "helper proved in the run": 1,
+     "nothing to prove": 4
+    },
+    "helperChecks": 2
+   },
+   "app": "crosscut",
+   "kind": "helper-rewrite",
+   "set": "own"
+  },
+  {
+   "name": "crosscut, a behaviour-preserving helper rewrite, own, warm",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.036,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.036,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.08,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": "sha256:97fb09a13df454136dec47af7c0c94f7cb99aac103de42352140f3add12609f7",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.08,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.144,
+     "checker": 0.032,
+     "hashing": 0.0,
+     "key": "sha256:5658f1bf0d1167a245e48f9e46fa7022438a62df9a4f586ba480ddabe992abf5",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": true,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.055
+      }
+     ],
+     "helperSeconds": 0.055,
+     "other": 0.057,
+     "replayed": null,
+     "served": "helper evidence found"
+    }
+   ],
+   "totals": {
+    "wall": 0.331,
+    "checker": 0.032,
+    "hashing": 0.0,
+    "helperSeconds": 0.055,
+    "other": 0.244,
+    "claims": 6,
+    "served": {
+     "exact hit": 1,
+     "helper evidence found": 1,
+     "nothing to prove": 4
+    },
+    "helperChecks": 1
+   },
+   "app": "crosscut",
+   "kind": "helper-rewrite",
+   "set": "own",
+   "against": "crosscut, a behaviour-preserving helper rewrite, own, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, a representation change, rebased, cold",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.164,
+     "checker": 0.045,
+     "hashing": 0.032,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.087,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.25,
+     "checker": 0.154,
+     "hashing": 0.036,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.06,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.563,
+     "checker": 0.461,
+     "hashing": 0.033,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.069,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.251,
+     "checker": 0.161,
+     "hashing": 0.034,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.056,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.155,
+     "checker": 0.069,
+     "hashing": 0.034,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.052,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.201,
+     "checker": 0.093,
+     "hashing": 0.043,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.065,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.566,
+     "checker": 0.482,
+     "hashing": 0.032,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.052,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.144,
+     "checker": 0.058,
+     "hashing": 0.034,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.052,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 3.813,
+     "checker": 3.688,
+     "hashing": 0.033,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.092,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 6.156,
+    "checker": 5.211,
+    "hashing": 0.311,
+    "helperSeconds": 0,
+    "other": 0.634,
+    "claims": 11,
+    "served": {
+     "nothing to prove": 2,
+     "proved": 5,
+     "refuted": 4
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "representation",
+   "set": "rebased"
+  },
+  {
+   "name": "crosscut, a representation change, rebased, warm",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.056,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.068,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:e39773165a36386bb258e6a70ff66114dee081292018036e0035295fd5c8cf96",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.059,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:5523d79c7d3e4234204e3e9e491c44aa2b0228cfd774eb56f8a742a363f175d8",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.058,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.056,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.058,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 0.608,
+    "checker": 0.0,
+    "hashing": 0.329,
+    "helperSeconds": 0,
+    "other": 0.279,
+    "claims": 11,
+    "served": {
+     "exact hit": 9,
+     "nothing to prove": 2
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "representation",
+   "set": "rebased",
+   "against": "crosscut, a representation change, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, a representation change, own, cold",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.333,
+     "checker": 0.247,
+     "hashing": 0.04,
+     "key": "sha256:b6416f0ecd0a6e3852d1ba8d2cb7c5fe9ac8c1de704acd6b46ad367770444fd3",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.046,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.333,
+     "checker": 0.239,
+     "hashing": 0.035,
+     "key": "sha256:bd25ead513d8c6d5571ceaffa644e279a6991312b49affd447ea924487eef6a2",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.059,
+     "replayed": null,
+     "served": "proved"
+    }
+   ],
+   "totals": {
+    "wall": 0.763,
+    "checker": 0.486,
+    "hashing": 0.075,
+    "helperSeconds": 0,
+    "other": 0.202,
+    "claims": 6,
+    "served": {
+     "nothing to prove": 4,
+     "proved": 2
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "representation",
+   "set": "own"
+  },
+  {
+   "name": "crosscut, a representation change, own, warm",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.329,
+     "checker": 0.25,
+     "hashing": 0.034,
+     "key": "sha256:b6416f0ecd0a6e3852d1ba8d2cb7c5fe9ac8c1de704acd6b46ad367770444fd3",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.045,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.329,
+     "checker": 0.239,
+     "hashing": 0.033,
+     "key": "sha256:bd25ead513d8c6d5571ceaffa644e279a6991312b49affd447ea924487eef6a2",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.057,
+     "replayed": null,
+     "served": "proved"
+    }
+   ],
+   "totals": {
+    "wall": 0.755,
+    "checker": 0.489,
+    "hashing": 0.067,
+    "helperSeconds": 0,
+    "other": 0.199,
+    "claims": 6,
+    "served": {
+     "nothing to prove": 4,
+     "proved": 2
+    },
+    "helperChecks": 0
+   },
+   "app": "crosscut",
+   "kind": "representation",
+   "set": "own",
+   "against": "crosscut, a representation change, own, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, a real regression, rebased, cold",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.146,
+     "checker": 0.046,
+     "hashing": 0.033,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.067,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.251,
+     "checker": 0.155,
+     "hashing": 0.04,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.056,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.162,
+     "checker": 0.072,
+     "hashing": 0.034,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.056,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.207,
+     "checker": 0.112,
+     "hashing": 0.032,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.627,
+     "checker": 0.54,
+     "hashing": 0.032,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.055,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.155,
+     "checker": 0.06,
+     "hashing": 0.032,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 3.663,
+     "checker": 3.544,
+     "hashing": 0.034,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.085,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.398,
+     "checker": 0.032,
+     "hashing": 0.0,
+     "key": "sha256:8bca9f4c8278d17507ec5321041d8fcb01cefb24749908c6a89d67d10dcbcfc6",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": false,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.312
+      }
+     ],
+     "helperSeconds": 0.312,
+     "other": 0.054,
+     "replayed": null,
+     "served": "helper proved in the run"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.494,
+     "checker": 0.153,
+     "hashing": 0.0,
+     "key": "sha256:1e4adf206b3107250983034330552c4db45df3397eadb4484e0bd1a2cfe6c86f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": false,
+       "why": "its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.275
+      }
+     ],
+     "helperSeconds": 0.275,
+     "other": 0.066,
+     "replayed": true,
+     "served": "refuted"
+    }
+   ],
+   "totals": {
+    "wall": 6.103,
+    "checker": 4.714,
+    "hashing": 0.237,
+    "helperSeconds": 0.587,
+    "other": 0.565,
+    "claims": 11,
+    "served": {
+     "helper proved in the run": 1,
+     "not run": 2,
+     "proved": 4,
+     "refuted": 4
+    },
+    "helperChecks": 2
+   },
+   "app": "crosscut",
+   "kind": "regression",
+   "set": "rebased"
+  },
+  {
+   "name": "crosscut, a real regression, rebased, warm",
+   "rows": [
+    {
+     "id": "124",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:a3599af133524127bbfd037d29c02c5dd1b4897df428bef4850fd6a895704b4b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "125",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.06,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:f17a697dee681fad62b65d79331458f8535e3dc9e89621d332bfa2319b118052",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "132",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    },
+    {
+     "id": "133",
+     "example": "133",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java: patch does not apply"
+    },
+    {
+     "id": "135",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--before-arguments",
+      "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+      "--results-agree-when",
+      "previous.startNanos == result.startNanos && previous.count == result.count",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.067,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:e59e3deece5f1f8069a89eb949dd8e760e123f2908a07cf9b20f4d24a476f44f",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.034,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "136",
+     "example": "136",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.079,
+     "checker": 0.0,
+     "hashing": 0.044,
+     "key": "sha256:c661cf71186bef4cf0229c11537771f8bef10dba3cd29de6208536eeb489047e",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.035,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "137",
+     "example": "137",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.068,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:26882f05b7e7ebbe9ea86a8389e0f8de258476960a776a47a2d64137c8a801ca",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "138",
+     "example": "138",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.061,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e291994a8593e30824c3a4d54aa035ac10181d325d482f3605d1faf5d6b857d4",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.029,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "139",
+     "example": "139",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.079,
+     "checker": 0.0,
+     "hashing": 0.053,
+     "key": "sha256:1b13c0834b4ed2e28a648ad6ccfd1bebbdde2a697038a396895d21352d55bb95",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "160",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.126,
+     "checker": 0.031,
+     "hashing": 0.0,
+     "key": "sha256:8bca9f4c8278d17507ec5321041d8fcb01cefb24749908c6a89d67d10dcbcfc6",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": true,
+       "found": true,
+       "key": "sha256:a4bb38dbbbb7b82df57aafd5ecef1fc075e62f3d2107392d11011a492d787139",
+       "seconds": 0.053
+      }
+     ],
+     "helperSeconds": 0.053,
+     "other": 0.042,
+     "replayed": null,
+     "served": "helper evidence found"
+    },
+    {
+     "id": "161",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.297,
+     "checker": 0.164,
+     "hashing": 0.0,
+     "key": "sha256:1e4adf206b3107250983034330552c4db45df3397eadb4484e0bd1a2cfe6c86f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.lastAfter",
+       "shared": false,
+       "why": "its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.065
+      }
+     ],
+     "helperSeconds": 0.065,
+     "other": 0.068,
+     "replayed": true,
+     "served": "refuted"
+    }
+   ],
+   "totals": {
+    "wall": 0.904,
+    "checker": 0.195,
+    "hashing": 0.279,
+    "helperSeconds": 0.118,
+    "other": 0.312,
+    "claims": 11,
+    "served": {
+     "exact hit": 7,
+     "helper evidence found": 1,
+     "not run": 2,
+     "refuted": 1
+    },
+    "helperChecks": 2
+   },
+   "app": "crosscut",
+   "kind": "regression",
+   "set": "rebased",
+   "against": "crosscut, a real regression, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "crosscut, a real regression, own, cold",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.038,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.038,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.487,
+     "checker": 0.389,
+     "hashing": 0.032,
+     "key": "sha256:26b388a0d5226825d23173e9d083338fa59eb469bdd3ba2e0d24543f773e8d42",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.066,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.569,
+     "checker": 1.175,
+     "hashing": 0.0,
+     "key": "sha256:4e036fc1e06e5d3c70d794d5b82799ba0c842d4ce472d464c1e818ae9f6d322a",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.tokensAfter",
+       "shared": false,
+       "why": "its two versions differ, at tokensAfter(tokens=0, lastNanos=2, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.322
+      }
+     ],
+     "helperSeconds": 0.322,
+     "other": 0.072,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.891,
+     "checker": 0.76,
+     "hashing": 0.0,
+     "key": "sha256:f2eac5ea6d4a99877ee298f69e782b4ff3595c71a81b4594f916245cc47f42c3",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.tokensAfter",
+       "shared": false,
+       "why": "its two versions differ, at tokensAfter(tokens=0, lastNanos=2, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.064
+      }
+     ],
+     "helperSeconds": 0.064,
+     "other": 0.067,
+     "replayed": true,
+     "served": "refuted"
+    }
+   ],
+   "totals": {
+    "wall": 3.036,
+    "checker": 2.324,
+    "hashing": 0.032,
+    "helperSeconds": 0.386,
+    "other": 0.294,
+    "claims": 6,
+    "served": {
+     "nothing to prove": 3,
+     "refuted": 3
+    },
+    "helperChecks": 2
+   },
+   "app": "crosscut",
+   "kind": "regression",
+   "set": "own"
+  },
+  {
+   "name": "crosscut, a real regression, own, warm",
+   "rows": [
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "example": "124",
+     "target": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "example": "125",
+     "target": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+     "flags": [
+      "--unchanged-unless",
+      "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter (as 132)",
+     "example": "132",
+     "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.472,
+     "checker": 0.356,
+     "hashing": 0.043,
+     "key": "sha256:26b388a0d5226825d23173e9d083338fa59eb469bdd3ba2e0d24543f773e8d42",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.073,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.Window#counted (as 135)",
+     "example": "135",
+     "target": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 160)",
+     "example": "160",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.59,
+     "checker": 1.188,
+     "hashing": 0.0,
+     "key": "sha256:4e036fc1e06e5d3c70d794d5b82799ba0c842d4ce472d464c1e818ae9f6d322a",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.tokensAfter",
+       "shared": false,
+       "why": "its two versions differ, at tokensAfter(tokens=0, lastNanos=2, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.332
+      }
+     ],
+     "helperSeconds": 0.332,
+     "other": 0.07,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "crosscut:net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken (as 161)",
+     "example": "161",
+     "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+     "flags": [
+      "--unchanged-unless",
+      "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.875,
+     "checker": 0.741,
+     "hashing": 0.0,
+     "key": "sha256:f2eac5ea6d4a99877ee298f69e782b4ff3595c71a81b4594f916245cc47f42c3",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "TokenBucket.tokensAfter",
+       "shared": false,
+       "why": "its two versions differ, at tokensAfter(tokens=0, lastNanos=2, nowNanos=0, periodNanos=2, capacity=0)",
+       "seconds": 0.066
+      }
+     ],
+     "helperSeconds": 0.066,
+     "other": 0.068,
+     "replayed": true,
+     "served": "refuted"
+    }
+   ],
+   "totals": {
+    "wall": 3.012,
+    "checker": 2.285,
+    "hashing": 0.043,
+    "helperSeconds": 0.398,
+    "other": 0.286,
+    "claims": 6,
+    "served": {
+     "nothing to prove": 3,
+     "refuted": 3
+    },
+    "helperChecks": 2
+   },
+   "app": "crosscut",
+   "kind": "regression",
+   "set": "own",
+   "against": "crosscut, a real regression, own, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, an unrelated edit, rebased, cold",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.139,
+     "checker": 0.03,
+     "hashing": 0.032,
+     "key": "sha256:1f450262468a91aea744f405e4039cd5b1fdcf7154dfe7971389b48fd11fd3dc",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.077,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 1.943,
+     "checker": 1.828,
+     "hashing": 0.033,
+     "key": "sha256:3f1ff2d4f8bb7d86bbbc5df076b2be3a3bad61e28e5fe6d7cac6410987fdc0b9",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.082,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 6.329,
+     "checker": 6.233,
+     "hashing": 0.033,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.135,
+     "checker": 1.037,
+     "hashing": 0.033,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.065,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.137,
+     "checker": 0.025,
+     "hashing": 0.033,
+     "key": "sha256:835597d8c336cd3c3595825ec7eed6c1dd3d647c66384a072a6b7b6449167893",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.079,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 3.614,
+     "checker": 3.523,
+     "hashing": 0.032,
+     "key": "sha256:e41001317dca0ba513e097f0166413066563fbc30376dd29c47314a79f9ff280",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.059,
+     "replayed": null,
+     "served": "proved"
+    }
+   ],
+   "totals": {
+    "wall": 13.297,
+    "checker": 12.676,
+    "hashing": 0.196,
+    "helperSeconds": 0,
+    "other": 0.425,
+    "claims": 6,
+    "served": {
+     "proved": 4,
+     "refuted": 2
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "unrelated",
+   "set": "rebased"
+  },
+  {
+   "name": "mica, an unrelated edit, rebased, warm",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.085,
+     "checker": 0.0,
+     "hashing": 0.057,
+     "key": "sha256:1f450262468a91aea744f405e4039cd5b1fdcf7154dfe7971389b48fd11fd3dc",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.057,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:3f1ff2d4f8bb7d86bbbc5df076b2be3a3bad61e28e5fe6d7cac6410987fdc0b9",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.057,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.069,
+     "checker": 0.0,
+     "hashing": 0.043,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.058,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:835597d8c336cd3c3595825ec7eed6c1dd3d647c66384a072a6b7b6449167893",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.059,
+     "checker": 0.0,
+     "hashing": 0.033,
+     "key": "sha256:e41001317dca0ba513e097f0166413066563fbc30376dd29c47314a79f9ff280",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "exact hit"
+    }
+   ],
+   "totals": {
+    "wall": 0.385,
+    "checker": 0.0,
+    "hashing": 0.229,
+    "helperSeconds": 0,
+    "other": 0.156,
+    "claims": 6,
+    "served": {
+     "exact hit": 6
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "unrelated",
+   "set": "rebased",
+   "against": "mica, an unrelated edit, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, an unrelated edit, own, cold",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.035,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.035,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.028,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 0.114,
+    "checker": 0.0,
+    "hashing": 0.0,
+    "helperSeconds": 0,
+    "other": 0.114,
+    "claims": 4,
+    "served": {
+     "nothing to prove": 4
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "unrelated",
+   "set": "own"
+  },
+  {
+   "name": "mica, an unrelated edit, own, warm",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.026,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.038,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.038,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.032,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.032,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 0.121,
+    "checker": 0.0,
+    "hashing": 0.0,
+    "helperSeconds": 0,
+    "other": 0.121,
+    "claims": 4,
+    "served": {
+     "nothing to prove": 4
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "unrelated",
+   "set": "own",
+   "against": "mica, an unrelated edit, own, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, a behaviour-preserving helper rewrite, rebased, cold",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 6.288,
+     "checker": 6.208,
+     "hashing": 0.034,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.046,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.16,
+     "checker": 1.034,
+     "hashing": 0.04,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.086,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    }
+   ],
+   "totals": {
+    "wall": 7.448,
+    "checker": 7.242,
+    "hashing": 0.074,
+    "helperSeconds": 0,
+    "other": 0.132,
+    "claims": 6,
+    "served": {
+     "not run": 4,
+     "proved": 1,
+     "refuted": 1
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "helper-rewrite",
+   "set": "rebased"
+  },
+  {
+   "name": "mica, a behaviour-preserving helper rewrite, rebased, warm",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.063,
+     "checker": 0.0,
+     "hashing": 0.036,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.074,
+     "checker": 0.0,
+     "hashing": 0.044,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.03,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    }
+   ],
+   "totals": {
+    "wall": 0.137,
+    "checker": 0.0,
+    "hashing": 0.08,
+    "helperSeconds": 0,
+    "other": 0.057,
+    "claims": 6,
+    "served": {
+     "exact hit": 2,
+     "not run": 4
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "helper-rewrite",
+   "set": "rebased",
+   "against": "mica, a behaviour-preserving helper rewrite, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, a behaviour-preserving helper rewrite, own, cold",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 2.66,
+     "checker": 2.46,
+     "hashing": 0.0,
+     "key": "sha256:20cdeeadf5d0969eb15557b5143586211548657c32f59c2003445618c18d8ec7",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "LookupSwitch.midpoint",
+       "shared": true,
+       "found": false,
+       "key": "sha256:9e8434b0a8c0d7f53cca3891882a01741d367f47270ed1a5d5a80d2c3c634b1d",
+       "seconds": 0.139
+      }
+     ],
+     "helperSeconds": 0.139,
+     "other": 0.061,
+     "replayed": null,
+     "served": "helper proved in the run"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.027,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.135,
+     "checker": 0.024,
+     "hashing": 0.0,
+     "key": "sha256:e2c68edc345c83c3748247b842198612efb54e22ae12ec0a5aa54ad0f80a4188",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "LookupSwitch.midpoint",
+       "shared": true,
+       "found": true,
+       "key": "sha256:9e8434b0a8c0d7f53cca3891882a01741d367f47270ed1a5d5a80d2c3c634b1d",
+       "seconds": 0.055
+      }
+     ],
+     "helperSeconds": 0.055,
+     "other": 0.056,
+     "replayed": null,
+     "served": "helper evidence found"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 4.604,
+     "checker": 4.403,
+     "hashing": 0.0,
+     "key": "sha256:1df54b9ed51c682666beb87c9f67eaa888720a29c80e9fadf571bb0714529f74",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "LookupSwitch.midpoint",
+       "shared": true,
+       "found": false,
+       "key": "sha256:52e942ecc81d80cee611c6f2fc1ac0349b45b50bd02a532ba2a857f9a2eb5aaa",
+       "seconds": 0.139
+      }
+     ],
+     "helperSeconds": 0.139,
+     "other": 0.062,
+     "replayed": null,
+     "served": "helper proved in the run"
+    }
+   ],
+   "totals": {
+    "wall": 7.426,
+    "checker": 6.887,
+    "hashing": 0.0,
+    "helperSeconds": 0.333,
+    "other": 0.206,
+    "claims": 4,
+    "served": {
+     "helper evidence found": 1,
+     "helper proved in the run": 2,
+     "nothing to prove": 1
+    },
+    "helperChecks": 3
+   },
+   "app": "mica",
+   "kind": "helper-rewrite",
+   "set": "own"
+  },
+  {
+   "name": "mica, a behaviour-preserving helper rewrite, own, warm",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 2.696,
+     "checker": 2.498,
+     "hashing": 0.0,
+     "key": "sha256:20cdeeadf5d0969eb15557b5143586211548657c32f59c2003445618c18d8ec7",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "LookupSwitch.midpoint",
+       "shared": true,
+       "found": false,
+       "key": "sha256:9e8434b0a8c0d7f53cca3891882a01741d367f47270ed1a5d5a80d2c3c634b1d",
+       "seconds": 0.137
+      }
+     ],
+     "helperSeconds": 0.137,
+     "other": 0.061,
+     "replayed": null,
+     "served": "helper proved in the run"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.032,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.032,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.13,
+     "checker": 0.024,
+     "hashing": 0.0,
+     "key": "sha256:e2c68edc345c83c3748247b842198612efb54e22ae12ec0a5aa54ad0f80a4188",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "LookupSwitch.midpoint",
+       "shared": true,
+       "found": true,
+       "key": "sha256:9e8434b0a8c0d7f53cca3891882a01741d367f47270ed1a5d5a80d2c3c634b1d",
+       "seconds": 0.054
+      }
+     ],
+     "helperSeconds": 0.054,
+     "other": 0.052,
+     "replayed": null,
+     "served": "helper evidence found"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 4.58,
+     "checker": 4.382,
+     "hashing": 0.0,
+     "key": "sha256:1df54b9ed51c682666beb87c9f67eaa888720a29c80e9fadf571bb0714529f74",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [
+      {
+       "callee": "LookupSwitch.midpoint",
+       "shared": true,
+       "found": false,
+       "key": "sha256:52e942ecc81d80cee611c6f2fc1ac0349b45b50bd02a532ba2a857f9a2eb5aaa",
+       "seconds": 0.136
+      }
+     ],
+     "helperSeconds": 0.136,
+     "other": 0.062,
+     "replayed": null,
+     "served": "helper proved in the run"
+    }
+   ],
+   "totals": {
+    "wall": 7.438,
+    "checker": 6.904,
+    "hashing": 0.0,
+    "helperSeconds": 0.327,
+    "other": 0.207,
+    "claims": 4,
+    "served": {
+     "helper evidence found": 1,
+     "helper proved in the run": 2,
+     "nothing to prove": 1
+    },
+    "helperChecks": 3
+   },
+   "app": "mica",
+   "kind": "helper-rewrite",
+   "set": "own",
+   "against": "mica, a behaviour-preserving helper rewrite, own, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, a representation change, rebased, cold",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 6.362,
+     "checker": 6.278,
+     "hashing": 0.034,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.05,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.141,
+     "checker": 1.041,
+     "hashing": 0.032,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.068,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    }
+   ],
+   "totals": {
+    "wall": 7.503,
+    "checker": 7.319,
+    "hashing": 0.066,
+    "helperSeconds": 0,
+    "other": 0.118,
+    "claims": 6,
+    "served": {
+     "not run": 4,
+     "proved": 1,
+     "refuted": 1
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "representation",
+   "set": "rebased"
+  },
+  {
+   "name": "mica, a representation change, rebased, warm",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.061,
+     "checker": 0.0,
+     "hashing": 0.034,
+     "key": "sha256:3056a72a7495338f7215361b54c0819de5d34568f1cd94828fbde895e33f2d19",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.07,
+     "checker": 0.0,
+     "hashing": 0.042,
+     "key": "sha256:c2513d04f0f029bb872ed52f02102ed58c8cf42d69072fcd865ab1a2f805f30b",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java: patch does not apply"
+    }
+   ],
+   "totals": {
+    "wall": 0.131,
+    "checker": 0.0,
+    "hashing": 0.076,
+    "helperSeconds": 0,
+    "other": 0.055,
+    "claims": 6,
+    "served": {
+     "exact hit": 2,
+     "not run": 4
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "representation",
+   "set": "rebased",
+   "against": "mica, a representation change, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, a representation change, own, cold",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 1.982,
+     "checker": 1.895,
+     "hashing": 0.032,
+     "key": "sha256:4be812d65421ddf07f15dfee7f31a1f03014cfd0de6f3f9743cad531b9b7cc7e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.055,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.112,
+     "checker": 0.024,
+     "hashing": 0.034,
+     "key": "sha256:01b20d163b0e281a77514a3956698b1c534d722d6b399ff793e2ea1528ebfaaa",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.054,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 4.174,
+     "checker": 4.081,
+     "hashing": 0.032,
+     "key": "sha256:207b28f1ebc2cb977810ad9c70cb621e77f03a941c60b76ca4aaac97c5f6a502",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.061,
+     "replayed": null,
+     "served": "proved"
+    }
+   ],
+   "totals": {
+    "wall": 6.291,
+    "checker": 6.0,
+    "hashing": 0.098,
+    "helperSeconds": 0,
+    "other": 0.193,
+    "claims": 4,
+    "served": {
+     "nothing to prove": 1,
+     "proved": 3
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "representation",
+   "set": "own"
+  },
+  {
+   "name": "mica, a representation change, own, warm",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 1.981,
+     "checker": 1.892,
+     "hashing": 0.032,
+     "key": "sha256:4be812d65421ddf07f15dfee7f31a1f03014cfd0de6f3f9743cad531b9b7cc7e",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.057,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.109,
+     "checker": 0.023,
+     "hashing": 0.032,
+     "key": "sha256:01b20d163b0e281a77514a3956698b1c534d722d6b399ff793e2ea1528ebfaaa",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.054,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 4.245,
+     "checker": 4.153,
+     "hashing": 0.032,
+     "key": "sha256:207b28f1ebc2cb977810ad9c70cb621e77f03a941c60b76ca4aaac97c5f6a502",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.06,
+     "replayed": null,
+     "served": "proved"
+    }
+   ],
+   "totals": {
+    "wall": 6.36,
+    "checker": 6.068,
+    "hashing": 0.096,
+    "helperSeconds": 0,
+    "other": 0.196,
+    "claims": 4,
+    "served": {
+     "nothing to prove": 1,
+     "proved": 3
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "representation",
+   "set": "own",
+   "against": "mica, a representation change, own, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, a real regression, rebased, cold",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.134,
+     "checker": 0.029,
+     "hashing": 0.042,
+     "key": "sha256:1f450262468a91aea744f405e4039cd5b1fdcf7154dfe7971389b48fd11fd3dc",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.063,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 2.095,
+     "checker": 2.01,
+     "hashing": 0.032,
+     "key": "sha256:3f1ff2d4f8bb7d86bbbc5df076b2be3a3bad61e28e5fe6d7cac6410987fdc0b9",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.053,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.111,
+     "checker": 0.022,
+     "hashing": 0.032,
+     "key": "sha256:835597d8c336cd3c3595825ec7eed6c1dd3d647c66384a072a6b7b6449167893",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.057,
+     "replayed": null,
+     "served": "proved"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 3.615,
+     "checker": 3.524,
+     "hashing": 0.032,
+     "key": "sha256:e41001317dca0ba513e097f0166413066563fbc30376dd29c47314a79f9ff280",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.059,
+     "replayed": null,
+     "served": "proved"
+    }
+   ],
+   "totals": {
+    "wall": 5.955,
+    "checker": 5.585,
+    "hashing": 0.138,
+    "helperSeconds": 0,
+    "other": 0.232,
+    "claims": 6,
+    "served": {
+     "not run": 2,
+     "proved": 3,
+     "refuted": 1
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "regression",
+   "set": "rebased"
+  },
+  {
+   "name": "mica, a real regression, rebased, warm",
+   "rows": [
+    {
+     "id": "140",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 0.069,
+     "checker": 0.0,
+     "hashing": 0.043,
+     "key": "sha256:1f450262468a91aea744f405e4039cd5b1fdcf7154dfe7971389b48fd11fd3dc",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.026,
+     "replayed": true,
+     "served": "exact hit"
+    },
+    {
+     "id": "141",
+     "example": "141",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.057,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:3f1ff2d4f8bb7d86bbbc5df076b2be3a3bad61e28e5fe6d7cac6410987fdc0b9",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "142",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply"
+    },
+    {
+     "id": "143",
+     "example": "143",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "served": "not run",
+     "why": "patch 2 of 2 does not apply: error: examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java: patch does not apply"
+    },
+    {
+     "id": "144",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.057,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:835597d8c336cd3c3595825ec7eed6c1dd3d647c66384a072a6b7b6449167893",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    },
+    {
+     "id": "145",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.057,
+     "checker": 0.0,
+     "hashing": 0.032,
+     "key": "sha256:e41001317dca0ba513e097f0166413066563fbc30376dd29c47314a79f9ff280",
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "exact hit"
+    }
+   ],
+   "totals": {
+    "wall": 0.24,
+    "checker": 0.0,
+    "hashing": 0.139,
+    "helperSeconds": 0,
+    "other": 0.101,
+    "claims": 6,
+    "served": {
+     "exact hit": 4,
+     "not run": 2
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "regression",
+   "set": "rebased",
+   "against": "mica, a real regression, rebased, cold",
+   "differs": []
+  },
+  {
+   "name": "mica, a real regression, own, cold",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.025,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.025,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.126,
+     "checker": 1.03,
+     "hashing": 0.032,
+     "key": "sha256:ea6f8c803eeeb63015898c25ff15e20376b09f689cd6d863474291c64a5c138f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.064,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.024,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.024,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.027,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.027,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 1.202,
+    "checker": 1.03,
+    "hashing": 0.032,
+    "helperSeconds": 0,
+    "other": 0.14,
+    "claims": 4,
+    "served": {
+     "nothing to prove": 3,
+     "refuted": 1
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "regression",
+   "set": "own"
+  },
+  {
+   "name": "mica, a real regression, own, warm",
+   "rows": [
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 140)",
+     "example": "140",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.028,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.028,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto (as 142)",
+     "example": "142",
+     "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+     "flags": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "violation",
+     "wall": 1.125,
+     "checker": 1.028,
+     "hashing": 0.032,
+     "key": "sha256:ea6f8c803eeeb63015898c25ff15e20376b09f689cd6d863474291c64a5c138f",
+     "stored": true,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.065,
+     "replayed": true,
+     "served": "refuted"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 144)",
+     "example": "144",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict"
+     ],
+     "verdict": "verified",
+     "wall": 0.023,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.023,
+     "replayed": null,
+     "served": "nothing to prove"
+    },
+    {
+     "id": "mica:net.terminalvalue.mica.interp.LookupSwitch#find (as 145)",
+     "example": "145",
+     "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
+     "flags": [
+      "--unchanged-unless",
+      "matches.length <= 8",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--max-array-length",
+      "12"
+     ],
+     "verdict": "verified",
+     "wall": 0.033,
+     "checker": 0.0,
+     "hashing": 0.0,
+     "key": null,
+     "stored": false,
+     "cacheNotUsed": null,
+     "helpers": [],
+     "helperSeconds": 0,
+     "other": 0.033,
+     "replayed": null,
+     "served": "nothing to prove"
+    }
+   ],
+   "totals": {
+    "wall": 1.209,
+    "checker": 1.028,
+    "hashing": 0.032,
+    "helperSeconds": 0,
+    "other": 0.149,
+    "claims": 4,
+    "served": {
+     "nothing to prove": 3,
+     "refuted": 1
+    },
+    "helperChecks": 0
+   },
+   "app": "mica",
+   "kind": "regression",
+   "set": "own",
+   "against": "mica, a real regression, own, cold",
+   "differs": []
+  }
+ ],
+ "expectations": [
+  {
+   "expectation": "every check ran and gave an outcome",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "every warm verdict is the cold run's",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "the warm rerun is an exact hit wherever the cold run stored a result, with its verdict",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "crosscut, an unrelated edit: every rebased claim the cold run stored is an exact hit",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "crosscut, an unrelated edit: the change's own claims have nothing to prove",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "crosscut, a behaviour-preserving helper rewrite: a claim proves with the rewritten helper as one function, and another finds that helper's proof in the cache",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "crosscut, a representation change: no helper is shared, and a claim is proved again",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "crosscut, a real regression: a claim is refuted with a witness that replays",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "mica, an unrelated edit: every rebased claim the cold run stored is an exact hit",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "mica, an unrelated edit: the change's own claims have nothing to prove",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "mica, a behaviour-preserving helper rewrite: a claim proves with the rewritten helper as one function, and another finds that helper's proof in the cache",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "mica, a representation change: no helper is shared, and a claim is proved again",
+   "passed": true,
+   "failures": []
+  },
+  {
+   "expectation": "mica, a real regression: a claim is refuted with a witness that replays",
+   "passed": true,
+   "failures": []
+  }
+ ]
+}

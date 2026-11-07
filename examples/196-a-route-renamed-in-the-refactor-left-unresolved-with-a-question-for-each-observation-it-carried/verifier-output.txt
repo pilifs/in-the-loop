@@ -1,0 +1,54 @@
+comparing before/classes with examples/apps/shop/build/main
+
+The entry points (no mapping: their inputs are anchored by the observation specs)
+
+POST /quotes: unresolved
+  observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send unresolved
+  why: POST /quotes has no counterpart in examples/apps/shop/build/main: removed, renamed, or not told apart from another
+  domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+  assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+  assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+  assumes: QuotesController is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default
+  assumes: a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved
+  assumes: at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved
+POST /quotes/text: unresolved
+  observations: result unresolved, exception unresolved, status unresolved
+  why: what the analysis can't see stays unresolved: the old build: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in QuotesController.quoteText(long, int) (string concatenation: the string's value isn't modeled); the new build: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in QuotesController.quoteText(long, int) (string concatenation: the string's value isn't modeled)
+  domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+  assumes: QuotesController is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default
+  assumes: a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved
+  assumes: at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved
+2 entry points: 0 verified, 0 refuted, 2 unresolved, 0 unsupported
+
+The kernel (each changed method pair alignment matched, under its proposal)
+
+shop.Pricing#discount: verified
+  observations: result preserved, exception preserved
+  domain: gross: long × quantity: int
+shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+  correspondence (inferred, proposed; proved for sha256:2f032bb29ec96f0a956bfbe34e67aa2f0ee2459d904eff3f2baa1a26d427c9c6): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  observations: result preserved, exception preserved
+  domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:80299fb28e36d1c9961ac310f75c5b39613e7dae215cd1c835d94fc4d3b0f47c), one function in both versions
+shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+  correspondence (inferred, proposed; proved for sha256:b6b2b54fdf37aa23d474d1f0919cfd2e903365fd6a31a4873954e691fdfecc9b): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  observations: result preserved, exception preserved, identity:result==q preserved
+  domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
+
+kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+obligations: 12 (4 new, 3 preserved, 4 removed, 1 unresolved)
+
+Effort: decisions a person made: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0
+questions for a person: 4
+  - POST /quotes (observation change): POST /quotes is gone from the new build: approve its result as removed, or it stays unresolved
+  - POST /quotes (observation change): POST /quotes is gone from the new build: approve its exception as removed, or it stays unresolved
+  - POST /quotes (observation change): POST /quotes is gone from the new build: approve its status as removed, or it stays unresolved
+  - POST /quotes (observation change): POST /quotes is gone from the new build: approve its effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object; as removed, or it stays unresolved
+assumed, not decided by anyone:
+  - KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+  - every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+  - QuotesController is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default
+  - a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved
+  - at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved

@@ -18,6 +18,107 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-019: under `auto --confirm`, the six nullable and may-alias claims of H2 get "no engine wrote a harness", which the conformance test counts as a disagreement
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`. Job `20261107-043420-nullable-and-one-array-parameters-in-pro` at `d404b15cbac6`
+  (heap stream, H2's first step).
+  - Step 1's `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` passed.
+  - `the_corpus_agrees_with_the_jvm_under_auto_confirm` (`tests/conformance.rs:859`) failed with 20 disagreements.
+- **Found**: 84 cases, 166 claims, 332 runs. The 20 disagreements are of two kinds:
+  - **8 are VF-009's**: `boomTwice` and `enumBroken` at `n=0`, under strict and assume, unchanged.
+  - **12 are new**: the six claims H2 widened, under `--gaps Strict` and `Assume`, each reported as "no engine wrote
+    a harness". The claims are `twoArrays` with `may alias a,b` (two claims), `length` with `nullable a` (two), and
+    `lengthOrMinusOne` with `nullable a` (two).
+
+  The job's description expected these six to be refused under JBMC and `--confirm` (JBMC can't take a nullable or
+  aliased input). So the refusal happens, but `--confirm` reports it as no harness at all, not as a named refusal,
+  and the test counts it as a disagreement with the JVM. Not yet read in the code: whether `--confirm` refuses with
+  a reason, or fails to make a harness and says nothing.
+- **Needs**: `--confirm` refuses these with a named reason (an unverifiable result naming the input JBMC can't
+  take). The test then reads a named refusal as no verdict, not a disagreement, as the heap stream's rule says:
+  "`--confirm` refuses rather than confirming a different claim". This must not weaken the test: an unnamed "no
+  harness" stays a failure. For the cleanup loop's jbmc stream, with VF-009, since the same test closes both.
+- **Tracked in**: [`llm-dlc/loops/cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md) (J1).
+- **Closes when**: job `20261107-043420-nullable-and-one-array-parameters-in-pro`, resubmitted unchanged at a fixing
+  commit, passes.
+
+### VF-018: JBMC doesn't finish within 600 s on four of H5's regression proofs over objects under a correspondence
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`. Four of the heap stream's H5 jobs, each one ignored test of `lib/tests/heap.rs`
+  under `--engine jbmc` and `auto --confirm`, each failed after about 22 minutes:
+  - `20261107-080218-output-relations-under-a-correspondence` at `9b9c3a34`: `objects.Kernel#price` (`heap.rs:986`);
+  - `20261107-083358-computed-input-equations-under-a-corresp` at `a405b89a`: `prices.Prices#total` (`heap.rs:1172`);
+  - `20261107-092158-input-equations-that-read-a-primitive-pa` at `e7e61dbd`: `lines.Lines#reprice` (`heap.rs:1472`);
+  - `20261107-115201-input-equations-that-read-another-object` at `0348f57c`: `orders.Orders#reprice` (`heap.rs:1685`).
+- **Found**: each fails on its first JBMC run, with `Jbmc confirm=false after …: Unverifiable (expected Verified, on
+  a JVM false)` and "JBMC did not finish within 600 s". The own checker proves each claim. JBMC gives no verdict,
+  which is sound but not what the tests expect. The other four H5 jobs, over the same harness machinery, passed in
+  2 to 6 minutes: `-085410`, `-104658`, `-112033` and `-121516`. Not read further: the harness JBMC is given (its
+  size, the unwinding, how the correspondence's equations are encoded for it), or whether these proofs are simply
+  beyond JBMC in 600 s.
+- **Needs**: triage of one of the four as a quick job: JBMC on the generated harness with its statistics, and
+  whether a smaller encoding (fewer objects, a tighter unwind, the equations as assumptions) lets it finish.
+  - If the harness can be made tractable, do it, with the tests unchanged.
+  - If not, the tests' expectation that JBMC agrees is the question. Accepting JBMC's timeout as no verdict would
+    relax a check, so it is for the user to decide.
+
+  For the cleanup loop's jbmc stream.
+- **Tracked in**: [`llm-dlc/loops/cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md) (J3).
+- **Closes when**: the four jobs, resubmitted unchanged at a fixing commit, pass; or the user decides the
+  expectation, and the jobs pass under it.
+
+### VF-017: examples 150, 151 and 152 fail on the result schema, which has no `object` parameter kind
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-064330-example-150-crosscut-retry-throttle-a-re`,
+  `20261107-064331-example-151-…` and `20261107-064331-example-152-…`, at `224431e7bb68` (heap stream).
+- **Found**: each fails within 5 s, after `jvmcontract equivalence` exits 0, as `build.py` validates the result:
+  `result.json: 'object' is not one of ['primitive', 'array', 'record']`. The path in the schema is
+  `$defs/statement/properties/domain/properties/parameters/items/properties/kind` in
+  `examples/schema/result.schema.json`. It is unchanged at `main` (`34e1d87b`), so the three examples can't be
+  recorded there either. H2's object parameters write `kind: object`, and the schema was never extended for them.
+- **Needs**: the schema allows `object`, with whatever else an object parameter's domain entry carries (its
+  constructor, nullability, aliasing: check the statement jvmcontract writes). Then a `test_build.py` case
+  validating such a result. For the cleanup loop's examples stream.
+- **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
+- **Closes when**: the three jobs, resubmitted after the fix, pass with each example's expected verdict: 150
+  verified; 151 a violation differing only in `result == throttle`; 152 verified within the constructor-made domain.
+
+### VF-016: examples 160 and 161 fail before any proof: their subject is a caller the patch doesn't change
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-053635-example-160-a-changed-refill-helper-prov` and
+  `20261107-053635-example-161-a-refill-helper-aligned-to-t`, at `85ee8db14dfb` (summaries stream).
+- **Found**: each fails in 0.2 s with "the patch does not change the subject file
+  examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java"
+  (`examples/tools/build.py:3523`). The examples are about a changed helper, `TokenBucket`, proved on its own and
+  then used in its caller's proof. So the subject (`RetryAfter#nanosUntilToken`) is the caller, and the patch only
+  touches `TokenBucket.java`. The check is the same one VF-002 trips on, for another reason: there the patch creates
+  the subject, here it leaves it alone.
+- **Needs**: `build.py` takes a subject the patch doesn't change, when the change is in the subject's code closure.
+  Its excerpts then show the changed file. Or the examples name the helper's file and keep the caller as the
+  symbol. For the cleanup loop's examples stream, with VF-002.
+- **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
+- **Closes when**: both jobs, resubmitted after the fix, pass with their expected verdicts: 160 verified with
+  `lastAfter` shared, 161 a violation with no helper shared.
+
+### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
+
+- **Status**: open
+- **Raised**: 2026-11-07, from the inventory of failed results for the cleanup loop. Job
+  `20261103-010716-example-109-revisited-hex-todigit-s-regr` at `4abee307b922`, on `FilSurface`, failed on
+  2026-11-03. It was never rerun or tracked.
+- **Found**: step 3 ("old toDigit decodes the Arabic-Indic zero") exited 1. JBMC 6.11.0 found `ch == 1632`, but the
+  interpreter could not replay it: `outcome: <could not replay: <unsupported: reads static field
+  java.nio.charset.StandardCharsets.UTF_8>>` (`lib/src/interp/natives.rs:373`). The two steps after it were
+  skipped. The JDK models have shipped with jvmcontract since, so the failure may have changed.
+- **Needs**: a rerun at the current commit first. Then, if it fails the same way, the interpreter reads
+  `StandardCharsets`' constants as the JVM has them. For the cleanup loop's native stream.
+- **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N3).
+- **Closes when**: the job, resubmitted at a fixing commit, passes.
+
 ### VF-014: H1's benchmark comparison fails on 8 verdicts that changed because `lib/benchmark/results.json` is stale, not because of symbolic references
 
 - **Status**: open
@@ -129,6 +230,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   so this finding is all that is left of the engine-priorities brief's "conformance job for the native stream's step 3
   cases" (Next, item 8).
 - **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 2 pass.
+- **Seen again** 2026-11-07, unchanged (the same 8 disagreements), in job
+  `20261107-043420-nullable-and-one-array-parameters-in-pro`, beside VF-019's 12. Taken by the cleanup loop's jbmc
+  stream ([`cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md), J1).
 
 ### VF-002: examples 147, 148 and 149 never reach a proof
 

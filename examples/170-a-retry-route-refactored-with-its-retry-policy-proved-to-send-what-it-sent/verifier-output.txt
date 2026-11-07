@@ -1,0 +1,10 @@
+POST /deliveries/failures: verified
+  observations: result preserved, exception preserved, status preserved, KafkaTemplate.send preserved
+  proof: jvmcontract's own checker (CaDiCaL): 1 properties proved over status: int × idempotent: boolean × attempts: int in 0.0 s; loops unwound 16 times with unwinding assertions
+  domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
+  assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+  assumes: every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim
+  assumes: DeliveryFailures is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default
+  assumes: a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved
+  assumes: at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved
+1 entry points: 1 verified, 0 refuted, 0 unresolved, 0 unsupported

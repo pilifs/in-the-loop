@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-043420-nullable-and-one-array-parameters-in-pro",
+  "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 22m46s, peak 1.2 GiB (estimated 1h00m, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "step 1 (conformance under JBMC, auto and auto --confirm) exited 101, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-043420-nullable-and-one-array-parameters-in-pro.json",
+    "sha256": "eb331e21214f064c32c5bee1678e21128cf1db94eb90367d7fb1052f44d49fc5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-043420-nullable-and-one-array-parameters-in-pro",
+      "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM",
+      "description": "Property checks gained a wider domain for array parameters (step H2 of llm-dlc/loops/foundations-heap.md): --nullable a lets a be null and --may-alias a,b lets a and b be one array. Only the own checker takes such a domain (each such parameter a symbolic reference among null and the arrays it may be); --engine jbmc and --confirm refuse it, and --engine auto does not fall back to JBMC. Witnesses say it (b=the same array as a, a=null) and keep it through the interpreter, the shrinker and the JVM run. The conformance corpus (lib/tests/conformance.rs) gained six claims over widened domains for twoArrays, length and lengthOrMinusOne, whose outside-the-domain calls ([0];@0 and null) they now take; the own checker's run of the corpus passed inline. This job runs the corpus's ignored tests, which run every claim through JBMC, --engine auto and auto --confirm and hold each to the JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/property.rs",
+          "lib/src/bmc/mod.rs",
+          "lib/tests/conformance.rs"
+        ]
+      },
+      "expected": "exits 0: both ignored tests pass. The six widened claims are Unverifiable under --engine jbmc and auto --confirm (refused: JBMC would prove a narrower claim), and under --engine auto have the own checker's verdicts (Verified, or Violation with a witness the JVM refutes); every other claim as before.",
+      "submitted": {
+        "at": "2026-11-07T04:34:20+00:00",
+        "session": "750c8a36-92b9-44e3-adad-ef96dc6aa676",
+        "by": "claude (foundations-heap)"
+      },
+      "priority": 0,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "60m",
+        "notes": "the corpus has about 90 claims, each run by JBMC once or more; earlier runs of these tests were pipeline jobs of comparable size"
+      },
+      "steps": [
+        {
+          "name": "conformance under JBMC, auto and auto --confirm",
+          "run": "cd lib && cargo test --release --test conformance -- --ignored",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "d404b15cbac6084b0d53c40cca9a5b4e5e11bc6d",
+  "startedAt": "2026-11-07T15:34:00+00:00",
+  "finishedAt": "2026-11-07T15:56:47+00:00",
+  "wallSeconds": 1367.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3960624,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 3600.0,
+    "notes": "the corpus has about 90 claims, each run by JBMC once or more; earlier runs of these tests were pipeline jobs of comparable size"
+  },
+  "usage": {
+    "peakMemoryBytes": 1261076480,
+    "wallSeconds": 1366.8,
+    "cpuSeconds": 2090.4,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance under JBMC, auto and auto --confirm",
+      "run": "cd lib && cargo test --release --test conformance -- --ignored",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 1366.83,
+      "cpuSeconds": 2090.443,
+      "cpuThrottledSeconds": 4.727,
+      "peakMemoryBytes": 1261076480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-under-jbmc-auto-an.log",
+        "lines": 450,
+        "bytes": 33898,
+        "sha256": "2431b79beb9ee1d7335290bebc536694269501b7cfa1c0b64d306cab434e7f96",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 448,
+          "text": "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 1239.52s",
+          "groups": [
+            "FAILED",
+            "1",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "enumBroken [assert result == 12]: Auto --gaps Assume reports a violation on enumBroken(n=0) that the JVM does not reproduce: the harness holds",
+        "boomTwice [assert result == 2]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontrac",
+        "  boomTwice(n=0)",
+        "    outcome in the interpreter: 2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "boomTwice [assert result == 2]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#boomTwice cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 2` on every input (jvmcontrac",
+        "  boomTwice(n=0)",
+        "    outcome in the interpreter: 2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "enumBroken [assert result == 12]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcon",
+        "  enumBroken(n=0)",
+        "    outcome in the interpreter: 12, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "enumBroken [assert result == 12]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#enumBroken cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 12` on every input (jvmcon",
+        "  enumBroken(n=0)",
+        "    outcome in the interpreter: 12, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "twoArrays [assume a.length > 0 && b.length > 0; assert result == 1; may alias a,b]: the corpus says it is refuted, the JVM does not on any of its calls",
+        "twoArrays [assume a.length > 0 && b.length > 0; assert result == 1; may alias a,b]: the corpus says it is refuted, the JVM does not on any of its calls",
+        "length [assert result >= 0; nullable a]: the corpus says it is refuted, the JVM does not on any of its calls",
+        "length [assert result >= 0; nullable a]: the corpus says it is refuted, the JVM does not on any of its calls",
+        "lengthOrMinusOne [assert result >= 0; nullable a]: the corpus says it is refuted, the JVM does not on any of its calls",
+        "lengthOrMinusOne [assert result >= 0; nullable a]: the corpus says it is refuted, the JVM does not on any of its calls",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    the_corpus_agrees_with_the_jvm_under_auto_confirm",
+        "",
+        "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 1239.52s",
+        "",
+        "error: test failed, to rerun pass `--test conformance`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T15:56:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-043420-nullable-and-one-array-parameters-in-pro"
+}
