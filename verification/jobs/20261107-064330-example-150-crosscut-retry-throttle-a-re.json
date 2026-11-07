@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-064330-example-150-crosscut-retry-throttle-a-re",
+  "title": "Example 150: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker)",
+  "description": "Runs example 150 through build.py: a B9 regression proof by jvmcontract's own checker of Crosscut's RetryThrottling, whose Throttle parameter is made in the harness by its constructor from symbolic limits (step H2-H4 of llm-dlc/loops/foundations-heap.md). 150 is a correct rewrite of recorded, 151 the alias-to-copy defect in reconfigured, 152 a rewrite of recorded wrong only on drained throttles, which the constructor never makes. Checked inline on the same classes before submitting; the job records result.json and the page.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "150"
+    ]
+  },
+  "expected": "verified: behaves as before on every input of constructor-made objects, the domain naming Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), existing tests passing",
+  "submitted": {
+    "at": "2026-11-07T06:43:30+00:00",
+    "by": "foundations-heap"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "example 150 (B9)",
+      "run": "python3 examples/tools/build.py 150",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes"
+  ]
+}

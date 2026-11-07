@@ -1,0 +1,12 @@
+diff --git a/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java b/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
+@@ -49,7 +49,7 @@
+         for (char c : chars) {
+             if (c >= 0x0001 && c <= 0x007f) {
+                 out[k++] = (byte) c;
+-            } else if (c <= 0x07ff) {
++            } else if (c < 0x07ff) {
+                 out[k++] = (byte) (0xc0 | (c >> 6));
+                 out[k++] = (byte) (0x80 | (c & 0x3f));
+             } else {

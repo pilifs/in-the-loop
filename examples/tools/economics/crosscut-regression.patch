@@ -1,0 +1,12 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
+@@ -12,7 +12,7 @@
+ 
+     /** The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}. */
+     public static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {
+-        long earned = (nowNanos - lastNanos) / periodNanos;
++        long earned = (nowNanos - lastNanos + periodNanos - 1) / periodNanos;
+         return Math.min(capacity, tokens + earned);
+     }
+ 

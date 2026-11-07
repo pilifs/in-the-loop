@@ -1,0 +1,19 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
+@@ -17,11 +17,12 @@
+     }
+ 
+     /**
+-     * The time up to which refills have been credited after the refill: {@code lastNanos} advanced by the whole
+-     * periods that earned a token, which is {@code nowNanos} less the part of a period that has not earned one yet.
+-     * That part is kept, so that a bucket polled more often than it refills still refills.
++     * The time up to which refills have been credited after the refill: the start of the period {@code nowNanos}
++     * falls in, on the clock's grid of whole periods, as the fixed window aligns its start. The part of a period
++     * that has not earned a token yet is left after it, so that a bucket polled more often than it refills still
++     * refills.
+      */
+     public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {
+-        return nowNanos - (nowNanos - lastNanos) % periodNanos;
++        return nowNanos - nowNanos % periodNanos;
+     }
+ }

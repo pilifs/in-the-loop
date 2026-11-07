@@ -104,6 +104,11 @@ pub struct JbmcResult {
     pub raw_inputs: BTreeMap<u32, String>,
     /// The counterexample's array inputs by slot: their elements as JBMC prints them, or `None` for `null`.
     pub raw_arrays: BTreeMap<u32, Option<Vec<String>>>,
+    /// The counterexample's array inputs that are the same array as an earlier parameter, by slot: that
+    /// parameter's slot. Only the own checker gives any, under a domain that lets parameters be one array
+    /// ([`crate::bmc::Parameters`]).
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub raw_same: BTreeMap<u32, u32>,
     pub stage: Option<String>,
     pub problem: Option<String>,
     pub log: PathBuf,
@@ -122,12 +127,14 @@ pub struct JbmcResult {
     pub profile: crate::phases::Profile,
 }
 
-/// An argument of a counterexample: a primitive, an array of primitives, or `null`.
+/// An argument of a counterexample: a primitive, an array of primitives, `null`, or the same object as an earlier
+/// argument (by its index), which a replay passes again rather than a copy of it.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Argument {
     Scalar(Value),
     Array(Vec<Value>),
     Null,
+    Same(usize),
 }
 
 impl JbmcResult {
@@ -142,8 +149,14 @@ impl JbmcResult {
     pub fn arguments(&self, params: &[Type]) -> Result<Vec<Argument>, Error> {
         let mut out = Vec::new();
         let mut slot = 0;
+        let mut index_of: BTreeMap<u32, usize> = BTreeMap::new();
         for t in params {
+            index_of.insert(slot, out.len());
             out.push(match t {
+                Type::Array(_) if self.raw_same.contains_key(&slot) => match index_of.get(&self.raw_same[&slot]) {
+                    Some(&earlier) => Argument::Same(earlier),
+                    None => return Err(Error::new(format!("the counterexample's parameter in slot {slot} is the same array as one in slot {}, which is no earlier parameter", self.raw_same[&slot]))),
+                },
                 Type::Array(element) => match self.raw_arrays.get(&slot) {
                     Some(Some(raw)) => Argument::Array(raw.iter().map(|r| parse_value(element, r)).collect::<Result<Vec<_>, _>>()?),
                     Some(None) => Argument::Null,
@@ -354,6 +367,7 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
             properties: 0,
             raw_inputs: BTreeMap::new(),
             raw_arrays: BTreeMap::new(),
+            raw_same: BTreeMap::new(),
             stage: run.stage.clone(),
             problem: Some(format!("jbmc is not installed ({} not found)", run.executable)),
             log: run.log.clone(),
@@ -402,6 +416,7 @@ fn blank(version: &str, stage: Option<String>, ending: Ending, verdict: Verdict,
         properties,
         raw_inputs: BTreeMap::new(),
         raw_arrays: BTreeMap::new(),
+        raw_same: BTreeMap::new(),
         stage,
         problem,
         log: PathBuf::new(),

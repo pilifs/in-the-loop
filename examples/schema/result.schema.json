@@ -250,14 +250,15 @@
                   "initialization",
                   "library",
                   "gap",
-                  "contract"
+                  "contract",
+                  "callee"
                 ]
               },
               "text": {
                 "type": "string"
               },
               "basis": {
-                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that the tool's own checker `proved` against the JDK's bytecode, that a JVM `tested`, or that nothing has checked (`trusted`), under --gaps advised --contracts.",
+                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that the tool's own checker `proved` against the JDK's bytecode, that a JVM `tested`, or that nothing has checked (`trusted`), under --gaps advised --contracts; for a changed callee shared in both versions (`callee`), `proved` by a regression proof of its two versions whose claim key is the assumption's `id`.",
                 "enum": [
                   "stated",
                   "harness",
@@ -700,7 +701,7 @@
             "additionalProperties": false,
             "properties": {
               "checker": { "description": "`native` for the tool's own checker, `jbmc` for JBMC.", "enum": ["native", "jbmc"] },
-              "purpose": { "description": "`proof`; `fallback`, JBMC after the own checker gave no verdict; `shared`, with the shared callees as one function; `as-written`, again without them; or `probe`, the vacuity probe.", "enum": ["proof", "fallback", "shared", "as-written", "probe"] },
+              "purpose": { "description": "`proof`; `fallback`, JBMC after the own checker gave no verdict; `shared`, with the shared callees as one function (once per refinement, with the callees still shared); `as-written`, again without them; or `probe`, the vacuity probe.", "enum": ["proof", "fallback", "shared", "as-written", "probe"] },
               "stage": { "description": "The input interval of a preliminary JBMC stage, as `[0:20]`; null for every input.", "type": ["string", "null"] },
               "budgetSeconds": { "description": "The time the run was given.", "type": "number" },
               "seconds": { "description": "The time it took.", "type": "number" },
@@ -794,6 +795,20 @@
           "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds), and since 2026-11-06 the seconds of its other phases (loadingSeconds, decodingSeconds, encodingSeconds, witnessSeconds; lib/src/phases.rs).",
           "type": "object",
           "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+    "helpers": {
+      "description": "For a B9 proof run with the proof cache (the example's `approach.cache`): each changed helper of the target the tool offered for a regression proof of its own before the caller's, from the tool's note about it. Null when the run reached no verdict; absent without the cache.",
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "required": ["callee", "shared", "note"],
+        "additionalProperties": false,
+        "properties": {
+          "callee": { "description": "The helper, as Class.method.", "type": "string" },
+          "shared": { "description": "Whether its own proof held, so that the caller's proof took it as one function in both versions; its statement then has an assumption of kind `callee` naming that proof's claim.", "type": "boolean" },
+          "note": { "description": "The tool's account: the helper proof's claim and whether it was proved in the run or found in the cache, or why the helper stays as written in both versions (its two versions differ, with the input; no verdict; a cycle).", "type": "string" }
         }
       }
     },

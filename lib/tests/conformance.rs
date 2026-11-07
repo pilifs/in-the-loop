@@ -13,7 +13,9 @@
 //!
 //! An input outside the domain the engines prove over (a null array parameter, or two parameters that are one
 //! array) is run on the JVM only, and a `Verified` verdict for a claim of that case must state the restriction
-//! that leaves the input out.
+//! that leaves the input out. A claim may widen its domain to take such inputs (`--nullable`, `--may-alias`,
+//! which only the own checker takes): its harness is then run on the JVM on the case's outside calls too, as on
+//! its other calls, and its verdict held to the JVM's there.
 //!
 //! The native engine's verdicts are recorded per claim. JBMC, `--engine auto` and `--engine auto --confirm` run in
 //! the ignored tests, pipeline jobs: `cargo test --release --test conformance -- --ignored`. What `--confirm` does
@@ -55,6 +57,16 @@ struct Claim {
     refuted: bool,
     /// The native engine's verdict under `--gaps strict`.
     native: Verdict,
+    /// The array parameters that may be null, and the pairs that may be one array: a domain wider than the
+    /// default, which takes the case's outside calls.
+    nullable: &'static [&'static str],
+    may_alias: &'static [(&'static str, &'static str)],
+}
+
+impl Claim {
+    fn widened(&self) -> bool {
+        !self.nullable.is_empty() || !self.may_alias.is_empty()
+    }
 }
 
 struct Case {
@@ -71,11 +83,18 @@ impl Case {
         Case { method, calls: calls.to_vec(), outside: Vec::new(), claims: Vec::new() }
     }
     fn holds(mut self, assume: Option<&'static str>, assert: &'static str, throws: &'static [&'static str], native: Verdict) -> Case {
-        self.claims.push(Claim { assume, assert, throws, refuted: false, native });
+        self.claims.push(Claim { assume, assert, throws, refuted: false, native, nullable: &[], may_alias: &[] });
         self
     }
     fn refuted(mut self, assume: Option<&'static str>, assert: &'static str, throws: &'static [&'static str], native: Verdict) -> Case {
-        self.claims.push(Claim { assume, assert, throws, refuted: true, native });
+        self.claims.push(Claim { assume, assert, throws, refuted: true, native, nullable: &[], may_alias: &[] });
+        self
+    }
+    /// Widens the last claim's domain: these array parameters may be null, and these pairs one array.
+    fn within(mut self, nullable: &'static [&'static str], may_alias: &'static [(&'static str, &'static str)]) -> Case {
+        let claim = self.claims.last_mut().expect("a claim to widen");
+        claim.nullable = nullable;
+        claim.may_alias = may_alias;
         self
     }
     fn outside(mut self, arguments: &'static str, outcome: &'static str, domain_says: &'static str) -> Case {
@@ -180,13 +199,41 @@ fn corpus() -> Vec<Case> {
         // Aliasing.
         Case::new("aliasedLocals", &[("1", "returns 1")]).holds(None, "result == n", &[], V).refuted(None, "result == 0", &[], X),
         Case::new("aliasedObjects", &[("1", "returns 1")]).holds(None, "result == n", &[], V).refuted(None, "result == 0", &[], X),
+        // Symbolic references: past the engine's merge threshold, x is one of a, b (or null) under a formula.
+        Case::new("swaps", &[("0", "returns 2102"), ("1", "returns 112"), ("3", "returns 2102"), ("512", "returns 112"), ("1023", "returns 2102")])
+            .holds(None, "result == 2102 || result == 112", &[], V)
+            .refuted(None, "result == 2102", &[], X),
+        Case::new("swapsOrNull", &[("0", "returns 1"), ("2", "returns 2"), ("1", "returns 0"), ("1023", "returns 0")])
+            .holds(None, "(n & 1) != 0 || result == 1 || result == 2", &[], V)
+            .holds(None, "(n & 1) == 0 || result == 0", &[], V)
+            .refuted(None, "result != 0", &[], X),
+        Case::new("swapsThenNull", &[("0", "returns 1"), ("6", "returns 1"), ("2", "returns 2"), ("1", NPE)])
+            .holds(None, "result == 1 || result == 2", &["NullPointerException when (n & 1) != 0"], V)
+            .refuted(None, "result == 1", &["NullPointerException when (n & 1) != 0"], X)
+            .refuted(None, "result == 1 || result == 2", &[], X),
         Case::new("twoArrays", &[("[0];[0]", "returns 1")])
             .holds(Some("a.length > 0 && b.length > 0"), "result == 1", &[], V)
+            .holds(Some("a.length > 0 && b.length > 0"), "result == (a == b ? 2 : 1)", &[], V)
+            .within(&[], &[("a", "b")])
+            .refuted(Some("a.length > 0 && b.length > 0"), "result == 1", &[], X)
+            .within(&[], &[("a", "b")])
             .outside("[0];@0", "returns 2", "no two the same array"),
         Case::new("writeThrough", &[("[]", "returns 7"), ("[1]", "returns 7")]).holds(None, "result == 7", &[], V),
         // Null arrays.
-        Case::new("length", &[("[1,2]", "returns 2")]).holds(None, "result >= 0", &[], V).outside("null", "throws java.lang.NullPointerException", "a: int[] of length ≤ 8, not null"),
-        Case::new("lengthOrMinusOne", &[("[]", "returns 0")]).holds(None, "result >= 0", &[], V).outside("null", "returns -1", "a: int[] of length ≤ 8, not null"),
+        Case::new("length", &[("[1,2]", "returns 2")])
+            .holds(None, "result >= 0", &[], V)
+            .holds(None, "result == a.length", &["NullPointerException when a == null"], V)
+            .within(&["a"], &[])
+            .refuted(None, "result >= 0", &[], X)
+            .within(&["a"], &[])
+            .outside("null", "throws java.lang.NullPointerException", "a: int[] of length ≤ 8, not null"),
+        Case::new("lengthOrMinusOne", &[("[]", "returns 0")])
+            .holds(None, "result >= 0", &[], V)
+            .holds(None, "a == null ? result == -1 : result == a.length", &[], V)
+            .within(&["a"], &[])
+            .refuted(None, "result >= 0", &[], X)
+            .within(&["a"], &[])
+            .outside("null", "returns -1", "a: int[] of length ≤ 8, not null"),
         Case::new("nullLocal", &[("0", "throws java.lang.NullPointerException"), ("1", "returns 1")])
             .holds(None, "result == 1", &["NullPointerException when n <= 0"], V)
             .refuted(None, "result == 1", &[], X),
@@ -350,6 +397,7 @@ fn show(v: Value) -> String {
 fn runner_arguments(inputs: &[jvmcontract::witness::Typed]) -> String {
     fn token(v: &serde_json::Value) -> String {
         match v {
+            serde_json::Value::Object(o) if o.contains_key("same") => format!("@{}", o["same"]),
             serde_json::Value::Bool(b) => b.to_string(),
             serde_json::Value::Number(n) => n.to_string(),
             serde_json::Value::String(s) => s.clone(),
@@ -459,6 +507,8 @@ fn prove(case: &Case, claim: &Claim, index: usize, (engine, gaps, confirm, contr
     options.confirm = confirm;
     options.contracts = (contracts == Contracts::File).then(corpus_contracts);
     options.contract_library = contracts == Contracts::Library;
+    options.nullable = claim.nullable.iter().map(|s| s.to_string()).collect();
+    options.may_alias = claim.may_alias.iter().map(|(a, b)| (a.to_string(), b.to_string())).collect();
     let work = target_tmp().join(format!("conformance-{engine:?}-{gaps:?}{}{}", if confirm { "-confirm" } else { "" }, match contracts { Contracts::None => "", Contracts::File => "-contracts", Contracts::Library => "-library" })).join(format!("{}-{index}", case.method));
     let _ = std::fs::remove_dir_all(&work);
     options.work = Some(work);
@@ -473,6 +523,12 @@ fn claim_text(claim: &Claim) -> String {
     let _ = write!(s, "assert {}", claim.assert);
     for t in claim.throws {
         let _ = write!(s, "; throws {t}");
+    }
+    for n in claim.nullable {
+        let _ = write!(s, "; nullable {n}");
+    }
+    for (a, b) in claim.may_alias {
+        let _ = write!(s, "; may alias {a},{b}");
     }
     s
 }
@@ -548,7 +604,8 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
                 failures.push(format!("{} [{}]: no engine wrote a harness", case.method, claim_text(&case.claims[k])));
                 continue;
             };
-            for (arguments, _) in &case.calls {
+            let outside = case.outside.iter().filter(|_| case.claims[k].widened()).map(|(arguments, _, _)| arguments);
+            for arguments in case.calls.iter().map(|(arguments, _)| arguments).chain(outside) {
                 checks.push((None, c, k, format!("check\t{}\t{arguments}", dir.display())));
             }
         }
@@ -595,7 +652,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
             (true, Verdict::Verified, _) if gaps == 0 => failures.push(format!("{label}: {:?} --gaps {:?} says Verified with no gap assumed, and the JVM refutes it: {}", run.engine, run.gaps, run.outcome.output)),
             _ => {}
         }
-        if verdict == Verdict::Verified {
+        if verdict == Verdict::Verified && !claim.widened() {
             for (arguments, _, says) in &case.outside {
                 let domain = run.outcome.domain.as_deref().unwrap_or("");
                 if !domain.contains(says) || !run.outcome.output.contains(says) {
@@ -743,7 +800,9 @@ fn the_benchmark_takes_its_first_group_from_this_corpus() {
     };
     let mut claims = Vec::new();
     for case in corpus() {
-        for (i, claim) in case.claims.iter().enumerate() {
+        // A claim over a widened domain is left out: the benchmark's runner gives no domain flags, and JBMC takes
+        // no such domain.
+        for (i, claim) in case.claims.iter().enumerate().filter(|(_, c)| !c.widened()) {
             claims.push(serde_json::json!({
                 "id": format!("conformance/{}/{}", case.method, i + 1),
                 "group": 1,

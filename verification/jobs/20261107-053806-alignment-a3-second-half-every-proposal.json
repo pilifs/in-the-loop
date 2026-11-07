@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-053806-alignment-a3-second-half-every-proposal",
+  "title": "Alignment A3, second half: every proposal for examples 121-139 checked by the regression proof, and scored",
+  "description": "jvmcontract align --prove (new, lib/src/alignment/proofs.rs) runs the regression check (equivalence, as a caller) on every complete mapping align proposes for a pair, with the flags it amounts to, collapses proved mappings that give the old version the same observations, and settles the pair: one proved (evidence for its claim key, intent still proposed), several (a question), or none (each tried with its counterexample). examples/tools/alignment.py score --step proofs runs it on each of the 19 regression examples 121-139 for the table's pair, under the example's own scope (--unchanged-unless) and proof options (engine, gaps, unwind, as build.py gives them), and scores the outcome against the example's verdict: a verified example's hand-written mapping should be the one proved; a violation should leave no mapping proved. Any other proved mapping is 'wrong and accepted', the worst outcome (a mapping hiding a regression). It writes the score to examples/tools/alignment/scores/A3-proofs.json and the page.",
+  "kind": "other",
+  "capabilities": [
+    "B9",
+    "jvmcontract:align",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/alignment/proofs.rs",
+      "examples/tools/alignment.py"
+    ]
+  },
+  "expected": "exits 0; the printed A3-proofs tally: 'proof, verified' 10 found (121, 123, 125, 127, 129, 131, 133, 135, 137, 138; 123's relation proved but still a person's decision), 'proof, violation' 9 found (122, 124, 126, 128, 130, 132, 134, 136, 139: none proved, counterexamples shown), nothing wrong, and wrongAndAccepted empty in scores/A3-proofs.json. Any example listed under wrongAndAccepted is a finding for the alignment stream.",
+  "submitted": {
+    "at": "2026-11-07T05:38:06+00:00",
+    "session": "11f93b59-b830-4090-8775-33313957ef5c",
+    "by": "claude-opus-5-5"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "19 javac compiles (about 40 s inline) and one proof per proposal, about 35 proofs; the recorded proofs of these examples take 0.1 s to 15 s each"
+  },
+  "steps": [
+    {
+      "name": "proofs over 121-139",
+      "run": "python3 examples/tools/alignment.py score --step proofs --record",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/tools/alignment/scores/A3-proofs.json",
+    "examples/tools/alignment/README.md"
+  ]
+}

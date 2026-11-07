@@ -9,6 +9,8 @@
 
 > Spring's default rollback rule is that a `RuntimeException` or an `Error` rolls the transaction back and a checked exception does not. The kernel writes it as "anything but a checked exception", and a developer rewrites it in the positive, as "a runtime exception", which is how most people remember the rule. The behavioural contract of the transaction boundary, 22 cases derived from the bytecode, changes in exactly one: a method that dies with an `Error` now commits whatever it had written.
 
+> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 025` runs it again.
+
 Tags: [transactions](../README.md#tag-transactions), [dropped-case](../README.md#tag-dropped-case), [exceptions](../README.md#tag-exceptions)
 
 ## The change
@@ -111,7 +113,7 @@ Revert, or write the rule as Spring does, `instanceof RuntimeException || instan
 
 The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
 
-This page renders attempt `20261106T181224Z-3160b2c0` at claim `35164c1aff042c68`, in pipeline job `20261106-181059-example-025-b8-under-build-py-s-strict-s`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181224Z-3160b2c0` at claim `35164c1aff042c68`, in pipeline job `20261106-181059-example-025-b8-under-build-py-s-strict-s`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

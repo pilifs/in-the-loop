@@ -11,12 +11,40 @@
 //! The abstraction is sound for a proof: the stub behaves as every function the callee could be, the callee
 //! itself included, so what holds of the two versions with the stub holds of them as written. It can be too
 //! coarse for a counterexample, which is why one found with it is replayed through the bytecode as written and,
-//! when it does not reproduce, the proof is run again with the callees as written. A callee of a few instructions
-//! without a loop, a multiplication, a division or a remainder (`Math.min`, `Math.abs`) is left as written: it costs
-//! the solver less than the rerun a counterexample through its stub usually brings ([`trivial`]).
+//! when it does not reproduce, the proof is run again with the callees whose stubs it rests on as written, and the
+//! others still one function ([`spurious`], refinement per callee). A callee of a few instructions without a loop, a
+//! multiplication, a division or a remainder (`Math.min`, `Math.abs`) is left as written: it costs the solver less
+//! than the rerun a counterexample through its stub usually brings ([`trivial`]).
 //!
 //! The same comparison of the two versions' bytecode settles a prior question: when the target and everything it
 //! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]).
+//!
+//! **A changed helper proved equivalent** (`llm-dlc/loops/foundations-summaries.md`, S4) is shared the same way,
+//! narrowly. A callee both versions call whose code differs is a candidate when, in each version, it is a pure
+//! function of the kind above over integral values only (no `float` or `double`, whose `0.0` and `-0.0` a regression
+//! proof's comparison of results doesn't tell apart), and when neither version constructs or throws an exception
+//! of its own (a regression proof compares exceptions by class, not by message, and the stub throws one with no
+//! message): what it can throw is the JVM's own `ArithmeticException` of a division. [`plan_with`] asks its caller
+//! for a proof of each candidate: a regression proof of the helper's two versions, unrestricted, on every input
+//! ([`crate::proof_cache::Helpers`]). With one, the helper is one stub in both versions ([`Callee::proved`]), and
+//! the caller's statement names that proof's claim key as an assumption with basis `proved`. Without one (refuted,
+//! unresolved, or not asked for) it stays as written in both versions, as any other changed code does.
+//!
+//! Under the tool's own checker, the one function a proved helper becomes is its new version itself
+//! ([`substitute_directory`]): the previous version's calls of the helper are redirected to the new version's
+//! method, so that both versions call the same code, which the checker's hashing makes one circuit per arguments
+//! (as it does for a helper identical in both). Since the two versions of the helper have the same outcome on every
+//! input and neither has an effect, the previous version with its calls redirected behaves exactly as it did: the
+//! proof is of the versions as written, and a counterexample to it is one to them, with no refinement to run. A class
+//! whose methods the helper's closure holds, in either version, may have no static initializer, nor may its
+//! application superclasses: a redirected call initializes the other version's class rather than its own.
+//!
+//! Either way the reuse is sound for the caller's proof only where the helper's two versions agree, which the
+//! helper's proof shows for every input of its parameter types; so every call, in either version and with any
+//! arguments, is in its domain, and the applicability check at a call site has nothing left to assert. A helper
+//! proof whose domain is narrower (one with `--unchanged-unless`, or mapped arguments, or a relation between results
+//! rather than equal ones) is never one the caller is given: its domain would have to become an assertion at each
+//! call.
 
 use std::collections::{BTreeMap, BTreeSet, HashSet, VecDeque};
 use std::path::Path;
@@ -25,7 +53,7 @@ use std::rc::Rc;
 use serde::Serialize;
 
 use crate::classfile::writer::{ClassWriter, CodeBuilder, FieldWriter, MethodWriter};
-use crate::classfile::{encode_modified_utf8, flags, ArithOp, BootstrapArg, ClassFile, Cond, ConstantPool, Insn, Kind, MemberRef, Method, Type};
+use crate::classfile::{encode_modified_utf8, flags, ArithOp, BootstrapArg, BootstrapMethod, ClassFile, Cond, ConstantPool, Insn, Kind, MemberRef, Method, Type};
 use crate::classpath::ClassPath;
 use crate::Error;
 
@@ -48,6 +76,19 @@ pub struct Callee {
     pub descriptor: String,
     /// The exception classes it can throw, by internal name.
     pub throws: Vec<String>,
+    /// For a callee whose two versions differ: the proof that they have the same outcome on every input, which is
+    /// what lets one stub stand for both. `None` for a callee identical in both versions.
+    pub proved: Option<Proved>,
+}
+
+/// A regression proof of a changed helper's two versions, unrestricted: the same result, or the same exception, on
+/// every input of its parameter types.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct Proved {
+    /// The proof's claim key ([`crate::spec::cache::ClaimKey`]), under which its result is in the proof cache.
+    pub key: String,
+    /// The run that proved it, as its cache record says.
+    pub from: String,
 }
 
 impl Callee {
@@ -70,7 +111,21 @@ impl Callee {
     fn member(&self) -> MemberRef {
         MemberRef::new(&self.owner, &self.name, &self.descriptor)
     }
+
+    /// `pkg.Class#name(long, int)`: the callee as a target of its own check.
+    pub fn target(&self) -> String {
+        target_of(&self.member())
+    }
 }
+
+/// `pkg.Class#name(long, int)`, a method as `equivalence --target` names it, with its parameter types.
+pub fn target_of(m: &MemberRef) -> String {
+    let params = crate::classfile::MethodDescriptor::parse(&m.descriptor).map(|d| d.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", ")).unwrap_or_default();
+    format!("{}#{}({params})", m.owner.replace('/', "."), m.name)
+}
+
+/// What a caller of [`plan_with`] is asked for a changed helper: its proof, or `None` to leave it as written.
+pub type Prover<'a> = dyn FnMut(&MemberRef) -> Option<Proved> + 'a;
 
 /// What the comparison of the two versions decided.
 #[derive(Debug, Clone, Default)]
@@ -86,6 +141,13 @@ pub struct Plan {
 /// to both versions: only then is a target identical in both, with everything it reaches, verified without a proof
 /// (with the previous version's arguments mapped, `f(a, b)` against `f(b, a)` say, identical bytecode proves nothing).
 pub fn plan(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, target: &MemberRef, plain: bool) -> Plan {
+    plan_with(before, after, before_target, target, plain, &mut |_| None)
+}
+
+/// [`plan`], with a changed helper shared too where `prove` gives a proof of its two versions' equivalence (the
+/// module's documentation says which helpers are asked about). `prove` is asked once per candidate, in the order the
+/// calls sort in.
+pub fn plan_with(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, target: &MemberRef, plain: bool, prove: &mut Prover) -> Plan {
     let after_reach = reach(after, target);
     let before_reach = reach(before, before_target);
     let mut plan = Plan::default();
@@ -100,17 +162,30 @@ pub fn plan(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, ta
             continue;
         }
         let Some(closure) = pure_closure(after, callee) else { continue };
-        if trivial(after, &closure) {
-            continue;
-        }
-        if !closure.methods.iter().all(|m| !after.is_application(&m.owner) || same_method(before, after, m)) {
-            continue;
-        }
-        if !closure.throws.iter().all(|t| constructor(after, t).is_some()) {
-            continue;
-        }
+        let identical = closure.methods.iter().all(|m| !after.is_application(&m.owner) || same_method(before, after, m));
+        let (throws, proved) = if identical {
+            if trivial(after, &closure) || !closure.throws.iter().all(|t| constructor(after, t).is_some()) {
+                continue;
+            }
+            (closure.throws.clone(), None)
+        } else {
+            // A changed helper: pure in both versions, provable as one function, and proved so.
+            let Some(previous) = pure_closure(before, callee) else { continue };
+            if !provable(after, callee, &closure) || !provable(before, callee, &previous) || (trivial(after, &closure) && trivial(before, &previous)) {
+                continue;
+            }
+            if !uninitialized(after, &closure) || !uninitialized(before, &previous) {
+                continue;
+            }
+            let throws: BTreeSet<String> = closure.throws.union(&previous.throws).cloned().collect();
+            if !throws.iter().all(|t| constructor(after, t).is_some()) {
+                continue;
+            }
+            let Some(proof) = prove(callee) else { continue };
+            (throws, Some(proof))
+        };
         inside.extend(closure.methods);
-        candidates.push(Callee { owner: callee.owner.clone(), name: callee.name.clone(), descriptor: callee.descriptor.clone(), throws: closure.throws.into_iter().collect() });
+        candidates.push(Callee { owner: callee.owner.clone(), name: callee.name.clone(), descriptor: callee.descriptor.clone(), throws: throws.into_iter().collect(), proved });
     }
     // A callee only ever called from inside another shared callee is never reached once that one is a stub.
     plan.callees = candidates.into_iter().filter(|c| after_reach.callers.get(&c.member()).is_some_and(|callers| callers.iter().any(|caller| !inside.contains(caller)))).collect();
@@ -140,6 +215,24 @@ pub fn names(callees: &[Callee]) -> Vec<String> {
             }
         })
         .collect()
+}
+
+/// What a proof line says of the callees it took as one function (`used`, as [`names`] gives them): the unchanged
+/// ones, then each changed one with the claim its equivalence was proved under. Empty when none was used.
+pub fn sharing(callees: &[Callee], used: &[String]) -> String {
+    let all = names(callees);
+    let used: Vec<(&String, &Callee)> = all.iter().zip(callees).filter(|(n, _)| used.contains(n)).collect();
+    let unchanged: Vec<&String> = used.iter().filter(|(_, c)| c.proved.is_none()).map(|(n, _)| *n).collect();
+    let mut out = match unchanged.len() {
+        0 => String::new(),
+        1 => format!("; {} unchanged in both versions and taken as one function in both", unchanged[0]),
+        n => format!("; {n} callees unchanged in both versions and taken as one function in both: {}", unchanged.iter().map(|s| s.as_str()).collect::<Vec<_>>().join(", ")),
+    };
+    for (name, callee) in used.iter().filter(|(_, c)| c.proved.is_some()) {
+        let proof = callee.proved.as_ref().expect("filtered");
+        out.push_str(&format!("; {name} changed, its two versions proved to have the same outcome on every input (claim {}), and taken as one function in both", proof.key));
+    }
+    out
 }
 
 /// The methods a target reaches, in one version.
@@ -278,15 +371,24 @@ fn same_method(before: &ClassPath, after: &ClassPath, m: &MemberRef) -> bool {
 }
 
 /// A method's code with its constant pool references resolved, so that two class files compare by what they
-/// say and not by how their pools are numbered. `None` when the code cannot be decoded.
-fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
+/// say and not by how their pools are numbered. `None` when the code cannot be decoded. A dynamic constant
+/// (`ldc`, or a bootstrap argument) is resolved through its own bootstrap entry, since that entry is where what it
+/// says lives: javac makes `case Color.GREEN` in a pattern switch a dynamic constant whose bootstrap names `GREEN`.
+pub(crate) fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
     let code = method.code.as_ref()?;
     let insns = code.instructions().ok()?;
     let pool = &class.pool;
+    // An unreadable table leaves it empty, and a body that needs it undecodable.
+    let bootstraps = class.bootstrap_methods().unwrap_or_default();
     let mut out = Vec::with_capacity(insns.len() + code.exception_table.len());
     for (_, insn) in &insns {
         out.push(match insn {
-            Insn::Ldc(i) => format!("ldc {:?}", pool.loadable(*i).ok()?),
+            Insn::Ldc(i) => match pool.loadable(*i).ok()? {
+                BootstrapArg::Dynamic { bootstrap_method_attr_index, name, descriptor } => {
+                    format!("ldc dynamic {name}{descriptor} {}", bootstrap_text(&bootstraps, bootstrap_method_attr_index, 0)?)
+                }
+                other => format!("ldc {other:?}"),
+            },
             Insn::GetStatic(i) | Insn::PutStatic(i) | Insn::GetField(i) | Insn::PutField(i) | Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => {
                 format!("{} {:?}", opname(insn), pool.member(*i).ok()?)
             }
@@ -294,8 +396,7 @@ fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
             Insn::MultiANewArray(i, dims) => format!("multianewarray {} {dims}", pool.class_name(*i).ok()?),
             Insn::InvokeDynamic(i) => {
                 let (b, name, descriptor) = pool.invoke_dynamic(*i).ok()?;
-                let bootstraps = class.bootstrap_methods().ok()?;
-                format!("invokedynamic {name}{descriptor} {:?}", bootstraps.get(b as usize)?)
+                format!("invokedynamic {name}{descriptor} {}", bootstrap_text(&bootstraps, b, 0)?)
             }
             other => format!("{other:?}"),
         });
@@ -304,6 +405,25 @@ fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
         out.push(format!("{handler:?}"));
     }
     Some(out)
+}
+
+/// A bootstrap entry as text: its method handle and its arguments, a dynamic constant among them resolved through
+/// its own entry in turn. `None` past a few levels, or for an index the table doesn't have.
+fn bootstrap_text(bootstraps: &[BootstrapMethod], index: u16, depth: u32) -> Option<String> {
+    if depth > 8 {
+        return None;
+    }
+    let entry = bootstraps.get(index as usize)?;
+    let mut args = Vec::with_capacity(entry.args.len());
+    for arg in &entry.args {
+        args.push(match arg {
+            BootstrapArg::Dynamic { bootstrap_method_attr_index, name, descriptor } => {
+                format!("Dynamic {name}{descriptor} {}", bootstrap_text(bootstraps, *bootstrap_method_attr_index, depth + 1)?)
+            }
+            other => format!("{other:?}"),
+        });
+    }
+    Some(format!("{:?} [{}]", entry.method, args.join(", ")))
 }
 
 fn opname(insn: &Insn) -> &'static str {
@@ -345,6 +465,33 @@ fn constant_values(class: &ClassFile) -> Vec<(String, String)> {
 struct Closure {
     methods: Vec<MemberRef>,
     throws: BTreeSet<String>,
+    /// Whether a method in it constructs or throws an exception itself (`new` of a `Throwable`, or `athrow`),
+    /// rather than the JVM throwing one for an instruction.
+    raises: bool,
+    /// Whether a parameter or result in it is a `float` or a `double`.
+    floating: bool,
+}
+
+/// Whether no application class whose methods `closure` holds, nor any of its application superclasses, has a
+/// static initializer: a call into them, redirected or not, initializes nothing.
+fn uninitialized(cp: &ClassPath, closure: &Closure) -> bool {
+    closure.methods.iter().filter(|m| cp.is_application(&m.owner)).all(|m| {
+        let mut class = Some(m.owner.clone());
+        while let Some(name) = class.filter(|c| cp.is_application(c)) {
+            let Ok(Some(file)) = cp.application(&name) else { return false };
+            if file.method("<clinit>", "()V").is_some() {
+                return false;
+            }
+            class = file.super_class.clone();
+        }
+        true
+    })
+}
+
+/// Whether a changed helper's closure in one version is of the narrow kind a proof of its equivalence lets one stub
+/// stand for: integral values only, and no exception of its own (see the module's documentation).
+fn provable(cp: &ClassPath, root: &MemberRef, closure: &Closure) -> bool {
+    !closure.raises && !closure.floating && cp.is_application(&root.owner) && closure.throws.iter().all(|t| t == "java/lang/ArithmeticException")
 }
 
 /// A closure of at most this many instructions, without a loop, a multiplication, a division or a remainder, is
@@ -376,7 +523,7 @@ fn trivial(cp: &ClassPath, closure: &Closure) -> bool {
 /// array and nothing of the JDK beyond its arithmetic, the building of an exception message, and the exception
 /// itself; `None` otherwise. The exceptions it can throw are the ones it constructs and the arithmetic ones.
 fn pure_closure(cp: &ClassPath, root: &MemberRef) -> Option<Closure> {
-    let mut out = Closure { methods: Vec::new(), throws: BTreeSet::new() };
+    let mut out = Closure { methods: Vec::new(), throws: BTreeSet::new(), raises: false, floating: false };
     let mut seen: HashSet<MemberRef> = HashSet::new();
     let mut work: VecDeque<MemberRef> = VecDeque::from([root.clone()]);
     while let Some(reference) = work.pop_front() {
@@ -385,7 +532,7 @@ fn pure_closure(cp: &ClassPath, root: &MemberRef) -> Option<Closure> {
         }
         let (class, method) = cp.find_method(&reference.owner, &reference.name, &reference.descriptor)?;
         let declared = MemberRef::new(&class.name, &reference.name, &reference.descriptor);
-        let callees = local_facts(cp, &class, &method, reference == *root, &mut out.throws)?;
+        let callees = local_facts(cp, &class, &method, reference == *root, &mut out)?;
         out.methods.push(declared);
         work.extend(callees);
     }
@@ -393,7 +540,7 @@ fn pure_closure(cp: &ClassPath, root: &MemberRef) -> Option<Closure> {
 }
 
 /// Checks one method of a pure closure and returns the static callees it has; adds what it can throw.
-fn local_facts(cp: &ClassPath, class: &ClassFile, method: &Method, root: bool, throws: &mut BTreeSet<String>) -> Option<Vec<MemberRef>> {
+fn local_facts(cp: &ClassPath, class: &ClassFile, method: &Method, root: bool, closure: &mut Closure) -> Option<Vec<MemberRef>> {
     if !method.is_static() || method.is_native() {
         return None;
     }
@@ -402,6 +549,10 @@ fn local_facts(cp: &ClassPath, class: &ClassFile, method: &Method, root: bool, t
     if !descriptor.params.iter().all(Type::is_primitive) || !(descriptor.ret.is_primitive() || (!root && descriptor.ret == Type::Void)) || (root && descriptor.ret == Type::Void) {
         return None;
     }
+    if descriptor.params.iter().chain([&descriptor.ret]).any(|t| matches!(t, Type::Float | Type::Double)) {
+        closure.floating = true;
+    }
+    let throws = &mut closure.throws;
     let pool = &class.pool;
     let mut callees = Vec::new();
     for (_, insn) in code.instructions().ok()? {
@@ -418,6 +569,7 @@ fn local_facts(cp: &ClassPath, class: &ClassFile, method: &Method, root: bool, t
                 let name = pool.class_name(i).ok()?;
                 if cp.is_subtype(name, "java/lang/Throwable") {
                     throws.insert(name.to_string());
+                    closure.raises = true;
                 } else if name != "java/lang/StringBuilder" {
                     return None;
                 }
@@ -452,6 +604,7 @@ fn local_facts(cp: &ClassPath, class: &ClassFile, method: &Method, root: bool, t
             Insn::Arith(ArithOp::Div | ArithOp::Rem, Kind::Int | Kind::Long) => {
                 throws.insert("java/lang/ArithmeticException".to_string());
             }
+            Insn::AThrow => closure.raises = true,
             _ => {}
         }
     }
@@ -844,6 +997,34 @@ pub fn redirect_calls_directory(input: &Path, output: &Path, lookup: &dyn Fn(Inv
     Ok(written)
 }
 
+/// Copies into `output` every class of the previous version (under `before_dir`, relocated under `prefix`) that calls
+/// a proved helper of `callees`, with each such call redirected to the new version's method: the one function a
+/// proved helper is in both versions under the tool's own checker (see the module's documentation). Returns how many
+/// were written.
+pub fn substitute_directory(before_dir: &Path, output: &Path, prefix: &str, callees: &[Callee]) -> Result<usize, Error> {
+    redirect_calls_directory(before_dir, output, &|invoke, m| {
+        if invoke != Invoke::Static {
+            return None;
+        }
+        let owner = original_owner(&m.owner, prefix);
+        callees.iter().find(|c| c.proved.is_some() && owner != m.owner && c.owner == owner && c.name == m.name && c.descriptor == m.descriptor).map(Callee::member)
+    })
+}
+
+/// For the tool's own checker: when `callees` has a proved helper, writes the previous version's classes (under
+/// `before_dir`, relocated under `before`) that call one into `dir`, with those calls redirected to the new version
+/// ([`substitute_directory`]), puts `dir` second on the checker's class path `entries` (after the harness), and
+/// returns the names of the helpers so shared, as [`names`] gives them; otherwise changes nothing.
+pub fn substitute(callees: &[Callee], before_dir: &Path, dir: &Path, entries: &mut Vec<std::path::PathBuf>) -> Result<Vec<String>, Error> {
+    if callees.iter().all(|c| c.proved.is_none()) {
+        return Ok(Vec::new());
+    }
+    std::fs::create_dir_all(dir)?;
+    substitute_directory(before_dir, dir, "before", callees)?;
+    entries.insert(1.min(entries.len()), dir.to_path_buf());
+    Ok(names(callees).into_iter().zip(callees).filter(|(_, c)| c.proved.is_some()).map(|(n, _)| n).collect())
+}
+
 /// The owner a relocated call names, back in the original package: `before/a/B` is `a/B`.
 pub fn original_owner<'a>(owner: &'a str, prefix: &str) -> &'a str {
     owner.strip_prefix(prefix).and_then(|s| s.strip_prefix('/')).unwrap_or(owner)
@@ -864,8 +1045,8 @@ mod tests {
     fn the_stub_class_parses_and_declares_a_method_per_callee() {
         let cp = ClassPath::new().with_default_jdk();
         let callees = vec![
-            Callee { owner: "a/Shares".into(), name: "perSeat".into(), descriptor: "(JI)J".into(), throws: vec!["java/lang/ArithmeticException".into(), "java/lang/IllegalArgumentException".into()] },
-            Callee { owner: "java/lang/Math".into(), name: "abs".into(), descriptor: "(D)D".into(), throws: Vec::new() },
+            Callee { owner: "a/Shares".into(), name: "perSeat".into(), descriptor: "(JI)J".into(), throws: vec!["java/lang/ArithmeticException".into(), "java/lang/IllegalArgumentException".into()], proved: None },
+            Callee { owner: "java/lang/Math".into(), name: "abs".into(), descriptor: "(D)D".into(), throws: Vec::new(), proved: None },
         ];
         let bytes = stub(&cp, &callees).unwrap();
         let class = ClassFile::parse(&bytes).unwrap();
@@ -877,4 +1058,224 @@ mod tests {
         let insns = code.instructions().unwrap();
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::AThrow)).count(), 2);
     }
+}
+
+/// Writes into `dir` the stub class for `callees` and the classes of each of `versions` (the new version's
+/// directory, and the previous version's relocated one) that call one of them, with those calls redirected to the
+/// stub: the class path entry that goes ahead of the versions as written when the callees are shared under JBMC.
+pub fn stub_directory(cp: &ClassPath, callees: &[Callee], versions: &[&Path], dir: &Path) -> Result<(), Error> {
+    std::fs::create_dir_all(dir)?;
+    std::fs::write(dir.join(format!("{CLASS}.class")), stub(cp, callees)?)?;
+    let lookup = |m: &MemberRef| -> Option<String> {
+        let owner = original_owner(&m.owner, "before");
+        callees.iter().position(|c| c.owner == owner && c.name == m.name && c.descriptor == m.descriptor).map(|i| callees[i].stub_method(i))
+    };
+    for version in versions {
+        redirect_directory(version, dir, &lookup)?;
+    }
+    Ok(())
+}
+
+// Refinement per callee (`llm-dlc/loops/foundations-summaries.md`, S5). A counterexample JBMC finds with the callees
+// as stubs is one to the versions as written only if it reproduces through their bytecode; when it doesn't, some
+// stub gave an answer its callee never gives. Which one is read off the counterexample itself: the stubs' memo
+// tables, as the trace leaves them, are what each stub answered and on which arguments ([`answers`]). The two
+// versions are replayed on the counterexample's input with a stub that gives those answers again ([`replay_stub`]),
+// once with every callee so, which must show the disagreement JBMC found, and then once per callee with that one
+// computed as written instead. A callee whose real answers make the disagreement vanish is one the counterexample
+// rests on ([`spurious`]), and only those are computed as written in the next run; the others stay one function.
+// Whichever callees are blamed, the next run is still sound for a proof (any subset of the stubs over-approximates
+// the callees), and its counterexample is replayed as written in turn, so the blame decides only how much of the
+// proof is computed again, never a verdict.
+
+/// What a stub answered on one call, as a counterexample's trace leaves its memo table.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Answer {
+    pub arguments: Vec<crate::interp::Value>,
+    pub outcome: Answered,
+}
+
+/// A stub's answer: a result (`None` for a `void` callee), or an exception of the class named.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Answered {
+    Returned(Option<crate::interp::Value>),
+    Threw(String),
+}
+
+/// The answers each of `callees` gave in the counterexample of the JBMC run whose `--json-ui` output is `output`, in
+/// the order of `callees` (the stub's own, by index). `marker` is the harness's `Class.method`, which names the
+/// assertion whose trace is read. `None` when the output holds no such trace or a memo table can't be read from it:
+/// then nothing can be told about the stubs.
+pub fn answers(output: &str, callees: &[Callee], marker: &str) -> Option<Vec<Vec<Answer>>> {
+    let items = crate::jbmc::json_items(output);
+    let results = items.iter().find_map(|i| i.get("result").and_then(|r| r.as_array()))?;
+    let failed = results.iter().find(|p| {
+        let id = p.get("property").and_then(|s| s.as_str()).unwrap_or_default();
+        p.get("status").and_then(|s| s.as_str()) == Some("FAILURE") && id.contains(marker) && id.contains("assertion")
+    })?;
+    let steps = failed.get("trace")?.as_array()?;
+    // The memo fields' last values, assigned in the stub's own methods (its locals are anonymous, and a field of the
+    // application's assigned elsewhere is not one of its).
+    let mut fields: BTreeMap<String, serde_json::Value> = BTreeMap::new();
+    let mut stack: Vec<String> = Vec::new();
+    let prefix = format!("java::{CLASS}.");
+    for step in steps {
+        match step.get("stepType").and_then(|t| t.as_str()) {
+            Some("function-call") => stack.push(step.get("function").and_then(|f| f.get("identifier")).and_then(|i| i.as_str()).unwrap_or_default().to_string()),
+            Some("function-return") => {
+                stack.pop();
+            }
+            Some("assignment") if stack.last().is_some_and(|f| f.starts_with(&prefix)) => {
+                if let (Some(lhs), Some(value)) = (step.get("lhs").and_then(|l| l.as_str()), step.get("value")) {
+                    fields.insert(lhs.to_string(), value.clone());
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut out = Vec::new();
+    for (index, callee) in callees.iter().enumerate() {
+        let descriptor = crate::classfile::MethodDescriptor::parse(&callee.descriptor).ok()?;
+        let count = match fields.get(&format!("n{index}")) {
+            Some(v) => trace_value(&Type::Int, v)?.as_int(),
+            None => 0,
+        };
+        let mut entries = Vec::new();
+        for e in 0..count.clamp(0, i32::from(ENTRIES)) {
+            let arguments = descriptor.params.iter().enumerate().map(|(j, p)| trace_value(p, fields.get(&format!("a{index}_{e}_{j}"))?)).collect::<Option<Vec<_>>>()?;
+            let kind = trace_value(&Type::Int, fields.get(&format!("t{index}_{e}"))?)?.as_int();
+            let outcome = if kind == 0 {
+                Answered::Returned(if descriptor.ret == Type::Void { None } else { Some(trace_value(&descriptor.ret, fields.get(&format!("r{index}_{e}"))?)?) })
+            } else {
+                Answered::Threw(callee.throws.get(usize::try_from(kind - 1).ok()?)?.clone())
+            };
+            entries.push(Answer { arguments, outcome });
+        }
+        out.push(entries);
+    }
+    Some(out)
+}
+
+/// A primitive of a trace, from its bits.
+fn trace_value(t: &Type, value: &serde_json::Value) -> Option<crate::interp::Value> {
+    use crate::interp::Value;
+    let bits = value.get("binary")?.as_str()?;
+    let raw = u64::from_str_radix(bits, 2).ok()?;
+    let width = bits.len() as u32;
+    let signed = |w: u32| -> i64 { if w == 0 || w >= 64 { raw as i64 } else { ((raw << (64 - w)) as i64) >> (64 - w) } };
+    Some(match t {
+        Type::Long => Value::Long(raw as i64),
+        Type::Float => Value::Float(f32::from_bits(raw as u32)),
+        Type::Double => Value::Double(f64::from_bits(raw)),
+        Type::Boolean | Type::Char => Value::Int(raw as i32),
+        Type::Int | Type::Short | Type::Byte => Value::Int(signed(width) as i32),
+        _ => return None,
+    })
+}
+
+/// A stub class for replaying a counterexample: each of `callees` (by the index the stub JBMC ran with gave it)
+/// gives the answers `answers` holds for it on those arguments, compared as the stub compares them, and on any
+/// other arguments, or with no answers given, is the callee as written.
+pub fn replay_stub(cp: &ClassPath, callees: &[Callee], answers: &[Option<&[Answer]>]) -> Result<Vec<u8>, Error> {
+    use crate::interp::Value;
+    let mut w = ClassWriter::new(CLASS);
+    w.source_file = Some("SharedCallees.java".into());
+    for (index, callee) in callees.iter().enumerate() {
+        let descriptor = crate::classfile::MethodDescriptor::parse(&callee.descriptor).map_err(|e| Error::new(format!("{}: {e}", callee.display())))?;
+        let mut slots = Vec::new();
+        let mut slot = 0u16;
+        for p in &descriptor.params {
+            slots.push(slot);
+            slot += p.slots();
+        }
+        let ret = (descriptor.ret != Type::Void).then(|| kind_of(&descriptor.ret));
+        let mut code = CodeBuilder::new();
+        code.max_locals = slot;
+        let push = |w: &mut ClassWriter, code: &mut CodeBuilder, v: &Value| match *v {
+            Value::Int(i) if (-32768..=32767).contains(&i) => code.iconst(i),
+            Value::Int(i) => code.ldc(w.pool.integer(i)),
+            Value::Long(l) => code.ldc2(w.pool.long(l)),
+            Value::Float(f) => code.ldc(w.pool.float(f)),
+            Value::Double(d) => code.ldc2(w.pool.double(d)),
+            _ => code.op(0x01),
+        };
+        for answer in answers.get(index).copied().flatten().unwrap_or(&[]) {
+            let next = code.label();
+            for (j, p) in descriptor.params.iter().enumerate() {
+                code.load(kind_of(p), slots[j]);
+                push(&mut w, &mut code, &answer.arguments[j]);
+                match kind_of(p) {
+                    Kind::Int => code.if_icmp(Cond::Ne, next),
+                    Kind::Long => {
+                        code.op(0x94);
+                        code.if_zero(Cond::Ne, next);
+                    }
+                    Kind::Float => {
+                        code.op(0x95);
+                        code.if_zero(Cond::Ne, next);
+                    }
+                    Kind::Double => {
+                        code.op(0x97);
+                        code.if_zero(Cond::Ne, next);
+                    }
+                    Kind::Ref => return Err(Error::new("a shared callee takes primitives only")),
+                }
+            }
+            match &answer.outcome {
+                Answered::Returned(value) => {
+                    if let Some(v) = value {
+                        push(&mut w, &mut code, v);
+                    }
+                    code.return_(ret);
+                }
+                Answered::Threw(exception) => {
+                    let class = w.pool.class(exception);
+                    let ctor = constructor(cp, exception).ok_or_else(|| Error::new(format!("{exception} has no constructor the stub can call")))?;
+                    let init = w.pool.method_ref(exception, "<init>", ctor);
+                    code.op_u16(0xbb, class);
+                    code.op(0x59);
+                    if ctor != "()V" {
+                        code.op(0x01);
+                    }
+                    code.op_u16(0xb7, init);
+                    code.op(0xbf);
+                }
+            }
+            code.bind(next);
+        }
+        for (j, p) in descriptor.params.iter().enumerate() {
+            code.load(kind_of(p), slots[j]);
+        }
+        let real = w.pool.method_ref(&callee.owner, &callee.name, &callee.descriptor);
+        code.op_u16(0xb8, real);
+        code.return_(ret);
+        w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: callee.stub_method(index), descriptor: callee.descriptor.clone(), code: Some(code) });
+    }
+    Ok(w.to_bytes())
+}
+
+/// Which of `callees` a counterexample found with all of them as stubs rests on, by index: those whose answers as
+/// written, in place of the stub's, make the two versions agree on its input (the notes above [`Answer`]). `disagrees`
+/// replays the two versions on that input with the class path entry it is given (a directory holding a replay
+/// stub) ahead of the redirected classes, and says whether they still differ. Each replay stub is written under
+/// `dir`. `None` when the stubs' answers, given again, don't reproduce the disagreement (the trace was not read
+/// whole, or a stub's table overflowed), or when no one callee's answers undo it: then nothing is told apart.
+pub fn spurious(cp: &ClassPath, callees: &[Callee], answers: &[Vec<Answer>], dir: &Path, disagrees: &mut dyn FnMut(&Path) -> bool) -> Result<Option<Vec<usize>>, Error> {
+    let write = |name: &str, real: Option<usize>| -> Result<std::path::PathBuf, Error> {
+        let given: Vec<Option<&[Answer]>> = answers.iter().enumerate().map(|(i, a)| (Some(i) != real).then_some(a.as_slice())).collect();
+        let entry = dir.join(name);
+        std::fs::create_dir_all(&entry)?;
+        std::fs::write(entry.join(format!("{CLASS}.class")), replay_stub(cp, callees, &given)?)?;
+        Ok(entry)
+    };
+    if !disagrees(&write("as-found", None)?) {
+        return Ok(None);
+    }
+    let mut blamed = Vec::new();
+    for i in 0..callees.len() {
+        if !disagrees(&write(&format!("real-{i}"), Some(i))?) {
+            blamed.push(i);
+        }
+    }
+    Ok((!blamed.is_empty()).then_some(blamed))
 }

@@ -2231,6 +2231,99 @@ class StatementTest(unittest.TestCase):
 
 
 
+class ProofCacheTest(unittest.TestCase):
+    """S4 of llm-dlc/loops/foundations-summaries.md: a B9 example that asks for the proof cache (`approach.cache`)
+    runs with a fresh one under the build, its claim says so, and its result and page say what came of each changed
+    helper: proved first and one function in both versions, or left as written and why."""
+
+    KEY = "sha256:b5b79662a815f894366e60583cd769ba924eeb0562c169ae509d394617b279a7"
+    # The tool's notes, from runs of examples 160 and 161.
+    SHARED = (f"note: TokenBucket.lastAfter, changed: its two versions have the same outcome, result or exception, on every "
+              f"input, proved now and stored in the proof cache (claim {KEY}); one function in both versions\n")
+    REFUTED = ("note: TokenBucket.lastAfter, changed, stays as written in both versions: its two versions differ, at "
+               "lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0)\n")
+
+    def cached(self, cache=True):
+        ex = example(verdict="verified")
+        ex["approach"].update({"engine": "native", **({"cache": True} if cache else {})})
+        return ex
+
+    def proved(self, output, verdict="verified", ex=None):
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        stale = root / "examples/apps/crosscut" / build.PROOF_CACHE_DIR / "claims/aa/stale.json"
+        stale.parent.mkdir(parents=True)
+        stale.write_text("{}")
+        seen = []
+        def fake(command, **kwargs):
+            seen.append(stale.exists())
+            if verdict == "violation":  # a violation comes with its report
+                reports = root / "examples/apps/crosscut/build/reports"
+                reports.mkdir(parents=True, exist_ok=True)
+                (reports / "equivalence.sarif").write_text(json.dumps({"version": "2.1.0", "runs": []}))
+            return proc(0 if verdict == "verified" else 1, equivalence_json(root, verdict, output=output))
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", side_effect=fake):
+            result = empty_result()
+            build.run_tool_equivalence(root, ex or self.cached(), root, "crosscut", result)
+        return result, seen
+
+    def test_the_proof_runs_with_a_fresh_cache_under_the_build_when_the_example_asks(self):
+        self.assertEqual(build.plan(self.cached())["options"][-2:], ["--cache", "build/proof-cache"])
+        self.assertNotIn("--cache", build.plan(self.cached(cache=False))["options"])
+        _, seen = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        self.assertEqual(seen, [False], "what an earlier run proved is gone before the proof")
+
+    def test_the_claim_says_it_may_rest_on_helpers_proofs_and_the_claims_without_it_are_unchanged(self):
+        q = build.plan(self.cached())
+        self.assertEqual(build.claim_scope(self.cached(), q)["proofCache"], "fresh: helpers' proofs made in the run")
+        plain = self.cached(cache=False)
+        self.assertEqual(build.claim_scope(plain, build.plan(plain)), {"maxArrayLength": None, "intendedInputs": None})
+
+    def test_a_helper_proved_first_is_recorded_as_shared_and_the_page_says_so(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        self.assertEqual(result["helpers"], [{"callee": "TokenBucket.lastAfter", "shared": True, "note":
+            f"its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim {self.KEY}); one function in both versions"}])
+        lines = build.helper_lines(result)
+        self.assertIn("`TokenBucket.lastAfter` changed, and was proved first, as a check of its own: its two versions", lines[-1])
+        self.assertIn(f"(claim {self.KEY}). The caller's proof took it as one function in both versions", lines[-1])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["helpers"], {**schema["properties"]["helpers"], "$defs": schema["$defs"]})
+
+    def test_a_helper_whose_proof_fails_stays_as_written_and_the_page_says_why(self):
+        result, _ = self.proved(self.REFUTED + EQUIVALENCE_VIOLATION, verdict="violation")
+        self.assertEqual(result["helpers"], [{"callee": "TokenBucket.lastAfter", "shared": False,
+                                              "note": "its two versions differ, at lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0)"}])
+        lines = build.findings_equivalence(self.cached(), {**result, "domain": "x: int"})
+        self.assertIn("which did not hold: its two versions differ, at lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0). It stays as written", lines[-1])
+        self.assertTrue(lines[0].startswith("The two versions disagree."), lines[0])
+
+    def test_an_example_without_the_cache_records_nothing_of_helpers(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n", ex=self.cached(cache=False))
+        self.assertNotIn("helpers", result)
+        self.assertEqual(build.helper_lines(result), [])
+
+    def test_the_example_s_expected_helpers_are_part_of_its_expectation(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        self.assertEqual(build.expectation(result, {"verdict": "verified"}), "yes")
+        self.assertEqual(build.expectation(result, {"verdict": "verified", "sharedHelpers": ["TokenBucket.lastAfter"]}), "yes")
+        self.assertEqual(build.expectation(result, {"verdict": "verified", "sharedHelpers": []}), "no")
+        refuted, _ = self.proved(self.REFUTED + EQUIVALENCE_VIOLATION, verdict="violation")
+        self.assertEqual(build.expectation(refuted, {"verdict": "violation", "sharedHelpers": []}), "yes")
+        self.assertEqual(build.expectation(refuted, {"verdict": "violation", "sharedHelpers": ["TokenBucket.lastAfter"]}), "no")
+
+    def test_a_callee_assumption_reads_as_the_helper_s_proof_not_as_a_contract(self):
+        stated = json.loads(json.dumps(StatementTest.STATED))
+        stated["assumptions"].append({"kind": "callee", "basis": "proved", "id": self.KEY, "text":
+            f"TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim {self.KEY}) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain"})
+        paragraph = build.statement_paragraph(build.camel(stated))
+        self.assertIn(f"(claim {self.KEY}) shows", paragraph)
+        self.assertIn("(a changed helper's own regression proof, made by the tool's own checker before the caller's", paragraph)
+        self.assertNotIn("a contract for a gap", paragraph)
+
+
 class VacuityTest(unittest.TestCase):
     """Step 2b of llm-dlc/loops/sound-verdicts.md: a verified statement says whether it is about any input, as a
     status (non-vacuous, vacuous, unknown) the result keeps in its statement and the page and label state. A
@@ -2638,6 +2731,116 @@ class SchemaTest(unittest.TestCase):
         jsonschema.validate(result, schema)
         with self.assertRaises(jsonschema.ValidationError):
             jsonschema.validate({**result, "replay": {"by": "the JVM", "reproduced": True}}, schema)
+
+
+def effects_check(verdict, **fields):
+    """One entry point's check as `jvmcontract effects --json` prints it."""
+    check = {"entry": "POST /deliveries/failures", "handler": "net.terminalvalue.deliveries.DeliveryFailures#failed", "source_line": 28}
+    if verdict == "unsupported":
+        return {**check, "unsupported": "an input of type java.lang.String: the effect trace takes integral inputs", **fields}
+    outcome = {"verdict": verdict, "domain": "status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)",
+               "accounting": [{"observation": "result", "state": "preserved" if verdict == "verified" else "unresolved"}], "witness": None}
+    checked = {"outcome": outcome, "reason": None, "assumptions": ["every modeled call returns normally"], "before": None, "after": None,
+               "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over status: int × idempotent: boolean × attempts: int in 0.1 s"}
+    if verdict == "refuted":
+        outcome["witness"] = ("POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts "
+                              "KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400); the new one returns 200 and attempts no modeled call")
+        checked["proof"] = "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000]"
+        checked["before"] = {"outcome": "returns 200", "kind": 0, "result": 200, "unresolved": [],
+                             "attempts": [[0, [0, 1, 400], "KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400)"]]}
+        checked["after"] = {"outcome": "returns 200", "kind": 0, "result": 200, "unresolved": [], "attempts": []}
+    if verdict == "unresolved":
+        checked["reason"] = "more attempts than the trace bound, 4"
+    checked.update(fields)
+    return {**check, "checked": checked}
+
+
+class EffectsRunnerTest(unittest.TestCase):
+    """The B9 runner of the route app, whose subject is an entry point: `jvmcontract effects`, once for its text and
+    report, once for its JSON."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.folder = self.dir / "example"
+        self.folder.mkdir()
+        self.root = self.dir / "root"
+        self.build = self.root / build.TOOL_APPS["deliveries"]["root"]
+        (self.build / "build/reports").mkdir(parents=True)
+        (self.folder / "statement.java").write_text("class EquivalenceHarness {}")  # an earlier run's, not this one's
+        self.patches = [mock.patch.object(build, "jvmcontract", return_value="jvmcontract"),
+                        mock.patch.object(build, "tool_before_classes", return_value=self.dir / "before")]
+        for p in self.patches:
+            p.start()
+
+    def tearDown(self):
+        for p in self.patches:
+            p.stop()
+        shutil.rmtree(self.dir)
+
+    def example(self, verdict):
+        return {"id": "999", "origin": "constructed", "approach": {"id": "B9", "engine": "native"},
+                "change": {"behaviourChangeIntended": False},
+                "subject": {"file": "examples/apps/deliveries/src/main/java/net/terminalvalue/deliveries/DeliveryFailures.java",
+                            "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed"},
+                "expected": {"verdict": verdict}}
+
+    def run_effects(self, code, checks, ex, text="POST /deliveries/failures: ...\n", report=True):
+        commands = []
+        def fake(command, **kwargs):
+            commands.append(command)
+            if "--json" in command:
+                return proc(code, checks if isinstance(checks, str) else json.dumps(checks))
+            if report:
+                (self.build / "build/reports/effects.sarif").write_text(json.dumps({"version": "2.1.0", "runs": []}))
+            return proc(code, text)
+        result = empty_result()
+        with mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_effects(self.folder, ex, self.root, "deliveries", result)
+        build.finish(result, ex)
+        stores_whole(self, result, self.folder)
+        return result, commands
+
+    def test_the_plan_runs_the_effect_check_with_no_engine_flags(self):
+        p = build.plan(self.example("verified"))
+        self.assertEqual((p["runner"], p["engine"], p["options"]), ("run_tool_effects", "native", []))
+        self.assertEqual(p["build"]["copies"], ["examples/apps/deliveries", "examples/apps/crosscut"])
+        self.assertNotIn("jbmc", p["tools"]["required"] + p["tools"]["optional"])
+
+    def test_a_refuted_entry_point_is_a_violation_with_both_builds_attempts(self):
+        result, commands = self.run_effects(1, [effects_check("refuted")], self.example("violation"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("completed", "violation"))
+        self.assertTrue(result["matchesExpected"])
+        self.assertEqual(result["counterexamples"], [{
+            "input": "POST /deliveries/failures: status=400, idempotent=false, attempts=0",
+            "contract": "returns 200; KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400)",
+            "actual": "returns 200; no modeled call"}])
+        self.assertEqual(result["replay"], {"by": "jvm", "reproduced": True})
+        self.assertTrue((self.folder / "result.sarif").exists())
+        self.assertFalse((self.folder / "statement.java").exists())
+        self.assertEqual(commands[0][:2], ["jvmcontract", "effects"])
+        self.assertIn("--report", commands[0])
+        self.assertNotIn("--engine", commands[0] + commands[1])
+
+    def test_a_verified_entry_point_says_what_was_preserved(self):
+        result, _ = self.run_effects(0, [effects_check("verified")], self.example("verified"))
+        self.assertEqual(result["verdict"], "verified")
+        self.assertIn("trace of boundary calls", result["verdictLabel"])
+        self.assertTrue(result["proof"].startswith("jvmcontract's own checker"))
+        self.assertTrue(result["domain"].startswith("status: int"))
+
+    def test_an_unresolved_or_unsupported_entry_point_is_no_proof(self):
+        for check in (effects_check("unresolved"), effects_check("unsupported")):
+            result, _ = self.run_effects(1, [effects_check("verified"), check], self.example("verified"))
+            self.assertEqual(result["verdict"], "unverifiable")
+            self.assertIn("POST /deliveries/failures", result["problem"])
+
+    def test_a_refutation_without_a_report_or_readable_json_is_no_verdict(self):
+        result, _ = self.run_effects(1, [effects_check("refuted")], self.example("violation"), report=False)
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        result, _ = self.run_effects(1, "garbage", self.example("violation"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        result, _ = self.run_effects(2, "", self.example("violation"), text="jvmcontract: no entry point\n")
+        self.assertEqual(result["execution"]["status"], "tool-error")
 
 
 if __name__ == "__main__":

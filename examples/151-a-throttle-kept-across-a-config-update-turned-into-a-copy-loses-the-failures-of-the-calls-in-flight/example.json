@@ -1,0 +1,59 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "151",
+  "title": "A throttle kept across a config update turned into a copy loses the failures of the calls in flight",
+  "summary": "When a channel's service config is updated with the same retry limits, `reconfigured` hands back the channel's throttle itself, so the calls in flight, which hold it, keep counting their failures into the throttle the channel goes on using. The change hands back a copy with the same tokens and the same limits instead: every field agrees when it returns, and a failure recorded afterwards by a call in flight goes into the old object, which nothing reads, so a failing backend gets retries the throttle would have refused. The regression proof observes the identity relations within each version and refutes the change with `result == throttle`, which holds before and not after; the witness is a construction recipe, replayed in the interpreter and run on a JVM.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "aliasing",
+    "object-inputs",
+    "own-checker",
+    "confined-change"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+    "symbol": "net.terminalvalue.crosscut.retry.RetryThrottling#reconfigured"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Hand back a defensive copy of the throttle when the limits are unchanged, `new Throttle(throttle.limits)` with the tokens copied over, so that the caller cannot change the channel's throttle through the object it was given. The copy has the same limits and the same tokens, so it looked like the same throttle.",
+    "patch": "change.patch"
+  },
+  "risk": "The calls in flight hold the old throttle and record their outcomes into it, while the channel decides its next retries from the copy: their failures are lost to the throttle, so during an outage that coincides with a config push (when a new config is pushed, often the same retry limits come again) the channel goes on retrying against a failing backend at full rate, the storm the throttle is there to stop. No field differs when the method returns, so a test that compares the throttle's tokens and limits passes.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The harness makes the throttle from symbolic limits and the new limits as a record from two symbolic `int`s, calls both versions, and compares the result field by field, the throttle as each call leaves it, and the identity relations within each version, as 'holds before iff it holds now': `result == throttle` and `result.limits == throttle.limits`. With the same limits, the previous version returns the throttle itself and the changed one a copy with equal fields and the same limits object, so only `result == throttle` tells them apart. The tool's own checker finds it, shrinks it to `reconfigured(throttle=new Throttle(new ThrottleLimits(1, 1)), limits=ThrottleLimits[maxTokens=1, tokenRatioMilli=1])`, replays it in the interpreter (`before: Throttle{…, milliTokens=1000}, with result == throttle and result.limits == throttle.limits`, `after: Throttle{…, milliTokens=1000}, with result.limits == throttle.limits`) and runs it on a JVM, where the harness fails on it too.",
+  "resolution": "Revert to handing back the throttle itself. If a caller must not change the channel's throttle, the throttle's fields are the place to guard (they are package-private already); a copy splits the one counter all calls must share.",
+  "notes": [
+    "This is the alias-to-copy defect of llm-dlc/loops/foundations.md: an alias turned into a copy with identical primitive values, which a caller sees only by mutating one. Physical object ids are never compared across versions; the identity relation is compared within each version, and the witness's two replays read alike but for it.",
+    "The copy reuses the same `ThrottleLimits` object, so `result.limits == throttle.limits` holds in both versions and is no part of the difference; a copy made with `new ThrottleLimits(...)` would differ there too, but a record of primitive components is a value and is compared by components only.",
+    "The witness is run on a JVM after the interpreter's replay (`replayed in the interpreter and run on a JVM (JDK …), where the harness fails on it too`): the harness makes each version's throttle from the same leaves, and reads the classes' package-private fields through opened copies of them, which the JVM run loads first on its class path.",
+    "Pairs with 150 (the same kernel's `recorded`, rewritten correctly and proved) and 152 (a rewrite of `recorded` that differs only outside the constructor-made domain)."
+  ],
+  "provenance": "Constructed for step H3–H4 of llm-dlc/loops/foundations-heap.md as the required alias-to-copy defect, on the Crosscut retry throttle added for the object-input examples.",
+  "references": [
+    {
+      "title": "gRPC proposal A6: client retries, retry throttling (maxTokens, tokenRatio, retries throttled at half the tokens)",
+      "url": "https://github.com/grpc/proposal/blob/master/A6-client-retries.md"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

@@ -113,8 +113,626 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 
 ## Progress
 
-- Nothing yet.
-- Status: working
+- **H1 done (2026-11-07), pending review of job `20261107-041414`.** The own checker has symbolic references:
+  `Val::C`, a [`Choice`](../../lib/src/bmc/mod.rs) of the path's objects or null under exclusive guards, made where
+  paths that differ only in a reference merge (`Engine::absorb`, through `choose`), and by a read through one.
+  `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas; `getfield` chooses among the candidates'
+  fields and `putfield` writes each under its guard, with `NullPointerException` where it is null; every other use
+  that needs the object (a call's receiver, a JDK call's or intrinsic's argument, array instructions, `checkcast`,
+  `athrow`, monitors) splits the path per candidate (`Engine::concrete_ref`), substituting the known reference for
+  every copy of the choice. `Val::R` stays the fast path: a known reference is never a formula. Arrays of references
+  still hold known cells (an `aastore` of a choice splits first), and paths whose objects differ in number or class
+  still don't merge.
+  - Evidence inline: `lib/tests/heap.rs` (new), three claims each checked merged from the start and never merged,
+    same verdicts, every violation's witness failing the claim on the JVM: ten independent choices then a write
+    through the chosen one, 22 paths merged against 1024; with null among the options, 30 against 1024; across two
+    classes with `instanceof`, a cast and a virtual call, 22 against 1024. Conformance cases `swaps`, `swapsOrNull`
+    and `swapsThenNull` (past the 512-path merge threshold) agree with the JVM. Unit tests (183), `integration.rs`
+    (64), `conformance.rs` and `foundations.rs` pass; the aliasing cases keep their verdicts.
+  - *For review*: job `20261107-041414`, the benchmark on the own checker against `lib/benchmark/results.json`:
+    expected no verdict changed, no formula grown past 10%, and paths or merges changed only in the three new cases.
+  - Shared files changed: `lib/README.md` (the merging paragraph), `lib/tests/conformance.rs` and
+    `lib/tests/conformance/conformance/Conformance.java` (three cases), `lib/tests/heap.rs` (new), and the generated
+    `lib/benchmark/conformance.json`.
+- **H2, first step (2026-11-07): null and one-array parameters in property checks.** `jvmcontract prove` takes
+  `--nullable a` and `--may-alias a,b` (closed under chains) for array parameters; the domain line says so
+  (`a: int[] of length ≤ 8, or null`; `a and b may be the same array`), and so does the statement (`null`,
+  `shared_arrays`, the new `may_alias` groups). The own checker alone takes such a domain
+  ([`bmc::Parameters`](../../lib/src/bmc/mod.rs)): each such parameter is an H1 choice among null, its own array
+  and the own arrays of the parameters before it in its group, and a witness reads back which it holds
+  (`raw_same`, `Argument::Same`). `--engine jbmc` and `--confirm` refuse it (JBMC would prove a narrower claim), and
+  `auto` doesn't fall back to JBMC. Properties say which it is with `a == null` and `a == b` (new in the
+  expression language). Witnesses keep identity: `twoArrays(a=[0], b=the same array as a)` passes one array twice in
+  the interpreter, the shrinker (which never splits or joins arrays) and the JVM run (`jvm_witness.rs` now passes
+  null and shared arrays). The harness's `\old` copy of a null array is null.
+  - Evidence inline: the conformance corpus's outside-the-domain calls became claims: `twoArrays` under
+    `--may-alias a,b` (`result == (a == b ? 2 : 1)` V; `result == 1` X, witness `[0]` twice, refuted on the JVM),
+    `length` and `lengthOrMinusOne` under `--nullable a` (two V, two X with a null witness); the default-domain
+    claims keep their verdicts and their domain words. Unit tests for the engine's choices (merged and unmerged)
+    and a JVM run with one array twice and with null (`lib/tests/heap.rs`). Unit tests (185), `integration.rs`,
+    `conformance.rs`, `foundations.rs` and `heap.rs` pass. One run of `integration.rs` under the other streams'
+    load (617 s) failed `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` at a native regression check
+    (no output kept); alone it passed in 17 s. A stream that sees it again should suspect a budget under load first.
+  - *For review*: job `20261107-043420`, the corpus's ignored tests (JBMC, `auto`, `auto --confirm`): expected to
+    pass, the six widened claims refused (unverifiable) under JBMC and `--confirm`, and as the own checker says
+    under `auto`.
+  - Shared files changed: `lib/src/main.rs` (two flags), `property.rs` (the options), `equivalence.rs` (its
+    `locals_of` now the witness module's, and the vacuity probe takes the parameters), `statement.rs` (`may_alias`
+    on `Domain`, skipped when empty), `lib/README.md` (a paragraph), `lib/tests/conformance.rs` (claims with a
+    domain, six of them; left out of the benchmark's group 1, whose runner passes no domain flags), and
+    `lib/tests/heap.rs`. `jbmc.rs` gained `raw_same` and `Argument::Same` (owned by no stream; a witness type).
+- `sync.py check` on this branch reports errors that aren't this stream's and that it may not fix (they are under
+  `llm-dlc/traces/`): the other streams' sessions (`be22079e`, `e65240e3`, `11f93b59`, `3ef2aade`) have no manifest
+  here, and five planning-era commits (`olwyzkwouyln`, `xrkxxnnuwwuq`, `nnqrnknuvslx`, `xpsxzuolnwop`,
+  `kxnqrntnkztt`) point at session `c2bd9df4`'s log `1f2230c9f137`, which that session's manifest lists in the
+  default workspace but not in this branch's copy from the fork. Both should clear at the reconcile merge.
+- **H2, second step (2026-11-07): objects made by their constructor as regression inputs.** Done in regression
+  checks first rather than property checks as the last Next said, since the integration contract's heap part is
+  regression checks and the record machinery (`Layout`, `Slot::Record`) was there to generalize. A parameter of an
+  application class is made in the harness by its one usable constructor, whose arguments are primitives or objects
+  made the same way ([`RecordType::made`](../../lib/src/harness/mod.rs): `params`, `inner`, and `components` the
+  primitive leaves by path, `l.price.cents`); both versions get their own objects from the same leaves, the old
+  one's under `before/`, and their fields after the calls are compared ([`Fields`](../../lib/src/harness/mod.rs):
+  primitives, primitive arrays, objects of application classes followed, nulls agreeing). The domain says
+  `l: a Line made by its constructor, Line(price: Money(cents: long), quantity: int), from any arguments it accepts`;
+  `stated.observations.objects` lists the compared paths; the witness is a recipe, `bump(l=new Line(new Money(0),
+  1))`, and the replay says what each version left in the object. Refused as named gaps, by field or argument: a
+  superclass other than `Object`, several constructors, a constructor argument or field of another type (`String`),
+  a class reaching itself, and an object made differently in the two versions (H5's).
+  - Evidence inline: `lib/tests/heap.rs`, five regression checks on the own checker over `Line(Money, int)`: a
+    rewrite verified with the domain words and the observed paths; a changed result refuted with a recipe witness;
+    a change seen only in the object as left (`l.quantity += 2` in a void method) refuted, its rewrite verified; a
+    difference only where the constructor rejects verified, the domain and the constructible assumption saying so;
+    a `String` field refused naming it. Unit tests (185), `heap.rs` (9), `integration.rs` (64), `conformance.rs` and
+    `foundations.rs` pass. A first run of `integration.rs` under the other streams' load (611 s) failed one test,
+    whose name its cut output didn't keep; the full rerun passed all 64 in 23 s, as last step's did.
+  - Not yet: identity is not observed (an alias-to-copy passes; H3), nullability and aliasing among object
+    parameters, receivers and results of such classes (a result of one is still compared with `Objects.equals`), and
+    property checks over objects. The JVM run of a regression witness (`jvm_witness.rs`, reached only for a witness
+    through a contract) runs the harness, whose `getfield` on a package-private or private field is an
+    `IllegalAccessError` on a JVM, as it already was for a record result's fields: H4 has to give it accessible
+    reads.
+  - Shared files changed: `equivalence.rs` (`object_of`, `made_of`, `fields_of`, the parameter refusal's words, the
+    identical-closure check over every constructor the harness calls), `statement.rs` (`ParameterKind::Object`,
+    `Observations.objects`, the constructible assumption's words for objects), `lib/README.md` (step 5 of the
+    regression proof, the limits, the domain's kinds), `lib/tests/heap.rs`. No job: every check is inline and small.
+- **H3, first step (2026-11-07): results of made classes by their fields, and identity within each version.** In
+  regression checks, a result of an application class other than a record of primitive components is compared field
+  by field as an object parameter is ([`Layout::result_fields`](../../lib/src/harness/mod.rs)), where it was compared
+  by `Objects.equals`, which is identity across two versions' distinct classes; a result class with a field outside
+  the supported kinds is a named gap, and one whose fields changed between the versions is refused for H5. Identity
+  relations are observed within each version and compared as "holds before iff it holds now"
+  ([`Layout::references`, `identity_pairs`](../../lib/src/harness/mod.rs)): the references are the result, each
+  array parameter, each object parameter made by its constructor and every object or array field those reach; every
+  two under the same path in both versions and of one static type are compared by `if_acmp` (pairs of different
+  types are left out: the classes followed extend `Object` directly, so they are never one object). A field of null
+  reads as null, a version that throws has a null result, and records of primitive components stay values, compared
+  by components only. `stated.observations.identities` lists them (`result == l`, `result.price == l.price`), and
+  the replay states which hold in each version (`…, with result == l and result.price == l.price` against `…, with
+  result.price == l.price`), so a witness that differs only in identity replays as different.
+  - Evidence inline: `lib/tests/heap.rs`, four new checks on the own checker: `withQuantity` handing back its
+    argument, rewritten, verified with both relations listed; the alias-to-copy defect (a copy with the same values
+    and the same `Money`) refuted, its two replays reading alike but for the relation; a `Line` result compared
+    field by field (a rewrite verified, `quantity * 3` refuted with `Line{price=Money{cents=…}, …}`); an array
+    filled in place then copied, refuted by `result == a`. Unit tests (185), `heap.rs` (13), `conformance.rs`,
+    `foundations.rs` and `integration.rs` pass. `integration.rs` under the other streams' load (615 s, load 5.3)
+    timed out once in `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` ("the solver did not finish within
+    the time limit"), as in both earlier steps; alone it passed in 11.6 s. It is a primitive check this change
+    doesn't reach.
+  - Not yet: a result is compared field by field only where both versions' result classes have the same
+    fields (H5 relates different ones), identity relations under `--before-arguments` cover the result alone, and
+    the JVM run of such a witness has the `getfield` access problem named under H2 (H4).
+  - Shared files changed: `equivalence.rs` (the result's fields worked out and refused by name, the previous
+    version's own layout given them, the replays' texts ending in the relations that hold, the observations'
+    identities), `statement.rs` (`Observations.identities`, skipped when empty; the words for a result compared
+    field by field), `lib/README.md` (step 5 of the regression proof, the JSON's observations), `lib/tests/heap.rs`.
+    No job: every check is inline and small.
+- **H5's narrow case and `spec::heap::check` (2026-11-07): the joint example's two shapes of `Quote` related by the
+  correspondence.** A regression check takes a correspondence (`equivalence::Options::correspondence`, filled by
+  `spec::heap::check` from the claim; no command-line flag yet) whose input equations relate a field path of a
+  parameter's object in each version, `old.q.cents == new.q.amount.cents`, `old.q.quantity == new.q.quantity`
+  ([`spec::heap::relate`](../../lib/src/spec/heap.rs), [`harness::Corresponds`](../../lib/src/harness/mod.rs)). The
+  previous version's object is made from the new one's leaves as the equations name them, and an input on which the
+  two objects as made don't satisfy them is skipped (the domain, the constructible assumption and the vacuity probe
+  say so). After the calls the parameter's objects, and a result of the same pair of classes, are compared under the
+  equations, a path through null reading as absent; identity relations are those both versions have (`result == q`).
+  The replays are compared through the equations too (`Replayed::views`), each showing its own object, and a
+  counterexample names the observations it differs in (`differs`). Refused by name: an equation not between two paths
+  (the offset mapping `new.q.amount.cents + 1` included), output relations, a field of the previous version's object
+  in no equation (it would leave the count), a leaf of its construction no equation gives, and equations about a
+  parameter other than the one in its place; equations about a parameter neither version has are left out with a
+  note. Bounds are per version: `stated.domain.input_objects` counts each version's input objects (`[1, 2]`).
+  `spec::heap::check` runs the native strict check under the claim's bounds and correspondence and accounts for every
+  required observation: preserved where a proof compared it, refuted where the witness differs in it (the rest
+  unresolved), unresolved where the check doesn't compare it or the witness differs only elsewhere, and the whole
+  result unresolved where a version's inputs need more objects than its bound. A refusal is `Unsupported` with the
+  gap's words. `spec::Outcome` gained `problem`.
+  - Evidence inline: the integration contract's heap part went from 6 unsupported to 6 passed (`after` `total`,
+    `withQuantity` with `identity:result==q`, `discount`; `offset` `total` refuted, witness `total(q=new Quote(new
+    Money(0), 1)): before, 0; after, 1`; `alias-to-copy` `withQuantity` refuted; `outside-domain` `total` verified,
+    its domain saying constructor-made). `lib/tests/heap.rs`, five new tests on the fixture's kernel: the two shapes
+    proved for `total` and `withQuantity`; the offset refuted with the result refuted and the exception unresolved;
+    the alias-to-copy defect, where its copy can be made (`--unchanged-unless "quantity <= 0"`), refuted with
+    `differs` = `identity:result==q` alone, `before: Quote{cents=0, quantity=1}, with result == q` against `after:
+    Quote{amount=Money{cents=0}, quantity=1}`, and the harness source checked; a witness that differs only in an
+    observation the claim doesn't require giving unresolved; a correspondence leaving `q.cents` out, no
+    correspondence, and an input-object bound of 1 for the new version, each never proved. Two unit tests of
+    `relate`. Unit tests (187), `heap.rs` (18), `foundations.rs`, `conformance.rs` and `integration.rs` (64, 26 s at
+    load 1.7) pass.
+  - For the reconcile loop, about the fixture (not changed here): the `alias-to-copy` defect's copy is made by the
+    constructor, which rejects a quantity of 0 or less, so there the defect also throws, and the claim-level witness
+    is that exception (`withQuantity(q=new Quote(new Money(0), 1), quantity=0)`); `expected.json`'s "every field
+    agrees" holds for a quantity of 1 or more, where only `result == q` tells the versions apart. The kernel claim's
+    `allocations: 0` is not checked (the own checker follows every allocation within the unwinding bound), and the
+    alias-to-copy copy allocates one `Quote`. The kernel claim is reused for `discount`, whose parameters aren't `q`:
+    its contract's inputs (`q: shop.Quote`) don't match the method, which `check` doesn't compare.
+  - Also fixed: the harness's Java rendering wrote `before.Object` as the type of an object result (H3).
+  - Not yet: output relations and equations other than path = path, a correspondence flag on `regress`, the JVM run
+    of such a witness (H4), and examples in 150–159.
+  - Shared files changed: `equivalence.rs` (`Options::correspondence`, its reading through `spec::heap::roots` and
+    `relate`, the result's equations, the vacuity reason, the replays compared through the views, `differs`),
+    `statement.rs` (`Domain::input_objects`, the observations' and the constructible assumption's words under a
+    correspondence), `spec/mod.rs` (`Outcome::problem`), `lib/README.md` (step 5 of the regression proof, and
+    `spec::heap::check` under the foundations IR), `lib/tests/heap.rs`. No job: every check is inline and small.
+- **H4, first step (2026-11-07): regression witnesses over objects run on the JVM with their identities.** A
+  counterexample over objects (an object parameter made by its constructor, a result compared field by field, or
+  versions differing in a field of an object or an identity relation; `equivalence::observes_objects`) is run on a
+  real JVM after the interpreter's replay and the shrinking: the harness on the input, which makes each version's
+  objects from the same leaves, with the same identities, as in the interpreter. The JVM loads copies of the
+  application classes the harness names (its constant pool's class entries) with the class, its fields, its
+  constructors and its static methods made public ([`relocate::opened`](../../lib/src/relocate.rs), placed first on
+  the class path by [`jvm_witness`](../../lib/src/jvm_witness.rs)): a record's fields are private and a class's often
+  package-private, which a JVM refuses to another package's `getfield`. Field resolution and those calls don't
+  depend on access; instance methods keep theirs, which decides overriding. The proof line says `replayed in the
+  interpreter and run on a JVM (JDK ...), where the harness fails on it too`, and the counterexample has `jvm`, the
+  JDK. Where the JVM's harness holds on the witness the result is unverifiable (the JVM is the reference); where it
+  could not run, the interpreter's replay stands and the proof line says why. `spec::heap::check` gives a refutation
+  only with that confirmation, and unresolved otherwise. Shrinking changes only the leaves, so it never merges or
+  splits objects.
+  - Evidence inline: every object refutation in `lib/tests/heap.rs` (a changed result, a change in the object as
+    left, the alias-to-copy defect, a `Line` result field by field, an array handed back in place of a copy, the
+    joint example's alias-to-copy under the correspondence) now asserts the JVM's confirmation; with the opened
+    copies left out, the JVM's harness throws `IllegalAccessError` and the two tests over records' private fields
+    fail, as they should. A unit test of `opened` (a private constructor, private and protected fields and a static
+    method made public; a private instance method and `<clinit>` left; the code and the pool unchanged). The
+    integration contract's heap part: 6 passed, its refutations confirmed on the JVM. Unit tests (188), `heap.rs`
+    (18), `foundations.rs` and `conformance.rs` pass. `integration.rs` under the other streams' load (612 s) passed 63
+    of 64, failing `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` as in every earlier step; alone it
+    passed in 10.9 s. It is a primitive check, which runs no JVM confirmation.
+  - Not yet: a JVM confirmation that disagrees with the interpreter has no test (no such disagreement is known);
+    object parameters that may be null or the same object (H2's rest), so a witness with two parameters one object
+    is still only an array's, in property checks; property checks over objects.
+  - Shared files changed: `equivalence.rs` (`observes_objects`, the JVM run after shrinking, `Counterexample::jvm`),
+    `lib/README.md` (step 6 of the regression proof, `spec::heap::check`'s paragraph), `lib/tests/heap.rs`. No job:
+    every check is inline and small.
+- **Examples 150–152 (2026-11-07): a mutable object input in a subject system.** Crosscut gained a kernel for them,
+  gRPC-style retry throttling (`retry.ThrottleLimits`, a record; `retry.Throttle`, a mutable class every call on a
+  channel shares, made full by its one constructor; `retry.RetryThrottling`, `recorded` and `reconfigured`), with
+  its tests. 150 rewrites `recorded` with `Math.max`/`Math.min`, verified; 151 is the alias-to-copy defect
+  (`reconfigured` hands back a copy with the same tokens and limits object where it handed back the throttle),
+  refuted by `result == throttle` alone, the witness run on a JVM; 152 is 150's rewrite without the floor at zero,
+  wrong only on a throttle calls have drained, which the constructor never makes, so it is verified within the
+  constructor-made claim. So that such a verdict can't read as a proof over every state, the verified headline over
+  an object made by its constructor now says `behaves as before on every input of constructor-made objects`
+  (`equivalence::made_by_constructor`). Tags `aliasing` (defect) and `object-inputs` (technique) added.
+  - Evidence inline: the three checks run by the CLI on the classes the patches make (150 and 152 verified with the
+    new headline, 151 refuted with `reconfigured(throttle=new Throttle(new ThrottleLimits(1, 1)), …)` and confirmed
+    on the JVM); 152's defect shown on a JVM by hand (a two-token throttle after three failures: 1000, 0, 0 against
+    1000, 0, −1000 thousandths, then 11 against 21 successes before a retry); Crosscut's tests (52) pass;
+    `jvmcontract verify` on Crosscut's contracts passes. `heap.rs` asserts the new headline. Unit tests (188, one
+    of them, `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed`, a stand-in script's run, failed
+    once under load and passed alone), `heap.rs` (18), `foundations.rs`, `conformance.rs` and `integration.rs`
+    (64) pass.
+  - *For review*, quick jobs submitted at priority 10 but not back within the cycle (no runner was active), the
+    build.py runs that record the results and pages: `20261107-064330-example-150…` (verified, the headline `on
+    every input of constructor-made objects`), `20261107-064331-example-151…` (violation, the replays differing
+    only in `result == throttle`, run on a JVM), `20261107-064331-example-152…` (verified, as 150). Their pages
+    are not rendered until then.
+  - *For review*, a long job: `20261107-064838`, rerunning the nine Crosscut examples whose recorded claims
+    fingerprint the app's sources (025, 076, 120, 127–130, 132, 133), which the new kernel made stale and whose
+    pages now say so; expected each to give its recorded verdict (025, 128, 130, 132 violation; the rest
+    verified) and none stale after.
+  - Shared files changed: `equivalence.rs` (the headline's words, `made_by_constructor`), `lib/README.md` (step 5:
+    the headline), `lib/tests/heap.rs`, `examples/tags.json` (two tags), `examples/README.md` and `index.json`
+    (rendered; the nine stale pages too, with their warning). Also changed, owned by no stream: Crosscut's sources, tests, README (a row) and `api.contract`,
+    which `jvmcontract update` regenerated and which was stale before (`ratelimit.Window` and `retry.Backoff`
+    were missing from it).
+- **H2, third step, and H4's rest (2026-11-07): object parameters that may be null or one object, in regression
+  checks.** `jvmcontract equivalence` takes `--nullable l` and `--may-alias from,to` (closed under chains; the
+  receiver as `this`) for object parameters made by their constructor, and `spec::heap::check` passes a claim's
+  `ObjectDomain` `nullable` and `may_alias` (parameters only; a field path is `Unsupported`). The harness makes each
+  choice with a boolean input of its own appended after every leaf (`l.null`, `to.same.from`;
+  [`Layout::choose`](../../lib/src/harness/mod.rs), `Choice`, `Made`), in both versions alike: null first, then the
+  same object as an earlier parameter of the group, a choice naming a parameter that is null itself passed over so
+  that a parameter that may not be null never is, otherwise its own object; an object made null has no fields to
+  compare. The own checker's H1 merging turns the three ways into one choice. The domain says so (`…, from any
+  arguments it accepts, or null`; `; from and to may be the same object`), and so do `stated.domain`'s `null` and
+  `may_alias`. Witnesses keep identity: `move(from=new Line(new Money(0), 1), to=the same object as from)` is one
+  object in the interpreter's replay, the shrinker (`shrink_in_harness_keeping`, which never changes a flag) and the
+  JVM run, and `--json`'s call gives it as `{"same": "from"}`; `size(l=null)` likewise. So H4's "a witness that
+  needs two parameters to be the same object replays with one object" now holds in regression checks too. Refused
+  by name: a record of primitive components, an array or primitive parameter (arrays are a property check's), a
+  parameter the previous version gets through `--before-arguments`, `--nullable this`, and two parameters of
+  different classes. JBMC checks the same harness (the choices are plain boolean inputs), so `--engine jbmc` and
+  `--confirm` need no refusal.
+  - Evidence inline: `lib/tests/heap.rs`, four new tests: a buffered `move(from, to)` verified over two lines of
+    their own and refuted under `--may-alias from,to` with one object (`differs` has `field:from`, both replays
+    `with from == to`), confirmed on the JVM, while the rewrite in the other order is verified there; a dropped null
+    check verified by default and refuted under `--nullable l` with `size(l=null)` on the JVM, its correct rewrite
+    verified; refusals for an `int` and an array parameter; the kernel claim with `q` nullable verified under the
+    correspondence and a field path unsupported. A harness unit test of the flags' places, the resolution rule, the
+    domain words, the Java rendering and the bytecode's branch targets. Unit tests (189), `heap.rs` (22),
+    `foundations.rs`, `conformance.rs` and `integration.rs` (64, 23 s at load 0.9) pass.
+  - Not yet: property checks over objects; a field of an input object that may be null or shared (its object's
+    constructor decides it); arrays that may be null or one in a regression check. No example: Crosscut's kernels
+    have no method whose bug needs two parameters to be one object, and a source change there makes its recorded
+    examples stale again (job `20261107-064838` is rerunning them).
+  - Shared files changed: `equivalence.rs` (`Options::nullable`, `may_alias`, the choices made after the layout, the
+    shrinker keeping the flags), `statement.rs` (the parameter's `null` and the domain's `may_alias` for objects),
+    `main.rs` (two flags on `equivalence`), `lib/README.md` (step 5, `--json`'s domain), `lib/tests/heap.rs`. No job:
+    every check is inline and small.
+- **H2's rest (2026-11-07): object parameters in property checks.** `jvmcontract prove` takes a static method with
+  parameters of application classes, each made in the harness by its constructor from symbolic leaves, as in a
+  regression check (`equivalence::made_of`, a record by its canonical constructor too), and an object result read by
+  its fields ([`harness::generate_property_over`](../../lib/src/harness/mod.rs) over a `Layout`). An input a
+  constructor rejects is skipped (a constructible assumption in the statement), and so is one on which the
+  assumption throws. The expression language reads field paths, `l.price.cents`, and under `\old` before the call
+  (`Expr::Field`, `Expr::OldField`, read by the harness first, a path through null throwing when read), and compares
+  references, `result == l`, `result.price == l.price`, `l == null` (`Expr::Refs`;
+  [`expr::parse_over_objects`](../../lib/src/harness/expr.rs)). `--nullable l` and `--may-alias from,to` on object
+  parameters are the harness's flags (`Layout::choose_in`), so JBMC takes them too, unlike an array's. The domain
+  and the headline say what is covered (`on every input of constructor-made objects`). A witness is a recipe that
+  keeps its choices (`move(from=new Line(new Money(0), 1), to=the same object as from)`, `size(l=null)`); since the
+  property reads the heap, the interpreter checks it by running the harness itself, the shrinker keeps the flags,
+  and the harness runs on a JVM with the classes opened, which is the reference.
+  - Evidence inline: `lib/tests/heap.rs`, six new tests on the own checker over the object kernel: `bump`'s
+    `l.quantity == \old(l.quantity) + 1 && …` verified, and its `+= 2` defect refuted with `bump(l=new Line(new
+    Money(0), 1))`, leaving `quantity=3`; `withQuantity`'s `result == l && …` verified and the alias-to-copy defect
+    refuted (while the same property without `result == l` holds on it); `size` under `--nullable l` verified, and the
+    dropped null check refuted with `size(l=null)`, an assumption through null skipping the input; `move` under
+    `--may-alias from,to` verified, and the buffered defect refuted with one object, though it holds on two of their
+    own; `checked`, wrong only on a quantity the constructor rejects, verified within the constructor-made claim;
+    refusals by name (a `String` field, `\old(l)`, `l.price == l`, an unknown field, `--nullable` on an `int`). Every
+    refutation confirmed on the JVM. A harness unit test (the leaves and flags, the Java rendering, the `\old` read,
+    the bytecode's branch targets, and the plain harness's handlers unchanged). Unit tests (190), `heap.rs` (28),
+    `foundations.rs`, `conformance.rs` and `integration.rs` (64, 25 s at load 4.8) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-072431`, the new ignored test in `heap.rs`,
+    the eight properties under `--engine jbmc` and `auto --confirm`: expected exit 0, the four correct ones verified
+    and the four defects refuted with witnesses confirmed on the JVM.
+  - Not yet: an array parameter's `--nullable`/`--may-alias` in a property that has object parameters too (refused);
+    an array field in an expression; a call of the method under proof when it takes objects; which throws clause
+    applied, in a counterexample over objects (the conditions are evaluated in the harness only). From the earlier
+    steps: a field of an input object that may be null or shared, and arrays that may be null or one in a
+    regression check.
+  - Shared files changed: `property.rs` (the object layout, the choices split between arrays and objects, the
+    witness checked in the harness and on a JVM), `equivalence.rs` (`made_of`, `fields_of` and
+    `made_by_constructor` made `pub(crate)`), `statement.rs` (`property_assumptions`), `main.rs` (the two flags'
+    help), `lib/README.md` (a paragraph under the property proof, the limits), `lib/tests/heap.rs`.
+- **H5's rest, first step (2026-11-07): output relations for the result, and `--correspondence FILE`.** A
+  correspondence's output relation for the result takes the place of `--results-agree-when`: a boolean over
+  `old.result`, `new.result` and the new parameters, rewritten to one over `previous` and `result`
+  ([`spec::heap::output_relation`](../../lib/src/spec/heap.rs)), so a result that became a value object is related
+  by `old.result == new.result.cents`. A result that is an object of an application class is in a result relation
+  (either kind) by its field paths, of whatever shape in each version, `old.result.cents == new.result.amount.cents
+  && …`, read through the objects in the harness ([`harness::Relation`](../../lib/src/harness/mod.rs)'s
+  `previous_object`, `result_object`; `Fields::under`); two nulls agree, one alone does not, a path through null
+  doesn't hold. Identity relations are still compared, so the alias-to-copy defect is refuted under such a relation
+  by `result == q`. A replay evaluates it on each result's field paths as the call left them
+  (`Replayed::result_paths`, [`expr::eval_reading`](../../lib/src/harness/expr.rs)), the harness run in the
+  interpreter deciding the rest; a witness the relation fails on differs in `result`, and the JVM runs it.
+  `jvmcontract equivalence --correspondence FILE` reads the IR's JSON (`golden/correspondence.json` as it is). In
+  `spec::heap::check`, a required observation under an output relation is compared under it, not for equality, so
+  it is unresolved whatever the check finds (`true` would otherwise hide the offset defect) until the contract's
+  `approved_changes` has it, then changed with approval if proved, refuted if the witness breaks the relation. Also
+  fixed: the previous version called without `--before-arguments` compared its parameter types with the flat leaves,
+  so a result relation with an object parameter was refused; it compares with the layout's types now.
+  - Evidence inline: `lib/tests/heap.rs`, four new tests: `objects.Kernel#price` (a `long` that became a `Money`)
+    verified under `old.result == new.result.cents`, refused without it, and a cent too much refuted with
+    `price(l=new Line(new Money(0), 1))`, `0` against `Money[cents=1]`, on the JVM too; the fixture's `withQuantity`
+    between the two `Quote`s with its result related by field paths verified, the alias-to-copy defect refuted by
+    `identity:result==q` and never by `result`, and a relation the versions break refuted with the note and
+    `differs = [result]`, on the JVM; the claim's accounting (`true` on the offset build unresolved, approved changed
+    with approval; a broken relation unresolved); the CLI with the golden file (verified on `after`, exit 1 on
+    `offset`, a malformed file named). A unit test of `output_relation` (renaming, words left alone, three
+    refusals). Unit tests (191), `heap.rs` (32), `foundations.rs` and `conformance.rs` pass; `integration.rs` passed
+    63 of 64 in 612 s under load, failing `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` as in every
+    earlier step, which passed alone in 8.2 s (a primitive check this change doesn't reach).
+  - *For review*: quick job `20261107-080218` (no runner was active), the new ignored test in `heap.rs`, the five
+    checks under `--engine jbmc` and `auto --confirm`: expected exit 0, the two correct ones verified and the three
+    others refuted with witnesses run on a JVM.
+  - Not yet: output relations for other observations (a parameter's field, an identity relation) or over the
+    previous version's parameters; equations other than path = path; a result relation's object paths through an
+    array field.
+  - Shared files changed: `equivalence.rs` (the result relation taken from the correspondence, an object result's
+    fields under a relation, the replay's evaluation of it), `main.rs` (`--correspondence`), `lib/README.md` (step
+    5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (a `price` method in the object kernel's three builds).
+- **H5's rest, second step (2026-11-07): input equations that compute.** An input equation's new side may be an
+  expression over primitive field paths of one parameter's new object that are leaves of its construction, giving
+  the previous version's field (`int`, `long`, `boolean`): `Price(long cents)` before and `Price(long dollars, int
+  cents)` now are related by `old.p.cents == new.p.dollars * 100 + new.p.cents`
+  ([`harness::Computed`](../../lib/src/harness/mod.rs), `Source`, `Leaf`; `FieldEquation::computed`). The harness
+  computes the previous constructor's argument from the new leaves before the calls (`new
+  before.prices.Price((long) (p_dollars * 100 + p_cents))`), and after them compares the expression over the new
+  object's paths with the previous field, for the parameter as left and a result of the same pair of classes, absent
+  where a path goes through null; a division by zero skips the input as a constructor's rejection does, in the
+  harness and the replay alike. The interpreter's replay and the `--json` call compute it too, and the replays'
+  views read through it. In `spec::heap::check`, an equation that computes a field of an input the preservation
+  contract anchors (derivation `identity`) is `Unsupported`, the right expression as well as an offset one, which the
+  tool can't tell apart; under a derivation a person stated, an equation among its `&&` conjuncts stands, and one it
+  doesn't have is refused ([`spec::heap::anchored`](../../lib/src/spec/heap.rs)). An input the contract doesn't name
+  is internal, and the correspondence's to state. Refused by name: an old side that is not a path, a new side that
+  reads the previous version's input, a parameter as a whole, several parameters, a path that is no leaf, or has a
+  type that doesn't fit the field.
+  - Evidence inline: `lib/tests/heap.rs`, a price kernel (`prices.Price`, `prices.Prices`) and two tests:
+    `total`, `doubled` and `raise` verified between the two shapes, the harness's source checked; a cent too much in
+    `total` refuted (`differs = [result]`) and a carry into the dollars dropped in `raise` refuted (`differs =
+    [field:p]`), both on the JVM; the offset equation `… + 1` proving the defect equivalent where no contract anchors
+    `p` (the model case), refused by a claim that anchors `p`, as is the right one, and under a stated derivation the
+    right one refuting the defect and proving the rewrite, the offset one stated proving the defect, and an equation
+    the statement doesn't have refused. Three unit tests (`relate` with an expression, seven refusals, the anchoring
+    rule). Unit tests (194), `heap.rs` (34), `foundations.rs`, `conformance.rs` and `integration.rs` (64, 22 s at
+    load 1.2) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-083358`, the new ignored test in `heap.rs`,
+    the five checks under `--engine jbmc` and `auto --confirm`: expected exit 0, the three correct ones verified and
+    the two defects refuted with witnesses run on a JVM.
+  - Not yet: an expression over several parameters (`old.q.total == new.q.price * new.n`), or over fields that are
+    not leaves of the construction; a computed equation whose field is of another primitive type (`short`, a float);
+    an old side that is an expression.
+  - Shared files changed: `equivalence.rs` (two comments, the `correspondence` option's doc), `lib/README.md` (step
+    5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (the price kernel).
+- **H5's rest, third step (2026-11-07): output relations for an object parameter's field as the calls leave it.**
+  A correspondence's output relation for `field:p.cents` (a previous version's path; `field:p` for the whole object)
+  is a boolean over primitive field paths of that parameter's two objects, `old.p.…` and `new.p.…`
+  ([`harness::FieldRelation`](../../lib/src/harness/mod.rs) on `Corresponds::relations`, made by
+  [`spec::heap::relate`](../../lib/src/spec/heap.rs)), compared after the calls in place of the input equations about
+  that path or under it, which still make the previous object and are still assumed of the two as made: a `raise`
+  that now rounds up to whole dollars is related by `new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && … <
+  100`. A path through null makes it fail. The observations say so (`p: under the correspondence; p.cents under the
+  output relation …`); the replay evaluates it on both objects' paths as left (`Replayed::object_paths`), and a
+  witness it fails on differs in `field:p.cents`, with a note (`p.cents as the calls leave it is not related by …`).
+  A counterexample's `differs` now also names each previous version's path its correspondence views read differently
+  (`field:p` and `field:p.cents`), so that a claim requiring a path can be refuted in it. In `spec::heap::check`, a
+  relation for a field path bears on the required observations of that path, of paths under it and of the object
+  above it, and is approved by a change of its own path or one above it: unresolved without approval (`true` on the
+  dropped-carry defect included), changed with approval when proved, refuted when the witness breaks it. Refused by
+  name: a relation for a parameter no input equation relates, for a path the previous object doesn't have, two that
+  overlap, one that reads another parameter or a parameter as a whole, one that is not a boolean, and still one for
+  an identity relation.
+  - Evidence inline: `lib/tests/heap.rs`, a `rounded` build of the price kernel and two tests: rounding up refuted
+    under the equation alone (`differs = [field:p, field:p.cents]`) and verified under the relation, with the
+    observations' words and the harness's source checked; the exact `raise` verified under it; the dropped carry
+    refuted in `field:p.cents` with the note, on the JVM; an unknown path named. The claim's accounting: refuted in
+    `field:p.cents` without the relation; unresolved under it, and under `true` on the defect; approved by
+    `field:p.cents` or `field:p`, changed with approval, and the defect refuted; an approval of `field:p.dollars`
+    approving nothing. Two unit tests (the relation's reads, evaluation and refusals; `within` and `overlaps`), and
+    `output_relation` leaving field relations to `relate`. Unit tests (196), `heap.rs` (36), `foundations.rs`,
+    `conformance.rs` and `integration.rs` (64, 22 s at load 1.4) pass.
+  - *For review*: quick job `20261107-085410` (no runner was active), the new ignored test in `heap.rs`, the four
+    checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `rounded` without the relation and `defect`
+    under it refuted with witnesses run on a JVM, `rounded` and `after` under it verified.
+  - Not yet: output relations for identity relations or over the previous version's parameters as the call got
+    them; a relation for a field of a parameter whose two versions have the same shape and no input equations; a
+    view's paths through an object field (`differs` names leaf paths only under a correspondence).
+  - Shared files changed: `equivalence.rs` (the refusal of a relation no parameter took, the replays' evaluation of
+    field relations, the `correspondence` option's doc), `statement.rs` (the objects' words under a field relation),
+    `lib/README.md` (step 5, `differs`, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (the `rounded` build,
+    the relation test's words for `field:l.quantity` changed to the new refusal).
+- **H5's rest, fourth step (2026-11-07): input equations that read the new version's primitive parameters.** A
+  computed equation's expression may read the new version's primitive parameters (integral or `boolean`) beside the
+  object's leaves, or only them: a `Line(long total)` that now holds its unit price, `Line(long price)`, with a count
+  both versions take, is related by `old.l.total == new.l.price * new.n`, and `old.l.count == new.n` is an
+  expression too. A read of a parameter is a [`harness::Read`](../../lib/src/harness/mod.rs) with `param`, resolved
+  to its flat parameter by `Layout::new`; the harness makes the previous object from it before the calls (`new
+  before.lines.Line((long) (l_price * n))`) and compares the expression over the new object's paths and the
+  parameter as the call got it after them; the replay, the views and the `--json` call read it too. A result of the
+  same pair of classes is not compared under such an equation, which is about the parameter in this call. In
+  `spec::heap::check` it is a computed equation, refused about an input the contract anchors unless a person stated
+  it ([`spec::heap::anchored`](../../lib/src/spec/heap.rs); `is_computed` now counts `old.l.count == new.n`). Refused
+  by name: a parameter the new version doesn't have, an object parameter read as a whole, the fields of several
+  object parameters, a parameter of a floating type; `roots` gives no new root for an expression over parameters
+  alone, which is about the parameter in the previous one's place.
+  - Evidence inline: `lib/tests/heap.rs`, a line kernel (`lines.Line`, `lines.Lines`) and two tests: `discounted`
+    and `reprice` verified, the harness's source and the observations' words checked; a discount from the eleventh
+    item refuted in the result and a unit price set to the line's amount refuted in `field:l, field:l.total`, both
+    on the JVM; an unknown parameter and the object read as a whole named. Through `spec::heap::check`: refused
+    where the contract anchors `l`; under a stated derivation, verified on the rewrite, the discount defect refuted,
+    and the reprice defect outside a claim that doesn't require `field:l.total` and refuted by one that does. A unit
+    test (the reads, the layout's flat index, the text, six refusals, expressions over parameters alone). A first
+    `raise` example (`l.total += by * n` against `l.price += by`) ran out of the solver's time on the own checker
+    in both tests of one run, since it needs `(p + b) * n == p * n + b * n` over 64 bits: an example too hard for the engine, not a
+    defect of this step, replaced by `reprice`. Unit tests (197), `heap.rs` (38), `foundations.rs` and
+    `conformance.rs` pass; `integration.rs` passes run one test at a time (64, 106 s), and alone each test passes.
+  - Found, not caused by this step: run with its tests in parallel, `integration.rs` fails in
+    `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs`, the own checker giving no verdict on the
+    `Pricing#total` rounding refactor after 600 s (`0 of 2 divisions built in full, 8 solver calls`) where alone it
+    refutes it in 2 s (`1 of 2 divisions built in full, 13 solver calls`), on an identical harness. The parent
+    commit `vzwuvxyo` fails the same way (once passed in 22 s, then failed with the same summary). The cause is in
+    `bmc/mod.rs`: `Engine::probe` gives a branch's other side as long as the solver calls so far took, at least a
+    second, by the wall clock, so under CPU contention a probe leaves a side undecided, and deciding it at the end
+    with the division still lazy does not finish. A verdict that depends on the machine's load is honest
+    (unverifiable, never wrong) but not reproducible; a fix would budget probes by the solver's own work
+    (conflicts or propagations) instead of time, with this case under parallel load as its test.
+  - The jbmc unit test `a_run_is_limited_and_goes_first_when_memory_runs_out` failed once, run beside other suites,
+    and passed when rerun.
+  - *For review*: quick job `20261107-092158` (no runner was active), the new ignored test in `heap.rs`, the four
+    checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `after` verified for `discounted` and
+    `reprice`, `defect` refuted for both with witnesses run on a JVM.
+  - Not yet: an expression over another object parameter's fields; a parameter of a floating type; the previous
+    version's parameters other than the related object given by expressions (its primitives stay identical).
+  - Shared files changed: `equivalence.rs` (the new parameters passed to `relate`, `roots`' empty new root, results
+    not related by an equation that reads a parameter), `lib/README.md` (step 5, `spec::heap::check`'s paragraph),
+    `lib/tests/heap.rs` (the line kernel).
+- **H5's rest, fifth step (2026-11-07): output relations for identity relations.** A correspondence's output
+  relation for an identity relation the check observes, `identity:result==q` (named either way round), is a boolean
+  over whether it holds in each version, written `old.result == old.q` and `new.result == new.q` (either way round,
+  or with `!=`), compared in place of "holds before iff it holds now"
+  ([`harness::IdentityRelation`](../../lib/src/harness/mod.rs) on `Layout::identity_relations`, made by
+  [`spec::heap::identity_relations`](../../lib/src/spec/heap.rs) over `Layout::identity_pairs`): a `withQuantity`
+  that now hands back a copy on purpose is related by `old.result == old.q && new.result != new.q`. The harness
+  computes each version's relation into a boolean by `if_acmp` and evaluates the relation over the two; the Java
+  rendering says `((a == q_before) && !(b == q_after))`; the observations say `result == q, under the output relation
+  …`; a replay evaluates it on whether the relation holds in each (`Replayed::identity_holds`), the pair left out of
+  the "iff" comparison, and a witness it fails on differs in `identity:result==q`, with a note (`result == q is not
+  related by …: it holds before and holds now`). In `spec::heap::check` it is accounted as the other output
+  relations are: unresolved without approval, changed with approval when proved, refuted when the witness breaks it.
+  Refused by name: a relation the check doesn't observe, a second for the same one, and one that reads anything
+  else (a field path, a reference alone, references of two versions), or is not a boolean.
+  - Evidence inline: `lib/tests/heap.rs`, two builds of the joint example's new `withQuantity` written by the test
+    (`copied`, a copy with the same values made past the constructor's check so it never throws; `sometimes-copied`,
+    the quote itself where its quantity is already the one asked for) and two tests: without the relation `copied`
+    refuted by `identity:result==q` alone; under it verified, with the observations' words and the harness's source
+    checked; `after` and `sometimes-copied` refuted in `identity:result==q` with the note, on the JVM; the "iff"
+    written out giving the default's verdicts; an unobserved relation and a field read named. Through
+    `spec::heap::check`: unresolved on `copied` without approval (the rest preserved), and on `after` with "differ
+    under the correspondence's output relation"; approved, `copied` changed with approval and `after` and
+    `sometimes-copied` refuted in it. A unit test of `identity_relations` (the pair either way round, `!=`, the
+    "iff", nested references, seven refusals), and `output_relation` leaving identity relations to it. The `price`
+    test's identity refusal now reads "names result == l, which is not an identity relation the check observes
+    (none)". Unit tests (198), `heap.rs` (40), `foundations.rs` and `conformance.rs` pass; `integration.rs` passes
+    run one test at a time (64, 106 s), as the last step recorded.
+  - *For review* unless it comes back in this cycle: quick job `20261107-104658`, the new ignored test in `heap.rs`,
+    the three checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `copied` verified, `after` and
+    `sometimes-copied` refuted with witnesses run on a JVM.
+  - Not yet: an identity relation's output relation that reads another relation (`result.amount == q.amount` beside
+    `result == q`), or one for a pair only one version observes.
+  - Shared files changed: `equivalence.rs` (the identity relations put on the layout, the observations' words, the
+    replays' evaluation of them), `lib/README.md` (step 5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (two
+    builds, the `price` test's refusal words).
+- **H5's rest, sixth step (2026-11-07): output relations for a field of a parameter of the same shape.** An object
+  parameter made by its constructor whose two versions have the same shape, and which no input equation relates,
+  takes output relations for its fields too: a `bump` that now adds two is related by `field:l.quantity`, `new.l.quantity
+  == old.l.quantity + 1` ([`spec::heap::relate_same_shape`](../../lib/src/spec/heap.rs)). It is a `Corresponds` with
+  `same_shape` set: implied equations, the identity on every primitive path, and the leaves the same, so the objects
+  are made as without a correspondence and nothing is assumed of them as made (no input check in the bytecode or the
+  Java, the plain constructible assumption and domain words); after the calls each relation is compared in place of
+  equality for its path and every other path still for equality, through the third step's machinery (the views, the
+  relation's evaluation in the replays, the notes). The observations say `l: price.cents; l.quantity under the output
+  relation …`, which `spec::heap::check`'s `compared_observations` reads, so the accounting is the other relations':
+  unresolved without approval, changed with approval when proved, refuted when the witness breaks it, the other
+  paths preserved. Also: a counterexample over an object compared field by field without a correspondence now names
+  each primitive path its replays read differently beside `field:l` (`Replayed::object_paths` kept for every such
+  parameter, `witness::differences`), so a claim requiring `field:l.quantity` is refuted in it where before it was
+  unresolved. Results of the same classes stay compared field by field. Refused by name: one whose other fields
+  include an array (a relation for the whole object covers it), and, as before, a path the object doesn't have, one
+  for a parameter that is neither related nor of the same shape (the words now say both).
+  - Evidence inline: `lib/tests/heap.rs`, two tests on the object kernel's `bump`: the defect verified under the
+    relation, the observations' words, the domain, the constructible assumption and the harness's source checked
+    (`(l_before.price.cents == l_after.price.cents) && (l_after.quantity == l_before.quantity + 1)`, no input
+    check); `after` refuted in `field:l.quantity` alone with the note, on the JVM; under a relation for
+    `field:l.price.cents` alone the defect refuted in `field:l, field:l.quantity`, on the JVM; equality written out
+    giving the default's verdicts; an unknown path and an `int` parameter's field named. Through
+    `spec::heap::check`: refuted in `field:l.quantity` without the relation; unresolved under it, the price
+    preserved; approved by `field:l.quantity` or `field:l`, the defect changed with approval and `after` refuted.
+    The plain `bump` refutation now asserts `differs = [field:l, field:l.quantity]`; the `price` test's former
+    refusal of `field:l.quantity` is now a verified check beside the result relation. A unit test of
+    `relate_same_shape` (the implied equations and leaves, another parameter's relation, the array refusal and the
+    whole object covering it, an unknown path). Unit tests (199), `heap.rs` (42), `foundations.rs`, `conformance.rs`
+    and `integration.rs` (64, run one test at a time, 106 s) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-112033`, the new ignored test in `heap.rs`,
+    the two checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `defect` verified and `after`
+    refuted with its witness run on a JVM.
+  - Not yet: a parameter of the same shape with an array field beside a relation for another field; a result of the
+    same classes under a relation for a field (results are related by the result's relation only).
+  - Shared files changed: `equivalence.rs` (the same-shape arm, the refusal's words, results and the vacuity reason
+    not under implied equations, the `correspondence` option's doc), `statement.rs` (the constructible assumption
+    and the observations' words for a same-shape parameter), `lib/README.md` (step 5, `differs`,
+    `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (two tests, the `price` test, the `bump` assertion).
+- **H5's rest, seventh step (2026-11-07): input equations that read another object parameter's fields.** A computed
+  equation's expression may read a primitive field path of another object parameter of the new version made by its
+  constructor, where the path is a leaf of that object's construction, read as the argument it was made from: a
+  `Line(long total)` that now holds its unit price, `Line(long price)`, beside an `Order(int count)` both versions
+  take, is related by `old.l.total == new.l.price * new.o.count`. The read is a parameter read
+  ([`harness::Read`](../../lib/src/harness/mod.rs) with `param`) of the path `o.count`, which `Layout::new` resolves
+  to the order's leaf, its flat parameter of that name, so everything a primitive parameter's read does it does: the
+  harness makes the previous line from it before the calls (`new before.orders.Line((long) (l_price * o_count))`),
+  checks the objects as made, and compares the expression over the new line's paths and the order's argument as the
+  call got it after them; the replay, the views and the `--json` call read it too. The order is compared field by
+  field as without a correspondence (`o: count`). `roots` takes an expression over several objects' fields as about
+  the parameter of the previous root's name, or else the one in its place. Refused by name: a path the other object
+  doesn't have, one that is no leaf of its construction, a root that is no object parameter made by its constructor,
+  and an object that may be null or another parameter's (`--nullable`, `--may-alias`), whose argument is then not its
+  field. A call that changes the other object leaves the equation reading its argument as the call got it.
+  - Evidence inline: `lib/tests/heap.rs`, an order kernel (`orders.Order`, `orders.Line`, `orders.Orders`) and two
+    tests: `discounted` and `reprice` verified, the harness's source, the domain and the observations' words
+    checked; a discount from the eleventh item refuted in the result (`o=new Order(10)`) and a unit price set to the
+    line's amount refuted in `field:l, field:l.total`, both on the JVM; an unknown path and a nullable order named.
+    Through `spec::heap::check`: refused where the contract anchors `l`; under a stated derivation, verified on the
+    rewrites and the discount defect refuted. A unit test (the reads, `roots` over several objects, the Java text, the
+    layout's flat index, three refusals); two refusals of the earlier tests now name the parameter that is no object
+    in place of "the fields of several parameters". Unit tests (200), `heap.rs` (44), `foundations.rs`,
+    `conformance.rs` and `integration.rs` (64, one test at a time, 106 s) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-115201`, the new ignored test in `heap.rs`,
+    the four checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `after` verified for `discounted`
+    and `reprice`, `defect` refuted for both with witnesses run on a JVM.
+  - Not yet: a read of another object's field that is not a leaf of its construction, or of that object as the call
+    leaves it; an equation that reads only other objects' fields by a path (`old.l.count == new.o.count`, still refused
+    as relating `l` to `o`).
+  - Shared files changed: `equivalence.rs` (the new version's objects passed to `relate`, the refusal of a nullable
+    or shared one, two comments and the `correspondence` option's doc), `lib/README.md` (step 5, `spec::heap::check`'s
+    paragraph), `lib/tests/heap.rs` (the order kernel).
+- **H5's rest, eighth step (2026-11-07): output relations for the result that read the previous version's
+  parameters.** A correspondence's output relation for the result may read the previous version's parameters: a
+  primitive one, `old.by`, as the new version's in its place, and an object's primitive field path, `old.p.cents`,
+  from the previous version's object as its call left it. A `raised(Price p, int by)` that returned whether it raised
+  the price (`Price(long cents)`) and now returns the amount it leaves (`Price(long dollars, int cents)`), which
+  callers read from the price before, is related by `new.result == old.p.cents && old.result == (old.by > 0)`.
+  [`spec::heap::output_relation`](../../lib/src/spec/heap.rs) writes them `before$by` and `before$p.cents`
+  ([`harness::BEFORE`](../../lib/src/harness/mod.rs)), and `BeforeMethod::parse_relation` resolves them by the
+  previous version's parameter names: a primitive one to the new flat parameter in its place, an object to the local
+  its previous object is kept in, read through its fields under `before/` (`Relation::previous_objects`); the Java
+  rendering says `result == p_before.cents && previous == (by > 0)`. The replay reads the previous object's paths
+  as its replay left them (`Replayed::object_paths`, now kept for every object a correspondence relates). The new
+  version's parameters stay as the call got them, so `new.p.dollars * 100 + new.p.cents` there is the amount before.
+  In `spec::heap::check` it is accounted as the other result relations are. Refused by name: an object read as a
+  whole, a field of a primitive, a name the previous version has no parameter of, an object the previous version
+  doesn't get made by its constructor, and any of them with `--before-arguments`.
+  - Evidence inline: `lib/tests/heap.rs`, a `raised` method in the price kernel's four builds and two tests:
+    `after` verified, the harness's source checked; the defect (the amount before the raise) refuted with
+    `raised(p=new Price(0, 0), by=1)`, `before: true, leaving p=Price{cents=1}` against `after: 0, …`, `differs =
+    [result]`, on the JVM; the relation written over the new version's `p` instead verifying the defect and refuting
+    `after`, on the JVM, which shows each side is read where it should be; three refusals. Through `spec::heap::check`:
+    unresolved without approval, changed with approval on `after`, the defect refuted. A harness unit test (a
+    primitive read under another name in the bytecode's relation and the Java, three refusals) and one of the
+    reads' scanning and renaming; `output_relation`'s test now rewrites the reads. Unit tests (201; the stand-in
+    script's `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed` failed once, then passed alone and
+    in a rerun of all), `heap.rs` (46), `foundations.rs`, `conformance.rs` and `integration.rs` (64, one test at a
+    time, 107 s) pass. One CLI run of the defect, to read its witness, went to JBMC inline (0.2 s) through the
+    command's default engine, by mistake: it refuted the defect as the own checker does, and is not evidence in
+    place of the job.
+  - *For review*: quick job `20261107-121516` (no runner was active), the new ignored test in `heap.rs`, `raised`
+    under `--engine jbmc` and `auto --confirm`: expected exit 0, `after` verified and `defect` refuted with its
+    witness run on a JVM.
+  - Not yet: an array parameter of the previous version read in a result relation; the receiver (`old.this`); a
+    result relation that reads the new version's object as the call left it (`new.p` reads the arguments).
+  - Shared files changed: `equivalence.rs` (the replay's reads of the previous objects), `lib/README.md` (step 5),
+    `lib/tests/heap.rs` (the `raised` method, two tests and an ignored one).
+- **The stream closed (2026-11-07): H1–H5 done, the rest of H5 recorded as named gaps.** The last Next proposed a
+  ninth step, either naming the intermediate object paths in `differs` under a correspondence or widening a
+  same-shape parameter that has an array field. Checked against the code, the first changes no verdict:
+  `spec::heap::check` already refutes a required `field:p.price` when `differs` has a leaf under it (`within`
+  through `under`). The second only lifts one refusal. Both are polish by the loop's rule, so the stream stops.
+  - Done-criteria checked on this branch: the integration contract's heap part passes 6 of 6, and
+    `foundations.rs` passes (3); the rest of the contract is still unsupported, as the other streams' parts are.
+    Every job this run submitted is listed above with what it should show: `041414`, `043420`, `064330`, both
+    `064331` (151, 152), `064838`, `072431`, `080218`, `083358`, `085410`, `092158`, `104658`, `112033`, `115201`,
+    `121516`. All are *for review*; no quick job came back within its cycle.
+  - Named gaps left for a later brief. Each is refused by name where the tool meets it, never accepted silently:
+    - correspondences: equations whose old side is an expression, or that read a field that is not a leaf of
+      the construction; an equation that reads only another object's field by a path; a parameter of a floating
+      type or a computed field of `short` or floating type;
+    - output relations: identity relations that read another relation, or that only one version observes;
+      result relations that read the previous version's arrays or receiver, or the new version's object as left;
+      a result of the same classes under a relation for one field;
+    - domains and checks: a same-shape parameter with an array field beside a relation for another field; the
+      fields of an input object that may be null or shared; arrays that may be null or one object in a regression
+      check; an array's `--nullable` or `--may-alias` beside object parameters in a property check; a call of the
+      method under proof when it takes objects;
+    - outside these phases: collections, cycles and broad polymorphism (the main brief's deferrals);
+    - a fixture note for the reconcile loop, under H5's narrow case above.
+  - For a person: `Engine::probe` budgets by the wall clock, so `integration.rs` under parallel load leaves the
+    `Pricing#total` refactor unverifiable (H5's fourth step). A fix would budget by the solver's own work.
+  - Shared files changed: none in this entry.
+- Status: done
 
 ## Loop settings
 

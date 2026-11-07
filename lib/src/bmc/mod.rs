@@ -15,7 +15,8 @@
 //! paths waiting at the earliest such point are made one path when nothing else can run, every value they differ
 //! in a choice by the condition of each and its models all of theirs ([`Engine::merge`]), so that independent
 //! branches add paths rather than multiply them and a branch each of whose sides some model takes costs no solver
-//! call. A small search stays unmerged, each solver call being about one concrete path, which is cheaper.
+//! call. A reference they differ in becomes a symbolic one, one of their objects or null under the condition of
+//! each ([`Choice`]); a reference every path agrees on stays a known object, the fast path. A small search stays unmerged, each solver call being about one concrete path, which is cheaper.
 //!
 //! The fragment this engine handles is the one the proofs are mostly about: static methods over `int`, `long`,
 //! `short`, `byte`, `char` and `boolean`, straight-line and branching arithmetic, calls into the application's own
@@ -23,7 +24,8 @@
 //! `Integer`/`Long` comparisons, exceptions thrown and caught by class, and strings only as opaque objects (a
 //! message built for an exception). An array of those primitives is an object with a symbolic length and a cell
 //! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
-//! as JBMC's nondeterministic arrays do, a read is a choice among the cells by the index and a write a
+//! as JBMC's nondeterministic arrays do (and is never null nor another parameter's array, unless
+//! [`Options::parameters`] lets it be, a symbolic reference then), a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
 //! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
 //! a constant splits the path per cell. An application class's static fields are path state, and its initializer
@@ -39,11 +41,11 @@
 //! |---|---|
 //! | `nop`, `aconst_null`, `iconst`, `lconst`, `bipush`/`sipush`, `ldc` of an int or a long, `iload`/`lload`/`aload`, `istore`/`lstore`/`astore`, `pop`, `pop2`, `dup`, `dup_x1`, `dup_x2`, `dup2`, `dup2_x1`, `dup2_x2`, `swap`, `iinc` | implemented |
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
-//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound |
+//! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound; `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
 //! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
-//! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one |
-//! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass |
+//! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
+//! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
 //! | `getstatic`, `putstatic` of an application class's field; `getstatic` of a JDK compile-time constant (`Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`, or a field with a `ConstantValue`) | implemented: a field is resolved as the JVM resolves it, and holds what the path wrote, else its `ConstantValue`, else zero or null |
 //! | class initialization (JVMS §5.5), at the first `new`, `getstatic`, `putstatic` or `invokestatic` of an application class | implemented ([`Engine::initialise`]): the class's superclass, then the superinterfaces that declare a default method ([`gaps::initialization_supers`]), then its `<clinit>`, run as bytecode; a use from inside its own initialization goes on; an exception that leaves a `<clinit>` is thrown as an `ExceptionInInitializerError` (an `Error` as it is), and a later use of the class, or of one that waited on it, throws `NoClassDefFoundError`. A JDK class is taken to be initialized already |
@@ -114,11 +116,33 @@ pub struct Options {
     /// [`sat::ENV`] chooses, CaDiCaL unless it names another, and otherwise what a test puts behind the same
     /// interface. Results name the solver by [`solver_signature`], the default's.
     pub solver: fn() -> Box<dyn sat::Sat>,
+    /// Which array parameters may be null and which may be one array ([`Parameters`]); by default each is an
+    /// array of its own, never null.
+    pub parameters: Parameters,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default() }
+    }
+}
+
+/// The harness's array parameters beyond the default domain, by local-variable slot. Each array parameter has an
+/// array of its own, of a fresh length up to the bound with fresh cells; a parameter that may be null, or may be
+/// one array with another, is a symbolic reference ([`Choice`]) among null and the arrays it may be: its own, and
+/// the own array of each parameter before it in its group. Any partition of a group into arrays is so reachable,
+/// each array named by the first parameter holding it, and a witness says which parameters hold one array
+/// ([`Outcome::raw_same`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Parameters {
+    pub nullable: Vec<u32>,
+    /// Groups of parameters any two of which may be one array, each group in slot order.
+    pub may_alias: Vec<Vec<u32>>,
+}
+
+impl Parameters {
+    pub fn is_default(&self) -> bool {
+        self.nullable.is_empty() && self.may_alias.is_empty()
     }
 }
 
@@ -134,9 +158,12 @@ pub struct Outcome {
     pub verdict: Verdict,
     /// The violating input by parameter slot, as decimal numbers (a boolean as 0 or 1, a char by its code).
     pub raw_inputs: BTreeMap<u32, String>,
-    /// The violating input's array parameters by slot, their elements as `raw_inputs` spells values (never
-    /// `None`: an array parameter is not null).
+    /// The violating input's array parameters by slot, their elements as `raw_inputs` spells values, or `None`
+    /// for a null one ([`Parameters::nullable`]).
     pub raw_arrays: BTreeMap<u32, Option<Vec<String>>>,
+    /// The violating input's array parameters that are the same array as an earlier one, by slot: the slot of the
+    /// first parameter holding it ([`Parameters::may_alias`]).
+    pub raw_same: BTreeMap<u32, u32>,
     /// The stage the violating input was found in, as JBMC's `--java-assume-inputs-interval` would spell it;
     /// `None` when only the whole range has one.
     pub stage: Option<String>,
@@ -190,6 +217,7 @@ impl Outcome {
             properties: 1,
             raw_inputs: self.raw_inputs,
             raw_arrays: self.raw_arrays,
+            raw_same: self.raw_same,
             stage: self.stage,
             problem: self.problem,
             log,
@@ -308,12 +336,18 @@ fn cell_width(element: &Type) -> usize {
 }
 
 /// A value on the operand stack or in a local: an int (32 bits, which boolean, byte, char and short are too), a
-/// long, or a reference to an object this run made (an exception, a string) or `null`.
+/// long, a reference to an object of the path's (one this run made, an exception, a string) or `null`, or a
+/// symbolic reference ([`Choice`]).
+///
+/// A reference whose target is known is `R`, the fast path every reference took before symbolic ones: nothing
+/// about it is a formula. A `C` is made only where paths that differ in a reference merge ([`Engine::absorb`]),
+/// or where a read through a `C` gives references ([`Engine::get_field`]).
 #[derive(Debug, Clone)]
 enum Val {
     I(Bits),
     J(Bits),
     R(Option<usize>),
+    C(Rc<Choice>),
 }
 
 impl Val {
@@ -323,6 +357,51 @@ impl Val {
             _ => 1,
         }
     }
+
+    /// The reference as a choice: a known one is the only option, under `TRUE`. `None` for a primitive.
+    fn options(&self) -> Option<Vec<(Lit, Option<usize>)>> {
+        match self {
+            Val::R(r) => Some(vec![(TRUE, *r)]),
+            Val::C(c) => Some(c.0.clone()),
+            _ => None,
+        }
+    }
+}
+
+/// A symbolic reference: one of a finite set of the path's objects, or null, each under a guard. The guards are
+/// pairwise exclusive, and under the path's condition one of them holds, so the reference is the target of the
+/// guard that holds. Options are sorted by target, each target once, at least two of them ([`choice`]), so that two
+/// choices of the same guards and targets are equal.
+///
+/// `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas over the guards, `getfield` reads each
+/// candidate's field and chooses among the values by the guards, and `putfield` writes each candidate's field
+/// under its guard ([`Engine::put_field`]). Every other instruction that needs to know the object (a call on it,
+/// an array instruction, `checkcast`, `athrow`, a monitor) splits the path per option first
+/// ([`Engine::concrete_ref`]), the reference then known on each.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Choice(Vec<(Lit, Option<usize>)>);
+
+/// The reference that is each target under its guard: options under `FALSE` dropped, the guards of one target
+/// joined, sorted by target; a known reference when one target is left.
+fn choice(b: &mut Blaster, options: Vec<(Lit, Option<usize>)>) -> Val {
+    let mut by_target: BTreeMap<Option<usize>, Lit> = BTreeMap::new();
+    for (g, t) in options {
+        if g == FALSE {
+            continue;
+        }
+        let joined = match by_target.get(&t) {
+            Some(&h) => b.or(h, g),
+            None => g,
+        };
+        by_target.insert(t, joined);
+    }
+    if let Some((&t, _)) = by_target.iter().find(|(_, &g)| g == TRUE) {
+        return Val::R(t);
+    }
+    if by_target.len() <= 1 {
+        return Val::R(by_target.into_keys().next().flatten());
+    }
+    Val::C(Rc::new(Choice(by_target.into_iter().map(|(t, g)| (g, t)).collect())))
 }
 
 /// An object made during the run: its class, and the fields written so far (an application exception's, say), or
@@ -367,6 +446,7 @@ fn class_of(t: &Type) -> String {
 struct Input {
     scalars: BTreeMap<u32, String>,
     arrays: BTreeMap<u32, Option<Vec<String>>>,
+    same: BTreeMap<u32, u32>,
 }
 
 /// A method's decoded code, shared by every frame that runs it.
@@ -472,17 +552,55 @@ fn join_key(path: &Path) -> JoinKey {
     path.frames.iter().map(|f| (f.at, f.class.name.clone(), f.method.clone())).collect()
 }
 
-/// Whether two values can be one value under a condition: both ints, both longs, or the same reference.
-fn mergeable(a: &Val, b: &Val) -> bool {
-    match (a, b) {
-        (Val::I(_), Val::I(_)) | (Val::J(_), Val::J(_)) => true,
-        (Val::R(x), Val::R(y)) => x == y,
-        _ => false,
+/// The value that is `x` where `g` holds and `y` where it doesn't: bits chosen bit by bit, references a
+/// [`Choice`] of both's options. `None` when the two are not of one kind ([`mergeable`]).
+fn choose(b: &mut Blaster, g: Lit, x: &Val, y: &Val) -> Option<Val> {
+    match (x, y) {
+        (Val::I(p), Val::I(q)) => Some(Val::I(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
+        (Val::J(p), Val::J(q)) => Some(Val::J(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
+        (Val::R(p), Val::R(q)) if p == q => Some(x.clone()),
+        (Val::C(p), Val::C(q)) if p == q => Some(x.clone()),
+        _ => {
+            let (xs, ys) = (x.options()?, y.options()?);
+            let mut options = Vec::with_capacity(xs.len() + ys.len());
+            for (h, t) in xs {
+                options.push((b.and(g, h), t));
+            }
+            for (h, t) in ys {
+                options.push((b.and(-g, h), t));
+            }
+            Some(choice(b, options))
+        }
     }
 }
 
+/// Makes every copy of `choice` in the path's state (locals, stacks, static fields, objects' fields) the known
+/// reference `target`, once the path has taken the option of `target`.
+fn substitute(path: &mut Path, choice: &Rc<Choice>, target: Option<usize>) {
+    let fix = |v: &mut Val| {
+        if matches!(v, Val::C(c) if Rc::ptr_eq(c, choice) || **c == **choice) {
+            *v = Val::R(target);
+        }
+    };
+    for frame in &mut path.frames {
+        frame.locals.iter_mut().flatten().for_each(fix);
+        frame.stack.iter_mut().for_each(fix);
+    }
+    path.statics.values_mut().for_each(fix);
+    for o in &mut path.objects {
+        o.fields.values_mut().for_each(fix);
+    }
+}
+
+/// Whether two values can be one value under a condition: both ints, both longs, or both references, which
+/// are a [`Choice`] by the condition where they differ.
+fn mergeable(a: &Val, b: &Val) -> bool {
+    matches!((a, b), (Val::I(_), Val::I(_)) | (Val::J(_), Val::J(_)) | (Val::R(_) | Val::C(_), Val::R(_) | Val::C(_)))
+}
+
 /// Whether two paths at the same join point have states of one shape, so that they can be merged: the same
-/// slots and objects, with references to the same objects (the paths only differ in bits).
+/// slots and objects, each object of the same class with the same fields (the paths differ only in bits and in
+/// which objects references denote). The cells of arrays of references must be the same objects.
 fn same_shape(a: &Path, b: &Path) -> bool {
     let slots = |x: &Option<Val>, y: &Option<Val>| match (x, y) {
         (None, None) => true,
@@ -579,6 +697,9 @@ struct Engine<'a> {
     /// The harness's array parameters: slot, element type, length and cells, for reading the input off a model
     /// (the cells as made; a path writes into its own copy of the object).
     arrays: Vec<(u32, Type, Bits, Vec<Bits>)>,
+    /// The array parameters that are a choice ([`Parameters`]): slot, and each option's guard with the slot whose
+    /// own array it is, or null.
+    choices: Vec<(u32, Vec<(Lit, Option<u32>)>)>,
     max_array_length: u32,
     /// One literal per entry of [`STAGES`], true when every parameter is in the range; built at the first
     /// violation, so that a proof pays nothing for them.
@@ -664,6 +785,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         paths: 0,
         params: Vec::new(),
         arrays: Vec::new(),
+        choices: Vec::new(),
         max_array_length: options.max_array_length,
         stage_lits: vec![None; STAGES.len()],
         gap_mode: options.gaps,
@@ -683,6 +805,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         verdict,
         raw_inputs: input.scalars,
         raw_arrays: input.arrays,
+        raw_same: input.same,
         stage,
         problem,
         paths: engine.paths,
@@ -716,6 +839,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         let mut objects: Vec<Obj> = Vec::new();
         let mut cond: Vec<Lit> = Vec::new();
         let mut slot = 0u32;
+        // Each array parameter's own array: slot, type and object.
+        let mut own: Vec<(u32, Type, usize)> = Vec::new();
+        let options_in = &options.parameters;
         for t in &descriptor.params {
             if let Some(why) = unsupported_parameter(t) {
                 break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
@@ -729,7 +855,36 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
                 let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
                 engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
                 objects.push(Obj { class: t.descriptor(), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }) });
-                locals.push(Some(Val::R(Some(objects.len() - 1))));
+                own.push((slot, t.clone(), objects.len() - 1));
+                // Null, the own arrays of the parameters before it in its group of the same type, and its own,
+                // one of them under exclusive guards that cover every input.
+                let mut options: Vec<Option<u32>> = Vec::new();
+                if options_in.nullable.contains(&slot) {
+                    options.push(None);
+                }
+                if let Some(group) = options_in.may_alias.iter().find(|g| g.contains(&slot)) {
+                    options.extend(own.iter().filter(|(s, ty, _)| *s != slot && ty == t && group.contains(s)).map(|(s, _, _)| Some(*s)));
+                }
+                options.push(Some(slot));
+                let mut guarded = Vec::new();
+                let mut none_before = TRUE;
+                for (i, option) in options.iter().enumerate() {
+                    let g = if i + 1 == options.len() {
+                        none_before
+                    } else {
+                        let pick = engine.b.var();
+                        let g = engine.b.and(none_before, pick);
+                        none_before = engine.b.and(none_before, -pick);
+                        g
+                    };
+                    guarded.push((g, *option));
+                }
+                let object_of = |s: Option<u32>| s.map(|s| own.iter().find(|(o, _, _)| *o == s).expect("an own array").2);
+                let value = choice(&mut engine.b, guarded.iter().map(|(g, s)| (*g, object_of(*s))).collect());
+                if guarded.len() > 1 {
+                    engine.choices.push((slot, guarded));
+                }
+                locals.push(Some(value));
                 slot += 1;
                 continue;
             }
@@ -870,9 +1025,10 @@ pub fn solver_signature() -> String {
 /// and their class path (not the JDK classes extracted for JBMC: a JDK method is modelled here, never run), with
 /// the tool's models; the result is in JBMC's shape, and a line goes to `work/bmc.log`.
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
-pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+#[allow(clippy::too_many_arguments)]
+pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), parameters: parameters.clone(), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -1120,9 +1276,34 @@ impl<'a> Engine<'a> {
         for (slot, t, bits) in &self.params {
             input.scalars.insert(*slot, unsigned(t, self.b.eval(bits)).to_string());
         }
-        for (slot, element, length, cells) in &self.arrays {
+        let contents = |own: u32| -> Option<Vec<String>> {
+            let (_, element, length, cells) = self.arrays.iter().find(|(s, ..)| *s == own)?;
             let n = usize::try_from(self.b.eval(length)).unwrap_or(0).min(cells.len());
-            input.arrays.insert(*slot, Some(cells[..n].iter().map(|c| unsigned(element, self.b.eval(c)).to_string()).collect()));
+            Some(cells[..n].iter().map(|c| unsigned(element, self.b.eval(c)).to_string()).collect())
+        };
+        // Which array each parameter holds (its own, unless it is a choice), and the first parameter to hold each.
+        let mut first: BTreeMap<u32, u32> = BTreeMap::new();
+        for (slot, ..) in &self.arrays {
+            let held = match self.choices.iter().find(|(s, _)| s == slot) {
+                Some((_, options)) => options.iter().find(|(g, _)| self.b.value(*g)).and_then(|(_, s)| *s),
+                None => Some(*slot),
+            };
+            match held {
+                None => {
+                    input.arrays.insert(*slot, None);
+                }
+                Some(own) => {
+                    input.arrays.insert(*slot, contents(own));
+                    match first.get(&own) {
+                        Some(&earlier) => {
+                            input.same.insert(*slot, earlier);
+                        }
+                        None => {
+                            first.insert(own, *slot);
+                        }
+                    }
+                }
+            }
         }
         input
     }
@@ -1242,9 +1423,10 @@ impl<'a> Engine<'a> {
         if either != TRUE {
             into.cond.push(either);
         }
-        let choose = |b: &mut Blaster, x: &mut Val, y: &Val| match (x, y) {
-            (Val::I(p), Val::I(q)) | (Val::J(p), Val::J(q)) if p != q => *p = b.ite_bits(takes_into, p, q),
-            _ => {}
+        let choose = |b: &mut Blaster, x: &mut Val, y: &Val| {
+            if let Some(v) = choose(b, takes_into, x, y) {
+                *x = v;
+            }
         };
         for (f, g) in into.frames.iter_mut().zip(&other.frames) {
             for (x, y) in f.locals.iter_mut().zip(&g.locals) {
@@ -1368,6 +1550,9 @@ impl<'a> Engine<'a> {
     fn array_insn(&mut self, path: &mut Path, insn: &Insn) -> Step {
         match insn {
             Insn::ArrayLength => {
+                if let Some(step) = self.concrete_ref(path, 0) {
+                    return step;
+                }
                 let o = match self.pop_array(path) {
                     Ok(o) => o,
                     Err(step) => return step,
@@ -1378,6 +1563,9 @@ impl<'a> Engine<'a> {
                 Ok(None)
             }
             Insn::ArrayLoad(ArrayKind::Ref) => {
+                if let Some(step) = self.concrete_ref(path, 1) {
+                    return step;
+                }
                 if let Some(step) = self.concrete_index(path, 0) {
                     return step;
                 }
@@ -1398,6 +1586,9 @@ impl<'a> Engine<'a> {
                 self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", Val::R(value))
             }
             Insn::ArrayStore(ArrayKind::Ref) => {
+                if let Some(step) = self.concrete_ref(path, 2).or_else(|| self.concrete_ref(path, 0)) {
+                    return step;
+                }
                 if let Some(step) = self.concrete_index(path, 1) {
                     return step;
                 }
@@ -1424,6 +1615,9 @@ impl<'a> Engine<'a> {
                 })
             }
             Insn::ArrayLoad(kind) => {
+                if let Some(step) = self.concrete_ref(path, 1) {
+                    return step;
+                }
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
                     Ok(o) => o,
@@ -1444,9 +1638,12 @@ impl<'a> Engine<'a> {
                 self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", value)
             }
             Insn::ArrayStore(kind) => {
+                if let Some(step) = self.concrete_ref(path, 2) {
+                    return step;
+                }
                 let value = match self.pop(path)? {
                     Val::I(b) | Val::J(b) => b,
-                    Val::R(_) => return unsupported("arrays of references"),
+                    Val::R(_) | Val::C(_) => return unsupported("arrays of references"),
                 };
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
@@ -1600,6 +1797,148 @@ impl<'a> Engine<'a> {
             }
         }
         self.raise(path, "java/lang/ArrayIndexOutOfBoundsException")
+    }
+
+    /// Splits the path per option of the symbolic reference `depth` values below the top of the stack, if it is one
+    /// ([`Choice`]): the instruction, which needs to know the object, runs again on each part with the reference
+    /// known, as [`Engine::concrete_index`] makes an index known. `None` when it is known already.
+    fn concrete_ref(&mut self, path: &mut Path, depth: usize) -> Option<Step> {
+        let stack = &path.frames.last().expect("a frame").stack;
+        let at = stack.len().checked_sub(depth + 1)?;
+        let Val::C(choice) = &stack[at] else { return None };
+        let choice = choice.clone();
+        Some(self.split_choice(path, &choice))
+    }
+
+    /// Splits the path per option of `choice`, every option but the last asked of the solver, the last taking what
+    /// is left; on each part, every copy of the choice in the path's state is the option's target.
+    fn split_choice(&mut self, path: &mut Path, choice: &Rc<Choice>) -> Step {
+        let fix = |path: &mut Path, target: Option<usize>| {
+            substitute(path, choice, target);
+            path.resumed = true;
+        };
+        let (last, rest) = choice.0.split_last().expect("a choice has options");
+        for &(c, target) in rest {
+            match self.sides(path, c)? {
+                Sides::Both { then_models, else_models } => {
+                    let mut twin = self.split(path, c, then_models, else_models, true);
+                    fix(&mut twin, target);
+                    self.paths += 1;
+                    self.pending.push(twin);
+                }
+                Sides::Then => {
+                    path.cond.push(c);
+                    fix(path, target);
+                    return Ok(None);
+                }
+                Sides::Else => path.cond.push(-c),
+                Sides::Undecided { model_takes_then: true } => {
+                    // The twin takes the other options: it runs the instruction again, this one decided against.
+                    let mut twin = self.split_undecided(path, c, true);
+                    twin.resumed = true;
+                    self.pending.push(twin);
+                    fix(path, target);
+                    return Ok(None);
+                }
+                Sides::Undecided { model_takes_then: false } => {
+                    let mut twin = self.split_undecided(path, c, false);
+                    fix(&mut twin, target);
+                    self.pending.push(twin);
+                }
+            }
+        }
+        // Every other option excluded: the last one's guard holds under the path's condition.
+        if !path.cond.contains(&last.0) {
+            path.cond.push(last.0);
+        }
+        fix(path, last.1);
+        Ok(None)
+    }
+
+    /// Whether the reference is null, as a literal: a formula over a [`Choice`]'s guards.
+    fn null_lit(&mut self, v: &Val) -> Result<Lit, Stop> {
+        let Some(options) = v.options() else { return unsupported(format!("expected a reference on the stack, found {v:?}")) };
+        let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_none()).map(|(g, _)| *g).collect();
+        Ok(self.any(&guards))
+    }
+
+    /// Whether two references are the same object (or both null), as a literal: some pair of their options with
+    /// one target, both guards holding.
+    fn same_lit(&mut self, x: &Val, y: &Val) -> Result<Lit, Stop> {
+        let (Some(xs), Some(ys)) = (x.options(), y.options()) else { return unsupported(format!("expected two references on the stack, found {x:?} and {y:?}")) };
+        let mut pairs = Vec::new();
+        for (g, t) in &xs {
+            for (h, u) in &ys {
+                if t == u {
+                    pairs.push(self.b.and(*g, *h));
+                }
+            }
+        }
+        Ok(self.any(&pairs))
+    }
+
+    /// The disjunction of `lits`, `FALSE` when there are none.
+    fn any(&mut self, lits: &[Lit]) -> Lit {
+        let mut c = FALSE;
+        for &l in lits {
+            c = self.b.or(c, l);
+        }
+        c
+    }
+
+    /// `getfield` through a symbolic reference: the field of each object it may be, chosen among by the guards, and
+    /// `NullPointerException` where it is null.
+    fn get_field(&mut self, path: &mut Path, choice: &Choice, owner: &str, name: &str, descriptor: &str) -> Step {
+        let mut values: Vec<(Lit, Val)> = Vec::new();
+        let mut null = Vec::new();
+        for &(g, t) in &choice.0 {
+            match t {
+                None => null.push(g),
+                Some(o) => {
+                    let key = self.field_key(path, o, owner, name, descriptor)?;
+                    let v = match path.objects[o].fields.get(&key) {
+                        Some(v) => v.clone(),
+                        None => self.default_value(descriptor)?,
+                    };
+                    values.push((g, v));
+                }
+            }
+        }
+        // Where no object is the target the reference is null, which throws; there the value is any of them.
+        let (_, mut value) = values.pop().expect("a choice has an object or two options");
+        while let Some((g, v)) = values.pop() {
+            value = choose(&mut self.b, g, &v, &value).ok_or_else(|| Stop::Unsupported(format!("fields {name} of different kinds")))?;
+        }
+        let null = self.any(&null);
+        self.branch_throw(path, null, "java/lang/NullPointerException", value)
+    }
+
+    /// `putfield` through a symbolic reference: each object it may be gets the value where its guard holds and keeps
+    /// its own elsewhere, and where it is null, `NullPointerException`.
+    fn put_field(&mut self, path: &mut Path, choice: &Choice, value: Val, owner: &str, name: &str, descriptor: &str) -> Step {
+        let mut writes: Vec<(usize, String, Val)> = Vec::new();
+        let mut null = Vec::new();
+        for &(g, t) in &choice.0 {
+            match t {
+                None => null.push(g),
+                Some(o) => {
+                    let key = self.field_key(path, o, owner, name, descriptor)?;
+                    let old = match path.objects[o].fields.get(&key) {
+                        Some(v) => v.clone(),
+                        None => self.default_value(descriptor)?,
+                    };
+                    let new = choose(&mut self.b, g, &value, &old).ok_or_else(|| Stop::Unsupported(format!("a putfield of {value:?} into {name}")))?;
+                    writes.push((o, key, new));
+                }
+            }
+        }
+        let null = self.any(&null);
+        self.branch_throw_or(path, null, "java/lang/NullPointerException", move |engine, path| {
+            for (o, key, v) in writes {
+                path.objects[o].fields.insert(key, v);
+            }
+            engine.advance(path);
+        })
     }
 
     /// A jump within the top frame, counting back edges against the bound.
@@ -1941,19 +2280,22 @@ impl<'a> Engine<'a> {
                 let c = self.compare(cond, &x, &y);
                 return self.conditional(path, c, target);
             }
+            // Over known references these are constants; over a symbolic one, formulas of its guards.
             Insn::IfACmp(equal, target) => {
-                let y = self.pop_ref(path)?;
-                let x = self.pop_ref(path)?;
-                let c = if (x == y) == equal { TRUE } else { FALSE };
-                return self.conditional(path, c, target);
+                let y = self.pop(path)?;
+                let x = self.pop(path)?;
+                let same = self.same_lit(&x, &y)?;
+                return self.conditional(path, if equal { same } else { -same }, target);
             }
             Insn::IfNull(target) => {
-                let x = self.pop_ref(path)?;
-                return self.conditional(path, if x.is_none() { TRUE } else { FALSE }, target);
+                let x = self.pop(path)?;
+                let null = self.null_lit(&x)?;
+                return self.conditional(path, null, target);
             }
             Insn::IfNonNull(target) => {
-                let x = self.pop_ref(path)?;
-                return self.conditional(path, if x.is_some() { TRUE } else { FALSE }, target);
+                let x = self.pop(path)?;
+                let null = self.null_lit(&x)?;
+                return self.conditional(path, -null, target);
             }
             Insn::Goto(target) => return self.jump(path, target),
             Insn::Jsr(_) | Insn::Ret(_) => return unsupported("jsr/ret"),
@@ -2017,6 +2359,10 @@ impl<'a> Engine<'a> {
             }
             Insn::GetField(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                if let Some(Val::C(choice)) = path.frames.last().expect("a frame").stack.last().cloned() {
+                    self.pop(path)?;
+                    return self.get_field(path, &choice, &member.owner, &member.name, &member.descriptor);
+                }
                 let r = self.pop_ref(path)?;
                 let o = match self.null_check(path, r) {
                     Ok(o) => o.expect("checked"),
@@ -2032,6 +2378,10 @@ impl<'a> Engine<'a> {
             Insn::PutField(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let v = self.pop(path)?;
+                if let Some(Val::C(choice)) = path.frames.last().expect("a frame").stack.last().cloned() {
+                    self.pop(path)?;
+                    return self.put_field(path, &choice, v, &member.owner, &member.name, &member.descriptor);
+                }
                 let r = self.pop_ref(path)?;
                 let o = match self.null_check(path, r) {
                     Ok(o) => o.expect("checked"),
@@ -2052,6 +2402,12 @@ impl<'a> Engine<'a> {
                     }
                     let args = self.pop_args(path, descriptor.params.len())?;
                     return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+                }
+                // The JDK's methods and the intrinsics take known references.
+                for depth in 0..descriptor.params.len() {
+                    if let Some(step) = self.concrete_ref(path, depth) {
+                        return step;
+                    }
                 }
                 let args = self.pop_args(path, descriptor.params.len())?;
                 if member.owner == crate::gap_contracts::INTRINSICS {
@@ -2079,6 +2435,23 @@ impl<'a> Engine<'a> {
             Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                // The receiver is dispatched on, so it is known first; so are the arguments of a call that is not
+                // into the application, whose models and contracts take known references.
+                if let Some(step) = self.concrete_ref(path, descriptor.params.len()) {
+                    return step;
+                }
+                let receiver_at = path.frames.last().expect("a frame").stack.len() - 1 - descriptor.params.len();
+                if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
+                    let owner = if matches!(insn, Insn::InvokeSpecial(_)) { member.owner.clone() } else { path.objects[o].class.clone() };
+                    let application = self.cp.checker_method(&owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some());
+                    if !application {
+                        for depth in 0..descriptor.params.len() {
+                            if let Some(step) = self.concrete_ref(path, depth) {
+                                return step;
+                            }
+                        }
+                    }
+                }
                 let args = self.pop_args(path, descriptor.params.len())?;
                 let receiver = self.pop_ref(path)?;
                 let o = match self.null_check(path, receiver) {
@@ -2160,6 +2533,9 @@ impl<'a> Engine<'a> {
                 self.push(path, Val::R(Some(r)));
             }
             Insn::AThrow => {
+                if let Some(step) = self.concrete_ref(path, 0) {
+                    return step;
+                }
                 let r = self.pop_ref(path)?;
                 let o = match self.null_check(path, r) {
                     Ok(o) => o.expect("checked"),
@@ -2169,6 +2545,9 @@ impl<'a> Engine<'a> {
             }
             Insn::CheckCast(index) => {
                 let target = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
+                if let Some(step) = self.concrete_ref(path, 0) {
+                    return step;
+                }
                 let r = self.pop_ref(path)?;
                 if let Some(o) = r {
                     if !self.cp.is_subtype(&path.objects[o].class, &target) {
@@ -2179,13 +2558,19 @@ impl<'a> Engine<'a> {
             }
             Insn::InstanceOf(index) => {
                 let target = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
-                let r = self.pop_ref(path)?;
-                let is = r.is_some_and(|o| self.cp.is_subtype(&path.objects[o].class, &target));
-                let c = self.b.constant(i64::from(is), 32);
+                let r = self.pop(path)?;
+                let Some(options) = r.options() else { return unsupported(format!("expected a reference on the stack, found {r:?}")) };
+                let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| self.cp.is_subtype(&path.objects[o].class, &target))).map(|(g, _)| *g).collect();
+                let is = self.any(&guards);
+                let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
+                let c = self.b.ite_bits(is, &one, &zero);
                 self.push(path, Val::I(c));
             }
             // In a run of one thread a monitor is always free and always held by it: only a null one does anything.
             Insn::MonitorEnter | Insn::MonitorExit => {
+                if let Some(step) = self.concrete_ref(path, 0) {
+                    return step;
+                }
                 let r = self.pop_ref(path)?;
                 if let Err(step) = self.null_check(path, r) {
                     return step;
@@ -2632,7 +3017,7 @@ impl<'a> Engine<'a> {
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
-            Val::R(_) => None,
+            Val::R(_) | Val::C(_) => None,
         };
         let a: Vec<Bits> = match args.iter().map(bits).collect::<Option<Vec<_>>>() {
             Some(a) => a,
@@ -2929,6 +3314,75 @@ mod tests {
 
     fn run(cp: &ClassPath) -> Outcome {
         check(cp, "Check", "check", &Options::default()).unwrap()
+    }
+
+    /// `a[0] = 1; b[0] = 2; a[0] == 1`, which holds unless `a` and `b` are one array, over arrays of length 1 at
+    /// least: a parameter that may be the same array as another is a choice between its own and the other's.
+    #[test]
+    fn array_parameters_that_may_be_one_array_are_a_choice_and_the_witness_says_which() {
+        let cp = harness("([I[I)V", |code, _, fail| {
+            let skip = code.label();
+            for a in [0, 1] {
+                code.load(Kind::Ref, a);
+                code.op(0xbe); // arraylength
+                code.if_zero(Cond::Eq, skip);
+            }
+            for (a, v) in [(0, 1), (1, 2)] {
+                code.load(Kind::Ref, a);
+                code.iconst(0);
+                code.iconst(v);
+                code.op(0x4f); // iastore
+            }
+            code.load(Kind::Ref, 0);
+            code.iconst(0);
+            code.op(0x2e); // iaload
+            code.iconst(1);
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(skip);
+        });
+        let distinct = run(&cp);
+        assert_eq!(distinct.verdict, Verdict::Verified, "{:?}", distinct.problem);
+        for merge_after in [0, u64::MAX] {
+            let parameters = Parameters { nullable: Vec::new(), may_alias: vec![vec![0, 1]] };
+            let out = check(&cp, "Check", "check", &Options { parameters, merge_after, ..Options::default() }).unwrap();
+            assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+            assert_eq!(out.raw_same, BTreeMap::from([(1, 0)]), "b is a's array");
+            assert_eq!(out.raw_arrays[&1], out.raw_arrays[&0], "and has its elements");
+        }
+    }
+
+    /// `a.length >= 0`, which an array parameter that may be null refutes with a `NullPointerException` the
+    /// harness doesn't catch: the engine says so, and with the null checked first, the claim holds.
+    #[test]
+    fn an_array_parameter_that_may_be_null_is_null_on_some_path() {
+        let length = |guarded: bool| {
+            harness("([I)V", move |code, _, fail| {
+                let done = code.label();
+                if guarded {
+                    code.load(Kind::Ref, 0);
+                    code.if_null(done);
+                }
+                code.load(Kind::Ref, 0);
+                code.op(0xbe); // arraylength
+                code.if_zero(Cond::Lt, fail);
+                code.bind(done);
+            })
+        };
+        let nullable = |cp: &ClassPath| check(cp, "Check", "check", &Options { parameters: Parameters { nullable: vec![0], may_alias: Vec::new() }, ..Options::default() }).unwrap();
+        assert_eq!(run(&length(false)).verdict, Verdict::Verified, "never null by default");
+        let unguarded = nullable(&length(false));
+        assert_eq!(unguarded.verdict, Verdict::Unverifiable);
+        assert!(unguarded.problem.as_deref().unwrap_or("").contains("NullPointerException"), "{:?}", unguarded.problem);
+        assert_eq!(nullable(&length(true)).verdict, Verdict::Verified);
+        // A null that fails the claim is the witness's.
+        let fails_on_null = harness("([I)V", |code, _, fail| {
+            code.load(Kind::Ref, 0);
+            code.if_null(fail);
+        });
+        let out = nullable(&fails_on_null);
+        assert_eq!(out.verdict, Verdict::Violation);
+        assert_eq!(out.raw_arrays[&0], None);
+        assert!(out.raw_same.is_empty());
     }
 
     #[test]

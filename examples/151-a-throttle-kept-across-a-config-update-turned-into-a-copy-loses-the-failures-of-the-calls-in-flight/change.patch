@@ -1,0 +1,14 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java
+@@ -31,7 +31,9 @@
+      */
+     public static Throttle reconfigured(Throttle throttle, ThrottleLimits limits) {
+         if (limits.maxTokens() == throttle.limits.maxTokens() && limits.tokenRatioMilli() == throttle.limits.tokenRatioMilli()) {
+-            return throttle;
++            Throttle kept = new Throttle(throttle.limits);
++            kept.milliTokens = throttle.milliTokens;
++            return kept;
+         }
+         return new Throttle(limits);
+     }

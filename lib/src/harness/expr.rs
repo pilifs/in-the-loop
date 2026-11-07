@@ -23,6 +23,9 @@
 //! body holds (an `int`), and `\max` and `\min` take the extreme of a numeric body; over an empty range they are
 //! 0, 0, the smallest value of the body's type and the largest, as in JML.
 //!
+//! Where a property's domain lets an array parameter be null or one array with another (`--nullable`,
+//! `--may-alias`), `a == null`, `a != null`, `a == b` and `a != b` say which it is.
+//!
 //! A property reads an array parameter after the call, so `\old(a[i])` and `\old(a.length)` (JML's `\old`) are
 //! the element and the length before it, from a copy the harness takes before the call; `\old(a)` passes that
 //! copy to a call. That is how a method that writes into an array is held to what it changed and what it left:
@@ -86,6 +89,43 @@ pub enum Expr {
     Index(String, u16, Type, Box<Expr>),
     /// `\forall int i; range; body` or `\exists ...`.
     Quantifier(Box<Quantifier>),
+    /// `a == null`, `a != b`: whether two array parameters (each by name and slot, or `null` as `None`) are the same
+    /// array, or not (`false`), where a domain lets one be null or one array with another.
+    Same(Option<(String, u16)>, Option<(String, u16)>, bool),
+    /// `l.price.cents`: a primitive field path of an object parameter or an object `result` (step H2 of
+    /// `llm-dlc/loops/foundations-heap.md`), read when the expression is evaluated. A path through null throws
+    /// `NullPointerException`, as in Java.
+    Field(Box<FieldPath>),
+    /// `\old(l.quantity)`: the field path as it was before the call, which the harness reads first into the local
+    /// `value`, with `value + 2` holding 0 where the path went through null; reading that one throws
+    /// `NullPointerException` then, as reading the path before the call would have.
+    OldField(Box<FieldPath>, u16),
+    /// `l == null`, `result == l`, `result.price != l.price`: whether two references (an object parameter, `result`, or
+    /// a reference field path of one; `None` for `null`) are one object (`true`) or not (`false`).
+    Refs(Option<Box<FieldPath>>, Option<Box<FieldPath>>, bool),
+}
+
+/// A path from an object parameter or an object `result` through its fields (step H2): `l.price.cents` as the
+/// object's name and slot, each field read in turn (its declaring class, name and descriptor), and the type the
+/// path ends in: a primitive, or the class of an object it ends at (`Type::Object`).
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldPath {
+    /// As written: `l.price.cents`.
+    pub shown: String,
+    pub slot: u16,
+    pub steps: Vec<(String, String, String)>,
+    pub ty: Type,
+}
+
+impl FieldPath {
+    /// Pushes the reference or the value the path reads: the object, then each field in turn.
+    pub fn emit(&self, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
+        code.load(Kind::Ref, self.slot);
+        for (owner, name, descriptor) in &self.steps {
+            let field = pool.field_ref(owner, name, descriptor);
+            code.op_u16(0xb4, field); // getfield
+        }
+    }
 }
 
 /// The quantifiers: the two boolean ones, and JML's generalized ones, which fold a value over the range.
@@ -213,6 +253,8 @@ impl Expr {
             Expr::Var(_, t, _) => *t,
             Expr::Call(callee, _) => callee.ret,
             Expr::Length(..) => Ty::Int,
+            Expr::Same(..) | Expr::Refs(..) => Ty::Boolean,
+            Expr::Field(f) | Expr::OldField(f, _) => ty_of(&f.ty).unwrap_or(Ty::Int),
             Expr::Index(_, _, t, _) => ty_of(t).unwrap_or(Ty::Int),
             Expr::Quantifier(q) => q.ty(),
             Expr::Neg(e) | Expr::BitNot(e) => e.ty(),
@@ -250,6 +292,10 @@ impl Expr {
             Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => 0,
             Expr::Var(_, Ty::Long, slot) => slot + 2,
             Expr::Var(_, _, slot) | Expr::Length(_, slot) => slot + 1,
+            Expr::Same(l, r, _) => l.iter().chain(r).map(|(_, s)| s + 1).max().unwrap_or(0),
+            Expr::Field(f) => f.slot + 1,
+            Expr::OldField(f, value) => (f.slot + 1).max(value + 3),
+            Expr::Refs(l, r, _) => l.iter().chain(r).map(|f| f.slot + 1).max().unwrap_or(0),
             Expr::Index(_, slot, _, index) => (slot + 1).max(index.slots_used()),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.slots_used(),
             Expr::Binary(_, l, r) => l.slots_used().max(r.slots_used()),
@@ -265,7 +311,7 @@ impl Expr {
     /// Whether the expression calls the method under proof, which only the harness can evaluate.
     pub fn has_call(&self) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) => false,
             Expr::Call(..) => true,
             Expr::Index(_, _, _, index) => index.has_call(),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.has_call(),
@@ -278,7 +324,7 @@ impl Expr {
     /// Whether the expression passes the array in `slot` to a call, which sees its whole length.
     pub fn passes(&self, slot: u16) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) => false,
             Expr::Index(_, _, _, index) => index.passes(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.passes(slot),
             Expr::Binary(_, l, r) => l.passes(slot) || r.passes(slot),
@@ -293,12 +339,74 @@ impl Expr {
         match self {
             Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => false,
             Expr::Var(_, _, s) | Expr::Length(_, s) => *s == slot,
+            Expr::Same(l, r, _) => l.iter().chain(r).any(|(_, s)| *s == slot),
+            Expr::Field(f) => f.slot == slot,
+            Expr::OldField(f, value) => f.slot == slot || (*value..value + 3).contains(&slot),
+            Expr::Refs(l, r, _) => l.iter().chain(r).any(|f| f.slot == slot),
             Expr::Index(_, s, _, index) => *s == slot || index.mentions(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.mentions(slot),
             Expr::Binary(_, l, r) => l.mentions(slot) || r.mentions(slot),
             Expr::Ternary(c, t, e) => c.mentions(slot) || t.mentions(slot) || e.mentions(slot),
             Expr::Call(_, args) => args.iter().any(|a| a.mentions(slot)),
             Expr::Quantifier(q) => q.lo.mentions(slot) || q.hi.mentions(slot) || q.body.mentions(slot) || q.filter.as_ref().is_some_and(|f| f.mentions(slot)),
+        }
+    }
+}
+
+impl Expr {
+    /// The field paths read under `\old`, each with the local its value goes in, in the order they appear: the
+    /// harness reads each before the call.
+    pub fn old_fields(&self) -> Vec<(FieldPath, u16)> {
+        let mut out = Vec::new();
+        self.visit(&mut |e| {
+            if let Expr::OldField(f, value) = e {
+                out.push(((**f).clone(), *value));
+            }
+        });
+        out
+    }
+
+    /// Whether the expression reads an object (a field path, or a reference compared), which only the harness can
+    /// evaluate.
+    pub fn reads_objects(&self) -> bool {
+        let mut reads = false;
+        self.visit(&mut |e| reads |= matches!(e, Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..)));
+        reads
+    }
+
+    /// Calls `f` on the expression and every expression within it.
+    fn visit(&self, f: &mut dyn FnMut(&Expr)) {
+        f(self);
+        match self {
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) => {}
+            Expr::Index(_, _, _, index) => index.visit(f),
+            Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.visit(f),
+            Expr::Binary(_, l, r) => {
+                l.visit(f);
+                r.visit(f);
+            }
+            Expr::Ternary(c, t, e) => {
+                c.visit(f);
+                t.visit(f);
+                e.visit(f);
+            }
+            Expr::Call(_, args) => {
+                for a in args {
+                    match a {
+                        CallArg::Value(e) => e.visit(f),
+                        CallArg::Record(_, components) => components.iter().for_each(|e| e.visit(f)),
+                        CallArg::Array(..) => {}
+                    }
+                }
+            }
+            Expr::Quantifier(q) => {
+                q.lo.visit(f);
+                q.hi.visit(f);
+                q.body.visit(f);
+                if let Some(filter) = &q.filter {
+                    filter.visit(f);
+                }
+            }
         }
     }
 }
@@ -438,6 +546,8 @@ struct Parser<'a> {
     old: Option<&'a [(u16, u16)]>,
     /// Whether the parser is inside `\old(...)`.
     in_old: bool,
+    /// The fields of each object parameter (and of an object `result`) by name, which field paths follow.
+    objects: &'a [(String, super::Fields)],
 }
 
 impl Parser<'_> {
@@ -605,6 +715,7 @@ impl Parser<'_> {
             Token::Ident(name) => match name.as_str() {
                 "true" => Ok(Expr::Bool(true)),
                 "false" => Ok(Expr::Bool(false)),
+                "null" => self.same(None),
                 _ if self.callee.is_some_and(|c| c.name == name) && self.peek() == &Token::Op("(") => {
                     let callee = self.callee.expect("checked");
                     self.next();
@@ -679,8 +790,15 @@ impl Parser<'_> {
                     if self.in_old && name == "result" {
                         return Err(Error::new("result has no value before the call; \\old applies to the parameters"));
                     }
+                    if let Some(fields) = self.objects.iter().find(|(n, _)| *n == name).map(|(_, f)| f) {
+                        let path = self.path(name.clone(), param.slot, fields)?;
+                        return self.object_operand(path);
+                    }
                     if let Type::Array(element) = &param.ty {
                         let element = (**element).clone();
+                        if !self.in_old && matches!(self.peek(), Token::Op("==") | Token::Op("!=")) {
+                            return self.same(Some((name.clone(), param.slot)));
+                        }
                         element_ty(&param.ty).ok_or_else(|| Error::new(format!("parameter {name} has type {}; only arrays of integral or boolean elements can appear in the expression", param.ty.java_name())))?;
                         let (shown, slot) = self.array_state(name.clone(), param.slot)?;
                         if self.eat(".") {
@@ -706,6 +824,106 @@ impl Parser<'_> {
             },
             other => Err(Error::new(format!("unexpected {other:?} in expression"))),
         }
+    }
+
+    /// The rest of `a == b`, `a != null` or `null == a`, after its left operand: an array parameter or `null`.
+    fn same(&mut self, left: Option<(String, u16)>) -> Result<Expr, Error> {
+        let equal = if self.eat("==") {
+            true
+        } else if self.eat("!=") {
+            false
+        } else {
+            return Err(Error::new(format!("null is compared with an array parameter by == or !=, found {:?}", self.peek())));
+        };
+        let right = match self.next() {
+            Token::Ident(n) if n == "null" => None,
+            Token::Ident(n) if left.is_none() && self.objects.iter().any(|(o, _)| *o == n) => {
+                let slot = self.params.iter().find(|p| p.name == n).map(|p| p.slot).ok_or_else(|| Error::new(format!("unknown name {n:?}")))?;
+                let fields = self.objects.iter().find(|(o, _)| *o == n).map(|(_, f)| f).expect("checked");
+                let path = self.path(n, slot, fields)?;
+                require(matches!(path.ty, Type::Object(_)), &format!("{} is a {}, which is never null", path.shown, path.ty.java_name()))?;
+                return Ok(Expr::Refs(None, Some(Box::new(path)), equal));
+            }
+            Token::Ident(n) => match self.params.iter().find(|p| p.name == n) {
+                Some(p) if matches!(p.ty, Type::Array(_)) => Some((n, p.slot)),
+                _ => return Err(Error::new(format!("{n} is not an array parameter; an array parameter is compared with null or another array parameter"))),
+            },
+            other => return Err(Error::new(format!("expected an array parameter or null after == or !=, found {other:?}"))),
+        };
+        require(left.is_some() || right.is_some(), "null == null says nothing")?;
+        Ok(Expr::Same(left, right, equal))
+    }
+
+    /// A field path from the object `name` in `slot`, whose fields are `fields`, after its name: `.price.cents`, or
+    /// nothing for the object itself.
+    fn path(&mut self, name: String, slot: u16, fields: &super::Fields) -> Result<FieldPath, Error> {
+        let mut shown = name;
+        let mut steps = Vec::new();
+        let mut at = Some(fields);
+        let mut ty = Type::Object(fields.class.clone());
+        while let (Token::Op("."), Some(Token::Ident(field))) = (self.peek(), self.tokens.get(self.pos + 1)) {
+            let field = field.clone();
+            let Some(here) = at else { return Err(Error::new(format!("{shown} is a {}, which has no field {field}", ty.java_name()))) };
+            let Some((_, kind)) = here.fields.iter().find(|(n, _)| *n == field) else {
+                return Err(Error::new(format!("{} has no field {field}; its fields are {}", here.class.replace('/', "."), here.fields.iter().map(|(n, _)| n.as_str()).collect::<Vec<_>>().join(", "))));
+            };
+            self.pos += 2;
+            shown = format!("{shown}.{field}");
+            match kind {
+                super::FieldKind::Value(t) => {
+                    steps.push((here.class.clone(), field, t.descriptor()));
+                    ty = t.clone();
+                    at = None;
+                }
+                super::FieldKind::Object(inner) => {
+                    steps.push((here.class.clone(), field, format!("L{};", inner.class)));
+                    ty = Type::Object(inner.class.clone());
+                    at = Some(inner);
+                }
+                super::FieldKind::Array(t) => return Err(Error::new(format!("{shown} is an array field ({}); a property does not read an object's array fields yet", t.java_name()))),
+            }
+        }
+        Ok(FieldPath { shown, slot, steps, ty })
+    }
+
+    /// What a field path is in the expression: a value where it ends at a primitive (under `\old`, the value before
+    /// the call), and where it ends at an object, the left side of `==` or `!=` with another or with `null`.
+    fn object_operand(&mut self, path: FieldPath) -> Result<Expr, Error> {
+        if let Type::Object(class) = &path.ty {
+            require(!self.in_old, &format!("\\old({}) is an object; \\old applies to a primitive field of one, as \\old({}.f)", path.shown, path.shown))?;
+            let equal = if self.eat("==") {
+                true
+            } else if self.eat("!=") {
+                false
+            } else {
+                return Err(Error::new(format!("{} is an object; read a primitive field of it ({}.f), or compare it with == or != to another object or to null", path.shown, path.shown)));
+            };
+            let right = match self.next() {
+                Token::Ident(n) if n == "null" => None,
+                Token::Ident(n) => {
+                    let fields = self.objects.iter().find(|(o, _)| *o == n).map(|(_, f)| f).ok_or_else(|| Error::new(format!("{n} is not an object parameter or result; {} is compared with one, or with null", path.shown)))?;
+                    let slot = self.params.iter().find(|p| p.name == n).map(|p| p.slot).ok_or_else(|| Error::new(format!("unknown name {n:?}")))?;
+                    let other = self.path(n, slot, fields)?;
+                    match &other.ty {
+                        Type::Object(c) if c == class => Some(Box::new(other)),
+                        // The classes an object is followed into extend Object directly, so objects of two of them
+                        // are never one, and Java rejects the comparison.
+                        Type::Object(c) => return Err(Error::new(format!("{} is a {} and {} a {}: incomparable types, never one object", path.shown, class.replace('/', "."), other.shown, c.replace('/', ".")))),
+                        t => return Err(Error::new(format!("{} is a {}, not an object", other.shown, t.java_name()))),
+                    }
+                }
+                other => return Err(Error::new(format!("expected an object or null after == or !=, found {other:?}"))),
+            };
+            return Ok(Expr::Refs(Some(Box::new(path)), right, equal));
+        }
+        ty_of(&path.ty).ok_or_else(|| Error::new(format!("{} has type {}; only integral and boolean fields can appear in the expression", path.shown, path.ty.java_name())))?;
+        if self.in_old {
+            // The value, a long's two slots, and whether the path was read: the harness fills them before the call.
+            let value = self.next_slot;
+            self.next_slot += 3;
+            return Ok(Expr::OldField(Box::new(path), value));
+        }
+        Ok(Expr::Field(Box::new(path)))
     }
 
     /// `int i; range; body`, after `\forall`, `\exists`, `\sum`, `\num_of`, `\max` or `\min`.
@@ -849,8 +1067,15 @@ pub fn parse_value(src: &str, params: &[Param], callee: Option<&Callee>, first_f
 /// slot of the copy of it taken before the call, which `\old(a[i])` and `\old(a.length)` read; without it,
 /// `\old` is an error.
 pub fn parse_after(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>) -> Result<Expr, Error> {
+    parse_over_objects(src, params, callee, first_free_slot, old, &[])
+}
+
+/// As [`parse_after`], where some parameters (or `result`) are objects whose fields `objects` gives by name (step
+/// H2): `l.price.cents` reads a field path, `\old(l.quantity)` one before the call (only with `old`), and `l ==
+/// null`, `result == l` and `result.price != l.price` compare references.
+pub fn parse_over_objects(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>, objects: &[(String, super::Fields)]) -> Result<Expr, Error> {
     let tokens = lex(src)?;
-    let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot, old, in_old: false };
+    let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot, old, in_old: false, objects };
     let expr = parser.ternary()?;
     if parser.peek() != &Token::End {
         return Err(Error::new(format!("unexpected {:?} after the expression", parser.peek())));
@@ -868,17 +1093,23 @@ pub fn eval(expr: &Expr, locals: &[Value]) -> Result<Value, Error> {
 /// As [`eval`], with the elements of the array parameters by slot. A quantifier's variable is written into its
 /// slot, so the locals are extended as needed.
 pub fn eval_with(expr: &Expr, locals: &[Value], arrays: &[(u16, Vec<Value>)]) -> Result<Value, Error> {
-    let mut locals = locals.to_vec();
-    locals.resize(locals.len().max(usize::from(expr.slots_used())), Value::Int(0));
-    eval_in(expr, &mut locals, arrays)
+    eval_reading(expr, locals, arrays, &|_| None)
 }
 
-fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -> Result<Value, Error> {
+/// As [`eval_with`], with a field path's value read by `fields` (the value it reads in a replay, none where it
+/// goes through null); a comparison of objects is still the harness's alone.
+pub fn eval_reading(expr: &Expr, locals: &[Value], arrays: &[(u16, Vec<Value>)], fields: &dyn Fn(&FieldPath) -> Option<Value>) -> Result<Value, Error> {
+    let mut locals = locals.to_vec();
+    locals.resize(locals.len().max(usize::from(expr.slots_used())), Value::Int(0));
+    eval_in(expr, &mut locals, arrays, fields)
+}
+
+fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)], fields: &dyn Fn(&FieldPath) -> Option<Value>) -> Result<Value, Error> {
     let array = |name: &str, slot: u16| arrays.iter().find(|(s, _)| *s == slot).map(|(_, data)| data).ok_or_else(|| Error::new(format!("no elements for the array {name}")));
     Ok(match expr {
         Expr::Length(name, slot) => Value::Int(array(name, *slot)?.len() as i32),
         Expr::Index(name, slot, t, index) => {
-            let i = eval_in(index, locals, arrays)?.as_int();
+            let i = eval_in(index, locals, arrays, fields)?.as_int();
             let data = array(name, *slot)?;
             let v = *usize::try_from(i).ok().and_then(|i| data.get(i)).ok_or_else(|| Error::new(format!("{name}[{i}] is out of bounds for length {}", data.len())))?;
             match (t, v) {
@@ -887,8 +1118,8 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
             }
         }
         Expr::Quantifier(q) => {
-            let lo = eval_in(&q.lo, locals, arrays)?.as_int();
-            let hi = eval_in(&q.hi, locals, arrays)?.as_int();
+            let lo = eval_in(&q.lo, locals, arrays, fields)?.as_int();
+            let hi = eval_in(&q.hi, locals, arrays, fields)?.as_int();
             let end = if q.inclusive { i64::from(hi) + 1 } else { i64::from(hi) };
             let wide = q.ty() == Ty::Long;
             let wrap = |v: i64| if wide { Value::Long(v) } else { Value::Int(v as i32) };
@@ -903,11 +1134,11 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
             while i < end {
                 locals[usize::from(q.slot)] = Value::Int(i as i32);
                 let selected = match &q.filter {
-                    Some(f) => eval_in(f, locals, arrays)?.as_int() != 0,
+                    Some(f) => eval_in(f, locals, arrays, fields)?.as_int() != 0,
                     None => true,
                 };
                 if selected {
-                    let v = as_i64(eval_in(&q.body, locals, arrays)?);
+                    let v = as_i64(eval_in(&q.body, locals, arrays, fields)?);
                     match q.kind {
                         Quant::Forall | Quant::Exists => {
                             if (v != 0) != forall {
@@ -927,6 +1158,21 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
         Expr::Int(v) => Value::Int(*v),
         Expr::Long(v) => Value::Long(*v),
         Expr::Bool(b) => Value::Int(*b as i32),
+        Expr::Same(l, r, equal) => {
+            let reference = |operand: &Option<(String, u16)>| -> Result<Value, Error> {
+                match operand {
+                    None => Ok(Value::Null),
+                    Some((name, slot)) => locals.get(usize::from(*slot)).copied().ok_or_else(|| Error::new(format!("no value for {name}"))),
+                }
+            };
+            let same = match (reference(l)?, reference(r)?) {
+                (Value::Null, Value::Null) => true,
+                (Value::Ref(a), Value::Ref(b)) => a == b,
+                (Value::Null, Value::Ref(_)) | (Value::Ref(_), Value::Null) => false,
+                _ => return Err(Error::new("an array parameter has no reference to compare")),
+            };
+            Value::Int(i32::from(same == *equal))
+        }
         Expr::Var(name, t, slot) => {
             let v = *locals.get(*slot as usize).ok_or_else(|| Error::new(format!("no value for {name}")))?;
             match (t, v) {
@@ -934,35 +1180,38 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
                 _ => v,
             }
         }
-        Expr::Neg(e) => match eval_in(e, locals, arrays)? {
+        Expr::Neg(e) => match eval_in(e, locals, arrays, fields)? {
             Value::Int(x) => Value::Int(x.wrapping_neg()),
             Value::Long(x) => Value::Long(x.wrapping_neg()),
             v => v,
         },
-        Expr::Not(e) => Value::Int((eval_in(e, locals, arrays)?.as_int() == 0) as i32),
+        Expr::Not(e) => Value::Int((eval_in(e, locals, arrays, fields)?.as_int() == 0) as i32),
         Expr::Call(callee, _) => return Err(Error::new(format!("a call of {} can only be evaluated in the harness", callee.name))),
-        Expr::BitNot(e) => match eval_in(e, locals, arrays)? {
+        Expr::Field(f) => return fields(f).ok_or_else(|| Error::new(format!("{} reads an object, which only the harness can, or goes through null", f.shown))),
+        Expr::OldField(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
+        Expr::Refs(..) => return Err(Error::new("a comparison of objects can only be evaluated in the harness")),
+        Expr::BitNot(e) => match eval_in(e, locals, arrays, fields)? {
             Value::Int(x) => Value::Int(!x),
             Value::Long(x) => Value::Long(!x),
             v => v,
         },
-        Expr::Cast(Ty::Int, e) => Value::Int(as_i64(eval_in(e, locals, arrays)?) as i32),
-        Expr::Cast(_, e) => Value::Long(as_i64(eval_in(e, locals, arrays)?)),
+        Expr::Cast(Ty::Int, e) => Value::Int(as_i64(eval_in(e, locals, arrays, fields)?) as i32),
+        Expr::Cast(_, e) => Value::Long(as_i64(eval_in(e, locals, arrays, fields)?)),
         Expr::Ternary(c, t, e) => {
-            if eval_in(c, locals, arrays)?.as_int() != 0 {
-                eval_in(t, locals, arrays)?
+            if eval_in(c, locals, arrays, fields)?.as_int() != 0 {
+                eval_in(t, locals, arrays, fields)?
             } else {
-                eval_in(e, locals, arrays)?
+                eval_in(e, locals, arrays, fields)?
             }
         }
         Expr::Binary(op, l, r) => {
             if *op == BinOp::LogAnd {
-                return Ok(Value::Int((eval_in(l, locals, arrays)?.as_int() != 0 && eval_in(r, locals, arrays)?.as_int() != 0) as i32));
+                return Ok(Value::Int((eval_in(l, locals, arrays, fields)?.as_int() != 0 && eval_in(r, locals, arrays, fields)?.as_int() != 0) as i32));
             }
             if *op == BinOp::LogOr {
-                return Ok(Value::Int((eval_in(l, locals, arrays)?.as_int() != 0 || eval_in(r, locals, arrays)?.as_int() != 0) as i32));
+                return Ok(Value::Int((eval_in(l, locals, arrays, fields)?.as_int() != 0 || eval_in(r, locals, arrays, fields)?.as_int() != 0) as i32));
             }
-            let (a, b) = (eval_in(l, locals, arrays)?, eval_in(r, locals, arrays)?);
+            let (a, b) = (eval_in(l, locals, arrays, fields)?, eval_in(r, locals, arrays, fields)?);
             let wide = expr.ty() == Ty::Long || (matches!(op, BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge | BinOp::Eq | BinOp::Ne) && promote(l.ty(), r.ty()) == Ty::Long);
             let (x, y) = (as_i64(a), as_i64(b));
             let wrap = |v: i64| if wide { Value::Long(v) } else { Value::Int(v as i32) };
@@ -1033,6 +1282,47 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
         Expr::Int(v) => emit_int(*v, code, pool),
         Expr::Long(v) => emit_long(*v, code, pool),
         Expr::Bool(b) => code.iconst(*b as i32),
+        Expr::Same(l, r, equal) => {
+            for operand in [l, r] {
+                match operand {
+                    Some((_, slot)) => code.load(Kind::Ref, *slot),
+                    None => code.op(0x01), // aconst_null
+                }
+            }
+            let (differ, end) = (code.label(), code.label());
+            code.if_acmpne(differ);
+            code.iconst(i32::from(*equal));
+            code.goto(end);
+            code.bind(differ);
+            code.iconst(i32::from(!*equal));
+            code.bind(end);
+        }
+        Expr::Refs(l, r, equal) => {
+            for operand in [l, r] {
+                match operand {
+                    Some(path) => path.emit(code, pool),
+                    None => code.op(0x01), // aconst_null
+                }
+            }
+            let (differ, end) = (code.label(), code.label());
+            code.if_acmpne(differ);
+            code.iconst(i32::from(*equal));
+            code.goto(end);
+            code.bind(differ);
+            code.iconst(i32::from(!*equal));
+            code.bind(end);
+        }
+        Expr::Field(f) => f.emit(code, pool),
+        Expr::OldField(f, value) => {
+            // Through null before the call: reading it then would have thrown, and so does this.
+            let read = code.label();
+            code.load(Kind::Int, value + 2);
+            code.if_zero(Cond::Ne, read);
+            code.op(0x01); // aconst_null
+            code.op(0xbf); // athrow: a NullPointerException
+            code.bind(read);
+            code.load(if ty_of(&f.ty) == Some(Ty::Long) { Kind::Long } else { Kind::Int }, *value);
+        }
         Expr::Var(_, Ty::Long, slot) => code.load(Kind::Long, *slot),
         Expr::Var(_, _, slot) => code.load(Kind::Int, *slot),
         Expr::Length(_, slot) => {

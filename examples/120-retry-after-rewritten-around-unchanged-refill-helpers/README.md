@@ -9,6 +9,8 @@
 
 > The wait a refused request is told to make is rewritten from `credited + period - now` to `period - (now - credited)`, around the two refill helpers it calls and leaves alone. Each helper holds a 64-bit division, and relating two copies of each across the versions is more than the solver settles in a minute. The proof takes the unchanged helpers as one function in both versions, never sees their arithmetic, and is done in a second.
 
+> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 120` runs it again.
+
 Tags: [resilience](../README.md#tag-resilience), [clocks-and-time](../README.md#tag-clocks-and-time), [shared-callees](../README.md#tag-shared-callees)
 
 ## The change
@@ -118,7 +120,7 @@ How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long 
 
 **What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
 
-This page renders attempt `20261106T181225Z-2f4bd5aa` at claim `a5f4b0f7606a99f2`, in pipeline job `20261106-181059-example-120-b9-jbmc-shared-callees-read`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181225Z-2f4bd5aa` at claim `a5f4b0f7606a99f2`, in pipeline job `20261106-181059-example-120-b9-jbmc-shared-callees-read`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

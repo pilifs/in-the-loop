@@ -77,9 +77,6 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
             return Err(format!("a parameter of type {} is not one the JVM run passes", t.java_name()));
         }
     }
-    if arguments.iter().any(|a| matches!(a, Argument::Null)) {
-        return Err("a null argument is not one the JVM run passes".into());
-    }
     let home = crate::jimage::JImage::find_java_home().ok_or("no JVM to run it on (set JAVA_HOME)")?;
     let java = home.join("bin").join("java");
     let jdk = crate::bmc::gaps::jdk_release().unwrap_or_else(|| "of unknown version".into());
@@ -97,10 +94,9 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     // The harness's check.
     {
         let (start, end, assertion, any, done) = (main.label(), main.label(), main.label(), main.label(), main.label());
+        let locals = references(arguments, types, first_array_local, &mut main, &mut writer);
         main.bind(start);
-        for (a, t) in arguments.iter().zip(types) {
-            push(a, t, &mut main, &mut writer);
-        }
+        pass(arguments, types, &locals, &mut main, &mut writer);
         let check = writer.pool.method_ref(harness_class, crate::harness::METHOD, &check_descriptor);
         main.op_u16(0xb8, check);
         main.bind(end);
@@ -122,23 +118,11 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
 
     for (k, call) in calls.iter().enumerate() {
         let (start, end, thrown, done) = (main.label(), main.label(), main.label(), main.label());
-        // Fresh arrays for the call, kept in locals to print what it leaves in them.
-        let mut array_locals = Vec::new();
-        for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
-            if matches!(t, Type::Array(_)) {
-                push(a, t, &mut main, &mut writer);
-                let local = first_array_local + i as u16;
-                main.store(Kind::Ref, local);
-                array_locals.push((i, local));
-            }
-        }
+        // Fresh arrays for the call, kept in locals to print what it leaves in them (a null one leaves nothing).
+        let locals = references(arguments, types, first_array_local, &mut main, &mut writer);
+        let array_locals: Vec<(usize, u16)> = locals.iter().enumerate().filter_map(|(i, l)| l.filter(|_| holds_array(arguments, i)).map(|l| (i, l))).collect();
         main.bind(start);
-        for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
-            match array_locals.iter().find(|(j, _)| *j == i) {
-                Some((_, local)) => main.load(Kind::Ref, *local),
-                None => push(a, t, &mut main, &mut writer),
-            }
-        }
+        pass(arguments, types, &locals, &mut main, &mut writer);
         let m = writer.pool.method_ref(&call.owner, &call.name, &call.descriptor);
         main.op_u16(0xb8, m);
         main.bind(end);
@@ -210,6 +194,9 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     std::fs::write(dir.join(format!("{CLASS}.class")), writer.to_bytes()).map_err(|e| format!("cannot write the JVM run: {e}"))?;
     let absolute = |p: &Path| std::path::absolute(p).unwrap_or_else(|_| p.to_path_buf());
     let mut class_path = vec![absolute(dir)];
+    if open_classes(&dir.join(OPENED), harness_class, calls, entries)? {
+        class_path.push(absolute(&dir.join(OPENED)));
+    }
     class_path.extend(entries.iter().map(|e| absolute(e)));
     let class_path = std::env::join_paths(&class_path).map_err(|e| format!("a class path entry cannot be joined: {e}"))?;
     let stdout = std::fs::File::create(dir.join("stdout")).map_err(|e| e.to_string())?;
@@ -244,10 +231,41 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     parse(&text, jdk, types, slots, calls)
 }
 
+/// The directory, under the run's, of the application classes it loads opened.
+const OPENED: &str = "opened";
+
+/// Writes into `out` an opened copy ([`crate::relocate::opened`]) of every application class the harness names and
+/// of each direct call's owner, as the first of `entries` that has it holds it, so that the harness, a class of
+/// the unnamed package, may read their fields and call their constructors on a JVM as it does in the checker,
+/// which doesn't check access: a record's fields are private, and a class's are often package-private. JDK
+/// classes are never copied: they aren't in `entries`. Returns whether it wrote any.
+fn open_classes(out: &Path, harness_class: &str, calls: &[DirectCall], entries: &[PathBuf]) -> Result<bool, String> {
+    let find = |name: &str| entries.iter().map(|e| e.join(format!("{name}.class"))).find(|p| p.is_file());
+    let Some(harness) = find(harness_class) else { return Ok(false) };
+    let bytes = std::fs::read(&harness).map_err(|e| format!("cannot read {}: {e}", harness.display()))?;
+    let mut names = crate::relocate::referenced_classes(&bytes).map_err(|e| format!("cannot read {}: {e}", harness.display()))?;
+    names.extend(calls.iter().map(|c| c.owner.clone()));
+    names.sort();
+    names.dedup();
+    let mut wrote = false;
+    for name in names.iter().filter(|n| n.as_str() != harness_class) {
+        let Some(path) = find(name) else { continue };
+        let bytes = std::fs::read(&path).map_err(|e| format!("cannot read {}: {e}", path.display()))?;
+        let opened = crate::relocate::opened(&bytes).map_err(|e| format!("cannot open {name} for the JVM run: {e}"))?;
+        let target = out.join(format!("{name}.class"));
+        if let Some(parent) = target.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
+        std::fs::write(&target, opened).map_err(|e| e.to_string())?;
+        wrote = true;
+    }
+    Ok(wrote)
+}
+
 /// Reads the run's lines.
 fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[DirectCall]) -> Result<Run, String> {
     let mut check = None;
-    let mut replayed: Vec<Replayed> = calls.iter().map(|_| Replayed { outcome: "<not run>".into(), returned: None, result_array: None, result_fields: None, arrays_after: Vec::new(), thrown: None }).collect();
+    let mut replayed: Vec<Replayed> = calls.iter().map(|_| Replayed { outcome: "<not run>".into(), returned: None, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: Default::default(), object_paths: Vec::new() }).collect();
     let mut message_of: Option<usize> = None;
     for line in text.lines() {
         if let Some(rest) = line.strip_prefix("@check ") {
@@ -397,7 +415,49 @@ fn print_elements(code: &mut CodeBuilder, writer: &mut ClassWriter, local: u16, 
     code.op_u16(0xb6, println);
 }
 
-/// Pushes an argument: a constant, or a new array of constants.
+/// Makes the arguments that are references, each into a local of its own from `first`: a new array, null, or the
+/// array an earlier argument is. `None` for a primitive.
+fn references(arguments: &[Argument], types: &[Type], first: u16, code: &mut CodeBuilder, writer: &mut ClassWriter) -> Vec<Option<u16>> {
+    let mut locals: Vec<Option<u16>> = Vec::new();
+    for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
+        let local = first + i as u16;
+        match a {
+            Argument::Scalar(_) => {
+                locals.push(None);
+                continue;
+            }
+            Argument::Same(j) => match locals.get(*j).copied().flatten() {
+                Some(earlier) => code.load(Kind::Ref, earlier),
+                None => code.op(0x01),
+            },
+            _ => push(a, t, code, writer),
+        }
+        code.store(Kind::Ref, local);
+        locals.push(Some(local));
+    }
+    locals
+}
+
+/// Whether argument `i` is an array, its own or an earlier argument's, rather than null.
+fn holds_array(arguments: &[Argument], i: usize) -> bool {
+    match arguments.get(i) {
+        Some(Argument::Array(_)) => true,
+        Some(Argument::Same(j)) => holds_array(arguments, *j),
+        _ => false,
+    }
+}
+
+/// Passes the arguments: each primitive as a constant, each reference from its local ([`references`]).
+fn pass(arguments: &[Argument], types: &[Type], locals: &[Option<u16>], code: &mut CodeBuilder, writer: &mut ClassWriter) {
+    for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
+        match locals[i] {
+            Some(local) => code.load(Kind::Ref, local),
+            None => push(a, t, code, writer),
+        }
+    }
+}
+
+/// Pushes an argument: a constant, a new array of constants, or null.
 fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter) {
     match (a, t) {
         (Argument::Scalar(v), t) => push_scalar(*v, t, code, writer),
@@ -419,7 +479,7 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
                 code.op(store);
             }
         }
-        _ => code.op(0x01), // aconst_null; refused before
+        _ => code.op(0x01), // aconst_null
     }
 }
 

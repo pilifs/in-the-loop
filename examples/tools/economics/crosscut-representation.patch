@@ -1,0 +1,16 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java
+@@ -15,6 +15,11 @@
+         if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {
+             return 0;
+         }
+-        return TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) + periodNanos - nowNanos;
++        return periodNanos - uncredited(lastNanos, nowNanos, periodNanos);
++    }
++
++    /** The part of the period under way that has not earned a token yet: what the refill leaves uncredited. */
++    private static long uncredited(long lastNanos, long nowNanos, long periodNanos) {
++        return (nowNanos - lastNanos) % periodNanos;
+     }
+ }

@@ -148,6 +148,11 @@ switch-lowering heuristic computed in `int`, and [037](037-table-size-rewritten-
 JDK 8 one on all 2^32 inputs, with the JDK's own bytecode of `Integer.numberOfLeadingZeros` in the proof. On Crosscut, [120](120-retry-after-rewritten-around-unchanged-refill-helpers/README.md) proves a
 rewrite of a `Retry-After` kernel around two unchanged refill helpers in a second where the proof had not finished in a minute: a callee both
 versions call unchanged is taken as one function in both, so the solver relates how the versions use it and never sees its 64-bit division.
+A helper that changed is taken as one function too when a proof of its own says its two versions agree: with a proof cache
+(`approach.cache`, the tool's `--cache`, a fresh directory under the build), the tool's own checker proves a changed pure helper of the target
+first, over every input, and names that proof by its claim key among the caller's assumptions; a helper whose proof fails stays as written
+([proved-helpers](README.md#tag-proved-helpers): [160](160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/README.md)
+and [161](161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/README.md)).
 A signature change is a relation between the versions rather than a difference: on Quorum, [121](121-tie-break-parameters-grouped-by-kind-proved-under-the-reordering/README.md) proves a
 tie-break whose parameters were regrouped and whose body became a comparison chain equal to the previous version called with the arguments in their old order
 (`previousArguments`, the tool's `--before-arguments`; a method renamed or moved is named with `--before-target`).

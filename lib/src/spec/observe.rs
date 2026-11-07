@@ -7,8 +7,11 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 use super::{CanonicalClaim, EnvironmentModel, ExternalInput, Observation, Outcome, Part, Unsupported};
+pub use crate::reach::{Placement, SiteKind};
 
-/// An entry point and what a consumer observes of it.
+/// An entry point and what a consumer observes of it, from [`crate::observations`]. The fields after `unresolved`
+/// say how the analysis found the ones before: how each input is bound, the status of each outcome, each effect's
+/// call site.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EntryPointSpec {
     /// A stable id: `POST /quotes`, `kafka quotes`, `schedule PT1M`.
@@ -23,25 +26,179 @@ pub struct EntryPointSpec {
     /// What the analysis couldn't see, named; never dropped.
     #[serde(default)]
     pub unresolved: Vec<String>,
+    #[serde(default)]
+    pub kind: EntryKind,
+    /// The annotation or route that makes it an entry point, as declared: `POST /quotes (consumes application/json)`.
+    #[serde(default)]
+    pub declared: String,
+    /// How each input is bound, in the order of `inputs`.
+    #[serde(default)]
+    pub bindings: Vec<Binding>,
+    /// The response's Java type (the body of a route), when the handler returns something.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub response: Option<String>,
+    /// A route's status for each outcome: a normal return, then each exception it may throw.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub statuses: Vec<StatusOutcome>,
+    /// Each call site that gives an effect (reads included, which are modeled calls but not observations).
+    #[serde(default)]
+    pub effects: Vec<EffectSite>,
+    /// Which identity relations count at this boundary, and why.
+    #[serde(default)]
+    pub identity: String,
+    /// What the environment model assumes, in words: these are the result's assumptions.
+    #[serde(default)]
+    pub assumptions: Vec<String>,
+    /// The handler's first source line, when compiled with line numbers.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_line: Option<u16>,
+    /// The handler as `Class.method(Types)`.
+    #[serde(default)]
+    pub method: String,
 }
 
-/// One obligation between two builds' entry points.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum EntryKind {
+    #[default]
+    Route,
+    Listener,
+    Schedule,
+    /// An application-event listener.
+    Event,
+}
+
+/// How an external input reaches the handler.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Binding {
+    /// The input's name, as in `inputs`.
+    pub input: String,
+    pub source: BindingSource,
+    /// The type the value is decoded into, dotted.
+    pub wire_type: String,
+    /// For a body, a part or a payload of an application type: its wire shape, as the boundary contract renders it,
+    /// one property a line under its type (`PlaceOrder: holdId: @NotBlank String`), with the types it reaches and
+    /// their `!` lines (`PlaceOrder: billing: ! constraints on Billing are not checked: no @Valid on billing`).
+    /// Part of the input domain: two builds that decode different shapes don't take the same requests.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub shape: Vec<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum BindingSource {
+    RequestParameter,
+    PathVariable,
+    Header,
+    Cookie,
+    MatrixVariable,
+    Body,
+    Part,
+    ModelAttribute,
+    /// A message's payload.
+    Payload,
+    /// An application event.
+    Event,
+}
+
+impl BindingSource {
+    pub fn words(self) -> &'static str {
+        match self {
+            BindingSource::RequestParameter => "request parameter",
+            BindingSource::PathVariable => "path variable",
+            BindingSource::Header => "header",
+            BindingSource::Cookie => "cookie",
+            BindingSource::MatrixVariable => "matrix variable",
+            BindingSource::Body => "request body",
+            BindingSource::Part => "request part",
+            BindingSource::ModelAttribute => "model attribute",
+            BindingSource::Payload => "payload",
+            BindingSource::Event => "event",
+        }
+    }
+}
+
+/// What a route answers with for one outcome.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct StatusOutcome {
+    /// `returns`, or the exception thrown (`NotFoundException`).
+    pub outcome: String,
+    /// The status code, when the analysis can tell.
+    pub status: Option<u16>,
+    /// What decides it: `@ExceptionHandler ApiErrors.notFound`, `the default`.
+    pub by: String,
+    /// For an outcome the framework decides before the handler runs (the body's validation, a parameter that can't
+    /// bind), which requests take it, one condition each (`@NotBlank on PlaceOrder.holdId`, `every request`). Empty
+    /// for the handler's own outcomes.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub when: Vec<String>,
+}
+
+/// One call site that gives an effect.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct EffectSite {
+    pub kind: SiteKind,
+    /// What it is of or to: a document, a topic, a route.
+    pub target: String,
+    /// The modeled call, `owner#name(descriptor)`: the effect observation's id is `effect:` and this.
+    pub call: String,
+    /// The paths its payload is snapshotted at, at the call.
+    pub payload: Vec<String>,
+    pub placement: Placement,
+    /// Where the call is, as `Class.method(Types)`.
+    pub in_method: String,
+    /// The call's parameters by name, each with the class of the argument passed at this site when the walk can
+    /// tell (`data`: `shop/QuoteEvent`): where a recording stub reads the payload paths from.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub arguments: Vec<CallArgument>,
+}
+
+/// One parameter of a modeled call, at one call site.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CallArgument {
+    pub name: String,
+    /// The static class of the argument passed (an internal name), when the walk can tell; else the parameter's
+    /// declared type is all that is known.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub class: Option<String>,
+}
+
+/// One obligation between two builds' entry points, from [`compare`]. Every observation of every old entry point
+/// is the subject of exactly one; `observation` is otherwise `inputs` (the preservation contract's external inputs
+/// differ) or `unresolved` (what the analysis can't see of the pair), which are obligations but not observations.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Obligation {
     /// The entry point's id, in the old build (or the new one, for a new entry point).
     pub entry: String,
     pub observation: String,
     pub change: Change,
+    /// The matched entry point's id in the new build, when it differs from `entry` (a path variable renamed, or
+    /// the handler appended to tell two apart).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub new_entry: Option<String>,
+    /// What differs between the two specs for this observation, one line each. For a preserved one, what its proof
+    /// must show makes no difference (a new exception type, a second call site).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub differences: Vec<String>,
+    /// What discharging it would need: the proof, or the person's decision.
+    #[serde(default)]
+    pub needs: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Change {
-    /// To be proved preserved.
+    /// To be proved preserved: the two specs agree on its shape, which makes the obligation well formed and
+    /// discharges nothing.
     Preserved,
+    /// Its shape differs (a status mapping, a payload's paths, an effect's transaction placement): preserved only
+    /// with a person's approval of the change, or a proof that the difference never shows.
     Changed,
+    /// Only the new build has it: nothing to preserve.
     New,
+    /// Only the old build has it: gone, with a person's approval, or unresolved.
     Removed,
+    /// The analysis can't tell which way it went.
     Unresolved,
 }
 
@@ -50,30 +207,49 @@ pub enum Change {
 pub struct EffectLogPlan {
     pub entry: String,
     pub environment: EnvironmentModel,
+    /// One recording stub per modeled call, in the environment model's order: the index of an attempt in the log.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub stubs: Vec<RecordingStub>,
+    /// What the log's verdicts rest on, in words: the stubs, the environment model's restriction, how the handler is
+    /// made.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub assumptions: Vec<String>,
+}
+
+/// A modeled call replaced, in both versions, by a stub that appends an attempt to the effect log.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RecordingStub {
+    /// The call replaced, `owner#name(descriptor)`.
+    pub call: String,
+    /// The payload paths it snapshots at the call, in the order the log holds them.
+    pub snapshot: Vec<String>,
+    /// What it gives back to the caller: `nothing` (void), or the type's default, which the caller must drop.
+    pub returns: String,
 }
 
 /// The entry points of the application whose classes are under `build`.
 pub fn entry_points(build: &Path) -> Result<Vec<EntryPointSpec>, Unsupported> {
-    let _ = build;
-    Err(Unsupported::new(Part::Observations, "observation specs (O1)"))
+    let fail = |e: crate::Error| Unsupported::new(Part::Observations, format!("reading the classes under {}: {e}", build.display()));
+    let mut cp = crate::classpath::ClassPath::new();
+    cp.add(build).map_err(fail)?;
+    let local: std::collections::BTreeSet<String> = cp.application_class_names().map_err(fail)?.into_iter().collect();
+    let cp = cp.with_default_jdk();
+    crate::observations::analyse(&cp, Some(&local), Some(&local)).map_err(fail)
 }
 
 /// The obligations between two builds' entry points; every old observation is accounted for.
 pub fn compare(before: &[EntryPointSpec], after: &[EntryPointSpec]) -> Result<Vec<Obligation>, Unsupported> {
-    let _ = (before, after);
-    Err(Unsupported::new(Part::Observations, "comparing two builds' specs (O2)"))
+    Ok(crate::observations::compare(before, after))
 }
 
 /// The effect-log hook: how the harness records and compares the effects of `spec`'s entry point.
 pub fn effect_log(spec: &EntryPointSpec) -> Result<EffectLogPlan, Unsupported> {
-    let _ = spec;
-    Err(Unsupported::new(Part::Observations, "recording stubs and the effect log (O3)"))
+    crate::effects::plan(spec)
 }
 
 /// Discharges an entry point's obligations: proves that `claim`'s observations of the entry point `old` in the
 /// classes under `before` are preserved by `new` under `after`, effects included, under the claim's environment
 /// model. A refuted [`Outcome`] carries a witness replayed under the modeled dependencies.
 pub fn check(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
-    let _ = (claim, old, new, before, after);
-    Err(Unsupported::new(Part::Observations, "discharging an entry point's obligations (O3)"))
+    crate::effects::check(claim, old, new, before, after).map(|c| c.outcome)
 }

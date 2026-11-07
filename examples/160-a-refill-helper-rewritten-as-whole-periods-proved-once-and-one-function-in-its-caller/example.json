@@ -1,0 +1,73 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "160",
+  "title": "A refill helper rewritten as whole periods, proved once and one function in its caller's proof",
+  "summary": "Crosscut's `TokenBucket.lastAfter`, the time up to which a refill has credited the bucket, is rewritten from `now - (now - last) % period` to `last + (now - last) / period * period`, the whole periods counted and added back. Its caller, the `Retry-After` of a refused request, is unchanged. Run with the proof cache, the regression proof of the caller first proves the helper's two versions equal on every input, as a check of its own, and stores that proof. It then takes the helper as one function in both versions of the caller, whose statement names the helper's proof by its claim key. Where example 120 shares a helper because its bytecode is identical, this one shares a helper that changed, on the strength of its own proof.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "shared-callees",
+    "proved-helpers",
+    "own-checker"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "cache": true
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Count the whole periods since the last refill, `long periods = (nowNanos - lastNanos) / periodNanos`, and credit them, `lastNanos + periods * periodNanos`, in place of `nowNanos - (nowNanos - lastNanos) % periodNanos`, the clock less the part of a period not earned yet. The javadoc says the same in the new order. `RetryAfter`, the method checked, is unchanged, and so are the tests.",
+    "patch": "change.patch"
+  },
+  "risk": "None: the helper's two versions give the same credited time, or both throw `ArithmeticException` for a zero period, on every input, and the caller's proof is over every input too. What is at stake is the review of an arithmetic identity, `(d / p) * p + d % p == d`, on 64-bit values, which a reader has to trust for negative differences and for the one overflowing quotient, `Long.MIN_VALUE / -1`.",
+  "expected": {
+    "verdict": "verified",
+    "sharedHelpers": [
+      "TokenBucket.lastAfter"
+    ]
+  },
+  "explanation": "The proof runs with a proof cache, a fresh directory under the build (`--cache`). Before the caller's proof, the tool looks at the static callees both versions call. `TokenBucket.tokensAfter` is identical in both, so it is one function in both as in example 120. `TokenBucket.lastAfter` changed. It is in the narrow class a proof of its own may stand for: static, a pure function of `long`s, no exception of its own (only a zero period's `ArithmeticException`), no static initializer, and not trivial (a remainder, a division and a product). So the tool checks it first as a check of its own: the same builds and settings, `lastAfter` as the target, nothing restricting its inputs. The own checker proves that check: the product of a quotient and its divisor is the dividend less the remainder, exactly (example 138), so both versions compute the same bits. The proof is stored in the cache under its claim key. The caller's proof then redirects the previous version's calls of `lastAfter` to the new version's method, and proves `nanosUntilToken` with one `lastAfter` in both versions. Its statement has an assumption of kind `callee`, basis `proved`, whose id is the helper proof's claim key. Since the caller's claim key digests that assumption, a different helper proof gives the caller a different key.",
+  "resolution": "Merge. The proof of the helper says the two forms credit the same time, and the caller's proof says the `Retry-After` is unchanged with it.",
+  "notes": [
+    "Why the proof can take the helper's new version for both: the helper's own proof is over every input of its parameter types, so every call, in either version and with any arguments, is in its domain, and the two versions have the same outcome there, a result or the same exception. Neither reads or writes state. The previous version with its calls redirected therefore behaves exactly as written, and the caller's proof is exact: a counterexample under the redirection would be a real one, and no refinement is needed. A helper proof over a narrower domain (`--unchanged-unless`, mapped arguments, a relation between results) is never used, since it would need an assertion at each call.",
+    "Measured when the example was written, on the development machine: the helper's proof took 0.19 s (2 paths, 2 solver calls), and the caller's with the helper as one function 0.00 s (3 paths, 2 solver calls). Without the cache, the caller's proof runs through both versions of the helper as written and takes 1.2 s (4 solver calls) for the same verdict. A second run with the same cache is an exact hit of the caller's claim, and a second caller of the helper would find the helper's proof in the cache. The recorded run starts from an empty cache, so its proof line says the helper was proved now.",
+    "The helper's proof is a regression proof like any other, and its key is the one a check of `TokenBucket#lastAfter` alone gets: the library's tests check both, and that a caller's key does not depend on when or where the helper's proof was made.",
+    "Without `--cache` the tool proves nothing of a changed helper, and runs the caller through both versions of it, which is what every recorded example did before this one. The cache is the proof's only source of helper evidence, and it is local: a directory under the build, filled by this run and never committed.",
+    "Example 161 is the sibling with the helper's change wrong: its own proof is refuted, the helper stays as written, and the caller's proof finds the regression.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 7 November 2026, JDK 25.0.5, from the bytecode, nothing proved): the tool's own checker meets no gap in the 3 methods the proof reaches in either version, so strict mode does not move this verdict."
+  ],
+  "provenance": "Constructed for S4 of `llm-dlc/loops/foundations-summaries.md` on Crosscut's token bucket kernel (examples 031, 120, 132 and 133), to show a changed helper proved once, as a check of its own, and that proof used in its caller's regression proof.",
+  "references": [
+    {
+      "title": "The Java Language Specification, 15.17.2 and 15.17.3: division truncates toward zero and the remainder satisfies (a / b) * b + (a % b) == a",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.17.2"
+    },
+    {
+      "title": "Bucket4j: the token bucket algorithm, refill as whole periods since the last refill",
+      "url": "https://bucket4j.com/"
+    },
+    {
+      "title": "RFC 9110, HTTP Semantics, 10.2.3: Retry-After, how long the user agent ought to wait before a follow-up request",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110#field.retry-after"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

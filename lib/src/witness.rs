@@ -16,14 +16,56 @@ use crate::jbmc::Argument;
 use crate::shrink::{self, Shrunk};
 use crate::Error;
 
-/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`.
+/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`; the same object as argument `i`
+/// is `@i` (by name in [`call`]).
 pub fn argument(argument: &Argument, t: &Type) -> String {
     match (argument, t) {
         (Argument::Scalar(v), _) => render::witness(*v, t),
         (Argument::Array(data), Type::Array(element)) => array(data, element),
         (Argument::Array(_), _) => "<array>".into(),
         (Argument::Null, _) => "null".into(),
+        (Argument::Same(i), _) => format!("@{i}"),
     }
+}
+
+/// An argument as [`call`] shows it among `names`: the same object as an earlier argument by that one's name.
+fn shown(argument: &Argument, t: &Type, names: &[&str]) -> String {
+    match argument {
+        Argument::Same(i) => names.get(*i).map(|n| format!("the same array as {n}")).unwrap_or_else(|| format!("@{i}")),
+        other => self::argument(other, t),
+    }
+}
+
+/// The locals and the arrays by slot that an expression over `params` is evaluated on ([`harness::expr::eval_with`])
+/// for `arguments`: each array a distinct reference in its local (the same one for an argument that is the same
+/// array as an earlier one, and null for a null one), with its elements, `arrays_after` where the call left them.
+pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16, Vec<Value>)]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
+    let mut locals = Vec::new();
+    let mut arrays = Vec::new();
+    let mut refs: Vec<Value> = Vec::new();
+    for (k, (a, p)) in arguments.iter().zip(params).enumerate() {
+        let data = |slot: u16, data: &Vec<Value>| arrays_after.iter().find(|(s, _)| *s == slot).map(|(_, d)| d.clone()).unwrap_or_else(|| data.clone());
+        let value = match a {
+            Argument::Scalar(v) => *v,
+            Argument::Array(d) => {
+                arrays.push((p.slot, data(p.slot, d)));
+                Value::Ref(k as Ref + 1)
+            }
+            Argument::Null => Value::Null,
+            Argument::Same(i) => {
+                if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
+                    arrays.push((p.slot, d));
+                }
+                refs.get(*i).copied().unwrap_or(Value::Null)
+            }
+        };
+        refs.push(value);
+        locals.push(value);
+        if value.is_wide() {
+            locals.push(Value::Int(0));
+        }
+    }
+    (locals, arrays)
 }
 
 pub fn array(data: &[Value], element: &Type) -> String {
@@ -32,7 +74,8 @@ pub fn array(data: &[Value], element: &Type) -> String {
 
 /// `method(a=[1, 2], n=3)`: the arguments by parameter name, and the rendering of each.
 pub fn call(method: &str, params: &[Param], arguments: &[Argument]) -> (String, Vec<String>) {
-    let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| argument(a, &p.ty)).collect();
+    let names: Vec<&str> = params.iter().map(|p| p.name.as_str()).collect();
+    let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| shown(a, &p.ty, &names)).collect();
     let rendered = format!("{method}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
     (rendered, witnesses)
 }
@@ -40,9 +83,17 @@ pub fn call(method: &str, params: &[Param], arguments: &[Argument]) -> (String, 
 /// `method(this=Backoff[baseMillis=1, capMillis=1], attempt=63)`: the receiver and the arguments by name, a
 /// record as Java prints it, and the rendering of each flat parameter.
 pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String, Vec<String>) {
-    let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| argument(a, &p.ty)).collect();
+    let names: Vec<&str> = layout.params.iter().map(|p| p.name.as_str()).collect();
+    let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| shown(a, &p.ty, &names)).collect();
+    let made = layout.made_on(arguments);
+    let made_as = |name: &str| made.iter().find(|(n, _)| n == name).map(|(_, m)| m.clone()).unwrap_or(harness::Made::Own);
     let shown = |s: &Slot| match s {
         Slot::Plain(i) => format!("{}={}", layout.params[*i].name, witnesses[*i]),
+        Slot::Record { name, record, first, .. } if record.is_made() => match made_as(name) {
+            harness::Made::Null => format!("{name}=null"),
+            harness::Made::Same(other) => format!("{name}=the same object as {other}"),
+            harness::Made::Own => format!("{name}={}", recipe(record, &mut witnesses[*first..].iter())),
+        },
         Slot::Record { name, record, first, .. } => {
             let components = record.components.iter().zip(&witnesses[*first..]).map(|((c, _), w)| format!("{c}={w}")).collect::<Vec<_>>().join(", ");
             format!("{name}={}[{components}]", record.simple_name())
@@ -50,6 +101,21 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
     };
     let rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
     (rendered, witnesses)
+}
+
+/// How an object made by its constructor is made, as Java writes it, from the renderings of its leaves in order:
+/// `new Quote(new Money(5), 1)`.
+fn recipe<'a>(record: &crate::harness::RecordType, leaves: &mut impl Iterator<Item = &'a String>) -> String {
+    let mut nested = record.inner.iter();
+    let args: Vec<String> = record
+        .params
+        .iter()
+        .map(|(_, t)| match t {
+            Type::Object(_) => nested.next().map(|r| recipe(r, leaves)).unwrap_or_default(),
+            _ => leaves.next().cloned().unwrap_or_default(),
+        })
+        .collect();
+    format!("new {}({})", record.simple_name(), args.join(", "))
 }
 
 /// A witness value with its Java type, exact: enough to pass it to the method again without reading the text.
@@ -63,11 +129,13 @@ pub struct Typed {
     pub ty: String,
     /// The value: a boolean; a number for `byte`, `short` and `int`, and for `char` its UTF-16 code unit; a string
     /// for `long` (in decimal, exact past 2^53) and for `float` and `double` (Java's `toString` of it, which reads
-    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; or null. Absent for a record,
-    /// whose components give it.
+    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; null; or `{"same": i}` for
+    /// the same array as the `i`th input. Absent for a record, whose components give it. For an object parameter a
+    /// choice made null or the same object as another (step H2), null or `{"same": "a"}` by that one's name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
-    /// A record's components, in declaration order: the arguments of its canonical constructor.
+    /// A record's components, in declaration order: the arguments of its canonical constructor; for an object
+    /// made by its constructor, that constructor's arguments, an object among them typed so in turn.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub components: Option<Vec<Typed>>,
     /// Where a call's argument came from: the input it is (`this.baseMillis`), or for the previous version's
@@ -123,9 +191,10 @@ pub fn exact(v: Value, t: &Type) -> serde_json::Value {
     }
 }
 
-/// The exact value of an argument: a primitive, an array of them, or null.
+/// The exact value of an argument: a primitive, an array of them, null, or `{"same": i}`.
 pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
     match (argument, t) {
+        (Argument::Same(i), _) => serde_json::json!({ "same": i }),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
         (Argument::Array(data), _) => serde_json::Value::Array(data.iter().map(|v| exact(*v, &Type::Int)).collect()),
@@ -143,6 +212,7 @@ pub fn typed_inputs(params: &[Param], arguments: &[Argument]) -> Vec<Typed> {
 /// parameter `i` (its name when `from` is empty).
 pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], before: bool, from: &[String]) -> Call {
     let source = |i: usize| from.get(i).cloned().unwrap_or_else(|| layout.params[i].name.clone());
+    let made = layout.made_on(arguments);
     let typed = |s: &Slot| match s {
         Slot::Plain(i) => {
             let p = &layout.params[*i];
@@ -150,13 +220,12 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         }
         Slot::Record { name, record, before: previous, first } => {
             let record = if before { previous.as_ref().unwrap_or(record) } else { record };
-            let components = record
-                .components
-                .iter()
-                .enumerate()
-                .map(|(k, (c, t))| Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(first + k).map(|a| exact_argument(a, t)), components: None, from: Some(source(first + k)) })
-                .collect();
-            Typed { name: name.clone(), ty: record.java_name(), value: None, components: Some(components), from: None }
+            // A choice's object (step H2): null, or `{"same": "a"}` for the same object as the parameter `a`.
+            match made.iter().find(|(n, _)| n == name).map(|(_, m)| m) {
+                Some(harness::Made::Null) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::Value::Null), components: None, from: None },
+                Some(harness::Made::Same(other)) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::json!({ "same": other })), components: None, from: None },
+                _ => typed_made(name, record, arguments, &source, &mut record.leaves(*first).into_iter()),
+            }
         }
     };
     Call {
@@ -169,6 +238,36 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         receiver: layout.receiver.as_ref().map(typed),
         arguments: layout.args.iter().map(typed).collect(),
     }
+}
+
+/// A record or an object made by its constructor, typed: its constructor's arguments in order, each primitive the
+/// flat parameter `leaves` gives next, each object typed so in turn.
+fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argument], source: &dyn Fn(usize) -> String, leaves: &mut dyn Iterator<Item = crate::harness::Leaf>) -> Typed {
+    let mut nested = record.inner.iter();
+    let components = record
+        .params
+        .iter()
+        .map(|(c, t)| match t {
+            Type::Object(_) => match nested.next() {
+                Some(inner) => typed_made(c, inner, arguments, source, leaves),
+                None => Typed { name: c.clone(), ty: t.java_name(), value: None, components: None, from: None },
+            },
+            _ => match leaves.next().expect("a leaf for each primitive argument") {
+                crate::harness::Leaf::Flat(k) => Typed { name: c.clone(), ty: t.java_name(), value: arguments.get(k).map(|a| exact_argument(a, t)), components: None, from: Some(source(k)) },
+                // The previous version's argument an expression gives (H5's rest): its value, from the expression
+                // over what its reads came from.
+                crate::harness::Leaf::Computed(e, at) => {
+                    let values: Option<Vec<Value>> = at.iter().map(|k| match arguments.get(*k) { Some(Argument::Scalar(v)) => Some(*v), _ => None }).collect();
+                    let value = values.and_then(|v| e.eval(&v).ok()).map(|v| exact(v, t));
+                    let names: Vec<(bool, String, String)> = e.reads.iter().zip(&at).map(|(r, k)| (r.param, r.path.clone(), source(*k))).collect();
+                    let named = |param: bool, p: &str| names.iter().find(|(x, q, _)| *x == param && q == p).map(|(_, _, n)| n.clone()).unwrap_or_default();
+                    let from = e.text_with(&|p| named(false, p), &|p| named(true, p));
+                    Typed { name: c.clone(), ty: t.java_name(), value, components: None, from: Some(from.trim().to_string()) }
+                }
+            },
+        })
+        .collect();
+    Typed { name: name.to_string(), ty: record.java_name(), value: None, components: Some(components), from: None }
 }
 
 /// The method's behaviour on a counterexample, replayed in the interpreter (or run on a JVM, [`crate::jvm_witness`]).
@@ -184,11 +283,55 @@ pub struct Replayed {
     pub result_fields: Option<BTreeMap<String, Value>>,
     /// The elements of the array arguments after the call, by parameter slot.
     pub arrays_after: Vec<(u16, Vec<Value>)>,
+    /// Each object argument made by its constructor that the call changed, by name, with its fields as the call
+    /// left them: `("q", "Quote{amount=Money{cents=5}, quantity=3}")`.
+    pub objects_after: Vec<(String, String)>,
     /// The class of the exception thrown, as an internal name.
     pub thrown: Option<String>,
+    /// Each reference identity relations are over ([`crate::harness::Layout::references`]), by path, as the call
+    /// left it: the result null where the method threw, a field of null null.
+    pub references: Vec<(String, Value)>,
+    /// Under a correspondence (step H5), each object it relates (a parameter as the call left it, by name, and the
+    /// result, as `result`) read through its equations and labelled by the previous version's paths,
+    /// `Quote{cents=5, quantity=3}`: two versions' views read alike exactly when the harness has the objects agree.
+    pub views: Vec<(String, String)>,
+    /// The harness's category of the exception thrown: its index among [`crate::harness::EXCEPTIONS`], the first it
+    /// is an instance of, or their number for any other.
+    pub category: Option<usize>,
+    /// Each primitive field path of a returned object the layout reads by its fields, as the call left it
+    /// (`amount.cents`), for a relation between the results (step H5); a path through null is absent.
+    pub result_paths: BTreeMap<String, Value>,
+    /// Under output relations for an object parameter's fields (H5's rest), each such parameter's primitive field
+    /// paths as the call left it, by name, for evaluating them over both replays, and those of each object
+    /// parameter of the same shape in both versions compared without a correspondence, for naming the paths two
+    /// replays differ in; a path through null is absent.
+    pub object_paths: Vec<(String, BTreeMap<String, Value>)>,
 }
 
 impl Replayed {
+    /// The identity relations among `pairs` (from [`crate::harness::Layout::identity_pairs`]) that hold in this
+    /// replay, as `, with result == q`; empty when none does. Two replays agree on the relations exactly when these
+    /// read the same.
+    pub fn identities(&self, pairs: &[(String, String)]) -> String {
+        let value = |path: &str| self.references.iter().find(|(p, _)| p == path).map(|(_, v)| *v);
+        let holding: Vec<String> = pairs
+            .iter()
+            .filter(|(x, y)| matches!((value(x), value(y)), (Some(a), Some(b)) if a == b))
+            .map(|(x, y)| format!("{x} == {y}"))
+            .collect();
+        if holding.is_empty() {
+            String::new()
+        } else {
+            format!(", with {}", holding.join(" and "))
+        }
+    }
+
+    /// Whether the identity relation `x == y` holds in this replay: both references there and the same object.
+    pub fn identity_holds(&self, x: &str, y: &str) -> bool {
+        let value = |path: &str| self.references.iter().find(|(p, _)| p == path).map(|(_, v)| *v);
+        matches!((value(x), value(y)), (Some(a), Some(b)) if a == b)
+    }
+
     /// The outcome, followed by what the method left in each array argument it changed: `3, leaving a=[0, 0]`.
     pub fn with_leftovers(&self, params: &[Param], arguments: &[Argument]) -> String {
         let mut outcome = self.outcome.clone();
@@ -199,7 +342,35 @@ impl Replayed {
                 }
             }
         }
+        for (name, fields) in &self.objects_after {
+            outcome = format!("{outcome}, leaving {name}={fields}");
+        }
         outcome
+    }
+
+    /// What two replays are compared on: [`Replayed::with_leftovers`] and [`Replayed::identities`], with each object
+    /// a correspondence relates in its [`Replayed::views`] instead (the result's in place of the outcome), so that
+    /// two versions of different shapes read alike when they agree under it. Without one it is the text shown.
+    pub fn compared(&self, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> String {
+        if self.views.is_empty() {
+            return format!("{}{}", self.with_leftovers(params, arguments), self.identities(pairs));
+        }
+        let view = |name: &str| self.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
+        let mut text = if self.thrown.is_none() { view("result").unwrap_or_else(|| self.outcome.clone()) } else { self.outcome.clone() };
+        for (p, a) in params.iter().zip(arguments) {
+            if let (Argument::Array(before), Type::Array(element)) = (a, &p.ty) {
+                if let Some((_, after)) = self.arrays_after.iter().find(|(slot, after)| *slot == p.slot && after != before) {
+                    text = format!("{text}, leaving {}={}", p.name, array(after, element));
+                }
+            }
+        }
+        for (name, fields) in self.objects_after.iter().filter(|(n, _)| view(n).is_none()) {
+            text = format!("{text}, leaving {name}={fields}");
+        }
+        for (name, v) in self.views.iter().filter(|(n, _)| n != "result") {
+            text = format!("{text}, {name} as left {v}");
+        }
+        format!("{text}{}", self.identities(pairs))
     }
 
     /// Whether the replay failed for a reason that is not the method's (a method the interpreter does not model).
@@ -208,14 +379,15 @@ impl Replayed {
     }
 }
 
-/// The argument values for a call in the interpreter, with each array allocated afresh.
+/// The argument values for a call in the interpreter, with each array allocated afresh, once: an argument that is
+/// the same array as an earlier one is passed that one.
 fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Value> {
-    arguments
-        .iter()
-        .zip(types)
-        .map(|(argument, t)| match argument {
+    let mut values: Vec<Value> = Vec::with_capacity(arguments.len());
+    for (argument, t) in arguments.iter().zip(types) {
+        let v = match argument {
             Argument::Scalar(v) => *v,
             Argument::Null => Value::Null,
+            Argument::Same(i) => values.get(*i).copied().unwrap_or(Value::Null),
             Argument::Array(data) => {
                 let element = match t {
                     Type::Array(e) => (**e).clone(),
@@ -223,8 +395,10 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
                 };
                 m.new_array_of(element, data.clone())
             }
-        })
-        .collect()
+        };
+        values.push(v);
+    }
+    values
 }
 
 /// Runs the counterexample through `class_internal.method` in the interpreter, with the effect monitor off.
@@ -253,31 +427,66 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     let _ = m.begin_case();
     let ret = &signature.ret;
     let flat = values_for(&mut m, arguments, &layout.types());
-    let build = |m: &mut Machine, slot: &Slot| -> Result<Value, Fault> {
+    // What the choices make of each object parameter (step H2), as the harness does: null, the same object as an
+    // earlier one, or its own.
+    let chosen = layout.made_on(arguments);
+    let mut built: Vec<(String, Value)> = Vec::new();
+    let build = |m: &mut Machine, slot: &Slot, built: &[(String, Value)]| -> Result<Value, Fault> {
         match slot {
             Slot::Plain(i) => Ok(flat[*i]),
-            Slot::Record { record, before, first, .. } => {
-                let owner = match (prefix, before) {
-                    (Some(p), Some(before)) => format!("{p}/{}", before.class),
-                    _ => record.class.clone(),
+            Slot::Record { name, record, before, first } => {
+                match chosen.iter().find(|(n, _)| n == name).map(|(_, c)| c) {
+                    Some(harness::Made::Null) => return Ok(Value::Null),
+                    Some(harness::Made::Same(other)) => return Ok(built.iter().find(|(n, _)| n == other).map(|(_, v)| *v).unwrap_or(Value::Null)),
+                    _ => {}
+                }
+                let (made, prefix) = match (prefix, before) {
+                    (Some(p), Some(before)) => (before, Some(p)),
+                    _ => (record, None),
                 };
-                m.construct(&owner, &record.constructor(), flat[*first..*first + record.components.len()].to_vec())
+                construct(m, made, prefix, &flat, &mut made.leaves(*first).into_iter())
             }
         }
     };
     let mut values = Vec::new();
     let mut receiver = None;
     let mut rejected = None;
+    // Each object made by its constructor, with its fields as made, to tell what the call changed.
+    let mut objects: Vec<(String, Value, crate::harness::Fields, String)> = Vec::new();
     for slot in layout.receiver.iter().chain(layout.args.iter()) {
-        match build(&mut m, slot) {
-            Ok(v) if layout.receiver.as_ref() == Some(slot) => receiver = Some(v),
-            Ok(v) => values.push(v),
+        match build(&mut m, slot, &built) {
+            Ok(v) => {
+                if let Slot::Record { name, .. } = slot {
+                    built.push((name.clone(), v));
+                }
+                if let Slot::Record { name, record, before, .. } = slot {
+                    let made = if prefix.is_some() { before.as_ref().unwrap_or(record) } else { record };
+                    if let Some(fields) = &made.fields {
+                        let shown = object_fields(&m, v, fields);
+                        objects.push((name.clone(), v, fields.clone(), shown));
+                    }
+                }
+                if layout.receiver.as_ref() == Some(slot) {
+                    receiver = Some(v);
+                } else {
+                    values.push(v);
+                }
+            }
             Err(f) => {
                 rejected = Some(f);
                 break;
             }
         }
     }
+    let changed = |m: &Machine| -> Vec<(String, String)> {
+        objects
+            .iter()
+            .filter_map(|(name, v, fields, made)| {
+                let now = object_fields(m, *v, fields);
+                (now != *made).then(|| (name.clone(), now))
+            })
+            .collect()
+    };
     let arrays: Vec<(u16, Ref)> = layout
         .args
         .iter()
@@ -297,8 +506,9 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             })
             .collect()
     };
+    let arg_values = values.clone();
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), thrown: Some(m.class_of(r)) },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -306,7 +516,63 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         },
     };
     let after = left(&m);
-    match outcome {
+    let objects_after = changed(&m);
+    // The references the identity relations are over, as the call left them.
+    let result_value = match &outcome {
+        Ok(Some(v)) => *v,
+        _ => Value::Null,
+    };
+    let mut references: Vec<(String, Value)> = Vec::new();
+    for r in layout.references(prefix.is_some(), ret, true) {
+        let v = match &r.field {
+            None => match r.root {
+                crate::harness::Root::Result => result_value,
+                crate::harness::Root::Arg(i) => arg_values.get(i).copied().unwrap_or(Value::Null),
+            },
+            Some((parent, _, name, _)) => match references[*parent].1 {
+                Value::Ref(p) => match m.heap.get(p) {
+                    Object::Instance { fields, .. } => fields.get(name).copied().unwrap_or(Value::Null),
+                    _ => Value::Null,
+                },
+                _ => Value::Null,
+            },
+        };
+        references.push((r.path.clone(), v));
+    }
+    // Under a correspondence, the objects it relates as the call left them, read through its equations; those an
+    // output relation takes the place of are left to it, which reads the object's paths (H5's rest).
+    let mut views = Vec::new();
+    let mut object_paths = Vec::new();
+    for (slot, v) in layout.args.iter().zip(&arg_values) {
+        if let Slot::Record { name, record, before: Some(previous), .. } = slot {
+            if let (Some(c), Some(old)) = (&previous.corresponds, &previous.fields) {
+                views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.compared_equations(), prefix.is_some(), &flat)));
+                let fields = if prefix.is_some() { Some(old) } else { record.fields.as_ref() };
+                // A parameter its choice made null is null in both versions, and has nothing to relate. Its paths
+                // are kept for the output relations for its fields and for a result relation that reads them.
+                if let (Some(fields), Value::Ref(_)) = (fields, v) {
+                    object_paths.push((name.clone(), primitive_paths(&m, *v, fields)));
+                }
+            } else if let (None, Some(old), Some(new), Value::Ref(_)) = (&previous.corresponds, &previous.fields, &record.fields, v) {
+                // Of the same shape without a correspondence, compared field by field: its paths too, so that a
+                // difference names each path it is in (H5's rest).
+                object_paths.push((name.clone(), primitive_paths(&m, *v, if prefix.is_some() { old } else { new })));
+            }
+        }
+    }
+    if let (Some(equations), Some(old), Ok(Some(v))) = (&layout.result_equations, &layout.result_fields.1, &outcome) {
+        views.push(("result".to_string(), corresponding_view(&m, *v, &old.class, equations, prefix.is_some(), &flat)));
+    }
+    let category = match &outcome {
+        Err(Fault::Throw(r)) => Some(harness::EXCEPTIONS.iter().position(|e| m.is_instance(*r, e)).unwrap_or(harness::EXCEPTIONS.len())),
+        _ => None,
+    };
+    let result_fields_of = if prefix.is_some() { &layout.result_fields.1 } else { &layout.result_fields.0 };
+    let result_value = match &outcome {
+        Ok(Some(v)) => Some(*v),
+        _ => None,
+    };
+    let mut replayed = match outcome {
         Ok(Some(v)) => {
             let (array, fields) = match v {
                 Value::Ref(r) => match m.heap.get(r) {
@@ -318,15 +584,207 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             };
             let text = match (&array, ret) {
                 (Some(data), Type::Array(element)) => self::array(data, element),
+                (_, Type::Object(_)) if result_fields_of.is_some() => object_fields(&m, v, result_fields_of.as_ref().expect("checked")),
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, thrown: None }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: None },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: Some(m.class_of(r)) },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: None },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+    };
+    if let (Some(v), Some(fields)) = (result_value, result_fields_of) {
+        replayed.result_paths = primitive_paths(&m, v, fields);
     }
+    replayed.objects_after = objects_after;
+    replayed.references = references;
+    replayed.views = views;
+    replayed.object_paths = object_paths;
+    replayed.category = category;
+    replayed
+}
+
+/// The observations two replays of the same input differ in, by id ([`crate::spec::Observation::id`]), as the
+/// harness compares them: `exception` for the category, `result` (when both returned; through the correspondence's
+/// view under one), `array:a` for an array parameter as left, `field:q` for an object parameter as left (its view
+/// under a correspondence, with `field:q.cents` for each previous version's path the views read differently, or
+/// each primitive path read differently of an object of the same shape compared without one), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
+pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> Vec<String> {
+    let mut out = Vec::new();
+    let view = |r: &Replayed, name: &str| r.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
+    if before.category != after.category || before.thrown.is_some() != after.thrown.is_some() {
+        out.push("exception".to_string());
+    } else if before.thrown.is_none() {
+        let result = |r: &Replayed| view(r, "result").unwrap_or_else(|| r.outcome.clone());
+        if result(before) != result(after) {
+            out.push("result".to_string());
+        }
+    }
+    for (p, a) in params.iter().zip(arguments) {
+        if let Argument::Array(_) = a {
+            let left = |r: &Replayed| r.arrays_after.iter().find(|(slot, _)| *slot == p.slot).map(|(_, data)| data.clone());
+            if left(before) != left(after) {
+                out.push(format!("array:{}", p.name));
+            }
+        }
+    }
+    let mut objects: Vec<&String> = before.views.iter().chain(&after.views).map(|(n, _)| n).chain(before.objects_after.iter().chain(&after.objects_after).map(|(n, _)| n)).filter(|n| *n != "result").collect();
+    objects.sort();
+    objects.dedup();
+    for name in objects {
+        let left = |r: &Replayed| view(r, name).or_else(|| r.objects_after.iter().find(|(n, _)| n == name).map(|(_, t)| t.clone()));
+        if left(before) != left(after) {
+            out.push(format!("field:{name}"));
+            // Of the same shape without a correspondence, each primitive path read differently, `field:l.quantity`.
+            let paths = |r: &Replayed| r.object_paths.iter().find(|(n, _)| n == name).map(|(_, p)| p.clone());
+            if let (None, None, Some(x), Some(y)) = (view(before, name), view(after, name), paths(before), paths(after)) {
+                let mut names: Vec<&String> = x.keys().chain(y.keys()).collect();
+                names.sort();
+                names.dedup();
+                for path in names {
+                    if format!("{:?}", x.get(path)) != format!("{:?}", y.get(path)) {
+                        out.push(format!("field:{name}.{path}"));
+                    }
+                }
+            }
+            // Through a correspondence's views, each previous version's path read differently too, `field:q.cents`.
+            if let (Some(x), Some(y)) = (view(before, name), view(after, name)) {
+                let parts = |v: &str| -> Vec<(String, String)> {
+                    let inner = v.split_once('{').map(|(_, rest)| rest.trim_end_matches('}')).unwrap_or_default();
+                    inner.split(", ").filter_map(|p| p.split_once('=')).map(|(k, v)| (k.to_string(), v.to_string())).collect()
+                };
+                let (xs, ys) = (parts(&x), parts(&y));
+                for (path, value) in &xs {
+                    if ys.iter().find(|(p, _)| p == path).map(|(_, v)| v) != Some(value) {
+                        out.push(format!("field:{name}.{path}"));
+                    }
+                }
+            }
+        }
+    }
+    let holds = |r: &Replayed, x: &str, y: &str| {
+        let value = |path: &str| r.references.iter().find(|(p, _)| p == path).map(|(_, v)| *v);
+        matches!((value(x), value(y)), (Some(a), Some(b)) if a == b)
+    };
+    for (x, y) in pairs {
+        if holds(before, x, y) != holds(after, x, y) {
+            out.push(format!("identity:{x}=={y}"));
+        }
+    }
+    out
+}
+
+/// The object `v` read through a correspondence's `equations` (step H5): each equation's path in this version (the
+/// previous one's when `previous`), labelled by the previous version's path, `Quote{cents=5, quantity=3}` under the
+/// previous version's simple class name `class`; a path through null reads `absent`. A parameter an expression reads
+/// (H5's rest) is its flat value in `flat`.
+fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::harness::FieldEquation], previous: bool, flat: &[Value]) -> String {
+    if !matches!(v, Value::Ref(_)) {
+        return "null".into();
+    }
+    let read = |path: &str| -> Option<Value> {
+        let mut current = v;
+        for name in path.split('.') {
+            current = match current {
+                Value::Ref(r) => match m.heap.get(r) {
+                    Object::Instance { fields, .. } => fields.get(name).copied().unwrap_or(Value::Null),
+                    _ => Value::Null,
+                },
+                _ => return None,
+            };
+        }
+        Some(current)
+    };
+    let parts: Vec<String> = equations
+        .iter()
+        .map(|e| {
+            // The new side an expression over the new object's paths gives (H5's rest), absent where one is.
+            let value = match (&e.computed, previous) {
+                (Some(c), false) => c.reads.iter().map(|r| if r.param { flat.get(r.leaf).copied() } else { read(&r.path) }).collect::<Option<Vec<_>>>().map(|values| c.eval(&values).unwrap_or(Value::Null)),
+                (_, true) => read(&e.old),
+                (None, false) => read(&e.new),
+            };
+            match value {
+                Some(current) => format!("{}={}", e.old, render::witness(current, &e.ty)),
+                None => format!("{}=absent", e.old),
+            }
+        })
+        .collect();
+    format!("{}{{{}}}", crate::classfile::simple_name_of(class), parts.join(", "))
+}
+
+/// Makes `record` in the interpreter (its classes under `prefix/` when given) from its leaves, the values of `flat`
+/// at the indices `leaves` gives in turn, each inner object made first.
+fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Option<&str>, flat: &[Value], leaves: &mut dyn Iterator<Item = crate::harness::Leaf>) -> Result<Value, Fault> {
+    let owner = match prefix {
+        Some(p) => format!("{p}/{}", record.class),
+        None => record.class.clone(),
+    };
+    let mut nested = record.inner.iter();
+    let mut args = Vec::new();
+    for (_, t) in &record.params {
+        if t.is_primitive() {
+            args.push(match leaves.next().expect("a leaf for each primitive argument") {
+                crate::harness::Leaf::Flat(i) => flat[i],
+                // An expression over the new version's leaves (H5's rest), as the harness computes it; one that
+                // divides by zero throws, and the input is skipped as one a constructor rejects.
+                crate::harness::Leaf::Computed(e, at) => {
+                    let values: Vec<Value> = at.iter().map(|i| flat[*i]).collect();
+                    e.eval(&values).map_err(|_| m.throw("java/lang/ArithmeticException", Some("/ by zero")))?
+                }
+            });
+        } else if let Some(inner) = nested.next() {
+            args.push(construct(m, inner, prefix, flat, leaves)?);
+        }
+    }
+    m.construct(&owner, &record.constructor_in(prefix), args)
+}
+
+/// The fields of the object `v` as `fields` lays them out, followed into the objects they refer to:
+/// `Quote{amount=Money{cents=5}, quantity=3}`, by simple class name, so that both versions' objects read alike.
+pub fn object_fields(m: &Machine, v: Value, fields: &crate::harness::Fields) -> String {
+    let Value::Ref(r) = v else { return "null".into() };
+    let Object::Instance { fields: values, .. } = m.heap.get(r) else { return "<not an object>".into() };
+    let shown: Vec<String> = fields
+        .fields
+        .iter()
+        .map(|(name, kind)| {
+            let value = values.get(name).copied().unwrap_or(Value::Null);
+            let text = match kind {
+                crate::harness::FieldKind::Value(t) => render::witness(value, t),
+                crate::harness::FieldKind::Array(t) => match (value, t) {
+                    (Value::Ref(a), Type::Array(element)) => match m.heap.get(a) {
+                        Object::Array { data, .. } => array(data, element),
+                        _ => "<not an array>".into(),
+                    },
+                    _ => "null".into(),
+                },
+                crate::harness::FieldKind::Object(inner) => object_fields(m, value, inner),
+            };
+            format!("{name}={text}")
+        })
+        .collect();
+    format!("{}{{{}}}", crate::classfile::simple_name_of(&fields.class), shown.join(", "))
+}
+
+/// Each primitive field path of the object `v` by `fields`, as it reads now, `amount.cents`; a path through null is
+/// absent.
+fn primitive_paths(m: &Machine, v: Value, fields: &crate::harness::Fields) -> BTreeMap<String, Value> {
+    let mut out = BTreeMap::new();
+    let Value::Ref(r) = v else { return out };
+    let Object::Instance { fields: values, .. } = m.heap.get(r) else { return out };
+    for (name, kind) in &fields.fields {
+        let value = values.get(name).copied().unwrap_or(Value::Null);
+        match kind {
+            crate::harness::FieldKind::Value(_) => {
+                out.insert(name.clone(), value);
+            }
+            crate::harness::FieldKind::Object(inner) => out.extend(primitive_paths(m, value, inner).into_iter().map(|(p, v)| (format!("{name}.{p}"), v))),
+            crate::harness::FieldKind::Array(_) => {}
+        }
+    }
+    out
 }
 
 /// How many smaller inputs the shrinker may try.
@@ -337,13 +795,25 @@ pub const SHRINK_BUDGET: u32 = 4000;
 /// assumption is part of the harness, so an input outside it passes). An input the interpreter cannot run is not
 /// accepted.
 pub fn shrink_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
-    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found))
+    shrink_in_harness_keeping(cp, harness_class, types, found, &[])
 }
 
-fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
+/// [`shrink_in_harness`], keeping the flat parameters `kept` as found: a choice's flags (step H2,
+/// [`crate::harness::Layout::flags`]), so that shrinking never makes two objects one or one object two.
+pub fn shrink_in_harness_keeping(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
+    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found, kept))
+}
+
+fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
     let mut m = Machine::new(cp);
     m.monitor = false;
-    let mut fails = |arguments: &[Argument]| fails_in(&mut m, harness_class, types, arguments);
+    let original = found.clone();
+    let mut fails = |arguments: &[Argument]| {
+        if kept.iter().any(|&i| arguments.get(i) != original.get(i)) {
+            return Some(false);
+        }
+        fails_in(&mut m, harness_class, types, arguments)
+    };
     // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
     if fails(&found) != Some(true) {
         return Shrunk { arguments: found, runs: 0 };
@@ -418,7 +888,7 @@ mod tests {
 
     #[test]
     fn a_call_maps_a_records_components_to_the_inputs_they_are() {
-        let backoff = RecordType { class: "net/example/Backoff".into(), components: vec![("baseMillis".into(), Type::Long), ("capMillis".into(), Type::Long)] };
+        let backoff = RecordType::record("net/example/Backoff", vec![("baseMillis".into(), Type::Long), ("capMillis".into(), Type::Long)]);
         let layout = Layout::new(Some((backoff.clone(), Some(backoff))), &["attempt".into()], &[Type::Int], &[None], (None, None));
         let arguments = [Argument::Scalar(Value::Long(1)), Argument::Scalar(Value::Long(1)), Argument::Scalar(Value::Int(-1))];
         let target = Target { class_internal: "net/example/Backoff", method: "delayMillis", descriptor: "(I)J", is_static: false, classes: "after" };

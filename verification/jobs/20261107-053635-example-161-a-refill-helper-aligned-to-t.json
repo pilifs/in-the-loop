@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-053635-example-161-a-refill-helper-aligned-to-t",
+  "title": "Example 161: a refill helper aligned to the clock's grid, refuted on its own, and its caller's Retry-After found to change",
+  "description": "New example 161 (S4b of llm-dlc/loops/foundations-summaries.md), the sibling of 160 with a planted defect. Crosscut's TokenBucket.lastAfter is rewritten to now - now % period, aligning the credited time to the clock's grid instead of counting periods from the last refill; its caller RetryAfter#nanosUntilToken is unchanged, and the proof is scoped to the module's precondition (intendedInputs). build.py runs the B9 proof with the tool's own checker and --cache build/proof-cache (approach.cache). The tool should try to prove lastAfter on its own, refute it, leave it as written in both versions, and then find the caller's regression with a counterexample replayed on both versions. The tests pass, and the caller's property contract holds of the new version.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "161",
+      "160"
+    ],
+    "paths": [
+      "lib/src/proof_cache.rs",
+      "examples/tools/build.py"
+    ]
+  },
+  "expected": "Verdict violation, as expected (build.py prints 'as expected'; the example expects sharedHelpers []). result.json's helpers lists TokenBucket.lastAfter with shared false and the note 'its two versions differ, at lastAfter(...)'. stated has no assumption of kind callee. The counterexample, replayed in the interpreter (replay.reproduced true), was nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1): before 2, after 1, when written; another shrunk input within the precondition is as good.",
+  "submitted": {
+    "at": "2026-11-07T05:36:35+00:00",
+    "session": "be22079e-0c8d-41e4-ace3-12f7f213f1f9",
+    "by": "foundations-summaries loop"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "3m",
+    "notes": "A native refutation of the helper and of the caller, a few tenths of a second each, measured inline when the example was written; most of the time is building Crosscut and the tool."
+  },
+  "steps": [
+    {
+      "name": "example 161 (B9)",
+      "run": "python3 examples/tools/build.py 161",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early"
+  ]
+}

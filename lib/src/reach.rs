@@ -112,6 +112,58 @@ pub struct Reach {
     /// passes to `TransactionTemplate` or to a helper that runs its argument through one. What a
     /// `@Transactional` method of another class on the path reaches is left to that method.
     pub inside: Effects,
+    /// Each call that gives one of the effects above, with where it stands with respect to transactions, for the
+    /// observation spec ([`crate::observations`]). Sorted, each once.
+    pub sites: Vec<Placed>,
+    /// The `invokedynamic` call sites the walk doesn't follow (anything but a lambda), as `Bootstrap.method in
+    /// Class.method(Types)`.
+    pub dynamic: BTreeSet<String>,
+    /// The calls into application code the walk can't follow: a class outside the followed ones, or an
+    /// application interface nothing followed implements and that is no repository or HTTP client.
+    pub unresolved: BTreeSet<String>,
+}
+
+/// What kind of effect a call site gives.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum SiteKind {
+    Read,
+    Write,
+    Send,
+    Call,
+    Publish,
+}
+
+/// One call into a framework API (or an application interface the framework implements) that gives an effect.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Site {
+    pub kind: SiteKind,
+    /// What it is of or to, as the reach lines name it: `SeatDocument`, `quotes`, `GET /users/{id}`.
+    pub target: String,
+    /// The method called, as `owner#name(descriptor)` with the owner's internal name.
+    pub call: String,
+    /// The static type at the call site of each argument (an internal class name), when the walk can tell.
+    pub arguments: Vec<Option<String>>,
+    /// The method the call is in, as `Class.method(Types)`.
+    pub in_method: String,
+}
+
+/// Where a call site stands with respect to transactions, from the root's point of view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Placement {
+    /// On a path with no transaction.
+    Outside,
+    /// Inside a transaction the root opens.
+    Inside,
+    /// Inside a `@Transactional` method of another class, which opens or joins its own.
+    Callee,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Placed {
+    pub placement: Placement,
+    pub site: Site,
 }
 
 /// Where on the walk a method runs with respect to transactions.
@@ -205,6 +257,12 @@ struct Direct {
     /// For each callee, one entry per site that calls it: the catch types of the handlers covering the site that
     /// swallow what they catch (empty at a site under no such handler).
     guards: HashMap<String, Vec<Vec<String>>>,
+    /// The effect-giving call sites of the method itself.
+    sites: Vec<Site>,
+    /// Its `invokedynamic` sites that are not lambdas.
+    dynamic: Vec<String>,
+    /// Its calls into application code the walk can't follow.
+    unresolved: Vec<String>,
 }
 
 const RESPONSE_STATUS_EXCEPTIONS: &[&str] = &["org/springframework/web/server/ResponseStatusException", "org/springframework/web/ErrorResponseException"];
@@ -285,6 +343,14 @@ impl<'a> Graph<'a> {
                 Scope::Own => out.inside.extend(&direct.reach),
                 Scope::Callee => {}
             }
+            let placement = match scope {
+                Scope::Outside => Placement::Outside,
+                Scope::Own => Placement::Inside,
+                Scope::Callee => Placement::Callee,
+            };
+            out.sites.extend(direct.sites.iter().map(|site| Placed { placement, site: site.clone() }));
+            out.dynamic.extend(direct.dynamic.iter().cloned());
+            out.unresolved.extend(direct.unresolved.iter().cloned());
             let owner_of = |k: &str| k.split_once('.').map(|(o, _)| o.to_string()).unwrap_or_default();
             let caller_owner = owner_of(&k);
             for c in &direct.callees {
@@ -302,6 +368,8 @@ impl<'a> Graph<'a> {
                 }
             }
         }
+        out.sites.sort();
+        out.sites.dedup();
         out
     }
 
@@ -471,6 +539,7 @@ impl<'a> Graph<'a> {
         };
         // The verb of the fluent HTTP client chain being built (`client.get().uri(...)`).
         let mut verb: Option<String> = None;
+        let here = method_label(class, method);
         for (i, (pc, insn)) in insns.iter().enumerate() {
             match insn {
                 Insn::InvokeVirtual(idx) | Insn::InvokeSpecial(idx) | Insn::InvokeStatic(idx) | Insn::InvokeInterface(idx) => {
@@ -482,7 +551,14 @@ impl<'a> Graph<'a> {
                                 out.scoped.push((String::new(), lambda));
                             }
                         }
-                        for effect in self.leaf(class, method, &insns, &targets, i, &member, &mut verb) {
+                        let effects = self.leaf(class, method, &insns, &targets, i, &member, &mut verb);
+                        if !effects.is_empty() {
+                            let arguments = self.argument_types(class, method, &insns, &targets, i, &member);
+                            out.sites.extend(effects.iter().map(|e| site(e, &member, &arguments, &here)));
+                        } else if !is_leaf(&member.owner) && !self.classes.contains_key(&member.owner) && self.cp.is_application(&member.owner) {
+                            out.unresolved.push(format!("{}.{} in {here}: a class the walk doesn't follow", display(&member.owner), member.name));
+                        }
+                        for effect in effects {
                             apply(&mut out.reach, effect);
                         }
                         for e in self.leaf_throws(class, &insns, &targets, i, &member, &bootstrap) {
@@ -493,7 +569,17 @@ impl<'a> Graph<'a> {
                     let exact = matches!(insn, Insn::InvokeSpecial(_) | Insn::InvokeStatic(_));
                     let callees = self.resolve(&member, exact);
                     if callees.is_empty() {
-                        for effect in self.interface_effects(class, method, &insns, &targets, i, &member) {
+                        let effects = self.interface_effects(class, method, &insns, &targets, i, &member);
+                        // A method an application class inherits from the library (`Enum.ordinal`, `Object.getClass`)
+                        // is a library call, which the walk doesn't enter, not an unresolved one.
+                        let inherited = self.cp.find_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(c, _)| is_leaf(&c.name) || !self.cp.is_application(&c.name));
+                        if effects.is_empty() && !inherited {
+                            out.unresolved.push(format!("{}.{} in {here}: nothing followed implements it", display(&member.owner), member.name));
+                        } else {
+                            let arguments = self.argument_types(class, method, &insns, &targets, i, &member);
+                            out.sites.extend(effects.iter().map(|e| site(e, &member, &arguments, &here)));
+                        }
+                        for effect in effects {
                             apply(&mut out.reach, effect);
                         }
                     }
@@ -510,6 +596,14 @@ impl<'a> Graph<'a> {
                     for callee in self.lambda_targets(class, &bootstrap, *idx) {
                         out.guards.entry(callee.clone()).or_default().push(catches_at(*pc));
                         out.callees.push(callee);
+                    }
+                    if let Some(b) = class.pool.invoke_dynamic(*idx).ok().and_then(|(bsm, _, _)| bootstrap.get(usize::from(bsm))) {
+                        if b.method.member.owner != LAMBDA_METAFACTORY {
+                            let what = format!("{}.{} in {here}", display(&b.method.member.owner), b.method.member.name);
+                            if !out.dynamic.contains(&what) {
+                                out.dynamic.push(what);
+                            }
+                        }
                     }
                 }
                 Insn::AThrow => {
@@ -862,6 +956,23 @@ impl<'a> Graph<'a> {
         }
     }
 
+    /// The static type of each argument of the call at `at`, when the walk can tell (an internal class name).
+    fn argument_types(&self, class: &ClassFile, method: &Method, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, at: usize, member: &MemberRef) -> Vec<Option<String>> {
+        let Ok(d) = MethodDescriptor::parse(&member.descriptor) else { return Vec::new() };
+        let n = d.params.len();
+        (0..n)
+            .map(|position| {
+                let declared = d.params[position].class_name().map(str::to_string);
+                // A class literal names a type, which `type_at` would report as the class it names.
+                if declared.as_deref() == Some("java/lang/Class") {
+                    return declared;
+                }
+                let found = pushing(class, insns, targets, at, n - 1 - position).and_then(|pushed| self.type_at(class, method, insns, pushed));
+                found.or(declared)
+            })
+            .collect()
+    }
+
     /// What a data call is about: the class literal it passes, else the static type of its entity argument when
     /// that is an application class, else the stored types the method mentions.
     fn subject(&self, class: &ClassFile, method: &Method, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, at: usize, member: &MemberRef) -> Option<String> {
@@ -999,6 +1110,23 @@ fn handlers(class: &ClassFile, code: &crate::classfile::Code, insns: &[(u32, Ins
 
 pub(crate) fn display(internal: &str) -> String {
     internal.rsplit('/').next().unwrap_or(internal).replace('$', ".")
+}
+
+fn site(effect: &Effect, member: &MemberRef, arguments: &[Option<String>], in_method: &str) -> Site {
+    let (kind, target) = match effect {
+        Effect::Read(t) => (SiteKind::Read, t),
+        Effect::Write(t) => (SiteKind::Write, t),
+        Effect::Send(t) => (SiteKind::Send, t),
+        Effect::Call(t) => (SiteKind::Call, t),
+        Effect::Publish(t) => (SiteKind::Publish, t),
+    };
+    Site { kind, target: target.clone(), call: format!("{}#{}{}", member.owner, member.name, member.descriptor), arguments: arguments.to_vec(), in_method: in_method.to_string() }
+}
+
+/// `QuotesController.quote(long, int)`.
+pub(crate) fn method_label(class: &ClassFile, method: &Method) -> String {
+    let params = MethodDescriptor::parse(&method.descriptor).map(|d| d.params.iter().map(Type::simple_name).collect::<Vec<_>>().join(", ")).unwrap_or_default();
+    format!("{}.{}({params})", display(&class.name), method.name)
 }
 
 fn apply(reach: &mut Effects, effect: Effect) {

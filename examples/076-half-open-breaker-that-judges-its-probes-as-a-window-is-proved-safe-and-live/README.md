@@ -9,6 +9,8 @@
 
 > A half-open circuit breaker used to reopen on the first probe that failed. A developer makes it judge the probes together once the last has completed, as Resilience4j does: a failed probe is recorded like any other outcome, and the failure rate of the probes decides between closing and reopening. The contract changes in three rows, the test that expected the first failure to reopen is rewritten, and the model verifies the change under both configurations: every safety invariant in every state, and every liveness property under fairness, the three that say an open breaker probes again, a dependency that comes back is used again, and a dependency that stays down gets its wait between rounds of probes. The verdict comes with what it rests on: runs of the model take one of the three rows the change alters, a failed probe before the window is complete with the failure rate at the threshold, and the other two, a failed probe with the rate below the threshold, are rows the model's two probes and threshold of one in two can never produce.
 
+> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 076` runs it again.
+
 Tags: [resilience](../README.md#tag-resilience), [liveness](../README.md#tag-liveness), [tla-liveness](../README.md#tag-tla-liveness), [generated-operator](../README.md#tag-generated-operator), [multiple-configurations](../README.md#tag-multiple-configurations)
 
 ## The change
@@ -228,7 +230,7 @@ Merge. The contract diff is committed with the change, and the model is checked 
 
 How the verdict was reached: two calls in flight: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2.
 
-This page renders attempt `20261106T181235Z-0708aa74` at claim `3f26abff8d62e787`, in pipeline job `20261106-181100-example-076-d1-circuit-breaker-with-its`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181235Z-0708aa74` at claim `3f26abff8d62e787`, in pipeline job `20261106-181100-example-076-d1-circuit-breaker-with-its`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

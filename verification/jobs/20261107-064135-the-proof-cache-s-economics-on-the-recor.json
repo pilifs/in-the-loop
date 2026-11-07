@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-064135-the-proof-cache-s-economics-on-the-recor",
+  "title": "The proof cache's economics on the recorded B9 and B11 examples: cold, warm, and four kinds of change (S6)",
+  "description": "S6 of llm-dlc/loops/foundations-summaries.md: what the proof cache saves on the recorded examples. examples/tools/economics.py runs `jvmcontract equivalence --cache` (as build.py runs a B9 example with approach.cache) over the 61 recorded B9 and B11 examples of the javac apps. 8 more are left out: real-world, or Box Office's Gradle build. The cache serves the 17 B9 examples the tool's own checker proves (Crosscut 124, 125, 132, 133, 135-139, 160, 161; Mica 140-145). It doesn't serve the other 44: B9 under JBMC, whose identity is not in the key, and B11 (`prove`), which has no cache. The script lists them with the reason and runs nothing for them.\n\nThe runs, every check a process of its own, sequentially:\n1. cold: the 17 claims on an empty cache;\n2. warm: the same again on that cache;\n3. for Crosscut and Mica, four changes in examples/tools/economics/ (an unrelated edit, a behaviour-preserving helper rewrite, a representation change, a real regression). Each gets a \"rebased\" set (each served example with the change beneath it on both sides; an example whose patch conflicts with the change is listed as not run) and an \"own\" set (the change itself on the served targets). Each set runs cold, on an empty cache, and warm, on the cache the runs so far filled.\n\nFor each claim it reports how it was served: exact hit, nothing to prove, changed helper's proof found in the cache or proved in the run, proved/refuted again, unresolved. It also reports the time: wall, checker (search.seconds), the cache's key and lookup (a new note in lib/src/proof_cache.rs), the changed helpers' own checks, and the rest. Inline when written: --plan builds all trees (17 s, 55 s of javac CPU), and `jvmcontract impact` names exactly the own claims each change is meant to reach. Both helper rewrites' own proofs hold, in 0.06 s and 0.22 s.",
+  "kind": "other",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence",
+    "jvmcontract:proof-cache"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/economics.py",
+      "lib/src/proof_cache.rs"
+    ]
+  },
+  "expected": "Exits 0. Every expectation in examples/tools/economics/report.md has a check mark:\n- every check ran;\n- every warm verdict equals the cold run's (the soundness check);\n- the warm rerun is an exact hit for every claim the cold run stored, with its verdict;\n- for each app, under the unrelated edit, every rebased claim the cold run stored is an exact hit and the own claims have nothing to prove;\n- under the helper rewrite, an own claim shares the rewritten helper (TokenBucket.lastAfter, LookupSwitch.midpoint) and a later one finds its proof in the cache;\n- under the representation change, no helper is shared and a claim is proved again (verified);\n- under the regression, an own claim is refuted with a replayed witness (TokenBucket#tokensAfter / RetryAfter#nanosUntilToken; ModifiedUtf8#encodeInto).\nA check mark missing from the warm-equals-cold line would be a cache soundness bug. One missing from the others means the cache misses where it should hit, or a change does not do what examples/tools/economics/README.md says.",
+  "submitted": {
+    "at": "2026-11-07T06:41:35+00:00",
+    "session": "be22079e-0c8d-41e4-ace3-12f7f213f1f9",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "30m",
+    "notes": "about 280 native checks in sequence, most an exact hit or nothing to prove (under a second), the rest proved again in 0.1 to 6 s as the recorded native examples took (2.2 to 5.8 s); the trees take about 55 s of javac CPU"
+  },
+  "steps": [
+    {
+      "name": "economics",
+      "run": "python3 examples/tools/economics.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/tools/economics/report.md",
+    "examples/tools/economics/report.json"
+  ]
+}

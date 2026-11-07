@@ -1,0 +1,656 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "750c8a36-92b9-44e3-adad-ef96dc6aa676",
+  "status": "open",
+  "title": "Next multi-stream loop draft",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T04:01:19.557Z",
+  "ended": "2026-11-07T12:21:15.627Z",
+  "duration_seconds": 29996,
+  "stats": {
+    "turns": 103,
+    "api_calls": 1268,
+    "tool_calls": 1316,
+    "tool_errors": 7,
+    "compactions": 19,
+    "peak_context_tokens": 329169,
+    "usage": {
+      "input_tokens": 2572,
+      "output_tokens": 1015945,
+      "cache_read_input_tokens": 230317308,
+      "cache_creation_input_tokens": 4274633
+    }
+  },
+  "tools": {
+    "Bash": 1108,
+    "Read": 131,
+    "Edit": 51,
+    "ToolSearch": 9,
+    "Monitor": 8,
+    "Write": 5,
+    "TaskStop": 4
+  },
+  "files_touched": [
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Throttle.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/ThrottleLimits.java",
+    "lib/README.md",
+    "lib/src/equivalence.rs",
+    "lib/src/harness/mod.rs",
+    "lib/src/spec/heap.rs",
+    "lib/src/witness.rs",
+    "lib/tests/heap.rs",
+    "llm-dlc/loops/foundations-heap.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T04:01:19.557Z",
+      "ended": "2026-11-07T04:01:19.558Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-07T04:01:16.273Z",
+      "ended": "2026-11-07T04:16:03.592Z",
+      "turns": 6,
+      "api_calls": 62,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 53276,
+        "cache_read_input_tokens": 8210304,
+        "cache_creation_input_tokens": 213568
+      },
+      "peak_context_tokens": 197029
+    },
+    {
+      "index": 2,
+      "started": "2026-11-07T04:16:59.378Z",
+      "ended": "2026-11-07T04:49:15.406Z",
+      "turns": 6,
+      "api_calls": 110,
+      "usage": {
+        "input_tokens": 224,
+        "output_tokens": 84289,
+        "cache_read_input_tokens": 25524414,
+        "cache_creation_input_tokens": 316090
+      },
+      "peak_context_tokens": 329169
+    },
+    {
+      "index": 3,
+      "started": "2026-11-07T04:50:11.233Z",
+      "ended": "2026-11-07T05:15:25.998Z",
+      "turns": 8,
+      "api_calls": 71,
+      "usage": {
+        "input_tokens": 148,
+        "output_tokens": 60425,
+        "cache_read_input_tokens": 13106026,
+        "cache_creation_input_tokens": 240862
+      },
+      "peak_context_tokens": 253943
+    },
+    {
+      "index": 4,
+      "started": "2026-11-07T05:16:13.951Z",
+      "ended": "2026-11-07T05:40:12.792Z",
+      "turns": 5,
+      "api_calls": 63,
+      "usage": {
+        "input_tokens": 128,
+        "output_tokens": 50543,
+        "cache_read_input_tokens": 10472149,
+        "cache_creation_input_tokens": 225300
+      },
+      "peak_context_tokens": 238381
+    },
+    {
+      "index": 5,
+      "started": "2026-11-07T05:41:04.299Z",
+      "ended": "2026-11-07T06:03:24.192Z",
+      "turns": 5,
+      "api_calls": 86,
+      "usage": {
+        "input_tokens": 172,
+        "output_tokens": 95992,
+        "cache_read_input_tokens": 17138780,
+        "cache_creation_input_tokens": 285404
+      },
+      "peak_context_tokens": 298483
+    },
+    {
+      "index": 6,
+      "started": "2026-11-07T06:04:14.033Z",
+      "ended": "2026-11-07T06:33:05.885Z",
+      "turns": 5,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 37626,
+        "cache_read_input_tokens": 8685419,
+        "cache_creation_input_tokens": 172014
+      },
+      "peak_context_tokens": 185093
+    },
+    {
+      "index": 7,
+      "started": "2026-11-07T06:33:46.239Z",
+      "ended": "2026-11-07T06:50:01.572Z",
+      "turns": 5,
+      "api_calls": 76,
+      "usage": {
+        "input_tokens": 152,
+        "output_tokens": 51057,
+        "cache_read_input_tokens": 12422154,
+        "cache_creation_input_tokens": 210661
+      },
+      "peak_context_tokens": 223740
+    },
+    {
+      "index": 8,
+      "started": "2026-11-07T06:50:43.081Z",
+      "ended": "2026-11-07T07:06:39.576Z",
+      "turns": 5,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 116,
+        "output_tokens": 48059,
+        "cache_read_input_tokens": 11426107,
+        "cache_creation_input_tokens": 272455
+      },
+      "peak_context_tokens": 285534
+    },
+    {
+      "index": 9,
+      "started": "2026-11-07T07:07:24.029Z",
+      "ended": "2026-11-07T07:26:39.324Z",
+      "turns": 5,
+      "api_calls": 76,
+      "usage": {
+        "input_tokens": 152,
+        "output_tokens": 77992,
+        "cache_read_input_tokens": 17030019,
+        "cache_creation_input_tokens": 305001
+      },
+      "peak_context_tokens": 318080
+    },
+    {
+      "index": 10,
+      "started": "2026-11-07T07:27:22.866Z",
+      "ended": "2026-11-07T08:11:46.466Z",
+      "turns": 6,
+      "api_calls": 107,
+      "usage": {
+        "input_tokens": 218,
+        "output_tokens": 76764,
+        "cache_read_input_tokens": 20528858,
+        "cache_creation_input_tokens": 264168
+      },
+      "peak_context_tokens": 277247
+    },
+    {
+      "index": 11,
+      "started": "2026-11-07T08:12:22.156Z",
+      "ended": "2026-11-07T08:35:10.346Z",
+      "turns": 5,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 63321,
+        "cache_read_input_tokens": 10337920,
+        "cache_creation_input_tokens": 229749
+      },
+      "peak_context_tokens": 242828
+    },
+    {
+      "index": 12,
+      "started": "2026-11-07T08:35:43.674Z",
+      "ended": "2026-11-07T08:55:21.506Z",
+      "turns": 5,
+      "api_calls": 54,
+      "usage": {
+        "input_tokens": 108,
+        "output_tokens": 56107,
+        "cache_read_input_tokens": 9454972,
+        "cache_creation_input_tokens": 240666
+      },
+      "peak_context_tokens": 253745
+    },
+    {
+      "index": 13,
+      "started": "2026-11-07T08:55:53.452Z",
+      "ended": "2026-11-07T10:28:56.063Z",
+      "turns": 6,
+      "api_calls": 116,
+      "usage": {
+        "input_tokens": 238,
+        "output_tokens": 76061,
+        "cache_read_input_tokens": 23642388,
+        "cache_creation_input_tokens": 274248
+      },
+      "peak_context_tokens": 287329
+    },
+    {
+      "index": 14,
+      "started": "2026-11-07T10:29:31.949Z",
+      "ended": "2026-11-07T11:03:23.900Z",
+      "turns": 6,
+      "api_calls": 60,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 41224,
+        "cache_read_input_tokens": 9898698,
+        "cache_creation_input_tokens": 206927
+      },
+      "peak_context_tokens": 220006
+    },
+    {
+      "index": 15,
+      "started": "2026-11-07T11:04:04.600Z",
+      "ended": "2026-11-07T11:35:43.334Z",
+      "turns": 6,
+      "api_calls": 59,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 41212,
+        "cache_read_input_tokens": 10013209,
+        "cache_creation_input_tokens": 224536
+      },
+      "peak_context_tokens": 237617
+    },
+    {
+      "index": 16,
+      "started": "2026-11-07T11:36:21.472Z",
+      "ended": "2026-11-07T11:53:27.093Z",
+      "turns": 5,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 112,
+        "output_tokens": 39632,
+        "cache_read_input_tokens": 8738680,
+        "cache_creation_input_tokens": 207067
+      },
+      "peak_context_tokens": 220148
+    },
+    {
+      "index": 17,
+      "started": "2026-11-07T11:54:03.033Z",
+      "ended": "2026-11-07T12:16:44.754Z",
+      "turns": 5,
+      "api_calls": 73,
+      "usage": {
+        "input_tokens": 148,
+        "output_tokens": 50174,
+        "cache_read_input_tokens": 12221149,
+        "cache_creation_input_tokens": 228090
+      },
+      "peak_context_tokens": 241171
+    },
+    {
+      "index": 18,
+      "started": "2026-11-07T12:17:32.229Z",
+      "ended": "2026-11-07T12:19:44.266Z",
+      "turns": 5,
+      "api_calls": 15,
+      "usage": {
+        "input_tokens": 30,
+        "output_tokens": 6782,
+        "cache_read_input_tokens": 1283233,
+        "cache_creation_input_tokens": 112510
+      },
+      "peak_context_tokens": 125589
+    },
+    {
+      "index": 19,
+      "started": "2026-11-07T12:20:04.065Z",
+      "ended": "2026-11-07T12:21:15.627Z",
+      "turns": 4,
+      "api_calls": 5,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 5409,
+        "cache_read_input_tokens": 182829,
+        "cache_creation_input_tokens": 45317
+      },
+      "peak_context_tokens": 58396
+    }
+  ],
+  "log": {
+    "sha256": "26d304137ac5a035f6db33c25faa517642596b3068beb9cc92951f5b476a8f3d",
+    "bytes": 40357276,
+    "lines": 13617,
+    "gzip_bytes": 7965489,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/26d304137ac5a035f6db33c25faa517642596b3068beb9cc92951f5b476a8f3d.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uyqkxslyysrmrmwsvxsmtulqllwotsqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Symbolic references in the own checker: paths that differ only in a reference merge, the reference a guarded choice of objects (H1, verification pending)",
+      "body": "The own checker (lib/src/bmc/mod.rs) represented every reference as a known object index or null, so paths that met with a reference to different objects never merged. A reference may now be a Choice: one of the path's objects or null, each under a guard, the guards exclusive and covering the path's condition. It is made where such paths merge, and by a field read through one. if_acmp, ifnull, ifnonnull and instanceof on a choice are formulas over the guards; getfield chooses among the candidates' fields, and putfield writes each candidate's field under its guard, with NullPointerException where the reference is null. Every other use that needs the object (a call's receiver, a JDK call's argument, an array instruction, checkcast, athrow, a monitor) splits the path per candidate first, as an index into an array of references already did. A known reference stays the fast path and never becomes a formula.\n\nVerified inline: a new test, lib/tests/heap.rs, checks three Java claims merged from the start and never merged, with the same verdicts both ways, and every violation's witness fails the claim on a real JVM. Ten independent choices between two objects and a write through the chosen one take 22 paths merged and 1024 unmerged. Three new conformance cases (swaps, swapsOrNull, swapsThenNull), past the 512-path merge threshold, agree with the JVM. The unit tests (183), integration.rs (64), conformance.rs and foundations.rs pass, and the aliasing cases keep their verdicts. lib/benchmark/conformance.json was regenerated for the three cases.\n\nJob 20261107-041414 runs the benchmark on the own checker and compares every run with lib/benchmark/results.json. Expected: no verdict changed, no formula grown past 10%, and paths or merges changed only in the new cases. It is listed for review in llm-dlc/loops/foundations-heap.md, which records H1 as done pending that job, with H2 next.",
+      "log_sha256": "3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f"
+    },
+    {
+      "change_id": "lonuluzqnlmtqnxqwurqkmmyopmkxnpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Array parameters that may be null or one array in property checks, decided by the own checker with witnesses that keep identity (H2, first step; verification pending)",
+      "body": "jvmcontract prove takes --nullable a and --may-alias a,b for array parameters (step H2 of llm-dlc/loops/foundations-heap.md, its first targets the conformance corpus's inputs outside the domain). The own checker makes each such parameter a symbolic reference (H1's Choice) among null, its own array and the own arrays of the parameters before it in its group (bmc::Parameters), and reads back from a model which one it holds (raw_same, a new Argument::Same). The domain line and the statement say what the domain is ('a: int[] of length ≤ 8, or null', 'a and b may be the same array'); --engine jbmc and --confirm refuse it since JBMC would prove a narrower claim, and auto doesn't fall back to JBMC. The expression language gained a == null and a == b over array parameters. Witnesses keep identity everywhere: the interpreter, the shrinker and the JVM run (jvm_witness.rs now passes null and one array twice) never split or join arrays, and a witness reads twoArrays(a=[0], b=the same array as a). The harness's \\old copy of a null array is null.\n\nVerified inline: six new conformance claims over widened domains (twoArrays under --may-alias, length and lengthOrMinusOne under --nullable), each Verified or refuted as the JVM decides, their witnesses refuted on the JVM; default-domain claims unchanged; new unit tests for the engine's choices merged and unmerged, and a JVM run with one array twice and with null (lib/tests/heap.rs). Unit tests (185), integration.rs, conformance.rs, foundations.rs and heap.rs pass; one integration test failed once under the other streams' load and passed alone.\n\nJob 20261107-043420 (for review): the corpus's ignored JBMC, auto and auto --confirm runs, expected to pass with the widened claims refused under JBMC and --confirm.",
+      "log_sha256": "cec1ac6ca9c6ec56477a377c975e2f921f8527cca741953c4f47eda3e941aa8c"
+    },
+    {
+      "change_id": "xkutknnpsxmnnwxwttvwzzvzppxpwtxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Heap stream Progress: name the check errors that belong to other sessions' traces",
+      "body": "sync.py check on the heap branch reports the other streams' sessions without a manifest, and five planning-era commits pointing at session c2bd9df4's log 1f2230c9f137, which that session's manifest lists in the default workspace but not in the branch's copy from the fork. Both are under llm-dlc/traces/, which a stream may not edit, and should clear at the reconcile merge; recorded under the heap brief's Progress so the reconcile loop sees them.",
+      "log_sha256": "eebff3e85c1dae64eadc7f24516a8c30bec9e3d4937a557f66814aba00e257fd"
+    },
+    {
+      "change_id": "nmrmkovpnwqynllktpnkrtqsqoooprws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Objects made by their constructor as regression inputs, compared on their fields as both versions leave them (H2, second step)",
+      "body": "A regression check now takes a parameter of an application class: the harness makes it by the class's one usable constructor from symbolic arguments, an object argument made by its own constructor in turn (Line(Money price, int quantity) of a Money(long cents)), its primitive leaves the harness's parameters by path (l.price.cents). Both versions get their own objects from the same leaves, the old one's under before/, and after the calls their fields are compared, followed into the objects they refer to. The domain says the claim covers only objects made by that constructor from arguments it accepts, so a difference only in a state the constructor never makes is outside it; the statement lists the observed field paths; a witness is a construction recipe, new Line(new Money(0), 1), and the replay shows what each version left in the object. Classes outside this (a superclass, several constructors, a String field or argument, a class reaching itself, different shapes in the two versions) are refused naming why. Identity, nullability and aliasing among objects, results of such classes and property checks over them come next. Done in regression checks before property checks, against the brief's Progress note of last step, because the integration contract's heap part is regression checks.\n\nVerified inline: lib/tests/heap.rs adds five checks on the own checker (a rewrite verified with the domain words, a changed result and a change seen only in the object as left both refuted with recipe witnesses, a difference only where the constructor rejects verified with the domain saying so, a String field refused). Unit tests (185), heap.rs (9), integration.rs (64, on a rerun; one test failed once under the other streams' load), conformance.rs and foundations.rs pass. No job.",
+      "log_sha256": "258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f"
+    },
+    {
+      "change_id": "xnozsxqvqkpnsysnppxlzzoyostqtnwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Results of classes made by their constructor compared by their fields, and identity relations within each version compared as holds-before-iff-holds-now (H3, first step)",
+      "body": "Regression checks now compare a result of an application class (other than a record of primitive components) field by field, as object parameters are, where it was compared by Objects.equals, which across the two versions' distinct classes is identity. They also observe identity within each version: the result, array parameters, object parameters made by their constructor and the object or array fields those reach, every two of one static type under the same path in both versions compared as 'holds before iff it holds now' (result == l, result.price == l.price), never by comparing objects across versions. The statement lists them (observations.identities) and each replay states which relations hold, so the alias-to-copy defect (a copy with the same values handed back in place of the argument) is refuted with a witness whose two replays differ only there; an array filled in place and then copied likewise.\n\nVerified inline: four new checks in lib/tests/heap.rs on the own checker (an alias handed back verified; the alias-to-copy defect refuted; a Line result compared by fields, a rewrite verified and a changed quantity refuted; an array copied refuted by result == a), and the unit (185), heap (13), conformance, foundations and integration suites pass. One integration test timed out under the other streams' load in a 615 s run, as in the two earlier steps, and passed alone in 11.6 s. Next per the brief's Progress: H5's narrow case and spec::heap::check on the joint example.",
+      "log_sha256": "5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3"
+    },
+    {
+      "change_id": "ntqqzttlykmyqrvvzxkwtklypmkzsmvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A correspondence's input equations relate objects of different shapes in a regression check, and spec::heap::check runs the joint example's kernel claims (H5, narrow case)",
+      "body": "The joint example's Quote holds a long before and a Money now. A regression check now takes a correspondence (equivalence::Options::correspondence, filled by spec::heap::check from the canonical claim) whose input equations relate a field path of a parameter's object in each version, old.q.cents == new.q.amount.cents and old.q.quantity == new.q.quantity. The previous version's object is made from the new one's leaves as the equations name them; an input on which the two objects as made don't satisfy the equations is skipped, as the domain, the constructible assumption and the vacuity probe say. After the calls, the parameter's objects and a result of the same pair of classes are compared under the equations, and identity relations are those both versions have (result == q). Replays are compared through the equations as well, each version showing its own object, and a counterexample lists the observations its replays differ in. Equations that are not between two paths (an offset mapping), output relations, a field of the previous object left out of every equation, and a construction leaf no equation gives are refused by name.\n\nspec::heap::check runs the own checker, strict, under the claim's bounds and correspondence. It accounts for every required observation: preserved where a proof compared it, refuted where the replayed witness differs in it, and otherwise unresolved. A witness that differs only in observations the claim doesn't require refutes nothing, and inputs needing more objects than a version's input-object bound leave the result unresolved. spec::Outcome gained a problem field, and statement Domain gained input_objects per version. The harness's Java rendering of an object result's type, which read before.Object since H3, is fixed.\n\nVerified inline: the integration contract's heap part went from 6 unsupported to 6 passed (total, withQuantity and discount verified on after; offset total and alias-to-copy withQuantity refuted with replayed witnesses; outside-domain total verified with its constructor-made domain). lib/tests/heap.rs has five new checks on the fixture's kernel, and spec::heap has two unit tests. The unit tests (187), heap.rs (18), foundations.rs, conformance.rs and integration.rs (64) pass. Findings about the fixture for the reconcile loop are under the brief's Progress: the alias-to-copy defect also throws where quantity <= 0, and the kernel claim's allocations bound of 0 is not checked. No verification job: every check is inline and small.",
+      "log_sha256": "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a"
+    },
+    {
+      "change_id": "xmwsurtuomntxxnponyownpwvvvzrmvk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression witnesses over objects run on a real JVM with their identities, the application's classes opened for the harness (H4, first step)",
+      "body": "A regression counterexample over objects (an object parameter made by its constructor, a result compared field by field, or versions differing in a field of an object or an identity relation) is now run on a real JVM as well as replayed in the interpreter: the harness on the shrunk input, which makes each version's objects from the same leaves and with the same identities. The harness reads fields with getfield, which a JVM refuses (IllegalAccessError) for a record's private fields and a class's package-private ones from the unnamed package, so the JVM run loads copies of the classes the harness names with the class, its fields, its constructors and its static methods made public (relocate::opened, placed first on the class path by jvm_witness). Field resolution and those calls don't depend on access; instance methods keep theirs, since it decides overriding. The proof line says the JVM confirmed it and the counterexample carries the JDK as jvm. A harness the JVM finds holding makes the result unverifiable; spec::heap::check reports a refutation only with the JVM's confirmation.\n\nVerified inline: every object refutation in lib/tests/heap.rs (changed result, object as left, alias-to-copy, a Line result, an array handed back in place of a copy, the joint example's alias-to-copy under the correspondence) asserts the JVM's confirmation, and with the opened copies disabled the JVM's harness throws IllegalAccessError and those tests fail. A unit test of relocate::opened. The integration contract's heap part still passes 6 of 6. Unit tests (188), heap.rs (18), foundations.rs and conformance.rs pass; integration.rs passed 63 of 64 under load, the one failure the load-sensitive primitive test seen in every earlier step, which passed alone in 10.9 s. No job. The brief's Progress records the step and the next one.",
+      "log_sha256": "ede9e3b7ac91d52c49d69eaa7faf2e12a95ebc9de8d383bbcd640cefe162fd15"
+    },
+    {
+      "change_id": "yzzyzymtuptmtwuotlnwnymtkmwplpux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose a false public-ip finding for the allow list: a JVMS section number in a doc comment",
+      "body": "Finding 65c491aa in this session's log is the JVMS section number 5.4.3.3 cited in relocate::opened's doc comment, not an IP address. Proposed with sync.py allow propose; it stays a warning until a person approves it.",
+      "log_sha256": "ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d"
+    },
+    {
+      "change_id": "ovxylkttlsovyusrwvotonwlwlozlpxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 150-152: a retry throttle as a mutable object input, a correct rewrite proved, the alias-to-copy defect refuted, a bug outside the constructor-made domain verified only within it (verification pending)",
+      "body": "The heap stream's examples (llm-dlc/loops/foundations-heap.md, H2-H4). Crosscut gains a kernel with a mutable object input: gRPC-style retry throttling, retry.ThrottleLimits (a record), retry.Throttle (a class every call on a channel shares, made full by its one constructor) and retry.RetryThrottling (recorded, reconfigured), with tests. Example 150 rewrites recorded with Math.max and Math.min and is verified; 151 turns the throttle reconfigured hands back into a copy with the same tokens and the same limits object, refuted by the identity relation result == throttle alone, its witness a construction recipe replayed in the interpreter and run on a JVM; 152 drops the floor at zero tokens, wrong only on a throttle calls have drained, which the constructor never makes, so it is verified within the constructor-made claim. So that such a verdict cannot read as a proof over every state, a verified regression proof over an object made by its constructor now says 'behaves as before on every input of constructor-made objects' (equivalence::made_by_constructor). New tags: aliasing (defect) and object-inputs (technique).\n\nVerified inline: the three checks run by the CLI on the classes the patches make, giving the expected verdicts; 152's defect shown on a JVM by hand (a two-token throttle after three failures holds 1000, 0, -1000 thousandths against 1000, 0, 0, and needs 21 successes before a retry against 11); Crosscut's 52 tests and jvmcontract verify on its contracts pass; heap.rs (18, asserting the new headline), unit tests (188; jbmc's stand-in-script test failed once under load and passed alone), foundations.rs, conformance.rs and integration.rs (64) pass.",
+      "log_sha256": "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd"
+    },
+    {
+      "change_id": "luwtvovolmrnrtmumlnvtrrxymywlwyo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Object parameters that may be null or one object in regression checks, made by a flag of the harness's own and kept by every witness (H2, third step; H4's rest)",
+      "body": "jvmcontract equivalence takes --nullable and --may-alias for object parameters made by their constructor, and spec::heap::check passes a claim's ObjectDomain nullable and may_alias. The harness makes each choice with a boolean input after the leaves (l.null, to.same.from), in both versions alike, null first and a choice of a null parameter passed over, so a non-nullable parameter is never null; the domain and the statement say which parameters may be null or one object. The witness keeps the choice in the interpreter's replay, the shrinker (which never changes a flag) and the JVM run: move(from=new Line(new Money(0), 1), to=the same object as from) is one object everywhere, and --json gives it as {\"same\": \"from\"}. Records, arrays, primitives, parameters given by --before-arguments, a nullable receiver and parameters of two classes are refused by name.\n\nVerified inline: lib/tests/heap.rs gains four tests (a buffered move verified over two objects and refuted with one, confirmed on the JVM, its reordered rewrite verified; a dropped null check refuted with size(l=null) on the JVM; refusals; the kernel claim with q nullable under the correspondence), and a harness unit test covers the flags, the resolution rule, the domain words, the Java rendering and the bytecode. Unit tests (189), heap.rs (22), foundations.rs, conformance.rs and integration.rs (64) pass. No job: every check is small.",
+      "log_sha256": "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966"
+    },
+    {
+      "change_id": "ttrwlznywpkqnoqtsrnrvpyqszupukrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Object parameters in property checks, made by their constructor, read by field paths now and under \\old, compared by identity, and null or one object by the harness's flags (H2's rest; verification pending)",
+      "body": "jvmcontract prove now takes a static method whose parameters are objects of application classes (step H2 of llm-dlc/loops/foundations-heap.md). Each is made in the harness by its one usable constructor from symbolic primitive leaves, as a regression check already did, and an input the constructor rejects is outside the property; the domain and the verdict say the claim covers constructor-made objects only ('on every input of constructor-made objects'). A property reads such an object by its field paths (l.price.cents), before the call under \\old (l.quantity == \\old(l.quantity) + 1), and compares references by identity (result == l, l == null), so the alias-to-copy defect fails result == l though every field agrees. --nullable and --may-alias on object parameters are boolean inputs of the harness, so JBMC is given the same harness. A witness is a construction recipe that keeps null and shared objects (move(from=new Line(new Money(0), 1), to=the same object as from)); it is checked by running the harness itself in the interpreter and on a JVM, and the shrinker never changes a choice.\n\nVerified inline: six new tests in lib/tests/heap.rs (four correct methods proved and their defective versions refuted with witnesses confirmed on a JVM, a bug only where the constructor refuses verified within the claim, refusals by name), a harness unit test, and unit tests (190), heap.rs (28), foundations.rs, conformance.rs and integration.rs (64) passing. Job 20261107-072431 (quick, priority 10) runs the same eight properties under --engine jbmc and auto --confirm, expected to give the same verdicts.",
+      "log_sha256": "7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819"
+    },
+    {
+      "change_id": "vnrpwzkxuqnywykroqzkouqoltlwvssm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose a false long-token finding for the allow list: a test's work directory name",
+      "body": "Finding 606ed0f7 in this session's log is property-after-withQuantity-<hash>, a work directory lib/tests/heap.rs makes for a property check, named by a hash of the test's arguments and listed by ls while inspecting a generated harness. It is no credential; proposed with sync.py allow propose, for the user to approve.",
+      "log_sha256": "d3b3bdd48cf65f6a6458b3a57bb5ca161874d1639bc421968052c3f40a99e845"
+    },
+    {
+      "change_id": "nywxuwqrtlmmqptpnnxmqkmzxtqolrpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Output relations for the result under a correspondence, object results related by their field paths, and --correspondence FILE on equivalence (H5's rest, first step; verification pending)",
+      "body": "A regression check's correspondence may now give an output relation for the result in place of --results-agree-when: a boolean over old.result, new.result and the new parameters, rewritten to one over previous and result (spec::heap::output_relation), so a long result that became a Money value object is related by old.result == new.result.cents. A result that is an object of an application class is in a result relation of either kind by its field paths, of whatever shape in each version, read through the objects in the harness's bytecode; two null results agree, one alone does not. Identity relations are still compared, so the alias-to-copy defect stays refuted by result == q under such a relation. A replay evaluates the relation on each result's field paths as the call left them (Replayed::result_paths, expr::eval_reading), with the harness run in the interpreter deciding the rest; a witness the relation fails on differs in result and is run on a JVM. jvmcontract equivalence reads a correspondence as JSON in the IR's form with --correspondence FILE. In spec::heap::check, a required observation under an output relation is compared under it rather than for equality, so it stays unresolved whatever the check finds (a relation like true would otherwise hide the offset defect) until the preservation contract's approved_changes has it. Also fixed: without --before-arguments, the previous version's parameter types were compared with the flat leaves, which refused a result relation over an object parameter.\n\nVerified inline: four new tests in lib/tests/heap.rs (a value-object result related, refused without the relation, a defect refuted on the JVM; the fixture's withQuantity across the two Quote shapes related by field paths, the alias-to-copy defect refuted by identity alone, a broken relation refuted; the claim's accounting with and without an approved change; the CLI with the golden correspondence file), and a unit test of output_relation. Unit tests (191), heap.rs (32), foundations.rs and conformance.rs pass; integration.rs passed 63 of 64 under load, its known flaky the_tools_own_checker_agrees_with_jbmc_on_integer_proofs passing alone in 8.2 s.\n\nJob 20261107-080218-output-relations-under-a-correspondence (quick, priority 10, for review: no runner was active) runs the new ignored test, the five checks under --engine jbmc and auto --confirm.",
+      "log_sha256": "faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a"
+    },
+    {
+      "change_id": "ryyzlszonrxulsvrwwlxmvovqtrnxrmo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Input equations that compute: a previous field given by an expression over the new object's leaves, and refused where the preservation contract anchors the input (H5's rest, second step; verification pending)",
+      "body": "A correspondence's input equation may now give the previous version's field by an expression over primitive field paths of the same parameter's new object that are leaves of its construction: Price(long cents) before and Price(long dollars, int cents) now are related by old.p.cents == new.p.dollars * 100 + new.p.cents. The harness computes the previous constructor's argument from the new leaves before the calls and compares the expression over the new object's paths with the previous field after them (the parameter as left, and a result of the same pair of classes), a path through null reading as absent and a division by zero skipping the input; the interpreter's replay, the --json call and the replays' views compute it the same way (harness::Computed, Source, Leaf; FieldEquation::computed). Since such an equation can change what an input means (an offset of one cent makes a changed total agree), spec::heap::check refuses one about an input the claim's preservation contract anchors (derivation identity), the right expression as well as the offset, unless a person stated it among the input's derivation's conjuncts (spec::heap::anchored).\n\nVerified inline: a price kernel in lib/tests/heap.rs (total, doubled and raise verified between the two shapes; a cent too much in total and a dropped carry in raise refuted, on the JVM too; the offset equation proving the defect equivalent without a contract, refused by a claim anchoring p, and the stated derivations accepted or refused as they say), three unit tests in spec::heap, and the unit tests (194), heap.rs (34), foundations.rs, conformance.rs and integration.rs (64). Quick job 20261107-083358-computed-input-equations-under-a-corresp runs the ignored test with the five checks under --engine jbmc and auto --confirm: expected exit 0, three verified and two refuted with witnesses run on a JVM.",
+      "log_sha256": "b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7"
+    },
+    {
+      "change_id": "vzwuvxyortxwslrkkpypzvqusppmumrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Output relations for an object parameter's field as the calls leave it, compared in place of the input equations about its path, and accounted as the result's are (H5's rest, third step; verification pending)",
+      "body": "A correspondence's output relation for field:p.cents (a previous version's path; field:p for the whole object) is now a boolean over primitive field paths of that parameter's two objects, old.p.… and new.p.…, compared in the harness after the calls in place of the input equations about the path or under it. Those equations still make the previous object and are still assumed of the two objects as made. A raise that now rounds up to whole dollars is related by new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && … < 100. The replays evaluate it on both objects' paths as left, and a witness it fails on differs in field:p.cents. A counterexample's differs now also names each previous version's path its correspondence views read differently (field:p and field:p.cents), so a claim that requires a path can be refuted in it. In spec::heap::check a field relation bears on required observations at, under and above its path: unresolved until a person approves the change of its path or one above it, then changed with approval if proved and refuted if broken. Relations for a parameter no input equation relates, an unknown path, overlapping paths, another parameter, or not a boolean are refused by name.\n\nVerified inline: lib/tests/heap.rs adds a rounded build of the price kernel and two tests (rounding up refuted under the equation alone and verified under the relation, the harness's source and the observations' words checked; the exact raise verified; the dropped carry refuted in field:p.cents on the JVM; the claim's accounting unresolved, approved, refuted, and an unrelated approval approving nothing), and two unit tests. Unit tests (196), heap.rs (36), foundations.rs, conformance.rs and integration.rs (64) pass.\n\nJob 20261107-085410-output-relations-for-an-object-parameter (quick, priority 10, for review): the new ignored test in heap.rs, the four checks under --engine jbmc and auto --confirm; expected exit 0 with the own checker's verdicts and every witness run on a JVM.",
+      "log_sha256": "4aec40d690655a301ce32fdd6fa9dbae6e1dfc7e4ad91e4cbd63a8e2f896a37d"
+    },
+    {
+      "change_id": "syuyoumvqtqprsyyxzpxutmnxlpnvmko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Input equations whose expression reads the new version's primitive parameters, made before the call and compared after it (H5's rest, fourth step; verification pending)",
+      "body": "A correspondence's input equation may now compute the previous version's field from the new object's leaves and the new version's primitive parameters, or from the parameters alone: a Line(long total) that now holds its unit price, Line(long price), with a count both versions take, is related by old.l.total == new.l.price * new.n. A read of a parameter is a harness::Read with param set, resolved to its flat parameter by Layout::new. The harness makes the previous object from it before the calls (new before.lines.Line((long) (l_price * n))) and compares the expression over the new object's paths and the parameter as the call got it after them. The interpreter's replay, the correspondence views and the --json call read it too. A result of the same pair of classes is not compared under such an equation. In spec::heap::check it counts as a computed equation, so it is refused about an input the contract anchors unless a person stated it; old.l.count == new.n now counts as computed as well. Refused by name: a parameter the new version doesn't have, an object parameter read as a whole, the fields of several object parameters, and a parameter of a floating type.\n\nVerified inline: a line kernel in lib/tests/heap.rs with two tests. discounted and reprice are verified, with the harness's source and the observations' words checked. A discount from the eleventh item is refuted in the result, and a unit price set to the line's amount is refuted in field:l.total, both on a JVM. Through spec::heap::check the equation is refused where the contract anchors l, and under a stated derivation it verifies the rewrite and refutes the defects. One new unit test covers the reads, the layout's flat index, the text and the refusals. The unit tests (197), heap.rs (38), foundations.rs and conformance.rs pass. integration.rs passes with one test at a time; run in parallel, the_tools_own_checker_agrees_with_jbmc_on_integer_proofs fails on the parent commit as well. The cause is timing-dependent behaviour in the engine (Engine::probe budgets a probe by the wall clock), recorded under the heap brief's Progress with the evidence and a proposed fix.\n\nJob 20261107-092158 (quick, priority 10, for review since no runner was active) runs the new ignored test, the four checks under --engine jbmc and auto --confirm. It is expected to exit 0: after verified for discounted and reprice, and defect refuted for both with witnesses run on a JVM.",
+      "log_sha256": "10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054"
+    },
+    {
+      "change_id": "npqyzsmmxqsxqytnvypqwkkzpolwtlyw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Output relations for identity relations, compared in place of holds before iff it holds now and accounted as the other output relations are (H5's rest, fifth step; verification pending)",
+      "body": "A regression check's correspondence may now give an output relation for an identity relation the check observes, identity:result==q: a boolean over whether it holds in each version, written old.result == old.q and new.result == new.q (either way round, or negated with !=). The harness computes each version's relation into a boolean by if_acmp and evaluates the relation over the two in place of 'holds before iff it holds now' (harness::IdentityRelation on Layout::identity_relations, made by spec::heap::identity_relations). So a withQuantity that now hands back a copy on purpose is related by old.result == old.q && new.result != new.q, under which handing back the quote itself, always or only sometimes, is refuted. The observations, the Java rendering and the replays say so; a witness the relation fails on differs in identity:result==q with a note. spec::heap::check accounts for it as for the other output relations: unresolved until a person approves the change, then changed with approval when proved and refuted when the witness breaks it. A relation the check doesn't observe, a second for the same one, and one that reads a field or anything but that relation are refused by name.\n\nVerified inline: two new tests in lib/tests/heap.rs over two more builds of the joint example's withQuantity (a copy made on purpose; the quote itself when its quantity is unchanged), with refutations confirmed on a JVM, and the claim's accounting with and without approval; a unit test of identity_relations. Unit tests (198), heap.rs (40), foundations.rs and conformance.rs pass, and integration.rs passes run one test at a time (64). Quick job 20261107-104658 repeats the three checks under --engine jbmc and auto --confirm, for review unless it returns within the cycle.",
+      "log_sha256": "05da9cd05a972639e75b09912ab17b92a7016b50fee3991e7faf5df7a38e782a"
+    },
+    {
+      "change_id": "ukqxumttmsulpsklsynprqtswsvmzwqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Output relations for a field of a parameter of the same shape in both versions, compared in place of equality for its path, and refutations that name each path an object differs in (H5's rest, sixth step; verification pending)",
+      "body": "A regression check's correspondence may now give an output relation for a field of an object parameter made by its constructor whose two versions have the same shape and which no input equation relates: a bump that now adds two is related by field:l.quantity, new.l.quantity == old.l.quantity + 1. spec::heap::relate_same_shape makes it a Corresponds marked same_shape, with implied identity equations on every primitive path and the same leaves, so the objects are made as without a correspondence and nothing is assumed of them as made; after the calls each relation is compared in place of equality for its path and every other path still for equality. The observations say 'l: price.cents; l.quantity under the output relation ...', and spec::heap::check accounts for it as for the other output relations. A counterexample over an object compared field by field now also names each primitive path its replays read differently (field:l.quantity beside field:l), so a claim requiring that path can be refuted in it. A same-shape parameter whose other fields include an array is refused by name.\n\nVerified inline: two new tests in lib/tests/heap.rs on the object kernel's bump (the defect verified under the relation with the harness source, words and assumptions checked; after refuted in field:l.quantity with the note on the JVM; a relation for l.price.cents leaving the quantity to equality; equality written out; refusals; the claim's accounting unresolved, approved and changed with approval, refuted), a unit test of relate_same_shape, unit tests (199), heap.rs (42), foundations.rs, conformance.rs and integration.rs (64, one test at a time) pass.\n\nQuick job 20261107-112033-output-relations-for-a-field-of-a-parame runs the new ignored test under --engine jbmc and auto --confirm: expected exit 0, defect verified and after refuted with its witness run on a JVM.",
+      "log_sha256": "e6a4e7db9105cf89d593b8f892b454b3df0d72f7db656623f1f9bfbb40f5b216"
+    },
+    {
+      "change_id": "roxunqxwlqpppvrmslmoltmpnowprzwy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Input equations whose expression reads another object parameter's fields, as the arguments it was made from, made before the call and compared after it (H5's rest, seventh step; verification pending)",
+      "body": "A regression check's correspondence may now give the previous version's field from an expression that reads a primitive field path of another object parameter of the new version, where the path is a leaf of that object's construction: a Line(long total) that now holds its unit price beside an Order(int count) both versions take is related by old.l.total == new.l.price * new.o.count. spec::heap::relate takes the new version's object parameters and makes such a read a parameter read of the path o.count, which the harness layout resolves to the order's leaf, so the harness computes the previous line from it before the calls and compares the expression after them, as it does for a primitive parameter; roots takes an expression over several objects' fields as about the parameter of the previous root's name. Refused by name: a path the other object doesn't have or that is no leaf of its construction, a root that is no object parameter, and an object that may be null or another parameter's, whose argument is then not its field.\n\nVerified inline: lib/tests/heap.rs has an order kernel and two new tests (the rewrites verified with the harness source, domain and observations checked; a discount defect refuted in the result and a repricing defect in field:l.total, both confirmed on a JVM; refusals named; through spec::heap::check, refused where the contract anchors l and checked under a stated derivation), and a new unit test in spec::heap. Unit tests (200), heap.rs (44), foundations.rs, conformance.rs and integration.rs (64, one test at a time) pass. Quick job 20261107-115201 runs the new ignored test under JBMC and auto --confirm, expected exit 0 with the same verdicts.",
+      "log_sha256": "8cda31194603744009bd21bc8084e13407a92982dbf47b329750d7a58d1be3f8"
+    },
+    {
+      "change_id": "qyvvpluvtwxwqtvvmrswvlwmyvrtxvns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Output relations for the result that read the previous version's parameters, a primitive one as the new version's in its place and an object's field path as the call left the previous object (H5's rest, eighth step; verification pending)",
+      "body": "A correspondence's output relation for the result may now read old.by (a primitive parameter of the previous version, read as the new version's parameter in its place) and old.p.cents (a primitive field path of the previous version's object, read from the local it is kept in after both calls). spec::heap::output_relation writes them before$by and before$p.cents; BeforeMethod::parse_relation resolves them by the previous version's parameter names, and the replay reads the previous object's paths as its replay left them. The price kernel gained raised(Price p, int by), which returned whether it raised the price and now returns the amount it leaves, related by new.result == old.p.cents && old.result == (old.by > 0). Refused by name: an object read as a whole, a field of a primitive, an unknown name, an object not made by its constructor, and any such read under --before-arguments.\n\nVerified inline: the after build verified; a defect returning the amount before the raise refuted with raised(p=new Price(0, 0), by=1) and confirmed on a JVM; the same relation written over the new version's p (read as the call got it) verifies the defect and refutes after, so each side is read where it should be; spec::heap::check unresolved without approval, changed with approval, the defect refuted. Unit tests (201), heap.rs (46), foundations.rs, conformance.rs and integration.rs (64, one test at a time) pass. One CLI run went to JBMC inline by the command's default engine (0.2 s), recorded under Progress.\n\nJob 20261107-121516-result-relations-that-read-the-previous (quick, priority 10, for review): the new ignored test under --engine jbmc and auto --confirm, expected exit 0.",
+      "log_sha256": "b3531b584ebcdb6dec3acb9aa1a0603d3df73836e823b3128f2833524535dbb4"
+    },
+    {
+      "change_id": "znwsunmzwrwsqokooxtourqsuvwnvxzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Heap stream done: H1-H5 finished, the rest of H5 recorded as named gaps",
+      "body": "The heap stream of the foundations loop closes. The proposed ninth step of H5 was checked against the code first. Naming intermediate object paths in a counterexample's differs under a correspondence changes no verdict, because spec::heap::check already refutes a required path when differs has a leaf under it. The other option, a same-shape parameter with an array field, only lifts one refusal. Both are polish, so the stream stops with Status: done. Its Progress now records the gaps that are still refused by name, a probe-budget finding for a person, and a fixture note for the reconcile loop.\n\nDone criteria checked on this branch. cargo test --release --test foundations passes 3 of 3, and the integration contract's heap part passes 6 of 6 (after total, withQuantity and discount; the offset and alias-to-copy defects refuted; outside-domain verified within the constructor-made claim). Every verification job this run submitted (15 job files, 041414 through 121516) is listed under Progress for review. No code changed.",
+      "log_sha256": "b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44"
+    },
+    {
+      "change_id": "znkqslrsvzunnrnsxovwunkxvrnnqkry",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The foundations reconcile records the heap stream's conversation after its last commit, so that its trace is on its branch before the merge.",
+      "log_sha256": "26d304137ac5a035f6db33c25faa517642596b3068beb9cc92951f5b476a8f3d"
+    }
+  ],
+  "logs": {
+    "05da9cd05a972639e75b09912ab17b92a7016b50fee3991e7faf5df7a38e782a": {
+      "bytes": 32426063,
+      "lines": 11221,
+      "gzip_bytes": 6251726,
+      "url": null
+    },
+    "10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054": {
+      "bytes": 30427217,
+      "lines": 10611,
+      "gzip_bytes": 5822269,
+      "url": null
+    },
+    "258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f": {
+      "bytes": 7113333,
+      "lines": 2576,
+      "gzip_bytes": 1336230,
+      "url": null
+    },
+    "26d304137ac5a035f6db33c25faa517642596b3068beb9cc92951f5b476a8f3d": {
+      "bytes": 40357276,
+      "lines": 13617,
+      "gzip_bytes": 7965489,
+      "url": null
+    },
+    "3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f": {
+      "bytes": 1650525,
+      "lines": 592,
+      "gzip_bytes": 318904,
+      "url": null
+    },
+    "4aec40d690655a301ce32fdd6fa9dbae6e1dfc7e4ad91e4cbd63a8e2f896a37d": {
+      "bytes": 27628834,
+      "lines": 9487,
+      "gzip_bytes": 5347013,
+      "url": null
+    },
+    "5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3": {
+      "bytes": 8982260,
+      "lines": 3214,
+      "gzip_bytes": 1685201,
+      "url": null
+    },
+    "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966": {
+      "bytes": 17985659,
+      "lines": 6291,
+      "gzip_bytes": 3465944,
+      "url": null
+    },
+    "7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819": {
+      "bytes": 20549781,
+      "lines": 7080,
+      "gzip_bytes": 3971776,
+      "url": null
+    },
+    "8cda31194603744009bd21bc8084e13407a92982dbf47b329750d7a58d1be3f8": {
+      "bytes": 36407218,
+      "lines": 12447,
+      "gzip_bytes": 7074874,
+      "url": null
+    },
+    "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a": {
+      "bytes": 11659876,
+      "lines": 4193,
+      "gzip_bytes": 2162832,
+      "url": null
+    },
+    "b3531b584ebcdb6dec3acb9aa1a0603d3df73836e823b3128f2833524535dbb4": {
+      "bytes": 38645625,
+      "lines": 13232,
+      "gzip_bytes": 7519145,
+      "url": null
+    },
+    "b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7": {
+      "bytes": 25380790,
+      "lines": 8871,
+      "gzip_bytes": 4875711,
+      "url": null
+    },
+    "b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44": {
+      "bytes": 39712188,
+      "lines": 13449,
+      "gzip_bytes": 7806940,
+      "url": null
+    },
+    "ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d": {
+      "bytes": 13440046,
+      "lines": 4830,
+      "gzip_bytes": 2531767,
+      "url": null
+    },
+    "cec1ac6ca9c6ec56477a377c975e2f921f8527cca741953c4f47eda3e941aa8c": {
+      "bytes": 4672996,
+      "lines": 1744,
+      "gzip_bytes": 857489,
+      "url": null
+    },
+    "d3b3bdd48cf65f6a6458b3a57bb5ca161874d1639bc421968052c3f40a99e845": {
+      "bytes": 20630437,
+      "lines": 7122,
+      "gzip_bytes": 3984100,
+      "url": null
+    },
+    "e6a4e7db9105cf89d593b8f892b454b3df0d72f7db656623f1f9bfbb40f5b216": {
+      "bytes": 34509756,
+      "lines": 11856,
+      "gzip_bytes": 6679297,
+      "url": null
+    },
+    "ede9e3b7ac91d52c49d69eaa7faf2e12a95ebc9de8d383bbcd640cefe162fd15": {
+      "bytes": 13360746,
+      "lines": 4786,
+      "gzip_bytes": 2519597,
+      "url": null
+    },
+    "eebff3e85c1dae64eadc7f24516a8c30bec9e3d4937a557f66814aba00e257fd": {
+      "bytes": 4782055,
+      "lines": 1798,
+      "gzip_bytes": 873639,
+      "url": null
+    },
+    "faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a": {
+      "bytes": 23234819,
+      "lines": 8181,
+      "gzip_bytes": 4450511,
+      "url": null
+    },
+    "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd": {
+      "bytes": 15653803,
+      "lines": 5629,
+      "gzip_bytes": 2971461,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

@@ -1,0 +1,37 @@
+GET /payments => net.terminalvalue.boxoffice.payments.api.PaymentController#all
+  inputs: none
+  response: List<PaymentDocument>
+  status when returns: 200 (the default)
+  reads PaymentDocument by MongoTemplate.find, outside a transaction, in PaymentController.all(), snapshot of query
+  observes: result, exception, status
+  identity relations: none: its consumers see serialized values
+  environment: 1 modeled call, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+GET /payments/{orderId} => net.terminalvalue.boxoffice.payments.api.PaymentController#get
+  inputs: orderId: String (path variable)
+  response: ResponseEntity<PaymentDocument>
+  status when returns: unknown (the ResponseEntity the handler builds)
+  reads PaymentDocument by MongoTemplate.findById, outside a transaction, in PaymentController.get(String), snapshot of id
+  observes: result, exception, status
+  identity relations: none: its consumers see serialized values
+  environment: 1 modeled call, trace bound 4, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+kafka payments.commands => net.terminalvalue.boxoffice.payments.app.PaymentCommandListener#on
+  inputs: record: ConsumerRecord<String, String> (payload)
+  reads Inbox.Entry by MongoTemplate.exists, inside its transaction, in Inbox.firstDelivery(String, Message), snapshot of query
+  reads PaymentDocument by MongoTemplate.findById, inside its transaction, in PaymentCommandHandler.lambda$handle$0(PaymentCommand), snapshot of id
+  writes Inbox.Entry by MongoTemplate.insert, inside its transaction, in Inbox.firstDelivery(String, Message), snapshot of objectToSave.id, objectToSave.processedAt
+  writes Outbox.Entry by MongoTemplate.insert, inside its transaction, in Outbox.enqueue(String, Message), snapshot of objectToSave.id, objectToSave.topic, objectToSave.key, objectToSave.payload, objectToSave.createdAt, objectToSave.publishedAt
+  writes PaymentDocument by MongoTemplate.insert, inside its transaction, in PaymentCommandHandler.charge(ChargePayment, PaymentDocument), snapshot of objectToSave.orderId, objectToSave.customerId, objectToSave.amountCents, objectToSave.status, objectToSave.gatewayReference, objectToSave.reason, objectToSave.createdAt, objectToSave.updatedAt
+  writes PaymentDocument by MongoTemplate.insert, inside its transaction, in PaymentCommandHandler.refund(RefundPayment, PaymentDocument), snapshot of objectToSave.orderId, objectToSave.customerId, objectToSave.amountCents, objectToSave.status, objectToSave.gatewayReference, objectToSave.reason, objectToSave.createdAt, objectToSave.updatedAt
+  writes PaymentDocument by MongoTemplate.updateFirst, inside its transaction, in PaymentCommandHandler.refund(RefundPayment, PaymentDocument), snapshot of query, update
+  observes: exception, effect:org/springframework/data/mongodb/core/MongoTemplate#insert(Ljava/lang/Object;)Ljava/lang/Object;, effect:org/springframework/data/mongodb/core/MongoTemplate#updateFirst(Lorg/springframework/data/mongodb/core/query/Query;Lorg/springframework/data/mongodb/core/query/UpdateDefinition;Ljava/lang/Class;)Lcom/mongodb/client/result/UpdateResult;
+  identity relations: none: its consumers see serialized values
+  environment: 4 modeled calls, trace bound 5, exact order
+  assumes every modeled call returns normally: a failure of a store, broker or client call is outside this environment model
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in FakePaymentGateway.lambda$charge$0(String, String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in Inbox.firstDelivery(String, Message) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in PaymentCommandHandler.refund(RefundPayment, PaymentDocument) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: StringConcatFactory.makeConcatWithConstants in Transactions.requireActive(String) (string concatenation: the string's value isn't modeled)
+  unresolved: a dynamic call site the walk doesn't follow: SwitchBootstraps.typeSwitch in PaymentCommandHandler.charge(ChargePayment, PaymentDocument) (a pattern or enum switch)
+  unresolved: a dynamic call site the walk doesn't follow: SwitchBootstraps.typeSwitch in PaymentCommandHandler.lambda$handle$0(PaymentCommand) (a pattern or enum switch)

@@ -910,9 +910,9 @@
       "severity": "high",
       "changeKind": "refactor",
       "verdict": "violation",
-      "verdictLabel": "✗ Violation: 1 of 22 cases changed",
+      "verdictLabel": "✗ Violation: 1 of 22 cases changed (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "Commits after an `OutOfMemoryError`: \"a RuntimeException rolls back\" is not \"unchecked rolls back\"."
@@ -2986,9 +2986,9 @@
       "severity": "none",
       "changeKind": "feature",
       "verdict": "verified",
-      "verdictLabel": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration",
+      "verdictLabel": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "The circuit-breaker model (`apps/crosscut/spec`) checks the breaker with the component that owns it for its invariants and, under fairness, for three liveness properties, each written for a different fate of the dependency behind it. A rule can keep every invariant and still fail one of them.",
@@ -4471,7 +4471,8 @@
       "notes": [
         "The first example of approach B12, the boundary contract (`jvmcontract boundaries`, `verify --add boundaries`): where Spring enters a module and the advice on each bean, from the annotations in the class files. The three Box Office modules with Spring annotations carry theirs in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the PATH (`verifyBoundaries`, `updateBoundaries`).",
         "Box Office keeps its transactions programmatic (`Transactions`), so none of the contract's `!` lines (self-invocation of a `@Transactional` method, advice on a private or final method, a checked exception that commits, a lost `@Async` result) occur here; the library's Spring fixtures (`lib/tests/fixtures/spring`) have one of each. An example of a `@Transactional` self-invocation needs a service with `@Transactional` beans: a candidate for Crosscut's framework glue, which the kernels there deliberately leave out.",
-        "The runner (`build.py`, `run_boundaries`) compiles the patched module with Gradle and runs `jvmcontract verify` over its `src/contract` directory; it does not use the Gradle build's own `verifyBoundaries` task, so it works without the tool on the PATH of the Gradle daemon. The existing tests are the module's Spring Boot tests, which need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The runner (`build.py`, `run_boundaries`) compiles the patched module with Gradle and runs `jvmcontract verify` over its `src/contract` directory; it does not use the Gradle build's own `verifyBoundaries` task, so it works without the tool on the PATH of the Gradle daemon. The existing tests are the module's Spring Boot tests, which need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `POST /orders` gets two changed obligations. `inputs` names the new `Idempotency-Key` header and, in the body's wire shape, `! constraints on PlaceOrder are not checked: no @Valid on request`. `status` says that before the handler runs the old build answers `MethodArgumentNotValidException` with 400 for a body that fails one of `@NotBlank on PlaceOrder.holdId`, `@NotBlank on PlaceOrder.paymentToken`, and that the new build runs the handler instead. The spec models request validation as an outcome the framework takes before the handler, with the requests it is for, so a dropped `@Valid` is a changed status mapping, not a preserved one."
       ],
       "source": null
     },
@@ -4512,7 +4513,8 @@
         "The first example of the wire types in a boundary contract (`jvmcontract boundaries`, `verify --add boundaries`): the JSON shape of each request, response and message type as Jackson encodes it, with `!` lines for the Jackson pitfalls that no test with the same classes on both sides can see. The `contracts` module of Box Office has no Spring annotations; its boundary contract is wire types only, and it is checked by `./gradlew check` like the others when `jvmcontract` is on the `PATH`.",
         "The runner (`build.py`, `run_boundaries`) treats an intended change as a regeneration: it runs `jvmcontract update`, records the contract diff, and reports as the violation any `!` line the regenerated contract has that the old one did not. An unintended change is a plain `verify`, as in example 110.",
         "Jackson 3.1 behaviour, checked with a scratch program against the jars Box Office uses: a permitted subtype missing from an explicit `@JsonSubTypes` is written as `Outer$Inner` and rejected on reading; a sealed interface with `@JsonTypeInfo` and no `@JsonSubTypes` accepts all permitted subtypes under their class names, which the contract reports as a type id that is a class name; a listed subtype without `name` gets the class name too. Jackson 2 does not read permitted subclasses at all, so there the unlisted event fails on reading in every case.",
-        "The patch touches three modules (the record, the publisher, the consumer's switch); the runner compiles and checks the `contracts` module, where the subject is. The payment-service tests that exercise the void path are not in this patch, as they were not in the developer's change."
+        "The patch touches three modules (the record, the publisher, the consumer's switch); the runner compiles and checks the `contracts` module, where the subject is. The payment-service tests that exercise the void path are not in this patch, as they were not in the developer's change.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): nothing changes in any module's specs. The new `PaymentVoided` is enqueued through the outbox like the other events, so the payment listener's effect has the same call, sites and snapshot paths; its type id is inside the encoded string payload (`objectToSave.payload`), a payload value the static spec doesn't see. The effect stays preserved-to-prove, and only a trace proof over payload values with the codec modeled would refute it. The wire block of the boundary contract is what catches this example; the comparison names it as not observed (`observations::NOT_OBSERVED`)."
       ],
       "source": null
     },
@@ -4552,7 +4554,8 @@
       "notes": [
         "The first example of the configuration block of a boundary contract (`lib/src/config.rs`): the keys the classes read, the keys the application files set and the keys the class path's configuration metadata declares, cross-checked. The runner passes the module's resource directory with `--resources` and the runtime class path from Gradle's `printRuntimeClasspath` task with `--classpath`, so the metadata in the Spring Boot jars is read; without the class path, every `spring.*` and `server.*` key would be reported as unbound.",
         "The other `!` lines of the block, each in the library's Spring fixtures (`lib/tests/fixtures/spring/resources/application.yaml`): a key the metadata marks deprecated (`spring.data.mongodb.uri` in Spring Boot 4, which no longer binds it and names `spring.mongodb.uri`), a value that is not of the key's type (`ttl: 2 minutes` for a `Duration`, `port: eighty`, an enum constant that does not exist), and a placeholder default that is not (`${holds.retries:many}` for an `int`). A key no file sets is not a problem, since it may come from the environment: it is shown with its default and no value.",
-        "The patch changes no Java, so the module compiles as before and the existing tests pass as before; the runner compiles it anyway, since the contract is read from the classes and the files together. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The patch changes no Java, so the module compiles as before and the existing tests pass as before; the runner compiles it anyway, since the contract is read from the classes and the files together. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): nothing changes in any module's specs: a configuration key's value is not observed by an entry-point spec (`observations::NOT_OBSERVED`). The boundary contract's configuration block is what catches this example."
       ],
       "source": null
     },
@@ -4592,7 +4595,8 @@
       "notes": [
         "The first example of the validation checks on a boundary contract (`lib/src/validation.rs`): a nested type's constraints with no `@Valid` leading into them (this example), a `@RequestBody` taken without `@Valid` or `@Validated` while its type carries constraints, a `@Valid` or `@Validated(G.class)` that leaves out the constraints of other groups, a constraint on a type its validator cannot handle (`@Size` on an `int`, which Hibernate Validator rejects at the first validation with `UnexpectedTypeException`), a null check on a primitive, and constraints on a non-public method of a `@Validated` bean. Each is a `!` line under the property or the handler; the library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/Booking.java`) have one of each.",
         "The contract now writes the constraints inside a type, read from the class file's type annotations (`RuntimeVisibleTypeAnnotations`): `rows: @NotEmpty List<@Pattern(regexp = \"[A-Z]\") String>` in the ticketing service's `CreateConcert`, which earlier contracts showed as `List<String>`. The type-use constraints are where `List<@Valid Item>` cascades from, so a cascade check needs them.",
-        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `POST /orders` gets two changed obligations. `inputs`: the body's wire shape gains `Billing` and `PlaceOrder: billing: @NotNull Billing`, with `PlaceOrder: billing: ! constraints on Billing are not checked: no @Valid on billing`, since the input domain is the preservation contract's. `status`: `MethodArgumentNotValidException` is now also for a body that fails `@NotNull on PlaceOrder.billing`, so a request the old build took is answered 400. That is the change of meaning a person approves. The unchecked `Billing` constraints are new behaviour with no old counterpart, so the comparison names them and doesn't count them as a regression."
       ],
       "source": null
     },
@@ -4634,7 +4638,8 @@
         "The first example of the activation block of a boundary contract (`lib/src/activation.rs`): for each family of annotations the module uses (`@Scheduled`, `@Async`, `@Cacheable`, `@PreAuthorize`, `@Secured`, `@RolesAllowed`, `@Transactional`, `@Retryable`, `@Aspect`, `@KafkaListener`, `@RabbitListener`, `@JmsListener`, `@WebFilter`, `@Valid`, `@Validated`, `@Timed`, `@Counted`, `@Observed`), the switch that enables it, or a `!` line when nothing does. The `!` line names the nearest miss when there is one: a class that carries the switch but is not a component, a configuration outside the scanned packages, or an auto-configuration whose `@ConditionalOnClass` or `@ConditionalOnResource` fails (`no TimedAspect bean on a configuration in scope (MetricsAspectsAutoConfiguration defines one, but org.aspectj.weaver.Advice is not on the class path)`). The library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/App.java` and `fixtures/boot/`) have one of each.",
         "What counts as a configuration in scope follows Spring's own rules as far as the class files show them: the local classes with a stereotype (meta-annotations followed, so `@Service` is a `@Component`) in the packages the application class scans (its own, or `scanBasePackages`), the classes of the class path in those packages, the `@Import`s of each, their nested configuration classes, and the auto-configurations the class path's `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` files and `spring.factories` list minus the application's `exclude`s. `@ConditionalOnClass`, `@ConditionalOnMissingClass`, `@ConditionalOnResource` and `@ConditionalOnWebApplication` are evaluated against the class path; `@ConditionalOnBean`, `@ConditionalOnProperty` and `@Profile` are taken as met, so a switch behind a property the contract cannot see is reported as present. Spring Boot 4 lists its auto-configurations per module jar (`spring-boot-kafka`, `spring-boot-transaction`, `spring-boot-validation`), and the walk reads every jar's file.",
         "The example is caching because `@Cacheable` needs no new dependency, so the patch is one annotation. The `@Valid` case is the one developers hit most, since Spring Boot 2.3 moved Hibernate Validator out of the web starter: a build that drops `spring-boot-starter-validation` keeps compiling against `jakarta.validation-api`, and every `@Valid` on every handler goes quiet. In the activation block that is `@Valid: nothing enables it` with `! no Bean Validation provider on the class path (spring-boot-starter-validation adds Hibernate Validator)`.",
-        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): nothing changes in any module's specs, which is right: with no `@EnableCaching` the `@Cacheable` is inert, every read still happens, and a read is a modeled call, not an observation. The defect is a cache that doesn't work, not a regression of what consumers observe. Advice such as caching is named as not observed (`observations::NOT_OBSERVED`); the activation block of the boundary contract catches it."
       ],
       "source": null
     },
@@ -4677,7 +4682,8 @@
         "A string names a property by its Java name or its stored name, as Spring's query mapper accepts both (`where(\"due\")` and `where(\"dueAt\")` both reach a `@Field(\"due\") Instant dueAt`), `_id` and the id property's own name both reach the id, a dotted path goes through an embedded type's fields, through a collection or array to its element and through a map to any key, and stops at a leaf: `\"assignee.email\" is a String, which has no fields`. `$`-segments (`steps.$.done`) and array indices are skipped. The nearest property is suggested when one is within a few edits (`not a field of NoteDocument (createdAt?)`); here `requestKey` is too far from `idempotencyKey` for a hint. The library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/NotesStore.java`, `NoteRepository.java`, `TaskDocument.java`) have one wrong string of each kind.",
         "Which document a string is about is read from the method: the document classes it passes to the template or instantiates. `holdByIdempotencyKey` names `HoldDocument.class` alone, so its line says `not a field of HoldDocument`; the constructor creates indexes for `SeatDocument`, `HoldDocument` and `OrderDocument`, so the two lines from it name all three (the string is a field of none), and the line goes under the first. A private helper that names no document (`makeAvailable()` in the same store) takes the documents of the methods that call it. The checks cover Spring Data MongoDB; JPA queries are JPQL, which Hibernate validates at startup, and derived query methods (`findByHoldId`) are checked by Spring Data at startup, so neither needs a contract line. Aggregation pipelines are not followed: a stage after a `group` names computed fields.",
         "The three Box Office modules with documents gained stored types blocks with this feature (ticketing-service 4, payment-service 1, messaging 2) and no `!` line: every one of their forty-odd field strings resolves, including `where(\"_id\")` on `PaymentDocument`, whose id property is `orderId`, and `Sort.by(\"_id\")` on the outbox. The example renames the one field that only strings read, so that the whole breakage is in the strings; a rename of `SeatDocument.label` would break the hold itself (every hold conflicts, which a test sees at once), while this one breaks only the retry.",
-        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `POST /concerts/{id}/holds` gets one changed obligation, its `MongoTemplate.insert` effect: the payload no longer snapshots `objectToSave.idempotencyKey` and now snapshots `objectToSave.requestKey`. The query strings that still name the old field are reads, which the spec models as calls and doesn't observe (`observations::NOT_OBSERVED`); the stored-types block of the boundary contract checks them."
       ],
       "source": null
     },
@@ -4719,7 +4725,8 @@
         "Two checks read these lines: a `GET` or `HEAD` route that writes, sends, publishes or makes a non-GET call is `! a GET that ...: a safe method with side effects`, and a `@Transactional(readOnly = true)` method that writes is `! @Transactional(readOnly = true) but writes ...: a read-only transaction drops or rejects writes` (Hibernate sets the flush mode to manual and silently keeps the changes, PostgreSQL rejects the statement, MongoDB ignores the flag). The Box Office contracts regenerated with reach lines under every route, listener and schedule and no `!` line: `POST /orders` reads `HoldDocument, OrderDocument, SeatDocument` and writes `OrderDocument, Outbox.Entry`, the payment listener reads `Inbox.Entry, OrderDocument, SeatDocument` and writes those plus `Outbox.Entry`, the outbox relay in the messaging module `sends to Kafka` (the topic is read from the entry, so it is not a constant). A nested class keeps its outer name so the two `Entry` records stay apart.",
         "What the lines do not say: the order of the effects, the condition under which each happens (the write here runs only while the hold is unexpired; the line says `writes`), or anything a framework does on the module's behalf (a `@Transactional` commit, a Kafka offset commit, an audit aspect). A method called through reflection or a bean looked up by name is not followed; a data call whose entity argument is a `List` built elsewhere falls back to the documents the method mentions. The GET check is a statement about HTTP semantics, not about this application: a GET that records a metric or refreshes a cache is flagged the same way, and the line is for the reviewer to accept or move.",
         "The change is a feature rather than a refactoring because the keep-alive is what the developer wants; the point of the example is that the contract puts the cost of the shortcut on the page the reviewer reads, as a side effect of a safe method, instead of leaving it to be found when the next concert sells out with half the seats held by abandoned tabs. The patch leaves the returned hold with its old `expiresAt`, which a reviewer would also ask about; it is not what the contract sees.",
-        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `GET /holds/{id}` gets two new effect observations, `MongoTemplate.updateFirst` (writes `HoldDocument`) and `updateMulti` (writes `SeatDocument`), outside a transaction in `TicketingStore.extend`. In an entry point the old build has, a new attempt is a change to its ordered trace: it needs a person's approval or a proof that it is never reached, and the count says so."
       ],
       "source": null
     },
@@ -4760,7 +4767,8 @@
         "The first example of the transaction placement of the reach lines (`lib/src/reach.rs`): the walk from each entry point carries a scope, outside any transaction, inside one the root opened, or inside a `@Transactional` method of another class, and the effects go into `all`, `outside` and `inside` sets. The root is inside its own transaction when it is `@Transactional` (with a propagation that joins or opens one); a lambda enters the root's transaction when it is an argument of a call to `TransactionTemplate.execute` or `executeWithoutResult`, or to a method (a runner) that reaches either of those or a `@Transactional` method: Box Office's `Transactions.run(Supplier)` calls `template.execute`, and `run(Runnable)` calls that, so a lambda handed to either is inside. A `@Transactional` method of another class on the path takes its effects for itself (its own member in the contract carries them), so the `!` line sits under the service method and not under every route that calls it; a `@Transactional` method of the same class is a self-invocation, which the proxy does not see, and changes nothing.",
         "Four checks read the placement: a send (Kafka, RabbitMQ, JMS, Spring Cloud Stream, SQS, SNS, a `MessageChannel`) inside the root's transaction is `! a transaction that sends to ...` (left alone when `spring.kafka.producer.transaction-id-prefix` is set in an application file, which makes the Kafka producer transactional and synchronises its commit with the database's: not atomic, but not the plain dual write); an HTTP call inside it is `! a transaction that calls POST /...: the call is not part of the transaction, so a rollback does not undo it, and the transaction stays open for the round trip`; an event published with no transaction on the path, when a method of the module (or a sibling) is a `@TransactionalEventListener` for that event type without `fallbackExecution = true`, is `! publishes E outside a transaction: ...`, since Spring drops the event when no transaction is active; and a `@TransactionalEventListener` whose phase is not `BEFORE_COMMIT` and whose reach writes is `! an AFTER_COMMIT listener that writes ...` unless it is `@Transactional(propagation = REQUIRES_NEW)` or `@Async`: after the commit the transaction's resources are still bound to the thread and nothing commits again, so a JPA or JDBC write there is never committed (Spring's documentation of `TransactionPhase.AFTER_COMMIT` says the same). The Box Office contracts regenerated unchanged: no module sends from inside `Transactions.run`, the outbox relay sends from a `@Scheduled` method with no transaction, and nothing publishes application events.",
         "What the placement does not know: a transaction driven by hand through a `PlatformTransactionManager`, a lambda a runner takes but runs after its commit (it is placed inside), a `@Transactional` on a Kafka or JMS transaction manager (read as a database transaction, so a send under it is still flagged), and the retry in `Transactions.run`, which is what turns this dual write into a double charge: the `!` line says the send is not part of the transaction, and the reviewer, who knows the helper retries, draws the rest. The writes line also changes in this example (`Outbox.Entry` leaves it), which a reviewer who knows what the outbox is for would stop at on its own; the `!` line is there for the one who does not.",
-        "The change is a refactoring in the developer's eyes because the same command reaches the same topic; the page keeps it as `refactor` with the behaviour change marked intended, since the point is the shortcut's cost showing up under the route the reviewer reads. The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+        "The change is a refactoring in the developer's eyes because the same command reaches the same topic; the page keeps it as `refactor` with the behaviour change marked intended, since the point is the shortcut's cost showing up under the route the reviewer reads. The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `POST /orders`: the `MongoTemplate.insert` effect is changed (the old build writes `Outbox.Entry` by it inside its transaction and the new one doesn't, with the outbox entry's payload paths gone), and beside it the comparison names what the new build attempts instead: `sends to payments.commands, inside its transaction, in OrderService.lambda$place$0`. The `KafkaTemplate.send` is a new attempt in the route's trace. Statically the comparison sees an effect replaced by another; the dual write and its retry duplicate are for the trace proof (O3) and the boundary contract's `!` line."
       ],
       "source": null
     },
@@ -4801,7 +4809,8 @@
         "The first example of the request binding checks (`lib/src/binding.rs`), which read a handler's parameter annotations against its routes and its bytecode. A `@PathVariable`, `@RequestParam`, `@RequestHeader`, `@CookieValue` or `@MatrixVariable` binds by name: the annotation's `value` or `name`, else the parameter's name as the `MethodParameters` attribute records it (what `javac -parameters` writes and what Spring reads by reflection; the `LocalVariableTable` of `-g`, which Spring 6.0 fell back to, is not read by 6.1). Four things are `!` lines: a `@PathVariable` whose name is a variable of no template of the route (this example; `{id:\\\\d+}` and `{*rest}` count as `id` and `rest`, and a `Map` parameter takes every variable and needs no name); a named binder on a parameter whose name is not in the bytecode, which fails every request with a 500 (compile with `-parameters`, as the Spring Boot Gradle and Maven plugins do by default and Box Office's conventions do by hand, or name it in the annotation); a `required = false` binder with no `defaultValue` on a primitive, which cannot be null when the request leaves it out (a 500 instead of the 400 a missing required parameter gets); and two `@RequestBody` parameters, the second of which always reads an empty body.",
         "Two handlers on one route are found across the module: the same route rendered identically on two methods (`GET /tasks/open` twice) is a duplicate Spring refuses at startup (`IllegalStateException: Ambiguous mapping`), reported under both; the same pattern under different variable names (`/tasks/{id}/owner` and `/tasks/{key}/owner`) registers twice, since the patterns differ as strings, and every request that matches both finds them equally specific, so Spring throws `Ambiguous handler methods` for it, a 500. The pattern key drops the variable names and the constraints inside the braces; `consumes`, `produces`, `params` and `headers` stay in the key, so two routes that differ in them are not reported (Spring tells them apart by the request's headers). The Box Office contracts regenerated unchanged: every `@PathVariable` of the three modules names a variable of its route, the modules compile with `-parameters`, and no two handlers share a pattern.",
         "What the checks do not know: a mapping annotation of the application's own composed of `@RequestMapping` (its elements are not read as paths), a `@PathVariable` on a `@ModelAttribute` or an `@InitBinder` method, a route whose template comes from a constant in another class (the string is in the annotation either way, so this one is fine), a parameter name available to Spring through a `ParameterNameDiscoverer` of the application's own, and the HEAD and OPTIONS requests Spring answers for a GET route. The `required = false` check reads `required` and `defaultValue` as written on the annotation, and `Optional<T>` is an object, not a primitive, so it passes.",
-        "The runner compiles the module with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`; the module's Spring Boot tests need Docker for Testcontainers, and are recorded as the tests' result. By hand, `./gradlew :ticketing-service:verifyBoundaries --rerun` with the patch applied reports the route added under its new template with the `!` line and `reads HoldDocument` under it, the old route removed, and `1 problems` in the module's statistics."
+        "The runner compiles the module with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`; the module's Spring Boot tests need Docker for Testcontainers, and are recorded as the tests' result. By hand, `./gradlew :ticketing-service:verifyBoundaries --rerun` with the patch applied reports the route added under its new template with the `!` line and `reads HoldDocument` under it, the old route removed, and `1 problems` in the module's statistics.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `GET /holds/{id}` matches the new `GET /holds/{holdId}` (path variable names aside), and every obligation of the handler is changed. The new spec has a `MissingPathVariableException` with 500 before the handler runs, for every request (from `binding::check`), so its result, exception and status differences begin `the new build answers every request before the handler runs`."
       ],
       "source": null
     },
@@ -4842,7 +4851,8 @@
         "The first example of the throws lines and the exception outcomes of a boundary contract (`lib/src/failures.rs` for the outcomes, `Graph::throws` in `lib/src/reach.rs` for the exceptions). The exceptions come from the same call graph as the reach lines: a `throw` of a `new`, of a typed local, of what a method returned or a cast produced, the supplier of an `Optional.orElseThrow` (the lambda's return type, or `NoSuchElementException` with no supplier), and Spring's `Assert` (`IllegalStateException` for `state`, `IllegalArgumentException` for the rest). A `catch` on the path that never rethrows its variable swallows what it catches (`HoldService.hold` turns `HoldPolicy`'s `IllegalArgumentException` into `InvalidRequestException` this way); one that does rethrow it, like the retry loop in `Transactions.run` or a `finally`, passes everything through; one that wraps throws the wrapper. An `@Async` callee of another class throws on its own thread. The compiler's own guards, the `MatchException` of an exhaustive switch over a sealed type and an `assert`, are left out.",
         "What each exception becomes follows Spring's resolution order: an `@ExceptionHandler` in the controller (or a superclass of it) first, then the `@ControllerAdvice` beans in `@Order` (ties by class name), each matched by its `basePackages`, `assignableTypes` and `annotations` when it names any, the closest type up the exception's superclass chain winning within one bean; then a `@ResponseStatus` on the exception's class or a superclass; then the status a `ResponseStatusException` was built with, when it is an `HttpStatus` constant. A handler's status is its `@ResponseStatus`, else the first `HttpStatus` constant its body loads (`ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ...)`), else the literal it passes to `ResponseEntity.status`, else the handler is named without a status. Two `@ExceptionHandler` methods for one type in one advice are a `!` line: Spring refuses the ambiguity when it builds the advice's resolver at startup.",
         "Only an exception type of the module's own (or a sibling module's) that nothing maps is a `!` line. A JDK or framework exception that reaches a route is listed as `(500)` without one: `IllegalStateException` from `Transactions.requireActive` or from a concurrent status change in `OrderTransitions`, `IllegalArgumentException` from `HoldPolicy.totalCents`, are guards, and a 500 is what a guard that fired should be. The regenerated Box Office contracts list these under the routes of the ticketing service (the hold route throws five kinds), with no `!` line: every application exception of the three modules has its handler. What the lines do not see: an exception a framework or driver call throws (`DataAccessException`, `OptimisticLockingFailureException`, a Kafka timeout), a `throws` clause, an exception built in a way the walk cannot type, a handler status computed at run time, and a `ControllerAdvice` ordered by `Ordered` or `@Priority` rather than `@Order`. A `@KafkaListener` or `@Scheduled` method gets its `throws` line without outcomes: the container's error handler (retries, a dead-letter topic, a log line) decides, and that configuration is not read.",
-        "The runner compiles the module with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`; the module's Spring Boot tests need Docker for Testcontainers, and are recorded as the tests' result. By hand, `./gradlew :ticketing-service:verifyBoundaries --rerun` with the patch applied reports the `POST /orders` route changed, its throws line now ending in `HoldExpiredException (500)` with the `!` line under it, and `1 problems` in the module's statistics."
+        "The runner compiles the module with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`; the module's Spring Boot tests need Docker for Testcontainers, and are recorded as the tests' result. By hand, `./gradlew :ticketing-service:verifyBoundaries --rerun` with the patch applied reports the `POST /orders` route changed, its throws line now ending in `HoldExpiredException (500)` with the `!` line under it, and `1 problems` in the module's statistics.",
+        "The observation specs (`jvmcontract observations --against`, foundations O2), Box Office with this change against Box Office as it is (`lib/tests/observations.rs`, `box_office_examples_compare_as_their_boundary_diffs_say`): `POST /orders`: its status is changed. The old build answers 409 for an exception it throws (`ConflictException`, by `ApiErrors.conflict`), and no exception of the new build is answered 409; `HoldExpiredException` is a new outcome with 500 (nothing maps it). The route's normal return builds a `ResponseEntity` whose status is unknown, which is no longer read as hiding the mapping that is gone. In this route the expired hold was the only `ConflictException`, so the 409 is gone entirely."
       ],
       "source": null
     },
@@ -4875,9 +4885,9 @@
       "severity": "none",
       "changeKind": "refactor",
       "verdict": "verified",
-      "verdictLabel": "✓ Verified: equivalent on every input",
+      "verdictLabel": "✓ Verified: equivalent on every input (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "On the machine the examples are measured on (JBMC 6.11.0, CaDiCaL), the proof with the helpers shared took 1.3 s over all 2^320 inputs. With `--no-shared-callees`, the search over inputs in [0:20] passed in a second and the search over [-100000:100000] had not finished after 60 s: two 64-bit divisions and two remainders, one of each per version, compared across the versions.",
@@ -5175,9 +5185,9 @@
       "severity": "none",
       "changeKind": "refactor",
       "verdict": "verified",
-      "verdictLabel": "✓ Verified: equivalent on every input",
+      "verdictLabel": "✓ Verified: equivalent on every input (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "The library's run of this shape took 5.9 s with JBMC: three stages, three properties (the assertion and the two unwinding assertions), the loop unwound 32 times. The measurement on this kernel is the pipeline's.",
@@ -5218,9 +5228,9 @@
       "severity": "high",
       "changeKind": "refactor",
       "verdict": "violation",
-      "verdictLabel": "✗ Violation: counterexample found",
+      "verdictLabel": "✗ Violation: counterexample found (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "The library's run of this shape took 0.5 s with JBMC, the witness found in the stage `[0:20]` as `offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)` and shrunk in 19 interpreter runs; with the scope `failedIndex >= this.size`, 0.3 s and 80 runs to `offsetToCommit(this=Batch[start=0, size=1], failedIndex=-2)`. The measurement on this kernel is the pipeline's. The witness is shown as both versions received it, `offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)`, the receiver written as Java prints a record.",
@@ -5262,9 +5272,9 @@
       "severity": "none",
       "changeKind": "refactor",
       "verdict": "verified",
-      "verdictLabel": "✓ Verified: equivalent on every input",
+      "verdictLabel": "✓ Verified: equivalent on every input (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "The library's run of this shape took 0.5 s with JBMC: three stages, two properties (the assertion and the unwinding assertion of the harness's loops), proved over `this: Batch(start: long, size: int) × failedIndex: int`. The measurement on this kernel is the pipeline's.",
@@ -5304,9 +5314,9 @@
       "severity": "medium",
       "changeKind": "feature",
       "verdict": "violation",
-      "verdictLabel": "✗ Violation: counterexample found",
+      "verdictLabel": "✗ Violation: counterexample found (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "The library's run of this shape took 9.0 s with JBMC: the first stage, over attempts in [0:20], proves the versions equal there; the second, over [-100000:100000], finds the negative attempt. The witness is shrunk in 110 interpreter runs. The measurement on this kernel is the pipeline's.",
@@ -5390,9 +5400,9 @@
       "severity": "medium",
       "changeKind": "refactor",
       "verdict": "violation",
-      "verdictLabel": "✗ Violation: counterexample found",
+      "verdictLabel": "✗ Violation: counterexample found (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), which has the method's arithmetic: five `long` parameters, divisions, a subtraction and `Math.min`. The library's run of this shape took 3.0 s: one path, the one the scope leaves, twelve solver calls, the witness found in the first stage of the search as `tokensAfter(tokens=8, lastNanos=10, nowNanos=18, periodNanos=3, capacity=20)` and shrunk to the input above in 46 interpreter runs. The measurement on this kernel is the pipeline's.",
@@ -5436,9 +5446,9 @@
       "severity": "none",
       "changeKind": "refactor",
       "verdict": "verified",
-      "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+      "verdictLabel": "✓ Verified: equivalent on every input outside the declared change (⚠ stale)",
       "vacuous": false,
-      "snapshot": "current",
+      "snapshot": "stale",
       "existingTestsPassed": true,
       "notes": [
         "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`): five `long` parameters, a division, additions, comparisons, `Math.min`. The library's run of this shape took 0.5 s, nine paths and ten solver calls. Until this cycle every branch cost two solver calls, one per side; a path now carries a model of its condition, so the side the model takes needs no call and the other side one, and the same run took 22 calls before. The measurement on this kernel is the pipeline's, which runs the proof through JBMC as well.",
@@ -6165,6 +6175,360 @@
         "`approach.maxTrust` 0 passes `--max-trust 0`. A contract the JVM cannot test (one with a parameter of an object type, say) is trusted, and under that policy it would be refused, its gap going back to the agent before anything is solved. The library keeps only contracts that are proved or tested.",
         "Open (2026-11-06): the pipeline job for this example failed before any proof, on vm-1 as it would anywhere. The patch creates the subject file Jitter.java (--- /dev/null), and build.py's excerpts() requires the subject to have a before side, so it stops with 'the patch does not change the subject file'. Either excerpts() takes a created subject (an empty before side) or the patch stops creating it; then rerun the job. Recorded under Progress in llm-dlc/loops/sound-verdicts.md.",
         "Since item 9 of `llm-dlc/loops/engine-priorities.md` (7 November 2026) the tool's own checker computes `Integer.numberOfLeadingZeros` exactly, so it is no gap, and the contract library's contract for it was taken out with its records (`lib/models/contracts/README.md`): a run now rests on the library's two tested contracts for `java.util.Random` alone, where the summary names three. Not rerun: the example has no recorded result yet (the open note above)."
+      ],
+      "source": null
+    },
+    {
+      "id": "150",
+      "path": "examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes",
+      "title": "A retry throttle rewritten with min and max proved equal on every throttle its constructor makes",
+      "summary": "Crosscut's retry throttle (gRPC's retry throttling: a failure takes a token, a success gives back the token ratio, retries only while more than half the tokens are left) is a mutable object every call on a channel shares. `recorded` is rewritten in the form gRPC's Java client uses, one clamp with `Math.max` and `Math.min` and the threshold doubled instead of halved. The regression proof takes the throttle as an object made by its constructor from symbolic limits, compares the result and the throttle's fields as both versions leave them, and proves them equal on every input, the claim saying that its throttles are the ones the constructor makes: full ones.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.RetryThrottling#recorded",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "object-inputs",
+          "own-checker",
+          "confined-change"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The domain is objects made by their constructor (decision 2 of llm-dlc/loops/foundations.md): `Throttle(ThrottleLimits)` starts full, `maxTokens * 1000` thousandths, so the proof is over one outcome on a full throttle, for every limit the record accepts (1 to 1000 tokens, a ratio of 1 to 1000000 thousandths). A throttle drained by earlier failures is a state no constructor makes; the claim covers none, and its headline and domain say so instead of 'every input'. 152 is the rewrite that differs only there, and is verified by the same proof for the same reason.",
+        "Observed: the boolean result, the exception, the throttle's fields as the call leaves them, and the identity relations among the throttle, its limits and the result (`stated.observations.objects` lists `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`). The `ThrottleLimits` record is a value, compared by its components only.",
+        "`Math.max` and `Math.min` are taken by the tool's own checker as the JDK computes them, so the proof needs no contract and no JBMC; JBMC cannot take an object input at all (`approach.engine`: native).",
+        "Pairs with 151 (the same kernel's `reconfigured`, its alias turned into a copy, refuted) and 152 (this rewrite without the floor at zero, outside the claim)."
+      ],
+      "source": null
+    },
+    {
+      "id": "151",
+      "path": "examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight",
+      "title": "A throttle kept across a config update turned into a copy loses the failures of the calls in flight",
+      "summary": "When a channel's service config is updated with the same retry limits, `reconfigured` hands back the channel's throttle itself, so the calls in flight, which hold it, keep counting their failures into the throttle the channel goes on using. The change hands back a copy with the same tokens and the same limits instead: every field agrees when it returns, and a failure recorded afterwards by a call in flight goes into the old object, which nothing reads, so a failing backend gets retries the throttle would have refused. The regression proof observes the identity relations within each version and refutes the change with `result == throttle`, which holds before and not after; the witness is a construction recipe, replayed in the interpreter and run on a JVM.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.RetryThrottling#reconfigured",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "object-inputs",
+          "own-checker",
+          "confined-change"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This is the alias-to-copy defect of llm-dlc/loops/foundations.md: an alias turned into a copy with identical primitive values, which a caller sees only by mutating one. Physical object ids are never compared across versions; the identity relation is compared within each version, and the witness's two replays read alike but for it.",
+        "The copy reuses the same `ThrottleLimits` object, so `result.limits == throttle.limits` holds in both versions and is no part of the difference; a copy made with `new ThrottleLimits(...)` would differ there too, but a record of primitive components is a value and is compared by components only.",
+        "The witness is run on a JVM after the interpreter's replay (`replayed in the interpreter and run on a JVM (JDK …), where the harness fails on it too`): the harness makes each version's throttle from the same leaves, and reads the classes' package-private fields through opened copies of them, which the JVM run loads first on its class path.",
+        "Pairs with 150 (the same kernel's `recorded`, rewritten correctly and proved) and 152 (a rewrite of `recorded` that differs only outside the constructor-made domain)."
+      ],
+      "source": null
+    },
+    {
+      "id": "152",
+      "path": "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ",
+      "title": "A throttle that drops its floor at zero is proved only on full throttles, where it cannot differ",
+      "summary": "The same rewrite of `recorded` as 150, but the floor at zero tokens is gone: `Math.min(next, ceiling)` without the `Math.max(0, …)`. A failure on a drained throttle now takes it below zero, and every token below zero is ten more successes (at a ratio of 0.1) before the channel may retry again: after three failures on a two-token throttle it takes 21 successes instead of 11. The regression proof verifies the change, because its throttles are made by their constructor, which makes them full, and one failure never drains a full throttle; the verdict says `on every input of constructor-made objects` and the domain names the constructor, so the result is a claim about full throttles only, not a proof that the rewrite is right.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.RetryThrottling#recorded",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "object-inputs",
+          "own-checker",
+          "confined-change"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This is the planted defect 'a bug only in a state outside the constructor-made domain, which must show as outside the claim, not as proved' of llm-dlc/loops/foundations.md. The question it answers: can the way inputs are made hide the bug? It can, and so the result names the domain in its headline (`every input of constructor-made objects`, not `every input`), in its domain line, and in its constructible assumption; a reader who takes the verdict as 'the rewrite is right' has dropped those words.",
+        "Shown on a JVM by hand, not by the run: `new Throttle(new ThrottleLimits(2, 100))`, three failures, then successes until `recorded` returns true. The unpatched build leaves 1000, 0, 0 thousandths and allows a retry after 11 successes; the patched one 1000, 0, -1000 and 21.",
+        "Pairs with 150 (the same rewrite with the floor, proved by the same proof) and 151 (an alias turned into a copy, refuted by an identity relation)."
+      ],
+      "source": null
+    },
+    {
+      "id": "160",
+      "path": "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller",
+      "title": "A refill helper rewritten as whole periods, proved once and one function in its caller's proof",
+      "summary": "Crosscut's `TokenBucket.lastAfter`, the time up to which a refill has credited the bucket, is rewritten from `now - (now - last) % period` to `last + (now - last) / period * period`, the whole periods counted and added back. Its caller, the `Retry-After` of a refused request, is unchanged. Run with the proof cache, the regression proof of the caller first proves the helper's two versions equal on every input, as a check of its own, and stores that proof. It then takes the helper as one function in both versions of the caller, whose statement names the helper's proof by its claim key. Where example 120 shares a helper because its bytecode is identical, this one shares a helper that changed, on the strength of its own proof.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [],
+        "technique": [
+          "shared-callees",
+          "proved-helpers",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Why the proof can take the helper's new version for both: the helper's own proof is over every input of its parameter types, so every call, in either version and with any arguments, is in its domain, and the two versions have the same outcome there, a result or the same exception. Neither reads or writes state. The previous version with its calls redirected therefore behaves exactly as written, and the caller's proof is exact: a counterexample under the redirection would be a real one, and no refinement is needed. A helper proof over a narrower domain (`--unchanged-unless`, mapped arguments, a relation between results) is never used, since it would need an assertion at each call.",
+        "Measured when the example was written, on the development machine: the helper's proof took 0.19 s (2 paths, 2 solver calls), and the caller's with the helper as one function 0.00 s (3 paths, 2 solver calls). Without the cache, the caller's proof runs through both versions of the helper as written and takes 1.2 s (4 solver calls) for the same verdict. A second run with the same cache is an exact hit of the caller's claim, and a second caller of the helper would find the helper's proof in the cache. The recorded run starts from an empty cache, so its proof line says the helper was proved now.",
+        "The helper's proof is a regression proof like any other, and its key is the one a check of `TokenBucket#lastAfter` alone gets: the library's tests check both, and that a caller's key does not depend on when or where the helper's proof was made.",
+        "Without `--cache` the tool proves nothing of a changed helper, and runs the caller through both versions of it, which is what every recorded example did before this one. The cache is the proof's only source of helper evidence, and it is local: a directory under the build, filled by this run and never committed.",
+        "Example 161 is the sibling with the helper's change wrong: its own proof is refuted, the helper stays as written, and the caller's proof finds the regression.",
+        "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 7 November 2026, JDK 25.0.5, from the bytecode, nothing proved): the tool's own checker meets no gap in the 3 methods the proof reaches in either version, so strict mode does not move this verdict."
+      ],
+      "source": null
+    },
+    {
+      "id": "161",
+      "path": "examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early",
+      "title": "A refill helper aligned to the clock's grid, refuted alone, and its caller sends a client back early",
+      "summary": "Crosscut's `TokenBucket.lastAfter` is rewritten to credit the bucket up to the start of the period the clock reading falls in, `now - now % period`, as the fixed window aligns its start. A bucket's periods are counted from its last refill, not from the clock's zero, so the credited time moves whenever the last refill is off the clock's grid. Run with the proof cache, the proof first checks the helper on its own and refutes it, so the helper stays as written in both versions. The caller's proof, the `Retry-After` of a refused request, then finds a client told to wait 1 ns where the old code said 2, which comes back and is refused again. The tests pass, and so does the caller's property that the wait is never more than a period.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "proved-helpers",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The tests miss it because every refill in `TokenBucketTest` and `RetryAfterTest` starts at `lastNanos = 0`, which is on every grid, where the two forms agree. The property of `nanosUntilToken` in `properties.contract`, a wait of nothing or more than nothing and at most a period, holds of the new version too, since the wait to the end of the grid's period is within a period as well. The property of `lastAfter`, that the credited time never falls behind the last refill, does not hold of the new version (credited 0 after a refill at 1, by the arithmetic), so a property proof of the helper would find it. The regression proof of the caller finds it with no property written.",
+        "The helper's own counterexample lies outside the module's precondition, with the clock reading before the last refill, since the helper's proof covers every input and the shrinker keeps the smallest. That is enough to keep the helper out of the narrow class: a proof restricted to its callers' domain would need the caller's proof to assert, at each call, that the arguments are in that domain, which this form of sharing does not do.",
+        "With the helper refuted, the caller's proof is the one it would be without the cache: both versions of the helper as written, the regression found in a few tenths of a second when the example was written.",
+        "Example 160 is the sibling whose helper change is right: its own proof holds, and the caller is proved with the helper as one function in both versions. Example 132 is a regression on the other refill helper, `tokensAfter`, counting periods from the clock's zero.",
+        "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 7 November 2026, JDK 25.0.5, from the bytecode, nothing proved): the tool's own checker meets no gap in the 3 methods the proof reaches in either version, so strict mode does not move this verdict."
+      ],
+      "source": null
+    },
+    {
+      "id": "170",
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent",
+      "title": "A retry route and its policy refactored, proved to send what they sent, in order, on every input",
+      "summary": "A webhook dispatcher's failure route and the Crosscut retry policy behind it are both rewritten: the policy as one expression over two helpers, the route around the policy's answer with each Kafka send in a method of its own. The tool proves, for every status, idempotency and attempt count, that the route answers the same status and attempts the same sends, to the same topics with the same payloads in the same order, as before.",
+      "origin": "constructed",
+      "system": "Deliveries",
+      "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "resilience",
+          "spring-boot"
+        ],
+        "defect": [
+          "dropped-case",
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "effect-trace",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`): every entry point of the unpatched build against its counterpart in the patched one, under the claim its own observation spec makes. Run inline on 2026-11-07 (JDK 25.0.5): `POST /deliveries/failures` verified, with the result, exception, status and `KafkaTemplate.send` observations preserved, proved by the tool's own checker in 0.1 s (0.4 s for the whole command) over `status: int × idempotent: boolean × attempts: int`.",
+        "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\").",
+        "The kernel's rewrite is proved through the route, not on its own: `status / 100 == 5` is the same test as `status >= 500 && status <= 599` on every `int`, negative ones included, since Java's division truncates toward zero (-599 / 100 is -5), and the proof covers every status, not only the HTTP range.",
+        "What the proof assumes, as the verifier output lists it: `KafkaTemplate.send` is a recording stub in both builds that returns normally (an attempt is a call made, not a delivery), `DeliveryFailures` is made by its constructor with a null template, and at most four attempts are recorded, exactly in order.",
+        "The siblings 171 and 172 are this refactor with one defect each: a dropped dead letter, and a duplicated one."
+      ],
+      "source": null
+    },
+    {
+      "id": "171",
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace",
+      "title": "A retry route that skips the dead letter for a client error loses the delivery without a trace",
+      "summary": "The same refactor of the failure route and its retry policy, with one shortcut added: a 4xx other than 408 and 429 answers 200 at once, since no retry fixes it. The answer is the same as before and every test passes, but the delivery is no longer dead-lettered. The effect check finds a request on which the old route sends a dead letter and the new one sends nothing, and replays it on a JVM.",
+      "origin": "constructed",
+      "system": "Deliveries",
+      "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "resilience",
+          "spring-boot"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "effect-trace",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`). Run inline on 2026-11-07 (JDK 25.0.5): refuted. The checker found `status=416, idempotent=true, attempts=0` in its second search stage ([-100000:100000]: no status in [0, 20] is a client error) and shrank it in 27 interpreter runs to `status=400, idempotent=false, attempts=0`, on which both builds answer 200, the old one attempting `KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, ...)` and the new one no modeled call; replayed on the JVM under the recording stubs.",
+        "The observations other than the send are unresolved, not preserved, in the result: a refutation of the log shows that the logs differ, not which of the other observations still agree. The answer does agree here (200 in both), which is the point of the example: a proof of the answer alone would pass.",
+        "`attempts=0` is outside what a dispatcher reports (one attempt at least), and the proof's domain is every `int` the parameter binds; the defect shows on every client error other than 408 and 429, whatever the attempt count.",
+        "The tests pass: they look at the answer and at the last record sent, and none reports a client error.",
+        "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\")."
+      ],
+      "source": null
+    },
+    {
+      "id": "172",
+      "path": "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice",
+      "title": "A retry route that dead-letters a delivery out of attempts sends the dead letter twice",
+      "summary": "The same refactor of the failure route and its retry policy, with the case of a delivery out of attempts handled first: it is dead-lettered whatever the receiver answered, and the route then goes on to ask the policy, which refuses, and dead-letters it again. The answer is the same and every test passes; the effect check finds the duplicate send, in exact order, and replays it on a JVM.",
+      "origin": "constructed",
+      "system": "Deliveries",
+      "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "resilience",
+          "spring-boot"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "effect-trace",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`). Run inline on 2026-11-07 (JDK 25.0.5): refuted. The checker found `status=20, idempotent=true, attempts=20` in its first search stage ([0:20]) and shrank it in 19 interpreter runs to `status=0, idempotent=false, attempts=5`, on which both builds answer 200, the old one attempting one `send` to `delivery-dead-letters` and the new one the same send twice; replayed on the JVM under the recording stubs.",
+        "The trace is compared in exact order and in number, so two equal attempts are not one: the check would not pass a duplicate even if the payloads were all that a consumer looked at.",
+        "The tests pass: `deadLettersADeliveryOutOfAttempts` looks at the last record sent, which is the right dead letter. A test that counted the records sent would catch it.",
+        "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\")."
       ],
       "source": null
     }

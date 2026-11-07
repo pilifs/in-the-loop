@@ -17,7 +17,7 @@
 //! A(x) no input in D satisfies holds of every program. Its status is non-vacuous, vacuous, or unknown, with how that
 //! is known. A vacuous `Verified` still exits 0, which is the user's to change (the brief's open question 1).
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::bmc::gaps::{GapMode, GapTreatment};
 use crate::classfile::Type;
@@ -25,7 +25,7 @@ use crate::equivalence::{Confirmed, Search};
 use crate::harness::{self, Layout, Param, Slot};
 use crate::jbmc::JbmcResult;
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Statement {
     /// `regression` (two versions compared) or `property` (one version against an assertion).
     pub kind: String,
@@ -36,7 +36,9 @@ pub struct Statement {
     pub bounds: Bounds,
     pub models: Models,
     pub checker: Checker,
-    /// The gap mode of the checker the verdict comes from (the own checker's; none for JBMC, which has none).
+    /// The gap mode of the checker the verdict comes from (the own checker's; none for JBMC, which has none). Not
+    /// read back with the rest (its type doesn't deserialize): a reader that needs it restores it by its name.
+    #[serde(skip_deserializing)]
     pub gap_mode: Option<GapMode>,
     /// What JBMC made of the own checker's proof under `--confirm`; none when it was not asked for.
     pub confirmation: Option<Confirmed>,
@@ -51,7 +53,7 @@ pub struct Statement {
 }
 
 /// Whether some input in D satisfies A and reaches the calls, so that a proof of the statement says something.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Vacuity {
     pub status: VacuityStatus,
     pub basis: VacuityBasis,
@@ -62,7 +64,7 @@ pub struct Vacuity {
     pub witness: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum VacuityStatus {
     /// Some input in D reaches the calls.
@@ -73,7 +75,7 @@ pub enum VacuityStatus {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum VacuityBasis {
     /// Nothing in the harness skips an input before the calls, so every input in D reaches them.
@@ -117,18 +119,28 @@ impl Vacuity {
 }
 
 /// D: the inputs the statement is about.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Domain {
     /// The target's receiver and parameters, as the target takes them (a record as one, built from its components).
     pub parameters: Vec<Parameter>,
-    /// Whether two array parameters may be one array. Never today: each is an array of its own in both engines
-    /// (JBMC under `--java-assume-inputs-non-null`), so a claim refuted only by aliased arrays is outside D.
+    /// Whether two array parameters may be one array. Only where a property's domain says which may
+    /// (`--may-alias`, the own checker alone): otherwise each is an array of its own in both engines (JBMC under
+    /// `--java-assume-inputs-non-null`), so a claim refuted only by aliased arrays is outside D.
     pub shared_arrays: bool,
+    /// The groups of parameters any two of which may be one array (a property's), or one object (a regression
+    /// check's object parameters made by their constructor, step H2), by name.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub may_alias: Vec<Vec<String>>,
     /// The domain as the proof line writes it: `a: int[] of length ≤ 8, not null × n: int`.
     pub text: String,
+    /// How many input objects each version's inputs are made of, the previous version's first, where a parameter
+    /// is an object made by its constructor: every one its construction makes (a `Quote` of a `Money` is two).
+    /// Under a correspondence the two may differ (step H5 of `llm-dlc/loops/foundations-heap.md`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input_objects: Option<(u32, u32)>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Parameter {
     /// `n`, `this` for a record's receiver.
     pub name: String,
@@ -136,28 +148,31 @@ pub struct Parameter {
     #[serde(rename = "type")]
     pub ty: String,
     pub kind: ParameterKind,
-    /// Whether `null` is among its values: never today, an array being a fresh array and a record one its
-    /// constructor built.
+    /// Whether `null` is among its values: only for an array parameter a property's domain lets be null
+    /// (`--nullable`); otherwise an array is a fresh array and a record one its constructor built.
     pub null: bool,
     /// The longest array it is given, for an array.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_length: Option<u32>,
     /// A record's components, `name: type`, which are the symbolic inputs it is built from.
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub components: Vec<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum ParameterKind {
     Primitive,
     Array,
     /// A record of primitive components, built through its canonical constructor.
     Record,
+    /// An object of an application class made by its constructor, from primitives and objects made so in turn;
+    /// its fields after the call are observed.
+    Object,
 }
 
 /// One conjunct of A.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Assumption {
     pub kind: AssumptionKind,
     /// What it says, in words.
@@ -168,7 +183,7 @@ pub struct Assumption {
     pub id: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum AssumptionKind {
     /// A regression proof's scope: the inputs outside the intended change (`--unchanged-unless`).
@@ -187,10 +202,13 @@ pub enum AssumptionKind {
     Gap,
     /// What a contract for a gap states, which the own checker applied at the call (`--contracts`).
     Contract,
+    /// A callee whose two versions differ, taken as one function in both because a regression proof of its own
+    /// showed they have the same outcome on every input ([`crate::shared::Proved`]); `id` is that proof's claim key.
+    Callee,
 }
 
 /// Why an assumption is taken: what stands behind it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Basis {
     /// The claim states it: it is part of what is claimed, not a weakness of the proof.
@@ -202,7 +220,8 @@ pub enum Basis {
     /// An approximation the own checker took at a gap (`--gaps assume`), checked against nothing.
     Assumed,
     /// A contract for a gap that the tool's own checker proved against the JDK's bytecode on every input it is
-    /// about, and a real JVM's test does not refute (`--contracts`).
+    /// about, and a real JVM's test does not refute (`--contracts`). For a [`AssumptionKind::Callee`], the regression
+    /// proof of the callee's two versions under the claim key in `id`.
     Proved,
     /// A contract for a gap that a real JVM ran the JDK's call against, on boundary and seeded random inputs, none
     /// refuting it (`--contracts`): evidence, not a proof.
@@ -213,18 +232,26 @@ pub enum Basis {
 }
 
 /// Obs: what is observed of a call.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Observations {
     /// What is compared or checked of the result.
     pub result: String,
     /// What is compared or checked of an exception.
     pub exceptions: String,
     /// The array parameters whose contents after the call are compared too.
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arrays: Vec<String>,
+    /// The object parameters made by their constructors whose fields after the call are compared too, each as
+    /// `q: amount.cents, quantity`, the fields by path.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub objects: Vec<String>,
+    /// The identity relations within each version compared as "holds before iff it holds now", `result == q`
+    /// (step H3 of `llm-dlc/loops/foundations-heap.md`); objects are never compared by identity across versions.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub identities: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Bounds {
     /// The loop unwinding bound, which unwinding assertions check: a proof's every loop ends within it. None when no
     /// checker ran (identical bytecode).
@@ -237,7 +264,7 @@ pub struct Bounds {
 }
 
 /// The models of the JDK the checker read in place of the JDK's own classes, and the JDK whose classes it read.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Models {
     /// Whether the tool's models (`lib/models`, [`crate::models`]) were used.
     pub used: bool,
@@ -248,7 +275,7 @@ pub struct Models {
     pub jdk: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Checker {
     /// `native`, `jbmc`, or `none` when no checker ran (identical bytecode).
     pub engine: String,
@@ -267,7 +294,7 @@ pub struct Checker {
 /// The SAT solver a checker ran on, as the evidence for a result names it: the own checker's bundled CaDiCaL
 /// ([`native_sat`]), or the one JBMC was asked for ([`crate::jbmc::sat`]). The benchmark gathers them into
 /// `results.json`'s environment.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Sat {
     /// `CaDiCaL`, or the solver JBMC used by default.
     pub solver: String,
@@ -309,20 +336,36 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
             Slot::Record { name, record, .. } => Parameter {
                 name: name.clone(),
                 ty: record.java_name(),
-                kind: ParameterKind::Record,
-                null: false,
+                kind: if record.is_made() { ParameterKind::Object } else { ParameterKind::Record },
+                null: layout.choice(name).is_some_and(|c| c.null.is_some()),
                 max_length: None,
                 components: record.components.iter().map(|(c, t)| format!("{c}: {}", t.java_name())).collect(),
             },
         })
         .collect();
-    Domain { parameters, shared_arrays: false, text: layout.domain(max_array_length) }
+    let made: Vec<(u32, u32)> = layout
+        .records()
+        .iter()
+        .filter_map(|s| match s {
+            Slot::Record { record, before, .. } if record.is_made() => Some((before.as_ref().unwrap_or(record).objects(), record.objects())),
+            _ => None,
+        })
+        .collect();
+    let input_objects = (!made.is_empty()).then(|| made.iter().fold((0, 0), |(b, a), (x, y)| (b + x, a + y)));
+    Domain { parameters, shared_arrays: false, may_alias: layout.alias_groups(), text: layout.domain(max_array_length), input_objects }
 }
 
 /// The domain of a method of plain parameters (a property's).
 pub fn plain_domain(params: &[Param], max_array_length: u32) -> Domain {
-    let text = harness::domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))).collect(), max_array_length);
-    Domain { parameters: params.iter().map(|p| parameter(p, max_array_length)).collect(), shared_arrays: false, text }
+    plain_domain_of(params, max_array_length, &[], &[])
+}
+
+/// [`plain_domain`], with the array parameters that may be null (`nullable`) and the groups that may be one array
+/// (`may_alias`), by name ([`harness::domain_of`]).
+pub fn plain_domain_of(params: &[Param], max_array_length: u32, nullable: &[String], may_alias: &[Vec<String>]) -> Domain {
+    let text = harness::domain_of(params, max_array_length, nullable, may_alias);
+    let parameters = params.iter().map(|p| Parameter { null: nullable.contains(&p.name), ..parameter(p, max_array_length) }).collect();
+    Domain { parameters, shared_arrays: !may_alias.is_empty(), may_alias: may_alias.to_vec(), text, input_objects: None }
 }
 
 fn parameter(p: &Param, max_array_length: u32) -> Parameter {
@@ -384,11 +427,23 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
         out.push(Assumption { kind: AssumptionKind::IntendedInputs, text: format!("!({s}): the input is not among those the change is meant for"), basis: Basis::Stated, id: None });
     }
     for slot in layout.records() {
+        if let Slot::Record { name, record, before: Some(previous), .. } = slot {
+            if let Some(c) = previous.corresponds.as_ref().filter(|c| !c.same_shape) {
+                out.push(Assumption {
+                    kind: AssumptionKind::Constructible,
+                    text: format!("the new version's constructor {} accepts the arguments of {name}, and the previous version's {} accepts those the correspondence's input equations give it from them, the two objects as made satisfying the equations ({}): an input either constructor rejects, or on which they do not hold, is skipped, so the statement is about the pairs of objects the correspondence relates", record.describe(), previous.describe(), c.equations.iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", ")),
+                    basis: Basis::Harness,
+                    id: None,
+                });
+                continue;
+            }
+        }
         if let Slot::Record { name, record, before, .. } = slot {
             let versions = if before.is_some() { "either version's" } else { "the new version's" };
+            let (what, built) = if record.is_made() { ("arguments", "objects") } else { ("components", "records") };
             out.push(Assumption {
                 kind: AssumptionKind::Constructible,
-                text: format!("{versions} constructor {} accepts the components of {name}: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it", record.describe()),
+                text: format!("{versions} constructor {} accepts the {what} of {name}: an input it rejects is skipped, so the statement is about the {built} both versions can build, and whether the constructors accept the same inputs is not part of it", record.describe()),
                 basis: Basis::Harness,
                 id: None,
             });
@@ -400,24 +455,81 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
     out
 }
 
+/// A property's assumptions from how its harness makes its inputs (step H2 of `llm-dlc/loops/foundations-heap.md`):
+/// each object parameter made by its constructor, which skips an input it rejects.
+pub fn property_assumptions(layout: &Layout) -> Vec<Assumption> {
+    layout
+        .records()
+        .iter()
+        .filter_map(|slot| match slot {
+            Slot::Record { name, record, .. } => Some(Assumption {
+                kind: AssumptionKind::Constructible,
+                text: format!("the constructor {} accepts the arguments of {name}: an input it rejects is skipped, so the property is about the objects it makes", record.describe()),
+                basis: Basis::Harness,
+                id: None,
+            }),
+            Slot::Plain(_) => None,
+        })
+        .collect()
+}
+
 /// What a regression proof observes: the result as compared (or related), the exception's class among the harness's
 /// categories, and what the versions leave in each array parameter.
 pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&str>) -> Observations {
     let result = match (relation, &layout.result.0, ret) {
         (Some(r), _, _) => format!("the results, related by {r} whenever both versions return"),
         (None, Some(record), _) => format!("the result, a {} compared component by component ({})", record.simple_name(), record.components.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>().join(", ")),
+        (None, None, Type::Object(_)) if layout.result_equations.is_some() => {
+            let fields = layout.result_fields.0.as_ref().expect("a result under a correspondence has fields");
+            let equations = layout.result_equations.as_deref().unwrap_or_default();
+            format!("the result, a {} compared under the correspondence ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), equations.iter().map(|e| e.text("result", "result")).collect::<Vec<_>>().join(", "))
+        }
+        (None, None, Type::Object(_)) if layout.result_fields.0.is_some() => {
+            let fields = layout.result_fields.0.as_ref().expect("checked");
+            format!("the result, a {} compared field by field ({}), two nulls agreeing", crate::classfile::simple_name_of(&fields.class), fields.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))
+        }
         (None, None, Type::Void) => "nothing: the method returns no value".into(),
         (None, None, Type::Array(_)) => "the result, an array compared element by element".into(),
         (None, None, _) => "the result, equal in both versions".into(),
     };
     let arrays = layout.params.iter().filter(|p| matches!(p.ty, Type::Array(_))).map(|p| p.name.clone()).collect();
-    Observations { result, exceptions: exception_categories("the same in both versions"), arrays }
+    let objects = layout
+        .records()
+        .iter()
+        .filter_map(|s| match s {
+            // The equations an output relation for a field takes the place of are left out, and the relation
+            // follows (H5's rest): `p: under the correspondence; p.cents under the output relation …`.
+            // Of two objects of the same shape (H5's rest), the paths compared, then the relations: `l: price.cents;
+            // l.quantity under the output relation …`.
+            Slot::Record { name, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| c.same_shape) => previous.corresponds.as_ref().map(|c| {
+                let paths = c.compared_equations().iter().map(|e| e.old.clone()).collect::<Vec<_>>().join(", ");
+                let mut parts = if paths.is_empty() { Vec::new() } else { vec![paths] };
+                for r in &c.relations {
+                    let path = if r.path.is_empty() { name.clone() } else { format!("{name}.{}", r.path) };
+                    parts.push(format!("{path} under the output relation {}", r.holds.trim()));
+                }
+                format!("{name}: {}", parts.join("; "))
+            }),
+            Slot::Record { name, before: Some(previous), .. } if previous.corresponds.is_some() => previous.corresponds.as_ref().map(|c| {
+                let equations = c.compared_equations().iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", ");
+                let mut text = if equations.is_empty() { format!("{name}: under the correspondence") } else { format!("{name}: under the correspondence, {equations}") };
+                for r in &c.relations {
+                    let path = if r.path.is_empty() { name.clone() } else { format!("{name}.{}", r.path) };
+                    text.push_str(&format!("; {path} under the output relation {}", r.holds.trim()));
+                }
+                text
+            }),
+            Slot::Record { name, record, before: Some(_), .. } => record.fields.as_ref().map(|f| format!("{name}: {}", f.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))),
+            _ => None,
+        })
+        .collect();
+    Observations { result, exceptions: exception_categories("the same in both versions"), arrays, objects, identities: Vec::new() }
 }
 
 /// What a property proof observes: the result against the assertion, and an exception against the throws clauses.
 pub fn property_observations(assertion: &str, throws_checked: &[String]) -> Observations {
     let exceptions = if throws_checked.is_empty() { "none may be thrown".to_string() } else { format!("none may be thrown but as a throws clause says: {}", throws_checked.join("; ")) };
-    Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new() }
+    Observations { result: if assertion == "true" { "nothing beyond returning".into() } else { format!("the result and the parameters, against {assertion}") }, exceptions, arrays: Vec::new(), objects: Vec::new(), identities: Vec::new() }
 }
 
 /// How the regression harness tells exceptions apart: by class, among a fixed list.

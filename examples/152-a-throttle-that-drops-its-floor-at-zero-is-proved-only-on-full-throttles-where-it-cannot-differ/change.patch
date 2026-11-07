@@ -1,0 +1,20 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java
+@@ -16,13 +16,9 @@
+      */
+     public static boolean recorded(Throttle throttle, boolean failed) {
+         int ceiling = throttle.limits.maxTokens() * 1000;
+-        if (failed) {
+-            throttle.milliTokens = throttle.milliTokens >= 1000 ? throttle.milliTokens - 1000 : 0;
+-        } else {
+-            int raised = throttle.milliTokens + throttle.limits.tokenRatioMilli();
+-            throttle.milliTokens = raised < ceiling ? raised : ceiling;
+-        }
+-        return throttle.milliTokens > ceiling / 2;
++        int next = failed ? throttle.milliTokens - 1000 : throttle.milliTokens + throttle.limits.tokenRatioMilli();
++        throttle.milliTokens = Math.min(next, ceiling);
++        return 2 * throttle.milliTokens > ceiling;
+     }
+ 
+     /**

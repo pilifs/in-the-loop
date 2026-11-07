@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-085410-output-relations-for-an-object-parameter",
+  "title": "Output relations for an object parameter's field (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an output relation for an object parameter's field as the calls leave it, field:p.cents, compared in place of the input equation about that path (which still makes the previous object). Over the price kernel in lib/tests/heap.rs (Price(long cents) before, Price(long dollars, int cents) now, related by old.p.cents == new.p.dollars * 100 + new.p.cents), a raise that now rounds up to whole dollars is refuted under the equation alone (differs field:p) and verified under the relation new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && ... < 100; the exact raise is verified under it; the defect that drops the carry is refuted in field:p.cents with a witness run on a JVM. These run inline on the own checker. This job runs the ignored test that repeats the four under --engine jbmc and under --engine auto --confirm, where JBMC checks the same harness (the relation compared in its bytecode).",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/spec/heap.rs",
+      "lib/src/witness.rs",
+      "lib/src/equivalence.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines: rounded without the relation Violation, rounded and after under it Verified, defect under it Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T08:54:10+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 8 small JBMC runs over 64-bit arithmetic"
+  },
+  "steps": [
+    {
+      "name": "field relations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored field_relations",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

@@ -522,6 +522,108 @@ annotations or configuration, which S1 adds.
   (2026-11-07). It is in the heap stream's code; a stream that sees it fail should rerun it once before treating it as
   its own regression.
 - Decisions settled by the user on 2026-11-07 ([Decisions](#decisions)).
+- **The streams ran** on 2026-11-07 from 04:01 UTC, forked from the planning session, and all four finished with
+  `Status: done`: heap (session `750c8a36`, 18 cycles), summaries (`be22079e`), observations (`e65240e3`, 7 cycles)
+  and alignment (`11f93b59`, 12 cycles). None deferred anything by the timebox. Each stream's Progress, as its branch left it, is
+  `jj file show -r 'COMMIT' llm-dlc/loops/foundations-STREAM.md` at the stream's last commit below.
+- **Reconciled** (2026-11-07, this loop's first cycle): each stream's last turns recorded on its branch (heap
+  `bbbc8e05`, summaries `8f654191`, observations `932cea08`, alignment `07fa82b4`), their logs copied here, the four
+  merged with the default line's `3d4fd12`, and the workspaces `heap`, `summaries`, `observations`, `alignment` and
+  `integration` forgotten (their directories, about 3 GB each, are the user's to delete). What the merge needed:
+  - Conflicts in `equivalence.rs` (heap's object inputs and correspondence against summaries' cache, proved helpers
+    and per-callee refinement), `main.rs`, `build.py` (summaries' helper lines and observations' effect findings),
+    `lib/README.md` (paragraphs added side by side) and the generated files. Summaries' `replay_on` now carries heap's
+    identity and field comparisons; `examples/README.md` and `index.json` were regenerated with
+    `build.py --index-only`.
+  - The shared IR met in three places, all additions, kept as each stream made them: heap's `spec::Outcome.problem`
+    (now filled by observations' `effects.rs` with its reason for an unresolved result, and `None` in summaries'
+    stored records), heap's `Counterexample.differs` and `.jvm` (now stored and read back by the proof cache), and
+    alignment's `Hint.rank`, `.why` and `.ask`.
+  - A real disagreement the integration check never got to run (every check from 05:01 on was a merge conflict):
+    heap's `Domain.may_alias` was skipped when empty but had no `serde(default)`, so once summaries made `Statement`
+    read back, no result could be stored in the proof cache, and the contract's "summaries reuse of
+    shop.Pricing#discount in shop.Pricing#total" failed. Fixed with the default.
+  - Two hooks made to agree: a proved helper's own check no longer inherits its caller's `--correspondence`,
+    `--nullable` and `--may-alias`, and the canonical claim names those three options among its assumptions (the
+    harness's digest and the domain already carried what they change; the key now says so outright).
+  - After the merge: the integration contract 24 passed, 0 unsupported, 0 failed; the whole Rust suite and every
+    Python suite pass.
+- **Heap** (last commit `b5ef1d41`): H0 was the engines loop's. H1 symbolic references, a guarded choice of objects
+  or null, with `Val::R` kept as the fast path (`ddbb54ba`). H2 nullable and one-array parameters in property checks,
+  then objects made by their constructor as regression inputs, nullable or aliased, and in property checks
+  (`d404b15c`, `ce45baaa`, `6beb082c`, `f0a47ca9`). H3 results compared field by field and identity relations within
+  each version compared "holds before iff now" (`c2dbb26d`). H4 object witnesses run on a real JVM with the classes
+  opened (`709632c9`). H5 narrow, path-to-path input equations and `spec::heap::check` (`8e35687e`), then eight
+  widening steps: output relations for results, fields, identities and same-shape parameters, computed input
+  equations (refused where the contract anchors the input), equations reading primitive parameters or another object
+  (`9b9c3a34`, `a405b89a`, `8e9e24a6`, `e7e61dbd`, `dfca6c38`, `9aebe18f`, `0348f57c`, `f92fc77c`). Examples 150–152,
+  a Crosscut retry throttle: a correct rewrite, the alias-to-copy defect, and a bug outside the constructor-made
+  domain verified only within that claim (`224431e7`). Named gaps: correspondences whose old side is an expression or
+  a non-leaf field, floating point, fields of input objects that may be null or shared, collections, cycles,
+  polymorphism. For a person: `Engine::probe` budgets by wall clock, so under parallel load
+  `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` can time out (it does at the parent commit too); two
+  allow-list proposals (`65c491aa`, `606ed0f7`) wait for approval.
+- **Summaries** (last commit `697b9a64`): S1 closure digests covering dispatch targets, hierarchy, annotations and
+  Spring files, and a fix to `shape` for dynamic constants (`1ca74dc3`). S2 the canonical claim key and the local proof
+  cache, `equivalence --cache`, native engine only, with 11 invalidation tests (`8cb76352`, `ce73b14e`). S3
+  `jvmcontract impact`, right on all 59 B9/B11 examples of Crosscut, Quorum and Mica (`e4e02438`). S4 changed pure
+  helpers proved equivalent and shared in the caller, examples 160 and 161 (`afe6babb`, `85ee8db1`). S5 refinement per
+  callee (`b5db0cae`), so [Where it starts from](#where-it-starts-from)'s "refinement is all or nothing" is out of
+  date. S6 `examples/tools/economics.py` and its job (`697b9a64`). Named gaps: JBMC's identity is not in the key (B9
+  under `jbmc` or `auto` is uncacheable), `prove` has no cache hook, the golden claims' computed parts are
+  placeholders, a helper with a narrower domain is never shared.
+- **Observations** (last commit `d4885570`): O1 an observation spec per entry point, all 13 of Box Office's, with
+  golden files (`93afaf61`, `093bac5f`). O2 two builds' specs compared into accounted obligations, held to examples
+  110–119's recorded boundary diffs (`fa7f17c2`, `705256b4`). O3 recording stubs, one environment model, and the
+  effect trace proved through `equivalence::run`; `jvmcontract effects`; the app `examples/apps/deliveries` and
+  examples 170–172, a correct refactor and a dropped and a duplicated dead letter refuted on the JVM (`8f385981`,
+  `6d21d181`, `d4885570`). Named gaps: a modeled call's result can't be used, inputs integral only, no failure outcomes
+  in the environment model; `POST /quotes/text` stays unresolved (string concatenation).
+- **Alignment** (last commit `4f3abb38`): A1 the ground truth of examples 121–139, 85 parts (`88a4e1ef`). A2 `align`,
+  method correspondence: kept names 15/15, moved 2/2, renamed 1 found and 1 asked (122), none wrong or missed; the
+  thresholds were tuned on this table, so it shows consistency, not generality (`2217b733`). A3 argument, record and
+  result mappings, never arithmetic, so the offset mapping can't be proposed: anchored 50/50, internal 8/8, free 4/4,
+  results 19/19 with 122 and 123 asked (`9b509615`), and `align --prove`, scored by a job (`a6421004`). A4 field
+  correspondence from how constructors route their parameters, `align::propose` giving the joint example's golden
+  correspondence, widened to value objects three levels deep and reshaped results (`d45b10c6`, `e4ada93a`,
+  `634564ee`, `a5619c87`, `47cb1953`). A5 questions, `approve`, evidence refreshed under the claim key and gone
+  stale when it changes (`ac9053f1`, `e12daae7`, `f10232b6`). Notes: its claim key is provisional
+  (`whole-builds:sha256:…`), to be `spec::cache::key`; a moved method's correspondence leaves fields with no equation
+  (`Quote#cents` → `Money#cents` leaves `quantity`), which `spec::heap::check` refuses today.
+- **Deferred by the timebox:** nothing, in any stream.
+- **For review** (21 jobs, none run during the run, all pending in `verification/jobs/`; ids and what each should
+  give):
+  - Heap: `20261107-043420-nullable-and-one-array-parameters-in-pro` (the corpus's ignored tests under JBMC, `auto`
+    and `auto --confirm` pass, the six widened claims refused under JBMC and `--confirm`);
+    `20261107-064330-example-150-…`, `20261107-064331-example-151-…`, `20261107-064331-example-152-…` (verified;
+    violation differing only in `result == throttle`; verified); `20261107-064838-crosscut-s-nine-examples-with-claims-rer`
+    (025, 128, 130 and 132 violations, 076, 120, 127, 129 and 133 verified, none stale after); and nine quick ones of
+    H2's and H5's ignored tests under `--engine jbmc` and `auto --confirm`, each to exit 0 with the own checker's
+    verdicts: `20261107-072431-object-parameters-in-property-checks-h2`, `20261107-080218-output-relations-under-a-correspondence`,
+    `20261107-083358-computed-input-equations-under-a-corresp`, `20261107-085410-output-relations-for-an-object-parameter`,
+    `20261107-092158-input-equations-that-read-a-primitive-pa`, `20261107-104658-output-relations-for-identity-relations`,
+    `20261107-112033-output-relations-for-a-field-of-a-parame`, `20261107-115201-input-equations-that-read-another-object`,
+    `20261107-121516-result-relations-that-read-the-previous`.
+  - Heap's H1 benchmark, `20261107-041414-symbolic-references-in-the-own-checker-h`, came back during the run and
+    FAILED (VF-014, committed in `3d4fd12`): eight verdicts went from unverifiable to concrete on boom/1, inherited/1
+    and quiet/1, most likely against a stale `results.json` rather than because of H1, which the job doesn't isolate.
+  - Summaries: `20261107-053635-example-160-…` (verified, `lastAfter` shared), `20261107-053635-example-161-…`
+    (violation, no helper shared), `20261107-064135-the-proof-cache-s-economics-on-the-recor` (exit 0: warm verdicts
+    equal cold, warm reruns exact hits, the helper rewrite shared, the representation change proved again, the
+    regression refuted with a replayed witness).
+  - Observations: `20261107-065648-example-170-…` (verified), `-171-…` and `-172-…` (violations replayed on the JVM).
+  - Alignment: `20261107-053806-alignment-a3-second-half-every-proposal` (10 verified examples found with the table's
+    mapping proved and 123 still a person's, 9 violations found and none proved, `wrongAndAccepted` empty; it runs the
+    older collapse rule, so 122 or 123 shown as asked is not a regression).
+  - These ran at the streams' commits, before the merge; the merge changed `equivalence.rs`, so a rerun of 150–152,
+    160–161 and 170–172 at the merge is what shows the combination.
+- **Next: Phase 5**, the joint example as examples 190–199. Inline today: the integration contract's 24 parts pass,
+  so each stream's part reaches its verdict on the fixture. What Phase 5 adds is one run through all of them in
+  order (alignment's proposal fed to heap's check without a hand-written mapping, the effect obligation, the cache
+  on a rerun, the helper's proof in the caller), the honest-incompleteness case, the effort count, and the fixture
+  notes heap left: the `alias-to-copy` copy also throws for `quantity <= 0`, so `expected.json`'s "every field agrees"
+  holds only for a quantity of 1 or more; `allocations: 0` is not checked; the kernel claim is reused for `discount`,
+  whose inputs don't match it.
 - Status: working
 
 ## Loop settings

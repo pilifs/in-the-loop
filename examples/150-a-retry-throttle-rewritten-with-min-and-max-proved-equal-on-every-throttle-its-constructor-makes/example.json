@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "150",
+  "title": "A retry throttle rewritten with min and max proved equal on every throttle its constructor makes",
+  "summary": "Crosscut's retry throttle (gRPC's retry throttling: a failure takes a token, a success gives back the token ratio, retries only while more than half the tokens are left) is a mutable object every call on a channel shares. `recorded` is rewritten in the form gRPC's Java client uses, one clamp with `Math.max` and `Math.min` and the threshold doubled instead of halved. The regression proof takes the throttle as an object made by its constructor from symbolic limits, compares the result and the throttle's fields as both versions leave them, and proves them equal on every input, the claim saying that its throttles are the ones the constructor makes: full ones.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "dropped-case",
+    "object-inputs",
+    "own-checker",
+    "confined-change"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+    "symbol": "net.terminalvalue.crosscut.retry.RetryThrottling#recorded"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace the two branches of `recorded` with one computation of the next token count, clamped into `[0, ceiling]` by `Math.max(0, Math.min(next, ceiling))`, and test the threshold as `2 * milliTokens > ceiling` rather than `milliTokens > ceiling / 2`, which is the same test since the ceiling is a multiple of 1000. Shorter, and the form gRPC's Java client writes it in.",
+    "patch": "change.patch"
+  },
+  "risk": "None for the throttles the proof covers. What it does not cover is the point of the example's siblings: the throttle is made by its one constructor, which makes it full, so a throttle that calls have drained is outside the claim, and the claim says so (152 is a rewrite that differs only there).",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The harness makes a `ThrottleLimits` from two symbolic `int`s through its canonical constructor and the `Throttle` from it through its constructor, skipping limits the record rejects, once for each version from the same arguments, calls both versions with a symbolic outcome, and compares the result, the exception, and the throttle's fields as each call leaves them (`limits.maxTokens`, `limits.tokenRatioMilli`, `milliTokens`), and the identity relations within each version. On a full throttle a failure leaves `max - 1` tokens in both versions and a success leaves the ceiling, and both versions test the same threshold; the tool's own checker proves it at once. The verdict reads `behaves as before on every input of constructor-made objects`, and the domain names the constructor: `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts`.",
+  "resolution": "Merge. The proof is the review of the rewrite on a throttle as it starts; a drained throttle, where the floor at zero tokens matters, is reviewed by its tests or by a proof over a domain that makes drained throttles, which this one does not.",
+  "notes": [
+    "The domain is objects made by their constructor (decision 2 of llm-dlc/loops/foundations.md): `Throttle(ThrottleLimits)` starts full, `maxTokens * 1000` thousandths, so the proof is over one outcome on a full throttle, for every limit the record accepts (1 to 1000 tokens, a ratio of 1 to 1000000 thousandths). A throttle drained by earlier failures is a state no constructor makes; the claim covers none, and its headline and domain say so instead of 'every input'. 152 is the rewrite that differs only there, and is verified by the same proof for the same reason.",
+    "Observed: the boolean result, the exception, the throttle's fields as the call leaves them, and the identity relations among the throttle, its limits and the result (`stated.observations.objects` lists `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`). The `ThrottleLimits` record is a value, compared by its components only.",
+    "`Math.max` and `Math.min` are taken by the tool's own checker as the JDK computes them, so the proof needs no contract and no JBMC; JBMC cannot take an object input at all (`approach.engine`: native).",
+    "Pairs with 151 (the same kernel's `reconfigured`, its alias turned into a copy, refuted) and 152 (this rewrite without the floor at zero, outside the claim)."
+  ],
+  "provenance": "Constructed for step H2–H4 of llm-dlc/loops/foundations-heap.md, the correct change of the object-input examples, on a kernel added to Crosscut for them (`retry.Throttle`, `ThrottleLimits`, `RetryThrottling`).",
+  "references": [
+    {
+      "title": "gRPC proposal A6: client retries, retry throttling (maxTokens, tokenRatio, retries throttled at half the tokens)",
+      "url": "https://github.com/grpc/proposal/blob/master/A6-client-retries.md"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-121516-result-relations-that-read-the-previous",
+  "title": "Result relations that read the previous version's parameters (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A correspondence's output relation for the result may now read the previous version's parameters: a primitive one, old.by, as the new version's parameter in its place, and an object's primitive field path, old.p.cents, from the previous version's object as its call left it. The price kernel's raised(Price p, int by) returned whether it raised the price (Price(long cents)) and now returns the amount it leaves (Price(long dollars, int cents)), related by new.result == old.p.cents && old.result == (old.by > 0). The harness reads the previous object's field from the local it is kept in, after both calls. On the own checker the new tests in lib/tests/heap.rs pass inline; this job runs the ignored one, which checks the after build (correct) and the defect build (returns the amount before the raise) under --engine jbmc and under auto --confirm, since JBMC checks the same harness bytecode.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/spec/heap.rs",
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/witness.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines: after raised Verified; defect raised Violation, its witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T12:15:16+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 4 small JBMC runs over a long and an int"
+  },
+  "steps": [
+    {
+      "name": "previous-parameter reads under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored the_previous_parameter_reads",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

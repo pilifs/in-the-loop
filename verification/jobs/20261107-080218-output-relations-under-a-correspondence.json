@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-080218-output-relations-under-a-correspondence",
+  "title": "Output relations under a correspondence (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an output relation for the result in place of --results-agree-when: a boolean over old.result, new.result and the new parameters. A result that is an object of an application class is in it, or in --results-agree-when, by its field paths of whatever shape in each version, read through the objects in the harness's bytecode; identity relations are still compared. jvmcontract equivalence takes the correspondence as JSON with --correspondence FILE. lib/tests/heap.rs checks five such checks on the own checker inline: objects.Kernel#price, whose long result became a Money value object, related by old.result == new.result.cents (verified; a cent too much refuted); the foundations fixture's shop.Pricing#withQuantity between Quote(long, int) and Quote(Money, int), its result related by its field paths (verified; the alias-to-copy defect refuted by result == q; a relation the versions break refuted). This job runs the ignored test that repeats the five under --engine jbmc and under --engine auto --confirm.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/equivalence.rs",
+      "lib/src/harness/mod.rs",
+      "lib/src/spec/heap.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines, the two after-build checks are Verified and the three others Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T08:02:18+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 10 small JBMC runs (loop-free harnesses of a few dozen instructions)"
+  },
+  "steps": [
+    {
+      "name": "output relations under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored output_relations",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

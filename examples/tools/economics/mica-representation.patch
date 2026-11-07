@@ -1,0 +1,22 @@
+diff --git a/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java b/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
+@@ -14,12 +14,17 @@
+         return (low + high) >>> 1;
+     }
+ 
++    /** How far past {@code low} the index halfway to {@code high} is, for {@code low <= high}. */
++    static int half(int low, int high) {
++        return (high - low) >>> 1;
++    }
++
+     /** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */
+     public static int find(int[] matches, int key) {
+         int low = 0;
+         int high = matches.length - 1;
+         while (low <= high) {
+-            int mid = midpoint(low, high);
++            int mid = low + half(low, high);
+             int match = matches[mid];
+             if (match < key) {
+                 low = mid + 1;

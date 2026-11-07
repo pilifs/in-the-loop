@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 04:44 UTC |
-| Prompts | 1,080 |
-| Model calls | 10,624 |
-| Tool calls | 11,476 (242 failed) |
-| Compactions | 146 |
-| Subagents | 5 |
-| Tokens written | 13,212,102 |
-| Tokens read | 1,744,623,945 (97.9% from cache) |
-| Commits with a trace | 329 |
-| Log snapshots | 408 (1071.9 MB gzipped, 403 uploaded) |
+| Sessions | 51, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 12:44 UTC |
+| Prompts | 1,341 |
+| Model calls | 13,663 |
+| Tool calls | 14,617 (269 failed) |
+| Compactions | 195 |
+| Subagents | 9 |
+| Tokens written | 15,822,643 |
+| Tokens read | 2,281,018,835 (97.9% from cache) |
+| Commits with a trace | 393 |
+| Log snapshots | 477 (1252.4 MB gzipped, 403 uploaded) |
 
 ## Sessions
 
@@ -27,7 +27,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 
 | Started | Session | Status | Elapsed | Models | Prompts | Model calls | Tool calls | Failed | Compactions | Peak context | Commits |
 | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| ? | [fix-failing-python-test-suites](4c87308e-7822-4b69-83db-a853166e57e3/summary.md) | open | ? | `claude-opus-5-5` | 11 | 159 | 158 | 2 | 1 | 303,956 | 0 |
+| ? | [fix-failing-python-test-suites](4c87308e-7822-4b69-83db-a853166e57e3/summary.md) | ended | ? | `claude-opus-5-5` | 11 | 159 | 158 | 2 | 1 | 303,956 | 0 |
 | 2026-10-24 14:07 UTC | [WSL Java formal verification setup](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) | ended | 6 d 9 h | `claude-fable-5-1`, `claude-opus-5-5` | 50 | 353 | 416 | 17 | 6 | 400,634 | 14 |
 | 2026-10-31 00:53 UTC | [Formal verification example 004 proof](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | ended | 11 min | `claude-opus-5-5` | 6 | 15 | 26 | 0 | 0 | 111,790 | 3 |
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | ended | 10 h 34 min | `claude-fable-5-1`, `claude-opus-5-5` | 21 | 110 | 218 | 11 | 1 | 439,795 | 11 |
@@ -72,7 +72,12 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 4 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | open | 3 min | `claude-sonnet-5-5` | 4 | 9 | 9 | 0 | 0 | 69,093 | 1 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | ended | 2 h 58 min | `claude-opus-5-5` | 41 | 510 | 521 | 6 | 8 | 325,217 | 7 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | ended | 2 h 46 min | `claude-opus-5-5` | 47 | 560 | 579 | 4 | 9 | 322,777 | 15 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 8 h 19 min | `claude-opus-5-5` | 103 | 1,268 | 1,316 | 7 | 19 | 329,169 | 22 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
+| 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | open | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 2 |
+| 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 23 min | `claude-opus-5-5` | 1 | 100 | 105 | 1 | 0 | 246,550 | 5 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,23 +132,28 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 2,537 | 20 | 41,343 | 439,185 | 91.4% | 189 |
+| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 462,214 | 1,026 | 1,712,003 | 92,483,045 | 98.2% | 204 |
+| [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | 534,103 | 1,128 | 1,953,761 | 100,314,651 | 98.1% | 191 |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 1,015,945 | 2,572 | 4,274,633 | 230,317,308 | 98.2% | 231 |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
+| [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
+| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 49,843 | 202 | 233,471 | 15,062,688 | 98.5% | 307 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,079 | 87.8% | 46 |
-| `Edit` | 461 | 4.0% | 21 |
-| `Read` | 392 | 3.4% | 22 |
-| `Write` | 341 | 3.0% | 19 |
-| `ToolSearch` | 72 | 0.6% | 17 |
-| `Monitor` | 42 | 0.4% | 12 |
+| `Bash` | 12,726 | 87.1% | 51 |
+| `Read` | 717 | 4.9% | 27 |
+| `Edit` | 558 | 3.8% | 26 |
+| `Write` | 369 | 2.5% | 23 |
+| `ToolSearch` | 90 | 0.6% | 22 |
+| `Monitor` | 57 | 0.4% | 16 |
 | `WebFetch` | 26 | 0.2% | 6 |
 | `AskUserQuestion` | 24 | 0.2% | 7 |
-| `TaskStop` | 17 | 0.1% | 6 |
-| `Skill` | 6 | 0.1% | 3 |
-| `Agent` | 5 | 0.0% | 3 |
+| `TaskStop` | 24 | 0.2% | 10 |
+| `Agent` | 9 | 0.1% | 4 |
+| `Skill` | 6 | 0.0% | 3 |
 | `ScheduleWakeup` | 4 | 0.0% | 1 |
 | `SendMessage` | 3 | 0.0% | 2 |
 | `WebSearch` | 2 | 0.0% | 1 |
@@ -483,7 +493,71 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 326 | [`1f5411c5`](https://github.com/pilifs/in-the-loop/commit/1f5411c5180d0a0c50c81a30a3670e74e07ba79f) | Record verification result for the own checker's encoding-timing job: it passes after the benchmark's witness fix, closing VF-012 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) ([log](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)), [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) ([log](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/ddbb881e5541939be8ac6ce410c0eda1349bca952e37839be6c47b243fbe7533.jsonl.gz)) |
 | 327 | [`7c2c217c`](https://github.com/pilifs/in-the-loop/commit/7c2c217c1c10880bf7d569526bdaeba31abe6f4d) | The engine-priorities brief is done: its last job passed | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) ([log](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)), [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) ([log](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)) |
 | 328 | [`71ae92d2`](https://github.com/pilifs/in-the-loop/commit/71ae92d24caacaaa16d45594f06654af6bd9059e) | Record publishing the loops' run records as finding VF-013, deferred until after the next feature loop | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) ([log](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)) |
-| 329 | change `uvmurzwk` | Record verification results: H1's benchmark comparison fails on a stale recording (VF-014) | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) ([log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz)) |
+| 329 | change `lslmmpwr` | Observation specs per entry point (foundations O1, step 1): lib/src/observations.rs, jvmcontract observations, and observe::entry_points | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107.jsonl.gz)) |
+| 330 | change `zmqrplsq` | Observation specs for every Box Office entry point (foundations O1, step 2), with sibling modules followed | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/278ea47be6bdfa79870dc448cc0bf7b5fc6da19b47f5317a6cbb5f9972ebbd57.jsonl.gz)) |
+| 331 | change `xstwptus` | Two builds' observation specs compared into accounted obligations (foundations O2, step 1): observations::compare and observations --against | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/fc77552d2be43ed25a2dc85f04f7a4c2cbc07394fe45fa6a93c331c47e9e4264.jsonl.gz)) |
+| 332 | change `yvpqmlqt` | Box Office examples 110-119 compared into accounted obligations (foundations O2, step 2): outcomes before the handler, body wire shapes, and what no spec observes | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/770eecbafff5e07c9891fd4db76e4f23ec3cd67cc9c1a232faa8186739cacabd.jsonl.gz)) |
+| 333 | change `kxkxxrov` | The joint example's effect obligation discharged by an effect trace (foundations O3, narrow case): recording stubs, one environment model, a proof of the refactor, and the dropped and duplicated events refuted with witnesses replayed on a JVM | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/83e2f9e1a407c755079ca729dfb4fc0f30e04d8f9d80b23fd54e9e454d83d400.jsonl.gz)) |
+| 334 | change `upkxnrot` | The effect check from the command line (foundations O3, the rest, step 1): jvmcontract effects checks every entry point of two builds under the claim its own spec makes | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/d8486d45655bcf67dc9afe833488a4b9255314d6516c31c8c8b2cb5f4d00dbbc.jsonl.gz)) |
+| 335 | change `uqzznykp` | A Crosscut kernel behind a thin route, refactored and proved, a dropped and a duplicated send refuted (foundations O3, the rest, step 2; examples 170-172) (verification pending) | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/eea1a0e064993e146791f69a6de002586d28a1fd04e4556a52a78c0f3ba56790.jsonl.gz)) |
+| 336 | change `xuxuymrr` | Summaries S1: code closure digests per target, naming the parts a change touches; shared.rs's shape now resolves dynamic constants | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/472982d3adf890c5900c66a7c6834718f74db3d6a5b70ef27dd796b7334864fd.jsonl.gz)) |
+| 337 | change `spkzmqwz` | Summaries S2a: the claim key and the local proof cache, with adversarial invalidation tests | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25.jsonl.gz)) |
+| 338 | change `tumpnkkq` | Summaries S2b: equivalence --cache DIR, the proof cache's lookup on the prepared claim and its store of the result | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/0574a91e67a69d966e737ad41438686c9683d75e5fd5bdcdaded18b2f584ede9.jsonl.gz)) |
+| 339 | change `wwxvkxkm` | Summaries Progress: name the other streams' commits that sync.py check reports without a manifest | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/0aafe926b7f7dc1ff807d83cf829eb8890fd5fc22939e4b9d82d00ceafe155aa.jsonl.gz)) |
+| 340 | change `nplsyutx` | Summaries S3: jvmcontract impact, the claims a change invalidates and the parts of their code that changed | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/67bb1c62ef957ae44ca49b16ffbddae17b2583a26822db443bb8a2604402b895.jsonl.gz)) |
+| 341 | change `krmrutop` | Summaries Progress: name the 15 errors sync.py check reports after S3, none from this branch's work | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/a8cfa6d10626647e56a38c2578761a326a134305f3cc8993b932e6787e0680af.jsonl.gz)) |
+| 342 | change `ztyymsko` | Summaries S4a: a changed pure helper proved equivalent is one function in both versions of its callers | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/75a83fe563bc6aa7b206e0b014ef96bbb1f8b1730ce9edd2abff407841c0453f.jsonl.gz)) |
+| 343 | change `wmzzzzzs` | Summaries Progress: name the 18 errors sync.py check reports after S4a, none from this branch's work | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f.jsonl.gz)) |
+| 344 | change `stvkozlt` | Summaries S4b: examples 160 and 161, a changed refill helper proved on its own and used in its caller, and its wrong sibling (verification pending) | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/df67c67be1194198b18d46e77624ce78212f342f7088c9e1326464b7322591e8.jsonl.gz)) |
+| 345 | change `susnzxyt` | Summaries Progress: name the 20 errors sync.py check reports after S4b, none from this branch's work | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/99f62421d85e86c2ae874b0ee34e0c851a22aebaf0ce63617d9001f745a74818.jsonl.gz)) |
+| 346 | change `sntmsqzu` | Summaries Progress: S4b's two jobs are for review, not back within 15 minutes | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/fd172806fb5d804c510ac3c60fa81cfb83d58efcbe3759ddb33ac2ef159c0baa.jsonl.gz)) |
+| 347 | change `onmlxvvm` | Summaries Progress: two more errors in sync.py check, behind other streams' new commits | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/268cb9766e473bcb5ea24695b52ff7f2f8cb739860e7aaf0541301e28534f97d.jsonl.gz)) |
+| 348 | change `tqzzvqro` | Summaries S5: refinement per callee, only the stubs a spurious JBMC counterexample rests on are computed as written | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/69777a7779e2971cc7244aa4f0e83dc7e0bac27be67c9c3f2be56f1e69e3186f.jsonl.gz)) |
+| 349 | change `upvnlnwq` | Summaries Progress: name the 27 errors sync.py check reports after S5, none from this branch's work | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/24f0b9b0bccb67c9f098bbe6fc02e3a9465566f44bff89db818a0b16fa71a57c.jsonl.gz)) |
+| 350 | change `kkqoyoqr` | Summaries S6: the proof cache's economics on the recorded examples, cold, warm and after four kinds of change (verification pending) | [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) ([log](https://terminalvalue.net/raw-traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/4490bbfcd79cc8cf6d958594ef0cdc6b8693c4d77e243aaf7a7fb5d56db0df59.jsonl.gz)) |
+| 351 | change `uyqkxsly` | Symbolic references in the own checker: paths that differ only in a reference merge, the reference a guarded choice of objects (H1, verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f.jsonl.gz)) |
+| 352 | change `lonuluzq` | Array parameters that may be null or one array in property checks, decided by the own checker with witnesses that keep identity (H2, first step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/cec1ac6ca9c6ec56477a377c975e2f921f8527cca741953c4f47eda3e941aa8c.jsonl.gz)) |
+| 353 | change `xkutknnp` | Heap stream Progress: name the check errors that belong to other sessions' traces | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/eebff3e85c1dae64eadc7f24516a8c30bec9e3d4937a557f66814aba00e257fd.jsonl.gz)) |
+| 354 | change `nmrmkovp` | Objects made by their constructor as regression inputs, compared on their fields as both versions leave them (H2, second step) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f.jsonl.gz)) |
+| 355 | change `xnozsxqv` | Results of classes made by their constructor compared by their fields, and identity relations within each version compared as holds-before-iff-holds-now (H3, first step) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3.jsonl.gz)) |
+| 356 | change `ntqqzttl` | A correspondence's input equations relate objects of different shapes in a regression check, and spec::heap::check runs the joint example's kernel claims (H5, narrow case) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a.jsonl.gz)) |
+| 357 | change `xmwsurtu` | Regression witnesses over objects run on a real JVM with their identities, the application's classes opened for the harness (H4, first step) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/ede9e3b7ac91d52c49d69eaa7faf2e12a95ebc9de8d383bbcd640cefe162fd15.jsonl.gz)) |
+| 358 | change `yzzyzymt` | Propose a false public-ip finding for the allow list: a JVMS section number in a doc comment | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d.jsonl.gz)) |
+| 359 | change `ovxylktt` | Examples 150-152: a retry throttle as a mutable object input, a correct rewrite proved, the alias-to-copy defect refuted, a bug outside the constructor-made domain verified only within it (verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd.jsonl.gz)) |
+| 360 | change `luwtvovo` | Object parameters that may be null or one object in regression checks, made by a flag of the harness's own and kept by every witness (H2, third step; H4's rest) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966.jsonl.gz)) |
+| 361 | change `ttrwlzny` | Object parameters in property checks, made by their constructor, read by field paths now and under \old, compared by identity, and null or one object by the harness's flags (H2's rest; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819.jsonl.gz)) |
+| 362 | change `vnrpwzkx` | Propose a false long-token finding for the allow list: a test's work directory name | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/d3b3bdd48cf65f6a6458b3a57bb5ca161874d1639bc421968052c3f40a99e845.jsonl.gz)) |
+| 363 | change `nywxuwqr` | Output relations for the result under a correspondence, object results related by their field paths, and --correspondence FILE on equivalence (H5's rest, first step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/faffd3e2931a59bbf5375430622c71d1ff61094ad7211ec8775f8fd9f22f2a9a.jsonl.gz)) |
+| 364 | change `ryyzlszo` | Input equations that compute: a previous field given by an expression over the new object's leaves, and refused where the preservation contract anchors the input (H5's rest, second step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/b7e8994387607f26ae382451010608e0bca0bd149423659aa577c0cd0650cdd7.jsonl.gz)) |
+| 365 | change `vzwuvxyo` | Output relations for an object parameter's field as the calls leave it, compared in place of the input equations about its path, and accounted as the result's are (H5's rest, third step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/4aec40d690655a301ce32fdd6fa9dbae6e1dfc7e4ad91e4cbd63a8e2f896a37d.jsonl.gz)) |
+| 366 | change `syuyoumv` | Input equations whose expression reads the new version's primitive parameters, made before the call and compared after it (H5's rest, fourth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054.jsonl.gz)) |
+| 367 | change `npqyzsmm` | Output relations for identity relations, compared in place of holds before iff it holds now and accounted as the other output relations are (H5's rest, fifth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/05da9cd05a972639e75b09912ab17b92a7016b50fee3991e7faf5df7a38e782a.jsonl.gz)) |
+| 368 | change `ukqxumtt` | Output relations for a field of a parameter of the same shape in both versions, compared in place of equality for its path, and refutations that name each path an object differs in (H5's rest, sixth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/e6a4e7db9105cf89d593b8f892b454b3df0d72f7db656623f1f9bfbb40f5b216.jsonl.gz)) |
+| 369 | change `roxunqxw` | Input equations whose expression reads another object parameter's fields, as the arguments it was made from, made before the call and compared after it (H5's rest, seventh step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/8cda31194603744009bd21bc8084e13407a92982dbf47b329750d7a58d1be3f8.jsonl.gz)) |
+| 370 | change `qyvvpluv` | Output relations for the result that read the previous version's parameters, a primitive one as the new version's in its place and an object's field path as the call left the previous object (H5's rest, eighth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/b3531b584ebcdb6dec3acb9aa1a0603d3df73836e823b3128f2833524535dbb4.jsonl.gz)) |
+| 371 | change `znwsunmz` | Heap stream done: H1-H5 finished, the rest of H5 recorded as named gaps | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/b9fdc09d31f7ce24eed2481563187c24ea72554e586a5b6ed0197e8e5e0b6b44.jsonl.gz)) |
+| 372 | change `znkqslrs` | Record session traces | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/26d304137ac5a035f6db33c25faa517642596b3068beb9cc92951f5b476a8f3d.jsonl.gz)), [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 373 | change `yomwzkpy` | Alignment A1: the ground truth of the hand-written mappings in examples 121-139, part by part, anchored or internal | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/c5ebbf1d1bd82395979551376b5173609ba61b007296656393ebd4868349c01b.jsonl.gz)) |
+| 374 | change `prrxuokn` | Alignment A2: jvmcontract align proposes method correspondence between two builds, ranked, written to the hints file | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/ecff2f691d4e1d28381dddef4dadce90759417f1bc56b30657f95c4157ddfbfa.jsonl.gz)) |
+| 375 | change `szkpqzyl` | Alignment Progress: name every other stream's commit that sync.py check reports without a manifest | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e.jsonl.gz)) |
+| 376 | change `vvtltnmz` | Alignment A3 (static half): align maps each matched pair's arguments, records and result under the preservation contract, scored on examples 121-139 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/39ba85dbce2b8161e4587d36779118ccb78dfc7755bb7571986630b794cafead.jsonl.gz)) |
+| 377 | change `orvwtmzm` | Alignment Progress: name the sync.py check errors after A3's static half, none of them this stream's | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/c7eedb8b56b0e35cfb8691c3a877f28d98ec6c6dc385320bba7b3115bf77b72a.jsonl.gz)) |
+| 378 | change `orrmouym` | Alignment A4 (narrow case): field correspondence from constructor routing; align::propose passes the joint example's alignment checks | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/13edef94c2f9becdb92c9c4a0ba08250d1f61a1c594ee8aa20ffb943a2f8e2e8.jsonl.gz)) |
+| 379 | change `wrwkmlpx` | Alignment A3 (second half): align --prove checks every proposal by the regression proof, collapses by proof, and settles each pair (verification pending) | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/4d7819cc24cb4806409952fa20c4182fff17183a4b6903b77fff2ca98e5f3296.jsonl.gz)) |
+| 380 | change `llvlkvuq` | Alignment Progress: A3's proof job not taken within 15 minutes, now for review | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/71cdfb7f016e92572eb86a84f94d2ee21bace7ace9bb4b8adcd297191f74e276.jsonl.gz)) |
+| 381 | change `pxuuumry` | Alignment A4: field correspondence through value objects a constructor makes, and a method moved into one | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/dadc4f00a0f59f9d44870007cba471cf571d152772f7a4f29b04d205f76d246f.jsonl.gz)) |
+| 382 | change `ptlmkomn` | Alignment A4: nested shapes, a field whose own class changed shape related through that class | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/e920a3204d5e262521c66016eb998ce965f925460e5b2b31cb7cb1664b5e0daf.jsonl.gz)) |
+| 383 | change `xomnslzp` | Alignment A4: a result whose class changed shape compared field by field, from the class's field correspondence | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/bef92b461f51d0e67718a12d790908f09f431ec901db0bbcb27a41a3a513b2a0.jsonl.gz)) |
+| 384 | change `xksmnnwt` | Alignment A4: unchanged code over a class that changed shape is reshaped, not unchanged, and mapped through the class | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/8bb8323a656efe97cc7495522cad10ba3cfc8a46d76ef91b9998b7e34d1e8b54.jsonl.gz)) |
+| 385 | change `xuyyxpyz` | Alignment A5: each decision that is a person's put as a question, with its candidates, what each means, and a one-line approve that sets intent only | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/3c1114fb0efc5bb93a56e896f622dc0fccd84a07e4607d427accac3ef740b64d.jsonl.gz)) |
+| 386 | change `pomtzpnq` | Alignment A5: an approved relation's evidence comes from a proof under the current claim key, goes stale when it no longer matches, and approved-but-unproved decisions are listed | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/936ffea984cf467127ab9090c820b8eaf4493e365e1d582c8248c5e403a382ce.jsonl.gz)) |
+| 387 | change `kkkqlqut` | Alignment A5: proved relations with the same inputs are one candidate, told apart by a result no input gives; a question names an input that separates its candidates | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/0bf0ebdb11b3d49ab52a6d3636f5da02ed99ff54adfed9b118e56ef9305dfc7d.jsonl.gz)) |
+| 388 | change `spwpnwnu` | Alignment Progress: undo the copy of the brief's text that the last commit appended to its Progress | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/37a5ef9021634ea8c01a85415e013cd737c189c7794d3d5c06999a7a54603369.jsonl.gz)) |
+| 389 | change `uvmurzwk` | Record verification results: H1's benchmark comparison fails on a stale recording (VF-014) | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) ([log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz)) |
+| 390 | change `vmlkxxup` | Merge the four foundations streams: heap, summaries, observations and alignment | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) ([log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)), [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 391 | change `yrvvnkqy` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 392 | change `usumnkyr` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 393 | change `vrznnltv` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
 
 ## Logs
 
@@ -536,7 +610,12 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 1 | 0 | 0.1 MB | `6f9506472046`, not uploaded |
+| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 8 | 0 | 14.7 MB | `d9283d02ee97`, not uploaded |
+| [`be22079e`](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | 16 | 0 | 32.9 MB | `5dd0fa85bc0d`, not uploaded |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 22 | 0 | 90.5 MB | `26d304137ac5`, not uploaded |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 0 | 41.4 MB | `9a4c7376723a`, not uploaded |
+| [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 2 | 0 | 0.3 MB | `2031424cb330`, not uploaded |
+| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 5 | 0 | 0.9 MB | `7bd49949a99a`, not uploaded |
 
 ## Session notes
 

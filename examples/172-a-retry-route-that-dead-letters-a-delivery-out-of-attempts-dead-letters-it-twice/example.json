@@ -1,0 +1,59 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "172",
+  "title": "A retry route that dead-letters a delivery out of attempts sends the dead letter twice",
+  "summary": "The same refactor of the failure route and its retry policy, with the case of a delivery out of attempts handled first: it is dead-lettered whatever the receiver answered, and the route then goes on to ask the policy, which refuses, and dead-letters it again. The answer is the same and every test passes; the effect check finds the duplicate send, in exact order, and replays it on a JVM.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "messaging",
+    "resilience",
+    "spring-boot",
+    "duplicate-delivery",
+    "effect-trace",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Deliveries",
+    "file": "examples/apps/deliveries/src/main/java/net/terminalvalue/deliveries/DeliveryFailures.java",
+    "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Crosscut's `RetryPolicy.shouldRetry` is rewritten as one expression over two named helpers, `notProcessed` (429, 503) and `mayHaveRun` (408, and a server error other than 501, written `status / 100 == 5`), and the route `POST /deliveries/failures` is reorganised around the policy's answer, each send moved into a private method of its own (`scheduleRetry`, `deadLetter`). On the way, the case of a delivery out of attempts is made explicit at the top of the route: it is dead-lettered whatever the receiver answered. The branch has no `return`, so the route goes on to the policy, which refuses to retry, and dead-letters it at the end as before.",
+    "patch": "change.patch"
+  },
+  "risk": "Every delivery that runs out of attempts reaches the dead-letter topic twice. An operator who replays the topic replays the delivery twice, and a receiver that is not idempotent (the reason most deliveries are dead-lettered rather than retried) runs it twice; an alert that counts dead letters counts double. The route's answer is unchanged, and the tests, which look at the answer and the last record sent, pass.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The trace of attempted sends is compared exactly, in order and in number: one dead letter against the same dead letter twice is a different trace, even with equal payloads. The checker finds a request with the attempts at the maximum, shrinks it, and replays it on a JVM under the recording stubs: the old route attempts one `send`, the new one two identical ones.",
+  "resolution": "Return after the dead letter in the new branch, or drop the branch: the policy already refuses a delivery out of attempts, and the end of the route dead-letters it.",
+  "notes": [
+    "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`). Run inline on 2026-11-07 (JDK 25.0.5): refuted. The checker found `status=20, idempotent=true, attempts=20` in its first search stage ([0:20]) and shrank it in 19 interpreter runs to `status=0, idempotent=false, attempts=5`, on which both builds answer 200, the old one attempting one `send` to `delivery-dead-letters` and the new one the same send twice; replayed on the JVM under the recording stubs.",
+    "The trace is compared in exact order and in number, so two equal attempts are not one: the check would not pass a duplicate even if the payloads were all that a consumer looked at.",
+    "The tests pass: `deadLettersADeliveryOutOfAttempts` looks at the last record sent, which is the right dead letter. A test that counted the records sent would catch it.",
+    "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\")."
+  ],
+  "provenance": "Constructed for O3 of `llm-dlc/loops/foundations-observations.md` (the rest of O3: a Crosscut kernel behind a thin annotated route, refactored correctly and proved, with a dropped and a duplicated effect in siblings). Examples 170, 171 and 172 share the refactor; 171 and 172 each add one defect to it.",
+  "references": [
+    {
+      "title": "Spring for Apache Kafka: sending messages with KafkaTemplate",
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

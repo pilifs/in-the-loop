@@ -1,0 +1,70 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "161",
+  "title": "A refill helper aligned to the clock's grid, refuted alone, and its caller sends a client back early",
+  "summary": "Crosscut's `TokenBucket.lastAfter` is rewritten to credit the bucket up to the start of the period the clock reading falls in, `now - now % period`, as the fixed window aligns its start. A bucket's periods are counted from its last refill, not from the clock's zero, so the credited time moves whenever the last refill is off the clock's grid. Run with the proof cache, the proof first checks the helper on its own and refutes it, so the helper stays as written in both versions. The caller's proof, the `Retry-After` of a refused request, then finds a client told to wait 1 ns where the old code said 2, which comes back and is refused again. The tests pass, and so does the caller's property that the wait is never more than a period.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "rounding",
+    "proved-helpers",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "cache": true
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Credit the bucket up to the start of the period the reading falls in on the clock's grid of whole periods, `nowNanos - nowNanos % periodNanos`, as `Window` aligns a window's start, in place of `nowNanos - (nowNanos - lastNanos) % periodNanos`, which counts the periods from the last refill. The javadoc says so. `RetryAfter`, the method checked, is unchanged, and so are the tests, which pass: every refill in them starts at time zero, on the grid. The pull request declares the module's precondition as its scope, as the property contracts state it, so that the proof is about the readings the limiter is used with.",
+    "patch": "change.patch",
+    "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
+  },
+  "risk": "A bucket whose last refill is not on the clock's grid of periods gets a different credited time. In the `Retry-After` the proof checks, a refused client is told to wait until the period on the grid ends rather than the bucket's own period: 1 ns instead of 2 in the counterexample. A client that waits as told comes back before the bucket has a token and is refused again, so every refused client retries early, and a gateway that sends `Retry-After` to spread retries out turns them into a second wave of refusals. The same helper is the bucket's refill state: its credited time can now fall behind the last refill, which credits a part of a period twice, or jump ahead of it, which drops one, so the bucket's rate drifts from its configuration either way.",
+  "expected": {
+    "verdict": "violation",
+    "sharedHelpers": []
+  },
+  "explanation": "The proof runs with a proof cache, a fresh directory under the build (`--cache`). `TokenBucket.lastAfter` changed and is in the narrow class a proof of its own may stand for (static, pure over `long`s, no exception of its own, no static initializer, not trivial). So the tool checks it first, on its own, over every input of its parameter types. The own checker refutes that check, and the note gives the input, shrunk: there the last refill is a nanosecond after the reading. The helper is not shared: a helper proof that fails anywhere is never used, since only a proof over every input puts every call in its domain. So the caller's proof runs through both versions of `lastAfter` as written. Within the module's precondition, the solver finds readings on which the waits differ in [0, 20], and the interpreter shrinks them to `nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1)`. The bucket was refilled at 1 and is empty. The old helper credits it up to 1, and the next token is due at 3, a wait of 2. The new one credits it up to 0, the start of the grid's period, and says 1. The witness is replayed on both versions before it is reported.",
+  "resolution": "Keep counting the periods from the last refill: the bucket's periods start when it was last credited, not on the clock's grid. If an aligned form is wanted, align the bucket's creation time to the grid and keep `lastNanos` on it, so that the two forms agree; the proof will say so.",
+  "notes": [
+    "The tests miss it because every refill in `TokenBucketTest` and `RetryAfterTest` starts at `lastNanos = 0`, which is on every grid, where the two forms agree. The property of `nanosUntilToken` in `properties.contract`, a wait of nothing or more than nothing and at most a period, holds of the new version too, since the wait to the end of the grid's period is within a period as well. The property of `lastAfter`, that the credited time never falls behind the last refill, does not hold of the new version (credited 0 after a refill at 1, by the arithmetic), so a property proof of the helper would find it. The regression proof of the caller finds it with no property written.",
+    "The helper's own counterexample lies outside the module's precondition, with the clock reading before the last refill, since the helper's proof covers every input and the shrinker keeps the smallest. That is enough to keep the helper out of the narrow class: a proof restricted to its callers' domain would need the caller's proof to assert, at each call, that the arguments are in that domain, which this form of sharing does not do.",
+    "With the helper refuted, the caller's proof is the one it would be without the cache: both versions of the helper as written, the regression found in a few tenths of a second when the example was written.",
+    "Example 160 is the sibling whose helper change is right: its own proof holds, and the caller is proved with the helper as one function in both versions. Example 132 is a regression on the other refill helper, `tokensAfter`, counting periods from the clock's zero.",
+    "Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 7 November 2026, JDK 25.0.5, from the bytecode, nothing proved): the tool's own checker meets no gap in the 3 methods the proof reaches in either version, so strict mode does not move this verdict."
+  ],
+  "provenance": "Constructed for S4 of `llm-dlc/loops/foundations-summaries.md` on Crosscut's token bucket kernel (examples 031, 120, 132 and 133), as the sibling of example 160 with a planted defect in the helper: the proof of the helper on its own must fail, the helper must stay as written, and the caller's check must find the regression with a replayed counterexample.",
+  "references": [
+    {
+      "title": "Spring Cloud Gateway: the RequestRateLimiter filter, a token bucket per key",
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/gatewayfilter-factories/requestratelimiter-factory.html"
+    },
+    {
+      "title": "Bucket4j: the token bucket algorithm, refill as whole periods since the last refill",
+      "url": "https://bucket4j.com/"
+    },
+    {
+      "title": "RFC 9110, HTTP Semantics, 10.2.3: Retry-After, how long the user agent ought to wait before a follow-up request",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110#field.retry-after"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "171",
+  "title": "A retry route that skips the dead letter for a client error loses the delivery without a trace",
+  "summary": "The same refactor of the failure route and its retry policy, with one shortcut added: a 4xx other than 408 and 429 answers 200 at once, since no retry fixes it. The answer is the same as before and every test passes, but the delivery is no longer dead-lettered. The effect check finds a request on which the old route sends a dead letter and the new one sends nothing, and replays it on a JVM.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "messaging",
+    "resilience",
+    "spring-boot",
+    "dropped-case",
+    "effect-trace",
+    "own-checker"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Deliveries",
+    "file": "examples/apps/deliveries/src/main/java/net/terminalvalue/deliveries/DeliveryFailures.java",
+    "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Crosscut's `RetryPolicy.shouldRetry` is rewritten as one expression over two named helpers, `notProcessed` (429, 503) and `mayHaveRun` (408, and a server error other than 501, written `status / 100 == 5`), and the route `POST /deliveries/failures` is reorganised around the policy's answer, each send moved into a private method of its own (`scheduleRetry`, `deadLetter`). On the way, a shortcut is added at the top of the route: a client error other than 408 and 429 means the receiver refused the payload itself, no retry fixes that, and the dispatcher has logged it, so the route answers 200 at once.",
+    "patch": "change.patch"
+  },
+  "risk": "The dead-letter topic is where a failed delivery goes to be seen: an operator replays it once the receiver is fixed, and an alert counts it. The shortcut answers the dispatcher exactly as before (200, given up), so nothing upstream notices, and the tests, which look at the answer and the last record sent, pass. But every delivery a receiver refuses with a 400, 404 or 422 now disappears: no retry and no dead letter, and the dispatcher's log is the only place it was ever seen. A receiver that starts rejecting a payload after a schema change loses every delivery until someone reads that log.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The route's answer is the same on every request, so a regression proof of the answer alone would pass. The effect check compares the trace of attempted sends too, exactly in order, under one recording stub for both builds: for a status in the client-error range the old route attempts one `send` to `delivery-dead-letters`, with the status and the attempt count snapshotted at the call, and the new route attempts none. The checker finds such a request, shrinks it, and replays it on a JVM under the stubs, where the two logs differ as the checker said.",
+  "resolution": "Dead-letter what is given up, whatever the reason: keep the shortcut if the policy's answer should not be asked, but send the dead letter in it as the other branch does, or leave the decision to the policy, which already refuses to retry a client error.",
+  "notes": [
+    "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`). Run inline on 2026-11-07 (JDK 25.0.5): refuted. The checker found `status=416, idempotent=true, attempts=0` in its second search stage ([-100000:100000]: no status in [0, 20] is a client error) and shrank it in 27 interpreter runs to `status=400, idempotent=false, attempts=0`, on which both builds answer 200, the old one attempting `KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, ...)` and the new one no modeled call; replayed on the JVM under the recording stubs.",
+    "The observations other than the send are unresolved, not preserved, in the result: a refutation of the log shows that the logs differ, not which of the other observations still agree. The answer does agree here (200 in both), which is the point of the example: a proof of the answer alone would pass.",
+    "`attempts=0` is outside what a dispatcher reports (one attempt at least), and the proof's domain is every `int` the parameter binds; the defect shows on every client error other than 408 and 429, whatever the attempt count.",
+    "The tests pass: they look at the answer and at the last record sent, and none reports a client error.",
+    "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\")."
+  ],
+  "provenance": "Constructed for O3 of `llm-dlc/loops/foundations-observations.md` (the rest of O3: a Crosscut kernel behind a thin annotated route, refactored correctly and proved, with a dropped and a duplicated effect in siblings). Examples 170, 171 and 172 share the refactor; 171 and 172 each add one defect to it.",
+  "references": [
+    {
+      "title": "Spring for Apache Kafka: sending messages with KafkaTemplate",
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

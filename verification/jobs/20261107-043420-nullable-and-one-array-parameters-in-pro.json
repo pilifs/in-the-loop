@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-043420-nullable-and-one-array-parameters-in-pro",
+  "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM",
+  "description": "Property checks gained a wider domain for array parameters (step H2 of llm-dlc/loops/foundations-heap.md): --nullable a lets a be null and --may-alias a,b lets a and b be one array. Only the own checker takes such a domain (each such parameter a symbolic reference among null and the arrays it may be); --engine jbmc and --confirm refuse it, and --engine auto does not fall back to JBMC. Witnesses say it (b=the same array as a, a=null) and keep it through the interpreter, the shrinker and the JVM run. The conformance corpus (lib/tests/conformance.rs) gained six claims over widened domains for twoArrays, length and lengthOrMinusOne, whose outside-the-domain calls ([0];@0 and null) they now take; the own checker's run of the corpus passed inline. This job runs the corpus's ignored tests, which run every claim through JBMC, --engine auto and auto --confirm and hold each to the JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/property.rs",
+      "lib/src/bmc/mod.rs",
+      "lib/tests/conformance.rs"
+    ]
+  },
+  "expected": "exits 0: both ignored tests pass. The six widened claims are Unverifiable under --engine jbmc and auto --confirm (refused: JBMC would prove a narrower claim), and under --engine auto have the own checker's verdicts (Verified, or Violation with a witness the JVM refutes); every other claim as before.",
+  "submitted": {
+    "at": "2026-11-07T04:34:20+00:00",
+    "session": "750c8a36-92b9-44e3-adad-ef96dc6aa676",
+    "by": "claude (foundations-heap)"
+  },
+  "priority": 0,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "60m",
+    "notes": "the corpus has about 90 claims, each run by JBMC once or more; earlier runs of these tests were pipeline jobs of comparable size"
+  },
+  "steps": [
+    {
+      "name": "conformance under JBMC, auto and auto --confirm",
+      "run": "cd lib && cargo test --release --test conformance -- --ignored",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

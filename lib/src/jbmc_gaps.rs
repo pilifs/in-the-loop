@@ -1195,6 +1195,7 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
             properties: 2,
             raw_inputs: BTreeMap::new(),
             raw_arrays: BTreeMap::new(),
+            raw_same: BTreeMap::new(),
             stage: None,
             problem: None,
             log: PathBuf::new(),

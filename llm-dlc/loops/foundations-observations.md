@@ -114,8 +114,182 @@ under Progress.
 
 ## Progress
 
-- Nothing yet.
-- Status: working
+- **O1, step 1 (2026-11-07): the observation spec module and its command, on the joint example.**
+  `lib/src/observations.rs` builds one `EntryPointSpec` per route, message listener, schedule and application-event
+  listener from the boundary analysis's facts: stable ids (`POST /quotes`, `kafka TOPIC`, `schedule ARGS`,
+  `event TYPE`, with the handler appended only when two share one), inputs with their bindings (identity
+  derivations), the result, exception and a route's status per outcome (from `failures.rs`), one effect observation
+  per modeled call with its payload snapshot paths, each effect site with its kind, target and transaction
+  placement, the identity policy (none at a serialized boundary), the environment model (every modeled call, reads
+  included, outcome `returns`, trace bound 4, exact order; the restriction to normal returns stated as an
+  assumption), and the unresolved parts (dynamic call sites such as string concatenation, calls the walk can't
+  follow, computed targets, framework-supplied parameters, destinations from configuration).
+  `reach.rs` now records each effect's call site (`Reach::sites`, `dynamic`, `unresolved`); the boundary contract's
+  text is unchanged (the integration tests' drift checks pass). `observe::entry_points` returns the specs, so the
+  integration contract's `observations specs before` passes. New command `jvmcontract observations PATHS
+  [--classpath] [--json]`. Tested by `lib/tests/observations.rs` (4 tests: the spec of `POST /quotes` field by field;
+  `POST /quotes/text`'s concatenation named as unresolved; the refactor leaves every spec unchanged, the effect
+  defects leave the observations unchanged, the renamed route is another id; the command's text and JSON).
+  Shared files touched, by adding: `lib/src/main.rs` (the command), `lib/src/lib.rs` (the module), `lib/tests/observations.rs`
+  (new), `lib/README.md` (a section, and the command under Commands). `EntryPointSpec` in `observe.rs` gained fields
+  (`kind`, `declared`, `bindings`, `response`, `statuses`, `effects`, `identity`, `assumptions`, `source_line`,
+  `method`), all with serde defaults; its existing fields keep their meaning.
+- **O1, step 2 (2026-11-07): Box Office, every entry point.** The 13 routes, listeners and schedules of
+  `ticketing-service` (9), `payment-service` (3) and `messaging` (1) have specs (the boundary contracts' larger
+  entry-point counts include `@Bean` definitions). Checked by hand against the source and the boundary contracts,
+  which turned up three bugs, now fixed: the walk didn't follow sibling modules, so the outbox and inbox writes,
+  the placement inside `Transactions.run` and the guards' 500s were missing (`observations::analyse` now takes the
+  entry-point classes and the followed classes apart, as `boundaries::analyse_in` does, and the command has
+  `--base DIR`, as `verify` has); a `Class` argument was expanded into the document's fields as payload
+  (`reach.rs`'s `argument_types` now keeps a class literal's declared type); and a method inherited from the
+  library (`Enum.ordinal`, `Object.getClass`) was named unresolved (now a library call). The trace bound is now at
+  least the number of effect sites (the payment listener has five). After the fixes the specs' reads, writes, sends
+  and throws match the boundary contracts', and `verify` still passes on all three modules. Tested by two new tests in
+  `lib/tests/observations.rs`, which build Box Office offline with its own Gradle build in a copy under the target
+  folder (about 7 s): every module's specs equal golden text in `lib/tests/fixtures/boxoffice-observations/`
+  (`JVMCONTRACT_BLESS=1` rewrites it), and the facts read off the source hold (`POST /orders` writes the order and
+  the outbox entry inside one transaction, its statuses 500/409/404 and an unknown one for the `ResponseEntity`; the
+  hold route's three bindings; the payments listener's payload and inbox write; the sweep's configured schedule;
+  the relay's computed topic named as unresolved). Shared files touched, by adding: `lib/src/main.rs` (`--base`),
+  `lib/tests/observations.rs`, `lib/tests/fixtures/boxoffice-observations/` (new), `lib/README.md`. O1 is done.
+- Not this stream's to fix: `sync.py check` reports "session … has no manifest" for the other streams' commits
+  (alignment, summaries and heap alike), whose manifests are on their own branches; the reconcile merge brings them
+  together. None is in this branch's own commits.
+- **O2, step 1 (2026-11-07): two builds' specs compared into accounted obligations, on the joint example.**
+  `observations::compare` (behind `observe::compare`) matches entry points by what consumers address: verb and route
+  with path variable names erased, topic or queue, schedule; a renamed handler is the same entry point, a renamed
+  route is removed plus new (the handler now serving the new route is named), and several under one key whose
+  handlers all changed are unresolved. Each observation of each old entry point gets exactly one obligation:
+  preserved (to prove: the shapes agree, which discharges nothing), changed (a shared outcome mapped to another known
+  status, a status only one build can answer when all are known, a payload path gone or added, an effect site moved
+  into or out of a transaction or to another target, another response type), removed, or unresolved (a status
+  unknown, or no way to tell the pair). Two further obligations: `inputs` (changed when the external inputs or their
+  bindings differ, since the input domain is the contract's) and `unresolved` (what the analysis can't see of either
+  build). Each says what discharging it would need; differences that change no shape (an outcome replaced by one with
+  the same status, a second call site) are listed for the proof. `observations::unaccounted` checks the accounting.
+  New option `jvmcontract observations ... --against OLD.json` prints the obligations (text with the count, or
+  `--json`). The integration contract's six `observations compare` checks now pass (7 passed, 17 unsupported, 0
+  failed, with `observations specs before`). Tested by five new tests in `lib/tests/observations.rs` (the joint
+  example's builds and defects; a renamed handler and a renamed path variable; each kind of changed shape on a spec
+  changed by hand; entry points a key doesn't tell apart; the command), and Box Office's specs compared with
+  themselves give nothing changed, removed or new. Full `cargo test` passes (rustfmt and clippy aren't installed
+  here, so neither was run). The dropped and duplicated effects give no static difference, as expected: their
+  effect obligation is preserved-to-prove, for O3's trace to refute. Shared files touched, by adding:
+  `lib/src/main.rs` (`--against`), `lib/tests/observations.rs`, `lib/README.md` (a paragraph and the command).
+  `Obligation` in `observe.rs` gained `new_entry`, `differences` and `needs`, with serde defaults, and `Change`
+  derives `PartialOrd`/`Ord`; their existing meaning is unchanged.
+- **O2, step 2 (2026-11-07): Box Office examples 110–119, each compared with Box Office as it is.** A new test in
+  `lib/tests/observations.rs` applies each example's patch to a copy of the sources, compiles the modules it changes
+  with `javac -parameters` (as the Gradle build does) against the base build's class path, compares every module's
+  specs with the base's, and holds every obligation that isn't preserved-to-prove or unresolved to what the example's
+  recorded boundary diff says changed at the entry points, with the differences that say it. The gaps it showed are
+  closed in the spec: an outcome the framework takes before the handler runs, with the requests it is for
+  (`StatusOutcome::when`): Bean Validation of a `@Valid` or `@Validated` body (`MethodArgumentNotValidException`, 400
+  unless an `@ExceptionHandler` takes it, for a body that fails one of the constraints it runs), and a parameter that
+  can't bind, from `binding::check` (`MissingPathVariableException`, a 500 on every request); and a body's wire shape
+  as the input domain (`Binding::shape`, the wire block's lines with their `!` lines). The comparison gained: such an
+  outcome only one build has, or for other requests, is changed (110's dropped `@Valid`, 113's new `@NotNull billing`
+  with `! constraints on Billing are not checked` named in `inputs`); a build that fails every request before the
+  handler changes every observation of the handler (118); a status one build answers for an exception and no
+  exception of the other does is changed even beside a normal return whose status is unknown (119: the 409 is gone);
+  beside an effect attempt that is gone, what the new build attempts instead is named (117); a new effect in an entry
+  point the old build has needs approval or a proof it's never reached, and the count says how many (116, 117). 111,
+  112 and 114 change no spec at all: what no entry-point spec observes (configuration values, what an encoded payload
+  holds beyond its snapshot paths, advice such as caching, field names in query strings) is printed under every
+  comparison (`observations::NOT_OBSERVED`). 115 is a changed insert payload path. Also fixed: `observations --base .`
+  (relative) followed no sibling module, since the class path entries are absolute; the base is now compared
+  canonically, as `verify` does. Each example's `notes` says what its comparison gives. The two lines O1 step 2 added
+  to `examples/apps/boxoffice/README.md` are removed again: `build.py` digests the whole tree into its claim records,
+  so they marked the recorded results of 006, 012, 110 and 111 stale; `lib/README.md` says the same. Full `cargo
+  test` passes; the observations suite takes about a minute (the Gradle build and ten javac builds). Shared files
+  touched, by adding: `lib/src/main.rs` (`--base` canonical), `lib/tests/observations.rs`, `lib/README.md`,
+  `examples/index.json` (rendered notes). `observe.rs` gained `Binding::shape` and `StatusOutcome::when`, with serde
+  defaults. O2 is done.
+- Also not this stream's to fix: `sync.py check` reports five old `main` commits whose trailers point at session
+  `c2bd9df4`'s log `1f2230c9f137`, which their manifest doesn't list; the verification loop rewrote them at 04:44
+  in a change (`uvmurzwkyukn`) whose manifest lists it, and that change isn't in this branch.
+- **O3, narrow case (2026-11-07): the joint example's effect obligation discharged.** New module
+  `lib/src/effects.rs`, behind `observe::effect_log` (the plan: the environment model, one `RecordingStub` per
+  modeled call with its snapshot paths and what it returns, the assumptions) and `observe::check`. In both builds
+  alike, each call site of a modeled call is redirected to a generated stub (`shared::redirect_calls`, called, not
+  changed); a stub of an observed effect appends one attempt with its payload paths snapshotted at the call (a
+  string as the literal of either build it is, a record's component through its accessor). One environment model
+  serves both: the claim's calls and both specs', every call returning normally, stated as an assumption. A
+  generated method in the handler's package makes the handler with its one constructor and null dependencies, calls
+  it on the inputs and returns the log (outcome by exception class, response, attempts in exact order), and
+  `equivalence::run` (a new caller, with the own checker) proves the two logs equal. Past the trace bound, a string
+  no literal is, a call on a dependency the model doesn't have, or a `NullPointerException` out of the handler marks
+  the log unresolved, differently per build, so no proof covers such an input and a witness on it is unresolved,
+  never a shorter trace. A counterexample is replayed on a JVM (`jvm_witness::run`, called) under the stubs and
+  decoded into each build's attempts. Refused by name: a handler that uses a modeled call's result (modeled return
+  values), non-integral inputs or response, an application object among its dependencies, failure outcomes in the
+  model. Results, inline (each proof under a second): the refactor verified with result, exception, status and the
+  send preserved; `dropped-effect` refuted at cents=1, quantity=100 (the old build sends `total=90`, the new one
+  nothing), `duplicated-effect` at quantity=10 (one send against the same send twice), `offset` at cents=0,
+  quantity=1, each replayed on JDK 25; the duplicate under trace bound 1 unresolved; `POST /quotes/text` unresolved.
+  The integration contract's observations part now passes whole: 13 passed, 0 failed, and only the heap, alignment
+  and summaries parts unsupported. Tested by `lib/tests/effects.rs` (10 tests). Also fixed: the Box Office patch
+  test compiled with `javac -parameters` but no `-g`, unlike Gradle, and `reach.rs` reads a local's type from the
+  local variable table, so the new per-site argument classes differed (`Update` against `UpdateDefinition`); it now
+  passes `-g`. Shared files touched, by adding: `lib/src/lib.rs` (the module), `lib/tests/effects.rs` (new),
+  `lib/tests/observations.rs` (`-g`), `lib/README.md` (a paragraph). `observe.rs` gained `EffectSite::arguments`
+  (`CallArgument`), `EffectLogPlan::stubs` and `assumptions` (`RecordingStub`), with serde defaults. The core (O1,
+  O2, O3's narrow case) is done. The last integration report (05:01) was a merge conflict in shared docs and trace
+  files (`lib/README.md` four-sided among them), not a failing check: the reconcile loop's to merge.
+- **O3, the rest, step 1 (2026-11-07): the effect check from the command line.** New command `jvmcontract effects
+  BEFORE AFTER [--entry ID]... [--trace-bound N] [--unwind N] [--max-array-length N] [--json]`: every entry point of
+  the old build's class directory (or those named) is matched to its counterpart in the new one as `observations
+  --against` matches them, and checked by the effect trace under the claim its own spec makes
+  (`effects::claim_for`: its inputs, every observation it has as required, its environment model, the bounds, no
+  change approved; the closures and tools named, not digested, since the cache is the summaries stream's). Printed
+  per entry point: the verdict, what each required observation became, why it is unresolved, the replayed witness
+  with both builds' attempts, the proof (or the refutation's search) line, the domain and the assumptions; then the
+  count. An entry point with no counterpart is unresolved; one the narrow case refuses (a used result, string
+  inputs) is reported as unsupported while the others are still checked; an `--entry` the old build lacks is an
+  error. Exits 0 only when every entry point checked is verified. In `effects.rs`: `claim_for`, `check_builds`
+  (`EntryCheck`), `render_checks`; `Checked` and `Trace` derive `Serialize`. On the joint example: `before` against
+  `after` verifies `POST /quotes` and leaves `POST /quotes/text` unresolved; against `dropped-effect` and
+  `duplicated-effect` it refutes `POST /quotes` with the witnesses of the narrow case (cents=1, quantity=100; cents=1,
+  quantity=10), replayed on JDK 25. Tested by five new tests in `lib/tests/effects.rs` (14 now): the claim a spec makes
+  equals the joint example's golden claim in its subject, inputs, required observations, observations and
+  environment; the command over every entry point, one, and an unknown one; a refutation in text and, under
+  `--trace-bound 1`, unresolved in JSON; a refused handler reported as unsupported. Full `cargo test` passes. Shared
+  files touched, by adding: `lib/src/main.rs` (the command), `lib/tests/effects.rs`, `lib/README.md` (the command
+  under Commands, a sentence in the effect-trace paragraph).
+- **O3, the rest, step 2 (2026-11-07): a Crosscut kernel behind a thin route, refactored correctly and proved, with
+  a dropped and a duplicated effect in siblings (examples 170–172).** New app `examples/apps/deliveries`: one route,
+  `POST /deliveries/failures` (`int status, boolean idempotent, int attempts`), which asks Crosscut's
+  `RetryPolicy.shouldRetry` and sends a `RetryScheduled` to `delivery-retries` (202) or a `DeadLettered` to
+  `delivery-dead-letters` (200) through a `KafkaTemplate`; Spring stand-ins under `src/stubs/java` (on the class path,
+  never in the build checked) and plain tests against a recording template. Box Office and Crosscut are untouched,
+  so no recorded result's digest moves. Examples (each patch rewrites `shouldRetry` over two helpers and the route
+  around its answer): 170 the correct refactor, verified; 171 a shortcut that answers 200 for a client error
+  without the dead letter, refuted at status=400, idempotent=false, attempts=0 (old: one dead letter; new: no
+  modeled call); 172 an early dead letter without a `return`, refuted at status=0, idempotent=false, attempts=5 (one
+  dead letter against the same one twice). Each was checked inline with `jvmcontract effects` (under half a second
+  each), the witnesses replayed on JDK 25.0.5; the tests pass in all three. A narrowing lifted on the way, in
+  `effects.rs`: a modeled call whose sites pass payloads of several classes was refused ("a stub reads one"); now
+  each path is read through the payload's own class (instanceof chains), a path its class lacks is snapshotted as
+  absent, and the class itself as `data.class`, so payloads of two classes never compare equal (a single-class call
+  is unchanged). Also: `effects --report DIR` writes `effects.sarif` (new rule `effects-changed`, in `sarif.rs`),
+  anchored with `--sources`/`--base`; a witness's boolean input shows as `true`/`false`. build.py (additive):
+  `TOOL_APPS["deliveries"]` with `stubs` and `uses` (Crosscut's sources compiled in; `tool_copies`, `tool_stubs`),
+  `RUNNERS["deliveries"] = {"B9": run_tool_effects}`, `proof_options` giving the effect check only its bounds, and
+  `findings_effects` for the page. Tested by two new tests in `lib/tests/effects.rs` (16 now: two payload classes
+  through one send, reordered and verified, swapped with equal values and refuted on the class; the SARIF report)
+  and `EffectsRunnerTest` in `examples/tools/test_build.py` (5 tests; 166 there pass, and `verification/test_pipeline.py`).
+  Full `cargo test` passes; `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` timed out once under load
+  (load average about 5) and passed on its own in 12 s, in code this step doesn't touch. New tag `effect-trace`
+  (technique). Shared files touched, by adding: `lib/src/main.rs` (`--report`, `--sources`, `--base`),
+  `lib/src/sarif.rs` (a rule), `lib/tests/effects.rs`, `lib/README.md`, `examples/tags.json`, `examples/README.md`
+  (the Deliveries row; "five subject systems"), `examples/index.json` (rendered), `examples/tools/build.py` and its
+  test. Quick jobs, submitted at priority 10, each `build.py` on one example: `20261107-065648-example-170-a-retry-route-and-its-crossc`
+  (expected verified), `20261107-065648-example-171-a-retry-route-that-skips-the` and
+  `20261107-065648-example-172-a-retry-route-that-dead-lett` (each expected violation, one counterexample replayed
+  by jvm); their pages and results come back with them, and until then the router lists the three as not run. O3 is
+  done, pending those jobs. Narrowings left for later (not this loop's): a modeled call's result can't be used, the
+  scan for a used result covers the whole build rather than the handler's reach, and inputs are integral.
+- Status: done
 
 ## Loop settings
 

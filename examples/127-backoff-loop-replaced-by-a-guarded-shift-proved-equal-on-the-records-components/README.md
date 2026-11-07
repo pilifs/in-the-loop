@@ -9,6 +9,8 @@
 
 > The same rewrite as example 126, done right: the delay is `baseMillis << attempt` with the shift distance kept below the leading zeros of the base, so that a shift that would leave the range of a `long` is replaced by one that is already past the cap, and a non-positive attempt returns the base. The regression proof on the record's components shows the closed form equal to the loop for every base, cap and attempt the constructor admits, in six seconds.
 
+> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 127` runs it again.
+
 Tags: [resilience](../README.md#tag-resilience), [numeric-code](../README.md#tag-numeric-code), [record-components](../README.md#tag-record-components)
 
 ## The change
@@ -117,7 +119,7 @@ How the verdict was reached: JBMC 6.11.0: 3 properties proved over this: Backoff
 
 **What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20).
 
-This page renders attempt `20261106T181350Z-684dd73b` at claim `268579010ba48ec0`, in pipeline job `20261106-181102-example-127-b9-re-run-its-statement-says`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181350Z-684dd73b` at claim `268579010ba48ec0`, in pipeline job `20261106-181102-example-127-b9-re-run-its-statement-says`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
