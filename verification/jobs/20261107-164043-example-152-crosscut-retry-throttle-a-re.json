@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-164043-example-152-crosscut-retry-throttle-a-re",
+  "title": "Example 152: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker) (closes VF-017 when it passes)",
+  "description": "Runs example 152 through build.py: a B9 regression proof by jvmcontract's own checker of Crosscut's RetryThrottling, whose Throttle parameter is made in the harness by its constructor from symbolic limits (step H2-H4 of llm-dlc/loops/foundations-heap.md). 150 is a correct rewrite of recorded, 151 the alias-to-copy defect in reconfigured, 152 a rewrite of recorded wrong only on drained throttles, which the constructor never makes. Checked inline on the same classes before submitting; the job records result.json and the page. Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-017: examples/schema/result.schema.json now allows a domain parameter of kind object, with the domain's mayAlias and inputObjects and the observations' objects and identities, which jvmcontract writes for an object made by its constructor. The earlier job failed as build.py validated its result: 'object' is not one of ['primitive', 'array', 'record']. Closes VF-017 in verification/findings.md when this and the other two pass with their expected verdicts; this one's is 152 verified within the domain its constructor makes.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "152"
+    ]
+  },
+  "expected": "verified, as 150 (the defect is only on drained throttles, outside the constructor-made domain): behaves as before on every input of constructor-made objects; existing tests passing",
+  "submitted": {
+    "at": "2026-11-07T16:40:43+00:00",
+    "by": "foundations-heap"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ"
+  ],
+  "supersedes": "20261107-064331-example-152-crosscut-retry-throttle-a-re"
+}

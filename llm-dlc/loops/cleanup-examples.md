@@ -149,7 +149,24 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   `syqpoxom`) have no manifest in this workspace, and the planning session's log `3f768f3bb246` is only in the
   default workspace's gitignored `llm-dlc/traces/*/logs/`, since `oqqwvmqy` isn't pushed. Left alone: the merge and
   its push settle them.
-- Next: E1's VF-017, the `object` parameter kind in `result.schema.json`.
+- **E1, VF-017: fixed, jobs pending.** `examples/schema/result.schema.json`'s statement was behind
+  `lib/src/statement.rs` in more than the `kind` enum. An object parameter's statement also carries `inputObjects`
+  (the input objects each version is made of) and, where choices may be one object, `mayAlias` in the domain, and
+  `objects` and `identities` (step H3's `result == throttle`) in the observations. All four were refused by
+  `additionalProperties: false`. The job reported only the first error. The schema now has `object` and the four
+  fields, and its stale "never today" descriptions say what the code does.
+  - The page's statement paragraph (`statement_paragraph`) now says that each object is made by its constructor,
+    which fields are compared after the call, and which identity relations are compared within each version.
+    Without that, 151's page wouldn't name the observation that refutes it.
+  - Reproducers in `test_build.py`'s `StatementTest`: an object domain in 151's shape, recorded through
+    `run_tool_equivalence`, validates, and so does a variant with a nullable, may-alias object. Malformed
+    `kind`, `inputObjects` and `mayAlias` are refused, and the page names the object, fields and identities. Both
+    tests failed before the fix and pass after it, with all 187 tests.
+  - The statement's `spec` field isn't in the schema either, but nothing sets it yet (`statement.rs:52`), so it's
+    left alone.
+  - Jobs, resubmitted unchanged, with VF-017 and each one's expected verdict added to the title and description:
+    `20261107-164043-example-150-…`, `20261107-164043-example-151-…` and `20261107-164043-example-152-…`.
+- Next: E2, VF-014's two benchmark jobs at H1's parent and at H1.
 - Status: working
 
 ## Loop settings

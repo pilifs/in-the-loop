@@ -2238,6 +2238,50 @@ class StatementTest(unittest.TestCase):
         record = build.property_record({"verdict": "verified", "assert": "result >= 0", "stated": self.STATED}, "PropertyHarness", None)
         self.assertEqual(record["stated"]["bounds"]["maxArrayLength"], 8)
 
+    # VF-017: what `jvmcontract equivalence --json` gives as `stated` for an object parameter made by its constructor
+    # beside a record, in example 151's shape (lib/src/statement.rs's Domain and Observations, steps H2 and H3 of
+    # llm-dlc/loops/foundations-heap.md): `kind: object`, the input objects each version is made of, the fields
+    # compared after the call, and the identity relations compared within each version.
+    OBJECT_STATED = {**STATED,
+                     "domain": {"parameters": [{"name": "throttle", "type": "net.terminalvalue.crosscut.retry.Throttle", "kind": "object", "null": False,
+                                                "components": ["limits.maxTokens: int", "limits.tokenRatioMilli: int"]},
+                                               {"name": "limits", "type": "net.terminalvalue.crosscut.retry.ThrottleLimits", "kind": "record", "null": False,
+                                                "components": ["maxTokens: int", "tokenRatioMilli: int"]}],
+                                "shared_arrays": False, "input_objects": [2, 2],
+                                "text": "throttle: Throttle, made by new Throttle(new ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) × limits: ThrottleLimits[maxTokens: int, tokenRatioMilli: int]"},
+                     "assumptions": [{"kind": "constructible", "text": "both versions' constructor Throttle(ThrottleLimits) accepts the arguments of throttle: an input it rejects is skipped", "basis": "harness"},
+                                     {"kind": "initialization", "text": "every JDK class is initialized already, its static initializer having run and thrown nothing", "basis": "engine"}],
+                     "observations": {"result": "the result, its fields equal in both versions",
+                                      "exceptions": "whether it throws, and which of 15 exception classes it throws, the same in both versions",
+                                      "objects": ["throttle: milliTokens, limits.maxTokens, limits.tokenRatioMilli"],
+                                      "identities": ["result == throttle", "result.limits == throttle.limits"]},
+                     "bounds": {"unwind": 16, "max_array_length": None, "complete": True}}
+
+    def test_an_object_parameter_s_statement_validates(self):
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        statement = {**schema["$defs"]["statement"], "$defs": schema["$defs"]}
+        stated = self.recorded(stated=self.OBJECT_STATED)["stated"]
+        self.assertEqual([p["kind"] for p in stated["domain"]["parameters"]], ["object", "record"])
+        self.assertEqual(stated["domain"]["inputObjects"], [2, 2])
+        jsonschema.validate(stated, statement)
+        # A choice made null or the same object as another (step H2): `null` true, and the group that may be one.
+        s = json.loads(json.dumps(self.OBJECT_STATED))
+        s["domain"]["parameters"].append({**s["domain"]["parameters"][0], "name": "previous", "null": True})
+        s["domain"]["may_alias"] = [["throttle", "previous"]]
+        jsonschema.validate(build.camel(s), statement)
+        for wrong in ({"kind": "pointer"}, {"inputObjects": [2]}, {"mayAlias": ["throttle"]}):
+            with self.subTest(wrong=wrong), self.assertRaises(jsonschema.ValidationError):
+                jsonschema.validate({**stated, "domain": {**stated["domain"], **wrong}} if "kind" not in wrong else
+                                    {**stated, "domain": {**stated["domain"], "parameters": [{**stated["domain"]["parameters"][0], **wrong}]}}, statement)
+
+    def test_the_page_says_how_an_object_is_made_and_what_of_it_is_compared(self):
+        paragraph = build.statement_paragraph(build.camel(self.OBJECT_STATED))
+        for part in ("each object (throttle) made by its constructor", "each record (limits) built from its components",
+                     "the fields they leave in `throttle: milliTokens, limits.maxTokens, limits.tokenRatioMilli`",
+                     "`result == throttle` and `result.limits == throttle.limits`, each holding in one version iff it holds in the other"):
+            self.assertIn(part, paragraph)
+
 
 
 class ProofCacheTest(unittest.TestCase):

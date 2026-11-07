@@ -1739,8 +1739,10 @@ def statement_paragraph(s):
     differ in any of these read differently in the sentence about it."""
     d, o, b, m, c = s["domain"], s["observations"], s["bounds"], s["models"], s["checker"]
     records = [p["name"] for p in d["parameters"] if p["kind"] == "record"]
-    text = [f"For every input in `{d['text']}`" + (f", each record ({', '.join(records)}) built from its components "
-                                                  "through its canonical constructor" if records else "")]
+    objects = [p["name"] for p in d["parameters"] if p["kind"] == "object"]
+    text = [f"For every input in `{d['text']}`"
+            + (f", each object ({', '.join(objects)}) made by its constructor from primitives and objects made so in turn" if objects else "")
+            + (f", each record ({', '.join(records)}) built from its components through its canonical constructor" if records else "")]
     if s["assumptions"]:
         text[0] += ", assuming " + "; ".join(
             f"{a['text']} ({CALLEE_WORDS})" if a.get("kind") == "callee" else
@@ -1750,6 +1752,11 @@ def statement_paragraph(s):
         text[0] += f": the two versions agree on {o['result']}, and on exceptions: {o['exceptions']}"
         if o.get("arrays"):
             text[0] += f"; and on what they leave in {', '.join(f'`{a}`' for a in o['arrays'])}"
+        if o.get("objects"):
+            text[0] += f"; and on the fields they leave in {', '.join(f'`{a}`' for a in o['objects'])}"
+        if o.get("identities"):
+            text[0] += (f"; and on the identity relations {' and '.join(f'`{a}`' for a in o['identities'])}, each holding in one "
+                        "version iff it holds in the other")
     else:
         text[0] += f": the method is checked on {o['result']}, and on exceptions: {o['exceptions']}"
     text[0] += "."

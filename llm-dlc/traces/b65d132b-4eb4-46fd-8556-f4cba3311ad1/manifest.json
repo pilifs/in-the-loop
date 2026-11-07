@@ -12,28 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.451Z",
-  "ended": "2026-11-07T16:35:33.511Z",
-  "duration_seconds": 527,
+  "ended": "2026-11-07T16:41:23.329Z",
+  "duration_seconds": 877,
   "stats": {
-    "turns": 10,
-    "api_calls": 61,
-    "tool_calls": 61,
+    "turns": 15,
+    "api_calls": 107,
+    "tool_calls": 110,
     "tool_errors": 1,
-    "compactions": 2,
+    "compactions": 3,
     "peak_context_tokens": 109851,
     "usage": {
-      "input_tokens": 120,
-      "output_tokens": 32538,
-      "cache_read_input_tokens": 4176402,
-      "cache_creation_input_tokens": 170269
+      "input_tokens": 212,
+      "output_tokens": 54075,
+      "cache_read_input_tokens": 7590610,
+      "cache_creation_input_tokens": 267010
     }
   },
   "tools": {
-    "Bash": 55,
-    "Edit": 4,
-    "Read": 2
+    "Bash": 98,
+    "Edit": 8,
+    "Read": 4
   },
   "files_touched": [
+    "examples/tools/build.py",
     "examples/tools/test_build.py",
     "llm-dlc/loops/cleanup-examples.md"
   ],
@@ -69,24 +70,38 @@
     {
       "index": 2,
       "started": "2026-11-07T16:33:41.513Z",
-      "ended": "2026-11-07T16:35:33.511Z",
-      "turns": 4,
-      "api_calls": 15,
+      "ended": "2026-11-07T16:35:49.472Z",
+      "turns": 5,
+      "api_calls": 17,
       "usage": {
-        "input_tokens": 30,
-        "output_tokens": 7106,
-        "cache_read_input_tokens": 812702,
-        "cache_creation_input_tokens": 55856
+        "input_tokens": 34,
+        "output_tokens": 7759,
+        "cache_read_input_tokens": 951561,
+        "cache_creation_input_tokens": 58079
       },
-      "peak_context_tokens": 68935
+      "peak_context_tokens": 71158
+    },
+    {
+      "index": 3,
+      "started": "2026-11-07T16:36:21.675Z",
+      "ended": "2026-11-07T16:41:23.329Z",
+      "turns": 4,
+      "api_calls": 44,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 20884,
+        "cache_read_input_tokens": 3275349,
+        "cache_creation_input_tokens": 94518
+      },
+      "peak_context_tokens": 107597
     }
   ],
   "log": {
-    "sha256": "bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921",
-    "bytes": 1771725,
-    "lines": 660,
-    "gzip_bytes": 337560,
-    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921.jsonl.gz"
+    "sha256": "953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e",
+    "bytes": 2933804,
+    "lines": 1124,
+    "gzip_bytes": 536553,
+    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -105,9 +120,23 @@
       "summary": "test_build.py checks each recorded violation's replay wording against its own result, not against boxoffice alone",
       "body": "The cleanup integration check (report of 2026-11-07 16:26, at eeb1fa29) failed on ReplayWordingTest: it held that only the Java verifier's (boxoffice) pages say a witness was replayed on the JVM. jvmcontract effects replays its witness on a JVM under recording stubs (lib/src/effects.rs:577), and its results record replay.by jvm, so the pages of examples 171, 172 and 191-194 failed the test while saying what their results record. The test now checks every recorded B9 violation's page against that result's own replay record (build.replayed_where), and that at least one page is on the JVM. No page, result or build.py code changed. Verified with python3 examples/tools/test_build.py: 185 tests pass, where one failed before.",
       "log_sha256": "bd307f39830215b69180a6843aab9f21de856cc680895728c71313381339c921"
+    },
+    {
+      "change_id": "wmuwlwkxxtlrkstlsvwwtqplyzprksos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "result.schema.json allows an object parameter's statement, and the page says what of the object is compared, for examples 150-152 (verification pending)",
+      "body": "VF-017, item E1 of the cleanup loop's examples stream. Examples 150, 151 and 152 failed as build.py validated their results: the schema's statement domain allowed parameter kinds primitive, array and record only. Checked against lib/src/statement.rs, an object parameter made by its constructor also brings the domain's inputObjects and mayAlias and the observations' objects and identities, all of which additionalProperties refused; the job showed only the first error. The schema now has the object kind and the four fields, with descriptions that say what the code writes in place of the old 'never today'. The page's statement paragraph now says each object is made by its constructor, which of its fields are compared after the call, and which identity relations are compared within each version, so that 151's page names result == throttle, the observation that refutes it.\n\nReproducers in test_build.py's StatementTest. One records an object domain in example 151's shape through run_tool_equivalence and validates it, along with a variant with a nullable, may-alias object, and checks that malformed kinds, inputObjects and mayAlias are refused. The other checks the page's wording. Both failed before the fix and pass after it, and all 187 tests pass.\n\nJobs, resubmitted unchanged with the closing entry named: 20261107-164043-example-150-crosscut-retry-throttle-a-re (expected verified), 20261107-164043-example-151-crosscut-retry-throttle-a-re (a violation differing only in result == throttle) and 20261107-164043-example-152-crosscut-retry-throttle-a-re (verified within the constructor-made domain). Together they close VF-017 when they pass.",
+      "log_sha256": "953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e"
     }
   ],
   "logs": {
+    "953466621a6deeb91d0d466e462f3ff19f326cd32ab35de5cb5251d8fb94ac6e": {
+      "bytes": 2933804,
+      "lines": 1124,
+      "gzip_bytes": 536553,
+      "url": null
+    },
     "b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c": {
       "bytes": 1012292,
       "lines": 402,
