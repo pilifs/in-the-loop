@@ -12,10 +12,14 @@ inference may propose). Every later step of alignment inference is scored agains
   python3 examples/tools/alignment.py check --signatures  # and with the compiled classes (javac and javap, ~20 s)
   python3 examples/tools/alignment.py signatures 128      # an example's two signatures, as the check reads them
   python3 examples/tools/alignment.py render              # rewrite the table in alignment/README.md
+  python3 examples/tools/alignment.py score               # run `jvmcontract align` on every example and score it
+  python3 examples/tools/alignment.py score --record      # and keep the score in alignment/scores/, for the page
 
 What each field means is in alignment/README.md.
 """
 import argparse
+import datetime
+import hashlib
 import json
 import re
 import shutil
@@ -27,6 +31,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
 TRUTH = HERE / "alignment" / "ground-truth.json"
 PAGE = HERE / "alignment" / "README.md"
+SCORES = HERE / "alignment" / "scores"
 
 # The vocabulary of the table. An input part's anchor, a result part's relation, and who decides a part.
 ANCHORS = {
@@ -200,6 +205,106 @@ def signature_problems(entry, sigs):
     return out
 
 
+# Scoring.
+
+OUTCOMES = ("found", "asked", "wrong", "missed")
+
+
+def bare(symbol):
+    """`pkg.Class#name(int, long)` as the table names it, `pkg.Class#name`."""
+    return symbol.split("(")[0]
+
+
+def short(symbol):
+    """`Class#name`, without the package, in backticks."""
+    head, _, tail = symbol.partition("#")
+    return f"`{head.rsplit('.', 1)[-1]}#{tail}`"
+
+
+def align(before, after):
+    sys.path.insert(0, str(HERE))
+    import build
+    out = subprocess.run([str(build.jvmcontract()), "align", "--before", str(before), "--after", str(after), "--json"],
+                         capture_output=True, text=True, check=True)
+    return json.loads(out.stdout)
+
+
+def score_method(entry, report):
+    """Step A2's score for an example: its method part, or, where the method kept its name, the method itself, which
+    must be the only proposal (or no hint, when the method's own code is unchanged). Returns (scored, outcome, what was
+    proposed)."""
+    old, new = entry["before"]["symbol"], entry["after"]["symbol"]
+    part = next((p for p in entry["parts"] if p["kind"] == "method"), None)
+    scored = f"method {part['how']}" if part else "method kept its name"
+    match = next((m for m in report["methods"] if bare(m["before"]) == old), None)
+    if match is None:
+        return (scored, "found", "no hint: its code is unchanged") if part is None else (scored, "missed", "reported unchanged")
+    candidates = [bare(c["after"]) for c in match["candidates"]]
+    shown = ", ".join(f"{short(x['after'])} ({x['score']})" for x in match["candidates"])
+    if not candidates:
+        return scored, "missed", "no candidate"
+    if match["leads"]:
+        return scored, "found" if candidates[0] == new else "wrong", f"leads: {shown}"
+    return scored, "asked" if new in candidates else "wrong", f"none leads: {shown}"
+
+
+def score_methods(truth):
+    rows = []
+    for entry in truth["examples"]:
+        example = example_json(entry["example"])
+        report = align(*versions(example))
+        scored, outcome, proposed = score_method(entry, report)
+        others = [m for m in report["methods"] if bare(m["before"]) != entry["before"]["symbol"]]
+        rows.append({"example": entry["example"], "part": scored, "table": entry["after"]["symbol"], "outcome": outcome,
+                     "proposed": proposed, "otherChanged": sum(m["change"] == "changed" for m in others),
+                     "otherVanished": [f"{short(m['before'])} → {short(m['candidates'][0]['after']) if m['leads'] else 'none leads'}"
+                                       for m in others if m["change"] == "vanished"]})
+    return rows
+
+
+def tally(rows):
+    by = {}
+    for r in rows:
+        by.setdefault(r["part"], dict.fromkeys(OUTCOMES, 0))[r["outcome"]] += 1
+    return by
+
+
+def record(step, rows):
+    sys.path.insert(0, str(HERE))
+    import build
+    tool = hashlib.sha256(Path(build.jvmcontract()).read_bytes()).hexdigest()
+    SCORES.mkdir(exist_ok=True)
+    out = {"step": step, "date": datetime.date.today().isoformat(), "tool": f"sha256:{tool}",
+           "wrongAndAccepted": [], "counts": tally(rows), "rows": rows}
+    (SCORES / f"{step}.json").write_text(json.dumps(out, indent=2) + "\n")
+
+
+def render_scores():
+    blocks = []
+    for path in sorted(SCORES.glob("*.json")) if SCORES.is_dir() else []:
+        s = json.loads(path.read_text())
+        lines = [f"**{s['step']}** ({s['date']}, `jvmcontract` {s['tool'][:19]}…; "
+                 f"[{path.name}](scores/{path.name})). Wrong and accepted: "
+                 + (", ".join(s["wrongAndAccepted"]) or "none") + ".", "",
+                 "| Part | " + " | ".join(OUTCOMES) + " |", "|---|" + "---|" * len(OUTCOMES)]
+        lines += [f"| {k} | " + " | ".join(str(v[o]) for o in OUTCOMES) + " |" for k, v in sorted(s["counts"].items())]
+        lines += ["", "| Example | Part | Table | Score | Proposed | Elsewhere in the module |", "|---|---|---|---|---|---|"]
+        for r in s["rows"]:
+            elsewhere = f"{r['otherChanged']} changed" + (f"; vanished: {'; '.join(r['otherVanished'])}" if r["otherVanished"] else "")
+            lines.append(f"| {r['example']} | {r['part']} | `{r['table'].split('.')[-1]}` | {r['outcome']} | {cell(r['proposed'])} | {cell(elsewhere)} |")
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks) or "No step has been scored yet."
+
+
+def print_scores(rows):
+    for r in rows:
+        print(f"{r['example']}  {r['outcome']:6}  {r['part']:22}  {r['table']}: {r['proposed']}")
+        for v in r["otherVanished"]:
+            print(f"        also vanished: {v}")
+    for k, v in sorted(tally(rows).items()):
+        print(f"{k}: " + ", ".join(f"{v[o]} {o}" for o in OUTCOMES))
+
+
 # The page.
 
 def cell(text):
@@ -245,7 +350,11 @@ def render(truth):
     new = f"{begin}\n\n{summary}\n\n{render_table(truth)}\n\n{end}"
     if begin not in text or end not in text:
         raise SystemExit(f"{PAGE}: no table markers")
-    return text[: text.index(begin)] + new + text[text.index(end) + len(end):]
+    text = text[: text.index(begin)] + new + text[text.index(end) + len(end):]
+    begin, end = "<!-- scores:begin (generated by examples/tools/alignment.py render) -->", "<!-- scores:end -->"
+    if begin not in text or end not in text:
+        raise SystemExit(f"{PAGE}: no score markers")
+    return text[: text.index(begin)] + f"{begin}\n\n{render_scores()}\n\n{end}" + text[text.index(end) + len(end):]
 
 
 def main(argv=None):
@@ -256,8 +365,17 @@ def main(argv=None):
     s = sub.add_parser("signatures")
     s.add_argument("example")
     sub.add_parser("render")
+    sc = sub.add_parser("score")
+    sc.add_argument("--record", action="store_true", help="keep the score in alignment/scores/ and rewrite the page")
     args = p.parse_args(argv)
     truth = load()
+    if args.command == "score":
+        rows = score_methods(truth)
+        print_scores(rows)
+        if args.record:
+            record("A2-methods", rows)
+            PAGE.write_text(render(truth))
+        return 0
     if args.command == "signatures":
         print(json.dumps(signatures(example_json(args.example)), indent=2))
         return 0

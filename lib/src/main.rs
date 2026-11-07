@@ -181,6 +181,24 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Propose which method of a new build corresponds to each method of an old one that changed or is gone,
+    /// statically, from names, descriptors, body shapes and callers: ranked candidates, each with what ties it to the
+    /// old method. Proves nothing; --hints writes them to a hints file as proposed, their evidence unchecked.
+    Align {
+        /// The old build's class files.
+        #[arg(long)]
+        before: PathBuf,
+        /// The new build's class files.
+        #[arg(long)]
+        after: PathBuf,
+        /// The hints file to update (made if missing): its method proposals are replaced, and every hint a person
+        /// stated or approved is kept as it is. Keep it beside the build, not in the source tree.
+        #[arg(long)]
+        hints: Option<PathBuf>,
+        /// Print the report as JSON.
+        #[arg(long)]
+        json: bool,
+    },
     /// Print the structure of a class file: constant pool size, members, attributes and bytecode.
     Inspect {
         class_file: PathBuf,
@@ -784,6 +802,20 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 print!("{}", checked.report());
             }
             Ok(if checked.ok() { 0 } else { 1 })
+        }
+        Command::Align { before, after, hints, json } => {
+            let report = jvmcontract::alignment::methods(&jvmcontract::alignment::Build::load(&before)?, &jvmcontract::alignment::Build::load(&after)?);
+            if json {
+                println!("{}", serde_json::to_string_pretty(&report).map_err(|e| Error::new(e.to_string()))?);
+            } else {
+                print!("{}", jvmcontract::alignment::render(&report));
+            }
+            if let Some(path) = hints {
+                let merged = jvmcontract::alignment::merge_method_hints(jvmcontract::alignment::read_hints(&path)?, jvmcontract::alignment::method_hints(&report));
+                jvmcontract::alignment::write_hints(&path, &merged)?;
+                eprintln!("({} hints in {})", merged.entries.len(), path.display());
+            }
+            Ok(0)
         }
         Command::Inspect { class_file, code } => {
             let bytes = std::fs::read(&class_file)?;

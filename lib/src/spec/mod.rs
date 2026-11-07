@@ -297,6 +297,13 @@ pub struct Hint {
     pub source: Source,
     pub intent: Intent,
     pub evidence: Evidence,
+    /// Where several hints for one subject are alternatives, their place in the ranking, best first (1); `None` for a
+    /// hint that has no alternative.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rank: Option<u32>,
+    /// The static facts it was proposed on, for the person deciding it. Not evidence: that is `evidence`'s.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub why: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

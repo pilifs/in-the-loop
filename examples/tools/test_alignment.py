@@ -101,5 +101,39 @@ class TheTable(unittest.TestCase):
                 self.assertEqual(anchors, {"anchored"} if anchors else set(), entry["example"])
 
 
+class ScoringMethods(unittest.TestCase):
+    """Step A2's score from a made-up `align --json` report."""
+
+    RENAMED = {"example": "900", "before": {"symbol": "p.A#f"}, "after": {"symbol": "p.A#g"},
+               "parts": [{"kind": "method", "old": "p.A#f", "new": "p.A#g", "how": "renamed", "decide": "infer", "why": "x"}]}
+    KEPT = {"example": "901", "before": {"symbol": "p.A#f"}, "after": {"symbol": "p.A#f"}, "parts": []}
+
+    @staticmethod
+    def report(before, candidates, leads, change="vanished"):
+        return {"methods": [{"before": before, "change": change, "leads": leads,
+                             "candidates": [{"after": c, "score": 5, "basis": []} for c in candidates]}]}
+
+    def outcome(self, entry, report):
+        return A.score_method(entry, report)[1]
+
+    def test_the_leading_candidate_is_found_or_wrong(self):
+        self.assertEqual(self.outcome(self.RENAMED, self.report("p.A#f", ["p.A#g", "p.A#h"], True)), "found")
+        self.assertEqual(self.outcome(self.RENAMED, self.report("p.A#f", ["p.A#h", "p.A#g"], True)), "wrong")
+
+    def test_without_a_lead_it_is_asked_if_the_table_is_among_them(self):
+        self.assertEqual(self.outcome(self.RENAMED, self.report("p.A#f", ["p.A#h", "p.A#g"], False)), "asked")
+        self.assertEqual(self.outcome(self.RENAMED, self.report("p.A#f", ["p.A#h"], False)), "wrong")
+
+    def test_no_candidate_or_no_entry_is_missed(self):
+        self.assertEqual(self.outcome(self.RENAMED, self.report("p.A#f", [], False)), "missed")
+        self.assertEqual(self.outcome(self.RENAMED, {"methods": []}), "missed")
+
+    def test_a_kept_name_is_found_as_itself_or_with_no_hint(self):
+        self.assertEqual(self.outcome(self.KEPT, self.report("p.A#f", ["p.A#f"], True, "changed")), "found")
+        self.assertEqual(self.outcome(self.KEPT, {"methods": []}), "found")
+        self.assertEqual(self.outcome(self.KEPT, self.report("p.A#f(int)", ["p.A#f(long)"], True)), "found")
+        self.assertEqual(self.outcome(self.KEPT, self.report("p.A#f", ["p.B#f"], True)), "wrong")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -65,6 +65,10 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 # a boolean expression over the new parameters, `previous` and `result`, which takes the place of equality.
 jvmcontract equivalence --before base/classes --after head/classes --target 'net.example.Expiry#remainingNanos' \
     --before-target 'net.example.Expiry#isExpired' --results-agree-when 'previous == (result <= 0)'
+# Which new method corresponds to each old one that changed or is gone, proposed statically (names, descriptors,
+# body shapes, callers) and ranked, each with what ties it; --hints writes them to a hints file as proposed, their
+# evidence unchecked, keeping every hint a person stated or approved. Proves nothing.
+jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json
 
 # A property of one method, proved over every input, or refuted with a witness.
 jvmcontract prove 'net.example.Backoff#delayMillis' --classes build/classes/java/main \
@@ -291,11 +295,13 @@ change), the object part of an input domain (classes, input-object and allocatio
 aliasing, and how inputs are made, labelled in every result), observations beyond result and exception (field paths,
 identity relations within a version, effects as modeled boundary-call attempts), the correspondence between old and
 new internal states (of which `--before-arguments` and `--results-agree-when` are special cases,
-`Correspondence::from_flags`), the hints file (each hint with an intent state and an evidence state, kept apart), and
-the canonical claim a cache key digests. `Statement` carries them in its optional `spec` field. Each of the loop's
+`Correspondence::from_flags`), the hints file (each hint with an intent state and an evidence state, kept apart, and
+optionally its rank among alternatives and the static facts it was proposed on), and the canonical claim a cache key
+digests. `Statement` carries them in its optional `spec` field. Each of the loop's
 four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`, `align.rs`), which returns a named
 `Unsupported` until that stream implements it; `tests/foundations.rs` checks every part against the joint example in
-`tests/fixtures/foundations/`.
+`tests/fixtures/foundations/`. Method correspondence (`align`, `src/alignment.rs`) is scored against the hand-written
+mappings of the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md).
 
 ## Limits
 

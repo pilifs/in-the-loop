@@ -126,9 +126,42 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   exactly, and both versions' signatures were checked against the compiled classes (`check --signatures`: 0
   problems). No example outside 121–139 has a hand-written mapping. Scoring (found, asked, wrong, missed, and wrong
   and accepted on its own) is defined on the page; its code comes with A2's first output.
-- Shared files changed: `examples/README.md` (one line in its tools list).
-- Next: A2, `jvmcontract align --before DIR --after DIR`, method correspondence written as hints, scored on the
-  four method parts and on the fifteen examples whose method kept its name (where it must propose no other method).
+- **A2 done** (2026-11-07): `jvmcontract align --before DIR --after DIR [--hints FILE] [--json]`, in the new module
+  `lib/src/alignment.rs`. Static. An old method the new build declares with the same class, name and descriptor
+  corresponds to itself and nothing else (no hint if its code is unchanged). For a vanished one, the candidates are
+  the new build's new methods of the same kind that something ties to it: the same name (in its class or moved), the
+  same body shape, a similar body (≥ 50% of instruction kinds in common), a caller in common, or the same parameters
+  in the same class. Each tie has a weight, and candidates are ranked by score. The first *leads* only with at least
+  `LEAD` (3) points and 3 ahead of the next; otherwise it's a person's choice. `--hints` replaces the file's
+  inferred, proposed method hints and keeps every stated or approved one; it adds no proposal for a subject a person
+  has decided. Tests: 2 unit tests, 7 in `lib/tests/alignment.rs` (rename, move with callers, a tie that is a
+  question, a lone weak candidate that is a question, overloads, the joint example's kernel, the command keeping an
+  approved hint); 4 more in `examples/tools/test_alignment.py` for the scoring rules.
+  - **Score** (`alignment.py score --record`, kept in `examples/tools/alignment/scores/A2-methods.json` and on the
+    page): methods that kept their name 15 found of 15; moved 2 found of 2; renamed 1 found, 1 asked (122: the only
+    tie is the same parameters, 2 points, so it's a question). Nothing wrong, nothing missed, nothing wrong and
+    accepted (no proofs yet).
+  - **Caveat:** the same-parameters tie was added after the first run missed 122, and the lead threshold after that
+    found 122 on a weak tie. The table and the scorer come from this stream too, so this score shows consistency
+    with the table, not generality. Elsewhere in each module (unscored) a vanished constructor is matched with its
+    changed self (130, 131, 134, 135), and `BatchCommit#<init>` (128, 129) gets candidates but no lead.
+  - On the joint example: `Pricing#total` and `#discount` correspond to themselves; `Quote#<init>(long, int)` leads
+    to `Quote#<init>(Money, int)`; `Quote#cents()` leads to `Money#cents()` (the same name and body shape, in the
+    value object). Relating the two receivers is A4's work.
+  - `align::propose` still returns `Unsupported`: the integration contract's alignment checks want the field
+    correspondence (A4's narrow case), and a proposal without it would fail them.
+- Shared files changed: `examples/README.md` (one line in its tools list); `lib/src/lib.rs` (`pub mod alignment`);
+  `lib/src/main.rs` (the `align` command); `lib/src/spec/mod.rs` (two optional fields on `Hint`: `rank` and `why`,
+  serde-defaulted and skipped when empty, so the golden files are unchanged; a `Hint { .. }` literal in another
+  stream's code would need them at the merge); `lib/README.md` (the command, and a sentence on the hints file);
+  `lib/tests/alignment.rs` (new).
+- For the reconcile loop: `sync.py check` in this workspace reports one error that this stream can't fix:
+  "change xuxuymrrrqsq: session be22079e-… has no manifest". That's the summaries stream's S1 commit, whose manifest
+  is on its own branch; it resolves at the merge.
+- Next: A3, argument, record and result mappings under the contract, for the pairs A2 matches: anchored inputs fixed
+  to themselves, internal ones (a parameter gathered into a record, a reordering, a widening) and catalogue result
+  relations proposed, candidates collapsed, checked by the existing regression proof (a quick job), scored on the
+  input and result parts.
 - Status: working
 
 ## Loop settings
