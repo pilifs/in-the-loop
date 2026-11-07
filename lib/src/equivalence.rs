@@ -673,7 +673,7 @@ fn object_of(cp: &ClassPath, t: &Type) -> Result<Result<Option<harness::RecordTy
 
 /// The construction of an object of the application class `name`, as [`object_of`] says; `within` are the classes
 /// whose construction this one is part of, which it may not need again (a cycle).
-fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::RecordType, String>, Error> {
+pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::RecordType, String>, Error> {
     let java = name.replace('/', ".");
     let Some(cf) = cp.application(name)? else { return Ok(Err(format!("{java} is not among the application's classes"))) };
     if within.iter().any(|w| w == name) {
@@ -724,7 +724,7 @@ fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Resul
 
 /// The instance fields of the application class `name`, followed into the application classes they refer to
 /// ([`harness::Fields`]); `within` as for [`made_of`]. A field of another type is a named gap.
-fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::Fields, String>, Error> {
+pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::Fields, String>, Error> {
     let java = name.replace('/', ".");
     let Some(cf) = cp.application(name)? else { return Ok(Err(format!("{java} is not among the application's classes"))) };
     if within.iter().any(|w| w == name) {
@@ -770,7 +770,7 @@ fn observes_objects(layout: &harness::Layout, differs: &[String]) -> bool {
 /// Whether an input is an object of an application class made by its constructor (step H2), in either version: its
 /// states are those the constructor makes, which a claim over it names. A record of primitive components is not
 /// among them, its constructor making every state its components can hold that it accepts.
-fn made_by_constructor(layout: &harness::Layout) -> bool {
+pub(crate) fn made_by_constructor(layout: &harness::Layout) -> bool {
     layout.receiver.iter().chain(&layout.args).any(|s| matches!(s, harness::Slot::Record { record, before, .. } if record.fields.is_some() || before.as_ref().is_some_and(|b| b.fields.is_some() || b.corresponds.is_some())))
 }
 

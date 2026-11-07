@@ -421,12 +421,14 @@ struct ProveArgs {
     /// repeated; the first clause whose condition holds is the one expected.
     #[arg(long = "throws")]
     throws: Vec<String>,
-    /// An array parameter that may be null; may be repeated. Every other array parameter is an array. Only the
-    /// tool's own checker takes such a domain (`--engine native` or `auto`).
+    /// An array parameter, or an object parameter made by its constructor, that may be null; may be repeated.
+    /// Every other is an array or an object. Only the tool's own checker takes an array that may be null
+    /// (`--engine native` or `auto`); an object's choice is the harness's, which either checker takes.
     #[arg(long)]
     nullable: Vec<String>,
-    /// Two array parameters that may be one array, `a,b`; may be repeated, and any two of a chain may be. Every
-    /// other array parameter is an array of its own. Only the tool's own checker takes such a domain.
+    /// Two array parameters that may be one array, or two object parameters of one class that may be one object,
+    /// `a,b`; may be repeated, and any two of a chain may be. Every other is its own. Only the tool's own checker
+    /// takes arrays that may be one.
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
     /// A working directory for the harness and JBMC logs (a temporary one by default).

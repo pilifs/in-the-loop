@@ -449,6 +449,24 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
     out
 }
 
+/// A property's assumptions from how its harness makes its inputs (step H2 of `llm-dlc/loops/foundations-heap.md`):
+/// each object parameter made by its constructor, which skips an input it rejects.
+pub fn property_assumptions(layout: &Layout) -> Vec<Assumption> {
+    layout
+        .records()
+        .iter()
+        .filter_map(|slot| match slot {
+            Slot::Record { name, record, .. } => Some(Assumption {
+                kind: AssumptionKind::Constructible,
+                text: format!("the constructor {} accepts the arguments of {name}: an input it rejects is skipped, so the property is about the objects it makes", record.describe()),
+                basis: Basis::Harness,
+                id: None,
+            }),
+            Slot::Plain(_) => None,
+        })
+        .collect()
+}
+
 /// What a regression proof observes: the result as compared (or related), the exception's class among the harness's
 /// categories, and what the versions leave in each array parameter.
 pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&str>) -> Observations {

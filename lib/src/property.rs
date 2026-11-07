@@ -12,6 +12,12 @@
 //! `null`, and the property may quantify over it (`\forall int i; 0 <= i && i < a.length; a[i] != key`); so may
 //! an array `result`.
 //!
+//! A parameter of an application class is an object made by its constructor from symbolic leaves (step H2 of
+//! `llm-dlc/loops/foundations-heap.md`), null or the same object as another where `--nullable` and `--may-alias`
+//! say so; the property reads its field paths (`l.price.cents`, `\old(l.quantity)`) and compares references by
+//! identity (`result == l`). A witness over objects is checked by running the harness itself, in the interpreter
+//! and on a JVM, since only the harness reads the heap.
+//!
 //! A method that throws by design declares it: `throws: java.lang.ArithmeticException when divisor == 0` (JML's
 //! `signals`) says that on the inputs where the condition holds the method throws that exception, and that
 //! elsewhere it returns and the assertion holds. The exceptional path is then proved like the normal one, instead
@@ -277,18 +283,67 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
+    // A parameter of an application class is an object made by its constructor (step H2 of
+    // `llm-dlc/loops/foundations-heap.md`), from symbolic leaves, as in a regression check.
+    let mut records = Vec::new();
     for (name, t) in names.iter().zip(&descriptor.params) {
-        if !t.is_primitive() && harness::expr::element_ty(t).is_none() {
-            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters and arrays of integral or boolean elements. Finite types (enums, booleans, records) are covered by behavioural contracts.", t.java_name()));
+        if t.is_primitive() || harness::expr::element_ty(t).is_some() {
+            records.push(None);
+            continue;
+        }
+        let made = match t {
+            Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::made_of(&cp, class, &mut Vec::new())?,
+            _ => return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.", t.java_name())),
+        };
+        match made {
+            Ok(record) => records.push(Some((record, None))),
+            Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}, which is outside the objects a property check makes: {gap}", t.java_name())),
         }
     }
     let params = harness::params(&names, &descriptor.params);
-    let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
-    let (parameters, groups) = match parameter_domain(&params, &options.nullable, &options.may_alias) {
+    // A result of an application class is read by its fields (`result.quantity`) and compared by identity.
+    let result_fields = match &descriptor.ret {
+        Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::fields_of(&cp, class, &mut Vec::new())?.ok(),
+        _ => None,
+    };
+    let over_objects = records.iter().any(Option::is_some) || result_fields.is_some();
+    let mut layout = if over_objects { harness::Layout::new(None, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
+    layout.result_fields.0 = result_fields;
+    // The choices of null and of one object: an array parameter's are the own checker's, an object parameter's the
+    // harness's flags.
+    // Over objects, a name that is not an array's is the layout's to judge (an object's, or one it refuses by name).
+    let is_array = |n: &str| !over_objects || params.iter().any(|p| p.name == n && matches!(p.ty, Type::Array(_)));
+    let (array_nullable, object_nullable): (Vec<String>, Vec<String>) = options.nullable.iter().cloned().partition(|n| is_array(n));
+    let mut object_pairs = Vec::new();
+    let mut array_pairs = Vec::new();
+    for (a, b) in &options.may_alias {
+        match (is_array(a), is_array(b)) {
+            (true, true) => array_pairs.push((a.clone(), b.clone())),
+            (false, false) => object_pairs.push((a.clone(), b.clone())),
+            _ => return refuse(&mut out, line, format!("--may-alias {a},{b}: an array and {} are never one", if is_array(a) { b } else { a })),
+        }
+    }
+    if over_objects && (!array_nullable.is_empty() || !array_pairs.is_empty()) {
+        return refuse(&mut out, line, "a property over objects does not let an array parameter be null or one array with another yet; check the arrays' choices in a property of no object parameters".into());
+    }
+    let (parameters, groups) = match parameter_domain(&params, &array_nullable, &array_pairs) {
         Ok(p) => p,
         Err(problem) => return refuse(&mut out, line, problem),
     };
-    let domain = harness::domain_of(&params, options.max_array_length, &options.nullable, &groups);
+    if !object_nullable.is_empty() || !object_pairs.is_empty() {
+        if let Err(problem) = layout.choose_in(&object_nullable, &harness::alias_groups(&object_pairs, &names), true) {
+            return refuse(&mut out, line, problem);
+        }
+    }
+    let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
+    // The harness's own parameters: the method's, or over objects their leaves and the choices' flags.
+    let entry_types = layout.types();
+    let entry_slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();
+    let flat = layout.params.clone();
+    let render = |arguments: &[Argument]| if over_objects { witness::call_in(&method_name, &layout, arguments) } else { witness::call(&method_name, &params, arguments) };
+    let domain = if over_objects { layout.domain(options.max_array_length) } else { harness::domain_of(&params, options.max_array_length, &options.nullable, &groups) };
+    // A claim over objects made by their constructor is about those objects alone, and says so.
+    let every = if crate::equivalence::made_by_constructor(&layout) { "every input of constructor-made objects" } else { "every input" };
     // JBMC gives each array parameter an array of its own, never null: it would prove a narrower claim.
     let widened = !parameters.is_default();
     if widened && (options.engine == crate::Engine::Jbmc || options.confirm) {
@@ -319,7 +374,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         signals.push(signal);
     }
-    let harness = match harness::generate_property(&class_internal, &method_name, &params, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref(), &signals, options.max_array_length) {
+    let harness = match harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref(), &signals, options.max_array_length) {
         Ok(h) => h,
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
     };
@@ -331,7 +386,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let statement = harness_dir.join(format!("{}.java", harness::PROPERTY_CLASS));
     std::fs::write(&statement, &harness.source)?;
     let assertion = harness.assertion_text.clone();
-    let stated_domain = crate::statement::plain_domain_of(&params, options.max_array_length, &options.nullable, &groups);
+    let stated_domain = if over_objects { crate::statement::domain(&layout, options.max_array_length) } else { crate::statement::plain_domain_of(&params, options.max_array_length, &options.nullable, &groups) };
     let observations = crate::statement::property_observations(&assertion, &throws_checked);
     let stated = |last: Option<&crate::jbmc::JbmcResult>, search: Option<&crate::equivalence::Search>, complete: bool| crate::statement::Statement {
         kind: "property".into(),
@@ -340,6 +395,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             .assume
             .iter()
             .map(|a| crate::statement::Assumption { kind: crate::statement::AssumptionKind::Precondition, text: a.clone(), basis: crate::statement::Basis::Stated, id: None })
+            .chain(crate::statement::property_assumptions(&layout))
             .chain(crate::statement::checker_assumptions(last))
             .collect(),
         observations: observations.clone(),
@@ -389,7 +445,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
     let contract_options = crate::gap_contracts::ContractOptions { file: options.contracts.clone(), library: options.contract_library, max_trust: options.max_trust };
     let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
-    let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on every input{where_}"), harness: statement.clone() };
+    let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on {every}{where_}"), harness: statement.clone() };
     // Under advised, a gap the proof reaches with no contract goes to the agent before anything is solved.
     let stop_with = |out: &mut String, advice: crate::advice::Advice| -> Result<Outcome, Error> {
         let p = advice.problem();
@@ -508,7 +564,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base.clone() };
         let contracts = crate::equivalence::ConfirmContracts { setting: &gap_setting, rewrite: entries.clone(), cp: &cp, dir: work.join("jbmc-confirm-contracts") };
         let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
-        let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &descriptor.params, &r.arguments(&descriptor.params)?)) };
+        let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &r.arguments(&entry_types)?)) };
         let (c, refuting) = crate::equivalence::confirm(&last, &run, Some(contracts), &reproduces)?;
         (Some(c), refuting)
     } else {
@@ -549,16 +605,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // the interpreter's run of the method on it is shown, but it decides nothing: it shares the own checker's
     // models, and the disagreement is for a person (or a JVM) to settle.
     if let Some(refuting) = &refuting {
-        let found = refuting.arguments(&descriptor.params)?;
+        let found = refuting.arguments(&entry_types)?;
         let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?.with_models(options.models);
-        let replayed = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
-        let outcome = replayed.with_leftovers(&params, &found);
+        let replayed = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
+        let outcome = replayed.with_leftovers(&flat, &found);
         let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
-        let reproduced = witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &descriptor.params, &found);
-        let (rendered, values) = witness::call(&method_name, &params, &found);
+        let reproduced = witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &found);
+        let (rendered, values) = render(&found);
         let (assuming, _) = crate::equivalence::assumed_gaps(&last);
         let p = format!(
-            "the engines disagree: the tool's own checker proves that it {claim} on every input{where_}{and_throws}{assuming} ({}, {seconds:.1} s), and {} refutes it on\n  {rendered}\n    outcome in the interpreter: {outcome}, {}",
+            "the engines disagree: the tool's own checker proves that it {claim} on {every}{where_}{and_throws}{assuming} ({}, {seconds:.1} s), and {} refutes it on\n  {rendered}\n    outcome in the interpreter: {outcome}, {}",
             last.version,
             refuting.version,
             reproduced_words(reproduced)
@@ -571,9 +627,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             sarif::write(&report.join("property.sarif"), &findings)?;
         }
         let target = witness::Target { class_internal: &class_internal, method: &method_name, descriptor: &method.descriptor, is_static: method.is_static(), classes: "after" };
-        let names: Vec<String> = params.iter().map(|p| p.name.clone()).collect();
-        let call = witness::typed_call(&target, &harness::Layout::plain(&names, &descriptor.params), &found, false, &[]);
-        let counterexample = Some(Counterexample { input: rendered, outcome, expected: None, values, found: None, shrink_runs: 0, inputs: witness::typed_inputs(&params, &found), found_inputs: None, call });
+        let call = witness::typed_call(&target, &layout, &found, false, &[]);
+        let counterexample = Some(Counterexample { input: rendered, outcome, expected: None, values, found: None, shrink_runs: 0, inputs: witness::typed_inputs(&flat, &found), found_inputs: None, call });
         let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
         return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
     }
@@ -582,7 +637,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
             let (assuming, assumed) = crate::equivalence::assumed_gaps(&last);
             let (relying, relied) = crate::equivalence::relied_contracts(&last);
-            let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws}{assuming}{relying} ({how})", options.target);
+            let _ = writeln!(out, "✓ {} {claim} on {every}{where_}{and_throws}{assuming}{relying} ({how})", options.target);
             out.push_str(&assumed);
             out.push_str(&relied);
             if let Some(c) = search.as_ref().and_then(|s| s.confirmation.as_ref()) {
@@ -593,7 +648,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if !harness.probe.is_empty() {
                 let mut entries = options.classes.clone();
                 entries.extend(options.classpath.iter().cloned());
-                let render = |r: &JbmcResult| r.arguments(&descriptor.params).ok().map(|found| witness::call(&method_name, &params, &found).0);
+                let render = |r: &JbmcResult| r.arguments(&entry_types).ok().map(|found| render(&found).0);
                 let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &parameters, &work, "failing the assumption (--assume)", &render, &mut search)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
@@ -602,15 +657,19 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         Verdict::Violation => {
-            let found = last.arguments(&descriptor.params)?;
+            let found = last.arguments(&entry_types)?;
             let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?.with_models(options.models);
-            let mut replayed = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
+            let replay_on = |arguments: &[Argument]| witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
+            let mut replayed = replay_on(&found);
             // The JDK the witness was run on, when the interpreter could not run it and a JVM did.
             let mut on_jvm: Option<String> = None;
             let mut jvm_ran = false;
             // The throws clause that applies to an input: the first whose condition holds; `None` when none does
             // or a condition cannot be evaluated outside the harness (it calls the method).
             let applying = |arguments: &[Argument]| -> Option<usize> {
+                if over_objects {
+                    return None;
+                }
                 let (locals, arrays) = witness::locals_of(&params, arguments, &[]);
                 harness.signals.iter().position(|(_, when)| matches!(harness::expr::eval_with(when, &locals, &arrays), Ok(Value::Int(1))))
             };
@@ -649,23 +708,25 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // the harness on the witness, with the JDK's real calls where the contracts stood. It is a
             // counterexample when the property fails there, and none when the JVM's calls do not take the method
             // where the contracts let the checker suppose.
-            let mut unconfirmed = Some(&replayed).filter(|r| r.could_not_replay()).and_then(|r| crate::equivalence::unconfirmed_through_contracts(&last, &witness::call(&method_name, &params, &found).0, &r.outcome));
+            let mut unconfirmed = Some(&replayed).filter(|r| r.could_not_replay()).and_then(|r| crate::equivalence::unconfirmed_through_contracts(&last, &render(&found).0, &r.outcome));
             if let Some(p) = &unconfirmed {
                 let mut entries = vec![harness_dir.clone()];
                 entries.extend(options.classes.iter().cloned());
                 entries.extend(options.classpath.iter().cloned());
-                let call = crate::jvm_witness::DirectCall { owner: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), ret: descriptor.ret.clone() };
-                let slots: Vec<u16> = params.iter().map(|p| p.slot).collect();
-                let rendered = witness::call(&method_name, &params, &found).0;
-                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &descriptor.params, &slots, &found, &[call], &entries) {
+                // Over objects the JVM runs the harness alone, which makes them: a direct call takes flat values.
+                let calls = if over_objects { Vec::new() } else { vec![crate::jvm_witness::DirectCall { owner: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), ret: descriptor.ret.clone() }] };
+                let rendered = render(&found).0;
+                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &found, &calls, &entries) {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
-                        replayed = run.calls.into_iter().next().expect("one call");
+                        if let Some(call) = run.calls.into_iter().next() {
+                            replayed = call;
+                        }
                         on_jvm = Some(run.jdk);
                         unconfirmed = None;
                     }
                     Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
                         jvm_ran = true;
-                        let did = run.calls.first().map(|r| if r.thrown.is_some() || r.outcome == "void" { r.with_leftovers(&params, &found) } else { format!("returns {}", r.with_leftovers(&params, &found)) }).unwrap_or_default();
+                        let did = run.calls.first().map(|r| if r.thrown.is_some() || r.outcome == "void" { r.with_leftovers(&flat, &found) } else { format!("returns {}", r.with_leftovers(&flat, &found)) }).unwrap_or_default();
                         unconfirmed = Some(crate::equivalence::not_reproduced_on_jvm(&last, &rendered, &run.jdk, &format!("the method {did} there and the property holds on it"), false));
                     }
                     Ok(run) => {
@@ -688,15 +749,20 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let replay = Some(crate::equivalence::Replay { by: by.into(), reproduced: false });
                 return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
             }
-            let evaluable = !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
+            // Over objects the property reads the heap, which only the harness can: the interpreter runs the harness
+            // itself on the witness, which makes the objects as the checker did.
+            let evaluable = !over_objects && !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
+            let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
+            let in_harness = if over_objects { witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &found) } else { None };
             let holds_on_found = match (applying(&found), replayed.returned, replayed.thrown.as_deref()) {
+                _ if over_objects => in_harness == Some(false),
                 (Some(i), _, Some(thrown)) => cp.is_subtype(thrown, &harness.signals[i].0.class),
                 (Some(_), _, None) => false,
                 (None, Some(result), _) => matches!(assertion_on(&found, result, &replayed.result_array, &replayed.arrays_after), Ok(Value::Int(1))),
                 (None, None, _) => false,
             };
-            if evaluable && holds_on_found {
-                let (rendered, _) = witness::call(&method_name, &params, &found);
+            if (evaluable || over_objects) && holds_on_found {
+                let (rendered, _) = render(&found);
                 let did = if replayed.thrown.is_some() { replayed.outcome.clone() } else { format!("returns {}", replayed.outcome) };
                 let p = format!("{}'s counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. {}", if last.native.is_some() { "The tool's own checker" } else { "JBMC" }, preflight.as_ref().filter(|_| last.native.is_none()).and_then(crate::jbmc_gaps::Preflight::unreproduced_cause).unwrap_or_else(|| crate::equivalence::unreproduced_cause(&last)));
                 let message = format!("{} cannot be verified: {p}", options.target);
@@ -714,15 +780,42 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let mut shrink_runs = 0;
             let mut arguments = found.clone();
             // The interpreter is the shrinker's oracle, and it cannot run a witness only a JVM could.
+            // It changes the leaves alone, never a choice's flag, so that it never merges or splits objects.
             if options.shrink && on_jvm.is_none() {
-                let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
-                let shrunk = witness::shrink_in_harness(&harness_cp, harness::PROPERTY_CLASS, &descriptor.params, found.clone());
+                let shrunk = witness::shrink_in_harness_keeping(&harness_cp, harness::PROPERTY_CLASS, &entry_types, found.clone(), &layout.flags());
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;
             }
             let shrunk = arguments != found;
-            let replayed = if shrunk { witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments) } else { replayed };
-            let (mut outcome, returned, result_array, arrays_after, thrown) = (replayed.with_leftovers(&params, &arguments), replayed.returned, &replayed.result_array, &replayed.arrays_after, &replayed.thrown);
+            let replayed = if shrunk { replay_on(&arguments) } else { replayed };
+            // A witness over objects is run on a JVM too (step H4 of `llm-dlc/loops/foundations-heap.md`): the
+            // harness, which makes the objects from the same leaves with the same identities, the application's
+            // classes opened so that it may read their fields. The JVM is the reference: where its harness holds on
+            // the witness, the interpreter was wrong and nothing is reported.
+            let mut jvm_note = None;
+            if over_objects && on_jvm.is_none() {
+                let mut entries = vec![harness_dir.clone()];
+                entries.extend(options.classes.iter().cloned());
+                entries.extend(options.classpath.iter().cloned());
+                let rendered = render(&arguments).0;
+                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &arguments, &[], &entries) {
+                    Ok(run) if run.check == crate::jvm_witness::Check::Refuted => jvm_note = Some((true, format!("and run on a JVM (JDK {}), where the harness fails on it too", run.jdk))),
+                    Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
+                        let p = format!("the counterexample {rendered} fails the property's harness in the interpreter, but on a JVM (JDK {}) the harness holds on it. The JVM is the reference, so the tool's interpreter is wrong here and the witness is not reported", run.jdk);
+                        let message = format!("{} cannot be verified: {p}", options.target);
+                        let _ = writeln!(out, "✗ {message}");
+                        findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                        if let Some(report) = &options.report {
+                            sarif::write(&report.join("property.sarif"), &findings)?;
+                        }
+                        let replay = Some(crate::equivalence::Replay { by: "jvm".into(), reproduced: false });
+                        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
+                    }
+                    Ok(run) => jvm_note = Some((false, format!("not confirmed on a JVM, where the harness threw {}", match run.check { crate::jvm_witness::Check::Threw(c) => c, _ => unreachable!() }))),
+                    Err(e) => jvm_note = Some((false, format!("not run on a JVM: {e}"))),
+                }
+            }
+            let (mut outcome, returned, result_array, arrays_after, thrown) = (replayed.with_leftovers(&flat, &arguments), replayed.returned, &replayed.result_array, &replayed.arrays_after, &replayed.thrown);
             // What a throws clause required of this input, when that is what failed.
             let expected = match (applying(&arguments), thrown) {
                 (Some(i), _) => Some(format!("throws {}, since {}", harness.signals[i].0.java_name(), harness.signals[i].0.when)),
@@ -735,8 +828,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     outcome = format!("{outcome}; the assertion itself cannot be evaluated on it ({e})");
                 }
             }
-            let (rendered, witnesses) = witness::call(&method_name, &params, &arguments);
-            let (rendered_found, _) = witness::call(&method_name, &params, &found);
+            let (rendered, witnesses) = render(&arguments);
+            let (rendered_found, _) = render(&found);
             let expected_line = expected.as_ref().map(|e| format!("\n    expected: {e}")).unwrap_or_default();
             let claimed = if claim == "returns" { "returns".to_string() } else { format!("`{assertion}`") };
             let message = format!("Property of {} violated: {claimed}{where_}{and_throws}:\n  {rendered}\n    outcome: {outcome}{expected_line}", options.target);
@@ -747,23 +840,23 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             } else {
                 String::new()
             };
-            let replayed_by = match &on_jvm {
-                Some(jdk) => crate::equivalence::run_on_jvm_words(jdk),
-                None => "replayed in the interpreter".into(),
+            let replayed_by = match (&on_jvm, &jvm_note) {
+                (Some(jdk), _) => crate::equivalence::run_on_jvm_words(jdk),
+                (None, Some((_, note))) => format!("replayed in the interpreter {note}"),
+                (None, None) => "replayed in the interpreter".into(),
             };
             let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, {replayed_by}; domain {domain}", last.version);
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
-            replay = Some(match &on_jvm {
-                Some(_) => crate::equivalence::Replay { by: "jvm".into(), reproduced: true },
-                None => crate::equivalence::Replay { by: "interpreter".into(), reproduced: evaluable },
+            replay = Some(match (&on_jvm, &jvm_note) {
+                (Some(_), _) | (None, Some((true, _))) => crate::equivalence::Replay { by: "jvm".into(), reproduced: true },
+                (None, _) => crate::equivalence::Replay { by: "interpreter".into(), reproduced: evaluable || in_harness == Some(true) },
             });
             let target = witness::Target { class_internal: &class_internal, method: &method_name, descriptor: &method.descriptor, is_static: method.is_static(), classes: "after" };
-            let names: Vec<String> = params.iter().map(|p| p.name.clone()).collect();
-            let call = witness::typed_call(&target, &harness::Layout::plain(&names, &descriptor.params), &arguments, false, &[]);
-            let inputs = witness::typed_inputs(&params, &arguments);
-            let found_inputs = shrunk.then(|| witness::typed_inputs(&params, &found));
+            let call = witness::typed_call(&target, &layout, &arguments, false, &[]);
+            let inputs = witness::typed_inputs(&flat, &arguments);
+            let found_inputs = shrunk.then(|| witness::typed_inputs(&flat, &found));
             counterexample = Some(Counterexample { input: rendered, outcome, expected, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call });
         }
         Verdict::Unverifiable => {

@@ -489,6 +489,12 @@ impl Layout {
     /// null), the members of a group of one class. Each choice is a boolean flat parameter appended after every leaf,
     /// so that the leaves keep their places. An error names the flag and what is wrong.
     pub fn choose(&mut self, nullable: &[String], groups: &[Vec<String>]) -> Result<(), String> {
+        self.choose_in(nullable, groups, false)
+    }
+
+    /// [`Layout::choose`] for a regression check, or for a property check (`property`), whose one version makes
+    /// each object by its constructor and whose array parameters' choices are the own checker's, given apart.
+    pub fn choose_in(&mut self, nullable: &[String], groups: &[Vec<String>], property: bool) -> Result<(), String> {
         let slots: Vec<&Slot> = self.receiver.iter().chain(self.args.iter()).collect();
         let names: Vec<String> = slots
             .iter()
@@ -503,8 +509,10 @@ impl Layout {
             };
             match slots[at] {
                 Slot::Record { record, before: Some(previous), .. } if record.is_made() && previous.is_made() => Ok((record.class.clone(), previous.class.clone())),
+                Slot::Record { record, before: None, .. } if property && record.is_made() => Ok((record.class.clone(), record.class.clone())),
                 Slot::Record { record, before: None, .. } if record.is_made() => Err(format!("{flag} {name}: the previous version is given {name} by --before-arguments, which a choice of null or of the same object would not reach")),
                 Slot::Record { record, .. } => Err(format!("{flag} {name}: {name} is a {}, a record of primitive components, which a regression check compares as a value; only an object made by its constructor may be null or the same as another here", record.simple_name())),
+                Slot::Plain(i) if property => Err(format!("{flag} {name}: {name} is a {}, and only an array parameter or an object made by its constructor may be null or the same as another", self.params[*i].ty.java_name())),
                 Slot::Plain(i) => {
                     let t = &self.params[*i].ty;
                     let arrays = if matches!(t, Type::Array(_)) { "; an array parameter may be, in a property check (jvmcontract prove)" } else { "" };
@@ -2330,30 +2338,66 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    crate::phases::timed(crate::phases::Step::Harness, || generate_property_untimed(class_internal, method, params, ret, assume, assertion, signals, max_array_length))
+    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new() };
+    generate_property_over(class_internal, method, &layout, ret, assume, assertion, signals, max_array_length)
+}
+
+/// [`generate_property`] for a static method whose arguments are laid out as `layout` (step H2 of
+/// `llm-dlc/loops/foundations-heap.md`): an object parameter made by its constructor from the harness's flat
+/// parameters, its leaves, and null or the same object as an earlier one where the layout's choices say so; an
+/// input a constructor rejects is outside the property, and skipped. The expressions see each argument by its name,
+/// an object's fields by their paths (`l.price.cents`, `\old(l.quantity)`), and an object `result`'s, whose fields
+/// are `layout.result_fields.0`; an input on which the assumption throws (a path through null) is outside it too.
+#[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
+pub fn generate_property_over(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
+    crate::phases::timed(crate::phases::Step::Harness, || generate_property_untimed(class_internal, method, layout, ret, assume, assertion, signals, max_array_length))
 }
 
 #[allow(clippy::too_many_arguments)]
-fn generate_property_untimed(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let mut harness = generate_property_in(class_internal, method, params, ret, assume, assertion, signals, max_array_length, false)?;
+fn generate_property_untimed(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
+    let mut harness = generate_property_in(class_internal, method, layout, ret, assume, assertion, signals, max_array_length, false)?;
     if assume.is_some() {
-        harness.probe = generate_property_in(class_internal, method, params, ret, assume, assertion, signals, max_array_length, true)?.bytes;
+        harness.probe = generate_property_in(class_internal, method, layout, ret, assume, assertion, signals, max_array_length, true)?.bytes;
     }
     Ok(harness)
 }
 
 #[allow(clippy::too_many_arguments)]
-fn generate_property_in(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32, probe: bool) -> Result<PropertyHarness, Error> {
-    let descriptor = format!("({}){}", params.iter().map(|p| p.ty.descriptor()).collect::<String>(), ret.descriptor());
+fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32, probe: bool) -> Result<PropertyHarness, Error> {
+    let params = &layout.params;
+    let target_types = layout.target_types();
+    let descriptor = format!("({}){}", target_types.iter().map(Type::descriptor).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
     let is_void = *ret == Type::Void;
-    let callee = Callee::of(class_internal, method, &descriptor, &params.iter().map(|p| p.ty.clone()).collect::<Vec<_>>(), ret);
+    let callee = Callee::of(class_internal, method, &descriptor, &target_types, ret);
+    // Each object argument, made from its leaves before anything else, in a local of its own after the flat
+    // parameters (step H2).
+    let records = layout.records();
+    let object_slot = |i: usize| arg_slots + i as u16;
+    let base = arg_slots + records.len() as u16;
 
-    // The names the assertion sees: the parameters, then the result.
-    let mut names = params.to_vec();
+    // The names the expressions see: the arguments (an object by its local), then the result.
+    let mut arg_names: Vec<Param> = Vec::new();
+    let mut objects: Vec<(String, Fields)> = Vec::new();
+    for slot in &layout.args {
+        match slot {
+            Slot::Plain(i) => arg_names.push(params[*i].clone()),
+            Slot::Record { name, record, .. } => {
+                let at = records.iter().position(|r| *r == slot).expect("a record");
+                arg_names.push(Param { name: name.clone(), ty: Type::Object(record.class.clone()), slot: object_slot(at) });
+                if let Some(fields) = &record.fields {
+                    objects.push((name.clone(), fields.clone()));
+                }
+            }
+        }
+    }
+    let mut names = arg_names.clone();
     if !is_void {
-        names.push(Param { name: RESULT.into(), ty: ret.clone(), slot: arg_slots });
+        names.push(Param { name: RESULT.into(), ty: ret.clone(), slot: base });
+        if let Some(fields) = &layout.result_fields.0 {
+            objects.push((RESULT.into(), fields.clone()));
+        }
     }
     let assertion_text = match assertion {
         Some(a) => a.to_string(),
@@ -2361,19 +2405,19 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
         None if !signals.is_empty() => "true".to_string(),
         None => return Err(Error::new(format!("the method returns {}, so the property needs an assertion (--assert) over the parameters and `result`", ret.java_name()))),
     };
-    // Locals after the parameters: result, e, expected, a copy of each array parameter for \old (taken only when
-    // the assertion reads it); quantifiers take their variables after those.
+    // Locals after the parameters (and the objects): result, e, expected, a copy of each array parameter for \old
+    // (taken only when the assertion reads it); quantifiers, and the fields read under \old, take theirs after those.
     let ret_kind = kind_of(ret);
-    let result = arg_slots;
+    let result = base;
     let e = result + if is_void { 0 } else { ret.slots() };
     let expected = e + 1;
-    let copies: Vec<(u16, u16)> = params.iter().filter(|p| matches!(p.ty, Type::Array(_))).enumerate().map(|(i, p)| (p.slot, expected + 1 + i as u16)).collect();
+    let copies: Vec<(u16, u16)> = arg_names.iter().filter(|p| matches!(p.ty, Type::Array(_))).enumerate().map(|(i, p)| (p.slot, expected + 1 + i as u16)).collect();
     let first_free = expected + 1 + copies.len() as u16;
     let assume_expr = match assume {
-        Some(src) => Some(expr::parse_in(src, params, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
+        Some(src) => Some(expr::parse_over_objects(src, &arg_names, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
         None => None,
     };
-    let assertion_expr = expr::parse_after(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies)).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
+    let assertion_expr = expr::parse_over_objects(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies), &objects).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
     if assertion_expr.ty() != expr::Ty::Boolean {
         return Err(Error::new("in the assertion: the expression must be boolean"));
     }
@@ -2383,7 +2427,7 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
         if signal.class.is_empty() || signal.class.contains(|c: char| c.is_whitespace() || c == ';' || c == '[') {
             return Err(Error::new(format!("in the throws clause: {:?} is not a class name", signal.java_name())));
         }
-        let when = expr::parse_in(&signal.when, params, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
+        let when = expr::parse_over_objects(&signal.when, &arg_names, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
         signal_exprs.push((signal.clone(), when));
     }
 
@@ -2394,11 +2438,77 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
     code.max_locals = arg_slots;
     code.max_stack = 16 + 4 * arg_slots;
 
-    // The assumption: return on the inputs the property is not about.
+    // The objects (step H2), from their leaves: null, or the same object as an earlier one that is not null, where
+    // a choice says so, and otherwise each its own; an input a constructor rejects is outside the property.
+    if !records.is_empty() {
+        let (build_start, build_end, built) = (code.label(), code.label(), code.label());
+        code.bind(build_start);
+        for (i, slot) in records.iter().enumerate() {
+            let Slot::Record { name, record, first, .. } = slot else { unreachable!("records() returns records") };
+            let local = object_slot(i);
+            let done = code.label();
+            if let Some(c) = layout.choice(name) {
+                if let Some(flag) = c.null {
+                    let own = code.label();
+                    code.load(Kind::Int, params[flag].slot);
+                    code.if_zero(Cond::Eq, own);
+                    code.op(0x01); // aconst_null
+                    code.store(Kind::Ref, local);
+                    code.goto(done);
+                    code.bind(own);
+                }
+                for (other, flag) in &c.same {
+                    let next = code.label();
+                    let at = records.iter().position(|s| matches!(s, Slot::Record { name: n, .. } if n == other)).expect("a parameter of the group");
+                    code.load(Kind::Int, params[*flag].slot);
+                    code.if_zero(Cond::Eq, next);
+                    code.load(Kind::Ref, object_slot(at));
+                    code.if_null(next);
+                    code.load(Kind::Ref, object_slot(at));
+                    code.store(Kind::Ref, local);
+                    code.goto(done);
+                    code.bind(next);
+                }
+            }
+            emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaf_indices(*first).into_iter());
+            code.store(Kind::Ref, local);
+            code.bind(done);
+        }
+        code.bind(build_end);
+        code.goto(built);
+        let handler = code.label();
+        code.bind(handler);
+        code.op(0x57); // pop the exception
+        code.return_(None);
+        for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
+            let catch_type = writer.pool.class(exception);
+            code.handler(build_start, build_end, handler, Some(catch_type));
+        }
+        code.bind(built);
+    }
+
+    // The assumption: return on the inputs the property is not about. Over objects, an input on which it throws
+    // (a field path through null) is not among them either.
     if let Some(assume) = &assume_expr {
         let proceed = code.label();
+        let (start, end) = (code.label(), code.label());
+        code.bind(start);
         expr::emit(assume, &mut code, &mut writer.pool);
+        code.bind(end);
         code.if_zero(Cond::Ne, proceed);
+        let skip = code.label();
+        code.bind(skip);
+        if !records.is_empty() {
+            // The handler's stack holds the exception; the normal way out has nothing on it.
+            let threw = code.label();
+            code.return_(None);
+            code.bind(threw);
+            code.op(0x57); // pop the exception
+            for exception in EXCEPTIONS {
+                let catch_type = writer.pool.class(exception);
+                code.handler(start, end, threw, Some(catch_type));
+            }
+        }
         code.return_(None);
         code.bind(proceed);
     }
@@ -2479,6 +2589,32 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
         code.goto(loop_);
         code.bind(done);
     }
+    // The field paths the assertion reads under \old (step H2), each read before the call into its local, with
+    // whether it could be: a path through null leaves 0 there, and reading it in the assertion throws.
+    for (path, value) in assertion_expr.old_fields() {
+        let kind = if path.ty == Type::Long { Kind::Long } else { Kind::Int };
+        if kind == Kind::Long {
+            code.op(0x09); // lconst_0
+        } else {
+            code.iconst(0);
+        }
+        code.store(kind, value);
+        code.iconst(0);
+        code.store(Kind::Int, value + 2);
+        let (start, end, read, threw) = (code.label(), code.label(), code.label(), code.label());
+        code.bind(start);
+        path.emit(&mut code, &mut writer.pool);
+        code.bind(end);
+        code.store(kind, value);
+        code.iconst(1);
+        code.store(Kind::Int, value + 2);
+        code.goto(read);
+        code.bind(threw);
+        code.op(0x57); // pop the exception
+        let npe = writer.pool.class("java/lang/NullPointerException");
+        code.handler(start, end, threw, Some(npe));
+        code.bind(read);
+    }
     let try_start = code.label();
     let try_end = code.label();
     let join = code.label();
@@ -2487,7 +2623,7 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
         emit_failure(&mut code, &mut writer.pool);
     }
     code.bind(try_start);
-    for p in params {
+    for p in &arg_names {
         code.load(kind_of(&p.ty), p.slot);
     }
     let target = writer.pool.method_ref(class_internal, method, &descriptor);
@@ -2564,8 +2700,8 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
     code.max_locals = code.max_locals.max(first_free + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
-    let source = property_source(class_internal, method, params, ret, assume, &assertion_text, signals);
-    Ok(PropertyHarness { bytes: writer.to_bytes(), probe: Vec::new(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: params.to_vec(), old })
+    let source = if records.is_empty() { property_source(class_internal, method, params, ret, assume, &assertion_text, signals) } else { property_source_over(class_internal, method, layout, ret, assume, &assertion_text, signals) };
+    Ok(PropertyHarness { bytes: writer.to_bytes(), probe: Vec::new(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: arg_names, old })
 }
 
 /// The `newarray` type code of a primitive element type.
@@ -2655,6 +2791,45 @@ pub fn property_source(class_internal: &str, method: &str, params: &[Param], ret
     s
 }
 
+/// [`property_source`] for a method whose arguments are laid out as `layout` (step H2): the harness's parameters are
+/// the leaves of each object's construction and the choices' flags (`l_price_cents`, `l_null`), and each object is
+/// made from them before the property is checked.
+pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: &str, signals: &[Signal]) -> String {
+    let flat: Vec<Param> = layout.params.iter().map(|p| Param { name: p.name.replace('.', "_"), ty: p.ty.clone(), slot: p.slot }).collect();
+    let param_list = flat.iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
+    let args: Vec<String> = layout
+        .args
+        .iter()
+        .map(|s| match s {
+            Slot::Plain(i) => flat[*i].name.clone(),
+            Slot::Record { name, .. } => name.clone(),
+        })
+        .collect();
+    let plain: Vec<Param> = args.iter().map(|a| Param { name: a.clone(), ty: Type::Int, slot: 0 }).collect();
+    let mut s = property_source(class_internal, method, &plain, ret, assume, assertion, signals);
+    let mut objects = String::from("        // The objects, from their leaves; an input a constructor rejects is outside the property.\n");
+    for slot in layout.records() {
+        let Slot::Record { name, record, first, .. } = slot else { continue };
+        let mut made = construction_source(record, "", &mut record.leaf_indices(*first).into_iter().map(|i| &flat[i]));
+        if let Some(c) = layout.choice(name) {
+            for (other, flag) in c.same.iter().rev() {
+                made = format!("{} && {other} != null ? {other} : {made}", flat[*flag].name);
+            }
+            if let Some(flag) = c.null {
+                made = format!("{} ? null : {made}", flat[flag].name);
+            }
+        }
+        objects.push_str(&format!("        {} {name};\n        try {{ {name} = {made}; }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+    }
+    // The plain rendering's parameter list gives way to the leaves', and the objects are made first.
+    let header = format!("    public static void {METHOD}({}) {{\n", plain.iter().map(|p| format!("int {}", p.name)).collect::<Vec<_>>().join(", "));
+    s = s.replacen(&header, &format!("    public static void {METHOD}({param_list}) {{\n{objects}"), 1);
+    if assume.is_some() {
+        s = s.replacen("{ return; } // the inputs the property is about", "{ return; } // the inputs the property is about (one on which it throws is not among them)", 1);
+    }
+    s.replacen("/* \\old(a) is the array a as it was before the call: the class file copies it first. */", "/* \\old(a) is the array a, and \\old(l.f) the field l.f, as it was before the call: the class file copies it first. */", 1)
+}
+
 /// `merge(a, b)` becomes `net.example.Clock.merge(a, b)` in the Java rendering.
 fn qualify_calls(text: &str, method: &str, class: &str) -> String {
     let bytes = text.as_bytes();
@@ -2724,6 +2899,46 @@ mod tests {
                 assert!(pcs.contains(&t), "target {t} is not an instruction");
             }
         }
+    }
+
+    #[test]
+    fn a_property_over_objects_makes_them_from_their_leaves_and_reads_their_fields_now_and_before_the_call() {
+        let money_fields = Fields { class: "m/Money".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] };
+        let money = RecordType::made("m/Money", vec![("cents".into(), Type::Long)], Vec::new(), money_fields.clone());
+        let line_fields = Fields { class: "m/Line".into(), fields: vec![("price".into(), FieldKind::Object(Box::new(money_fields))), ("quantity".into(), FieldKind::Value(Type::Int))] };
+        let line = RecordType::made("m/Line", vec![("price".into(), Type::Object("m/Money".into())), ("quantity".into(), Type::Int)], vec![money], line_fields.clone());
+        let names = ["l".to_string(), "k".to_string(), "n".to_string()];
+        let types = [Type::Object("m/Line".into()), Type::Object("m/Line".into()), Type::Int];
+        let mut layout = Layout::new(None, &names, &types, &[Some((line.clone(), None)), Some((line, None)), None], (None, None));
+        assert!(layout.choose(&["l".into()], &[]).unwrap_err().contains("by --before-arguments"), "a regression check's rule");
+        assert!(layout.choose_in(&["n".into()], &[], true).unwrap_err().contains("only an array parameter or an object made by its constructor may be null"));
+        layout.choose_in(&["l".into()], &[vec!["l".into(), "k".into()]], true).unwrap();
+        layout.result_fields.0 = Some(line_fields);
+        let law = "result == k && result.quantity == \\old(l.quantity) + n && l.price != null";
+        let harness = generate_property_over("m/Kernel", "f", &layout, &Type::Object("m/Line".into()), Some("l.price.cents > 0"), Some(law), &[], 8).unwrap();
+        assert!(harness.source.contains("public static void check(long l_price_cents, int l_quantity, long k_price_cents, int k_quantity, int n, boolean l_null, boolean k_same_l)"), "{}", harness.source);
+        assert!(harness.source.contains("try { k = k_same_l && l != null ? l : new m.Line(new m.Money(k_price_cents), k_quantity); } catch (Throwable t) { return; }"), "{}", harness.source);
+        assert!(harness.source.contains("try { l = l_null ? null : new m.Line(new m.Money(l_price_cents), l_quantity); }"), "{}", harness.source);
+        assert!(harness.source.contains("result = m.Kernel.f(l, k, n);"), "{}", harness.source);
+        assert!(harness.source.contains("(one on which it throws is not among them)"), "{}", harness.source);
+        let olds = harness.assertion.old_fields();
+        assert_eq!(olds.len(), 1);
+        assert_eq!((olds[0].0.shown.as_str(), olds[0].0.steps.len()), ("l.quantity", 1));
+        assert!(harness.assertion.reads_objects() && harness.assume.as_ref().unwrap().reads_objects());
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let code = class.method(METHOD, "(JIJIIZZ)V").expect("the leaves, n, then the flags").code.as_ref().unwrap();
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        // The plain harness is as it was: no objects, no handlers of theirs.
+        let params = params(&["a".to_string()], &[Type::Int]);
+        let plain = generate_property("m/Kernel", "g", &params, &Type::Int, Some("a > 0"), Some("result > 0"), &[], 8).unwrap();
+        let plain_class = ClassFile::parse(&plain.bytes).unwrap();
+        assert_eq!(plain_class.method(METHOD, "(I)V").unwrap().code.as_ref().unwrap().exception_table.len(), 2 * EXCEPTIONS.len(), "the call's and the assertion's");
     }
 
     #[test]

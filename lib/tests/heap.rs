@@ -646,3 +646,174 @@ fn what_the_correspondence_leaves_out_and_bounds_it_exceeds_are_never_proved() {
     assert_eq!(o.verdict, V::Unresolved, "{o:?}");
     assert!(o.problem.as_deref().unwrap().contains("made of 2 objects, more than the claim's bound of 1"), "{o:?}");
 }
+
+// Object inputs in property checks (H2's rest): `jvmcontract prove` over a parameter of an application class, made
+// in the harness by its constructor from symbolic arguments, which the property reads by its field paths, before
+// the call under `\old`, and compares by identity; null and one object where the domain lets them be.
+
+/// A property of `objects.Kernel#method` in the build `build`, on the own checker.
+fn property_over(build: &str, method: &str, assume: Option<&str>, assert: &str, nullable: &[&str], may_alias: &[(&str, &str)]) -> Option<jvmcontract::property::Outcome> {
+    property_on(jvmcontract::Engine::Native, false, build, method, assume, assert, nullable, may_alias)
+}
+
+/// [`property_over`] on the checker `engine`, `--confirm` under `auto` where `confirm`.
+#[allow(clippy::too_many_arguments)]
+fn property_on(engine: jvmcontract::Engine, confirm: bool, build: &str, method: &str, assume: Option<&str>, assert: &str, nullable: &[&str], may_alias: &[(&str, &str)]) -> Option<jvmcontract::property::Outcome> {
+    let root = object_builds()?;
+    let mut options = jvmcontract::property::Options::new(&[root.join(build)], &format!("objects.Kernel#{method}"));
+    options.engine = engine;
+    options.confirm = confirm;
+    options.assume = assume.map(str::to_string);
+    options.assert = Some(assert.to_string());
+    options.nullable = nullable.iter().map(|n| n.to_string()).collect();
+    options.may_alias = may_alias.iter().map(|(a, b)| (a.to_string(), b.to_string())).collect();
+    let tag: String = format!("{engine:?}{confirm}{assume:?}{assert}{nullable:?}{may_alias:?}").bytes().fold(0u64, |h, b| h.wrapping_mul(31).wrapping_add(u64::from(b))).to_string();
+    let work = root.join(format!("property-{build}-{method}-{tag}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    Some(jvmcontract::property::run(&options).unwrap())
+}
+
+/// A property's witness over objects is run on a JVM as well as in the interpreter: the harness on it, which makes
+/// the objects from the same leaves.
+fn property_confirmed_on_the_jvm(o: &jvmcontract::property::Outcome) {
+    assert_eq!(o.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", o.output);
+    assert!(o.output.contains("replayed in the interpreter and run on a JVM (JDK "), "{}", o.output);
+}
+
+#[test]
+fn a_property_reads_an_object_parameter_by_its_field_paths_before_and_after_the_call() {
+    let law = "l.quantity == \\old(l.quantity) + 1 && l.price.cents == \\old(l.price.cents)";
+    let Some(o) = property_over("after", "bump", None, law, &[], &[]) else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("on every input of constructor-made objects"), "{}", o.output);
+    assert_eq!(o.domain.as_deref(), Some("l: a Line made by its constructor, Line(price: Money(cents: long), quantity: int), from any arguments it accepts"));
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.domain.parameters[0].kind, jvmcontract::statement::ParameterKind::Object);
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("the constructor Line(price: Money(cents: long), quantity: int) accepts the arguments of l")), "{:?}", stated.assumptions);
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("try { l = new objects.Line(new objects.Money(l_price_cents), l_quantity); } catch (Throwable t) { return; }"), "{source}");
+    // Adding two is seen in the object as the call leaves it, and refuted with a construction recipe, on the JVM too.
+    let Some(bad) = property_over("defect", "bump", None, law, &[], &[]) else { return };
+    assert_eq!(bad.verdict, Verdict::Violation, "{}", bad.output);
+    let c = bad.counterexample.as_ref().unwrap();
+    assert_eq!(c.input, "bump(l=new Line(new Money(0), 1))", "{}", bad.output);
+    assert!(c.outcome.contains("leaving l=Line{price=Money{cents=0}, quantity=3}"), "{}", c.outcome);
+    property_confirmed_on_the_jvm(&bad);
+}
+
+#[test]
+fn a_property_compares_an_object_result_with_its_argument_by_identity_and_the_alias_to_copy_defect_fails_it() {
+    let law = "result == l && result.quantity == quantity && result.price == l.price";
+    let Some(o) = property_over("after", "withQuantity", None, law, &[], &[]) else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let Some(bad) = property_over("defect", "withQuantity", None, law, &[], &[]) else { return };
+    assert_eq!(bad.verdict, Verdict::Violation, "{}", bad.output);
+    assert_eq!(bad.counterexample.as_ref().unwrap().input, "withQuantity(l=new Line(new Money(0), 1), quantity=0)", "{}", bad.output);
+    property_confirmed_on_the_jvm(&bad);
+    // The copy has the same values and the same price: only its identity tells it apart.
+    let Some(values) = property_over("defect", "withQuantity", None, "result.quantity == quantity && result.price == l.price", &[], &[]) else { return };
+    assert_eq!(values.verdict, Verdict::Verified, "{}", values.output);
+}
+
+#[test]
+fn a_property_over_an_object_that_may_be_null_is_checked_on_null_too() {
+    let law = "result == (l == null ? 0 : l.quantity)";
+    let Some(o) = property_over("after", "size", None, law, &["l"], &[]) else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap().ends_with("from any arguments it accepts, or null"), "{:?}", o.domain);
+    assert!(o.stated.as_ref().unwrap().domain.parameters[0].null);
+    let Some(bad) = property_over("defect", "size", None, law, &["l"], &[]) else { return };
+    assert_eq!(bad.verdict, Verdict::Violation, "{}", bad.output);
+    let c = bad.counterexample.as_ref().unwrap();
+    assert_eq!(c.input, "size(l=null)");
+    assert!(c.outcome.contains("NullPointerException"), "{}", c.outcome);
+    assert_eq!(c.call.arguments[0].value, Some(serde_json::Value::Null), "{:?}", c.call);
+    property_confirmed_on_the_jvm(&bad);
+    // Not null by default; and an input on which the assumption throws (a path through null) is outside it.
+    let Some(apart) = property_over("defect", "size", None, law, &[], &[]) else { return };
+    assert_eq!(apart.verdict, Verdict::Verified, "{}", apart.output);
+    let Some(assumed) = property_over("defect", "size", Some("l.quantity > 1"), "result == l.quantity", &["l"], &[]) else { return };
+    assert_eq!(assumed.verdict, Verdict::Verified, "{}", assumed.output);
+    assert!(assumed.vacuous.is_none(), "{}", assumed.output);
+}
+
+#[test]
+fn a_property_over_two_objects_that_may_be_one_is_refuted_with_one_object_where_the_bug_needs_it() {
+    let law = "from == to ? from.quantity == \\old(from.quantity) : from.quantity == \\old(from.quantity) - 1 && to.quantity == \\old(to.quantity) + 1";
+    let Some(o) = property_over("after", "move", None, law, &[], &[("from", "to")]) else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap().ends_with("; from and to may be the same object"), "{:?}", o.domain);
+    let Some(apart) = property_over("defect", "move", None, law, &[], &[]) else { return };
+    assert_eq!(apart.verdict, Verdict::Verified, "two lines of their own: {}", apart.output);
+    let Some(bad) = property_over("defect", "move", None, law, &[], &[("from", "to")]) else { return };
+    assert_eq!(bad.verdict, Verdict::Violation, "{}", bad.output);
+    let c = bad.counterexample.as_ref().unwrap();
+    assert_eq!(c.input, "move(from=new Line(new Money(0), 1), to=the same object as from)", "{}", bad.output);
+    assert_eq!(c.call.arguments[1].value, Some(serde_json::json!({"same": "from"})), "{:?}", c.call);
+    property_confirmed_on_the_jvm(&bad);
+}
+
+#[test]
+fn a_property_wrong_only_where_the_constructor_refuses_holds_within_the_constructor_made_claim() {
+    let Some(o) = property_over("after", "checked", None, "result == l.price.cents * l.quantity", &[], &[]) else { return };
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("on every input of constructor-made objects"), "{}", o.output);
+}
+
+#[test]
+fn a_property_over_an_object_outside_the_supported_kinds_or_written_wrong_is_refused_by_name() {
+    let Some(o) = property_over("after", "tagged", None, "result == t.n", &[], &[]) else { return };
+    assert_eq!(o.verdict, Verdict::Unverifiable);
+    assert!(o.problem.as_deref().unwrap().contains("the field tag of objects.Tagged has type java.lang.String"), "{:?}", o.problem);
+    let wrong = [
+        ("\\old(l) == l", "\\old(l) is an object"),
+        ("l.price == l", "incomparable types"),
+        ("l.amount == 0", "objects.Line has no field amount; its fields are price, quantity"),
+        ("l.price > 0", "l.price is an object"),
+    ];
+    for (law, words) in wrong {
+        let Some(o) = property_over("after", "bump", None, law, &[], &[]) else { return };
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{law}");
+        assert!(o.problem.as_deref().unwrap().contains(words), "{law}: {:?}", o.problem);
+    }
+    let Some(o) = property_over("after", "withQuantity", None, "true", &["quantity"], &[]) else { return };
+    assert!(o.problem.as_deref().unwrap().contains("--nullable quantity: quantity is a int, and only an array parameter or an object made by its constructor may be null"), "{:?}", o.problem);
+}
+
+/// The object properties above under JBMC, which checks the same harness (its inputs the leaves and the choices'
+/// flags, all primitive), and under `auto --confirm`, where JBMC proves again what the own checker proved: each
+/// verdict as the own checker's, each violation's witness run on a JVM. A pipeline job
+/// (`cargo test --release --test heap -- --ignored`).
+#[test]
+#[ignore = "runs JBMC on the object properties: a pipeline job"]
+fn the_object_properties_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let bump = "l.quantity == \\old(l.quantity) + 1 && l.price.cents == \\old(l.price.cents)";
+    let with = "result == l && result.quantity == quantity && result.price == l.price";
+    let size = "result == (l == null ? 0 : l.quantity)";
+    let moved = "from == to ? from.quantity == \\old(from.quantity) : from.quantity == \\old(from.quantity) - 1 && to.quantity == \\old(to.quantity) + 1";
+    let cases: [(&str, &str, &str, &[&str], &[(&str, &str)], Verdict); 8] = [
+        ("after", "bump", bump, &[], &[], Verdict::Verified),
+        ("defect", "bump", bump, &[], &[], Verdict::Violation),
+        ("after", "withQuantity", with, &[], &[], Verdict::Verified),
+        ("defect", "withQuantity", with, &[], &[], Verdict::Violation),
+        ("after", "size", size, &["l"], &[], Verdict::Verified),
+        ("defect", "size", size, &["l"], &[], Verdict::Violation),
+        ("after", "move", moved, &[], &[("from", "to")], Verdict::Verified),
+        ("defect", "move", moved, &[], &[("from", "to")], Verdict::Violation),
+    ];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, method, law, nullable, may_alias, expected) in &cases {
+            let Some(o) = property_on(engine, confirm, build, method, None, law, nullable, may_alias) else { return };
+            let jvm = o.replay.as_ref().is_some_and(|r| r.by == "jvm" && r.reproduced);
+            if o.verdict != *expected || (*expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build} {method}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}

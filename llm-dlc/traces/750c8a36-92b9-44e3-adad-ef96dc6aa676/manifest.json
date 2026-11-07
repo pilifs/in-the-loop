@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T07:06:10.346Z",
-  "duration_seconds": 11091,
+  "ended": "2026-11-07T07:24:57.959Z",
+  "duration_seconds": 12218,
   "stats": {
-    "turns": 44,
-    "api_calls": 584,
-    "tool_calls": 613,
+    "turns": 49,
+    "api_calls": 655,
+    "tool_calls": 684,
     "tool_errors": 6,
-    "compactions": 8,
+    "compactions": 9,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 1180,
-      "output_tokens": 479582,
-      "cache_read_input_tokens": 106139654,
-      "cache_creation_input_tokens": 1930020
+      "input_tokens": 1322,
+      "output_tokens": 555155,
+      "cache_read_input_tokens": 121510409,
+      "cache_creation_input_tokens": 2233311
     }
   },
   "tools": {
-    "Bash": 515,
-    "Read": 48,
+    "Bash": 577,
+    "Read": 57,
     "Edit": 35,
     "Write": 5,
     "Monitor": 4,
@@ -165,24 +165,38 @@
     {
       "index": 8,
       "started": "2026-11-07T06:50:43.081Z",
-      "ended": "2026-11-07T07:06:10.346Z",
-      "turns": 4,
-      "api_calls": 55,
+      "ended": "2026-11-07T07:06:39.576Z",
+      "turns": 5,
+      "api_calls": 58,
       "usage": {
-        "input_tokens": 110,
-        "output_tokens": 46374,
-        "cache_read_input_tokens": 10580408,
-        "cache_creation_input_tokens": 266121
+        "input_tokens": 116,
+        "output_tokens": 48059,
+        "cache_read_input_tokens": 11426107,
+        "cache_creation_input_tokens": 272455
       },
-      "peak_context_tokens": 279200
+      "peak_context_tokens": 285534
+    },
+    {
+      "index": 9,
+      "started": "2026-11-07T07:07:24.029Z",
+      "ended": "2026-11-07T07:24:57.959Z",
+      "turns": 4,
+      "api_calls": 68,
+      "usage": {
+        "input_tokens": 136,
+        "output_tokens": 73888,
+        "cache_read_input_tokens": 14525056,
+        "cache_creation_input_tokens": 296957
+      },
+      "peak_context_tokens": 310036
     }
   ],
   "log": {
-    "sha256": "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966",
-    "bytes": 17985659,
-    "lines": 6291,
-    "gzip_bytes": 3465944,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966.jsonl.gz"
+    "sha256": "7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819",
+    "bytes": 20549781,
+    "lines": 7080,
+    "gzip_bytes": 3971776,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -265,6 +279,14 @@
       "summary": "Object parameters that may be null or one object in regression checks, made by a flag of the harness's own and kept by every witness (H2, third step; H4's rest)",
       "body": "jvmcontract equivalence takes --nullable and --may-alias for object parameters made by their constructor, and spec::heap::check passes a claim's ObjectDomain nullable and may_alias. The harness makes each choice with a boolean input after the leaves (l.null, to.same.from), in both versions alike, null first and a choice of a null parameter passed over, so a non-nullable parameter is never null; the domain and the statement say which parameters may be null or one object. The witness keeps the choice in the interpreter's replay, the shrinker (which never changes a flag) and the JVM run: move(from=new Line(new Money(0), 1), to=the same object as from) is one object everywhere, and --json gives it as {\"same\": \"from\"}. Records, arrays, primitives, parameters given by --before-arguments, a nullable receiver and parameters of two classes are refused by name.\n\nVerified inline: lib/tests/heap.rs gains four tests (a buffered move verified over two objects and refuted with one, confirmed on the JVM, its reordered rewrite verified; a dropped null check refuted with size(l=null) on the JVM; refusals; the kernel claim with q nullable under the correspondence), and a harness unit test covers the flags, the resolution rule, the domain words, the Java rendering and the bytecode. Unit tests (189), heap.rs (22), foundations.rs, conformance.rs and integration.rs (64) pass. No job: every check is small.",
       "log_sha256": "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966"
+    },
+    {
+      "change_id": "ttrwlznywpkqnoqtsrnrvpyqszupukrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Object parameters in property checks, made by their constructor, read by field paths now and under \\old, compared by identity, and null or one object by the harness's flags (H2's rest; verification pending)",
+      "body": "jvmcontract prove now takes a static method whose parameters are objects of application classes (step H2 of llm-dlc/loops/foundations-heap.md). Each is made in the harness by its one usable constructor from symbolic primitive leaves, as a regression check already did, and an input the constructor rejects is outside the property; the domain and the verdict say the claim covers constructor-made objects only ('on every input of constructor-made objects'). A property reads such an object by its field paths (l.price.cents), before the call under \\old (l.quantity == \\old(l.quantity) + 1), and compares references by identity (result == l, l == null), so the alias-to-copy defect fails result == l though every field agrees. --nullable and --may-alias on object parameters are boolean inputs of the harness, so JBMC is given the same harness. A witness is a construction recipe that keeps null and shared objects (move(from=new Line(new Money(0), 1), to=the same object as from)); it is checked by running the harness itself in the interpreter and on a JVM, and the shrinker never changes a choice.\n\nVerified inline: six new tests in lib/tests/heap.rs (four correct methods proved and their defective versions refuted with witnesses confirmed on a JVM, a bug only where the constructor refuses verified within the claim, refusals by name), a harness unit test, and unit tests (190), heap.rs (28), foundations.rs, conformance.rs and integration.rs (64) passing. Job 20261107-072431 (quick, priority 10) runs the same eight properties under --engine jbmc and auto --confirm, expected to give the same verdicts.",
+      "log_sha256": "7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819"
     }
   ],
   "logs": {
@@ -290,6 +312,12 @@
       "bytes": 17985659,
       "lines": 6291,
       "gzip_bytes": 3465944,
+      "url": null
+    },
+    "7f73fac1c5568d6e93bae8774a5fa8d2fc44fa0c9faededfc0973e5c161d2819": {
+      "bytes": 20549781,
+      "lines": 7080,
+      "gzip_bytes": 3971776,
       "url": null
     },
     "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a": {

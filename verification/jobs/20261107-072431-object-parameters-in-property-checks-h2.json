@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-072431-object-parameters-in-property-checks-h2",
+  "title": "Object parameters in property checks (H2's rest): the object properties have the own checker's verdicts under JBMC and auto --confirm",
+  "description": "jvmcontract prove now takes static methods with parameters of application classes, each made in the harness by its constructor from symbolic primitive leaves (step H2 of llm-dlc/loops/foundations-heap.md); --nullable and --may-alias on such a parameter are boolean inputs of the harness's own, so JBMC is given the same harness. The property reads field paths (l.price.cents, \\old(l.quantity)) and compares references (result == l, from == to). lib/tests/heap.rs checks eight such properties on the own checker inline (bump, withQuantity, size under --nullable l, move under --may-alias from,to; a correct version verified and a defective one refuted, each witness run on a JVM). This job runs its ignored test, which runs the same eight under --engine jbmc and under --engine auto --confirm (JBMC proving again what the own checker proved).",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/property.rs",
+      "lib/src/harness/mod.rs",
+      "lib/src/harness/expr.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both, the four after-build properties are Verified and the four defect-build ones Violation, each violation's witness confirmed on a JVM (replay by jvm, reproduced).",
+  "submitted": {
+    "at": "2026-11-07T07:24:31+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 16 small JBMC runs (harnesses of a few dozen instructions, no loops)"
+  },
+  "steps": [
+    {
+      "name": "object properties under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

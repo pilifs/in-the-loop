@@ -371,7 +371,44 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     shrinker keeping the flags), `statement.rs` (the parameter's `null` and the domain's `may_alias` for objects),
     `main.rs` (two flags on `equivalence`), `lib/README.md` (step 5, `--json`'s domain), `lib/tests/heap.rs`. No job:
     every check is inline and small.
-- Next: H2's rest (property checks over objects), then H5's rest.
+- **H2's rest (2026-11-07): object parameters in property checks.** `jvmcontract prove` takes a static method with
+  parameters of application classes, each made in the harness by its constructor from symbolic leaves, as in a
+  regression check (`equivalence::made_of`, a record by its canonical constructor too), and an object result read by
+  its fields ([`harness::generate_property_over`](../../lib/src/harness/mod.rs) over a `Layout`). An input a
+  constructor rejects is skipped (a constructible assumption in the statement), and so is one on which the
+  assumption throws. The expression language reads field paths, `l.price.cents`, and under `\old` before the call
+  (`Expr::Field`, `Expr::OldField`, read by the harness first, a path through null throwing when read), and compares
+  references, `result == l`, `result.price == l.price`, `l == null` (`Expr::Refs`;
+  [`expr::parse_over_objects`](../../lib/src/harness/expr.rs)). `--nullable l` and `--may-alias from,to` on object
+  parameters are the harness's flags (`Layout::choose_in`), so JBMC takes them too, unlike an array's. The domain
+  and the headline say what is covered (`on every input of constructor-made objects`). A witness is a recipe that
+  keeps its choices (`move(from=new Line(new Money(0), 1), to=the same object as from)`, `size(l=null)`); since the
+  property reads the heap, the interpreter checks it by running the harness itself, the shrinker keeps the flags,
+  and the harness runs on a JVM with the classes opened, which is the reference.
+  - Evidence inline: `lib/tests/heap.rs`, six new tests on the own checker over the object kernel: `bump`'s
+    `l.quantity == \old(l.quantity) + 1 && …` verified, and its `+= 2` defect refuted with `bump(l=new Line(new
+    Money(0), 1))`, leaving `quantity=3`; `withQuantity`'s `result == l && …` verified and the alias-to-copy defect
+    refuted (while the same property without `result == l` holds on it); `size` under `--nullable l` verified, and the
+    dropped null check refuted with `size(l=null)`, an assumption through null skipping the input; `move` under
+    `--may-alias from,to` verified, and the buffered defect refuted with one object, though it holds on two of their
+    own; `checked`, wrong only on a quantity the constructor rejects, verified within the constructor-made claim;
+    refusals by name (a `String` field, `\old(l)`, `l.price == l`, an unknown field, `--nullable` on an `int`). Every
+    refutation confirmed on the JVM. A harness unit test (the leaves and flags, the Java rendering, the `\old` read,
+    the bytecode's branch targets, and the plain harness's handlers unchanged). Unit tests (190), `heap.rs` (28),
+    `foundations.rs`, `conformance.rs` and `integration.rs` (64, 25 s at load 4.8) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-072431`, the new ignored test in `heap.rs`,
+    the eight properties under `--engine jbmc` and `auto --confirm`: expected exit 0, the four correct ones verified
+    and the four defects refuted with witnesses confirmed on the JVM.
+  - Not yet: an array parameter's `--nullable`/`--may-alias` in a property that has object parameters too (refused);
+    an array field in an expression; a call of the method under proof when it takes objects; which throws clause
+    applied, in a counterexample over objects (the conditions are evaluated in the harness only). From the earlier
+    steps: a field of an input object that may be null or shared, and arrays that may be null or one in a
+    regression check.
+  - Shared files changed: `property.rs` (the object layout, the choices split between arrays and objects, the
+    witness checked in the harness and on a JVM), `equivalence.rs` (`made_of`, `fields_of` and
+    `made_by_constructor` made `pub(crate)`), `statement.rs` (`property_assumptions`), `main.rs` (the two flags'
+    help), `lib/README.md` (a paragraph under the property proof, the limits), `lib/tests/heap.rs`.
+- Next: H5's rest (output relations, equations other than path = path, a correspondence flag on `regress`).
 - Status: working
 
 ## Loop settings
