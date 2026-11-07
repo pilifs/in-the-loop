@@ -266,7 +266,16 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     decision), 9 violations found (none proved, counterexamples shown), and nothing wrong and accepted.
 - Shared files changed: `lib/src/main.rs` (`align --prove` and its proof options); `lib/README.md` (the `align`
   example and the module sentence); `lib/tests/alignment.rs` (the proof tests).
-- Next: read the job's result if it comes back within 15 minutes and record it. Then the rest of A4, and A5.
+- **For review:** job `20261107-053806-alignment-a3-second-half-every-proposal` was still pending, with nothing
+  running, 15 minutes after it was submitted (05:38 to 05:53; no runner was taking jobs). It now counts as a long
+  job, not awaited again. A3's score under proof is met *pending review*: the job should find each verified
+  example's hand-written mapping proved (123's relation still a person's decision), no mapping proved for any of the
+  9 violations, and `wrongAndAccepted` empty in `scores/A3-proofs.json`. An example listed there is a mapping that
+  hides a regression, and the first thing to look at.
+- For the reconcile loop: after this commit `sync.py check` lists 24 errors, all of the kinds named above (other
+  streams' commits without a manifest here, and the five launch commits before the fork). None is this stream's.
+- Next: the rest of A4, starting with fields a constructor computes (`this.amount = new Money(cents)`) and a method
+  moved between the two classes (`Quote#cents` to `Money#cents`). Then A5.
 - Status: working
 
 ## Loop settings
