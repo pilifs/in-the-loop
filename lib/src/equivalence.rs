@@ -124,6 +124,12 @@ pub struct Options {
     /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations between
     /// field paths of a parameter in each version ([`crate::spec::heap::relate`]).
     pub correspondence: Option<crate::spec::Correspondence>,
+    /// Object parameters made by their constructor that may be null (`--nullable`, step H2 of
+    /// `llm-dlc/loops/foundations-heap.md`); every other is an object.
+    pub nullable: Vec<String>,
+    /// Pairs of object parameters of one class that may be the same object (`--may-alias a,b`), closed under chains;
+    /// every other is an object of its own.
+    pub may_alias: Vec<(String, String)>,
 }
 
 impl Options {
@@ -159,6 +165,8 @@ impl Options {
             before_arguments: None,
             results_agree_when: None,
             correspondence: None,
+            nullable: Vec::new(),
+            may_alias: Vec::new(),
         }
     }
 }
@@ -1047,6 +1055,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
     layout.result_fields = result_fields;
     layout.result_equations = result_equations;
+    // Object parameters that may be null or one object (step H2): a choice each, made by the harness's flags.
+    if !options.nullable.is_empty() || !options.may_alias.is_empty() {
+        let order: Vec<String> = std::iter::once("this".to_string()).chain(names.iter().cloned()).collect();
+        if let Some((a, _)) = options.may_alias.iter().find(|(a, b)| a == b) {
+            return refuse(&mut out, line, format!("--may-alias {a},{a}: name two different parameters"));
+        }
+        if let Err(problem) = layout.choose(&options.nullable, &harness::alias_groups(&options.may_alias, &order)) {
+            return refuse(&mut out, line, problem);
+        }
+    }
     let layout = layout;
     let params = &layout.params;
     let flat_types = layout.types();
@@ -1703,7 +1721,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // The interpreter is the shrinker's oracle, and it cannot run a witness only a JVM could.
             if options.shrink && on_jvm.is_none() {
                 let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?;
-                let shrunk = witness::shrink_in_harness(&harness_cp, harness::CLASS, &flat_types, found.clone());
+                let shrunk = witness::shrink_in_harness_keeping(&harness_cp, harness::CLASS, &flat_types, found.clone(), &layout.flags());
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;
             }

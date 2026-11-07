@@ -125,7 +125,8 @@ pub struct Domain {
     /// (`--may-alias`, the own checker alone): otherwise each is an array of its own in both engines (JBMC under
     /// `--java-assume-inputs-non-null`), so a claim refuted only by aliased arrays is outside D.
     pub shared_arrays: bool,
-    /// The groups of array parameters any two of which may be one array, by name.
+    /// The groups of parameters any two of which may be one array (a property's), or one object (a regression
+    /// check's object parameters made by their constructor, step H2), by name.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub may_alias: Vec<Vec<String>>,
     /// The domain as the proof line writes it: `a: int[] of length ≤ 8, not null × n: int`.
@@ -330,7 +331,7 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
                 name: name.clone(),
                 ty: record.java_name(),
                 kind: if record.is_made() { ParameterKind::Object } else { ParameterKind::Record },
-                null: false,
+                null: layout.choice(name).is_some_and(|c| c.null.is_some()),
                 max_length: None,
                 components: record.components.iter().map(|(c, t)| format!("{c}: {}", t.java_name())).collect(),
             },
@@ -345,7 +346,7 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
         })
         .collect();
     let input_objects = (!made.is_empty()).then(|| made.iter().fold((0, 0), |(b, a), (x, y)| (b + x, a + y)));
-    Domain { parameters, shared_arrays: false, may_alias: Vec::new(), text: layout.domain(max_array_length), input_objects }
+    Domain { parameters, shared_arrays: false, may_alias: layout.alias_groups(), text: layout.domain(max_array_length), input_objects }
 }
 
 /// The domain of a method of plain parameters (a property's).

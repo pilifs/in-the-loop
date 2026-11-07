@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 06:49 UTC |
-| Prompts | 1,110 |
-| Model calls | 11,134 |
-| Tool calls | 12,007 (248 failed) |
-| Compactions | 152 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 07:06 UTC |
+| Prompts | 1,115 |
+| Model calls | 11,195 |
+| Tool calls | 12,078 (248 failed) |
+| Compactions | 153 |
 | Subagents | 5 |
-| Tokens written | 13,637,449 |
-| Tokens read | 1,838,363,940 (97.9% from cache) |
-| Commits with a trace | 337 |
-| Log snapshots | 414 (1083.7 MB gzipped, 404 uploaded) |
+| Tokens written | 13,686,171 |
+| Tokens read | 1,850,538,972 (97.9% from cache) |
+| Commits with a trace | 338 |
+| Log snapshots | 415 (1087.2 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 2 h 47 min | `claude-opus-5-5` | 39 | 523 | 542 | 6 | 7 | 329,169 | 9 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 3 h 4 min | `claude-opus-5-5` | 44 | 584 | 613 | 6 | 8 | 329,169 | 10 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,15 +127,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 430,860 | 1,058 | 1,658,289 | 94,236,475 | 98.3% | 223 |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 479,582 | 1,180 | 1,930,020 | 106,139,654 | 98.2% | 225 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,547 | 87.8% | 46 |
-| `Edit` | 477 | 4.0% | 22 |
-| `Read` | 424 | 3.5% | 23 |
+| `Bash` | 10,583 | 87.6% | 46 |
+| `Edit` | 496 | 4.1% | 22 |
+| `Read` | 440 | 3.6% | 23 |
 | `Write` | 346 | 2.9% | 20 |
 | `ToolSearch` | 76 | 0.6% | 18 |
 | `Monitor` | 46 | 0.4% | 13 |
@@ -492,6 +492,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 335 | change `xmwsurtu` | Regression witnesses over objects run on a real JVM with their identities, the application's classes opened for the harness (H4, first step) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/ede9e3b7ac91d52c49d69eaa7faf2e12a95ebc9de8d383bbcd640cefe162fd15.jsonl.gz)) |
 | 336 | change `yzzyzymt` | Propose a false public-ip finding for the allow list: a JVMS section number in a doc comment | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d.jsonl.gz)) |
 | 337 | change `ovxylktt` | Examples 150-152: a retry throttle as a mutable object input, a correct rewrite proved, the alias-to-copy defect refuted, a bug outside the constructor-made domain verified only within it (verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd.jsonl.gz)) |
+| 338 | change `luwtvovo` | Object parameters that may be null or one object in regression checks, made by a flag of the harness's own and kept by every witness (H2, third step; H4's rest) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966.jsonl.gz)) |
 
 ## Logs
 
@@ -544,7 +545,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 9 | 0 | 15.3 MB | `fe7c85653dfe`, not uploaded |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 10 | 0 | 18.7 MB | `5fdd3460048f`, not uploaded |
 
 ## Session notes
 

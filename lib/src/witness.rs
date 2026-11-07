@@ -85,9 +85,15 @@ pub fn call(method: &str, params: &[Param], arguments: &[Argument]) -> (String, 
 pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String, Vec<String>) {
     let names: Vec<&str> = layout.params.iter().map(|p| p.name.as_str()).collect();
     let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| shown(a, &p.ty, &names)).collect();
+    let made = layout.made_on(arguments);
+    let made_as = |name: &str| made.iter().find(|(n, _)| n == name).map(|(_, m)| m.clone()).unwrap_or(harness::Made::Own);
     let shown = |s: &Slot| match s {
         Slot::Plain(i) => format!("{}={}", layout.params[*i].name, witnesses[*i]),
-        Slot::Record { name, record, first, .. } if record.is_made() => format!("{name}={}", recipe(record, &mut witnesses[*first..].iter())),
+        Slot::Record { name, record, first, .. } if record.is_made() => match made_as(name) {
+            harness::Made::Null => format!("{name}=null"),
+            harness::Made::Same(other) => format!("{name}=the same object as {other}"),
+            harness::Made::Own => format!("{name}={}", recipe(record, &mut witnesses[*first..].iter())),
+        },
         Slot::Record { name, record, first, .. } => {
             let components = record.components.iter().zip(&witnesses[*first..]).map(|((c, _), w)| format!("{c}={w}")).collect::<Vec<_>>().join(", ");
             format!("{name}={}[{components}]", record.simple_name())
@@ -124,7 +130,8 @@ pub struct Typed {
     /// The value: a boolean; a number for `byte`, `short` and `int`, and for `char` its UTF-16 code unit; a string
     /// for `long` (in decimal, exact past 2^53) and for `float` and `double` (Java's `toString` of it, which reads
     /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; null; or `{"same": i}` for
-    /// the same array as the `i`th input. Absent for a record, whose components give it.
+    /// the same array as the `i`th input. Absent for a record, whose components give it. For an object parameter a
+    /// choice made null or the same object as another (step H2), null or `{"same": "a"}` by that one's name.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
     /// A record's components, in declaration order: the arguments of its canonical constructor; for an object
@@ -205,6 +212,7 @@ pub fn typed_inputs(params: &[Param], arguments: &[Argument]) -> Vec<Typed> {
 /// parameter `i` (its name when `from` is empty).
 pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], before: bool, from: &[String]) -> Call {
     let source = |i: usize| from.get(i).cloned().unwrap_or_else(|| layout.params[i].name.clone());
+    let made = layout.made_on(arguments);
     let typed = |s: &Slot| match s {
         Slot::Plain(i) => {
             let p = &layout.params[*i];
@@ -212,7 +220,12 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         }
         Slot::Record { name, record, before: previous, first } => {
             let record = if before { previous.as_ref().unwrap_or(record) } else { record };
-            typed_made(name, record, arguments, &source, &mut record.leaf_indices(*first).into_iter())
+            // A choice's object (step H2): null, or `{"same": "a"}` for the same object as the parameter `a`.
+            match made.iter().find(|(n, _)| n == name).map(|(_, m)| m) {
+                Some(harness::Made::Null) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::Value::Null), components: None, from: None },
+                Some(harness::Made::Same(other)) => Typed { name: name.clone(), ty: record.java_name(), value: Some(serde_json::json!({ "same": other })), components: None, from: None },
+                _ => typed_made(name, record, arguments, &source, &mut record.leaf_indices(*first).into_iter()),
+            }
         }
     };
     Call {
@@ -391,10 +404,19 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     let _ = m.begin_case();
     let ret = &signature.ret;
     let flat = values_for(&mut m, arguments, &layout.types());
-    let build = |m: &mut Machine, slot: &Slot| -> Result<Value, Fault> {
+    // What the choices make of each object parameter (step H2), as the harness does: null, the same object as an
+    // earlier one, or its own.
+    let chosen = layout.made_on(arguments);
+    let mut built: Vec<(String, Value)> = Vec::new();
+    let build = |m: &mut Machine, slot: &Slot, built: &[(String, Value)]| -> Result<Value, Fault> {
         match slot {
             Slot::Plain(i) => Ok(flat[*i]),
-            Slot::Record { record, before, first, .. } => {
+            Slot::Record { name, record, before, first } => {
+                match chosen.iter().find(|(n, _)| n == name).map(|(_, c)| c) {
+                    Some(harness::Made::Null) => return Ok(Value::Null),
+                    Some(harness::Made::Same(other)) => return Ok(built.iter().find(|(n, _)| n == other).map(|(_, v)| *v).unwrap_or(Value::Null)),
+                    _ => {}
+                }
                 let (made, prefix) = match (prefix, before) {
                     (Some(p), Some(before)) => (before, Some(p)),
                     _ => (record, None),
@@ -409,8 +431,11 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     // Each object made by its constructor, with its fields as made, to tell what the call changed.
     let mut objects: Vec<(String, Value, crate::harness::Fields, String)> = Vec::new();
     for slot in layout.receiver.iter().chain(layout.args.iter()) {
-        match build(&mut m, slot) {
+        match build(&mut m, slot, &built) {
             Ok(v) => {
+                if let Slot::Record { name, .. } = slot {
+                    built.push((name.clone(), v));
+                }
                 if let Slot::Record { name, record, before, .. } = slot {
                     let made = if prefix.is_some() { before.as_ref().unwrap_or(record) } else { record };
                     if let Some(fields) = &made.fields {
@@ -662,13 +687,25 @@ pub const SHRINK_BUDGET: u32 = 4000;
 /// assumption is part of the harness, so an input outside it passes). An input the interpreter cannot run is not
 /// accepted.
 pub fn shrink_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
-    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found))
+    shrink_in_harness_keeping(cp, harness_class, types, found, &[])
 }
 
-fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
+/// [`shrink_in_harness`], keeping the flat parameters `kept` as found: a choice's flags (step H2,
+/// [`crate::harness::Layout::flags`]), so that shrinking never makes two objects one or one object two.
+pub fn shrink_in_harness_keeping(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
+    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found, kept))
+}
+
+fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
     let mut m = Machine::new(cp);
     m.monitor = false;
-    let mut fails = |arguments: &[Argument]| fails_in(&mut m, harness_class, types, arguments);
+    let original = found.clone();
+    let mut fails = |arguments: &[Argument]| {
+        if kept.iter().any(|&i| arguments.get(i) != original.get(i)) {
+            return Some(false);
+        }
+        fails_in(&mut m, harness_class, types, arguments)
+    };
     // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
     if fails(&found) != Some(true) {
         return Shrunk { arguments: found, runs: 0 };

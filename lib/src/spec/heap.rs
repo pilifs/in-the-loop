@@ -46,6 +46,15 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
     options.max_array_length = claim.bounds.max_array_length;
     options.timeout_seconds = DEADLINE_SECONDS;
     options.correspondence = claim.correspondence.clone();
+    // The domain's parameters that may be null or one object (step H2); a field of an input object that may be
+    // null or shared is not made yet.
+    if let Some(d) = &claim.domain {
+        if let Some(path) = d.nullable.iter().chain(d.may_alias.iter().flat_map(|(a, b)| [a, b])).find(|p| p.contains('.')) {
+            return Err(unsupported(format!("the domain's {path} is a field path: only parameters may be null or one object yet, a field being whatever its object's constructor makes it")));
+        }
+        options.nullable = d.nullable.clone();
+        options.may_alias = d.may_alias.clone();
+    }
     let required = &claim.contract.required;
     let unresolved_all = |domain: String, problem: String| Outcome {
         verdict: Verdict::Unresolved,

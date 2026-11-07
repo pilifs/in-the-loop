@@ -240,6 +240,8 @@ public final class Kernel {
     public static Line withQuantity(Line l, int quantity) { l.quantity = quantity; return l; }
     public static Line doubled(Line l) { return new Line(l.price, l.quantity * 2); }
     public static int[] filled(int[] a) { for (int i = 0; i < a.length; i++) a[i] = 7; return a; }
+    public static void move(Line from, Line to) { from.quantity -= 1; to.quantity += 1; }
+    public static int size(Line l) { return l == null ? 0 : l.quantity; }
 }
 "#;
 
@@ -253,6 +255,9 @@ public final class Kernel {
     public static Line withQuantity(Line l, int quantity) { Line same = l; same.quantity = quantity; return same; }
     public static Line doubled(Line l) { return new Line(l.price, l.quantity + l.quantity); }
     public static int[] filled(int[] a) { int i = 0; while (i < a.length) { a[i] = 7; i++; } return a; }
+    // In the other order, which is the same when from and to are one line too.
+    public static void move(Line from, Line to) { to.quantity += 1; from.quantity -= 1; }
+    public static int size(Line l) { return l != null ? l.quantity : 0; }
 }
 "#;
 
@@ -268,6 +273,11 @@ public final class Kernel {
     public static Line doubled(Line l) { return new Line(l.price, l.quantity * 3); }
     // The same defect for an array: filled in place, then a copy handed back.
     public static int[] filled(int[] a) { int[] b = new int[a.length]; for (int i = 0; i < a.length; i++) { a[i] = 7; b[i] = 7; } return b; }
+    // Both quantities read before either is written: the same for two lines, but a move from a line to itself
+    // now adds one where it changed nothing.
+    public static void move(Line from, Line to) { int f = from.quantity - 1; int t = to.quantity + 1; from.quantity = f; to.quantity = t; }
+    // The null check dropped.
+    public static int size(Line l) { return l.quantity; }
 }
 "#;
 
@@ -294,10 +304,17 @@ fn object_builds() -> Option<&'static PathBuf> {
 }
 
 fn regression(after: &str, method: &str) -> Option<jvmcontract::equivalence::Outcome> {
+    regression_over(after, method, &[], &[])
+}
+
+/// [`regression`] with object parameters that may be null (`nullable`) or one object (`may_alias`), step H2.
+fn regression_over(after: &str, method: &str, nullable: &[&str], may_alias: &[(&str, &str)]) -> Option<jvmcontract::equivalence::Outcome> {
     let root = object_builds()?;
     let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join(after), &format!("objects.Kernel#{method}"));
     options.engine = jvmcontract::Engine::Native;
-    let work = root.join(format!("work-{after}-{method}"));
+    options.nullable = nullable.iter().map(|n| n.to_string()).collect();
+    options.may_alias = may_alias.iter().map(|(a, b)| (a.to_string(), b.to_string())).collect();
+    let work = root.join(format!("work-{after}-{method}-{}-{}", nullable.len(), may_alias.len()));
     let _ = std::fs::remove_dir_all(&work);
     options.work = Some(work);
     Some(jvmcontract::equivalence::run(&options).unwrap())
@@ -409,6 +426,60 @@ fn an_array_handed_back_in_place_of_a_copy_is_refuted_by_its_identity_relation()
     confirmed_on_the_jvm(&d);
 }
 
+// Object parameters that may be null or one object (the rest of H2): a choice the harness makes with a flag of its
+// own, in both versions alike, which the witness keeps and the JVM replays with one object or none.
+
+#[test]
+fn a_bug_only_when_two_parameters_are_one_object_is_outside_the_default_domain_and_refuted_inside_one_that_lets_them_be() {
+    // Two lines of their own: the buffered move is the same.
+    let Some(apart) = regression("defect", "move") else { return };
+    assert_eq!(apart.verdict, Verdict::Verified, "{}", apart.output);
+    assert!(!apart.domain.as_deref().unwrap().contains("the same object"), "{:?}", apart.domain);
+    // Lines that may be one: a move from a line to itself, with one object, as the JVM runs it too.
+    let Some(o) = regression_over("defect", "move", &[], &[("from", "to")]) else { return };
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let domain = o.domain.clone().unwrap();
+    assert!(domain.ends_with("; from and to may be the same object"), "{domain}");
+    let c = o.counterexample.as_ref().expect("a counterexample");
+    assert!(c.input.contains("to=the same object as from"), "{}", c.input);
+    assert!(c.before.contains("with from == to") && c.after.contains("with from == to"), "{} / {}", c.before, c.after);
+    assert!(c.differs.iter().any(|d| d == "field:from"), "{:?}", c.differs);
+    confirmed_on_the_jvm(&o);
+    let to = c.call.arguments.iter().find(|a| a.name == "to").unwrap();
+    assert_eq!(to.value, Some(serde_json::json!({ "same": "from" })));
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.domain.may_alias, vec![vec!["from".to_string(), "to".to_string()]]);
+    assert!(stated.observations.identities.iter().any(|i| i == "from == to"), "{:?}", stated.observations.identities);
+    // The rewrite in the other order is the same on one line too.
+    let Some(ok) = regression_over("after", "move", &[], &[("from", "to")]) else { return };
+    assert_eq!(ok.verdict, Verdict::Verified, "{}", ok.output);
+}
+
+#[test]
+fn a_dropped_null_check_is_refuted_with_a_null_object_where_the_domain_lets_it_be_null() {
+    let Some(apart) = regression("defect", "size") else { return };
+    assert_eq!(apart.verdict, Verdict::Verified, "never null by default: {}", apart.output);
+    let Some(o) = regression_over("defect", "size", &["l"], &[]) else { return };
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.domain.as_deref().unwrap().contains("from any arguments it accepts, or null"), "{:?}", o.domain);
+    let c = o.counterexample.as_ref().expect("a counterexample");
+    assert_eq!(c.input, "size(l=null)");
+    assert!(c.after.contains("NullPointerException"), "{}", c.after);
+    confirmed_on_the_jvm(&o);
+    assert!(o.stated.as_ref().unwrap().domain.parameters[0].null);
+    let Some(ok) = regression_over("after", "size", &["l"], &[]) else { return };
+    assert_eq!(ok.verdict, Verdict::Verified, "{}", ok.output);
+}
+
+#[test]
+fn a_choice_of_null_or_one_object_is_refused_by_name_outside_object_parameters() {
+    let Some(o) = regression_over("after", "withQuantity", &[], &[("l", "quantity")]) else { return };
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().contains("--may-alias quantity: quantity is a int, and in a regression check only an object parameter made by its constructor may be"), "{:?}", o.problem);
+    let Some(n) = regression_over("after", "filled", &["a"], &[]) else { return };
+    assert!(n.problem.as_deref().unwrap().contains("an array parameter may be, in a property check"), "{:?}", n.problem);
+}
+
 // H5's narrow case: the joint example's kernel (`tests/fixtures/foundations`), whose `Quote` holds a `long` before
 // and a `Money` now, related by the kernel claim's correspondence.
 
@@ -477,6 +548,22 @@ fn the_two_shapes_of_quote_are_related_by_the_correspondence_and_total_is_proved
     let o = r.expect("supported");
     assert_eq!(o.verdict, V::Verified, "{o:?}");
     assert_eq!(state_of(&o, "identity:result==q"), ObservationState::Preserved);
+}
+
+#[test]
+fn a_claim_whose_domain_lets_a_parameter_be_null_is_checked_over_null_too_and_a_field_path_is_not_yet() {
+    use jvmcontract::spec::Verdict as V;
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.domain.as_mut().expect("the kernel claim has a domain").nullable = vec!["q".into()];
+    let Some(r) = kernel_check("after", &claim) else { return };
+    let o = r.expect("supported");
+    // Both versions throw the same NullPointerException on a null quote.
+    assert_eq!(o.verdict, V::Verified, "{o:?}");
+    assert!(o.domain.contains("from any arguments it accepts, or null; in the previous version"), "{}", o.domain);
+    claim.domain.as_mut().unwrap().nullable = vec!["q.amount".into()];
+    let Some(r) = kernel_check("after", &claim) else { return };
+    let gap = r.expect_err("a field path is not made yet");
+    assert!(gap.what.contains("the domain's q.amount is a field path"), "{gap:?}");
 }
 
 #[test]

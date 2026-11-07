@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T06:49:08.427Z",
-  "duration_seconds": 10069,
+  "ended": "2026-11-07T07:06:10.346Z",
+  "duration_seconds": 11091,
   "stats": {
-    "turns": 39,
-    "api_calls": 523,
-    "tool_calls": 542,
+    "turns": 44,
+    "api_calls": 584,
+    "tool_calls": 613,
     "tool_errors": 6,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 1058,
-      "output_tokens": 430860,
-      "cache_read_input_tokens": 94236475,
-      "cache_creation_input_tokens": 1658289
+      "input_tokens": 1180,
+      "output_tokens": 479582,
+      "cache_read_input_tokens": 106139654,
+      "cache_creation_input_tokens": 1930020
     }
   },
   "tools": {
-    "Bash": 479,
-    "Read": 32,
-    "Edit": 16,
+    "Bash": 515,
+    "Read": 48,
+    "Edit": 35,
     "Write": 5,
     "Monitor": 4,
     "ToolSearch": 4,
@@ -45,6 +45,7 @@
     "lib/src/equivalence.rs",
     "lib/src/harness/mod.rs",
     "lib/src/spec/heap.rs",
+    "lib/src/witness.rs",
     "lib/tests/heap.rs",
     "llm-dlc/loops/foundations-heap.md"
   ],
@@ -150,24 +151,38 @@
     {
       "index": 7,
       "started": "2026-11-07T06:33:46.239Z",
-      "ended": "2026-11-07T06:49:08.427Z",
-      "turns": 4,
-      "api_calls": 70,
+      "ended": "2026-11-07T06:50:01.572Z",
+      "turns": 5,
+      "api_calls": 76,
       "usage": {
-        "input_tokens": 140,
-        "output_tokens": 48709,
-        "cache_read_input_tokens": 11099383,
-        "cache_creation_input_tokens": 205051
+        "input_tokens": 152,
+        "output_tokens": 51057,
+        "cache_read_input_tokens": 12422154,
+        "cache_creation_input_tokens": 210661
       },
-      "peak_context_tokens": 218130
+      "peak_context_tokens": 223740
+    },
+    {
+      "index": 8,
+      "started": "2026-11-07T06:50:43.081Z",
+      "ended": "2026-11-07T07:06:10.346Z",
+      "turns": 4,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 110,
+        "output_tokens": 46374,
+        "cache_read_input_tokens": 10580408,
+        "cache_creation_input_tokens": 266121
+      },
+      "peak_context_tokens": 279200
     }
   ],
   "log": {
-    "sha256": "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd",
-    "bytes": 15653803,
-    "lines": 5629,
-    "gzip_bytes": 2971461,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd.jsonl.gz"
+    "sha256": "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966",
+    "bytes": 17985659,
+    "lines": 6291,
+    "gzip_bytes": 3465944,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -242,6 +257,14 @@
       "summary": "Examples 150-152: a retry throttle as a mutable object input, a correct rewrite proved, the alias-to-copy defect refuted, a bug outside the constructor-made domain verified only within it (verification pending)",
       "body": "The heap stream's examples (llm-dlc/loops/foundations-heap.md, H2-H4). Crosscut gains a kernel with a mutable object input: gRPC-style retry throttling, retry.ThrottleLimits (a record), retry.Throttle (a class every call on a channel shares, made full by its one constructor) and retry.RetryThrottling (recorded, reconfigured), with tests. Example 150 rewrites recorded with Math.max and Math.min and is verified; 151 turns the throttle reconfigured hands back into a copy with the same tokens and the same limits object, refuted by the identity relation result == throttle alone, its witness a construction recipe replayed in the interpreter and run on a JVM; 152 drops the floor at zero tokens, wrong only on a throttle calls have drained, which the constructor never makes, so it is verified within the constructor-made claim. So that such a verdict cannot read as a proof over every state, a verified regression proof over an object made by its constructor now says 'behaves as before on every input of constructor-made objects' (equivalence::made_by_constructor). New tags: aliasing (defect) and object-inputs (technique).\n\nVerified inline: the three checks run by the CLI on the classes the patches make, giving the expected verdicts; 152's defect shown on a JVM by hand (a two-token throttle after three failures holds 1000, 0, -1000 thousandths against 1000, 0, 0, and needs 21 successes before a retry against 11); Crosscut's 52 tests and jvmcontract verify on its contracts pass; heap.rs (18, asserting the new headline), unit tests (188; jbmc's stand-in-script test failed once under load and passed alone), foundations.rs, conformance.rs and integration.rs (64) pass.",
       "log_sha256": "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd"
+    },
+    {
+      "change_id": "luwtvovolmrnrtmumlnvtrrxymywlwyo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Object parameters that may be null or one object in regression checks, made by a flag of the harness's own and kept by every witness (H2, third step; H4's rest)",
+      "body": "jvmcontract equivalence takes --nullable and --may-alias for object parameters made by their constructor, and spec::heap::check passes a claim's ObjectDomain nullable and may_alias. The harness makes each choice with a boolean input after the leaves (l.null, to.same.from), in both versions alike, null first and a choice of a null parameter passed over, so a non-nullable parameter is never null; the domain and the statement say which parameters may be null or one object. The witness keeps the choice in the interpreter's replay, the shrinker (which never changes a flag) and the JVM run: move(from=new Line(new Money(0), 1), to=the same object as from) is one object everywhere, and --json gives it as {\"same\": \"from\"}. Records, arrays, primitives, parameters given by --before-arguments, a nullable receiver and parameters of two classes are refused by name.\n\nVerified inline: lib/tests/heap.rs gains four tests (a buffered move verified over two objects and refuted with one, confirmed on the JVM, its reordered rewrite verified; a dropped null check refuted with size(l=null) on the JVM; refusals; the kernel claim with q nullable under the correspondence), and a harness unit test covers the flags, the resolution rule, the domain words, the Java rendering and the bytecode. Unit tests (189), heap.rs (22), foundations.rs, conformance.rs and integration.rs (64) pass. No job: every check is small.",
+      "log_sha256": "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966"
     }
   ],
   "logs": {
@@ -261,6 +284,12 @@
       "bytes": 8982260,
       "lines": 3214,
       "gzip_bytes": 1685201,
+      "url": null
+    },
+    "5fdd3460048fcfbb4874d76eb57de04fc776bff2faed4927f01034f3ea570966": {
+      "bytes": 17985659,
+      "lines": 6291,
+      "gzip_bytes": 3465944,
       "url": null
     },
     "aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a": {

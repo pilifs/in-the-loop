@@ -432,12 +432,164 @@ pub struct Layout {
     /// Where the result's classes are related by a correspondence (step H5): the equations two results are compared
     /// under, in place of field-by-field equality, as the objects of a parameter of the same pair of classes are.
     pub result_equations: Option<Vec<FieldEquation>>,
+    /// The object parameters that may be null or the same object as an earlier one (step H2), in slot order, each
+    /// choice a boolean flat parameter after every leaf ([`Layout::choose`]).
+    pub choices: Vec<Choice>,
+}
+
+/// How an object parameter made by its constructor may be made otherwise (step H2 of
+/// `llm-dlc/loops/foundations-heap.md`): null, or the same object as an earlier parameter of its class, each when a
+/// boolean flat parameter of the harness says so. Both versions are given the same choice, so that their identity
+/// relations start alike. The first flag that holds decides, null first; a flag naming a parameter that is null
+/// itself is passed over, so that a parameter that may not be null never is; with none, the object is its own.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Choice {
+    /// The parameter's name (`b`, or `this` for the receiver).
+    pub name: String,
+    /// The flat parameter that makes it null (`b.null`), where it may be.
+    pub null: Option<usize>,
+    /// For each earlier parameter it may be the same object as, that one's name and the flat parameter that makes it
+    /// so (`b.same.a`).
+    pub same: Vec<(String, usize)>,
+}
+
+/// What a [`Choice`] made of a parameter on one input.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Made {
+    /// An object of its own, made by its constructor from its leaves.
+    Own,
+    Null,
+    /// The same object as the parameter named, which has one of its own.
+    Same(String),
+}
+
+/// The groups of names that may be one object, from pairs (`--may-alias a,b`), closed under chains: each group in
+/// the order of `order`, the groups by their first member.
+pub fn alias_groups(pairs: &[(String, String)], order: &[String]) -> Vec<Vec<String>> {
+    let mut groups: Vec<Vec<String>> = Vec::new();
+    for (a, b) in pairs {
+        let mut group: Vec<String> = groups.iter().filter(|g| g.contains(a) || g.contains(b)).flatten().cloned().chain([a.clone(), b.clone()]).collect();
+        groups.retain(|g| !g.contains(a) && !g.contains(b));
+        group.sort_by_key(|n| order.iter().position(|o| o == n).unwrap_or(usize::MAX));
+        group.dedup();
+        groups.push(group);
+    }
+    groups.sort_by_key(|g| g.first().and_then(|n| order.iter().position(|o| o == n)).unwrap_or(usize::MAX));
+    groups
 }
 
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new() }
+    }
+
+    /// Lets the object parameters `nullable` be null and those of each group of `groups` be one object (step H2):
+    /// each a parameter made by its constructor in both versions (the receiver among them as `this`, which is never
+    /// null), the members of a group of one class. Each choice is a boolean flat parameter appended after every leaf,
+    /// so that the leaves keep their places. An error names the flag and what is wrong.
+    pub fn choose(&mut self, nullable: &[String], groups: &[Vec<String>]) -> Result<(), String> {
+        let slots: Vec<&Slot> = self.receiver.iter().chain(self.args.iter()).collect();
+        let names: Vec<String> = slots
+            .iter()
+            .map(|s| match s {
+                Slot::Plain(i) => self.params[*i].name.clone(),
+                Slot::Record { name, .. } => name.clone(),
+            })
+            .collect();
+        let object = |name: &str, flag: &str| -> Result<(String, String), String> {
+            let Some(at) = names.iter().position(|n| n == name) else {
+                return Err(format!("{flag} {name}: no parameter is named {name}; the parameters are {}", names.join(", ")));
+            };
+            match slots[at] {
+                Slot::Record { record, before: Some(previous), .. } if record.is_made() && previous.is_made() => Ok((record.class.clone(), previous.class.clone())),
+                Slot::Record { record, before: None, .. } if record.is_made() => Err(format!("{flag} {name}: the previous version is given {name} by --before-arguments, which a choice of null or of the same object would not reach")),
+                Slot::Record { record, .. } => Err(format!("{flag} {name}: {name} is a {}, a record of primitive components, which a regression check compares as a value; only an object made by its constructor may be null or the same as another here", record.simple_name())),
+                Slot::Plain(i) => {
+                    let t = &self.params[*i].ty;
+                    let arrays = if matches!(t, Type::Array(_)) { "; an array parameter may be, in a property check (jvmcontract prove)" } else { "" };
+                    Err(format!("{flag} {name}: {name} is a {}, and in a regression check only an object parameter made by its constructor may be null or the same as another{arrays}", t.java_name()))
+                }
+            }
+        };
+        for name in nullable {
+            object(name, "--nullable")?;
+            if name == "this" {
+                return Err("--nullable this: the receiver of an instance method is never null".into());
+            }
+        }
+        for group in groups {
+            let classes = group.iter().map(|n| object(n, "--may-alias").map(|c| (n, c))).collect::<Result<Vec<_>, _>>()?;
+            if let Some(((a, ca), (b, cb))) = classes.iter().zip(classes.iter().skip(1)).find(|((_, x), (_, y))| x != y) {
+                let what = if ca.0 != cb.0 { format!("a {} and a {}", crate::classfile::simple_name_of(&ca.0), crate::classfile::simple_name_of(&cb.0)) } else { format!("in the previous version a {} and a {}", crate::classfile::simple_name_of(&ca.1), crate::classfile::simple_name_of(&cb.1)) };
+                return Err(format!("--may-alias {a},{b}: {what} are never one object"));
+            }
+        }
+        let mut flat: Vec<(String, Type)> = self.params.iter().map(|p| (p.name.clone(), p.ty.clone())).collect();
+        let add = |flat: &mut Vec<(String, Type)>, name: String| -> Result<usize, String> {
+            if flat.iter().any(|(n, _)| *n == name) {
+                return Err(format!("the choice's input {name} has the name of a leaf of the construction; rename the constructor's parameter"));
+            }
+            flat.push((name, Type::Boolean));
+            Ok(flat.len() - 1)
+        };
+        let mut choices = Vec::new();
+        for (at, name) in names.iter().enumerate() {
+            let null = if nullable.contains(name) { Some(add(&mut flat, format!("{name}.null"))?) } else { None };
+            let mut same = Vec::new();
+            if let Some(group) = groups.iter().find(|g| g.contains(name)) {
+                for other in group.iter().filter(|o| names.iter().position(|n| n == *o).is_some_and(|p| p < at)) {
+                    same.push((other.clone(), add(&mut flat, format!("{name}.same.{other}"))?));
+                }
+            }
+            if null.is_some() || !same.is_empty() {
+                choices.push(Choice { name: name.clone(), null, same });
+            }
+        }
+        let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
+        self.params = params(&flat_names, &flat_types);
+        self.choices = choices;
+        Ok(())
+    }
+
+    /// The choice of the parameter `name`, if it has one.
+    pub fn choice(&self, name: &str) -> Option<&Choice> {
+        self.choices.iter().find(|c| c.name == name)
+    }
+
+    /// What the choices make of each object parameter on an input whose flat parameter `i` is `flag(i)`, by name, as
+    /// the harness decides it: the parameters without a choice are their own objects.
+    pub fn made(&self, flag: &dyn Fn(usize) -> bool) -> Vec<(String, Made)> {
+        let mut out: Vec<(String, Made)> = Vec::new();
+        for slot in self.receiver.iter().chain(self.args.iter()) {
+            let Slot::Record { name, .. } = slot else { continue };
+            let made = match self.choice(name) {
+                Some(c) if c.null.is_some_and(flag) => Made::Null,
+                Some(c) => c
+                    .same
+                    .iter()
+                    .filter(|(_, i)| flag(*i))
+                    .find_map(|(other, _)| match out.iter().find(|(n, _)| n == other).map(|(_, m)| m) {
+                        Some(Made::Own) => Some(Made::Same(other.clone())),
+                        Some(Made::Same(root)) => Some(Made::Same(root.clone())),
+                        _ => None,
+                    })
+                    .unwrap_or(Made::Own),
+                None => Made::Own,
+            };
+            out.push((name.clone(), made));
+        }
+        out
+    }
+
+    /// [`Layout::made`] on a witness's flat arguments.
+    pub fn made_on(&self, arguments: &[crate::jbmc::Argument]) -> Vec<(String, Made)> {
+        self.made(&|i| matches!(arguments.get(i), Some(crate::jbmc::Argument::Scalar(crate::interp::Value::Int(x))) if *x != 0))
+    }
+
+    /// The flat parameters that are choices' flags: a shrinker keeps them, so that it never merges or splits objects.
+    pub fn flags(&self) -> Vec<usize> {
+        self.choices.iter().flat_map(|c| c.null.into_iter().chain(c.same.iter().map(|(_, i)| *i))).collect()
     }
 
     /// The references a version's identity relations are over (step H3): the result when it is an array or an object
@@ -527,7 +679,7 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new() }
     }
 
     /// The flat parameters' types: the harness method's.
@@ -598,11 +750,37 @@ impl Layout {
                     let p = &self.params[*i];
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
-                Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.is_some() => (format!("{}; in the previous version, {}", record.domain_part(name), previous.made_from(name)), false),
-                Slot::Record { name, record, .. } => (record.domain_part(name), false),
+                Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.is_some() => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
+                Slot::Record { name, record, .. } => (format!("{}{}", record.domain_part(name), self.or_null(name)), false),
             })
             .collect();
-        domain(parts, max_array_length)
+        let text = domain(parts, max_array_length);
+        let groups = self.alias_groups();
+        if groups.is_empty() {
+            return text;
+        }
+        let listed = |names: &[String]| match names {
+            [init @ .., last] if !init.is_empty() => format!("{} and {last}", init.join(", ")),
+            _ => names.join(""),
+        };
+        let shared: Vec<String> = groups.iter().map(|g| format!("{} may be the same object", listed(g))).collect();
+        format!("{text}; {}", shared.join("; "))
+    }
+
+    /// `, or null` for a parameter its choice lets be null.
+    fn or_null(&self, name: &str) -> &'static str {
+        if self.choice(name).is_some_and(|c| c.null.is_some()) {
+            ", or null"
+        } else {
+            ""
+        }
+    }
+
+    /// The groups of object parameters that may be one object, by name in slot order.
+    pub fn alias_groups(&self) -> Vec<Vec<String>> {
+        let pairs: Vec<(String, String)> = self.choices.iter().flat_map(|c| c.same.iter().map(|(o, _)| (o.clone(), c.name.clone()))).collect();
+        let order: Vec<String> = self.receiver.iter().chain(self.args.iter()).filter_map(|s| if let Slot::Record { name, .. } = s { Some(name.clone()) } else { None }).collect();
+        alias_groups(&pairs, &order)
     }
 }
 
@@ -1124,12 +1302,41 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         let built = code.label();
         code.bind(build_start);
         for (i, slot) in records.iter().enumerate() {
-            let Slot::Record { record, before: previous, first, .. } = slot else { unreachable!("records() returns records") };
+            let Slot::Record { name, record, before: previous, first } = slot else { unreachable!("records() returns records") };
             let (new_local, old_local) = object_slots(i);
             let in_previous = previous.as_ref().map(|p| (p, Some("before"), old_local));
             for (made, prefix, local) in std::iter::once((record, None, new_local)).chain(in_previous) {
+                // A choice (step H2): null where its flag says so, or the same object as an earlier parameter that
+                // is not null, in both versions alike; otherwise an object of its own.
+                let done = code.label();
+                if let Some(c) = layout.choice(name) {
+                    if let Some(flag) = c.null {
+                        let own = code.label();
+                        code.load(Kind::Int, params[flag].slot);
+                        code.if_zero(Cond::Eq, own);
+                        code.op(0x01); // aconst_null
+                        code.store(Kind::Ref, local);
+                        code.goto(done);
+                        code.bind(own);
+                    }
+                    for (other, flag) in &c.same {
+                        let next = code.label();
+                        let at = records.iter().position(|s| matches!(s, Slot::Record { name: n, .. } if n == other)).expect("a parameter of the group");
+                        let (other_new, other_old) = object_slots(at);
+                        let other_local = if prefix.is_some() { other_old } else { other_new };
+                        code.load(Kind::Int, params[*flag].slot);
+                        code.if_zero(Cond::Eq, next);
+                        code.load(Kind::Ref, other_local);
+                        code.if_null(next);
+                        code.load(Kind::Ref, other_local);
+                        code.store(Kind::Ref, local);
+                        code.goto(done);
+                        code.bind(next);
+                    }
+                }
                 emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut made.leaf_indices(*first).into_iter());
                 code.store(Kind::Ref, local);
+                code.bind(done);
             }
         }
         code.bind(build_end);
@@ -1448,13 +1655,20 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
     // objects they refer to, two locals a level for the pair being compared.
     let mut scratch = code.max_locals.max(index + 1);
     for (i, slot) in records.iter().enumerate() {
-        let Slot::Record { record, before: Some(previous), .. } = slot else { continue };
+        let Slot::Record { name, record, before: Some(previous), .. } = slot else { continue };
         let (Some(fields), Some(old_fields)) = (&record.fields, &previous.fields) else { continue };
         let (new_local, old_local) = object_slots(i);
+        // A parameter its choice made null is null in both versions, and has no fields to compare.
+        let compared = code.label();
+        if layout.choice(name).is_some_and(|c| c.null.is_some()) {
+            code.load(Kind::Ref, new_local);
+            code.if_null(compared);
+        }
         let used = match &previous.corresponds {
             Some(c) => compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, scratch, fail),
             None => compare_fields(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, scratch, index, fail),
         };
+        code.bind(compared);
         scratch = scratch.max(used);
     }
     code.max_locals = code.max_locals.max(scratch);
@@ -1857,7 +2071,20 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     let old = format!("before.{}", previous.java_name());
                     let old_leaves = previous.leaf_indices(*first);
                     s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
-                    s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(previous, "before.", &mut old_leaves.iter().map(|i| &params[*i])), construction_source(record, "", &mut leaves.iter())));
+                    let (old_made, new_made) = (construction_source(previous, "before.", &mut old_leaves.iter().map(|i| &params[*i])), construction_source(record, "", &mut leaves.iter()));
+                    // A choice (step H2): null, or the same object as an earlier parameter that is not null.
+                    let chosen = |side: &str, made: String| -> String {
+                        let Some(c) = layout.choice(name) else { return made };
+                        let mut text = made;
+                        for (other, flag) in c.same.iter().rev() {
+                            text = format!("{} && {other}_{side} != null ? {other}_{side} : {text}", params[*flag].name);
+                        }
+                        if let Some(flag) = c.null {
+                            text = format!("{} ? null : {text}", params[flag].name);
+                        }
+                        text
+                    };
+                    s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", chosen("before", old_made), chosen("after", new_made)));
                     if let Some(c) = &previous.corresponds {
                         s.push_str(&format!("        if (!{}) {{ return; }} // the correspondence's input equations, of the objects as made\n", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations)));
                     }
@@ -1938,10 +2165,16 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     // Each object made by its constructor, as both versions leave it.
     for slot in &records {
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
-            match (&record.fields, &previous.fields, &previous.corresponds) {
-                (Some(_), Some(_), Some(c)) => s.push_str(&format!(" && {}", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations))),
-                (Some(fields), Some(old_fields), None) => s.push_str(&format!(" && {}", fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields))),
-                _ => {}
+            let compared = match (&record.fields, &previous.fields, &previous.corresponds) {
+                (Some(_), Some(_), Some(c)) => equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations),
+                (Some(fields), Some(old_fields), None) => fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields),
+                _ => continue,
+            };
+            // A parameter its choice made null is null in both versions.
+            if layout.choice(name).is_some_and(|c| c.null.is_some()) {
+                s.push_str(&format!(" && ({name}_after == null || {compared})"));
+            } else {
+                s.push_str(&format!(" && {compared}"));
             }
         }
     }
@@ -2451,7 +2684,46 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new() }
+    }
+
+    #[test]
+    fn a_choice_of_null_or_the_same_object_is_a_flag_after_the_leaves_and_never_makes_a_non_nullable_parameter_null() {
+        let money = RecordType::made("m/Money", vec![("cents".into(), Type::Long)], Vec::new(), Fields { class: "m/Money".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] });
+        let names = ["a".to_string(), "b".to_string(), "n".to_string(), "c".to_string()];
+        let types = [Type::Object("m/Money".into()), Type::Object("m/Money".into()), Type::Int, Type::Object("m/Money".into())];
+        let both = Some((money.clone(), Some(money.clone())));
+        let mut layout = Layout::new(None, &names, &types, &[both.clone(), both.clone(), None, both], (None, None));
+        let groups = alias_groups(&[("c".into(), "b".into()), ("a".into(), "b".into())], &names);
+        assert_eq!(groups, vec![vec!["a".to_string(), "b".into(), "c".into()]], "closed under the chain, in parameter order");
+        layout.choose(&["a".into()], &groups).unwrap();
+        let flat: Vec<&str> = layout.params.iter().map(|p| p.name.as_str()).collect();
+        assert_eq!(flat, vec!["a.cents", "b.cents", "n", "c.cents", "a.null", "b.same.a", "c.same.a", "c.same.b"], "the leaves keep their places");
+        assert_eq!(layout.flags(), vec![4, 5, 6, 7]);
+        assert_eq!(layout.domain(8), "a: a Money made by its constructor, Money(cents: long), from any arguments it accepts, or null × b: a Money made by its constructor, Money(cents: long), from any arguments it accepts × n: int × c: a Money made by its constructor, Money(cents: long), from any arguments it accepts; a, b and c may be the same object");
+        let made = |set: &[usize]| layout.made(&|i| set.contains(&i)).into_iter().map(|(_, m)| m).collect::<Vec<_>>();
+        assert_eq!(made(&[]), vec![Made::Own, Made::Own, Made::Own]);
+        assert_eq!(made(&[4, 5]), vec![Made::Null, Made::Own, Made::Own], "b may not be null, so a null a is passed over");
+        assert_eq!(made(&[5, 7]), vec![Made::Own, Made::Same("a".into()), Made::Same("a".into())], "the same as b is the same as the a it is");
+        assert_eq!(made(&[4, 5, 7]), vec![Made::Null, Made::Own, Made::Same("b".into())]);
+        assert!(layout.choose(&["n".into()], &[]).unwrap_err().contains("--nullable n: n is a int"));
+        let mut other = Layout::new(None, &names[..2], &types[..2], &[Some((money.clone(), None)), Some((money.clone(), Some(money.clone())))], (None, None));
+        assert!(other.choose(&["a".into()], &[]).unwrap_err().contains("by --before-arguments"));
+
+        let harness = generate("m/Kernel", "f", &layout, &Type::Void, None, 8, None).unwrap();
+        assert!(harness.source.contains("public static void check(long a_cents, long b_cents, int n, long c_cents, boolean a_null, boolean b_same_a, boolean c_same_a, boolean c_same_b)"), "{}", harness.source);
+        assert!(harness.source.contains("c_after = c_same_a && a_after != null ? a_after : c_same_b && b_after != null ? b_after : new m.Money(c_cents);"), "{}", harness.source);
+        assert!(harness.source.contains("a_before = a_null ? null : new before.m.Money(a_cents);"), "{}", harness.source);
+        assert!(harness.source.contains(" && (a_after == null || a_before.cents == a_after.cents)"), "{}", harness.source);
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let code = class.method(METHOD, "(JJIJZZZZ)V").expect("check method with the flags last").code.as_ref().unwrap();
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
     }
 
     #[test]

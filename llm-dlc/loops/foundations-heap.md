@@ -337,8 +337,41 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     (rendered; the nine stale pages too, with their warning). Also changed, owned by no stream: Crosscut's sources, tests, README (a row) and `api.contract`,
     which `jvmcontract update` regenerated and which was stale before (`ratelimit.Window` and `retry.Backoff`
     were missing from it).
-- Next: H2's rest (nullability and aliasing among object parameters, property checks over objects), then H5's
-  rest.
+- **H2, third step, and H4's rest (2026-11-07): object parameters that may be null or one object, in regression
+  checks.** `jvmcontract equivalence` takes `--nullable l` and `--may-alias from,to` (closed under chains; the
+  receiver as `this`) for object parameters made by their constructor, and `spec::heap::check` passes a claim's
+  `ObjectDomain` `nullable` and `may_alias` (parameters only; a field path is `Unsupported`). The harness makes each
+  choice with a boolean input of its own appended after every leaf (`l.null`, `to.same.from`;
+  [`Layout::choose`](../../lib/src/harness/mod.rs), `Choice`, `Made`), in both versions alike: null first, then the
+  same object as an earlier parameter of the group, a choice naming a parameter that is null itself passed over so
+  that a parameter that may not be null never is, otherwise its own object; an object made null has no fields to
+  compare. The own checker's H1 merging turns the three ways into one choice. The domain says so (`…, from any
+  arguments it accepts, or null`; `; from and to may be the same object`), and so do `stated.domain`'s `null` and
+  `may_alias`. Witnesses keep identity: `move(from=new Line(new Money(0), 1), to=the same object as from)` is one
+  object in the interpreter's replay, the shrinker (`shrink_in_harness_keeping`, which never changes a flag) and the
+  JVM run, and `--json`'s call gives it as `{"same": "from"}`; `size(l=null)` likewise. So H4's "a witness that
+  needs two parameters to be the same object replays with one object" now holds in regression checks too. Refused
+  by name: a record of primitive components, an array or primitive parameter (arrays are a property check's), a
+  parameter the previous version gets through `--before-arguments`, `--nullable this`, and two parameters of
+  different classes. JBMC checks the same harness (the choices are plain boolean inputs), so `--engine jbmc` and
+  `--confirm` need no refusal.
+  - Evidence inline: `lib/tests/heap.rs`, four new tests: a buffered `move(from, to)` verified over two lines of
+    their own and refuted under `--may-alias from,to` with one object (`differs` has `field:from`, both replays
+    `with from == to`), confirmed on the JVM, while the rewrite in the other order is verified there; a dropped null
+    check verified by default and refuted under `--nullable l` with `size(l=null)` on the JVM, its correct rewrite
+    verified; refusals for an `int` and an array parameter; the kernel claim with `q` nullable verified under the
+    correspondence and a field path unsupported. A harness unit test of the flags' places, the resolution rule, the
+    domain words, the Java rendering and the bytecode's branch targets. Unit tests (189), `heap.rs` (22),
+    `foundations.rs`, `conformance.rs` and `integration.rs` (64, 23 s at load 0.9) pass.
+  - Not yet: property checks over objects; a field of an input object that may be null or shared (its object's
+    constructor decides it); arrays that may be null or one in a regression check. No example: Crosscut's kernels
+    have no method whose bug needs two parameters to be one object, and a source change there makes its recorded
+    examples stale again (job `20261107-064838` is rerunning them).
+  - Shared files changed: `equivalence.rs` (`Options::nullable`, `may_alias`, the choices made after the layout, the
+    shrinker keeping the flags), `statement.rs` (the parameter's `null` and the domain's `may_alias` for objects),
+    `main.rs` (two flags on `equivalence`), `lib/README.md` (step 5, `--json`'s domain), `lib/tests/heap.rs`. No job:
+    every check is inline and small.
+- Next: H2's rest (property checks over objects), then H5's rest.
 - Status: working
 
 ## Loop settings
