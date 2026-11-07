@@ -1,0 +1,96 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "b65d132b-4eb4-46fd-8556-f4cba3311ad1",
+  "status": "open",
+  "title": null,
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T16:26:46.451Z",
+  "ended": "2026-11-07T16:32:00.172Z",
+  "duration_seconds": 314,
+  "stats": {
+    "turns": 5,
+    "api_calls": 39,
+    "tool_calls": 38,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 100640,
+    "usage": {
+      "input_tokens": 76,
+      "output_tokens": 21610,
+      "cache_read_input_tokens": 2634491,
+      "cache_creation_input_tokens": 105202
+    }
+  },
+  "tools": {
+    "Bash": 37,
+    "Edit": 1
+  },
+  "files_touched": [
+    "examples/tools/test_build.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T16:26:46.451Z",
+      "ended": "2026-11-07T16:26:46.452Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-07T16:26:43.700Z",
+      "ended": "2026-11-07T16:32:00.172Z",
+      "turns": 5,
+      "api_calls": 39,
+      "usage": {
+        "input_tokens": 76,
+        "output_tokens": 21610,
+        "cache_read_input_tokens": 2634491,
+        "cache_creation_input_tokens": 105202
+      },
+      "peak_context_tokens": 100640
+    }
+  ],
+  "log": {
+    "sha256": "b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c",
+    "bytes": 1012292,
+    "lines": 402,
+    "gzip_bytes": 177062,
+    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wurnsyotolpxuyossskkklznxorypspq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py takes a subject the patch creates or leaves alone for a helper it calls, for examples 147-149 and 160-161 (verification pending)",
+      "body": "VF-002 and VF-016, item E1 of the cleanup loop's examples stream. build.py's excerpts() stopped examples 147, 148 and 149 because their patches create the subject Jitter.java, and examples 160 and 161 because their patch changes only the helper TokenBucket, not the subject RetryAfter. A created subject now has an empty before side, and the page says the patch creates the file. An unchanged subject is taken when the patch changes exactly one Java file of its source tree whose class the subject's source names; the excerpts show that file and the page says so, while the verified unit, the claim's file and the SARIF location stay the subject's. Anything else is refused as before.\n\nReproducers in test_build.py's ExcerptsTest, on the five examples' own patches and made-up ones: 5 errors before the fix, all pass after. The rest of test_build.py passes except ReplayWordingTest on example 171's page, which fails at the parent commit too and is recorded under the brief's Progress, with the 148/149 jobs' expectation of '1 proved, 2 tested' that the current tool can no longer give.\n\nJobs, resubmitted unchanged with the closing entry named: 20261107-163046-example-147-b11-advised-contracts-a-cont, 20261107-163047-example-148-b11-advised-contracts-full-j, 20261107-163049-example-149-b11-contract-library-full-ji (close VF-002), 20261107-163050-example-160-a-changed-refill-helper-prov and 20261107-163051-example-161-a-refill-helper-aligned-to-t (close VF-016).",
+      "log_sha256": "b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c"
+    }
+  ],
+  "logs": {
+    "b4311613f1c419fc46dbe610c76eb1b766631f18a217abea87ac6c701546e40c": {
+      "bytes": 1012292,
+      "lines": 402,
+      "gzip_bytes": 177062,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

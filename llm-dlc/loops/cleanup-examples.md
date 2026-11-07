@@ -116,7 +116,32 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
 
 ## Progress
 
-- Nothing yet.
+- **E1, VF-002 and VF-016: fixed, jobs pending.** `excerpts()` in `examples/tools/build.py`:
+  - takes a subject the patch creates (`--- /dev/null`) with an empty before side at line 1, and the page says
+    "Before: none, the patch creates `Jitter.java`";
+  - takes a subject the patch leaves alone when the patch changes exactly one Java file of the subject's source tree
+    whose class the subject's source names. Both sides are then that file's hunks (`TokenBucket.java` for 160 and
+    161), and the page says the patch changes a helper the subject calls. Otherwise it is refused as before, with
+    the reason.
+  - **Why the unchanged subject, not the helper's file in the examples:** the subject file is also the page's
+    verified-unit link, the claim's `file` and the SARIF location. All three should be `RetryAfter`, the method
+    proved. Naming `TokenBucket.java` would point `nanosUntilToken` at the wrong file. The pages also need to show
+    the helper's change, which this does.
+  - Reproducers in `test_build.py`'s `ExcerptsTest`: the 5 examples' own patches and made-up ones. They failed
+    before the fix (5 errors) and pass after it.
+  - Jobs, resubmitted unchanged, with the entry each closes added to its title and description:
+    `20261107-163046-example-147-…`, `20261107-163047-example-148-…`, `20261107-163049-example-149-…` (VF-002),
+    `20261107-163050-example-160-…`, `20261107-163051-example-161-…` (VF-016).
+- **New finding, for review:** the jobs of 148 and 149 expect "1 proved, 2 tested". Since engine-priorities item 9,
+  `Integer.numberOfLeadingZeros` is no gap (the examples' last notes), so the current tool can give only the two
+  tested contracts. The verdict they expect, verified, is unaffected, and `build.py` checks only the verdict. The
+  examples' titles and summaries still name three contracts.
+- **New finding, for review:** `test_build.py`'s
+  `ReplayWordingTest.test_no_recorded_tool_example_is_said_to_be_replayed_on_the_jvm` fails on example 171's page,
+  at `oqqwvmqy` as well (not this stream's change). `--render-only` also marks the pages of 170–172 stale, since the
+  Crosscut and deliveries sources changed after their runs. They're not re-rendered here: Phase 4 reruns them at the
+  merge.
+- Next: E1's VF-017, the `object` parameter kind in `result.schema.json`.
 - Status: working
 
 ## Loop settings

@@ -3478,14 +3478,24 @@ def counterexamples(output):
     return found
 
 
-def excerpts(patch, subject_file, symbol=None):
-    """The before and after sides of the patch's hunks in the subject file, with their context lines. When the patch
-    deletes the subject file (a method moved into a new class, such as a parameter object), the after side is the
-    file of the symbol's class instead."""
+def excerpts(patch, subject_file, symbol=None, subject_source=None):
+    """The before and after sides of the patch's hunks in the subject file, with their context lines.
+
+    - When the patch deletes the subject file (a method moved into a new class, such as a parameter object), the
+      after side is the file of the symbol's class instead.
+    - When it creates the subject file (a new feature in a class of its own), the before side is empty, at line 1.
+    - When it leaves the subject file alone and changes a helper the subject calls (a caller proved over a changed
+      helper, with the proof cache), both sides are the helper's file: the one Java file of the subject's source
+      tree that the patch changes and the subject's source names by its class (`subject_source`, the subject file's
+      text, read from the repo when not given). The verifier's proof is what follows the calls; this only picks what
+      the page shows, so a patch whose change the subject names no class of, or several, is refused."""
     after_file = subject_file
     if re.search(rf"^--- a/{re.escape(subject_file)}\n\+\+\+ /dev/null$", patch, re.M) and symbol and "/src/main/java/" in subject_file:
         root = subject_file[:subject_file.index("/src/main/java/") + len("/src/main/java/")]
         after_file = root + symbol.split("#")[0].split("$")[0].replace(".", "/") + ".java"
+    created = bool(re.search(rf"^--- /dev/null\n\+\+\+ b/{re.escape(subject_file)}$", patch, re.M))
+    if not re.search(rf"^(?:--- a|\+\+\+ b)/{re.escape(subject_file)}$", patch, re.M):
+        subject_file = after_file = changed_helper(patch, subject_file, subject_source)
     wanted = {"before": subject_file, "after": after_file}
     paths = {"before": None, "after": None}
     sides = {"before": [], "after": []}
@@ -3519,11 +3529,31 @@ def excerpts(patch, subject_file, symbol=None):
             elif line.startswith(" "):
                 for side in taken:
                     sides[side].append(line[1:])
+    if created:
+        starts["before"] = 1
     if "before" not in starts or "after" not in starts:
         sys.exit(f"the patch does not change the subject file {subject_file}"
                  + (f" and {after_file}" if after_file != subject_file else ""))
     return tuple(
-        {"file": wanted[side], "startLine": starts[side], "code": dedent(sides[side])} for side in ("before", "after"))
+        {"file": wanted[side], "startLine": starts[side],
+         "code": "" if side == "before" and created else dedent(sides[side])} for side in ("before", "after"))
+
+
+def changed_helper(patch, subject_file, subject_source=None):
+    """The file an excerpt shows when the patch leaves the subject file alone (excerpts()): the one Java file of the
+    subject's source tree the patch changes whose class the subject's source names."""
+    refused = f"the patch does not change the subject file {subject_file}"
+    if "/src/main/java/" not in subject_file:
+        sys.exit(refused)
+    root = subject_file[:subject_file.index("/src/main/java/") + len("/src/main/java/")]
+    if subject_source is None:
+        subject_source = (REPO / subject_file).read_text()
+    changed = sorted({f for f in re.findall(r"^\+\+\+ b/(\S+\.java)$", patch, re.M) if f.startswith(root)})
+    named = [f for f in changed if re.search(rf"\b{re.escape(Path(f).stem)}\b", subject_source)]
+    if len(named) != 1:
+        sys.exit(refused + (", and it names more than one of the classes the patch changes: " + ", ".join(named)
+                            if named else ", nor a class its source names"))
+    return named[0]
 
 
 def dedent(lines):
@@ -3601,13 +3631,23 @@ def render_example(folder, ex, res, snap=None):
             "throw alike where they throw, or shows an input on which they do not.",
             "",
         ]
+    # The excerpts' file is the subject's, unless the patch changes a helper the subject calls (excerpts()).
+    excerpt_file = res["before"]["file"]
+    excerpt_link = f"[`{Path(excerpt_file).name}`](../../{excerpt_file})"
+    if excerpt_file != ex["subject"]["file"]:
+        lines += [f"The patch leaves `{file_name}` alone and changes a helper it calls, in {excerpt_link}.", ""]
+    if res["before"]["code"] == "":
+        lines += [f"**Before:** none, the patch creates {excerpt_link}.", ""]
+    else:
+        lines += [
+            f"**Before** ({excerpt_link}, line {res['before']['startLine']}):",
+            "",
+            "```java",
+            res["before"]["code"].rstrip("\n"),
+            "```",
+            "",
+        ]
     lines += [
-        f"**Before** ([`{file_name}`]({source_link}), line {res['before']['startLine']}):",
-        "",
-        "```java",
-        res["before"]["code"].rstrip("\n"),
-        "```",
-        "",
         "**After:**",
         "",
         "```java",

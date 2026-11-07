@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-163050-example-160-a-changed-refill-helper-prov",
+  "title": "Example 160: a changed refill helper proved on its own first, then one function in its caller's regression proof (closes VF-016 when it passes)",
+  "description": "New example 160 (S4b of llm-dlc/loops/foundations-summaries.md). Crosscut's TokenBucket.lastAfter is rewritten from now - (now - last) % period to last + (now - last) / period * period; its caller RetryAfter#nanosUntilToken, the method checked, is unchanged. build.py runs the B9 proof with the tool's own checker and, because the example sets approach.cache, with --cache build/proof-cache, a fresh directory under the build. The tool should first prove lastAfter's two versions equal on every input as a check of its own, store that proof, and then prove the caller with lastAfter as one function in both versions. Before this, every B9 run proved a changed helper only inside its caller. Resubmitted unchanged by the cleanup loop's examples stream (llm-dlc/loops/cleanup-examples.md, E1) after the fix of VF-016: build.py's excerpts() now takes a subject the patch leaves alone when the patch changes a helper the subject's source names, the excerpts showing the helper's file (TokenBucket.java). The earlier job, 20261107-053635-example-160-a-changed-refill-helper-prov, stopped before any proof with 'the patch does not change the subject file'. Closes VF-016 in verification/findings.md when it passes with the expected verdict.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "160"
+    ],
+    "paths": [
+      "lib/src/proof_cache.rs",
+      "lib/src/shared.rs",
+      "examples/tools/build.py"
+    ]
+  },
+  "expected": "Verdict verified, as expected (build.py prints 'as expected'; the example expects sharedHelpers [TokenBucket.lastAfter]). result.json's helpers lists TokenBucket.lastAfter with shared true and a note saying its two versions have the same outcome on every input, proved now and stored in the proof cache (claim sha256:...). stated.assumptions has one assumption of kind callee, basis proved, whose id is that claim key, and the proof line ends with 'TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim ...), and taken as one function in both'. Under a second in all: when written, 0.19 s for the helper's proof and 0.00 s for the caller's.",
+  "submitted": {
+    "at": "2026-11-07T16:30:50+00:00",
+    "session": "be22079e-0c8d-41e4-ace3-12f7f213f1f9",
+    "by": "foundations-summaries loop"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "3m",
+    "notes": "Two native proofs of a few tenths of a second each on a 64-bit division, measured inline when the example was written; most of the time is building Crosscut and the tool."
+  },
+  "steps": [
+    {
+      "name": "example 160 (B9)",
+      "run": "python3 examples/tools/build.py 160",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller"
+  ],
+  "supersedes": "20261107-053635-example-160-a-changed-refill-helper-prov"
+}

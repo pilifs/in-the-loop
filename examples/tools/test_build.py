@@ -2707,6 +2707,63 @@ class GapScanTest(unittest.TestCase):
             self.assertEqual(json.loads((folder / "example.json").read_text())["notes"], ["kept", "Gap scan (newer)"])
 
 
+CROSSCUT = "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut"
+
+
+class ExcerptsTest(unittest.TestCase):
+    """The before and after sides a page shows: the subject file's hunks, also where the patch creates the subject
+    (VF-002) or leaves it alone and changes a helper it calls (VF-016)."""
+
+    def test_a_changed_subject_shows_its_hunks(self):
+        patch = (f"--- a/{CROSSCUT}/a/A.java\n+++ b/{CROSSCUT}/a/A.java\n@@ -3,3 +3,3 @@\n"
+                 "     int f(int x) {\n-        return x;\n+        return x + 1;\n     }\n")
+        before, after = build.excerpts(patch, f"{CROSSCUT}/a/A.java")
+        self.assertEqual((before["startLine"], before["code"]), (3, "int f(int x) {\n    return x;\n}\n"))
+        self.assertEqual(after["code"], "int f(int x) {\n    return x + 1;\n}\n")
+
+    def test_a_patch_that_creates_its_subject_has_an_empty_before_side(self):
+        # Examples 147-149: the patch adds Jitter.java, which had no before side to show.
+        subject = f"{CROSSCUT}/retry/Jitter.java"
+        patch = (f"diff --git a/{subject} b/{subject}\nnew file mode 100644\nindex 0000000..d7d5164\n"
+                 f"--- /dev/null\n+++ b/{subject}\n@@ -0,0 +1,3 @@\n" "+final class Jitter {\n+    int f() { return 0; }\n+}\n")
+        before, after = build.excerpts(patch, subject, "net.terminalvalue.crosscut.retry.Jitter#f")
+        self.assertEqual(before, {"file": subject, "startLine": 1, "code": ""})
+        self.assertEqual(after, {"file": subject, "startLine": 1, "code": "final class Jitter {\n    int f() { return 0; }\n}\n"})
+
+    def test_examples_147_to_149_have_excerpts(self):
+        for number in ("147", "148", "149"):
+            folder = next(build.EXAMPLES.glob(f"{number}-*"))
+            example = json.loads((folder / "example.json").read_text())
+            before, after = build.excerpts((folder / example["change"]["patch"]).read_text(), example["subject"]["file"],
+                                           example["subject"]["symbol"])
+            self.assertEqual(before["code"], "", number)
+            self.assertIn("fullJitterMillis", after["code"], number)
+
+    def test_an_unchanged_subject_shows_the_helper_it_calls_that_the_patch_changes(self):
+        # Examples 160 and 161: the subject is the caller RetryAfter, and the patch changes only TokenBucket.
+        for number in ("160", "161"):
+            folder = next(build.EXAMPLES.glob(f"{number}-*"))
+            example = json.loads((folder / "example.json").read_text())
+            before, after = build.excerpts((folder / example["change"]["patch"]).read_text(), example["subject"]["file"],
+                                           example["subject"]["symbol"])
+            self.assertEqual(before["file"], f"{CROSSCUT}/ratelimit/TokenBucket.java", number)
+            self.assertEqual(after["file"], before["file"], number)
+            self.assertIn("lastAfter", after["code"], number)
+
+    def test_an_unchanged_subject_that_names_no_changed_class_is_refused(self):
+        patch = (f"--- a/{CROSSCUT}/b/B.java\n+++ b/{CROSSCUT}/b/B.java\n@@ -1,1 +1,1 @@\n-int x;\n+int y;\n")
+        with self.assertRaises(SystemExit) as raised:
+            build.excerpts(patch, f"{CROSSCUT}/a/A.java", "a.A#f", subject_source="class A { int f() { return C.g(); } }")
+        self.assertIn("does not change the subject file", str(raised.exception))
+
+    def test_a_patch_of_two_helpers_the_subject_names_is_refused(self):
+        patch = "".join(f"--- a/{CROSSCUT}/b/{c}.java\n+++ b/{CROSSCUT}/b/{c}.java\n@@ -1,1 +1,1 @@\n-int x;\n+int y;\n"
+                        for c in ("B", "C"))
+        with self.assertRaises(SystemExit) as raised:
+            build.excerpts(patch, f"{CROSSCUT}/a/A.java", "a.A#f", subject_source="class A { int f() { return B.g() + C.g(); } }")
+        self.assertIn("B.java", str(raised.exception))
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema
