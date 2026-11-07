@@ -25,7 +25,7 @@ use std::rc::Rc;
 use serde::Serialize;
 
 use crate::classfile::writer::{ClassWriter, CodeBuilder, FieldWriter, MethodWriter};
-use crate::classfile::{encode_modified_utf8, flags, ArithOp, BootstrapArg, ClassFile, Cond, ConstantPool, Insn, Kind, MemberRef, Method, Type};
+use crate::classfile::{encode_modified_utf8, flags, ArithOp, BootstrapArg, BootstrapMethod, ClassFile, Cond, ConstantPool, Insn, Kind, MemberRef, Method, Type};
 use crate::classpath::ClassPath;
 use crate::Error;
 
@@ -278,15 +278,24 @@ fn same_method(before: &ClassPath, after: &ClassPath, m: &MemberRef) -> bool {
 }
 
 /// A method's code with its constant pool references resolved, so that two class files compare by what they
-/// say and not by how their pools are numbered. `None` when the code cannot be decoded.
-fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
+/// say and not by how their pools are numbered. `None` when the code cannot be decoded. A dynamic constant
+/// (`ldc`, or a bootstrap argument) is resolved through its own bootstrap entry, since that entry is where what it
+/// says lives: javac makes `case Color.GREEN` in a pattern switch a dynamic constant whose bootstrap names `GREEN`.
+pub(crate) fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
     let code = method.code.as_ref()?;
     let insns = code.instructions().ok()?;
     let pool = &class.pool;
+    // An unreadable table leaves it empty, and a body that needs it undecodable.
+    let bootstraps = class.bootstrap_methods().unwrap_or_default();
     let mut out = Vec::with_capacity(insns.len() + code.exception_table.len());
     for (_, insn) in &insns {
         out.push(match insn {
-            Insn::Ldc(i) => format!("ldc {:?}", pool.loadable(*i).ok()?),
+            Insn::Ldc(i) => match pool.loadable(*i).ok()? {
+                BootstrapArg::Dynamic { bootstrap_method_attr_index, name, descriptor } => {
+                    format!("ldc dynamic {name}{descriptor} {}", bootstrap_text(&bootstraps, bootstrap_method_attr_index, 0)?)
+                }
+                other => format!("ldc {other:?}"),
+            },
             Insn::GetStatic(i) | Insn::PutStatic(i) | Insn::GetField(i) | Insn::PutField(i) | Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => {
                 format!("{} {:?}", opname(insn), pool.member(*i).ok()?)
             }
@@ -294,8 +303,7 @@ fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
             Insn::MultiANewArray(i, dims) => format!("multianewarray {} {dims}", pool.class_name(*i).ok()?),
             Insn::InvokeDynamic(i) => {
                 let (b, name, descriptor) = pool.invoke_dynamic(*i).ok()?;
-                let bootstraps = class.bootstrap_methods().ok()?;
-                format!("invokedynamic {name}{descriptor} {:?}", bootstraps.get(b as usize)?)
+                format!("invokedynamic {name}{descriptor} {}", bootstrap_text(&bootstraps, b, 0)?)
             }
             other => format!("{other:?}"),
         });
@@ -304,6 +312,25 @@ fn shape(class: &ClassFile, method: &Method) -> Option<Vec<String>> {
         out.push(format!("{handler:?}"));
     }
     Some(out)
+}
+
+/// A bootstrap entry as text: its method handle and its arguments, a dynamic constant among them resolved through
+/// its own entry in turn. `None` past a few levels, or for an index the table doesn't have.
+fn bootstrap_text(bootstraps: &[BootstrapMethod], index: u16, depth: u32) -> Option<String> {
+    if depth > 8 {
+        return None;
+    }
+    let entry = bootstraps.get(index as usize)?;
+    let mut args = Vec::with_capacity(entry.args.len());
+    for arg in &entry.args {
+        args.push(match arg {
+            BootstrapArg::Dynamic { bootstrap_method_attr_index, name, descriptor } => {
+                format!("Dynamic {name}{descriptor} {}", bootstrap_text(bootstraps, *bootstrap_method_attr_index, depth + 1)?)
+            }
+            other => format!("{other:?}"),
+        });
+    }
+    Some(format!("{:?} [{}]", entry.method, args.join(", ")))
 }
 
 fn opname(insn: &Insn) -> &'static str {

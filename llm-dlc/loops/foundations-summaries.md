@@ -119,7 +119,28 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 
 ## Progress
 
-- Nothing yet.
+- **S1 done** (2026-11-07): code closure digests, `lib/src/closure.rs` (new, this stream's: the first part of the proof
+  cache). A target's closure in a build is a map of parts to digests: each application method it may run (by
+  resolution, by every dispatch target, lambda bodies, the initializers of the classes involved), each application
+  class involved (hierarchy, fields with constants and annotations, annotations), each virtual or interface call's
+  set of dispatch targets, and the application files for a closure that touches Spring. `Closure::changes` names the
+  parts that differ between two builds, which S3's impact report will print. The JDK, the models and the binary are
+  left to the canonical claim's `ToolIdentity`, not repeated per closure.
+  - Tests: `lib/tests/summaries.rs` (new), 11 cases on small `javac` builds: a recompile, a changed callee, an
+    unrelated class, a constant field, a new overriding subclass with no body changed (the dispatch part changes), a
+    subclass that overrides nothing (no change), a changed superclass, a route annotation, configuration in a
+    Spring closure only, a missing target, and the case below.
+  - **Found and fixed in `shared.rs`'s `shape`**: a dynamic constant was printed by its bootstrap index, not
+    resolved, so `case Color.GREEN` against `case Color.BLUE` in a pattern switch gave equal shapes, and
+    `shared::identical_closure` called the two versions identical: a regression check could have said "nothing to
+    prove" for a changed body. Reproduced first (the last test above failed), then fixed by resolving a dynamic
+    constant through its bootstrap entry, recursively. The change only makes more bodies differ, so it can turn an
+    identical-closure verdict into a proof, never the reverse. The unit tests (183, the known flaky timing test
+    passing on its rerun), `integration.rs` (64) and `foundations.rs` (3) pass.
+  - Shared files changed: `lib/src/lib.rs` (`pub mod closure`), `lib/tests/summaries.rs` (new), `lib/README.md` (a
+    paragraph on code closures, and the dynamic-constant note in the regression proof's step 3).
+- Next: S2, the proof cache on the canonical claim (`spec/cache.rs`'s `key`, `lookup`, `store`), its invalidation
+  tests, and the cache's one call each way in `equivalence.rs`.
 - Status: working
 
 ## Loop settings
