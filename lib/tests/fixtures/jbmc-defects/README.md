@@ -10,6 +10,11 @@ job (`20261106-201041`), is [JBMC's right shifts](#cause-3-jbmc-right-shifts-by-
 A fourth, found by the Phase 5 job `20261106-203501` (`conformance/declaring/2`, a false proof), is
 [the initializers JBMC runs](#cause-4-jbmc-runs-initializers-the-jvm-does-not-a-jbmc-defect).
 
+`F.java` is VF-009's triage fixture (`verification/findings.md`): a class initializer that throws, one void method
+per part of what the JVM does then (JVMS §5.5: the exception wrapped in `ExceptionInInitializerError`, the class
+erroneous and `NoClassDefFoundError` at its next use, the initializer run once, an `Error` not wrapped), each
+assertion holding under `java -ea F`. Job `20261107-163056` runs it on stock JBMC 6.11.0; what it shows goes here.
+
 `p/D.java` is the fixture of `jbmc_gaps`'s tests (`the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm`),
 one method per shape:
 

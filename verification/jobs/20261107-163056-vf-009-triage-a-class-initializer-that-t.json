@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-163056-vf-009-triage-a-class-initializer-that-t",
+  "title": "VF-009 triage: a class initializer that throws, on the JVM, in stock JBMC 6.11.0 and through jvmcontract's JBMC adapter",
+  "description": "Triage for VF-009 (verification/findings.md), item J1 of llm-dlc/loops/cleanup-jbmc.md; it closes nothing. Under auto --confirm, JBMC 6.11.0 refutes conformance boomTwice (result == 2) and enumBroken (result == 12) at n=0, where the JVM and the tool's own checker hold (job 20261107-010728, step 2). Both methods run a class initializer that throws; the JVM wraps the throw in ExceptionInInitializerError (JVMS 5.5 step 11) and raises NoClassDefFoundError at the class's next use (step 5). JBMC's goto program sets clinit_already_run before it calls <clinit>, as the preflight's test fixtures show, so the hypothesis is that JBMC neither wraps the exception nor marks the class erroneous. Step 1 runs the new fixture lib/tests/fixtures/jbmc-defects/F.java, one void method per part of the semantics (wrapped, erroneous, once, error, enumWrapped, and copies of boomTwice and enumBroken), on the JVM (java -ea, where every assertion holds) and on stock JBMC with no flags, with --throw-runtime-exceptions alone, and with the flags jvmcontract passes; then the goto listings of the two copies. Step 2 runs the corpus's own two methods through jvmcontract prove under --engine jbmc and auto --confirm, keeping each run's work directory (JBMC's JSON output with its trace in jbmc.log), to tell JBMC's semantics from the adapter's reading of the trace. Evidence, not a pass/fail check: a VERIFICATION FAILED is expected where JBMC differs from the JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/fixtures/jbmc-defects/F.java",
+      "lib/src/jbmc_gaps.rs"
+    ]
+  },
+  "expected": "Both steps exit 0. Step 1: java prints 'all hold, runs 4'. The hypothesis holds if JBMC fails wrapped, erroneous, once (or not, if it never reruns), enumWrapped, boomTwice and enumBroken under --throw-runtime-exceptions, and passes error; the log says which. Step 2: the prove log names JBMC's verdict and failed property for each run; the work directories keep JBMC's trace.",
+  "submitted": {
+    "at": "2026-11-07T16:30:56+00:00",
+    "session": "a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3",
+    "by": "an agent (claude-opus-5-5, cleanup-jbmc stream)"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "timeout": "45m",
+    "notes": "a clean release build of lib (a few minutes at 8 jobs), 21 JBMC runs on a 7-method fixture (seconds each), 6 jvmcontract proofs of one-line claims (job -010728 took about 20 min for 332 runs)"
+  },
+  "steps": [
+    {
+      "name": "the fixture on the JVM and stock JBMC",
+      "run": "set -o pipefail; d=lib/target/vf009; rm -rf $d; mkdir -p $d/f && javac -g -d $d/f lib/tests/fixtures/jbmc-defects/F.java && (echo \"== java -ea F\"; java -ea -cp $d/f F; echo \"exit $?\"; for f in wrapped erroneous once error enumWrapped boomTwice enumBroken; do for flags in \"\" \"--throw-runtime-exceptions\" \"--trace --throw-runtime-exceptions --unwinding-assertions --unwind 16 --no-refine-strings --sat-solver cadical\"; do echo \"== jbmc F --function F.$f $flags\"; timeout 300 jbmc F --function F.$f --classpath $d/f $flags; echo \"exit $?\"; done; done; for f in boomTwice enumBroken; do echo \"== jbmc F --function F.$f --throw-runtime-exceptions --show-goto-functions\"; timeout 120 jbmc F --function F.$f --classpath $d/f --throw-runtime-exceptions --show-goto-functions; echo \"exit $?\"; done) > $d/f.log 2>&1; grep -E \"^(==|exit|VERIFICATION|\\\\[.*\\\\] .*FAILURE|all hold)\" $d/f.log",
+      "cwd": "."
+    },
+    {
+      "name": "the corpus methods through jvmcontract",
+      "run": "set -o pipefail; cd lib && cargo build --release && d=target/vf009 && mkdir -p $d/c && javac -parameters -g -proc:none -d $d/c tests/conformance/conformance/Conformance.java && (for m in \"boomTwice|result == 2\" \"enumBroken|result == 12\"; do name=${m%%|*}; claim=${m#*|}; for mode in \"jbmc strict\" \"auto strict confirm\" \"auto assume confirm\"; do set -- $mode; extra=; [ \"$3\" = confirm ] && extra=--confirm; echo \"== prove conformance.Conformance#$name --assert \\\"$claim\\\" --engine $1 --gaps $2 $extra\"; JVMCONTRACT_JBMC_MEMORY_MB=2048 ./target/release/jvmcontract prove \"conformance.Conformance#$name\" --classes $d/c --assert \"$claim\" --engine $1 --gaps $2 $extra --work $d/work/$name-$1-$2$extra; echo \"exit $?\"; done; done) 2>&1 | tee $d/prove.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/vf009/f.log",
+    "lib/target/vf009/prove.log",
+    "lib/target/vf009/work"
+  ]
+}

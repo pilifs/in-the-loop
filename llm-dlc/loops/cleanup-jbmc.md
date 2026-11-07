@@ -119,7 +119,15 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
 
 ## Progress
 
-- Nothing yet.
+- **J1, VF-009: triage queued** (2026-11-07). The JVM's side is checked inline on the new fixture
+  `lib/tests/fixtures/jbmc-defects/F.java`, one void method per part of a failed initializer's semantics (JVMS §5.5
+  steps 5, 11 and 12): `wrapped`, `erroneous`, `once`, `error`, `enumWrapped`, and copies of `boomTwice(0)` and
+  `enumBroken(0)`. Every assertion holds on JDK 25.0.5 (`all hold, runs 4`). The hypothesis, from the goto listings
+  in `jbmc_gaps.rs`'s tests (`clinit_already_run := true` before the `<clinit>` call): JBMC neither wraps the
+  initializer's exception in `ExceptionInInitializerError` nor marks the class erroneous. Job
+  `20261107-163056-vf-009-triage-a-class-initializer-that-t` (priority 10) runs the fixture on stock JBMC with no
+  flags, `--throw-runtime-exceptions`, and the adapter's flags, and the corpus's two methods through `jvmcontract
+  prove` under `jbmc` and `auto --confirm`, keeping JBMC's traces. Next: VF-019, which doesn't wait on it.
 - Status: working
 
 ## Loop settings
