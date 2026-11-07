@@ -24,6 +24,8 @@ public class D {
     public static int direct(int n) { return Holder.value + n; }
     public static int defaults(int n) { return Hello.value(n); }
     public static int created(int n) { new Sub(); return n; }
+    public static int later(int n) { int k = n + 1000; return Sub.value + k; }
+    public static int apart(int n) { return Holder.value + Quiet.value + Loud.value + n; }
 
     static int log;
     static class Holder { static int value = 7; static int get() { return value; } }
@@ -31,4 +33,6 @@ public class D {
     interface Bare { int[] T = { 4 }; }
     interface Greeter { int[] S = { 3 }; default int greet() { return S[0]; } }
     static class Hello implements Bare, Greeter { static int value(int n) { return n; } }
+    static class Quiet { static int value = 2; }
+    static class Loud { static int value = 3; }
 }

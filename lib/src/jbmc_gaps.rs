@@ -51,7 +51,8 @@ pub const PREFLIGHT_SECONDS: u64 = 60;
 pub struct Function {
     /// The functions it calls, by id, with the source line of the first call to each.
     pub calls: BTreeMap<String, Option<u16>>,
-    /// Its instructions' text by the bytecode index they come from.
+    /// Its instructions' text by the bytecode index they come from: JBMC numbers a method's instructions in order
+    /// from 0, so the index is an instruction's place in the method, not its offset (`pc`) in the code.
     pub at: BTreeMap<u32, String>,
     /// Its instructions' location numbers, unique in the program, each with the text of its comment after the number
     /// (`file F line L function G bytecode-index K`, or `no location`): how JBMC's symbolic execution names its steps.
@@ -413,7 +414,7 @@ fn jbmc_initializes(program: &Program, cp: &ClassPath, wrapper: &str, out: &mut 
 /// it every superinterface.
 fn extra_initializers(program: &Program, function: &Function, cp: &ClassPath, owner: &str, name: &str, class: &crate::classfile::ClassFile, code: &crate::classfile::Code, insns: &[(u32, Insn)]) -> Vec<Defect> {
     let mut out = Vec::new();
-    for (pc, insn) in insns {
+    for (index, (pc, insn)) in insns.iter().enumerate() {
         let (op, named, member, declaring) = match insn {
             Insn::New(i) => {
                 let Ok(c) = class.pool.class_name(*i) else { continue };
@@ -438,10 +439,10 @@ fn extra_initializers(program: &Program, function: &Function, cp: &ClassPath, ow
         if is_jdk_name(&named) {
             continue;
         }
-        // What JBMC initializes there: the wrappers it calls at the instruction.
+        // What JBMC initializes there: the wrappers it calls at the instruction, listed under its index.
         let mut jbmc = BTreeSet::new();
         let mut seen = BTreeSet::new();
-        for text in function.at.get(pc).map(|t| t.lines()).into_iter().flatten() {
+        for text in function.at.get(&(index as u32)).map(|t| t.lines()).into_iter().flatten() {
             let Some(callee) = text.strip_prefix("CALL ") else { continue };
             let callee = callee.split_once(" := ").map(|(_, f)| f).unwrap_or(callee);
             if let Some(wrapper) = callee.strip_suffix("()").filter(|w| w.ends_with(".<clinit_wrapper>")) {
@@ -543,8 +544,8 @@ pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, j
             Body::Bytecode(sites) => {
                 // Its call sites JBMC linked to no class of its own: the zero fallback.
                 let f = &program.functions[id];
-                for (bci, gap, always) in sites {
-                    let linked = !always && f.at.get(&bci).is_some_and(|text| text.contains("lambda_synthetic_class$"));
+                for (bci, index, gap, always) in sites {
+                    let linked = !always && f.at.get(&index).is_some_and(|text| text.contains("lambda_synthetic_class$"));
                     if !linked {
                         let line = jbmc_cp.application(&owner).ok().flatten().and_then(|c| c.method(&name, &descriptor).and_then(|m| m.code.as_ref()).and_then(|code| code.line_at(bci)));
                         found.gaps.entry(gap).or_default().insert(Site { class: owner.clone(), method: name.clone(), line });
@@ -652,9 +653,10 @@ fn gaps_call(owner: &str, name: &str, descriptor: &str) -> String {
 
 /// What JBMC runs for a method.
 enum Body {
-    /// Its bytecode, with its sites JBMC may approximate, each as the gap it would be: an `invokedynamic`, a gap
-    /// unless JBMC linked it (`false`), and a monitor, always one (`true`).
-    Bytecode(Vec<(u32, Gap, bool)>),
+    /// Its bytecode, with its sites JBMC may approximate, each at its offset and its instruction's index (how JBMC's
+    /// listing numbers it), as the gap it would be: an `invokedynamic`, a gap unless JBMC linked it (`false`), and a
+    /// monitor, always one (`true`).
+    Bytecode(Vec<(u32, u32, Gap, bool)>),
     /// JBMC's stub, which reproduces the call exactly.
     Exact,
     /// JBMC's stub, a gap of this kind.
@@ -665,12 +667,13 @@ fn body(cp: &ClassPath, owner: &str, name: &str, descriptor: &str) -> Body {
     if let Ok(Some(class)) = cp.application(owner) {
         if let Some(code) = class.method(name, descriptor).and_then(|m| m.code.as_ref()) {
             let mut sites = Vec::new();
-            for (pc, insn) in code.instructions().unwrap_or_default() {
+            for (nth, (pc, insn)) in code.instructions().unwrap_or_default().into_iter().enumerate() {
+                let nth = nth as u32;
                 // JBMC drops a monitor instruction (it models monitors only under --java-threading), so a null one
                 // throws nothing: one gap per method that synchronizes, met at its first monitorenter.
                 if insn == Insn::MonitorEnter {
-                    if !sites.iter().any(|(_, g, _): &(u32, Gap, bool)| g.kind == GapKind::Monitor) {
-                        sites.push((pc, Gap { kind: GapKind::Monitor, owner: owner.into(), name: name.into(), descriptor: descriptor.into() }, true));
+                    if !sites.iter().any(|(_, _, g, _): &(u32, u32, Gap, bool)| g.kind == GapKind::Monitor) {
+                        sites.push((pc, nth, Gap { kind: GapKind::Monitor, owner: owner.into(), name: name.into(), descriptor: descriptor.into() }, true));
                     }
                     continue;
                 }
@@ -678,7 +681,7 @@ fn body(cp: &ClassPath, owner: &str, name: &str, descriptor: &str) -> Body {
                 let Ok((index, site_name, site_descriptor)) = class.pool.invoke_dynamic(i) else { continue };
                 let bootstraps = class.bootstrap_methods().unwrap_or_default();
                 let (bsm_owner, bsm_name) = bootstraps.get(index as usize).map(|b| (b.method.member.owner.clone(), b.method.member.name.clone())).unwrap_or_else(|| ("java/lang/invoke/CallSite".into(), site_name.to_string()));
-                sites.push((pc, Gap { kind: GapKind::InvokeDynamic, owner: bsm_owner, name: bsm_name, descriptor: format!("{site_name}{site_descriptor}") }, false));
+                sites.push((pc, nth, Gap { kind: GapKind::InvokeDynamic, owner: bsm_owner, name: bsm_name, descriptor: format!("{site_name}{site_descriptor}") }, false));
             }
             return Body::Bytecode(sites);
         }
@@ -1287,5 +1290,44 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert!(matches!(pre.paths, Some(Ok(_))), "{:?}", pre.paths);
         let ids: Vec<&str> = found.records.iter().map(|r| r.id.as_str()).collect();
         assert!(ids.iter().any(|id| id.starts_with("jdk-primitive-method:java.util.Collection.isEmpty()Z")), "{ids:?}");
+    }
+
+    /// The reproducer of job `20261107-012013`'s refusal of example 071's two proofs: JBMC 6.11.0's goto listing
+    /// numbers an instruction's `bytecode-index` by its place in the method, not by its byte offset. `p.D.later`'s
+    /// `getstatic Sub.value` is at offset 6, the method's fifth instruction (index 4), and its extra initializer is
+    /// named there; `p.D.apart`'s `getstatic Quiet.value` is at offset 3, where index 3 is `getstatic Loud.value`,
+    /// and none of its three reads, each through the class that declares it, is one. Nothing is solved.
+    #[test]
+    fn the_preflight_reads_jbmc_listing_by_instruction_index() {
+        let Some((dir, _cp)) = defect_fixture() else { return };
+        if !crate::jbmc::available("jbmc") {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "jbmc not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            return;
+        }
+        // The proof's harness is the tool's own, and the preflight reads the methods it calls.
+        let harness = dir.path().join("H.java");
+        std::fs::write(&harness, "class H { static int later(int n) { return p.D.later(n); } static int apart(int n) { return p.D.apart(n); } }").unwrap();
+        let status = std::process::Command::new("javac").args(["-g", "-cp"]).arg(dir.path()).arg("-d").arg(dir.path()).arg(&harness).status().unwrap();
+        assert!(status.success(), "the harness compiles");
+        let run = |function: &str| JbmcRun {
+            executable: "jbmc".into(),
+            class: "H".into(),
+            function: function.into(),
+            classpath: vec![dir.path().to_path_buf(), Path::new(env!("CARGO_MANIFEST_DIR")).join("models/classes")],
+            unwind: 5,
+            timeout: Duration::from_secs(60),
+            stage: None,
+            refine_strings: false,
+            sat_solver: None,
+            log: dir.path().join(format!("{function}.log")),
+            extra_args: Vec::new(),
+        };
+        let defects = |function: &str| -> Vec<(String, String)> {
+            let pre = preflight(&run(function), Duration::from_secs(60)).unwrap();
+            let found = pre.found.as_ref().unwrap_or_else(|| panic!("{:?}", pre.problem));
+            found.defects.iter().map(|d| (d.kind.to_string(), d.site.clone())).collect()
+        };
+        assert_eq!(defects("later"), [("extra-initializer".to_string(), "p.D.later:27".to_string())]);
+        assert_eq!(defects("apart"), []);
     }
 }

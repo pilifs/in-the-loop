@@ -35,6 +35,8 @@ one method per shape:
 | `direct` | `Holder.value` | initializes `Holder`, as the JVM | — |
 | `defaults` | `Hello.value(n)`, `Hello implements Bare, Greeter` | initializes `Bare` and `Greeter` | `extra-initializer` |
 | `created` | `new Sub()` | initializes `Holder`, then `Sub`, as the JVM | — |
+| `later` | `Sub.value` after `sipush`, at offset 6, the fifth instruction | initializes `Sub` | `extra-initializer` |
+| `apart` | `Holder.value`, `Quiet.value`, `Loud.value`, each read through its own class | initializes each, as the JVM | — |
 
 `conformance/caught/1` is the first shape, the first cause. `nestedHandler/1` has both: its `IllegalArgumentException` escapes
 the `catch (RuntimeException e)`, and its `return 100 / n` the inner `catch (ArithmeticException x)`.
@@ -156,6 +158,14 @@ The preflight names an instruction at which JBMC's goto program calls a wrapper 
 application class the JVM does not initialize there as `extra-initializer`, comparing the wrappers' calls with
 `bmc::gaps::initializers` of the declaring class. A proof that reaches one is refused under every `--gaps` mode. Only
 initializers JBMC runs and the JVM does not are named: an instruction whose wrapper call JBMC put elsewhere is not one.
+
+The listing's comments give each instruction's `bytecode-index`, which counts a method's instructions from 0: it is an
+instruction's place in the method, not its offset in the code (`Labels: pc7` gives the offset). The preflight first
+looked the wrapper calls up by offset, which agrees with the index only up to the first instruction longer than a byte.
+So it read another instruction's calls. It missed `later`'s `Sub` (offset 6, index 4), and in `apart` it named `Loud`
+(index 3) at `Quiet.value` (offset 3). Job `20261107-012013` refused two of example 071's JBMC proofs that way:
+`VoteRule.decide`'s `invokestatic Decision.rejected` at offset 12, where index 12 is `getstatic Ballot.FOR_ANOTHER`.
+`the_preflight_reads_jbmc_listing_by_instruction_index` runs both methods through JBMC's listing.
 
 ## Draft report for CBMC/JBMC (not filed: for the user to decide)
 

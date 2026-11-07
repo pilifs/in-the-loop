@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T02:39:49.846Z",
-  "duration_seconds": 8889,
+  "ended": "2026-11-07T02:49:21.369Z",
+  "duration_seconds": 9460,
   "stats": {
     "turns": 41,
-    "api_calls": 432,
-    "tool_calls": 439,
+    "api_calls": 461,
+    "tool_calls": 469,
     "tool_errors": 7,
     "compactions": 7,
     "peak_context_tokens": 206242,
     "usage": {
-      "input_tokens": 882,
-      "output_tokens": 255691,
-      "cache_read_input_tokens": 47796631,
-      "cache_creation_input_tokens": 1066172
+      "input_tokens": 940,
+      "output_tokens": 274303,
+      "cache_read_input_tokens": 52096237,
+      "cache_creation_input_tokens": 1103191
     }
   },
   "tools": {
-    "Bash": 396,
+    "Bash": 426,
     "Read": 20,
     "Edit": 11,
     "Monitor": 4,
@@ -145,24 +145,24 @@
     {
       "index": 7,
       "started": "2026-11-07T02:32:46.803Z",
-      "ended": "2026-11-07T02:39:49.846Z",
+      "ended": "2026-11-07T02:49:21.369Z",
       "turns": 4,
-      "api_calls": 35,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 70,
-        "output_tokens": 21866,
-        "cache_read_input_tokens": 3086204,
-        "cache_creation_input_tokens": 115728
+        "input_tokens": 128,
+        "output_tokens": 40478,
+        "cache_read_input_tokens": 7385810,
+        "cache_creation_input_tokens": 152747
       },
-      "peak_context_tokens": 128807
+      "peak_context_tokens": 165826
     }
   ],
   "log": {
-    "sha256": "350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4",
-    "bytes": 10992458,
-    "lines": 3891,
-    "gzip_bytes": 2123665,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4.jsonl.gz"
+    "sha256": "5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29",
+    "bytes": 11493941,
+    "lines": 4127,
+    "gzip_bytes": 2186068,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -261,6 +261,14 @@
       "summary": "Record verification results for the numberOfLeadingZeros job: 037 and 127 under strict and the conformance corpus under JBMC and auto all pass",
       "body": "Job 20261107-022319-the-own-checker-models-numberofleadingze passed all 3 steps in 12m48s (peak 1.1 GiB, estimated 20m, 3.0 GiB) at d8cd7864321b on vm-1. The corpus (81 cases, 152 claims) agrees with the JVM under JBMC and auto. No findings opened or changed.",
       "log_sha256": "350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4"
+    },
+    {
+      "change_id": "xmslpytzqtlxyxrqyrswrrxuknvkmust",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC's preflight reads its goto listing by instruction index, not byte offset, so 071's two proofs are no longer refused on initializers JBMC does not run (verification pending)",
+      "body": "Job 20261107-012013 (VF-005) left example 071's first two property proofs unverifiable under strict with no gap: the preflight refused them on two extra-initializer defects, at VoteRule.decide:39 and grant:63, that JBMC does not have (013's output named the same four). JBMC 6.11.0's --show-goto-functions numbers an instruction's bytecode-index by its place in the method, counting from 0, while jbmc_gaps.rs looked the wrapper calls up by the instruction's byte offset. At offset 12, invokestatic Decision.rejected, it read index 12, getstatic Ballot.FOR_ANOTHER. The same mistake missed real defects, leaving a false JBMC proof through an initializer standing, wherever an initializing instruction follows one longer than a byte. extra_initializers and the invokedynamic linking check now look instructions up by index.\n\nReproducer: two new methods in lib/tests/fixtures/jbmc-defects/p/D.java, run through the preflight on JBMC 6.11.0's real listing, nothing solved (the_preflight_reads_jbmc_listing_by_instruction_index). In p.D.later, Sub.value sits at offset 6, index 4: the old lookup missed it, the fix names it. In p.D.apart, Quiet.value sits at offset 3, where index 3 is Loud.value: no defect now. The test failed with the old lookup and passes with the fix. On the job's own saved listings, the old lookup gives exactly its two defects and the new one none on all three of 071's proofs. Unit 179, conformance 9 (2 ignored) and integration 64 pass. The fixture README explains the cause.\n\nJob 20261107-024759 is 20261107-012013 resubmitted unchanged, as VF-005 asks. The notes of 071 and 013 record jobs -203501 and -012013. Job 20261107-022319 (exact numberOfLeadingZeros) came back passed, and 037's and 127's notes and the brief's Progress now say so. VF-009 (boomTwice, enumBroken under --confirm) is a different cause, initializers that throw, and is next.",
+      "log_sha256": "5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29"
     }
   ],
   "logs": {
@@ -286,6 +294,12 @@
       "bytes": 10992458,
       "lines": 3891,
       "gzip_bytes": 2123665,
+      "url": null
+    },
+    "5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29": {
+      "bytes": 11493941,
+      "lines": 4127,
+      "gzip_bytes": 2186068,
       "url": null
     },
     "7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8": {

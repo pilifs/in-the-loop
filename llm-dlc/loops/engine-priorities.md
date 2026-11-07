@@ -435,10 +435,20 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     `class-initializer` gaps are 0.
   - `Enum.<init>`, `List.of`, `List.copyOf` are models on JBMC's class path, checked on the JVM by 11 cases and by
     running them relocated against the JDK's classes.
-  - **071's two proofs under strict: not yet.** Job `20261107-012013` (collected by the runner, step 3 failed,
-    `verification/findings.md` VF-005): the preflight now names `Collection.isEmpty` and `toArray` as stubs never
-    entered and no gaps, but obligations 1 and 2 are still unverifiable with an empty gap list; its other steps
-    passed (071's build, 013 under strict, the corpus under JBMC and `auto`, which closes VF-008). Job `20261106-203501` (failed): the
+  - **071's two proofs under strict: fixed, job `20261107-024759` pending** (VF-005). Job `20261107-012013`
+    (collected by the runner, step 3 failed): the preflight named `Collection.isEmpty` and `toArray` as stubs never
+    entered and no gaps, but refused obligations 1 and 2 on two `extra-initializer` defects JBMC does not have
+    (`VoteRule.decide:39`, `grant:63`; 013's output named the same four). JBMC's goto listing numbers an
+    instruction's `bytecode-index` by its place in the method, and the preflight looked it up by byte offset: at
+    offset 12, `invokestatic Decision.rejected`, it read index 12, `getstatic Ballot.FOR_ANOTHER`. The same mistake
+    missed real ones, a false proof left standing, wherever an initializing instruction follows one longer than a
+    byte. Now `extra_initializers` and the `invokedynamic` check read the listing by index. Reproducer, on JBMC 6.11.0's
+    listing, nothing solved: `p.D.later` (`Sub.value` at offset 6, index 4: missed before, named now) and `p.D.apart`
+    (`Quiet.value` at offset 3, where index 3 is `Loud.value`: no defect now). On the job's own listings, the old
+    lookup gives exactly its two defects, the new one none on all three of 071's proofs. Unit 179, conformance 9 (2
+    ignored), integration 64 pass. The job is `-012013` resubmitted unchanged; its other steps passed (071's build,
+    013 under strict, the corpus under JBMC and `auto`, which closes VF-008). 071's and 013's `notes` record both
+    jobs. Job `20261106-203501` (failed): the
     models are used, but JBMC's preflight walks the call graph, not paths, and reaches `Collection.isEmpty` and
     `toArray` stubs in `ImmutableCollections.listCopy` that no path takes. Now, when the call graph reaches a stub,
     the preflight also runs JBMC's symbolic execution of the proof (`--program-only`, the proof's bounds, every
@@ -470,7 +480,9 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     The library's integration test named 25.0.4.1 as the one JDK with records; it now reads them from `checked.json`.
     In the full suite `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` failed once on `Pricing#total`'s
     refutation and passed alone: the wall-clock branch probes of item 8.
-- **4c's first extension, an exact `numberOfLeadingZeros`: done, job `20261107-022319` pending** (item 9 below).
+- **4c's first extension, an exact `numberOfLeadingZeros`: done, job `20261107-022319` passed** (item 9 below):
+  037 and 127 established on the own checker under strict with no gap, and the corpus (152 claims) agrees with the JVM
+  under JBMC and `auto`.
   `Integer` and `Long.numberOfLeadingZeros` were `jdk-static-method` gaps, which left 037 and 127 to JBMC under strict
   (037 to neither). The own checker now computes them as a priority encoder (`Engine::call_jdk_static`). The
   reproducer, two conformance cases checked on JDK 25.0.5 (`leadingZeros`, `leadingZerosLong`), gave no verdict on
@@ -499,19 +511,21 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   1. ~~take `checked.json` from job `-203501`~~ (done);
   2. ~~the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user~~ (done,
      job `20261107-010728` back, failed: VF-009, JBMC's spurious refutations of `boomTwice` and `enumBroken` at
-     `n = 0` under `--confirm`, to triage);
+     `n = 0` under `--confirm`, to triage next: not the index lookup, since both run an initializer that throws, which
+     the JVM wraps in `ExceptionInInitializerError` and follows with `NoClassDefFoundError`);
   3. ~~a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013~~
-     (done, job `20261107-012013` back, failed: VF-005, 071's obligations 1 and 2 unverifiable with no gap, to
-     find why);
+     (done; job `20261107-012013` failed, VF-005: the preflight read JBMC's listing by offset, not index; fixed, rerun
+     `20261107-024759` pending);
   4. ~~4c, the coverage inventory from 4a's tables and 4b~~ (done);
-  5. the examples' notes: 071 and 013 from `-203501` and the rerun `-012013` (037's from `-000039`: done);
+  5. ~~the examples' notes: 071 and 013 from `-203501` and the rerun `-012013`~~ (done; 037's from `-000039`
+     too), and from `-024759` once it is back;
   6. ~~Bitwuzla's version in 1b's record~~ (done: each solver records itself, `Sat::record`);
   7. `test_build.py`'s and `test_performance.py`'s failures;
   8. smaller ones the streams noted: the own checker's branch probes depend on wall-clock time (`Pricing#total` timing
      out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native
      stream's step 3 cases under JBMC, `auto` and `--confirm`;
   9. the inventory's first two extensions, each small and with a reproducer first: ~~an exact `numberOfLeadingZeros`
-     (`Integer`, `Long`) in the own checker~~ (done, job `20261107-022319` pending), and its unwinding bound counted
+     (`Integer`, `Long`) in the own checker~~ (done, job `20261107-022319` passed), and its unwinding bound counted
      per entry of a loop.
 - **For the user:** the 7 allow-list proposals (mangled C++ symbols in session `7b8a1d3b`'s logs); the two drafted
   upstream reports and the third, on initializers (`extra-initializer`), all in
