@@ -1,0 +1,76 @@
+{
+  "contract": {
+    "subject": "POST /quotes",
+    "inputs": [
+      {
+        "name": "cents",
+        "type": "long",
+        "derivation": {
+          "kind": "identity"
+        }
+      },
+      {
+        "name": "quantity",
+        "type": "int",
+        "derivation": {
+          "kind": "identity"
+        }
+      }
+    ],
+    "required": [
+      "result",
+      "exception",
+      "status",
+      "effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"
+    ]
+  },
+  "closures": {
+    "before": "computed by cache::key",
+    "after": "computed by cache::key"
+  },
+  "observations": [
+    {
+      "kind": "result"
+    },
+    {
+      "kind": "exception"
+    },
+    {
+      "kind": "status"
+    },
+    {
+      "kind": "effect",
+      "call": "org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;",
+      "payload": [
+        "topic",
+        "data.total",
+        "data.quantity"
+      ]
+    }
+  ],
+  "environment": {
+    "calls": [
+      {
+        "call": "org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;",
+        "outcomes": [
+          "returns"
+        ]
+      }
+    ],
+    "trace_bound": 4,
+    "order": "exact"
+  },
+  "bounds": {
+    "unwind": 16,
+    "max_array_length": 8
+  },
+  "assumptions": [
+    "the KafkaTemplate send call is a recording stub: an attempted send, not a delivery"
+  ],
+  "tools": {
+    "models": "computed",
+    "jdk": "computed",
+    "checker": "native strict",
+    "binary": "computed"
+  }
+}

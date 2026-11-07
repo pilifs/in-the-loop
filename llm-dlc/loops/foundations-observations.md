@@ -72,7 +72,8 @@ trace here are their inputs, so keep them free of anything proof-engine-specific
 
 ## Boundaries
 
-You own `lib/src/boundaries.rs`, `reach.rs`, `failures.rs`, `wire.rs`, `store.rs`, the new observation module and its
+You own `lib/src/spec/observe.rs`, your interface in the shared IR, which returns a named `Unsupported` until your
+part is done; your checks in `lib/tests/foundations.rs` turn from unsupported to passed as you do it. You also own `lib/src/boundaries.rs`, `reach.rs`, `failures.rs`, `wire.rs`, `store.rs`, the new observation module and its
 command, the recording stubs and the environment model, the effect-log hook behind Phase 0's interface, and Box
 Office's examples and build logic, with their tests. The boundary contract keeps its format: `boundaries.contract`
 files and their drift check don't change unless a test shows a bug.

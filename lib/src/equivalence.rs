@@ -900,6 +900,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
         vacuity: None,
+        spec: None,
     };
 
     // 3. The statement, as a harness JBMC can check.

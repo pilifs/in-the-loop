@@ -44,6 +44,10 @@ pub struct Statement {
     /// input that reaches the calls, and a statement with no verdict established nothing to be vacuous.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub vacuity: Option<Vacuity>,
+    /// What `llm-dlc/loops/foundations.md` adds: the preservation contract, object domain, observations and
+    /// correspondence. None until a stream of that brief fills it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub spec: Option<crate::spec::StatementSpec>,
 }
 
 /// Whether some input in D satisfies A and reaches the calls, so that a proof of the statement says something.

@@ -1,0 +1,97 @@
+{
+  "$comment": "The verdict each case of the joint example must reach, by subject. 'after' is the correct refactor; the others are defects overlaid on it (defects/NAME). Kernel subjects are Java API checks (heap, with the correspondence alignment proposes); entry points are POST routes (observations). See lib/tests/fixtures/foundations/README.md.",
+  "cases": [
+    {
+      "build": "after",
+      "subject": "POST /quotes",
+      "verdict": "verified",
+      "why": "the refactor preserves the response, status and the event"
+    },
+    {
+      "build": "after",
+      "subject": "shop.Pricing#total",
+      "verdict": "verified",
+      "why": "preserved under the correspondence, over the constructor-made domain"
+    },
+    {
+      "build": "after",
+      "subject": "shop.Pricing#withQuantity",
+      "verdict": "verified",
+      "why": "the same object back, changed the same way",
+      "observations": [
+        {
+          "kind": "identity",
+          "left": "result",
+          "right": "q"
+        }
+      ]
+    },
+    {
+      "build": "after",
+      "subject": "shop.Pricing#discount",
+      "verdict": "verified",
+      "why": "the changed pure helper, proved once and reused in total's proof",
+      "reused_in": "shop.Pricing#total"
+    },
+    {
+      "build": "after",
+      "subject": "POST /quotes/text",
+      "verdict": "unresolved",
+      "why": "string concatenation is outside this loop: it stays visibly unresolved"
+    },
+    {
+      "build": "offset",
+      "subject": "POST /quotes",
+      "verdict": "refuted",
+      "why": "a cent more per item; the anchored inputs keep their meaning"
+    },
+    {
+      "build": "offset",
+      "subject": "shop.Pricing#total",
+      "verdict": "refuted",
+      "why": "no inferred correspondence may shift q's amount to hide it"
+    },
+    {
+      "build": "alias-to-copy",
+      "subject": "shop.Pricing#withQuantity",
+      "verdict": "refuted",
+      "why": "result == q holds before and not after; every field agrees",
+      "observations": [
+        {
+          "kind": "identity",
+          "left": "result",
+          "right": "q"
+        }
+      ]
+    },
+    {
+      "build": "dropped-effect",
+      "subject": "POST /quotes",
+      "verdict": "refuted",
+      "why": "no event for 100 items or more"
+    },
+    {
+      "build": "duplicated-effect",
+      "subject": "POST /quotes",
+      "verdict": "refuted",
+      "why": "two events for a bulk order"
+    },
+    {
+      "build": "outside-domain",
+      "subject": "shop.Pricing#total",
+      "verdict": "verified",
+      "why": "wrong only where the constructor refuses; the result's domain says constructor-made",
+      "domain_mentions": "constructor"
+    },
+    {
+      "build": "route-change",
+      "subject": "POST /quotes",
+      "verdict": "unresolved",
+      "why": "the route is gone: changed, not proved, until a person approves it",
+      "obligations": {
+        "POST /quotes": "removed",
+        "POST /quote": "new"
+      }
+    }
+  ]
+}

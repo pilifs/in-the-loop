@@ -78,7 +78,8 @@ you). Loop and control-flow alignment and LLM-proposed mappings are [deferred](f
 
 ## Boundaries
 
-You own the new alignment module, the `align` command, the hints file's reading and writing, and the scoring tool for
+You own `lib/src/spec/align.rs`, your interface in the shared IR, which returns a named `Unsupported` until your
+part is done; your checks in `lib/tests/foundations.rs` turn from unsupported to passed as you do it. You also own the new alignment module, the `align` command, the hints file's reading and writing, and the scoring tool for
 A1, with their tests. You call into `equivalence.rs` to check candidates as a caller, not by changing how a check
 runs. The refusal messages that suggest an expression today (`equivalence.rs:768-810`) may call your inference
 instead of their own matching, as a hook.

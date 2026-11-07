@@ -73,7 +73,8 @@ correspondences (alignment), entry-point effects and the effect-log hook (observ
 
 ## Boundaries
 
-You own `lib/src/bmc/`, `lib/src/harness/` apart from Phase 0's effect-log hook, `witness.rs`, `jvm_witness.rs`,
+You own `lib/src/spec/heap.rs`, your interface in the shared IR, which returns a named `Unsupported` until your
+part is done; your checks in `lib/tests/foundations.rs` turn from unsupported to passed as you do it. You also own `lib/src/bmc/`, `lib/src/harness/` apart from Phase 0's effect-log hook, `witness.rs`, `jvm_witness.rs`,
 `shrink.rs`, `relocate.rs` and their tests. `lib/models/` is shared with no other stream this time, but a model change
 still says under Progress which JBMC results it may change. JBMC need not follow every new capability: where it can't
 take an object input, the own checker decides alone and the result says so; `--confirm` refuses rather than

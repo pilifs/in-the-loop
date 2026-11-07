@@ -332,6 +332,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
         vacuity: None,
+        spec: None,
     };
 
     // 3. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.

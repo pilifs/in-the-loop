@@ -224,11 +224,12 @@ Done on the branch `foundations-draft` (2026-11-06):
    The engines brief names no script, so its run is unchanged.
 3. **Session ids** in the five briefs' Loop settings, and `- fork:` naming the planning session in the four streams'.
 
-Still to do, in this order, once `engine-priorities` is merged into `main` and its jobs are back and verified:
-4. **Bring the branch up to date.** Rebase `foundations-draft` onto the merged `main`, and recheck
+Then, once `engine-priorities` was merged into `main` and verified (2026-11-07), steps 4 and 5 were done and 6 and 7
+follow:
+4. **Bring the branch up to date** (done). Rebase `foundations-draft` onto the merged `main`, and recheck
    [Where it starts from](#where-it-starts-from) against the merged code: the engines streams changed `statement.rs`,
    `equivalence.rs` and `main.rs`, and may have finished arrays of references (H0).
-5. **Phase 0** on top of it, by the planning session: the types, interfaces, fixture and `lib/tests/foundations.rs`,
+5. **Phase 0** (done) on top of it, by the planning session: the types, interfaces, fixture and `lib/tests/foundations.rs`,
    whose tests `foundations-integration.sh` runs. It wasn't done on the draft branch because it rewrites
    `statement.rs`, which the jbmc stream is changing.
 6. **Merge the branch into the default workspace's line**, so that `run-streams.sh foundations` runs from the default
@@ -240,20 +241,23 @@ Still to do, in this order, once `engine-priorities` is merged into `main` and i
 
 | Loop | Brief | jj workspace | Priority | Owns |
 |---|---|---|---|---|
-| `foundations-heap` | [`foundations-heap.md`](foundations-heap.md) | `heap` | 1 | `lib/src/bmc/`, `harness/` (apart from Phase 0's effect-log hook), `witness.rs`, `jvm_witness.rs`, `shrink.rs`, `relocate.rs` |
-| `foundations-summaries` | [`foundations-summaries.md`](foundations-summaries.md) | `summaries` | 2 | `shared.rs`, `digest.rs`, the new proof cache, the `impact` command, `examples/tools/build.py`'s use of the cache |
-| `foundations-observations` | [`foundations-observations.md`](foundations-observations.md) | `observations` | 3 | `boundaries.rs`, `reach.rs`, `failures.rs`, `wire.rs`, `store.rs`, the new observation spec, the recording stubs, Box Office |
-| `foundations-alignment` | [`foundations-alignment.md`](foundations-alignment.md) | `alignment` | 4 | the new alignment module and its command, the hints file |
+| `foundations-heap` | [`foundations-heap.md`](foundations-heap.md) | `heap` | 1 | `lib/src/spec/heap.rs`, `lib/src/bmc/`, `harness/` (apart from Phase 0's effect-log hook), `witness.rs`, `jvm_witness.rs`, `shrink.rs`, `relocate.rs` |
+| `foundations-summaries` | [`foundations-summaries.md`](foundations-summaries.md) | `summaries` | 2 | `lib/src/spec/cache.rs`, `shared.rs`, `digest.rs`, the new proof cache, the `impact` command, `examples/tools/build.py`'s use of the cache |
+| `foundations-observations` | [`foundations-observations.md`](foundations-observations.md) | `observations` | 3 | `lib/src/spec/observe.rs`, `boundaries.rs`, `reach.rs`, `failures.rs`, `wire.rs`, `store.rs`, the new observation spec, the recording stubs, Box Office |
+| `foundations-alignment` | [`foundations-alignment.md`](foundations-alignment.md) | `alignment` | 4 | `lib/src/spec/align.rs`, the new alignment module and its command, the hints file |
 | `foundations` | this brief | `default` | | the merge, Phase 5, the docs, and what the streams left |
 
 **Shared files**, which any stream may touch by adding rather than rewriting (new options, variants, cases and
 functions; no reorganization), naming each change under its Progress: `lib/src/main.rs`, `lib.rs`, `statement.rs`,
 `equivalence.rs`, `property.rs`, `Cargo.toml`, `lib/tests/`, `lib/README.md`, `examples/tags.json`,
-`examples/README.md`. `equivalence.rs` is where three streams hook in (the cache lookup, inferred mappings, object
+`examples/README.md`. Phase 0's shared IR, `lib/src/spec/mod.rs`, its fixture `lib/tests/fixtures/foundations/` and its
+test `lib/tests/foundations.rs` are shared the same way: add fields, variants, cases and checks; a change to what one
+already says is a note for the reconcile loop. A stream implements its own interface file in `lib/src/spec/` and
+calls into its own modules from there. `equivalence.rs` is where three streams hook in (the cache lookup, inferred mappings, object
 and effect observations): keep each hook a call into the stream's own module.
 
-**Example numbers.** Phase 0 reserves a block of ten example numbers for each stream, after the highest number at the
-fork, and the joint example's numbers. A stream numbers its new examples from its block only. The reconcile loop
+**Example numbers** (reserved in Phase 0, after 149, the highest at the fork): heap 150–159, summaries 160–169,
+observations 170–179, alignment 180–189, and 190–199 for the reconcile loop's joint example. A stream numbers its new examples from its block only. The reconcile loop
 closes any gaps with `examples/tools/build.py --render-only`.
 
 **Running it all** (the user, from the default workspace, in tmux): `llm-dlc/tools/run-streams.sh foundations`, as
@@ -312,8 +316,21 @@ the review, not inputs to this loop.
 
 ### Phase 0: the shared IR and the integration contract
 
-Done once in the default workspace, by the planning session after approval, before `run-streams.sh`. Types,
-interfaces, fixtures and tests; no behaviour change to any existing command.
+**Done** on 2026-11-07 by the planning session, on `main` after the `engine-priorities` merge, before
+`run-streams.sh`: types, interfaces, fixtures and tests, with no behaviour change to any existing command. What it
+delivered:
+- `lib/src/spec/mod.rs`: the types below, serializable both ways, with `Correspondence::from_flags` (the existing
+  flags as a special case) and stable observation ids. `Statement` has an optional `spec` field for them, `None`
+  until a stream fills it, so no recorded result changes.
+- `lib/src/spec/heap.rs` (`check`), `cache.rs` (`key`, `lookup`, `store`, `callee_reuse`), `observe.rs`
+  (`entry_points`, `compare`, `effect_log`, `check`) and `align.rs` (`propose`): each stream's interface, returning a
+  named `Unsupported` until it does its part.
+- `lib/tests/fixtures/foundations/`: the joint example (below), its six defects, and its golden files, checked on a
+  real JVM ([its README](../../lib/tests/fixtures/foundations/README.md)).
+- `lib/tests/foundations.rs`: the golden files round-trip through the types, and 24 checks over the four parts, all
+  unsupported at the start and none failing. `foundations-integration.sh` runs it.
+
+The plan it followed:
 
 **The types** (in `statement.rs` and beside it):
 - **Preservation contract.** The external input domain and the required observations of a comparison: how both
@@ -362,7 +379,7 @@ interfaces, fixtures and tests; no behaviour change to any existing command.
 
 **The integration contract**, executable:
 - the joint example's fixture ([Phase 5](#phase-5-the-joint-example)): the before and after builds and each defective
-  sibling, committed under the joint example's reserved numbers;
+  sibling, in `lib/tests/fixtures/foundations/`; Phase 5 makes it an example under the numbers 190–199;
 - golden files of its preservation contract, domain, observations, correspondence and canonical claim;
 - `lib/tests/foundations.rs`, a test per stream's part and per case, with the final verdict each must reach. A test
   passes when its part reaches that verdict or still stops with its named unsupported result, and fails on anything
@@ -495,9 +512,17 @@ annotations or configuration, which S1 adds.
 ## Progress
 
 - Drafted on the branch `foundations-draft`, with its inputs, and revised after the review of the draft.
-- Launch prerequisites 1–3 done on that branch: the names, the integration check, the session ids.
+- Launch prerequisites 1–5 done (2026-11-07): the names, the integration check, the session ids, the branch on
+  `main` after the `engine-priorities` merge with [Where it starts from](#where-it-starts-from) rechecked, and
+  [Phase 0](#phase-0-the-shared-ir-and-the-integration-contract).
+- Reserved example numbers: heap 150–159, summaries 160–169, observations 170–179, alignment 180–189, joint example
+  190–199.
+- A known flaky test, not caused by Phase 0: `bmc::bits::tests::the_encoding_estimate_does_not_count_a_large_circuit_many_times_over`
+  compares an encoding estimate with wall-clock time and failed once in three runs of the unit suite under load
+  (2026-11-07). It is in the heap stream's code; a stream that sees it fail should rerun it once before treating it as
+  its own regression.
 - Decisions settled by the user on 2026-11-07 ([Decisions](#decisions)).
-- Status: blocked: the `engine-priorities` merge and its verified results, then launch prerequisites 4–7.
+- Status: working
 
 ## Loop settings
 

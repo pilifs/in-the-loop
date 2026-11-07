@@ -59,6 +59,7 @@ pub mod relocate;
 pub mod sarif;
 pub mod shared;
 pub mod shrink;
+pub mod spec;
 pub mod statemachine;
 pub mod statement;
 pub mod reach;

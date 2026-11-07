@@ -283,6 +283,20 @@ The crate's modules follow the pipeline: [`classfile`](src/classfile/mod.rs) par
 
 JBMC has no bytecode for the class library, and the interpreter has natives for the part of it that pure domain code uses. Where the two must agree on a JDK class neither has, the tool ships a model: a small Java class with the behaviour programs observe, compiled into the binary, put on JBMC's class path by `equivalence` and `prove`, and executed by the interpreter in place of its natives for the methods the model defines. A few are for JBMC alone (`java.lang.Enum`, `List.of` and `List.copyOf` with the JDK's immutable lists), where the interpreter's natives already behave as the JVM does and stay; the tool's own checker runs `Enum`'s too (`models::CHECKER_RUNS`), as it has no natives; the conformance corpus checks both the natives and the models against a JVM. The catalogue, what each model keeps and leaves out, and how to add one are in [`models/README.md`](models/README.md). JBMC runs without its string solver (`--no-refine-strings`), which would otherwise replace calls of `java.lang.Character` by approximations of its own ahead of the model; `--refine-strings` turns it back on, and `--no-models` leaves the models out. JBMC is also asked for its bundled CaDiCaL (`--sat-solver`), since the MiniSAT path it takes without the string solver stalled on array proofs that CaDiCaL settles in a second.
 
+## The foundations IR
+
+`src/spec/` holds the shared types of the [foundations loop](../llm-dlc/loops/foundations.md): a comparison's
+preservation contract (its external inputs and the observations the old version is held to, which inference may not
+change), the object part of an input domain (classes, input-object and allocation bounds per version, nullability,
+aliasing, and how inputs are made, labelled in every result), observations beyond result and exception (field paths,
+identity relations within a version, effects as modeled boundary-call attempts), the correspondence between old and
+new internal states (of which `--before-arguments` and `--results-agree-when` are special cases,
+`Correspondence::from_flags`), the hints file (each hint with an intent state and an evidence state, kept apart), and
+the canonical claim a cache key digests. `Statement` carries them in its optional `spec` field. Each of the loop's
+four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`, `align.rs`), which returns a named
+`Unsupported` until that stream implements it; `tests/foundations.rs` checks every part against the joint example in
+`tests/fixtures/foundations/`.
+
 ## Limits
 
 - The interpreter models a subset of the JDK. Code outside it is *unverifiable*, never wrong; the message names the method. JBMC's view of the JDK is narrower still: it gets six JDK classes (`Byte`, `Short`, `Integer`, `Long`, `Math`, `StrictMath`) and the tool's [models](models/README.md) of a few more (the boxing caches, `Character.digit`, `java.nio.charset`, `Enum`, `List.of` and `List.copyOf`), and treats every other JDK class as a stub with nondeterministic fields and results, so a class whose static initializer reads a JDK static the tool does not model, or a call into a JDK method it does not, can end in a `NullPointerException` or an arbitrary result the JVM never produces. The replay in the interpreter is the check that catches most of these (a witness the interpreter cannot reproduce is reported as unverifiable, not as a violation); the fix is a model. Enum `hashCode` is deterministic here (the constant's name hash) where a JVM's is identity-based, and `ClassCastException` messages omit the class-loader suffix a JVM adds.

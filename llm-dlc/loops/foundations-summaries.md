@@ -79,7 +79,8 @@ observation specs (observations).
 
 ## Boundaries
 
-You own `lib/src/shared.rs`, `digest.rs`, the new cache module, the `impact` command, and `examples/tools/build.py`'s
+You own `lib/src/spec/cache.rs`, your interface in the shared IR, which returns a named `Unsupported` until your
+part is done; your checks in `lib/tests/foundations.rs` turn from unsupported to passed as you do it. You also own `lib/src/shared.rs`, `digest.rs`, the new cache module, the `impact` command, and `examples/tools/build.py`'s
 cache option, with their tests. `equivalence.rs` and `property.rs` are shared: the cache goes in as one call once the
 claim is prepared and one when the result is known, nothing more. `build.py`'s existing claim records
 (`claim_record`, `attempt_record`) are a starting point for what a key needs; reuse them rather than defining a second
