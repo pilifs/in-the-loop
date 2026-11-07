@@ -147,6 +147,20 @@ pub struct EffectSite {
     pub placement: Placement,
     /// Where the call is, as `Class.method(Types)`.
     pub in_method: String,
+    /// The call's parameters by name, each with the class of the argument passed at this site when the walk can
+    /// tell (`data`: `shop/QuoteEvent`): where a recording stub reads the payload paths from.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub arguments: Vec<CallArgument>,
+}
+
+/// One parameter of a modeled call, at one call site.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CallArgument {
+    pub name: String,
+    /// The static class of the argument passed (an internal name), when the walk can tell; else the parameter's
+    /// declared type is all that is known.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub class: Option<String>,
 }
 
 /// One obligation between two builds' entry points, from [`compare`]. Every observation of every old entry point
@@ -193,6 +207,24 @@ pub enum Change {
 pub struct EffectLogPlan {
     pub entry: String,
     pub environment: EnvironmentModel,
+    /// One recording stub per modeled call, in the environment model's order: the index of an attempt in the log.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub stubs: Vec<RecordingStub>,
+    /// What the log's verdicts rest on, in words: the stubs, the environment model's restriction, how the handler is
+    /// made.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub assumptions: Vec<String>,
+}
+
+/// A modeled call replaced, in both versions, by a stub that appends an attempt to the effect log.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RecordingStub {
+    /// The call replaced, `owner#name(descriptor)`.
+    pub call: String,
+    /// The payload paths it snapshots at the call, in the order the log holds them.
+    pub snapshot: Vec<String>,
+    /// What it gives back to the caller: `nothing` (void), or the type's default, which the caller must drop.
+    pub returns: String,
 }
 
 /// The entry points of the application whose classes are under `build`.
@@ -212,14 +244,12 @@ pub fn compare(before: &[EntryPointSpec], after: &[EntryPointSpec]) -> Result<Ve
 
 /// The effect-log hook: how the harness records and compares the effects of `spec`'s entry point.
 pub fn effect_log(spec: &EntryPointSpec) -> Result<EffectLogPlan, Unsupported> {
-    let _ = spec;
-    Err(Unsupported::new(Part::Observations, "recording stubs and the effect log (O3)"))
+    crate::effects::plan(spec)
 }
 
 /// Discharges an entry point's obligations: proves that `claim`'s observations of the entry point `old` in the
 /// classes under `before` are preserved by `new` under `after`, effects included, under the claim's environment
 /// model. A refuted [`Outcome`] carries a witness replayed under the modeled dependencies.
 pub fn check(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
-    let _ = (claim, old, new, before, after);
-    Err(Unsupported::new(Part::Observations, "discharging an entry point's obligations (O3)"))
+    crate::effects::check(claim, old, new, before, after).map(|c| c.outcome)
 }

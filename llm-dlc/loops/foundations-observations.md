@@ -208,11 +208,40 @@ under Progress.
 - Also not this stream's to fix: `sync.py check` reports five old `main` commits whose trailers point at session
   `c2bd9df4`'s log `1f2230c9f137`, which their manifest doesn't list; the verification loop rewrote them at 04:44
   in a change (`uvmurzwkyukn`) whose manifest lists it, and that change isn't in this branch.
-- Next: O3, narrow case: the effect-log hook (`observe::effect_log`) and `observe::check` for the joint example's
-  `POST /quotes`, with recording stubs for its one outgoing send, one environment model for both versions, exact
-  order and a visible bound, through `equivalence.rs` as a new caller of the harness; the dropped and the duplicated
-  effect refuted with witnesses replayed under the modeled dependencies, and the refactor proved (a quick job if it
-  needs a proof run).
+- **O3, narrow case (2026-11-07): the joint example's effect obligation discharged.** New module
+  `lib/src/effects.rs`, behind `observe::effect_log` (the plan: the environment model, one `RecordingStub` per
+  modeled call with its snapshot paths and what it returns, the assumptions) and `observe::check`. In both builds
+  alike, each call site of a modeled call is redirected to a generated stub (`shared::redirect_calls`, called, not
+  changed); a stub of an observed effect appends one attempt with its payload paths snapshotted at the call (a
+  string as the literal of either build it is, a record's component through its accessor). One environment model
+  serves both: the claim's calls and both specs', every call returning normally, stated as an assumption. A
+  generated method in the handler's package makes the handler with its one constructor and null dependencies, calls
+  it on the inputs and returns the log (outcome by exception class, response, attempts in exact order), and
+  `equivalence::run` (a new caller, with the own checker) proves the two logs equal. Past the trace bound, a string
+  no literal is, a call on a dependency the model doesn't have, or a `NullPointerException` out of the handler marks
+  the log unresolved, differently per build, so no proof covers such an input and a witness on it is unresolved,
+  never a shorter trace. A counterexample is replayed on a JVM (`jvm_witness::run`, called) under the stubs and
+  decoded into each build's attempts. Refused by name: a handler that uses a modeled call's result (modeled return
+  values), non-integral inputs or response, an application object among its dependencies, failure outcomes in the
+  model. Results, inline (each proof under a second): the refactor verified with result, exception, status and the
+  send preserved; `dropped-effect` refuted at cents=1, quantity=100 (the old build sends `total=90`, the new one
+  nothing), `duplicated-effect` at quantity=10 (one send against the same send twice), `offset` at cents=0,
+  quantity=1, each replayed on JDK 25; the duplicate under trace bound 1 unresolved; `POST /quotes/text` unresolved.
+  The integration contract's observations part now passes whole: 13 passed, 0 failed, and only the heap, alignment
+  and summaries parts unsupported. Tested by `lib/tests/effects.rs` (10 tests). Also fixed: the Box Office patch
+  test compiled with `javac -parameters` but no `-g`, unlike Gradle, and `reach.rs` reads a local's type from the
+  local variable table, so the new per-site argument classes differed (`Update` against `UpdateDefinition`); it now
+  passes `-g`. Shared files touched, by adding: `lib/src/lib.rs` (the module), `lib/tests/effects.rs` (new),
+  `lib/tests/observations.rs` (`-g`), `lib/README.md` (a paragraph). `observe.rs` gained `EffectSite::arguments`
+  (`CallArgument`), `EffectLogPlan::stubs` and `assumptions` (`RecordingStub`), with serde defaults. The core (O1,
+  O2, O3's narrow case) is done. The last integration report (05:01) was a merge conflict in shared docs and trace
+  files (`lib/README.md` four-sided among them), not a failing check: the reconcile loop's to merge.
+- Next: the rest of O3, from examples 170–179: an entry point refactored correctly and proved, with a dropped and a
+  duplicated effect in siblings. Box Office's handlers take strings and objects, which the narrow case refuses, so
+  the first is likely a Crosscut kernel behind a thin route with integral parameters. It needs the check from the
+  command line first (an `observations` option or command over two builds), then the examples and their runner.
+  Two narrowings to lift for Box Office: the scan for a used result covers the whole build rather than the handler's
+  reach, and a modeled call's result can't be used yet.
 - Status: working
 
 ## Loop settings

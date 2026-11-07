@@ -30,7 +30,7 @@ use crate::classfile::{flags, simple_name_of, Annotation, ClassFile, Method, Met
 use crate::classpath::ClassPath;
 use crate::failures::{self, status_code, Handlers, Outcome as Failure};
 use crate::reach::{self, display, method_label, Placed, Placement, SiteKind};
-use crate::spec::observe::{Binding, BindingSource, Change, EffectSite, EntryKind, EntryPointSpec, Obligation, StatusOutcome};
+use crate::spec::observe::{Binding, BindingSource, CallArgument, Change, EffectSite, EntryKind, EntryPointSpec, Obligation, StatusOutcome};
 use crate::spec::{Derivation, EnvironmentModel, ExternalInput, ModeledCall, Observation, OrderPolicy};
 use crate::{binding, validation, wire, Error};
 
@@ -315,7 +315,8 @@ impl Entry<'_> {
             if computed_target(&site.target) {
                 unresolved.push(format!("the target of {} in {}: computed at run time ({})", short_call(&site.call), site.in_method, site.target));
             }
-            effects.push(EffectSite { kind: site.kind, target: site.target.clone(), call: site.call.clone(), payload, placement: *placement, in_method: site.in_method.clone() });
+            let arguments = parameters.iter().enumerate().map(|(i, name)| CallArgument { name: name.clone(), class: site.arguments.get(i).cloned().flatten() }).collect();
+            effects.push(EffectSite { kind: site.kind, target: site.target.clone(), call: site.call.clone(), payload, placement: *placement, in_method: site.in_method.clone(), arguments });
         }
         unresolved.extend(reached.dynamic.iter().map(|d| format!("a dynamic call site the walk doesn't follow: {d}{}", dynamic_note(d))));
         unresolved.extend(reached.unresolved.iter().map(|u| format!("a call the walk can't follow: {u}")));

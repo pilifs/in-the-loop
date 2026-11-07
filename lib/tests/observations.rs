@@ -524,9 +524,10 @@ const BUILD_ORDER: [&str; 5] = ["contracts", "messaging", "ticketing-domain", "t
 
 /// The specs of Box Office's modules with entry points, with `patch` applied (none: as it is). The patched copy is
 /// the sources alone; each module whose Java sources the patch changes is compiled again with javac, as its Gradle
-/// build compiles it (`-parameters`), in dependency order, against the base build's class path with the recompiled
-/// modules' classes in place of their jars. Every other module is as the base build left it. The walk follows the
-/// sibling modules, as `observations --base` does. `None`, after `missing`, when the base build can't run here.
+/// build compiles it (`-g -parameters`: the walk reads a local's type from the local variable table), in dependency
+/// order, against the base build's class path with the recompiled modules' classes in place of their jars. Every
+/// other module is as the base build left it. The walk follows the sibling modules, as `observations --base` does.
+/// `None`, after `missing`, when the base build can't run here.
 fn patched_specs(name: &str, patch: Option<&Path>) -> Option<BTreeMap<&'static str, Vec<EntryPointSpec>>> {
     let (root, classpath) = boxoffice()?;
     let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("observations-examples").join(name);
@@ -553,7 +554,7 @@ fn patched_specs(name: &str, patch: Option<&Path>) -> Option<BTreeMap<&'static s
             }
             let files = java_files(&sources.join(m).join("src/main/java"));
             let cp = std::env::join_paths(&entries).unwrap();
-            let out = Command::new("javac").args(["-parameters", "-proc:none", "-nowarn", "-encoding", "UTF-8", "-d"]).arg(classes(m)).arg("-cp").arg(&cp).args(&files).output().unwrap();
+            let out = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "-encoding", "UTF-8", "-d"]).arg(classes(m)).arg("-cp").arg(&cp).args(&files).output().unwrap();
             assert!(out.status.success(), "{name}: javac {m}: {}", String::from_utf8_lossy(&out.stderr));
         }
     }

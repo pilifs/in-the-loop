@@ -42,6 +42,7 @@ pub mod deadline;
 pub mod details;
 pub mod digest;
 pub mod domain;
+pub mod effects;
 pub mod equivalence;
 pub mod harness;
 pub mod interp;
