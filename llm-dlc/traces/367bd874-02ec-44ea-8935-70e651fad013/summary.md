@@ -26,7 +26,7 @@ Job 20261107-155804-alignment-a3-second-half-every-proposal (regression proof ov
 
 ### Record session traces
 
-change `pzysxltwvptp` · [log `74cdaf871d27`](https://terminalvalue.net/raw-traces/367bd874-02ec-44ea-8935-70e651fad013/74cdaf871d27648a3ab992bb32db4cad7b63717df13ad70befed0726cc5d474e.jsonl.gz)
+[`629e88326e75`](https://github.com/pilifs/in-the-loop/commit/629e88326e75e2dfdce70da78b7dbefbce952f1d) · [log `74cdaf871d27`](https://terminalvalue.net/raw-traces/367bd874-02ec-44ea-8935-70e651fad013/74cdaf871d27648a3ab992bb32db4cad7b63717df13ad70befed0726cc5d474e.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

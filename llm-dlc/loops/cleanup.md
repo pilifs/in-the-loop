@@ -401,6 +401,13 @@ Settled by the user on 2026-11-07:
     - The directories of the forgotten workspaces `cleanup-native`, `cleanup-jbmc`, `cleanup-examples` and
       `cleanup-integration` are still on disk. `llm-dlc/tools/prune_workspaces.py` reports which are safe to delete
       and prints the command, for the user to run.
+- **The for-review list, reviewed with the user** (2026-11-07, after the loop, in its session). The decisions on
+  VF-001, VF-002, VF-018 and VF-020 are recorded in their `findings.md` entries; VF-011 and VF-013 are closed there.
+  The golden kernel domain's allocation bound of 2 for the new version is confirmed as intended: a regression claim
+  has to admit the code it is checked on. Chosen to do before the next feature loop: the smaller-witness search made
+  deterministic, the stale lines in `examples/coverage.md` and `jbmc-upstream.md`, and `test_runs.py` and
+  `test_performance.py` added to the integration scripts. `stub-reachability.md` runs before the application-core
+  loop. The leftover workspaces are the user's to delete with `prune_workspaces.py`.
 - Status: done
 
 ## Loop settings

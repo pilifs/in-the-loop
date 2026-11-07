@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "00316fc7-52d4-4009-9502-48e1d40764a8",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
   "client": {
@@ -60,7 +60,7 @@
     {
       "change_id": "tvwqssxpkwvkwuuolzxtykrqysorwotm",
       "commit_id": "75e7f89a60d966a434c2aa0d4d828cb5b01f0842",
-      "immutable": false,
+      "immutable": true,
       "summary": "prune_workspaces.py: delete jj workspaces only once nothing in them can be lost",
       "body": "llm-dlc/tools/prune_workspaces.py considers every workspace but the default: those jj lists and the directories of forgotten ones (siblings REPO-* whose .jj/repo points here). It reports by default and deletes only with --delete. A workspace is clear when: no process has its cwd or a file open inside it, and no unfinished loop owns it (a stream workspace NAME-STREAM while llm-dlc/loops/NAME.md's status is neither done nor blocked); every commit of ::WS@ outside ::INTO (the default workspace's @-, or --into) is empty and undescribed; and every file, tracked, untracked or gitignored, is recoverable. That means its exact content is a blob reachable from INTO, or a file anywhere in the default workspace (hashed only on a size match, so its 12 GB verification/.state costs a walk), or it lies in a gitignored build-output directory (target/, build/, ...). It reads file contents, so edits jj never snapshotted count. A .git pointer file jj 0.47 writes is metadata; a .git directory blocks. --archive DIR copies would-be-lost files out and verifies each copy. Deletion re-checks use, forgets a listed workspace, removes the directory and runs git worktree prune. Claude Code transcripts under ~/.claude/projects are left alone.\n\nVerified by test_prune_workspaces.py, 12 cases on throwaway colocated jj repos: merged and deleted; an unmerged commit, an unsnapshotted edit, a unique gitignored .env (and --archive keeping it), a tracked dir named build, a forgotten dir with a unique file, a process inside, a .git directory, and an unfinished loop's workspace all block; a run record copied into the default under another name and ignored target/ are clear. A report-only run here (13 s) finds 3 of 13 clear (the engine-priorities leftovers examples, jbmc, native). The four cleanup-* are kept while cleanup.md waits on jobs. Blocked: the foundations streams' gitignored run records in loop-summaries/ (alignment, heap, observations, summaries), three trace logs only in the foundations directory, and the integration directory's merge files. Nothing was deleted.",
       "log_sha256": "b866e68ac11269bd4b2f12f3b77fbbf79bff5d00de0b0166a691098a9945f8f5"
@@ -68,7 +68,7 @@
     {
       "change_id": "xlsmwprlkmpzspymrpkpryrlntmmrunz",
       "commit_id": "003e15ccaa465b1defe86ce9881e48488cbd569f",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for the cleanup merge's 4 jobs, all passed",
       "body": "Ran the four jobs queued at b6cc7ceb0c96 on vm-1: examples 150-152 and 160-161, 170-172 and 190-196 each gave their recorded verdict (as expected), and lib/tests/integration.rs passed unchanged. Collect applied 40 example output files (README, result.json, verifier-output) and regenerated the examples table. Only attention: 1-CPU quotas held the example steps back a few seconds; estimates were far over (minutes against under a minute). No findings added.",
       "log_sha256": "436361eaf1ae50a060c526c0e6a609652cc42923fad69d890b1f8ba21b9ecb03"
@@ -76,7 +76,7 @@
     {
       "change_id": "tposrkskrpmnuyqxvrqqzuymqussptnk",
       "commit_id": "10be49c860c94cfc564624a7fb510117f597e703",
-      "immutable": false,
+      "immutable": true,
       "summary": "prune_workspaces.py only reports, and prints the delete command for a person to run",
       "body": "Without --delete the script only reports whether each workspace is safe to delete, and ends with the exact command that deletes the safe ones. Where a workspace is blocked only by files found nowhere else, it also prints the --archive DIR form. --delete now takes the workspaces by name and refuses unless a person is at a terminal, the check sync.py's allow approve uses: stdin and stdout are terminals, and CLAUDECODE is unset. It checks the named workspaces again, lists the safe ones and asks the person to type \"delete\" before forgetting and removing any. --archive writes, so it goes with --delete only.\n\nVerified by test_prune_workspaces.py, now 14 cases. The deleting ones run main() with the terminal check and the prompt patched. New: the report prints the command and deletes nothing; --delete is refused in an agent's shell; --delete needs names; a wrong answer deletes nothing; --archive without --delete is a usage error. On this repo the report prints python3 llm-dlc/tools/prune_workspaces.py --delete examples jbmc native, and the same --delete run from this session was refused, with ../in-the-loop-native still in place.",
       "log_sha256": "ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53"
@@ -84,7 +84,7 @@
     {
       "change_id": "nmwtoxlzumykkxkywlkwtvpvonpsylms",
       "commit_id": "49d2979e3dee1b255ebd84f050a8e95067b36228",
-      "immutable": false,
+      "immutable": true,
       "summary": "Cleanup Phase 4, step 4: the merge's four jobs passed, and the for-review list names every entry's state: the cleanup loop is done",
       "body": "The four jobs queued at the merge's code (b6cc7ceb, collected in xlsmwprl) all passed on vm-1: examples 150-152, 160-161, 170-172 and 190-196 each gave their recorded verdict, and lib/tests/integration.rs passed unchanged. With the merge's inline tests and step 2's published run records (check at 0 errors), Phase 4's criterion is met, and Progress ends with status done.\n\nThe for-review list in llm-dlc/loops/cleanup.md's Progress gives each entry's state. Closed by their checks: VF-010, VF-021, VF-009, VF-019, VF-016, VF-017 and VF-014. Passed but still open in findings.md, for the verification agent to close: VF-011 (its 052 job passed) and VF-013 (test_runs.py, plus every record published). Open: VF-002's 147 and 148, deferred by the timebox; VF-018 and VF-001, deferred to the user; VF-015, to be settled by stub-reachability.md; VF-020, which needs the user's decision on jj's snapshot limit. The three foundations leftovers are fixed with tests. No job is pending. The new findings for a person are listed there too, among them: 148 and 149's '1 proved, 2 tested' expectation, the golden kernel domain's allocation bound going from 0 to 2, the stale wording in coverage.md and jbmc-upstream.md, and the forgotten cleanup workspaces' directories still on disk.\n\nOut of date in the rest of the brief: 'Where it starts from' describes the state before the streams ran.",
       "log_sha256": "ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53"

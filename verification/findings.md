@@ -36,6 +36,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   which is build output; a submitter's call for the jobs that follow.
 - **Closes when**: `jj st` shows no refused file after a collect, or the result is recorded as lacking its diff on
   purpose.
+- **Decided** by the user on 2026-11-07: `collect` handles the size. A `changes.diff` over jj's limit is written
+  gzipped (`changes.diff.gz`), or, if that is still over, as a `--stat` summary, and `result.json`'s `changesDiff`
+  says which. The limit stays at 1 MiB. The two results above are recorded as lacking their diff.
 
 ### VF-018: JBMC doesn't finish within 600 s on four of H5's regression proofs over objects under a correspondence
 
@@ -71,6 +74,10 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     Verified, on a JVM false)`. Tripling the limit did not help them, so a longer limit is not the way out for these
     three: the harness or its encoding needs triage, or the expectation is the user's decision, as above.
   - Memory was never the limit (peak 1.6 GiB of 6).
+- **Decided** by the user on 2026-11-07: triage the harness, with the tests' expectation unchanged. A quick job runs
+  JBMC on one of the three generated harnesses with its statistics, then on smaller encodings (fewer objects, a
+  tighter unwind, the equations as assumptions). If one finishes, the harness generator adopts it and the three jobs
+  are resubmitted unchanged.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 
@@ -87,54 +94,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N3).
 - **Closes when**: the job, resubmitted at a fixing commit, passes.
 - **Rerun** 2026-11-07 on `vm-1`: job `20261107-165827-example-109-revisited-hex-todigit-s-regr` (at `86e4ce7d220f`) failed at step 3, differently. The witness replay is no longer the problem (JBMC now proves the old `toDigit` for `0x0660`). Now `jvmcontract` refuses the result under `--gaps strict`: "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it: `jdk-static-method:java.lang.String.format(String, Object[])`" (a stub JBMC returns null or any object for). Steps 4 and 5 were skipped. **Needs**: a decision on whether the job should pass `--gaps assume` or advised (the job's step, the submitter's), or a model of `String.format` (the exception path of `Hex.toDigit` calls it); the cleanup loop's native stream. The entry stays open.
-
-### VF-013: the loops' run records are never published: they are gitignored, and unredacted
-
-- **Status**: open (deferred by the user on 2026-11-07, until after the next feature loop; the approach below is
-  chosen)
-- **Raised**: 2026-11-07, while deleting the engine-priorities stream workspaces, whose 6 run records existed nowhere
-  else (copied into `llm-dlc/loop-summaries/` first). Not a job failure.
-- **Found**: `llm-dlc/tools/feature-loop.sh` writes a record of each run to `llm-dlc/loop-summaries/` (gitignored,
-  `.gitignore:47`). It holds the start, cycle limit, session, model and effort, the brief's path and sha256, the
-  instruction every cycle was given, a line per commit as it landed, the session's closing summary, and how the run
-  ended. The summary is also the session's last turn (published, redacted, with its transcript), and the commits are in
-  git. But nothing else records which commits belong to which run, or how and when each run stopped. The 7 records
-  now are 7 to 18 KB each. Six of the seven hold unredacted local paths (the brief's path in the instruction and
-  header), so removing them from `.gitignore` would publish them raw.
-- **Needs** (option 1, chosen by the user): `sync.py` publishes each record redacted, beside the session it belongs to.
-  - It reads the session id from the record's header.
-  - It redacts the record with the same `Redactor` the transcripts use.
-  - It writes the copy to `llm-dlc/traces/<session>/runs/<record>.md`, and links it from that session's `summary.md`
-    (a list of runs: start, end, cycles, how it ended).
-  - `check` scans the published copies like any other published file, and a finding in one is an error as for a log.
-  - A record the loop is still writing (no `Ended` line yet) is republished as it grows, or held back until it ends.
-  - Reproducer first: a test with made-up paths and a made-up session, which shows a record published unredacted, or
-    not at all, before the change.
-  - The redaction rules don't change, so no stamp is needed. `traces-readme-template.md` and `llm-dlc/README.md` say
-    where the runs are.
-  - The 7 existing records are published on the first `sync.py commit` after the change.
-  - Option 2, R2 with the logs, was set aside: the records are small and are best read on GitHub next to the summary.
-- **Tracked in**: `llm-dlc/loops/engine-priorities.md` (Progress, "Flagged for later").
-- **Closes when**: `sync.py`'s tests cover it, and after a commit every record in `llm-dlc/loop-summaries/` has a
-  redacted copy under its session's trace, linked from its summary, with `check` at 0 errors.
-
-### VF-011: the own checker counts a loop's unwinding over the whole path, so example 052 is left to JBMC
-
-- **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)
-- **Raised**: 2026-11-07, from job `20261107-000039-the-41-recorded-jbmc-examples-under-stri` (at `98bab485`, `vm-1`) and
-  the coverage inventory `examples/coverage.md` (commit `unvpruot`). Not a job failure.
-- **Found**: under `--gaps strict`, obligation `052#0` is established by JBMC (with unwinding assertions at 16) and
-  unresolved on the own checker: "a loop was not fully unwound with --unwind 16 (PropertyHarness.check at pc 238)".
-  As read, not yet reproduced: `Engine::jump` in `lib/src/bmc/mod.rs` counts back edges per path and per
-  `(class, method, target)`, and never resets the count when the loop is left. The property's `\max` over `k` of a
-  `\sum` over `i < k` is two nested loops in the harness (`harness/expr.rs` compiles each quantifier as a loop), so over
-  an array of length 8 one path takes the inner back edge up to 36 times. The count is incomplete, not unsound: a
-  path cut short gives no verdict.
-- **Needs**: a reproducer first (a nested loop whose inner loop runs fewer than the bound each time but more in total),
-  then counting per entry of a loop. Ranked second among the own checker's extensions in `examples/coverage.md`.
-- **Tracked in**: `examples/coverage.md` (extension 2), `llm-dlc/loops/engine-priorities.md` (Next, item 9).
-- **Closes when**: a job runs 052 under strict on the own checker (`approach.engine` set to native in a copy) and it is
-  established with no gap.
 
 ### VF-002: examples 147, 148 and 149 never reach a proof
 
@@ -189,8 +148,65 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   2026-11-06 on `vm-1`), with every disagreement; the logs in each job's `results/ID/logs/`.
 - **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
 - **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-172721-conformance-corpus-under-jbmc-and-engine` and `20261107-172721-conformance-corpus-under-engine-auto-con` (at `a1e29ec6a2e7`) both **failed**, for the same reason, none to do with the tests: their step is `cd lib && ... cargo test ... | tee target/conformance-*.log` with no `mkdir -p target`, and in a clean checkout `lib/target` does not exist when `tee` starts. The first job's log says `tee: target/conformance-jbmc.log: No such file or directory` and the step exited 1 although the test output shows `test result: ok. 2 passed; 0 failed`, 1236 s (so both corpus tests pass at this commit); the second was killed with SIGTERM after 22 s: not `tee`, but the runner's scope-name collision with its twin (the ids share 40 characters; see VF-021, fixed). A job that didn't pass doesn't close this entry. **Needs**: resubmit both with `mkdir -p target` before the pipe (as the jbmc-initializers job does), the cleanup loop's jbmc stream; the scope collision no longer applies. Closes then, if they pass.
+- **Decided** by the user on 2026-11-07: resubmit both with `mkdir -p target &&` before the pipe, nothing else
+  changed. The first job's "2 passed, 0 failed" is not taken as the check.
 
 ## Decided and closed
+
+### VF-013: the loops' run records are never published: they are gitignored, and unredacted
+
+- **Status**: closed 2026-11-07, by `mmrwolwp` (`sync.py` publishes each record redacted under
+  `llm-dlc/traces/<session>/runs/`, listed in the session's `summary.md`; `llm-dlc/tools/test_runs.py`, 8 tests, covers
+  it) and `lrwynvul`, which published the records with `check` at 0 errors. On 2026-11-07, after the cleanup loop, all
+  21 run records in `llm-dlc/loop-summaries/` had a published copy, `test_runs.py` passed and `check` gave 0 errors
+  and 0 warnings. The two other files there, `cleanup-integration.md` and `foundations-integration.md`, are the
+  integration scripts' notes, not `feature-loop.sh` run records, and are not published.
+- **Raised**: 2026-11-07, while deleting the engine-priorities stream workspaces, whose 6 run records existed nowhere
+  else (copied into `llm-dlc/loop-summaries/` first). Not a job failure.
+- **Found**: `llm-dlc/tools/feature-loop.sh` writes a record of each run to `llm-dlc/loop-summaries/` (gitignored,
+  `.gitignore:47`). It holds the start, cycle limit, session, model and effort, the brief's path and sha256, the
+  instruction every cycle was given, a line per commit as it landed, the session's closing summary, and how the run
+  ended. The summary is also the session's last turn (published, redacted, with its transcript), and the commits are in
+  git. But nothing else records which commits belong to which run, or how and when each run stopped. The 7 records
+  now are 7 to 18 KB each. Six of the seven hold unredacted local paths (the brief's path in the instruction and
+  header), so removing them from `.gitignore` would publish them raw.
+- **Needs** (option 1, chosen by the user): `sync.py` publishes each record redacted, beside the session it belongs to.
+  - It reads the session id from the record's header.
+  - It redacts the record with the same `Redactor` the transcripts use.
+  - It writes the copy to `llm-dlc/traces/<session>/runs/<record>.md`, and links it from that session's `summary.md`
+    (a list of runs: start, end, cycles, how it ended).
+  - `check` scans the published copies like any other published file, and a finding in one is an error as for a log.
+  - A record the loop is still writing (no `Ended` line yet) is republished as it grows, or held back until it ends.
+  - Reproducer first: a test with made-up paths and a made-up session, which shows a record published unredacted, or
+    not at all, before the change.
+  - The redaction rules don't change, so no stamp is needed. `traces-readme-template.md` and `llm-dlc/README.md` say
+    where the runs are.
+  - The 7 existing records are published on the first `sync.py commit` after the change.
+  - Option 2, R2 with the logs, was set aside: the records are small and are best read on GitHub next to the summary.
+- **Tracked in**: `llm-dlc/loops/engine-priorities.md` (Progress, "Flagged for later").
+- **Closes when**: `sync.py`'s tests cover it, and after a commit every record in `llm-dlc/loop-summaries/` has a
+  redacted copy under its session's trace, linked from its summary, with `check` at 0 errors.
+
+### VF-011: the own checker counts a loop's unwinding over the whole path, so example 052 is left to JBMC
+
+- **Status**: closed 2026-11-07, by job `20261107-171502-vf-011-example-052-under-strict-on-the-o` (at
+  `c6f34f8cb771`, `vm-1`, passed in 3m17s): 052 under strict on the own checker, with unwinding counted per entry of a
+  loop, is established with no gap. The fix may turn other "not fully unwound" results into verdicts or timeouts;
+  `lib/benchmark/results.json` was regenerated after it (2829 runs).
+- **Raised**: 2026-11-07, from job `20261107-000039-the-41-recorded-jbmc-examples-under-stri` (at `98bab485`, `vm-1`) and
+  the coverage inventory `examples/coverage.md` (commit `unvpruot`). Not a job failure.
+- **Found**: under `--gaps strict`, obligation `052#0` is established by JBMC (with unwinding assertions at 16) and
+  unresolved on the own checker: "a loop was not fully unwound with --unwind 16 (PropertyHarness.check at pc 238)".
+  As read, not yet reproduced: `Engine::jump` in `lib/src/bmc/mod.rs` counts back edges per path and per
+  `(class, method, target)`, and never resets the count when the loop is left. The property's `\max` over `k` of a
+  `\sum` over `i < k` is two nested loops in the harness (`harness/expr.rs` compiles each quantifier as a loop), so over
+  an array of length 8 one path takes the inner back edge up to 36 times. The count is incomplete, not unsound: a
+  path cut short gives no verdict.
+- **Needs**: a reproducer first (a nested loop whose inner loop runs fewer than the bound each time but more in total),
+  then counting per entry of a loop. Ranked second among the own checker's extensions in `examples/coverage.md`.
+- **Tracked in**: `examples/coverage.md` (extension 2), `llm-dlc/loops/engine-priorities.md` (Next, item 9).
+- **Closes when**: a job runs 052 under strict on the own checker (`approach.engine` set to native in a copy) and it is
+  established with no gap.
 
 ### VF-021: two of VF-010's benchmark jobs were killed by SIGTERM, with no output, and no verdict comparison across its fix was made
 

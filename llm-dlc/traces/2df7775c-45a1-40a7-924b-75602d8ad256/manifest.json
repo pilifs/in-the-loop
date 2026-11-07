@@ -388,7 +388,7 @@
     {
       "change_id": "oqqwvmqyzzowzxkoutlyrwytrpkmlwnx",
       "commit_id": "eeb1fa2938598024e7722e4b809414ecf513cae8",
-      "immutable": false,
+      "immutable": true,
       "summary": "run-streams.sh: workspaces named by each stream brief, the integration workspace by the brief, and taken directories refused before anything starts",
       "body": "The first launch of the cleanup loop stopped after adding its three stream workspaces. The integration workspace is added at ../REPO-integration, and the foundations run had left that directory behind when its workspace was forgotten, so jj workspace add failed. The planning session had already been compacted by then.\n\nrun-streams.sh now takes each stream's workspace from its brief's '- workspace:' setting, which must be unique among the streams and may not be default or NAME-integration. It no longer has to equal the stream's name, and it is used for the merge revisions and the heads. The integration workspace is NAME-integration (../REPO-NAME-integration), so briefs no longer share one. Before compacting the planning session, the script checks every directory it would add a workspace at. If one is already there, it names the directory and stops. The cleanup briefs use cleanup-native, cleanup-jbmc and cleanup-examples. The launch command spells out FEATURE_LOOP_MEMORY_MAX=4G, because shells started before ~/.profile changed still carry 8G, which overrides the briefs' memory setting. The three workspaces the failed start made (native, jbmc, examples, all empty) are forgotten in jj, and their directories are left for the user.\n\nTested in a throwaway jj repository, with stub claude and feature-loop.sh. A taken stream directory and a taken integration directory each stop the run before the compaction. With all directories free, the run adds cleanup-native, cleanup-jbmc, cleanup-examples and cleanup-integration, runs the three stream loops and the merge loop, and finishes. jj new on the three cleanup-STREAM@- revisions works in the integration workspace. bash -n passes.",
       "log_sha256": "3f768f3bb24604fbc1b1b8ea1b3bd327ddfea99bf153527d2a4c5b604aa204d7"
@@ -396,7 +396,7 @@
     {
       "change_id": "syqpoxomnynkzzlmzlqtvypnkwxxqnom",
       "commit_id": "185e2b1ec059c85f519ed5647812390cb7c33b3a",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 1 job: Alignment A3's second-half proofs passed",
       "body": "Job 20261107-155804-alignment-a3-second-half-every-proposal (regression proof over proposals for examples 121-139) passed in 50.7s, peak 479 MiB (estimated 5m, 2 GiB). Collect applied its 2 outputs (examples/tools/alignment/README.md and scores/A3-proofs.json) and the examples index was regenerated. No new findings; the older failed results the report still lists were triaged earlier.",
       "log_sha256": "747e1075ca6b862c81a071601cecfc54f396812475a007f2a751767bcef4435c"
