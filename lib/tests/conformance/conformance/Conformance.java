@@ -331,6 +331,58 @@ public class Conformance {
 
     public static int aliasedObjects(int n) { A p = new A(); A q = p; q.x = n; return p.x; }
 
+    // Symbolic references: ten independent choices between two objects (more paths than the native engine
+    // explores before it merges them), so that what follows runs on a reference that may be either, or null.
+
+    public static int swaps(int n) {
+        A a = new A(); a.x = 1;
+        A b = new A(); b.x = 2;
+        A x = (n & 1) != 0 ? b : a;
+        if ((n & 2) != 0) x = x == a ? b : a;
+        if ((n & 4) != 0) x = x == a ? b : a;
+        if ((n & 8) != 0) x = x == a ? b : a;
+        if ((n & 16) != 0) x = x == a ? b : a;
+        if ((n & 32) != 0) x = x == a ? b : a;
+        if ((n & 64) != 0) x = x == a ? b : a;
+        if ((n & 128) != 0) x = x == a ? b : a;
+        if ((n & 256) != 0) x = x == a ? b : a;
+        if ((n & 512) != 0) x = x == a ? b : a;
+        x.x += 10;
+        return a.x * 100 + b.x + (x == a ? 1000 : 0);
+    }
+
+    public static int swapsOrNull(int n) {
+        A a = new A(); a.x = 1;
+        A b = new A(); b.x = 2;
+        A x = (n & 1) != 0 ? null : a;
+        if ((n & 2) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 4) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 8) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 16) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 32) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 64) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 128) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 256) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 512) != 0) x = x == a ? b : x == b ? a : null;
+        return x instanceof A ? x.x : 0;
+    }
+
+    public static int swapsThenNull(int n) {
+        A a = new A(); a.x = 1;
+        A b = new A(); b.x = 2;
+        A x = (n & 1) != 0 ? null : a;
+        if ((n & 2) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 4) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 8) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 16) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 32) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 64) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 128) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 256) != 0) x = x == a ? b : x == b ? a : null;
+        if ((n & 512) != 0) x = x == a ? b : x == b ? a : null;
+        return x.x;
+    }
+
     public static int twoArrays(int[] a, int[] b) { a[0] = 1; b[0] = 2; return a[0]; }
 
     public static int writeThrough(int[] a) { int[] b = a; if (b.length > 0) b[0] = 7; return a.length == 0 ? 7 : a[0]; }

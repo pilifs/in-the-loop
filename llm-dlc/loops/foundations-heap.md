@@ -113,7 +113,30 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 
 ## Progress
 
-- Nothing yet.
+- **H1 done (2026-11-07), pending review of job `20261107-041414`.** The own checker has symbolic references:
+  `Val::C`, a [`Choice`](../../lib/src/bmc/mod.rs) of the path's objects or null under exclusive guards, made where
+  paths that differ only in a reference merge (`Engine::absorb`, through `choose`), and by a read through one.
+  `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas; `getfield` chooses among the candidates'
+  fields and `putfield` writes each under its guard, with `NullPointerException` where it is null; every other use
+  that needs the object (a call's receiver, a JDK call's or intrinsic's argument, array instructions, `checkcast`,
+  `athrow`, monitors) splits the path per candidate (`Engine::concrete_ref`), substituting the known reference for
+  every copy of the choice. `Val::R` stays the fast path: a known reference is never a formula. Arrays of references
+  still hold known cells (an `aastore` of a choice splits first), and paths whose objects differ in number or class
+  still don't merge.
+  - Evidence inline: `lib/tests/heap.rs` (new), three claims each checked merged from the start and never merged,
+    same verdicts, every violation's witness failing the claim on the JVM: ten independent choices then a write
+    through the chosen one, 22 paths merged against 1024; with null among the options, 30 against 1024; across two
+    classes with `instanceof`, a cast and a virtual call, 22 against 1024. Conformance cases `swaps`, `swapsOrNull`
+    and `swapsThenNull` (past the 512-path merge threshold) agree with the JVM. Unit tests (183), `integration.rs`
+    (64), `conformance.rs` and `foundations.rs` pass; the aliasing cases keep their verdicts.
+  - *For review*: job `20261107-041414`, the benchmark on the own checker against `lib/benchmark/results.json`:
+    expected no verdict changed, no formula grown past 10%, and paths or merges changed only in the three new cases.
+  - Shared files changed: `lib/README.md` (the merging paragraph), `lib/tests/conformance.rs` and
+    `lib/tests/conformance/conformance/Conformance.java` (three cases), `lib/tests/heap.rs` (new), and the generated
+    `lib/benchmark/conformance.json`.
+- Next: H2, object inputs made by constructors, starting with the domain's parameter kinds in the harness and
+  `unsupported_parameter`, and the conformance inputs outside the domain today (`twoArrays` with one array twice,
+  `length` and `lengthOrMinusOne` with null).
 - Status: working
 
 ## Loop settings

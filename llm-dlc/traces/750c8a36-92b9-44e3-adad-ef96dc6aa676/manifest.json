@@ -1,0 +1,99 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "750c8a36-92b9-44e3-adad-ef96dc6aa676",
+  "status": "open",
+  "title": "Next multi-stream loop draft",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T04:01:19.557Z",
+  "ended": "2026-11-07T04:14:54.360Z",
+  "duration_seconds": 815,
+  "stats": {
+    "turns": 5,
+    "api_calls": 53,
+    "tool_calls": 53,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 186050,
+    "usage": {
+      "input_tokens": 104,
+      "output_tokens": 48865,
+      "cache_read_input_tokens": 6494686,
+      "cache_creation_input_tokens": 202589
+    }
+  },
+  "tools": {
+    "Bash": 49,
+    "Read": 2,
+    "Edit": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "lib/tests/heap.rs",
+    "llm-dlc/loops/foundations-heap.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T04:01:19.557Z",
+      "ended": "2026-11-07T04:01:19.558Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-07T04:01:16.273Z",
+      "ended": "2026-11-07T04:14:54.360Z",
+      "turns": 5,
+      "api_calls": 53,
+      "usage": {
+        "input_tokens": 104,
+        "output_tokens": 48865,
+        "cache_read_input_tokens": 6494686,
+        "cache_creation_input_tokens": 202589
+      },
+      "peak_context_tokens": 186050
+    }
+  ],
+  "log": {
+    "sha256": "3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f",
+    "bytes": 1650525,
+    "lines": 592,
+    "gzip_bytes": 318904,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uyqkxslyysrmrmwsvxsmtulqllwotsqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Symbolic references in the own checker: paths that differ only in a reference merge, the reference a guarded choice of objects (H1, verification pending)",
+      "body": "The own checker (lib/src/bmc/mod.rs) represented every reference as a known object index or null, so paths that met with a reference to different objects never merged. A reference may now be a Choice: one of the path's objects or null, each under a guard, the guards exclusive and covering the path's condition. It is made where such paths merge, and by a field read through one. if_acmp, ifnull, ifnonnull and instanceof on a choice are formulas over the guards; getfield chooses among the candidates' fields, and putfield writes each candidate's field under its guard, with NullPointerException where the reference is null. Every other use that needs the object (a call's receiver, a JDK call's argument, an array instruction, checkcast, athrow, a monitor) splits the path per candidate first, as an index into an array of references already did. A known reference stays the fast path and never becomes a formula.\n\nVerified inline: a new test, lib/tests/heap.rs, checks three Java claims merged from the start and never merged, with the same verdicts both ways, and every violation's witness fails the claim on a real JVM. Ten independent choices between two objects and a write through the chosen one take 22 paths merged and 1024 unmerged. Three new conformance cases (swaps, swapsOrNull, swapsThenNull), past the 512-path merge threshold, agree with the JVM. The unit tests (183), integration.rs (64), conformance.rs and foundations.rs pass, and the aliasing cases keep their verdicts. lib/benchmark/conformance.json was regenerated for the three cases.\n\nJob 20261107-041414 runs the benchmark on the own checker and compares every run with lib/benchmark/results.json. Expected: no verdict changed, no formula grown past 10%, and paths or merges changed only in the new cases. It is listed for review in llm-dlc/loops/foundations-heap.md, which records H1 as done pending that job, with H2 next.",
+      "log_sha256": "3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f"
+    }
+  ],
+  "logs": {
+    "3b42670d19dca6a6c663deddb57ef1d31cc86fa0b07747db8259f75ffef0716f": {
+      "bytes": 1650525,
+      "lines": 592,
+      "gzip_bytes": 318904,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

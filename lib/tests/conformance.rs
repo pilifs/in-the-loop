@@ -180,6 +180,18 @@ fn corpus() -> Vec<Case> {
         // Aliasing.
         Case::new("aliasedLocals", &[("1", "returns 1")]).holds(None, "result == n", &[], V).refuted(None, "result == 0", &[], X),
         Case::new("aliasedObjects", &[("1", "returns 1")]).holds(None, "result == n", &[], V).refuted(None, "result == 0", &[], X),
+        // Symbolic references: past the engine's merge threshold, x is one of a, b (or null) under a formula.
+        Case::new("swaps", &[("0", "returns 2102"), ("1", "returns 112"), ("3", "returns 2102"), ("512", "returns 112"), ("1023", "returns 2102")])
+            .holds(None, "result == 2102 || result == 112", &[], V)
+            .refuted(None, "result == 2102", &[], X),
+        Case::new("swapsOrNull", &[("0", "returns 1"), ("2", "returns 2"), ("1", "returns 0"), ("1023", "returns 0")])
+            .holds(None, "(n & 1) != 0 || result == 1 || result == 2", &[], V)
+            .holds(None, "(n & 1) == 0 || result == 0", &[], V)
+            .refuted(None, "result != 0", &[], X),
+        Case::new("swapsThenNull", &[("0", "returns 1"), ("6", "returns 1"), ("2", "returns 2"), ("1", NPE)])
+            .holds(None, "result == 1 || result == 2", &["NullPointerException when (n & 1) != 0"], V)
+            .refuted(None, "result == 1", &["NullPointerException when (n & 1) != 0"], X)
+            .refuted(None, "result == 1 || result == 2", &[], X),
         Case::new("twoArrays", &[("[0];[0]", "returns 1")])
             .holds(Some("a.length > 0 && b.length > 0"), "result == 1", &[], V)
             .outside("[0];@0", "returns 2", "no two the same array"),

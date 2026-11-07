@@ -1232,6 +1232,114 @@
       "workload": "semantics"
     },
     {
+      "assert": "result == 2102 || result == 112",
+      "assume": null,
+      "basis": "no call the corpus lists refutes it on the JVM, and the corpus states it",
+      "expected": "verified",
+      "group": 1,
+      "id": "conformance/swaps/1",
+      "kind": "property",
+      "nativeStrict": "verified",
+      "target": "conformance.Conformance#swaps",
+      "throws": [],
+      "workload": "semantics"
+    },
+    {
+      "assert": "result == 2102",
+      "assume": null,
+      "basis": "a call the corpus lists refutes it on the JVM",
+      "expected": "violation",
+      "group": 1,
+      "id": "conformance/swaps/2",
+      "kind": "property",
+      "nativeStrict": "violation",
+      "target": "conformance.Conformance#swaps",
+      "throws": [],
+      "workload": "semantics"
+    },
+    {
+      "assert": "(n & 1) != 0 || result == 1 || result == 2",
+      "assume": null,
+      "basis": "no call the corpus lists refutes it on the JVM, and the corpus states it",
+      "expected": "verified",
+      "group": 1,
+      "id": "conformance/swapsOrNull/1",
+      "kind": "property",
+      "nativeStrict": "verified",
+      "target": "conformance.Conformance#swapsOrNull",
+      "throws": [],
+      "workload": "semantics"
+    },
+    {
+      "assert": "(n & 1) == 0 || result == 0",
+      "assume": null,
+      "basis": "no call the corpus lists refutes it on the JVM, and the corpus states it",
+      "expected": "verified",
+      "group": 1,
+      "id": "conformance/swapsOrNull/2",
+      "kind": "property",
+      "nativeStrict": "verified",
+      "target": "conformance.Conformance#swapsOrNull",
+      "throws": [],
+      "workload": "semantics"
+    },
+    {
+      "assert": "result != 0",
+      "assume": null,
+      "basis": "a call the corpus lists refutes it on the JVM",
+      "expected": "violation",
+      "group": 1,
+      "id": "conformance/swapsOrNull/3",
+      "kind": "property",
+      "nativeStrict": "violation",
+      "target": "conformance.Conformance#swapsOrNull",
+      "throws": [],
+      "workload": "semantics"
+    },
+    {
+      "assert": "result == 1 || result == 2",
+      "assume": null,
+      "basis": "no call the corpus lists refutes it on the JVM, and the corpus states it",
+      "expected": "verified",
+      "group": 1,
+      "id": "conformance/swapsThenNull/1",
+      "kind": "property",
+      "nativeStrict": "verified",
+      "target": "conformance.Conformance#swapsThenNull",
+      "throws": [
+        "NullPointerException when (n & 1) != 0"
+      ],
+      "workload": "semantics"
+    },
+    {
+      "assert": "result == 1",
+      "assume": null,
+      "basis": "a call the corpus lists refutes it on the JVM",
+      "expected": "violation",
+      "group": 1,
+      "id": "conformance/swapsThenNull/2",
+      "kind": "property",
+      "nativeStrict": "violation",
+      "target": "conformance.Conformance#swapsThenNull",
+      "throws": [
+        "NullPointerException when (n & 1) != 0"
+      ],
+      "workload": "semantics"
+    },
+    {
+      "assert": "result == 1 || result == 2",
+      "assume": null,
+      "basis": "a call the corpus lists refutes it on the JVM",
+      "expected": "violation",
+      "group": 1,
+      "id": "conformance/swapsThenNull/3",
+      "kind": "property",
+      "nativeStrict": "violation",
+      "target": "conformance.Conformance#swapsThenNull",
+      "throws": [],
+      "workload": "semantics"
+    },
+    {
       "assert": "result == 1",
       "assume": "a.length > 0 && b.length > 0",
       "basis": "no call the corpus lists refutes it on the JVM, and the corpus states it",
