@@ -351,6 +351,9 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
       thread) and `spec/cache.rs` (`callee_reuse`).
   - Note for the reconcile loop: a hook another stream adds to `equivalence.rs` between the harness and the plan,
     and calls `stated` from, has to go below the plan now.
+- `sync.py check` after S4a reports 18 errors, none from this branch's work: the 15 listed after S3, and 4 more
+  sessions with no manifest, behind other streams' commits that are not ancestors of `@`. They are heap's
+  `nmrmkovpnwqy` and `xkutknnpsxmn`, and alignment's `vvtltnmzuwru` and `orvwtmzmlqts`. They clear at the merge.
 - Next: S4b, examples 160 and 161.
   - 160: a refactored pure helper on a javac app, proved once, then reused by its caller.
   - 161: a sibling where the helper's change is wrong, and the caller's check finds it with a replayed

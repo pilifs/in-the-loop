@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.542Z",
-  "ended": "2026-11-07T05:17:19.141Z",
-  "duration_seconds": 4560,
+  "ended": "2026-11-07T05:17:38.163Z",
+  "duration_seconds": 4579,
   "stats": {
     "turns": 25,
-    "api_calls": 283,
-    "tool_calls": 290,
+    "api_calls": 285,
+    "tool_calls": 293,
     "tool_errors": 1,
     "compactions": 5,
-    "peak_context_tokens": 271450,
+    "peak_context_tokens": 274672,
     "usage": {
-      "input_tokens": 566,
-      "output_tokens": 300013,
-      "cache_read_input_tokens": 46649377,
-      "cache_creation_input_tokens": 1125386
+      "input_tokens": 570,
+      "output_tokens": 301484,
+      "cache_read_input_tokens": 47194612,
+      "cache_creation_input_tokens": 1128608
     }
   },
   "tools": {
-    "Bash": 250,
+    "Bash": 252,
     "Read": 27,
-    "Edit": 7,
+    "Edit": 8,
     "Write": 6
   },
   "files_touched": [
@@ -118,24 +118,24 @@
     {
       "index": 5,
       "started": "2026-11-07T04:55:58.513Z",
-      "ended": "2026-11-07T05:17:19.141Z",
+      "ended": "2026-11-07T05:17:38.163Z",
       "turns": 4,
-      "api_calls": 73,
+      "api_calls": 75,
       "usage": {
-        "input_tokens": 146,
-        "output_tokens": 87338,
-        "cache_read_input_tokens": 14110923,
-        "cache_creation_input_tokens": 258371
+        "input_tokens": 150,
+        "output_tokens": 88809,
+        "cache_read_input_tokens": 14656158,
+        "cache_creation_input_tokens": 261593
       },
-      "peak_context_tokens": 271450
+      "peak_context_tokens": 274672
     }
   ],
   "log": {
-    "sha256": "75a83fe563bc6aa7b206e0b014ef96bbb1f8b1730ce9edd2abff407841c0453f",
-    "bytes": 9614783,
-    "lines": 3093,
-    "gzip_bytes": 1959113,
-    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/75a83fe563bc6aa7b206e0b014ef96bbb1f8b1730ce9edd2abff407841c0453f.jsonl.gz"
+    "sha256": "d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f",
+    "bytes": 9675889,
+    "lines": 3115,
+    "gzip_bytes": 1970004,
+    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -194,6 +194,14 @@
       "summary": "Summaries S4a: a changed pure helper proved equivalent is one function in both versions of its callers",
       "body": "With equivalence --cache and --engine native, a changed static helper of a narrow kind is checked first as a regression check of its own, on demand within half the caller's time, or found in the proof cache under that check's key. The kind: pure in both versions, integral values only, no exception of its own, no static initializer. A proof over every input makes the helper one function in both versions of the caller's proof, and the caller's statement gains an assumption of kind callee, basis proved, naming the helper proof's claim key, which is part of the caller's own key. A refuted, unresolved or cyclic helper stays as written, with a note. The checks in progress are a stack, so a helper's proof never rests on the proof it is used in. cache::callee_reuse plans a subject's check without running it, and the integration contract's 'summaries reuse of shop.Pricing#discount in shop.Pricing#total' now passes.\n\nFound on the way: under --engine native no callee was ever shared. The stubs went only on JBMC's class path, which costs nothing for an identical callee, because the own checker's hashing makes both calls one circuit, but would leave a proved helper's two different bodies for the solver to relate. Under the own checker the one function is now the helper's new version itself: the previous version's calls are redirected to it (shared::substitute_directory). The proof is exact and needs no refinement.\n\nThe brief's applicability check is met by construction, not dropped. Only a helper proof over every input of its parameter types is used, so the assertion at each call is true, and nothing is compared by numeric bounds. A helper proof with a narrower domain (--unchanged-unless, mapped arguments, a relation between results) is refused, since it would need a real assertion at each call.",
       "log_sha256": "75a83fe563bc6aa7b206e0b014ef96bbb1f8b1730ce9edd2abff407841c0453f"
+    },
+    {
+      "change_id": "wmzzzzzsyvyoyuqwyouymnuttquoznsu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summaries Progress: name the 18 errors sync.py check reports after S4a, none from this branch's work",
+      "body": "The 15 recorded after S3, and 4 more sessions with no manifest. They are behind the heap stream's nmrmkovpnwqy and xkutknnpsxmn and the alignment stream's vvtltnmzuwru and orvwtmzmlqts, none an ancestor of this branch. Each manifest lives on its stream's branch, so the errors clear at the merge.",
+      "log_sha256": "d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f"
     }
   ],
   "logs": {
@@ -231,6 +239,12 @@
       "bytes": 7400369,
       "lines": 2314,
       "gzip_bytes": 1531069,
+      "url": null
+    },
+    "d962fea0ace509785ea51d27269378bf87f9dfd37c24821a3efdec855ff1375f": {
+      "bytes": 9675889,
+      "lines": 3115,
+      "gzip_bytes": 1970004,
       "url": null
     },
     "ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25": {
