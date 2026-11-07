@@ -107,7 +107,8 @@ Settled by the user on 2026-11-07:
 ## Progress
 
 - Drafted 2026-11-07 by session `3da21514`, while the cleanup run was still going.
-- Status: blocked: the cleanup loop's merge
+- 2026-11-07: the cleanup loop's merge is committed (`lpvnwkuz`) and pushed, and the loop is done, so this brief starts.
+- Status: working
 
 ## Loop settings
 
