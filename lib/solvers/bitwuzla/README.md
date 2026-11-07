@@ -10,7 +10,10 @@ bitwuzla FILE` replays a transcript on it. Either takes Bitwuzla's options after
 command line: `bitwuzla:preprocess=0,rewrite-level=0`. The binding reads each option's range or modes from the
 library (`bitwuzla_get_option_info`) and refuses a value outside them before setting it, since the C API aborts the
 process on one; it refuses `produce-models`, `time-limit-per` and `sat-solver`, which it sets itself, and string
-options. The solver's signature, which results and transcripts record, lists the options set.
+options. The solver's signature, which results and transcripts record, lists the options set. A result's
+evidence (`stated.checker.sat`) names Bitwuzla with the version its C API reports, the library's file name and
+SHA-256, the build [`build.json`](build.json) records when it is of that version (its commit and the CaDiCaL it
+links), and the options.
 
 [`../compare.py`](../compare.py) is the comparison of Phase 6c on the engine's clauses: the benchmark's five
 workloads where the formula's size dominates (binary search, examples 141 and 142, reverse, prefix sums), each as a

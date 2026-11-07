@@ -391,6 +391,13 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
 - **1b, the SAT solver recorded: done** (`olttywtt`). `stated.checker.sat` in every result: CaDiCaL 1.9.5 for the own
   checker, JBMC's `--sat-solver cadical` (3.0.0, read from its executable) with its standing options. `results.json`
   lists them in `environment.sat`.
+- **1b's record follows the configured solver** (item 6 below). Under `JVMCONTRACT_SOLVER=bitwuzla` a result's
+  `stated.checker.name` and `solver` said Bitwuzla while `stated.checker.sat` said CaDiCaL 1.9.5, so `results.json`'s
+  `environment.sat` would have named the wrong solver (reproduced through `prove` on `Conformance#monitor`). Now
+  `native_sat()` is the configured solver's own `Sat::record`: CaDiCaL as before; Bitwuzla with its C API's version,
+  the library's file name and SHA-256 (`eac09e6d…`, the digest job `-194049`'s build gave), the build
+  `lib/solvers/bitwuzla/build.json` records (commit `61bdc637`, CaDiCaL 2.1.2 static), and its options. Recorded
+  results stand: job `-230455`'s comparison recorded the library beside them.
 - **1c, the Bitwuzla build: done** (`nzxrwvum`, `mwxvlkzz`). Job `20261106-194049` passed (its first run `-192008`
   failed on a shared CaDiCaL subproject): Bitwuzla 0.8.2, commit `61bdc637`, linking CaDiCaL 2.1.2 static, recorded in
   `lib/solvers/bitwuzla/build.json`. Built on x86_64, not the ARM64 the plan names.
@@ -480,7 +487,7 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
      (done, job `20261107-012013` pending: triage it when it is back);
   4. ~~4c, the coverage inventory from 4a's tables and 4b~~ (done);
   5. the examples' notes: 071 and 013 from `-203501` and the rerun `-012013` (037's from `-000039`: done);
-  6. Bitwuzla's version in 1b's record (`statement::native_sat()` from the configured solver);
+  6. ~~Bitwuzla's version in 1b's record~~ (done: each solver records itself, `Sat::record`);
   7. `test_build.py`'s and `test_performance.py`'s failures;
   8. smaller ones the streams noted: the own checker's branch probes depend on wall-clock time (`Pricing#total` timing
      out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native

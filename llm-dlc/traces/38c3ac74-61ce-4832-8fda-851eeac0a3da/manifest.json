@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-07T01:08:02.996Z",
-  "ended": "2026-11-07T01:18:14.107Z",
-  "duration_seconds": 611,
+  "ended": "2026-11-07T01:41:20.320Z",
+  "duration_seconds": 1997,
   "stats": {
     "turns": 1,
-    "api_calls": 6,
-    "tool_calls": 6,
+    "api_calls": 9,
+    "tool_calls": 9,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 32045,
+    "peak_context_tokens": 33852,
     "usage": {
-      "input_tokens": 12,
-      "output_tokens": 781,
-      "cache_read_input_tokens": 158080,
-      "cache_creation_input_tokens": 18926
+      "input_tokens": 18,
+      "output_tokens": 1218,
+      "cache_read_input_tokens": 255991,
+      "cache_creation_input_tokens": 20733
     }
   },
   "tools": {
-    "Bash": 6
+    "Bash": 9
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-07T01:08:02.996Z",
-      "ended": "2026-11-07T01:18:14.107Z",
+      "ended": "2026-11-07T01:41:20.320Z",
       "turns": 1,
-      "api_calls": 6,
+      "api_calls": 9,
       "usage": {
-        "input_tokens": 12,
-        "output_tokens": 781,
-        "cache_read_input_tokens": 158080,
-        "cache_creation_input_tokens": 18926
+        "input_tokens": 18,
+        "output_tokens": 1218,
+        "cache_read_input_tokens": 255991,
+        "cache_creation_input_tokens": 20733
       },
-      "peak_context_tokens": 32045
+      "peak_context_tokens": 33852
     }
   ],
   "log": {
-    "sha256": "8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240",
-    "bytes": 276568,
-    "lines": 56,
-    "gzip_bytes": 70746,
-    "path": "llm-dlc/traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/logs/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz"
+    "sha256": "973a9e5b2ca44a3b0c0f94af59f85334baed273abf1e9e3313ea0e10f67e9bf8",
+    "bytes": 307945,
+    "lines": 76,
+    "gzip_bytes": 74439,
+    "path": "llm-dlc/traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/logs/973a9e5b2ca44a3b0c0f94af59f85334baed273abf1e9e3313ea0e10f67e9bf8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -72,6 +72,14 @@
       "summary": "A coverage inventory of the recorded JBMC examples: which engine decides each obligation under strict, what stops the other, and the own checker's next extensions ranked (Phase 4c)",
       "body": "examples/coverage.md is step 4c of llm-dlc/loops/engine-priorities.md. Its table comes from the two per-obligation tables of job 20261107-000039 (both engines, strict, at 98bab485), through a new gap_table.py --inventory, which says for each obligation which engine decides it and why the other doesn't, and exits 1 on a conflict (a unit test covers each case). Of 43 obligations both engines decide 35 and agree on all of them, JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), neither decides 3 (037#0, 071#0, 071#1), and the own checker alone decides none.\n\nThe own checker's gap scan (build.py --scan-gaps, static, JDK 25.0.5) was rerun on the six examples concerned and rewrote their Gap scan notes. Phase 5 has taken the class-initializer gaps off 013 and 071, which leaves List.of and List.copyOf: their models are on JBMC's class path only. 037's notes now record why neither engine decides it under strict. The ranking: an exact numberOfLeadingZeros in the own checker (037, 127); its unwinding bound counted per entry of a loop (052: Engine::jump counts back edges per path and method and never resets them, and the property's nested quantifiers, each a harness loop, take the inner back edge up to 36 times, still to be reproduced); the own checker running the List models (013, 071); and floating point (035). Pages re-rendered; the gap_table tests pass. The brief's Progress records 4c, and adds the first two extensions as item 9.",
       "log_sha256": "8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240"
+    },
+    {
+      "change_id": "xmunlmmrqqtsmquzzzqwuvrqutvlusws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A result's SAT solver record names the solver the checks ran on: Bitwuzla, with its version, library digest and build, when JVMCONTRACT_SOLVER chooses it",
+      "body": "Phase 1b recorded the own checker's SAT solver in every result (stated.checker.sat), but always as the bundled CaDiCaL: under JVMCONTRACT_SOLVER=bitwuzla a result's checker name and solver line said Bitwuzla 0.8.2 while its sat record said CaDiCaL 1.9.5, so the benchmark's environment.sat would have named the wrong solver. Reproduced through jvmcontract prove on Conformance#monitor before the fix.\n\nEach solver now records itself (Sat::record in lib/src/bmc/sat.rs), and statement::native_sat() is the configured solver's record. CaDiCaL's is unchanged. Bitwuzla's names the version its C API reports, the loaded library's file name and SHA-256 (eac09e6d..., the digest job 20261106-194049's build gave), the build lib/solvers/bitwuzla/build.json records when it is of that version (commit 61bdc637, linking CaDiCaL 2.1.2 static), whether it is given clauses or terms, and its options. A solver choice that does not work is recorded as no solver, with why. The benchmark and Bitwuzla READMEs describe the record. Recorded results are unchanged.",
+      "log_sha256": "973a9e5b2ca44a3b0c0f94af59f85334baed273abf1e9e3313ea0e10f67e9bf8"
     }
   ],
   "logs": {
@@ -79,6 +87,12 @@
       "bytes": 276568,
       "lines": 56,
       "gzip_bytes": 70746,
+      "url": null
+    },
+    "973a9e5b2ca44a3b0c0f94af59f85334baed273abf1e9e3313ea0e10f67e9bf8": {
+      "bytes": 307945,
+      "lines": 76,
+      "gzip_bytes": 74439,
       "url": null
     }
   },

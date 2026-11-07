@@ -71,8 +71,11 @@ own checker's paths, solver calls, variables and clauses; JBMC's runs, each with
 
 Each run also keeps the SAT solver its verdict was solved on, as the result's evidence names it (`sat`, from the
 JSON's `stated.checker.sat`, [`../src/statement.rs`](../src/statement.rs)): the `solver`, its `version`, its `source`
-and its `configuration`. For the own checker that is CaDiCaL as the Rust crate `cadical` bundles it, the version
-from CaDiCaL's signature and the crate's from `Cargo.lock`, run incrementally with its default options. For JBMC it
+and its `configuration`. For the own checker that is the solver `JVMCONTRACT_SOLVER` chooses, as it records itself
+(`Sat::record` in [`../src/bmc/sat.rs`](../src/bmc/sat.rs)): by default CaDiCaL as the Rust crate `cadical` bundles it,
+the version from CaDiCaL's signature and the crate's from `Cargo.lock`, run incrementally with its default options;
+under `bitwuzla` or `bitwuzla-words`, Bitwuzla as [`../solvers/bitwuzla/`](../solvers/bitwuzla/README.md) describes
+its record. For JBMC it
 is the solver the adapter asks for, `--sat-solver cadical`, with the version of the CaDiCaL linked into the JBMC
 executable, read from CaDiCaL's signature there (`cadical-3.0.0` in JBMC 6.11.0's), and the options every JBMC run
 passes; a JBMC that holds no CaDiCaL is recorded with its default solver, which the runs then fall back to.

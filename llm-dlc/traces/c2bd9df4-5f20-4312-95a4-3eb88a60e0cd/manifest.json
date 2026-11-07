@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T01:27:02.123Z",
-  "duration_seconds": 4521,
+  "ended": "2026-11-07T01:46:44.084Z",
+  "duration_seconds": 5703,
   "stats": {
-    "turns": 24,
-    "api_calls": 246,
-    "tool_calls": 252,
-    "tool_errors": 2,
-    "compactions": 4,
+    "turns": 29,
+    "api_calls": 300,
+    "tool_calls": 309,
+    "tool_errors": 6,
+    "compactions": 5,
     "peak_context_tokens": 178584,
     "usage": {
-      "input_tokens": 504,
-      "output_tokens": 158369,
-      "cache_read_input_tokens": 26600011,
-      "cache_creation_input_tokens": 645812
+      "input_tokens": 616,
+      "output_tokens": 182176,
+      "cache_read_input_tokens": 31380286,
+      "cache_creation_input_tokens": 751851
     }
   },
   "tools": {
-    "Bash": 221,
-    "Read": 13,
+    "Bash": 272,
+    "Read": 15,
     "Edit": 10,
-    "Monitor": 3,
-    "TaskStop": 2,
-    "ToolSearch": 2,
+    "Monitor": 4,
+    "ToolSearch": 4,
+    "TaskStop": 3,
     "Write": 1
   },
   "files_touched": [
@@ -103,24 +103,38 @@
     {
       "index": 4,
       "started": "2026-11-07T01:21:30.630Z",
-      "ended": "2026-11-07T01:27:02.123Z",
-      "turns": 4,
-      "api_calls": 40,
+      "ended": "2026-11-07T01:27:28.403Z",
+      "turns": 5,
+      "api_calls": 43,
       "usage": {
-        "input_tokens": 80,
-        "output_tokens": 24853,
-        "cache_read_input_tokens": 3580043,
-        "cache_creation_input_tokens": 111366
+        "input_tokens": 86,
+        "output_tokens": 26535,
+        "cache_read_input_tokens": 3960770,
+        "cache_creation_input_tokens": 117569
       },
-      "peak_context_tokens": 124445
+      "peak_context_tokens": 130648
+    },
+    {
+      "index": 5,
+      "started": "2026-11-07T01:28:00.364Z",
+      "ended": "2026-11-07T01:46:44.084Z",
+      "turns": 4,
+      "api_calls": 51,
+      "usage": {
+        "input_tokens": 106,
+        "output_tokens": 22125,
+        "cache_read_input_tokens": 4399548,
+        "cache_creation_input_tokens": 99836
+      },
+      "peak_context_tokens": 112915
     }
   ],
   "log": {
-    "sha256": "7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8",
-    "bytes": 6558822,
-    "lines": 2236,
-    "gzip_bytes": 1290182,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8.jsonl.gz"
+    "sha256": "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280",
+    "bytes": 7822733,
+    "lines": 2716,
+    "gzip_bytes": 1550115,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -187,6 +201,14 @@
       "summary": "A coverage inventory of the recorded JBMC examples: which engine decides each obligation under strict, what stops the other, and the own checker's next extensions ranked (Phase 4c)",
       "body": "examples/coverage.md is step 4c of llm-dlc/loops/engine-priorities.md. Its table comes from the two per-obligation tables of job 20261107-000039 (both engines, strict, at 98bab485), through a new gap_table.py --inventory, which says for each obligation which engine decides it and why the other doesn't, and exits 1 on a conflict (a unit test covers each case). Of 43 obligations both engines decide 35 and agree on all of them, JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), neither decides 3 (037#0, 071#0, 071#1), and the own checker alone decides none.\n\nThe own checker's gap scan (build.py --scan-gaps, static, JDK 25.0.5) was rerun on the six examples concerned and rewrote their Gap scan notes. Phase 5 has taken the class-initializer gaps off 013 and 071, which leaves List.of and List.copyOf: their models are on JBMC's class path only. 037's notes now record why neither engine decides it under strict. The ranking: an exact numberOfLeadingZeros in the own checker (037, 127); its unwinding bound counted per entry of a loop (052: Engine::jump counts back edges per path and method and never resets them, and the property's nested quantifiers, each a harness loop, take the inner back edge up to 36 times, still to be reproduced); the own checker running the List models (013, 071); and floating point (035). Pages re-rendered; the gap_table tests pass. The brief's Progress records 4c, and adds the first two extensions as item 9.",
       "log_sha256": "7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8"
+    },
+    {
+      "change_id": "xmunlmmrqqtsmquzzzqwuvrqutvlusws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A result's SAT solver record names the solver the checks ran on: Bitwuzla, with its version, library digest and build, when JVMCONTRACT_SOLVER chooses it",
+      "body": "Phase 1b recorded the own checker's SAT solver in every result (stated.checker.sat), but always as the bundled CaDiCaL: under JVMCONTRACT_SOLVER=bitwuzla a result's checker name and solver line said Bitwuzla 0.8.2 while its sat record said CaDiCaL 1.9.5, so the benchmark's environment.sat would have named the wrong solver. Reproduced through jvmcontract prove on Conformance#monitor before the fix.\n\nEach solver now records itself (Sat::record in lib/src/bmc/sat.rs), and statement::native_sat() is the configured solver's record. CaDiCaL's is unchanged. Bitwuzla's names the version its C API reports, the loaded library's file name and SHA-256 (eac09e6d..., the digest job 20261106-194049's build gave), the build lib/solvers/bitwuzla/build.json records when it is of that version (commit 61bdc637, linking CaDiCaL 2.1.2 static), whether it is given clauses or terms, and its options. A solver choice that does not work is recorded as no solver, with why. The benchmark and Bitwuzla READMEs describe the record. Recorded results are unchanged.",
+      "log_sha256": "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280"
     }
   ],
   "logs": {
@@ -224,6 +246,12 @@
       "bytes": 1145678,
       "lines": 350,
       "gzip_bytes": 238309,
+      "url": null
+    },
+    "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280": {
+      "bytes": 7822733,
+      "lines": 2716,
+      "gzip_bytes": 1550115,
       "url": null
     }
   },

@@ -275,25 +275,19 @@ pub struct Sat {
     pub configuration: Vec<String>,
 }
 
-/// The own checker's solver: CaDiCaL as the `cadical` crate bundles it, with the crate's version from
-/// `Cargo.lock`, run incrementally with its default options.
+/// The own checker's solver, as the solver [`crate::bmc::sat::ENV`] chooses records itself
+/// ([`crate::bmc::sat::Sat::record`]): CaDiCaL as the `cadical` crate bundles it, with the crate's version from
+/// `Cargo.lock`, run incrementally with its default options, unless the variable chooses Bitwuzla. A choice that
+/// doesn't work here, which a check refuses before solving, is recorded as no solver, with why.
 pub fn native_sat() -> Sat {
-    let signature = cadical::Solver::<cadical::Timeout>::new().signature().to_string();
-    let version = signature.strip_prefix("cadical-").map(str::to_string);
-    let source = match locked_version("cadical") {
-        Some(v) => format!("bundled by the Rust crate cadical {v}"),
-        None => "bundled by the Rust crate cadical".to_string(),
-    };
-    let configuration = [
-        "CaDiCaL's default options",
-        "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
-        "the run's deadline through CaDiCaL's terminate callback",
-    ];
-    Sat { solver: "CaDiCaL".into(), version: version.or(Some(signature)), source, configuration: configuration.map(String::from).into() }
+    match crate::bmc::sat::configuration() {
+        Ok(make) => make().record(),
+        Err(e) => Sat { solver: "none".into(), version: None, source: e.0, configuration: Vec::new() },
+    }
 }
 
 /// A dependency's version as `Cargo.lock` pins it.
-fn locked_version(name: &str) -> Option<String> {
+pub(crate) fn locked_version(name: &str) -> Option<String> {
     const LOCK: &str = include_str!("../Cargo.lock");
     let header = format!("name = \"{name}\"\n");
     let at = LOCK.find(&header)? + header.len();
@@ -495,6 +489,7 @@ mod tests {
         assert_eq!(sat.source, format!("bundled by the Rust crate cadical {crate_version}"));
         assert!(!sat.configuration.is_empty());
         assert_eq!(locked_version("no-such-crate"), None);
+        assert_eq!(sat, crate::bmc::sat::configured().record(), "the solver checks run on, as it records itself");
         let search = |engine: &str| Search {
             engine: engine.into(),
             checker: "c".into(),

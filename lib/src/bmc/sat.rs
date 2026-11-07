@@ -25,6 +25,9 @@ use super::bits::Lit;
 pub trait Sat {
     /// The solver by name and version, as results and transcripts record it: `CaDiCaL 1.9.5 (bundled)`.
     fn signature(&self) -> String;
+    /// The solver as a result's evidence records it ([`crate::statement::native_sat`]): its name, version, where it
+    /// comes from, and how it is configured.
+    fn record(&self) -> crate::statement::Sat;
     /// Adds a clause, kept for every later call.
     fn add_clause(&mut self, lits: &[Lit]);
     /// Gives every later call at most this many seconds, or no limit.
@@ -200,6 +203,21 @@ impl Sat for Cadical {
         }
     }
 
+    fn record(&self) -> crate::statement::Sat {
+        let signature = self.solver.signature();
+        let version = signature.strip_prefix("cadical-").map(str::to_string);
+        let source = match crate::statement::locked_version("cadical") {
+            Some(v) => format!("bundled by the Rust crate cadical {v}"),
+            None => "bundled by the Rust crate cadical".to_string(),
+        };
+        let configuration = [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+        ];
+        crate::statement::Sat { solver: "CaDiCaL".into(), version: version.or(Some(signature.to_string())), source, configuration: configuration.map(String::from).into() }
+    }
+
     fn add_clause(&mut self, lits: &[Lit]) {
         self.solver.add_clause(lits.iter().copied());
     }
@@ -263,6 +281,10 @@ impl Logged {
 impl Sat for Logged {
     fn signature(&self) -> String {
         format!("logged {}", self.inner.signature())
+    }
+
+    fn record(&self) -> crate::statement::Sat {
+        self.inner.record()
     }
 
     fn add_clause(&mut self, lits: &[Lit]) {

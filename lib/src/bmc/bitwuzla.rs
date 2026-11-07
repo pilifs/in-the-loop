@@ -153,6 +153,37 @@ mod dl {
     pub const RTLD_NOW: c_int = 2;
 }
 
+/// The repository's record of its Bitwuzla build from source (`lib/solvers/bitwuzla/build.sh`).
+const BUILD: &str = include_str!("../../solvers/bitwuzla/build.json");
+
+/// Where a loaded library of `version` comes from, as a result records it: the library by file name and its
+/// digest (none when it can't be read), and the build that `build` (a `build.json`) records, when it is of the same
+/// version, with its commit and the CaDiCaL it links.
+fn source(library: &Path, digest: Option<&str>, version: &str, build: &str) -> String {
+    let name = library.canonicalize().ok().and_then(|p| p.file_name().map(|n| n.to_string_lossy().into_owned())).or_else(|| library.file_name().map(|n| n.to_string_lossy().into_owned())).unwrap_or_default();
+    let loaded = match digest {
+        Some(d) => format!("the shared library {name} (sha256:{d}), loaded at run time"),
+        None => format!("the shared library {name}, loaded at run time (unreadable, so not hashed)"),
+    };
+    let record: Option<serde_json::Value> = serde_json::from_str(build).ok();
+    let field = |key: &str| record.as_ref().and_then(|r| r.get(key)).and_then(|v| v.as_str()).map(str::to_string);
+    match field("version") {
+        Some(built) if built == version => {
+            let commit = field("commit").map(|c| format!(" at commit {}", &c[..c.len().min(8)])).unwrap_or_default();
+            let cadical = record.as_ref().and_then(|r| r.get("subprojectsFetched")).and_then(|v| v.as_array()).into_iter().flatten().filter_map(|v| v.as_str()).find_map(|s| s.strip_prefix("cadical-rel-")).map(|v| format!(", linking CaDiCaL {v} static")).unwrap_or_default();
+            format!("{loaded}; lib/solvers/bitwuzla/build.json records version {built} built from source{commit}{cadical}")
+        }
+        Some(built) => format!("{loaded}; not the version lib/solvers/bitwuzla/build.json records ({built})"),
+        None => format!("{loaded}; lib/solvers/bitwuzla/build.json records no version"),
+    }
+}
+
+/// The digest of the library the API was loaded from, read once per process (there is one such library).
+fn library_digest(library: &Path) -> Option<&'static str> {
+    static DIGEST: OnceLock<Option<String>> = OnceLock::new();
+    DIGEST.get_or_init(|| std::fs::read(library).ok().map(|bytes| crate::digest::sha256_hex(&bytes))).as_deref()
+}
+
 /// Where the library is: [`LIBRARY_ENV`] (a file, or an install directory), else `~/tools/bitwuzla/current`.
 pub fn library_path() -> Result<PathBuf, Error> {
     let named = std::env::var_os(LIBRARY_ENV).map(PathBuf::from);
@@ -577,6 +608,21 @@ impl Sat for Bitwuzla {
         format!("Bitwuzla {version} ({given}; sat-solver cadical, produce-models{set}, otherwise defaults)")
     }
 
+    fn record(&self) -> crate::statement::Sat {
+        // SAFETY: as in `signature`.
+        let version = unsafe { CStr::from_ptr((self.api.version)()) }.to_string_lossy().trim().to_string();
+        let mut configuration = vec![
+            if self.words { "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms" } else { "given the engine's clauses as Boolean terms" }.to_string(),
+            "sat-solver cadical".to_string(),
+            "produce-models".to_string(),
+        ];
+        configuration.extend(self.settings.iter().map(|s| format!("{}={}", s.name, s.value)));
+        configuration.push("otherwise Bitwuzla's default options".to_string());
+        configuration.push("incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)".to_string());
+        configuration.push("the run's deadline through Bitwuzla's termination callback".to_string());
+        crate::statement::Sat { solver: "Bitwuzla".into(), version: Some(version.clone()), source: source(&self.api.library, library_digest(&self.api.library), &version, BUILD), configuration }
+    }
+
     fn terms(&mut self) -> Option<&mut dyn Terms> {
         if self.words { Some(self) } else { None }
     }
@@ -642,6 +688,26 @@ mod tests {
                 eprintln!("skipped: {}", e.0);
                 None
             }
+        }
+    }
+
+    #[test]
+    fn bitwuzla_records_its_version_its_build_and_its_options_as_a_results_evidence() {
+        let build = r#"{"version": "0.8.2", "commit": "61bdc637a291c27597fc04263328ecd29d36cc12", "subprojectsFetched": ["cadical-rel-2.1.2", "symfpu"]}"#;
+        let missing = Path::new("/nonexistent/libbitwuzla.so.0");
+        assert_eq!(source(missing, None, "0.8.2", build), "the shared library libbitwuzla.so.0, loaded at run time (unreadable, so not hashed); lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static");
+        assert!(source(missing, None, "0.9.0", build).ends_with("; not the version lib/solvers/bitwuzla/build.json records (0.8.2)"));
+        assert!(source(missing, None, "0.8.2", "{}").ends_with("; lib/solvers/bitwuzla/build.json records no version"));
+        let recorded: serde_json::Value = serde_json::from_str(BUILD).unwrap();
+        assert_eq!(recorded["version"].as_str(), Some(VERSION), "the repository's build is of the version the binding is written against");
+        let Some(_) = installed() else { return };
+        for (words, given) in [(false, "given the engine's clauses as Boolean terms"), (true, "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms")] {
+            let s = Bitwuzla::configured(&settings("preprocess=0").unwrap(), words).unwrap();
+            let r = s.record();
+            assert_eq!((r.solver.as_str(), r.version.as_deref()), ("Bitwuzla", Some(VERSION)));
+            assert!(r.source.starts_with("the shared library libbitwuzla.so"), "{}", r.source);
+            assert!(r.source.contains(" (sha256:") && r.source.ends_with("built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static"), "{}", r.source);
+            assert_eq!(r.configuration[..4], [given, "sat-solver cadical", "produce-models", "preprocess=0"]);
         }
     }
 
