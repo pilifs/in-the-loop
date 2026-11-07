@@ -244,10 +244,12 @@ pub fn prove(before: &Path, after: &Path, keys: &Keys, mapping: &Mapping, settin
         .iter()
         .enumerate()
         .map(|(i, p)| {
-            let tried = if p.fields.is_empty() {
-                attempt(before, after, &mapping.after, &p.flags, settings, i)
-            } else {
+            let tried = if !p.fields.is_empty() {
                 Tried::NotTried { why: "its field equations have no flag form: the correspondence proof is the heap stream's".into() }
+            } else if mapping.result.kind == ResultKind::Fields {
+                Tried::NotTried { why: "its result is an object compared field by field, which the regression check can't observe: the proof is the heap stream's".into() }
+            } else {
+                attempt(before, after, &mapping.after, &p.flags, settings, i)
             };
             let evidence = evidence(&tried, &keys.key(&mapping.after, &p.flags, settings));
             Attempt { proposal: i, flags: p.flags.clone(), tried, evidence }

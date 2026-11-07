@@ -76,7 +76,8 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 # new Money(cents), or through the class of a field that changed shape in turn (old.q.line.cents ==
 # new.q.line.amount.cents); a field set any other way is named, never guessed. A method moved into that value object
 # (Quote#cents to Money#cents) takes it in place of the old object when the old method only reads fields it keeps
-# (old.this.cents == new.this.cents), and the fields it never reads are named.
+# (old.this.cents == new.this.cents), and the fields it never reads are named. A result of such a class is compared
+# field by field the same way (old.result.cents == new.result.amount.cents), its primitive fields only.
 # --hints writes them to a hints file as proposed, their evidence unchecked, keeping every hint a person stated or
 # approved. Proves nothing.
 jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json

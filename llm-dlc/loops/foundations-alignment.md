@@ -321,12 +321,32 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     `alignment.rs`.
   - **Score:** unchanged on 121–139, whose records hold primitives only. Re-recorded under the new tool's hash.
 - Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the nested test).
-- Next, the rest of A4:
-  - a result whose class changed shape, still `changed`, a person's decision: output equations from the same
-    correspondence;
-  - `Pricing#withQuantity`, unchanged code over changed classes.
-
-  Then A5.
+- **A4: a result whose class changed shape, done** (2026-11-07), in `lib/src/alignment/mappings.rs`:
+  - **The relation.** A result of a class both builds declare, whose shape changed, is no longer `changed`: it is
+    compared by the class's field correspondence, the one its inputs are related by, each old field at its path in
+    the new object. A new result kind `fields`, with the relation `previous.cents == result.amount.cents &&
+    previous.quantity == result.quantity`, which the hints file writes as `Correspondence.outputs` (one relation for
+    the observation `result`: `old.result.cents == new.result.amount.cents && …`). Only paths and integral casts. Every
+    old field is compared, so the accounting says the relation "compares every old value"; a new field no equation
+    reaches is named as not compared. Several candidates for a field give one relation per combination, a question.
+  - **Not related, a person's decision with the gap named** (`ResultMapping.gaps`, shown by `align`): a field the
+    class's correspondence can't relate (a constructor that shifts it), and a field that is a reference (a
+    `String`): comparing it across versions would compare object ids, which mean nothing across two runs; it needs
+    field observations inside it.
+  - **Not proved here:** `align --prove` doesn't try such a proposal (the regression check can't observe an object
+    result; evidence unknown, the proof is the heap stream's).
+  - **Tests:** 1 more in `lib/tests/alignment.rs`: the relation, its accounting, its hint's outputs, no proof
+    attempted; a shifted field and a `String` field left a person's decision with the gap named. All 27 pass, and the
+    unit, conformance, foundations and skill suites. In `tests/integration.rs` 63 passed and one failed:
+    `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs`, where JBMC on `fixtures.Pricing#total` "did not finish
+    within the time limit" after 615 s, with the other streams' loops running. It runs no alignment code, and it
+    passed in the earlier cycles. A JBMC run isn't repeated inline. The integration contract on this branch: 2 passed,
+    22 unsupported, 0 failed.
+  - **Score:** unchanged on 121–139, whose results are primitives or records of primitives. Re-recorded under the new
+    tool's hash.
+- Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the result test).
+- Next, the rest of A4: `Pricing#withQuantity`, unchanged code over changed classes (A2 says unchanged, so it gets no
+  mapping; it returns a `Quote`, which this step now relates). Then A5.
 - Status: working
 
 ## Loop settings

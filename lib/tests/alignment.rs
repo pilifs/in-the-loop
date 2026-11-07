@@ -8,7 +8,7 @@ use std::process::Command;
 use jvmcontract::alignment::mappings::{Anchor, Mapping, ResultKind};
 use jvmcontract::alignment::proofs::{self, Attempt, MappingProof, Settings, Settled, Tried};
 use jvmcontract::alignment::{self, Alignment, Basis, Build, Change, MethodReport};
-use jvmcontract::spec::{Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, PreservationContract, Source};
+use jvmcontract::spec::{Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, PreservationContract, Relation, Source};
 
 fn has_javac() -> bool {
     let found = Command::new("javac").arg("-version").output().is_ok();
@@ -503,6 +503,54 @@ fn a_field_whose_own_class_changed_shape_is_related_through_that_class() {
     let f = mapping(&a, "N#f");
     assert!(f.proposals.is_empty(), "{}", alignment::mappings::render(&a.mappings));
     assert!(f.unsupported.iter().any(|u| u.contains("holding its own class")), "{:?}", f.unsupported);
+}
+
+#[test]
+fn a_result_whose_class_changed_shape_is_compared_field_by_field() {
+    let before = [("Q.java", "final class Q { long cents; int quantity; Q(long cents, int quantity) { this.cents = cents; this.quantity = quantity; } static Q make(long cents, int quantity) { return new Q(cents, quantity); } }")];
+    let after = [
+        ("M.java", "record M(long cents) {}"),
+        ("Q.java", "final class Q { M amount; int quantity; int tag; Q(long cents, int quantity) { this.amount = new M(cents); this.quantity = quantity; } static Q make(long cents, int quantity) { Q q = new Q(cents, quantity); return q; } }"),
+    ];
+    let Some(a) = aligned("result-fields", &before, &after, None) else { return };
+    let m = mapping(&a, "Q#make");
+    assert_eq!(m.result.kind, ResultKind::Fields, "{}", alignment::mappings::render(&a.mappings));
+    let relation = "previous.cents == result.amount.cents && previous.quantity == result.quantity";
+    assert_eq!(expressions_of(&m.result.candidates), vec![relation]);
+    assert!(m.result.inferred, "relating a representation is not a change of meaning");
+    assert!(m.result.candidates[0].why.contains("tag"), "the new field is named as not compared: {}", m.result.candidates[0].why);
+    let kept = m.accounting.iter().find(|k| k.observation == "result").expect("the result is accounted for");
+    assert!(kept.how.contains("compares every old value"), "{}", kept.how);
+    assert_eq!(m.proposals.len(), 1);
+    assert_eq!(m.proposals[0].relation.as_deref(), Some(relation));
+    let hints = alignment::hints(&a);
+    let c = correspondences(&hints, "Q#make");
+    assert_eq!(c.len(), 1);
+    assert_eq!(c[0].outputs, vec![Relation { observation: "result".into(), holds: "old.result.cents == new.result.amount.cents && old.result.quantity == new.result.quantity".into() }]);
+    // The regression check can't observe an object result: the proof is the heap stream's, and none is attempted.
+    let Some(p) = proved("result-fields-prove", &before, &after, None) else { return };
+    let attempts = &proof(&p, "Q#make").attempts;
+    assert!(!attempts.is_empty() && attempts.iter().all(|t| matches!(&t.tried, Tried::NotTried { why } if why.contains("heap")) && matches!(t.evidence, Evidence::Unknown { .. })), "{}", proofs::render(&p.proofs));
+    // A field the result's constructor shifts, or one that is a reference, leaves the result a person's decision,
+    // with the gap named: no relation is proposed that would hide the shift or compare object ids across runs.
+    let shifted = [("Q.java", "final class Q { long cents; int quantity; int pad; Q(long cents, int quantity) { this.cents = cents + 1; this.quantity = quantity; } static Q make(long cents, int quantity) { Q q = new Q(cents, quantity); return q; } }")];
+    let tagged = |held: &str, set: &str| format!("final class Q {{ {held}; String tag; Q(long cents, String tag) {{ this.{set}; this.tag = tag; }} static Q make(long cents, String tag) {{ return new Q(cents, tag); }} }}");
+    let (old_tagged, new_tagged) = (tagged("long cents", "cents = cents"), tagged("M amount", "amount = new M(cents)").replace("return new Q(cents, tag);", "Q q = new Q(cents, tag); return q;"));
+    for (name, before, after, gap) in [
+        ("result-shifted", before.to_vec(), shifted.to_vec(), "cents"),
+        ("result-reference", vec![("Q.java", old_tagged.as_str())], vec![("M.java", "record M(long cents) {}"), ("Q.java", new_tagged.as_str())], "java.lang.String"),
+    ] {
+        let Some(a) = aligned(name, &before, &after, None) else { return };
+        let m = mapping(&a, "Q#make");
+        assert_eq!(m.result.kind, ResultKind::Changed, "{name}: {}", alignment::mappings::render(&a.mappings));
+        assert!(m.result.candidates.is_empty() && !m.result.inferred, "{name}");
+        assert!(m.result.gaps.iter().any(|g| g.contains(gap)), "{name}: the gap is named: {:?}", m.result.gaps);
+        assert!(alignment::mappings::render(&a.mappings).contains(gap), "{name}: and shown");
+    }
+}
+
+fn expressions_of(choices: &[alignment::mappings::Choice]) -> Vec<&str> {
+    choices.iter().map(|c| c.expression.as_str()).collect()
 }
 
 #[test]

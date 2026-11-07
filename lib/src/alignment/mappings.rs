@@ -25,8 +25,11 @@
 //! **The result**, from a small catalogue: equal (the contract's comparison); equal after a widening (`int` to
 //! `long`); equal after a known conversion (a value wrapped in a one-component record, or unwrapped from one); a
 //! record that gained components, compared on the old ones (each old observation is still compared, the new
-//! component is one the old version doesn't have); or a changed meaning, a `boolean` against a comparison of the new
-//! integral result with zero, which is a person's decision: it is put as a question, every candidate listed.
+//! component is one the old version doesn't have); an object of a class that changed shape, each old field compared
+//! at its path in the new object by the class's field correspondence (A4, `previous.cents == result.amount.cents &&
+//! previous.quantity == result.quantity`), only for primitive fields, and left a person's decision with its gaps named
+//! when a field can't be related; or a changed meaning, a `boolean` against a comparison of the new integral result
+//! with zero, which is a person's decision: it is put as a question, every candidate listed.
 //!
 //! **Collapse.** Candidates that are the same expression (up to spacing) are one. Candidates that differ in form are
 //! collapsed only by proof, when `align --prove` checks them ([`super::proofs`]).
@@ -93,6 +96,9 @@ pub enum ResultKind {
     Converted,
     /// A record result that gained components: each old component compared with the same-named new one.
     Components,
+    /// A result of a class that changed shape: each old field compared at its path in the new object, by the class's
+    /// field correspondence ([`super::fields`]), the one its inputs are related by.
+    Fields,
     /// What the result means changed: a person's decision, put as a question.
     Changed,
 }
@@ -105,6 +111,13 @@ pub struct ResultMapping {
     pub candidates: Vec<Choice>,
     /// Whether the tool may propose it on its own (`false`: only a person can decide it).
     pub inferred: bool,
+    /// For a result whose class changed shape: the class's field correspondence the relation comes from, or, when the
+    /// result is still [`ResultKind::Changed`], the one whose gaps kept it from being related.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fields: Option<FieldCorrespondence>,
+    /// Why a result whose class changed shape could not be related field by field.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub gaps: Vec<String>,
 }
 
 /// An observation the old version is held to, and how the mapping compares it.
@@ -239,11 +252,20 @@ impl Mapping {
 /// The equation of one old field of the old input `input`, made from the new object `object` (an expression over the
 /// new inputs, a name) at `path` (a path into it, or an integral cast of one): `old.q.cents == new.q.amount.cents`.
 fn field_equation(input: &str, object: &str, field: &str, path: &str) -> Equation {
-    let new = match path.strip_prefix('(').and_then(|r| r.split_once(") ")) {
-        Some((cast, rest)) => format!("({cast}) new.{object}.{rest}"),
-        None => format!("new.{object}.{path}"),
-    };
-    Equation { old: format!("old.{input}.{field}"), new }
+    Equation { old: format!("old.{input}.{field}"), new: at(&format!("new.{object}"), path) }
+}
+
+/// A path (or an integral cast of one) inside `object`: `new.q` and `(int) count` make `(int) new.q.count`.
+fn at(object: &str, path: &str) -> String {
+    match path.strip_prefix('(').and_then(|r| r.split_once(") ")) {
+        Some((cast, rest)) => format!("({cast}) {object}.{rest}"),
+        None => format!("{object}.{path}"),
+    }
+}
+
+/// The type of the member at a dotted path inside an object of type `t`.
+fn member_type(build: &Build, t: &Type, path: &str) -> Option<Type> {
+    path.split('.').try_fold(t.clone(), |t, name| shape(build, &t)?.members.into_iter().find(|(n, _)| n == name).map(|(_, m)| m))
 }
 
 /// One version's view of a method: its inputs and result, and the shapes of the classes they are.
@@ -571,7 +593,7 @@ fn map(before: &Build, after: &Build, report: &MethodReport, (bc, bm): (&ClassFi
         .collect();
     let complete = unsupported.is_empty() && inputs.iter().all(|i| !i.candidates.is_empty());
     let free = if complete { new_leaves.iter().map(|l| l.path.clone()).filter(|p| !used.contains(p) && !taken.contains(p)).collect() } else { Vec::new() };
-    let result = result_mapping(&old, &new);
+    let result = result_mapping(&old, &new, report);
     let accounting = contract
         .required
         .iter()
@@ -638,12 +660,12 @@ fn built(old: &Shape, leaves: &[Leaf], taken: &BTreeSet<String>) -> Vec<Choice> 
 }
 
 /// The result relation, from the catalogue.
-fn result_mapping(old: &Side, new: &Side) -> ResultMapping {
-    let one = |kind, expression: String, why: &str| ResultMapping { kind, candidates: vec![Choice { expression, score: 3, why: why.into() }], inferred: true };
+fn result_mapping(old: &Side, new: &Side, report: &MethodReport) -> ResultMapping {
+    let one = |kind, expression: String, why: &str| ResultMapping { kind, candidates: vec![Choice { expression, score: 3, why: why.into() }], inferred: true, fields: None, gaps: Vec::new() };
     let (a, b) = (&old.ret, &new.ret);
     let (sa, sb) = (shape(old.build, a), shape(new.build, b));
     if a == b && same_shape(old.build, new.build, a) {
-        return ResultMapping { kind: ResultKind::Equal, candidates: Vec::new(), inferred: true };
+        return ResultMapping { kind: ResultKind::Equal, candidates: Vec::new(), inferred: true, fields: None, gaps: Vec::new() };
     }
     if widens(a, b) {
         return one(ResultKind::Widened, "previous == result".into(), "the result widened: the old value compared with the new one");
@@ -663,6 +685,11 @@ fn result_mapping(old: &Side, new: &Side) -> ResultMapping {
         }
         _ => {}
     }
+    if a == b {
+        if let Some(r) = result_by_fields(old, new, report, a) {
+            return r;
+        }
+    }
     let candidates = if *a == Type::Boolean && integral(b) {
         ["<=", "<", "==", "!=", ">", ">="]
             .iter()
@@ -671,7 +698,54 @@ fn result_mapping(old: &Side, new: &Side) -> ResultMapping {
     } else {
         Vec::new()
     };
-    ResultMapping { kind: ResultKind::Changed, candidates, inferred: false }
+    ResultMapping { kind: ResultKind::Changed, candidates, inferred: false, fields: None, gaps: Vec::new() }
+}
+
+/// A result of a class both builds declare, whose shape changed: related by the class's field correspondence, each
+/// old field compared at its path in the new object (`previous.cents == result.amount.cents && previous.quantity ==
+/// result.quantity`), every combination of the fields' candidates one candidate, best first. Only paths and integral
+/// casts, as for the inputs, and only to primitive fields: a reference field compared across versions would compare
+/// object ids, which mean nothing across two runs. Every old field is compared, so no old observation of the result
+/// leaves the count; a new field no equation reaches is one the old version doesn't have. `None` when the class has
+/// no field correspondence at all; [`ResultKind::Changed`] with its gaps when it can't be completed.
+fn result_by_fields(old: &Side, new: &Side, report: &MethodReport, t: &Type) -> Option<ResultMapping> {
+    let fc = fields::correspondence(old.build, new.build, report, t.class_name()?)?;
+    let simple = t.simple_name();
+    let mut gaps: Vec<String> = fc.unsupported.iter().map(|u| format!("the result's class {simple} changed shape, and its fields can't all be related: {u}")).collect();
+    if gaps.is_empty() && !fc.complete() {
+        gaps.push(format!("the result's class {simple} changed shape, and a field has no candidate"));
+    }
+    for f in &fc.fields {
+        match member_type(old.build, t, &f.old) {
+            Some(m) if m.is_primitive() => {}
+            Some(m) => gaps.push(format!("the result's field {} is a {}: comparing it across versions needs field observations inside it, not a relation over its reference", f.old, m.java_name())),
+            None => gaps.push(format!("the result's field {} has no type in the old build", f.old)),
+        }
+    }
+    if !gaps.is_empty() {
+        return Some(ResultMapping { kind: ResultKind::Changed, candidates: Vec::new(), inferred: false, fields: Some(fc), gaps });
+    }
+    let mut combos: Vec<(u32, u32, Vec<String>)> = vec![(0, 3, Vec::new())];
+    for f in &fc.fields {
+        let options: Vec<&Choice> = if f.leads { vec![&f.candidates[0]] } else { f.candidates.iter().collect() };
+        combos = combos
+            .iter()
+            .flat_map(|(place, score, terms)| options.iter().enumerate().map(move |(i, c)| (place + i as u32, (*score).min(c.score), terms.iter().cloned().chain([format!("previous.{} == {}", f.old, at("result", &c.expression))]).collect())))
+            .take(ALTERNATIVES * 4)
+            .collect();
+    }
+    combos.sort_by_key(|(place, ..)| *place);
+    combos.truncate(ALTERNATIVES);
+    let free = if fc.free.is_empty() { String::new() } else { format!("; new fields the old version doesn't have, not compared: {}", fc.free.join(", ")) };
+    let candidates = combos
+        .into_iter()
+        .map(|(_, score, terms)| Choice {
+            expression: terms.join(" && "),
+            score,
+            why: format!("the result's class {simple} changed shape: each old field compared at its path in the new object, by the correspondence its constructors give ({}){free}", fc.constructors.iter().map(|(o, n)| format!("{o} -> {n}")).collect::<Vec<_>>().join(", ")),
+        })
+        .collect();
+    Some(ResultMapping { kind: ResultKind::Fields, candidates, inferred: true, fields: Some(fc), gaps: Vec::new() })
 }
 
 pub(super) fn find<'b>(build: &'b Build, wanted: &str) -> Option<(&'b ClassFile, &'b Method)> {
@@ -830,7 +904,14 @@ pub fn render(mappings: &[Mapping]) -> String {
         let r = &m.result;
         match (r.kind, r.candidates.as_slice()) {
             (ResultKind::Equal, _) => out.push_str("  result: equal, as the contract says\n"),
-            (ResultKind::Changed, []) => out.push_str("  result: changed, and no catalogue relation fits: a person's decision\n"),
+            (ResultKind::Changed, []) => {
+                out.push_str("  result: changed, and no catalogue relation fits: a person's decision\n");
+                for g in &r.gaps {
+                    out.push_str(&format!("    {g}\n"));
+                }
+            }
+            (ResultKind::Fields, [c]) => out.push_str(&format!("  result: {}: {}\n", c.expression, c.why)),
+            (ResultKind::Fields, cs) => out.push_str(&format!("  result, a question: {}\n", cs.iter().map(|c| c.expression.as_str()).collect::<Vec<_>>().join(" | "))),
             (ResultKind::Changed, cs) => out.push_str(&format!("  result: changed, a person's decision: {}\n", cs.iter().map(|c| c.expression.as_str()).collect::<Vec<_>>().join(" | "))),
             (_, cs) => out.push_str(&format!("  result: {}: {}\n", cs[0].expression, cs[0].why)),
         }
