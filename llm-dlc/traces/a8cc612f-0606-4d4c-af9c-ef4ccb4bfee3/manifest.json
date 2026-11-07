@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.424Z",
-  "ended": "2026-11-07T16:44:11.214Z",
-  "duration_seconds": 1045,
+  "ended": "2026-11-07T16:46:24.453Z",
+  "duration_seconds": 1178,
   "stats": {
     "turns": 10,
-    "api_calls": 87,
-    "tool_calls": 86,
+    "api_calls": 103,
+    "tool_calls": 102,
     "tool_errors": 0,
     "compactions": 2,
     "peak_context_tokens": 161587,
     "usage": {
-      "input_tokens": 172,
-      "output_tokens": 51969,
-      "cache_read_input_tokens": 7998748,
-      "cache_creation_input_tokens": 227477
+      "input_tokens": 204,
+      "output_tokens": 62082,
+      "cache_read_input_tokens": 9532263,
+      "cache_creation_input_tokens": 269053
     }
   },
   "tools": {
-    "Bash": 85,
+    "Bash": 101,
     "Write": 1
   },
   "files_touched": [
@@ -67,24 +67,24 @@
     {
       "index": 2,
       "started": "2026-11-07T16:39:18.441Z",
-      "ended": "2026-11-07T16:44:11.214Z",
+      "ended": "2026-11-07T16:46:24.453Z",
       "turns": 4,
-      "api_calls": 18,
+      "api_calls": 34,
       "usage": {
-        "input_tokens": 36,
-        "output_tokens": 10987,
-        "cache_read_input_tokens": 968066,
-        "cache_creation_input_tokens": 61322
+        "input_tokens": 68,
+        "output_tokens": 21100,
+        "cache_read_input_tokens": 2501581,
+        "cache_creation_input_tokens": 102898
       },
-      "peak_context_tokens": 74401
+      "peak_context_tokens": 115977
     }
   ],
   "log": {
-    "sha256": "fb79d60216eabb7ff3d034a744374f88594f801addba5ea779821b88cd5bde65",
-    "bytes": 2255018,
-    "lines": 886,
-    "gzip_bytes": 406168,
-    "path": "llm-dlc/traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/logs/fb79d60216eabb7ff3d034a744374f88594f801addba5ea779821b88cd5bde65.jsonl.gz"
+    "sha256": "b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39",
+    "bytes": 2628590,
+    "lines": 1027,
+    "gzip_bytes": 465783,
+    "path": "llm-dlc/traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/logs/b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -111,6 +111,14 @@
       "summary": "VF-018: heap's JBMC tests take their time limit from JVMCONTRACT_HEAP_TIME_LIMIT, and the four that timed out are queued at 1800 s (verification pending)",
       "body": "VF-018: four of H5's ignored heap tests (Kernel#price's output relation, Prices#total's computed equations, Lines#reprice's and Orders#reprice's equations) failed because JBMC did not finish within the tests' own 600 s, the options' default timeout_seconds, while the own checker proves each claim. By the user's decision, the first and only attempt is more time with the expectations unchanged. lib/tests/heap.rs's related_on and property_on now set timeout_seconds from JVMCONTRACT_HEAP_TIME_LIMIT for runs on an engine other than the own checker (600 s when unset; a value that is not a positive number of seconds stops the test, so a job asking for more never silently runs with less). The own checker keeps the default, so the tests that are not ignored are unchanged. heap.rs is a shared file; this only adds to it. Reproducer: the_jbmc_tests_take_their_time_limit_from_the_environment, which doesn't compile without the change. heap's 47 non-ignored tests pass.\n\nJobs, one per test, each with the variable at 1800 (2 CPUs, 4 GiB, about 70 minutes, a timeout of 100 minutes): 20261107-164356-vf-018-objects-kernel-price-s-output-rel, 20261107-164356-vf-018-prices-prices-total-s-computed-in, 20261107-164356-vf-018-lines-lines-reprice-s-equations-t, 20261107-164356-vf-018-orders-orders-reprice-s-equations. VF-018 closes when all four pass. If any fails, VF-018 is deferred to the user.",
       "log_sha256": "fb79d60216eabb7ff3d034a744374f88594f801addba5ea779821b88cd5bde65"
+    },
+    {
+      "change_id": "lqozoovutmvmxrrotwnxqtmpmkrrmvqk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-001 rechecked: each of its parts fixed by a named commit, its two jobs to be resubmitted with VF-009's fix",
+      "body": "J2 of llm-dlc/loops/cleanup-jbmc.md. Each part of VF-001 was checked against the current code and the passing runs of the conformance tests (job 20261107-024759 step 5, the corpus under JBMC and auto; job 20261107-043420, under auto --confirm). The seven Verifieds under strict that the JVM refutes (four capacity constructors, loadFactor, nullMonitor, firstByte, pairsEqual) and auto's pass-through of JBMC's Verified for loadFactor and pairsEqual were fixed by nlvopkvx (0874cd9f): JBMC's missing bodies, invokedynamic call sites and dropped monitors are named gaps, and a JBMC proof through one has no verdict under strict and names it under assume. The spurious refutations of caught and nestedHandler at n=0 were fixed by svvrpymr (c99a7476) and xzvyuwxp (48aefd9e), which name where JBMC lets an exception past its handler and give no verdict through it, under --confirm too. Nothing is left to fix, so no code changed. VF-001's two jobs are resubmitted unchanged once VF-009 is fixed, since the confirm test the first job also runs still carries VF-009's disagreements. Only the brief's Progress changed.",
+      "log_sha256": "b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39"
     }
   ],
   "logs": {
@@ -124,6 +132,12 @@
       "bytes": 944383,
       "lines": 375,
       "gzip_bytes": 173332,
+      "url": null
+    },
+    "b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39": {
+      "bytes": 2628590,
+      "lines": 1027,
+      "gzip_bytes": 465783,
       "url": null
     },
     "fb79d60216eabb7ff3d034a744374f88594f801addba5ea779821b88cd5bde65": {

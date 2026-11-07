@@ -156,6 +156,37 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
   `-164356-vf-018-prices-prices-total-s-computed-in`, `-164356-vf-018-lines-lines-reprice-s-equations-t` and
   `-164356-vf-018-orders-orders-reprice-s-equations`. If any fails, VF-018 is deferred to the user, with no second
   attempt. Next: J2's recheck, then VF-009 once its triage is back.
+- **J2, VF-001: rechecked, every part fixed. Its two jobs wait on VF-009's fix** (2026-11-07). Each part was
+  checked against the code and the logs of `-024759` (step 5) and `-043420`, then attributed to a commit. All are
+  descendants of the jobs' `470be6c5`.
+  - **The seven strict `Verified`s the JVM refutes: fixed by `nlvopkvx` (`0874cd9f`, sound-verdicts 4c).** JBMC's
+    preflight (`jbmc_gaps.rs`) names three of JBMC's own approximations as gaps, from its goto program:
+    - `missing-body`: a method with no bytecode on JBMC's class path. That covers the JDK constructors of
+      `capacity`, `builderCapacity`, `mapCapacity`, `setCapacity` and `loadFactor`, and `Random` for `firstByte`.
+    - `invokedynamic`: `pairsEqual`'s record `equals`.
+    - `monitor`: `nullMonitor`.
+
+    A JBMC proof that reaches a gap is `Unverifiable` under strict. In `-024759` all seven are `Jbmc/Strict
+    Unverifiable`. The kinds are at `jbmc_gaps.rs:639–744`, and the test is `jbmc_own_approximations_are_gaps_in_the_same_modes`
+    (`integration.rs:2389`). `qsnwzrrz` later dropped stubs that no path enters. That only narrows the gaps, and
+    `-024759` ran after it.
+  - **`caught` and `nestedHandler` at `n=0`: fixed by `svvrpymr` (`c99a7476`) and `xzvyuwxp` (`48aefd9e`)**, VF-007's
+    fix, closed by `20261106-231317`.
+    - The cause was JBMC's, not a flag. JBMC lets the division's `ArithmeticException` past its handler (the
+      preflight's `return-past-handler` and `stubbed-handler`), and a JBMC run through such a defect gives no
+      verdict.
+    - Under `--confirm`, a JBMC refutation through a named defect, whose witness doesn't reproduce, is no verdict,
+      so the own checker's proof stands unconfirmed.
+    - In `-024759` both are `Jbmc/Strict Unverifiable` and `Auto/Strict Verified`. In `-043420` both are `NoVerdict
+      Verified` under strict and assume.
+  - **`auto` taking JBMC's `Verified` for `loadFactor` and `pairsEqual`: fixed by `nlvopkvx` too.** `auto`'s
+    fallback is a JBMC run, which now meets the same gaps:
+    - In `-024759` both are `Auto/Strict Unverifiable`.
+    - Under assume, `-043420`'s `Verified`s for `loadFactor` and `pairsEqual`'s `!result` pass the check that fails
+      a `Verified` the JVM refutes with no gap assumed (`conformance.rs:664`), so each names its gap.
+  - Nothing is left to fix, so there is no new conformance case. What keeps both jobs from passing is VF-009, in the
+    confirm test that `-021741` also runs. Next: resubmit `20261106-021741-…` and `20261106-024336-…` unchanged,
+    with VF-009's fix.
 - Not this stream's: `sync.py commit`'s check in this workspace reports 4 errors, none on this branch's own commits.
   They are the planning session's base commit `oqqwvmqy`, whose log `3f768f3bb246` is stored only in the default
   workspace, and other workspaces' commits (`ruvmymplmmoo`, native; `syqpoxomnynk`, the verification loop) whose
