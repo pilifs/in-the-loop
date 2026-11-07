@@ -46,7 +46,8 @@ at the commit that adds this page:
   (`jdk-static-method`). Their models in `lib/models` are on JBMC's class path only, and the own checker doesn't run
   them.
 - **037, 127:** unchanged, `Integer.numberOfLeadingZeros` and `Long.numberOfLeadingZeros`.
-- **035, 052:** no gap. 035 is refused for its floating-point arithmetic, and 052 for the unwinding bound.
+- **035, 052:** no gap. 035 is refused for its floating-point arithmetic. 052 was refused for the unwinding bound
+  until extension 2 below; it is now established by the own checker under strict (job `20261107-171502`).
 
 On JBMC's side, 071#0 and #1 wait on job `20261107-012013`, which reruns them with the preflight's path-aware stub
 check. 037 stays refused: the defect is in stock JBMC.
@@ -64,14 +65,15 @@ By how many obligations each would move, then by cost:
 
    Cost: small. The count is a priority encoder over the argument's bits, and a conformance case checks it against
    the JVM.
-2. **The own checker's unwinding bound, counted per entry of a loop.** Effect: **052#0** goes from JBMC only to both.
-   - Cause: `Engine::jump` in `lib/src/bmc/mod.rs` counts back edges per path and per `(class, method, target)`, and
-     never resets the count when the loop is left.
+2. **The own checker's unwinding bound, counted per entry of a loop.** Done (VF-011, closed): **052#0** went from
+   JBMC only to both.
+   - Cause: `Engine::jump` in `lib/src/bmc/mod.rs` counted back edges per path and per `(class, method, target)`, and
+     never reset the count when the loop was left.
    - The property's `\max` over `k` of a `\sum` over `i < k` is two nested loops in the harness
-     (`harness/expr.rs` compiles each quantifier as a loop). Over an array of length 8, one path takes the inner back
+     (`harness/expr.rs` compiles each quantifier as a loop). Over an array of length 8, one path took the inner back
      edge up to 36 times.
-   - JBMC proved the property with unwinding assertions at 16.
-   - The cause still needs a reproducer. The current count is incomplete, not unsound: a path cut short is no verdict.
+   - The count is now per entry of a loop. Job `20261107-171502` (at `c6f34f8c`) established 052 under strict on the
+     own checker with no gap. JBMC proved the property with unwinding assertions at 16.
 3. **The own checker running the `List` models** (`List.of`, `List.copyOf`, `ImmutableCollections`). Effect:
    - **013#0** and **071#2** go from JBMC only to both.
    - **071#0** and **#1** go to the own checker, and to both if job `-012013` stands.

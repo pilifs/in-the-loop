@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:08:38.111Z",
-  "duration_seconds": 2335,
+  "ended": "2026-11-07T22:09:12.191Z",
+  "duration_seconds": 2369,
   "stats": {
     "turns": 25,
-    "api_calls": 131,
-    "tool_calls": 131,
+    "api_calls": 134,
+    "tool_calls": 134,
     "tool_errors": 4,
     "compactions": 4,
     "peak_context_tokens": 129988,
     "usage": {
-      "input_tokens": 268,
-      "output_tokens": 62501,
-      "cache_read_input_tokens": 9061975,
-      "cache_creation_input_tokens": 382507
+      "input_tokens": 274,
+      "output_tokens": 64601,
+      "cache_read_input_tokens": 9335119,
+      "cache_creation_input_tokens": 389801
     }
   },
   "tools": {
-    "Bash": 106,
+    "Bash": 109,
     "Read": 12,
     "Edit": 5,
     "TaskStop": 3,
@@ -100,24 +100,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:08:38.111Z",
+      "ended": "2026-11-07T22:09:12.191Z",
       "turns": 7,
-      "api_calls": 27,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 54,
-        "output_tokens": 15092,
-        "cache_read_input_tokens": 1750001,
-        "cache_creation_input_tokens": 76667
+        "input_tokens": 60,
+        "output_tokens": 17192,
+        "cache_read_input_tokens": 2023145,
+        "cache_creation_input_tokens": 83961
       },
-      "peak_context_tokens": 89746
+      "peak_context_tokens": 97040
     }
   ],
   "log": {
-    "sha256": "27db6b4cd8852ce90179aae8ab0095b8d2144ebea4104c7351d8480f24d6ee43",
-    "bytes": 4444864,
-    "lines": 1338,
-    "gzip_bytes": 966107,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/27db6b4cd8852ce90179aae8ab0095b8d2144ebea4104c7351d8480f24d6ee43.jsonl.gz"
+    "sha256": "6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea",
+    "bytes": 4600810,
+    "lines": 1370,
+    "gzip_bytes": 992374,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -216,6 +216,14 @@
       "summary": "The cleanup loop's for-review list reviewed with the user: decisions on VF-001, VF-002, VF-018 and VF-020 recorded, VF-011 and VF-013 closed",
       "body": "verification/findings.md: VF-011 is closed by job 20261107-171502-vf-011-example-052-under-strict-on-the-o (passed at c6f34f8cb771 on vm-1: example 052 under strict on the own checker, established with no gap). VF-013 is closed by mmrwolwp and lrwynvul: all 21 run records in llm-dlc/loop-summaries/ have a redacted copy under their session's trace, test_runs.py's 8 tests pass and check gives 0 errors. Both move to Decided and closed. The user's decisions on the open entries: VF-001's two conformance jobs are resubmitted with mkdir -p target before the tee, nothing else changed; VF-018 gets a triage job on the JBMC harness with the tests' expectation unchanged; VF-020 is fixed in collect, which writes a changes.diff over jj's 1 MiB limit gzipped or as a stat summary; VF-002's 147 and 148 are resubmitted after the wording of 148 and 149 is corrected to two contracts.\n\nllm-dlc/loops/cleanup.md, Progress: what the review settled, including the golden kernel domain's allocation bound of 2, confirmed as intended, and the order of work (stub-reachability before application-core). The status stays done. The rest of the brief is unchanged (its 'Where it starts from' is out of date, as noted before).",
       "log_sha256": "27db6b4cd8852ce90179aae8ab0095b8d2144ebea4104c7351d8480f24d6ee43"
+    },
+    {
+      "change_id": "xkpyzuvswyztxsotynmtslolwpwyqsom",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "coverage.md and jbmc-upstream.md brought up to date: extension 2 (the unwinding count per entry of a loop) is done, and VF-009 is closed",
+      "body": "examples/coverage.md still described the own checker's unwinding as counted per path and 052 as refused for it. The count is now per entry of a loop (VF-011), and job 20261107-171502 established 052#0 under strict on the own checker with no gap, so extension 2 is marked done with that job. llm-dlc/loops/jbmc-upstream.md still called VF-009 deferred and a candidate to join; VF-009 is closed, and what its triage found is the brief's candidate report cause 5, which decision 1 now names. Documentation only: no code or result changed.",
+      "log_sha256": "6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea"
     }
   ],
   "logs": {
@@ -230,6 +238,12 @@
       "lines": 421,
       "gzip_bytes": 260096,
       "url": "https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/499f10255fdc2d22ea5a1abea5b5e494e46aea241abcdd72707db8a620684c69.jsonl.gz"
+    },
+    "6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea": {
+      "bytes": 4600810,
+      "lines": 1370,
+      "gzip_bytes": 992374,
+      "url": null
     },
     "719632e3f1363999e9a66b6986979d3d1bca086c1090fe86c365cda4aae230e9": {
       "bytes": 3075788,

@@ -11,7 +11,7 @@ run. It also prepares what the tool needs when a fixed JBMC arrives. It files no
 **Inputs.** Read these in full before the first piece of work of every cycle:
 - [`lib/tests/fixtures/jbmc-defects/README.md`](../../lib/tests/fixtures/jbmc-defects/README.md): the four causes, the
   fixture's table, and the three drafted reports;
-- [`verification/findings.md`](../../verification/findings.md): the open findings, VF-009 among them;
+- [`verification/findings.md`](../../verification/findings.md): the findings, VF-009 (closed) among them;
 - this brief's [Progress](#progress).
 
 ## Direction
@@ -88,14 +88,15 @@ a fix. Verification runs with the pipeline.
 
 - Filing the reports, and anything else outward-facing: the user's.
 - Cause 2's exception-class models in `lib/models`: this repository's own work, for a models or engine loop.
-- VF-009 (JBMC's spurious refutations of `boomTwice` and `enumBroken` under `--confirm`) is deferred, and joins this loop
-  only if the user selects it (Decisions): it may be a fourth JBMC defect (a throwing class initializer), or a gap in
-  the tool's `--confirm` rule.
+- VF-009 (JBMC's spurious refutations of `boomTwice` and `enumBroken` under `--confirm`) is closed: its triage found a
+  JBMC defect (a throwing class initializer's exception reaches the caller unwrapped), guarded in the preflight as
+  `throwing-initializer`. Its report is [cause 5](#cause-5-a-class-initializers-exception-reaches-the-caller-unwrapped-vf-009)
+  among the candidate reports, and joins this loop only if the user selects it (decision 1).
 
 ## Decisions
 
 Open, for the user before the loop runs:
-1. Approve the brief, and the findings that join it (VF-009 is the likely candidate).
+1. Approve the brief, and the candidate reports that join it (cause 5, from VF-009's triage).
 2. Whether step 2 may run a job that reaches the network to read CBMC's issues and releases, or whether the user
    checks upstream themselves.
 3. Whether step 5 (a JBMC patch for cause 3, built from source) is in scope.
