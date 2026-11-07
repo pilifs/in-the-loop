@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3da21514-fe46-49d5-8200-08d3cf89ea17` (open) |
+| Session | `3da21514-fe46-49d5-8200-08d3cf89ea17` (ended) |
 | When | 2026-11-07 18:55 UTC to 2026-11-07 21:56 UTC (180 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.319 |
@@ -158,7 +158,7 @@ Out of date in the rest of the brief: 'Where it starts from' describes the state
 
 ### The foundations streams' four run records published, and run-streams.sh copies a stream's records into the default workspace itself
 
-change `nzyrtklmynkq` · [log `7ae46b0c5ffe`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)
+[`b65987421c02`](https://github.com/pilifs/in-the-loop/commit/b65987421c02661f8215e02a40ed3e61342d733d) · [log `7ae46b0c5ffe`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)
 
 feature-loop.sh writes a run's record in llm-dlc/loop-summaries/ of the workspace it runs in, and sync.py publishes only the default workspace's (VF-013). A stream's records were to be copied in when the streams were merged, but nothing did it: the cleanup loop copied its streams' records by hand, and the foundations streams' four (2026-11-07-040118-foundations-alignment, -heap, -observations and -summaries, sessions 11f93b59, 750c8a36, e65240e3 and be22079e) were left only in the forgotten workspaces ../in-the-loop-alignment, -heap, -observations and -summaries, never published. They are copied in, unchanged, and this commit publishes them under their sessions' traces. Before that, each redacted copy was scanned with sync.py's Redactor: no leak, nothing to review, no home path. The originals stay where they were.
 
