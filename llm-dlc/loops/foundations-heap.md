@@ -161,6 +161,11 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     on `Domain`, skipped when empty), `lib/README.md` (a paragraph), `lib/tests/conformance.rs` (claims with a
     domain, six of them; left out of the benchmark's group 1, whose runner passes no domain flags), and
     `lib/tests/heap.rs`. `jbmc.rs` gained `raw_same` and `Argument::Same` (owned by no stream; a witness type).
+- `sync.py check` on this branch reports errors that aren't this stream's and that it may not fix (they are under
+  `llm-dlc/traces/`): the other streams' sessions (`be22079e`, `e65240e3`, `11f93b59`, `3ef2aade`) have no manifest
+  here, and five planning-era commits (`olwyzkwouyln`, `xrkxxnnuwwuq`, `nnqrnknuvslx`, `xpsxzuolnwop`,
+  `kxnqrntnkztt`) point at session `c2bd9df4`'s log `1f2230c9f137`, which that session's manifest lists in the
+  default workspace but not in this branch's copy from the fork. Both should clear at the reconcile merge.
 - Next: H2's object inputs: a parameter of an application class made by its constructor in the harness, with
   symbolic arguments (as records are, through `Layout`), nullability and aliasing among such parameters, the
   domain's label in the result; first in property checks, then regression checks with the old version's objects
