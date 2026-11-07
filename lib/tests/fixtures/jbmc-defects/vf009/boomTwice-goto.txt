@@ -1,0 +1,1213 @@
+JBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Parsing ...
+Trying to load Java main class: PropertyHarness
+Found Java main class: PropertyHarness
+Converting
+stub class symbol java::java.lang.Object already exists
+Java: added 58 String or Class constant symbols
+Generating GOTO Program
+Running GOTO functions transformation passes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER__start /* __CPROVER__start */
+        // 0 no location
+        CALL __CPROVER_initialize()
+        // 1 no location
+        ASSIGN uncaught_exception' := NULL
+        // 2 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        DECL __CPROVER__start::arg0i : signedbv[32]
+        // 3 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        ASSIGN __CPROVER__start::arg0i := side_effect statement="nondet" is_nondet_nullable="1"
+        // 4 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        INPUT address_of("arg0i"[0]) __CPROVER__start::arg0i
+        // 5 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        CALL java::PropertyHarness.check:(I)V(__CPROVER__start::arg0i)
+        // 6 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        IF java::@inflight_exception = NULL THEN GOTO 1
+        // 7 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        GOTO 2
+        // 8 no location
+     1: GOTO 3
+        // 9 no location
+        // Labels: toplevel_catch
+     2: ASSIGN uncaught_exception' := cast(java::@inflight_exception, empty*)
+        // 10 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 11 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        // Labels: after_catch
+     3: OUTPUT address_of("uncaught_exception'"[0])
+        // 12 file PropertyHarness.java function java::PropertyHarness.check:(I)V
+        ASSERT uncaught_exception' = NULL // no uncaught exception
+        // 13 no location
+        DEAD __CPROVER__start::arg0i
+        // 14 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+__CPROVER_initialize /* __CPROVER_initialize */
+        // 15 no location
+        ASSIGN __CPROVER_rounding_mode := 0
+        // 16 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 17 no location
+        ASSIGN java::conformance.Conformance$Boom.TABLE := NULL
+        // 18 no location
+        ASSIGN java::conformance.Conformance$Boom::clinit_already_run := false
+        // 19 no location
+        ASSIGN java::java.lang.String.Literal.no_20table := { "java::java.lang.String" }
+        // 20 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+PropertyHarness.check(int) /* java::PropertyHarness.check:(I)V */
+        // 21 no location
+        DECL java::PropertyHarness.check:(I)V::$stack_tmp16 : signedbv[32]
+        // 22 no location
+        // Labels: pc0
+        DECL java::PropertyHarness.check:(I)V::anonlocal::1i : signedbv[32]
+        // 23 no location
+        // Labels: pc0$
+        DECL java::PropertyHarness.check:(I)V::anonlocal::2i : signedbv[32]
+        // 24 no location
+        // Labels: pc0$$
+        DECL java::PropertyHarness.check:(I)V::anonlocal::3i : signedbv[32]
+        // 25 function java::PropertyHarness.check:(I)V bytecode-index 1
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::1i := 0
+        // 26 function java::PropertyHarness.check:(I)V bytecode-index 3
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := 0
+        // 27 function java::PropertyHarness.check:(I)V bytecode-index 5
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::3i := 0
+        // 28 no location
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::3i
+        // 29 no location
+        // Labels: pc11
+        DECL java::PropertyHarness.check:(I)V::return_tmp0 : signedbv[32]
+        // 30 function java::PropertyHarness.check:(I)V bytecode-index 7
+        // Labels: pc11$
+        CALL java::conformance.Conformance.boomTwice:(I)I(java::PropertyHarness.check:(I)V::arg0i)
+        // 31 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception = NULL THEN GOTO 1
+        // 32 function java::PropertyHarness.check:(I)V bytecode-index 7
+        DEAD java::PropertyHarness.check:(I)V::return_tmp0
+        // 33 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.NumberFormatException" THEN GOTO 2
+        // 34 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.ArithmeticException" THEN GOTO 3
+        // 35 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.NullPointerException" THEN GOTO 4
+        // 36 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.ArrayIndexOutOfBoundsException" THEN GOTO 5
+        // 37 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.StringIndexOutOfBoundsException" THEN GOTO 6
+        // 38 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.IndexOutOfBoundsException" THEN GOTO 7
+        // 39 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.NegativeArraySizeException" THEN GOTO 8
+        // 40 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.ClassCastException" THEN GOTO 9
+        // 41 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.IllegalStateException" THEN GOTO 10
+        // 42 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.IllegalArgumentException" THEN GOTO 11
+        // 43 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.UnsupportedOperationException" THEN GOTO 12
+        // 44 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.util.NoSuchElementException" THEN GOTO 13
+        // 45 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.util.ConcurrentModificationException" THEN GOTO 14
+        // 46 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.RuntimeException" THEN GOTO 15
+        // 47 function java::PropertyHarness.check:(I)V bytecode-index 7
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.Error" THEN GOTO 16
+        // 48 function java::PropertyHarness.check:(I)V bytecode-index 7
+        GOTO 25
+        // 49 function java::PropertyHarness.check:(I)V bytecode-index 7
+     1: ASSIGN java::PropertyHarness.check:(I)V::return_tmp0 := java::conformance.Conformance.boomTwice:(I)I#return_value
+        // 50 function java::PropertyHarness.check:(I)V bytecode-index 7
+        DEAD java::conformance.Conformance.boomTwice:(I)I#return_value
+        // 51 function java::PropertyHarness.check:(I)V bytecode-index 8
+        // Labels: pc14
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::1i := java::PropertyHarness.check:(I)V::return_tmp0
+        // 52 no location
+        DEAD java::PropertyHarness.check:(I)V::return_tmp0
+        // 53 no location
+        GOTO 17
+        // 54 no location
+        DEAD java::PropertyHarness.check:(I)V::return_tmp0
+        // 55 no location
+        // Labels: pc19
+     2: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp1 : struct java::java.lang.NumberFormatException*
+        // 56 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp1 := cast(java::@inflight_exception, struct java::java.lang.NumberFormatException*)
+        // 57 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 58 function java::PropertyHarness.check:(I)V bytecode-index 12
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := 1
+        // 59 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp1
+        // 60 no location
+        GOTO 17
+        // 61 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp1
+        // 62 no location
+        // Labels: pc26
+     3: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp2 : struct java::java.lang.ArithmeticException*
+        // 63 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp2 := cast(java::@inflight_exception, struct java::java.lang.ArithmeticException*)
+        // 64 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 65 function java::PropertyHarness.check:(I)V bytecode-index 16
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := 2
+        // 66 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp2
+        // 67 no location
+        GOTO 17
+        // 68 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp2
+        // 69 no location
+        // Labels: pc33
+     4: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp3 : struct java::java.lang.NullPointerException*
+        // 70 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp3 := cast(java::@inflight_exception, struct java::java.lang.NullPointerException*)
+        // 71 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 72 function java::PropertyHarness.check:(I)V bytecode-index 20
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := 3
+        // 73 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp3
+        // 74 no location
+        GOTO 17
+        // 75 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp3
+        // 76 no location
+        // Labels: pc40
+     5: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp4 : struct java::java.lang.ArrayIndexOutOfBoundsException*
+        // 77 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp4 := cast(java::@inflight_exception, struct java::java.lang.ArrayIndexOutOfBoundsException*)
+        // 78 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 79 function java::PropertyHarness.check:(I)V bytecode-index 24
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := 4
+        // 80 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp4
+        // 81 no location
+        GOTO 17
+        // 82 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp4
+        // 83 no location
+        // Labels: pc47
+     6: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp5 : struct java::java.lang.StringIndexOutOfBoundsException*
+        // 84 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp5 := cast(java::@inflight_exception, struct java::java.lang.StringIndexOutOfBoundsException*)
+        // 85 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 86 function java::PropertyHarness.check:(I)V bytecode-index 28
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := 5
+        // 87 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp5
+        // 88 no location
+        GOTO 17
+        // 89 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp5
+        // 90 no location
+        // Labels: pc54
+     7: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp6 : struct java::java.lang.IndexOutOfBoundsException*
+        // 91 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp6 := cast(java::@inflight_exception, struct java::java.lang.IndexOutOfBoundsException*)
+        // 92 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 93 function java::PropertyHarness.check:(I)V bytecode-index 32
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(6, signedbv[32])
+        // 94 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp6
+        // 95 no location
+        GOTO 17
+        // 96 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp6
+        // 97 no location
+        // Labels: pc62
+     8: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp7 : struct java::java.lang.NegativeArraySizeException*
+        // 98 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp7 := cast(java::@inflight_exception, struct java::java.lang.NegativeArraySizeException*)
+        // 99 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 100 function java::PropertyHarness.check:(I)V bytecode-index 36
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(7, signedbv[32])
+        // 101 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp7
+        // 102 no location
+        GOTO 17
+        // 103 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp7
+        // 104 no location
+        // Labels: pc70
+     9: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp8 : struct java::java.lang.ClassCastException*
+        // 105 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp8 := cast(java::@inflight_exception, struct java::java.lang.ClassCastException*)
+        // 106 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 107 function java::PropertyHarness.check:(I)V bytecode-index 40
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(8, signedbv[32])
+        // 108 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp8
+        // 109 no location
+        GOTO 17
+        // 110 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp8
+        // 111 no location
+        // Labels: pc78
+    10: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp9 : struct java::java.lang.IllegalStateException*
+        // 112 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp9 := cast(java::@inflight_exception, struct java::java.lang.IllegalStateException*)
+        // 113 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 114 function java::PropertyHarness.check:(I)V bytecode-index 44
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(9, signedbv[32])
+        // 115 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp9
+        // 116 no location
+        GOTO 17
+        // 117 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp9
+        // 118 no location
+        // Labels: pc86
+    11: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp10 : struct java::java.lang.IllegalArgumentException*
+        // 119 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp10 := cast(java::@inflight_exception, struct java::java.lang.IllegalArgumentException*)
+        // 120 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 121 function java::PropertyHarness.check:(I)V bytecode-index 48
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(10, signedbv[32])
+        // 122 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp10
+        // 123 no location
+        GOTO 17
+        // 124 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp10
+        // 125 no location
+        // Labels: pc94
+    12: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp11 : struct java::java.lang.UnsupportedOperationException*
+        // 126 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp11 := cast(java::@inflight_exception, struct java::java.lang.UnsupportedOperationException*)
+        // 127 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 128 function java::PropertyHarness.check:(I)V bytecode-index 52
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(11, signedbv[32])
+        // 129 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp11
+        // 130 no location
+        GOTO 17
+        // 131 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp11
+        // 132 no location
+        // Labels: pc102
+    13: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp12 : struct java::java.util.NoSuchElementException*
+        // 133 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp12 := cast(java::@inflight_exception, struct java::java.util.NoSuchElementException*)
+        // 134 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 135 function java::PropertyHarness.check:(I)V bytecode-index 56
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(12, signedbv[32])
+        // 136 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp12
+        // 137 no location
+        GOTO 17
+        // 138 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp12
+        // 139 no location
+        // Labels: pc110
+    14: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp13 : struct java::java.util.ConcurrentModificationException*
+        // 140 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp13 := cast(java::@inflight_exception, struct java::java.util.ConcurrentModificationException*)
+        // 141 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 142 function java::PropertyHarness.check:(I)V bytecode-index 60
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(13, signedbv[32])
+        // 143 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp13
+        // 144 no location
+        GOTO 17
+        // 145 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp13
+        // 146 no location
+        // Labels: pc118
+    15: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp14 : struct java::java.lang.RuntimeException*
+        // 147 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp14 := cast(java::@inflight_exception, struct java::java.lang.RuntimeException*)
+        // 148 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 149 function java::PropertyHarness.check:(I)V bytecode-index 64
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(14, signedbv[32])
+        // 150 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp14
+        // 151 no location
+        GOTO 17
+        // 152 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp14
+        // 153 no location
+        // Labels: pc126
+    16: DECL java::PropertyHarness.check:(I)V::caught_exception_tmp15 : struct java::java.lang.Error*
+        // 154 no location
+        ASSIGN java::PropertyHarness.check:(I)V::caught_exception_tmp15 := cast(java::@inflight_exception, struct java::java.lang.Error*)
+        // 155 no location
+        ASSIGN java::@inflight_exception := NULL
+        // 156 function java::PropertyHarness.check:(I)V bytecode-index 68
+        ASSIGN java::PropertyHarness.check:(I)V::anonlocal::2i := cast(15, signedbv[32])
+        // 157 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp15
+        // 158 no location
+        GOTO 17
+        // 159 no location
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp15
+        // 160 function java::PropertyHarness.check:(I)V bytecode-index 71
+        // Labels: pc134
+    17: IF ¬(java::PropertyHarness.check:(I)V::anonlocal::2i ≠ 0) THEN GOTO 18
+        // 161 function java::PropertyHarness.check:(I)V bytecode-index 81
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::2i
+        // 162 function java::PropertyHarness.check:(I)V bytecode-index 81
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::1i
+        // 163 function java::PropertyHarness.check:(I)V bytecode-index 81
+        GOTO 22
+        // 164 no location
+    18: DEAD java::PropertyHarness.check:(I)V::anonlocal::2i
+        // 165 function java::PropertyHarness.check:(I)V bytecode-index 74
+        // Labels: pc139 pc141
+        IF ¬(java::PropertyHarness.check:(I)V::anonlocal::1i = 2) THEN GOTO 19
+        // 166 function java::PropertyHarness.check:(I)V bytecode-index 77
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::1i
+        // 167 function java::PropertyHarness.check:(I)V bytecode-index 77
+        GOTO 20
+        // 168 no location
+    19: DEAD java::PropertyHarness.check:(I)V::anonlocal::1i
+        // 169 no location
+        // Labels: pc145
+        ASSIGN java::PropertyHarness.check:(I)V::$stack_tmp16 := 0
+        // 170 no location
+        GOTO 21
+        // 171 no location
+        // Labels: pc149
+    20: ASSIGN java::PropertyHarness.check:(I)V::$stack_tmp16 := 1
+        // 172 function java::PropertyHarness.check:(I)V bytecode-index 78
+        // Labels: pc150
+    21: IF java::PropertyHarness.check:(I)V::$stack_tmp16 ≠ 0 THEN GOTO 24
+        // 173 no location
+        // Labels: pc153 pc157
+    22: DECL java::PropertyHarness.check:(I)V::new_tmp17 : struct java::java.lang.AssertionError*
+        // 174 function java::PropertyHarness.check:(I)V bytecode-index 81
+        ASSIGN java::PropertyHarness.check:(I)V::new_tmp17 := side_effect statement="allocate"(4, false)
+        // 175 function java::PropertyHarness.check:(I)V bytecode-index 81
+        ASSIGN *java::PropertyHarness.check:(I)V::new_tmp17 := { "java::java.lang.AssertionError" }
+        // 176 function java::PropertyHarness.check:(I)V bytecode-index 83
+        IF ¬(java::PropertyHarness.check:(I)V::new_tmp17 = NULL) THEN GOTO 23
+        // 177 function java::PropertyHarness.check:(I)V bytecode-index 83
+        ASSIGN new_exception::new_exception$7 := side_effect statement="allocate"(4, false)
+        // 178 function java::PropertyHarness.check:(I)V bytecode-index 83
+        ASSIGN *new_exception::new_exception$7 := { "java::java.lang.NullPointerException" }
+        // 179 function java::PropertyHarness.check:(I)V bytecode-index 83
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$7, empty*)
+        // 180 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::new_tmp17
+        // 181 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp15
+        // 182 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp14
+        // 183 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp13
+        // 184 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp12
+        // 185 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp11
+        // 186 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp10
+        // 187 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp9
+        // 188 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp8
+        // 189 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp7
+        // 190 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp6
+        // 191 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp5
+        // 192 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp4
+        // 193 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp3
+        // 194 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp2
+        // 195 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::caught_exception_tmp1
+        // 196 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::3i
+        // 197 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::2i
+        // 198 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::anonlocal::1i
+        // 199 function java::PropertyHarness.check:(I)V bytecode-index 83
+        DEAD java::PropertyHarness.check:(I)V::$stack_tmp16
+        // 200 function java::PropertyHarness.check:(I)V bytecode-index 83
+        GOTO 25
+        // 201 function java::PropertyHarness.check:(I)V bytecode-index 83
+    23: CALL java::java.lang.AssertionError.<init>:()V(java::PropertyHarness.check:(I)V::new_tmp17)
+        // 202 function java::PropertyHarness.check:(I)V bytecode-index 84
+        ASSERT false // assertion at function java::PropertyHarness.check:(I)V bytecode-index 84
+        // 203 function java::PropertyHarness.check:(I)V bytecode-index 84
+        ASSUME false
+        // 204 no location
+        DEAD java::PropertyHarness.check:(I)V::new_tmp17
+        // 205 no location
+        // Labels: pc165
+    24: DEAD java::PropertyHarness.check:(I)V::$stack_tmp16
+        // 206 no location
+    25: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[boolean].clone:() /* java::array[boolean].clone:()Ljava/lang/Object; */
+        // 207 no location
+        DECL java::array[boolean].clone:()Ljava/lang/Object;::cloned_array : struct java::array[boolean]*
+        // 208 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[boolean].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 209 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$1 := side_effect statement="allocate"(4, false)
+        // 210 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$1 := { "java::java.lang.NegativeArraySizeException" }
+        // 211 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$1, empty*)
+        // 212 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        // 213 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 214 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[boolean].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 215 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[boolean].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[boolean]" }, 0, NULL }
+        // 216 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[boolean].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[boolean].clone:()Ljava/lang/Object;::this.length
+        // 217 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[boolean].clone:()Ljava/lang/Object;::tmp_new_data_array : c_bool[8]*
+        // 218 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[boolean].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 219 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[boolean].clone:()Ljava/lang/Object;::cloned_array.data := java::array[boolean].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 220 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[boolean].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 221 no location
+        DECL java::array[boolean].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 222 no location
+        ASSIGN java::array[boolean].clone:()Ljava/lang/Object;::index := 0
+        // 223 no location
+     2: IF ¬(java::array[boolean].clone:()Ljava/lang/Object;::index < *java::array[boolean].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 224 no location
+        ASSIGN *(*java::array[boolean].clone:()Ljava/lang/Object;::cloned_array.data + java::array[boolean].clone:()Ljava/lang/Object;::index) := *(*java::array[boolean].clone:()Ljava/lang/Object;::this.data + java::array[boolean].clone:()Ljava/lang/Object;::index)
+        // 225 function java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[boolean].clone:()Ljava/lang/Object;::index := java::array[boolean].clone:()Ljava/lang/Object;::index + 1
+        // 226 no location
+        GOTO 2
+        // 227 no location
+     3: ASSIGN java::array[boolean].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[boolean].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 228 no location
+        DEAD java::array[boolean].clone:()Ljava/lang/Object;::index
+        // 229 no location
+        DEAD java::array[boolean].clone:()Ljava/lang/Object;::cloned_array
+        // 230 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[byte].clone:() /* java::array[byte].clone:()Ljava/lang/Object; */
+        // 231 no location
+        DECL java::array[byte].clone:()Ljava/lang/Object;::cloned_array : struct java::array[byte]*
+        // 232 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[byte].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 233 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$8 := side_effect statement="allocate"(4, false)
+        // 234 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$8 := { "java::java.lang.NegativeArraySizeException" }
+        // 235 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$8, empty*)
+        // 236 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        // 237 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 238 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[byte].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 239 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[byte].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[byte]" }, 0, NULL }
+        // 240 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[byte].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[byte].clone:()Ljava/lang/Object;::this.length
+        // 241 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[byte].clone:()Ljava/lang/Object;::tmp_new_data_array : signedbv[8]*
+        // 242 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[byte].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 243 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[byte].clone:()Ljava/lang/Object;::cloned_array.data := java::array[byte].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 244 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[byte].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 245 no location
+        DECL java::array[byte].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 246 no location
+        ASSIGN java::array[byte].clone:()Ljava/lang/Object;::index := 0
+        // 247 no location
+     2: IF ¬(java::array[byte].clone:()Ljava/lang/Object;::index < *java::array[byte].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 248 no location
+        ASSIGN *(*java::array[byte].clone:()Ljava/lang/Object;::cloned_array.data + java::array[byte].clone:()Ljava/lang/Object;::index) := *(*java::array[byte].clone:()Ljava/lang/Object;::this.data + java::array[byte].clone:()Ljava/lang/Object;::index)
+        // 249 function java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[byte].clone:()Ljava/lang/Object;::index := java::array[byte].clone:()Ljava/lang/Object;::index + 1
+        // 250 no location
+        GOTO 2
+        // 251 no location
+     3: ASSIGN java::array[byte].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[byte].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 252 no location
+        DEAD java::array[byte].clone:()Ljava/lang/Object;::index
+        // 253 no location
+        DEAD java::array[byte].clone:()Ljava/lang/Object;::cloned_array
+        // 254 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[char].clone:() /* java::array[char].clone:()Ljava/lang/Object; */
+        // 255 no location
+        DECL java::array[char].clone:()Ljava/lang/Object;::cloned_array : struct java::array[char]*
+        // 256 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[char].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 257 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$2 := side_effect statement="allocate"(4, false)
+        // 258 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$2 := { "java::java.lang.NegativeArraySizeException" }
+        // 259 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$2, empty*)
+        // 260 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        // 261 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 262 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[char].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 263 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[char].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[char]" }, 0, NULL }
+        // 264 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[char].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[char].clone:()Ljava/lang/Object;::this.length
+        // 265 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[char].clone:()Ljava/lang/Object;::tmp_new_data_array : unsignedbv[16]*
+        // 266 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[char].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 267 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[char].clone:()Ljava/lang/Object;::cloned_array.data := java::array[char].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 268 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[char].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 269 no location
+        DECL java::array[char].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 270 no location
+        ASSIGN java::array[char].clone:()Ljava/lang/Object;::index := 0
+        // 271 no location
+     2: IF ¬(java::array[char].clone:()Ljava/lang/Object;::index < *java::array[char].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 272 no location
+        ASSIGN *(*java::array[char].clone:()Ljava/lang/Object;::cloned_array.data + java::array[char].clone:()Ljava/lang/Object;::index) := *(*java::array[char].clone:()Ljava/lang/Object;::this.data + java::array[char].clone:()Ljava/lang/Object;::index)
+        // 273 function java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[char].clone:()Ljava/lang/Object;::index := java::array[char].clone:()Ljava/lang/Object;::index + 1
+        // 274 no location
+        GOTO 2
+        // 275 no location
+     3: ASSIGN java::array[char].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[char].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 276 no location
+        DEAD java::array[char].clone:()Ljava/lang/Object;::index
+        // 277 no location
+        DEAD java::array[char].clone:()Ljava/lang/Object;::cloned_array
+        // 278 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[double].clone:() /* java::array[double].clone:()Ljava/lang/Object; */
+        // 279 no location
+        DECL java::array[double].clone:()Ljava/lang/Object;::cloned_array : struct java::array[double]*
+        // 280 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[double].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 281 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$3 := side_effect statement="allocate"(4, false)
+        // 282 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$3 := { "java::java.lang.NegativeArraySizeException" }
+        // 283 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$3, empty*)
+        // 284 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        // 285 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 286 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[double].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 287 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[double].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[double]" }, 0, NULL }
+        // 288 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[double].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[double].clone:()Ljava/lang/Object;::this.length
+        // 289 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[double].clone:()Ljava/lang/Object;::tmp_new_data_array : floatbv[64]*
+        // 290 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[double].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 291 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[double].clone:()Ljava/lang/Object;::cloned_array.data := java::array[double].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 292 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[double].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 293 no location
+        DECL java::array[double].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 294 no location
+        ASSIGN java::array[double].clone:()Ljava/lang/Object;::index := 0
+        // 295 no location
+     2: IF ¬(java::array[double].clone:()Ljava/lang/Object;::index < *java::array[double].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 296 no location
+        ASSIGN *(*java::array[double].clone:()Ljava/lang/Object;::cloned_array.data + java::array[double].clone:()Ljava/lang/Object;::index) := *(*java::array[double].clone:()Ljava/lang/Object;::this.data + java::array[double].clone:()Ljava/lang/Object;::index)
+        // 297 function java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[double].clone:()Ljava/lang/Object;::index := java::array[double].clone:()Ljava/lang/Object;::index + 1
+        // 298 no location
+        GOTO 2
+        // 299 no location
+     3: ASSIGN java::array[double].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[double].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 300 no location
+        DEAD java::array[double].clone:()Ljava/lang/Object;::index
+        // 301 no location
+        DEAD java::array[double].clone:()Ljava/lang/Object;::cloned_array
+        // 302 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[float].clone:() /* java::array[float].clone:()Ljava/lang/Object; */
+        // 303 no location
+        DECL java::array[float].clone:()Ljava/lang/Object;::cloned_array : struct java::array[float]*
+        // 304 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[float].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 305 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$6 := side_effect statement="allocate"(4, false)
+        // 306 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$6 := { "java::java.lang.NegativeArraySizeException" }
+        // 307 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$6, empty*)
+        // 308 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        // 309 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 310 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[float].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 311 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[float].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[float]" }, 0, NULL }
+        // 312 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[float].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[float].clone:()Ljava/lang/Object;::this.length
+        // 313 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[float].clone:()Ljava/lang/Object;::tmp_new_data_array : floatbv[32]*
+        // 314 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[float].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 315 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[float].clone:()Ljava/lang/Object;::cloned_array.data := java::array[float].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 316 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[float].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 317 no location
+        DECL java::array[float].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 318 no location
+        ASSIGN java::array[float].clone:()Ljava/lang/Object;::index := 0
+        // 319 no location
+     2: IF ¬(java::array[float].clone:()Ljava/lang/Object;::index < *java::array[float].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 320 no location
+        ASSIGN *(*java::array[float].clone:()Ljava/lang/Object;::cloned_array.data + java::array[float].clone:()Ljava/lang/Object;::index) := *(*java::array[float].clone:()Ljava/lang/Object;::this.data + java::array[float].clone:()Ljava/lang/Object;::index)
+        // 321 function java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[float].clone:()Ljava/lang/Object;::index := java::array[float].clone:()Ljava/lang/Object;::index + 1
+        // 322 no location
+        GOTO 2
+        // 323 no location
+     3: ASSIGN java::array[float].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[float].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 324 no location
+        DEAD java::array[float].clone:()Ljava/lang/Object;::index
+        // 325 no location
+        DEAD java::array[float].clone:()Ljava/lang/Object;::cloned_array
+        // 326 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[int].clone:() /* java::array[int].clone:()Ljava/lang/Object; */
+        // 327 no location
+        DECL java::array[int].clone:()Ljava/lang/Object;::cloned_array : struct java::array[int]*
+        // 328 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[int].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 329 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$9 := side_effect statement="allocate"(4, false)
+        // 330 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$9 := { "java::java.lang.NegativeArraySizeException" }
+        // 331 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$9, empty*)
+        // 332 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        // 333 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 334 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[int].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 335 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[int].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[int]" }, 0, NULL }
+        // 336 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[int].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[int].clone:()Ljava/lang/Object;::this.length
+        // 337 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[int].clone:()Ljava/lang/Object;::tmp_new_data_array : signedbv[32]*
+        // 338 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[int].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 339 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[int].clone:()Ljava/lang/Object;::cloned_array.data := java::array[int].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 340 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[int].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 341 no location
+        DECL java::array[int].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 342 no location
+        ASSIGN java::array[int].clone:()Ljava/lang/Object;::index := 0
+        // 343 no location
+     2: IF ¬(java::array[int].clone:()Ljava/lang/Object;::index < *java::array[int].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 344 no location
+        ASSIGN *(*java::array[int].clone:()Ljava/lang/Object;::cloned_array.data + java::array[int].clone:()Ljava/lang/Object;::index) := *(*java::array[int].clone:()Ljava/lang/Object;::this.data + java::array[int].clone:()Ljava/lang/Object;::index)
+        // 345 function java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[int].clone:()Ljava/lang/Object;::index := java::array[int].clone:()Ljava/lang/Object;::index + 1
+        // 346 no location
+        GOTO 2
+        // 347 no location
+     3: ASSIGN java::array[int].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[int].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 348 no location
+        DEAD java::array[int].clone:()Ljava/lang/Object;::index
+        // 349 no location
+        DEAD java::array[int].clone:()Ljava/lang/Object;::cloned_array
+        // 350 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[long].clone:() /* java::array[long].clone:()Ljava/lang/Object; */
+        // 351 no location
+        DECL java::array[long].clone:()Ljava/lang/Object;::cloned_array : struct java::array[long]*
+        // 352 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[long].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 353 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$5 := side_effect statement="allocate"(4, false)
+        // 354 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$5 := { "java::java.lang.NegativeArraySizeException" }
+        // 355 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$5, empty*)
+        // 356 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        // 357 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 358 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[long].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 359 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[long].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[long]" }, 0, NULL }
+        // 360 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[long].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[long].clone:()Ljava/lang/Object;::this.length
+        // 361 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[long].clone:()Ljava/lang/Object;::tmp_new_data_array : signedbv[64]*
+        // 362 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[long].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 363 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[long].clone:()Ljava/lang/Object;::cloned_array.data := java::array[long].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 364 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[long].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 365 no location
+        DECL java::array[long].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 366 no location
+        ASSIGN java::array[long].clone:()Ljava/lang/Object;::index := 0
+        // 367 no location
+     2: IF ¬(java::array[long].clone:()Ljava/lang/Object;::index < *java::array[long].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 368 no location
+        ASSIGN *(*java::array[long].clone:()Ljava/lang/Object;::cloned_array.data + java::array[long].clone:()Ljava/lang/Object;::index) := *(*java::array[long].clone:()Ljava/lang/Object;::this.data + java::array[long].clone:()Ljava/lang/Object;::index)
+        // 369 function java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[long].clone:()Ljava/lang/Object;::index := java::array[long].clone:()Ljava/lang/Object;::index + 1
+        // 370 no location
+        GOTO 2
+        // 371 no location
+     3: ASSIGN java::array[long].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[long].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 372 no location
+        DEAD java::array[long].clone:()Ljava/lang/Object;::index
+        // 373 no location
+        DEAD java::array[long].clone:()Ljava/lang/Object;::cloned_array
+        // 374 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[reference].clone:() /* java::array[reference].clone:()Ljava/lang/Object; */
+        // 375 no location
+        DECL java::array[reference].clone:()Ljava/lang/Object;::cloned_array : struct java::array[reference]*
+        // 376 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[reference].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 377 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$4 := side_effect statement="allocate"(4, false)
+        // 378 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$4 := { "java::java.lang.NegativeArraySizeException" }
+        // 379 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$4, empty*)
+        // 380 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        // 381 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 382 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[reference].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(24, false)
+        // 383 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[reference].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[reference]" }, 0, NULL, "", 0 }
+        // 384 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[reference].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[reference].clone:()Ljava/lang/Object;::this.length
+        // 385 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[reference].clone:()Ljava/lang/Object;::tmp_new_data_array : empty**
+        // 386 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[reference].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 387 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[reference].clone:()Ljava/lang/Object;::cloned_array.data := java::array[reference].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 388 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[reference].clone:()Ljava/lang/Object;::tmp_new_data_array NULL
+        // 389 no location
+        ASSIGN *java::array[reference].clone:()Ljava/lang/Object;::cloned_array.@array_dimensions := *java::array[reference].clone:()Ljava/lang/Object;::this.@array_dimensions
+        // 390 no location
+        ASSIGN *java::array[reference].clone:()Ljava/lang/Object;::cloned_array.@element_class_identifier := *java::array[reference].clone:()Ljava/lang/Object;::this.@element_class_identifier
+        // 391 no location
+        DECL java::array[reference].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 392 no location
+        ASSIGN java::array[reference].clone:()Ljava/lang/Object;::index := 0
+        // 393 no location
+     2: IF ¬(java::array[reference].clone:()Ljava/lang/Object;::index < *java::array[reference].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 394 no location
+        ASSIGN *(*java::array[reference].clone:()Ljava/lang/Object;::cloned_array.data + java::array[reference].clone:()Ljava/lang/Object;::index) := *(*java::array[reference].clone:()Ljava/lang/Object;::this.data + java::array[reference].clone:()Ljava/lang/Object;::index)
+        // 395 function java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[reference].clone:()Ljava/lang/Object;::index := java::array[reference].clone:()Ljava/lang/Object;::index + 1
+        // 396 no location
+        GOTO 2
+        // 397 no location
+     3: ASSIGN java::array[reference].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[reference].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 398 no location
+        DEAD java::array[reference].clone:()Ljava/lang/Object;::index
+        // 399 no location
+        DEAD java::array[reference].clone:()Ljava/lang/Object;::cloned_array
+        // 400 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::array[short].clone:() /* java::array[short].clone:()Ljava/lang/Object; */
+        // 401 no location
+        DECL java::array[short].clone:()Ljava/lang/Object;::cloned_array : struct java::array[short]*
+        // 402 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        IF *java::array[short].clone:()Ljava/lang/Object;::this.length ≥ 0 THEN GOTO 1
+        // 403 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN new_exception::new_exception$10 := side_effect statement="allocate"(4, false)
+        // 404 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *new_exception::new_exception$10 := { "java::java.lang.NegativeArraySizeException" }
+        // 405 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$10, empty*)
+        // 406 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        DEAD java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        // 407 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        GOTO 4
+        // 408 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+     1: ASSIGN java::array[short].clone:()Ljava/lang/Object;::cloned_array := side_effect statement="allocate"(16, false)
+        // 409 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[short].clone:()Ljava/lang/Object;::cloned_array := { { "java::array[short]" }, 0, NULL }
+        // 410 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[short].clone:()Ljava/lang/Object;::cloned_array.length := *java::array[short].clone:()Ljava/lang/Object;::this.length
+        // 411 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        DECL java::array[short].clone:()Ljava/lang/Object;::tmp_new_data_array : signedbv[16]*
+        // 412 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[short].clone:()Ljava/lang/Object;::tmp_new_data_array := side_effect statement="java_new_array_data" size="member"
+        // 413 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN *java::array[short].clone:()Ljava/lang/Object;::cloned_array.data := java::array[short].clone:()Ljava/lang/Object;::tmp_new_data_array
+        // 414 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ARRAY_SET java::array[short].clone:()Ljava/lang/Object;::tmp_new_data_array 0
+        // 415 no location
+        DECL java::array[short].clone:()Ljava/lang/Object;::index : signedbv[32]
+        // 416 no location
+        ASSIGN java::array[short].clone:()Ljava/lang/Object;::index := 0
+        // 417 no location
+     2: IF ¬(java::array[short].clone:()Ljava/lang/Object;::index < *java::array[short].clone:()Ljava/lang/Object;::this.length) THEN GOTO 3
+        // 418 no location
+        ASSIGN *(*java::array[short].clone:()Ljava/lang/Object;::cloned_array.data + java::array[short].clone:()Ljava/lang/Object;::index) := *(*java::array[short].clone:()Ljava/lang/Object;::this.data + java::array[short].clone:()Ljava/lang/Object;::index)
+        // 419 function java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        ASSIGN java::array[short].clone:()Ljava/lang/Object;::index := java::array[short].clone:()Ljava/lang/Object;::index + 1
+        // 420 no location
+        GOTO 2
+        // 421 no location
+     3: ASSIGN java::array[short].clone:()Ljava/lang/Object;#return_value := address_of(*java::array[short].clone:()Ljava/lang/Object;::cloned_array.@java.lang.Object)
+        // 422 no location
+        DEAD java::array[short].clone:()Ljava/lang/Object;::index
+        // 423 no location
+        DEAD java::array[short].clone:()Ljava/lang/Object;::cloned_array
+        // 424 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+conformance.Conformance$Boom.<clinit>() /* java::conformance.Conformance$Boom.<clinit>:()V */
+        // 425 no location
+        DECL java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0 : struct java::array[int]*
+        // 426 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        // Labels: pc0
+        CALL java::conformance.Conformance$Boom.<clinit_wrapper>()
+        // 427 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        IF java::@inflight_exception = NULL THEN GOTO 1
+        // 428 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        DEAD java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0
+        // 429 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        GOTO 4
+        // 430 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+     1: CALL java::conformance.Conformance$Boom.table:()[I()
+        // 431 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        IF java::@inflight_exception = NULL THEN GOTO 2
+        // 432 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        DEAD java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0
+        // 433 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        GOTO 4
+        // 434 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+     2: ASSIGN java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0 := java::conformance.Conformance$Boom.table:()[I#return_value
+        // 435 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 0
+        DEAD java::conformance.Conformance$Boom.table:()[I#return_value
+        // 436 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 1
+        CALL java::conformance.Conformance$Boom.<clinit_wrapper>()
+        // 437 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 1
+        IF java::@inflight_exception = NULL THEN GOTO 3
+        // 438 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 1
+        DEAD java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0
+        // 439 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 1
+        GOTO 4
+        // 440 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 1
+     3: ASSIGN java::conformance.Conformance$Boom.TABLE := java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0
+        // 441 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V bytecode-index 2
+        DEAD java::conformance.Conformance$Boom.<clinit>:()V::return_tmp0
+        // 442 no location
+     4: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java::conformance.Conformance$Boom.<clinit_wrapper> /* java::conformance.Conformance$Boom.<clinit_wrapper> */
+        // 443 no location
+        IF ¬(java::conformance.Conformance$Boom::clinit_already_run ⇔ false) THEN GOTO 1
+        // 444 no location
+        ASSIGN java::conformance.Conformance$Boom::clinit_already_run := true
+        // 445 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V
+        CALL java::conformance.Conformance$Boom.<clinit>:()V()
+        // 446 file conformance/Conformance.java line 41 function java::conformance.Conformance$Boom.<clinit>:()V
+        IF java::@inflight_exception = NULL THEN GOTO 1
+        // 447 no location
+     1: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+conformance.Conformance$Boom.table() /* java::conformance.Conformance$Boom.table:()[I */
+        // 448 no location
+        DECL java::conformance.Conformance$Boom.table:()[I::new_tmp0 : struct java::java.lang.IllegalStateException*
+        // 449 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 0
+        ASSIGN java::conformance.Conformance$Boom.table:()[I::new_tmp0 := side_effect statement="allocate"(4, false)
+        // 450 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 0
+        ASSIGN *java::conformance.Conformance$Boom.table:()[I::new_tmp0 := { "java::java.lang.IllegalStateException" }
+        // 451 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+        IF ¬(java::conformance.Conformance$Boom.table:()[I::new_tmp0 = NULL) THEN GOTO 1
+        // 452 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+        ASSIGN new_exception::new_exception := side_effect statement="allocate"(4, false)
+        // 453 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+        ASSIGN *new_exception::new_exception := { "java::java.lang.NullPointerException" }
+        // 454 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception, empty*)
+        // 455 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+        DEAD java::conformance.Conformance$Boom.table:()[I::new_tmp0
+        // 456 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+        GOTO 5
+        // 457 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 3
+     1: CALL java::java.lang.IllegalStateException.<init>:(Ljava/lang/String;)V(java::conformance.Conformance$Boom.table:()[I::new_tmp0, address_of(java::java.lang.String.Literal.no_20table))
+        // 458 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        IF ¬(java::conformance.Conformance$Boom.table:()[I::new_tmp0 = NULL) THEN GOTO 2
+        // 459 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        ASSIGN new_exception::new_exception$0 := side_effect statement="allocate"(4, false)
+        // 460 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        ASSIGN *new_exception::new_exception$0 := { "java::java.lang.NullPointerException" }
+        // 461 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        ASSIGN java::@inflight_exception := cast(new_exception::new_exception$0, empty*)
+        // 462 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        DEAD java::conformance.Conformance$Boom.table:()[I::new_tmp0
+        // 463 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        GOTO 5
+        // 464 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+     2: ASSIGN java::@inflight_exception := cast(java::conformance.Conformance$Boom.table:()[I::new_tmp0, empty*)
+        // 465 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        DEAD java::conformance.Conformance$Boom.table:()[I::new_tmp0
+        // 466 file conformance/Conformance.java line 42 function java::conformance.Conformance$Boom.table:()[I bytecode-index 4
+        GOTO 5
+        // 467 no location
+        DEAD java::conformance.Conformance$Boom.table:()[I::new_tmp0
+        // 468 no location
+        DECL java::conformance.Conformance$Boom.table:()[I::nondet_tmp : struct java::array[int]*
+        // 469 no location
+        DECL java::conformance.Conformance$Boom.table:()[I::nondet_array_length : signedbv[32]
+        // 470 no location
+        DECL java::conformance.Conformance$Boom.table:()[I::array_data_init : signedbv[32][5]*
+        // 471 no location
+        IF ¬side_effect statement="nondet" is_nondet_nullable="1" THEN GOTO 3
+        // 472 no location
+        ASSIGN java::conformance.Conformance$Boom.table:()[I::nondet_tmp := NULL
+        // 473 no location
+        GOTO 4
+        // 474 no location
+     3: DECL java::conformance.Conformance$Boom.table:()[I::nondet_array_length : signedbv[32]
+        // 475 no location
+        ASSIGN java::conformance.Conformance$Boom.table:()[I::nondet_array_length := side_effect statement="nondet" is_nondet_nullable="1"
+        // 476 no location
+        ASSUME java::conformance.Conformance$Boom.table:()[I::nondet_array_length ≥ 0
+        // 477 no location
+        ASSUME java::conformance.Conformance$Boom.table:()[I::nondet_array_length ≤ 5
+        // 478 no location
+        ASSIGN java::conformance.Conformance$Boom.table:()[I::nondet_tmp := side_effect statement="allocate"(16, false)
+        // 479 no location
+        ASSIGN *java::conformance.Conformance$Boom.table:()[I::nondet_tmp := { { "java::array[int]" }, 0, NULL }
+        // 480 no location
+        ASSIGN *java::conformance.Conformance$Boom.table:()[I::nondet_tmp.length := java::conformance.Conformance$Boom.table:()[I::nondet_array_length
+        // 481 no location
+        DECL java::conformance.Conformance$Boom.table:()[I::tmp_new_data_array : signedbv[32]*
+        // 482 no location
+        ASSIGN java::conformance.Conformance$Boom.table:()[I::tmp_new_data_array := side_effect statement="java_new_array_data" size="constant"
+        // 483 no location
+        ASSIGN *java::conformance.Conformance$Boom.table:()[I::nondet_tmp.data := java::conformance.Conformance$Boom.table:()[I::tmp_new_data_array
+        // 484 no location
+        ARRAY_SET java::conformance.Conformance$Boom.table:()[I::tmp_new_data_array 0
+        // 485 no location
+        ASSIGN java::conformance.Conformance$Boom.table:()[I::array_data_init := side_effect statement="allocate"(5, false)
+        // 486 no location
+        ASSIGN *java::conformance.Conformance$Boom.table:()[I::array_data_init := side_effect statement="nondet" is_nondet_nullable="1"
+        // 487 no location
+        ASSIGN *java::conformance.Conformance$Boom.table:()[I::nondet_tmp.data := address_of(*java::conformance.Conformance$Boom.table:()[I::array_data_init[0])
+        // 488 no location
+        DEAD java::conformance.Conformance$Boom.table:()[I::nondet_array_length
+        // 489 no location
+     4: DEAD java::conformance.Conformance$Boom.table:()[I::array_data_init
+        // 490 no location
+        DEAD java::conformance.Conformance$Boom.table:()[I::nondet_array_length
+        // 491 no location
+        ASSIGN java::conformance.Conformance$Boom.table:()[I#return_value := java::conformance.Conformance$Boom.table:()[I::nondet_tmp
+        // 492 no location
+        DEAD java::conformance.Conformance$Boom.table:()[I::nondet_tmp
+        // 493 no location
+     5: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+conformance.Conformance$Boom.value(int) /* java::conformance.Conformance$Boom.value:(I)I */
+        // 494 file conformance/Conformance.java line 43 function java::conformance.Conformance$Boom.value:(I)I bytecode-index 1
+        // Labels: pc0
+        ASSIGN java::conformance.Conformance$Boom.value:(I)I#return_value := java::conformance.Conformance$Boom.value:(I)I::n
+        // 495 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+conformance.Conformance.boomTwice(int) /* java::conformance.Conformance.boomTwice:(I)I */
+        // 496 no location
+        DECL java::conformance.Conformance.boomTwice:(I)I::1::first : signedbv[32]
+        // 497 file conformance/Conformance.java line 123 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 1
+        // Labels: pc0
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::1::first := 0
+        // 498 no location
+        // Labels: pc3
+        DECL java::conformance.Conformance.boomTwice:(I)I::return_tmp0 : signedbv[32]
+        // 499 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        CALL java::conformance.Conformance$Boom.<clinit_wrapper>()
+        // 500 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        IF java::@inflight_exception = NULL THEN GOTO 1
+        // 501 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        DEAD java::conformance.Conformance.boomTwice:(I)I::return_tmp0
+        // 502 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.ExceptionInInitializerError" THEN GOTO 2
+        // 503 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        GOTO 6
+        // 504 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+     1: CALL java::conformance.Conformance$Boom.value:(I)I(java::conformance.Conformance.boomTwice:(I)I::n)
+        // 505 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::return_tmp0 := java::conformance.Conformance$Boom.value:(I)I#return_value
+        // 506 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 3
+        DEAD java::conformance.Conformance$Boom.value:(I)I#return_value
+        // 507 no location
+        DEAD java::conformance.Conformance.boomTwice:(I)I::return_tmp0
+        // 508 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 5
+        // Labels: pc6
+        GOTO 3
+        // 509 no location
+        // Labels: pc10
+     2: DECL java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp1 : struct java::java.lang.ExceptionInInitializerError*
+        // 510 no location
+        DECL java::conformance.Conformance.boomTwice:(I)I::10::e : struct java::java.lang.ExceptionInInitializerError*
+        // 511 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 6
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp1 := cast(java::@inflight_exception, struct java::java.lang.ExceptionInInitializerError*)
+        // 512 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 6
+        ASSIGN java::@inflight_exception := NULL
+        // 513 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 6
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::10::e := java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp1
+        // 514 file conformance/Conformance.java line 124 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 8
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::1::first := 1
+        // 515 no location
+        DEAD java::conformance.Conformance.boomTwice:(I)I::10::e
+        // 516 no location
+        DEAD java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp1
+        // 517 no location
+        // Labels: pc13 pc14
+     3: DECL java::conformance.Conformance.boomTwice:(I)I::return_tmp2 : signedbv[32]
+        // 518 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        // Labels: pc14$
+        CALL java::conformance.Conformance$Boom.<clinit_wrapper>()
+        // 519 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        IF java::@inflight_exception = NULL THEN GOTO 4
+        // 520 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        DEAD java::conformance.Conformance.boomTwice:(I)I::return_tmp2
+        // 521 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        IF java::@inflight_exception ≠ NULL ∧ *(cast(java::@inflight_exception, struct java::java.lang.Object*)).@class_identifier = "java::java.lang.NoClassDefFoundError" THEN GOTO 5
+        // 522 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        GOTO 6
+        // 523 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+     4: CALL java::conformance.Conformance$Boom.value:(I)I(java::conformance.Conformance.boomTwice:(I)I::n)
+        // 524 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::return_tmp2 := java::conformance.Conformance$Boom.value:(I)I#return_value
+        // 525 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 10
+        DEAD java::conformance.Conformance$Boom.value:(I)I#return_value
+        // 526 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 11
+        // Labels: pc17
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I#return_value := java::conformance.Conformance.boomTwice:(I)I::return_tmp2
+        // 527 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 11
+        DEAD java::conformance.Conformance.boomTwice:(I)I::return_tmp2
+        // 528 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 11
+        DEAD java::conformance.Conformance.boomTwice:(I)I::1::first
+        // 529 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 11
+        GOTO 6
+        // 530 no location
+        // Labels: pc18
+     5: DECL java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp3 : struct java::java.lang.NoClassDefFoundError*
+        // 531 no location
+        DECL java::conformance.Conformance.boomTwice:(I)I::18::e : struct java::java.lang.NoClassDefFoundError*
+        // 532 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 12
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp3 := cast(java::@inflight_exception, struct java::java.lang.NoClassDefFoundError*)
+        // 533 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 12
+        ASSIGN java::@inflight_exception := NULL
+        // 534 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 12
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I::18::e := java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp3
+        // 535 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 16
+        ASSIGN java::conformance.Conformance.boomTwice:(I)I#return_value := java::conformance.Conformance.boomTwice:(I)I::1::first + 1
+        // 536 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 16
+        DEAD java::conformance.Conformance.boomTwice:(I)I::18::e
+        // 537 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 16
+        DEAD java::conformance.Conformance.boomTwice:(I)I::caught_exception_tmp3
+        // 538 file conformance/Conformance.java line 125 function java::conformance.Conformance.boomTwice:(I)I bytecode-index 16
+        DEAD java::conformance.Conformance.boomTwice:(I)I::1::first
+        // 539 no location
+     6: END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java.lang.AssertionError.<init>() /* java::java.lang.AssertionError.<init>:()V */
+        // 540 function java::java.lang.AssertionError.<init>:()V
+        ASSIGN java::java.lang.AssertionError.<init>:()V::to_construct := java::java.lang.AssertionError.<init>:()V::this
+        // 541 no location
+        END_FUNCTION
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+java.lang.IllegalStateException.<init>() /* java::java.lang.IllegalStateException.<init>:(Ljava/lang/String;)V */
+        // 542 function java::java.lang.IllegalStateException.<init>:(Ljava/lang/String;)V
+        ASSIGN java::java.lang.IllegalStateException.<init>:(Ljava/lang/String;)V::to_construct := java::java.lang.IllegalStateException.<init>:(Ljava/lang/String;)V::this
+        // 543 no location
+        END_FUNCTION
+

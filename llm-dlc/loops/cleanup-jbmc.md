@@ -187,11 +187,73 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
   - Nothing is left to fix, so there is no new conformance case. What keeps both jobs from passing is VF-009, in the
     confirm test that `-021741` also runs. Next: resubmit `20261106-021741-…` and `20261106-024336-…` unchanged,
     with VF-009's fix.
-- Not this stream's: `sync.py commit`'s check in this workspace reports 4 errors, none on this branch's own commits.
+- **J1, VF-009: cause found (JBMC's semantics) and refused in the preflight. The closing jobs are queued**
+  (2026-11-07).
+  - **Triage**, job `20261107-163056` (passed, 2m25s): stock JBMC gives the same verdicts with no options, with
+    `--throw-runtime-exceptions` and with the adapter's options, so it's neither a flag nor the trace reading.
+    - `wrapped` and `enumWrapped` fail: the initializer's `IllegalStateException` or `ArithmeticException` reaches
+      the caller unwrapped.
+    - `error`, an `Error` the JVM doesn't wrap either, is proved.
+    - The copies of `boomTwice` and `enumBroken` fail on `no uncaught exception`: the raw exception passes their
+      `catch (ExceptionInInitializerError)`.
+    - The kept goto listing shows the wrapper setting `clinit_already_run := true`, calling `<clinit>` and
+      returning with what is in flight. So a later use also finds the class initialized, where the JVM throws
+      `NoClassDefFoundError`. This part is read from the listing. `erroneous` and `once` don't decide it: their
+      `catch (Throwable)` misses JBMC's stub of `IllegalStateException` (cause 2).
+    - Through `prove`, both corpus methods are refuted at `n=0` under `jbmc`, and "the engines disagree" under
+      `auto --confirm`, strict and assume.
+  - **The fix**: a fifth defect kind, `throwing-initializer` (`jbmc_gaps.rs`, `throwing_initializers`).
+    - It names an application class's `<clinit>` that JBMC runs and that may throw an exception other than an
+      `Error`. The exceptions counted are those its instructions may raise, and the throwables they make, in the
+      methods it reaches. The rule needs a handler that tells JBMC from the JVM: one that catches that exception,
+      `ExceptionInInitializerError` or `NoClassDefFoundError`.
+    - The harness's handlers count only when its assertion tells exception classes apart. `JbmcRun` has a new field,
+      `tells_exceptions`, which is set for a property with a `throws` clause and for every regression check. Its last
+      `catch (Throwable)` never counts.
+    - `may_raise` drops exceptions that straight-line code shows can't happen: stores into a fresh array of constant
+      length at constant indices within it, and fields and virtual calls of `this`. Without that, every enum's
+      initializer would count (checked by mutation: `Tone` is then named).
+    - As with the other kinds, a JBMC proof through the defect is refused under every mode. Under `--confirm`
+      (`xzvyuwxp`'s rule), a refutation through it whose witness doesn't reproduce is no verdict, so the own
+      checker's proof stands.
+    - The two corpus methods pin the cause, so no new conformance case was added.
+  - **Reproducers**, in `jbmc_gaps.rs`'s tests:
+    - `the_preflight_names_a_class_initializer_that_throws_where_a_handler_tells_jbmc_from_the_jvm` covers new
+      shapes in `p/D.java`:
+      - named: `boomed`, `divided`, `caughtAll` (but not under the harness's own `catch (Throwable)`), and `sized`;
+      - not named: `escaped`, `fatal`, `quiet`, `toned` (an enum) and `tabled` (a constant array).
+    - `the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings` reads JBMC's real listings of
+      `boomTwice` and `enumBroken`, kept by the triage job, now `tests/fixtures/jbmc-defects/vf009/`.
+    - Both fail with the detection disabled, which was checked.
+  - **Verified**:
+    - The unit tests pass (205), and so do the tests that aren't ignored in `conformance` (10), `heap` (47),
+      `compare`, `observations`, `skill` and `summaries`.
+    - In a first full `cargo test` run, `integration.rs`'s own-checker test
+      `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` failed once. It was the own checker alone
+      refuting `Pricing#total` (`integration.rs:1434`), which is VF-010's wall-clock flake, the native stream's
+      item, on a path with no JBMC preflight.
+    - That run broke a rule: `integration.rs`'s tests that aren't ignored run JBMC, and they ran inline (about
+      10 min). They weren't run again.
+  - **Candidate report**: cause 5 in `jbmc-upstream.md` (a new section, `## Candidate reports`), with the job, the
+    classes, what the JVM does, the wrapper's listing and a suggested fix. The fixture README has cause 5 and the
+    new rows.
+  - **What it may change**: a JBMC proof through such an initializer and handler becomes no verdict.
+    - Quorum (013, 071) has no handler, and enum initializers no longer count.
+    - Job `20261107-171442-vf-009-s-guard-measured-the-41-recorded` reruns VF-006's 41-example gap table at this
+      commit to show it: a measurement, not a closing check.
+  - **Shared files, by adding**: `JbmcRun.tells_exceptions` set in `property.rs` and `equivalence.rs` (one line
+    each).
+  - **Closing jobs**, resubmitted unchanged, each with the entries it closes in its title:
+    - `20261107-172721-jbmc-s-extra-initializers-named-and-refu` closes VF-009 when step 2 passes;
+    - `20261107-172721-nullable-and-one-array-parameters-in-pro` closes VF-019.
+- **J2, VF-001: its two jobs queued** with VF-009's fix: `20261107-172721-conformance-corpus-under-jbmc-and-engine`
+  and `20261107-172721-conformance-corpus-under-engine-auto-con`. The first is resized for the grown corpus.
+- Not this stream's: `sync.py commit`'s check in this workspace reports 4 errors (9 by this commit, more as other
+  workspaces commit), none on this branch's own commits.
   They are the planning session's base commit `oqqwvmqy`, whose log `3f768f3bb246` is stored only in the default
   workspace, and other workspaces' commits (`ruvmymplmmoo`, native; `syqpoxomnynk`, the verification loop) whose
   manifests are there. The foundations streams saw the same, and it resolved at the merge.
-- Status: working
+- Status: waiting on jobs ID 20261107-172721-jbmc-s-extra-initializers-named-and-refu 20261107-172721-nullable-and-one-array-parameters-in-pro 20261107-172721-conformance-corpus-under-jbmc-and-engine 20261107-172721-conformance-corpus-under-engine-auto-con 20261107-164356-vf-018-objects-kernel-price-s-output-rel 20261107-164356-vf-018-prices-prices-total-s-computed-in 20261107-164356-vf-018-lines-lines-reprice-s-equations-t 20261107-164356-vf-018-orders-orders-reprice-s-equations 20261107-171442-vf-009-s-guard-measured-the-41-recorded
 
 ## Loop settings
 

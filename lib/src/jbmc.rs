@@ -45,6 +45,11 @@ pub struct JbmcRun {
     /// Where to write the log.
     pub log: PathBuf,
     pub extra_args: Vec<String>,
+    /// Whether the harness's assertion tells one exception's class from another: a property with a `throws` clause,
+    /// or a regression check, which compares what each version throws. A property without one fails on any
+    /// exception alike, so the preflight doesn't count the handlers of its harness
+    /// ([`crate::jbmc_gaps`]'s `throwing-initializer`).
+    pub tells_exceptions: bool,
 }
 
 /// How a run ended, before anything else is made of it: the kinds of no verdict stay apart, since each calls for
@@ -755,6 +760,7 @@ mod tests {
             sat_solver: Some("cadical".into()),
             log: dir.path().join("jbmc.log"),
             extra_args: vec!["--max-nondet-array-length".into(), "8".into()],
+            tells_exceptions: true,
         };
         let cmd = command(&run);
         assert!(cmd.windows(standing.len()).any(|w| w == standing), "{cmd:?}");
@@ -934,6 +940,7 @@ mod tests {
             sat_solver: Some("cadical".into()),
             log: PathBuf::from("/tmp/work/jbmc.log"),
             extra_args: Vec::new(),
+            tells_exceptions: true,
         };
         let cmd = command(&run);
         let classpath = &cmd[cmd.iter().position(|a| a == "--classpath").unwrap() + 1];
@@ -972,6 +979,7 @@ mod tests {
             sat_solver: Some("cadical".into()),
             log: dir.join(format!("{name}.log")),
             extra_args: Vec::new(),
+            tells_exceptions: true,
         })
         .unwrap()
     }

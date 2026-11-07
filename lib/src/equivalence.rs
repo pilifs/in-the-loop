@@ -1415,6 +1415,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         sat_solver: options.sat_solver.clone(),
         log: work.join(format!("jbmc{tag}.log")),
         extra_args: extra_args.clone(),
+        tells_exceptions: true,
     };
     // Under `--engine jbmc --gaps advised`, the contracts for the gaps JBMC's program reaches, with the advice when
     // one has none ([`crate::jbmc_contracts`]); under `auto`, JBMC applies the own checker's.

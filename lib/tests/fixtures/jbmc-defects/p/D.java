@@ -35,4 +35,23 @@ public class D {
     static class Hello implements Bare, Greeter { static int value(int n) { return n; } }
     static class Quiet { static int value = 2; }
     static class Loud { static int value = 3; }
+
+    // A class initializer that throws (VF-009): the JVM gives its caller an ExceptionInInitializerError, and a
+    // NoClassDefFoundError at the class's next use; JBMC gives it the initializer's own exception, and the next use
+    // runs on as if the class were initialized.
+    public static int boomed(int n) { try { return Boom.value(n); } catch (ExceptionInInitializerError e) { return -1; } }
+    public static int divided(int n) { try { return Ratio.inverse + n; } catch (ArithmeticException e) { return -1; } }
+    public static int caughtAll(int n) { try { return Boom.value(n); } catch (Throwable t) { return -1; } }
+    public static int escaped(int n) { return Boom.value(n); }
+    public static int fatal(int n) { try { return Fatal.value(n); } catch (ExceptionInInitializerError e) { return -1; } }
+    public static int quiet(int n) { try { return Quiet.value + n; } catch (ExceptionInInitializerError e) { return -1; } }
+    public static int toned(int n) { try { return Tone.HIGH.level + n; } catch (ExceptionInInitializerError e) { return -1; } }
+    public static int tabled(int n) { try { return Table.T[0] + n; } catch (ExceptionInInitializerError e) { return -1; } }
+    public static int sized(int n) { try { return Sized.T.length + n; } catch (ExceptionInInitializerError e) { return -1; } }
+    static class Boom { static final int[] TABLE = table(); static int[] table() { throw new IllegalStateException(); } static int value(int n) { return n; } }
+    static class Ratio { static int inverse = 10 / log; }
+    enum Tone { LOW(1), HIGH(2); final int level; Tone(int level) { this.level = level; } }
+    static class Table { static final int[] T = { 1, 2 }; }
+    static class Sized { static final int[] T = new int[log - 1]; }
+    static class Fatal { static final int[] TABLE = table(); static int[] table() { throw new InternalError(); } static int value(int n) { return n; } }
 }

@@ -12,28 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.424Z",
-  "ended": "2026-11-07T16:46:24.453Z",
-  "duration_seconds": 1178,
+  "ended": "2026-11-07T17:29:44.397Z",
+  "duration_seconds": 3778,
   "stats": {
     "turns": 10,
-    "api_calls": 103,
-    "tool_calls": 102,
-    "tool_errors": 0,
+    "api_calls": 180,
+    "tool_calls": 184,
+    "tool_errors": 1,
     "compactions": 2,
-    "peak_context_tokens": 161587,
+    "peak_context_tokens": 261173,
     "usage": {
-      "input_tokens": 204,
-      "output_tokens": 62082,
-      "cache_read_input_tokens": 9532263,
-      "cache_creation_input_tokens": 269053
+      "input_tokens": 358,
+      "output_tokens": 136429,
+      "cache_read_input_tokens": 24796785,
+      "cache_creation_input_tokens": 414249
     }
   },
   "tools": {
-    "Bash": 101,
+    "Bash": 174,
+    "Edit": 5,
+    "Read": 4,
     "Write": 1
   },
   "files_touched": [
-    "lib/tests/fixtures/jbmc-defects/F.java"
+    "lib/src/jbmc_gaps.rs",
+    "lib/tests/fixtures/jbmc-defects/F.java",
+    "llm-dlc/loops/jbmc-upstream.md"
   ],
   "context_windows": [
     {
@@ -67,24 +71,24 @@
     {
       "index": 2,
       "started": "2026-11-07T16:39:18.441Z",
-      "ended": "2026-11-07T16:46:24.453Z",
+      "ended": "2026-11-07T17:29:44.397Z",
       "turns": 4,
-      "api_calls": 34,
+      "api_calls": 111,
       "usage": {
-        "input_tokens": 68,
-        "output_tokens": 21100,
-        "cache_read_input_tokens": 2501581,
-        "cache_creation_input_tokens": 102898
+        "input_tokens": 222,
+        "output_tokens": 95447,
+        "cache_read_input_tokens": 17766103,
+        "cache_creation_input_tokens": 248094
       },
-      "peak_context_tokens": 115977
+      "peak_context_tokens": 261173
     }
   ],
   "log": {
-    "sha256": "b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39",
-    "bytes": 2628590,
-    "lines": 1027,
-    "gzip_bytes": 465783,
-    "path": "llm-dlc/traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/logs/b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39.jsonl.gz"
+    "sha256": "9cb5c0b9766a52002aeab5d3da6f84dfc60f960525d230d92750e3b9cdc4a242",
+    "bytes": 4064874,
+    "lines": 1701,
+    "gzip_bytes": 643505,
+    "path": "llm-dlc/traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/logs/9cb5c0b9766a52002aeab5d3da6f84dfc60f960525d230d92750e3b9cdc4a242.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -119,6 +123,14 @@
       "summary": "VF-001 rechecked: each of its parts fixed by a named commit, its two jobs to be resubmitted with VF-009's fix",
       "body": "J2 of llm-dlc/loops/cleanup-jbmc.md. Each part of VF-001 was checked against the current code and the passing runs of the conformance tests (job 20261107-024759 step 5, the corpus under JBMC and auto; job 20261107-043420, under auto --confirm). The seven Verifieds under strict that the JVM refutes (four capacity constructors, loadFactor, nullMonitor, firstByte, pairsEqual) and auto's pass-through of JBMC's Verified for loadFactor and pairsEqual were fixed by nlvopkvx (0874cd9f): JBMC's missing bodies, invokedynamic call sites and dropped monitors are named gaps, and a JBMC proof through one has no verdict under strict and names it under assume. The spurious refutations of caught and nestedHandler at n=0 were fixed by svvrpymr (c99a7476) and xzvyuwxp (48aefd9e), which name where JBMC lets an exception past its handler and give no verdict through it, under --confirm too. Nothing is left to fix, so no code changed. VF-001's two jobs are resubmitted unchanged once VF-009 is fixed, since the confirm test the first job also runs still carries VF-009's disagreements. Only the brief's Progress changed.",
       "log_sha256": "b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39"
+    },
+    {
+      "change_id": "uxxvutuprprrwvlltzluuuxvnkrqymmx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-009: JBMC gives a throwing class initializer's exception to its caller unwrapped; the preflight names it as throwing-initializer, and the closing jobs of VF-009, VF-019 and VF-001 are resubmitted (verification pending)",
+      "body": "Triage job 20261107-163056 settled VF-009's cause: JBMC 6.11.0's semantics, not a flag jvmcontract passes nor the adapter's reading. On the fixture lib/tests/fixtures/jbmc-defects/F.java, stock JBMC with no options, with --throw-runtime-exceptions and with the adapter's options lets an initializer's IllegalStateException or ArithmeticException reach the caller as itself, where the JVM wraps it in ExceptionInInitializerError (JVMS 5.5 step 11). An Error, which the JVM doesn't wrap, is proved as on the JVM. JBMC's goto listing shows why: the <clinit_wrapper> sets clinit_already_run before calling <clinit> and returns with whatever is in flight, so a later use also finds the class initialized, where the JVM throws NoClassDefFoundError. That is why the corpus's boomTwice and enumBroken were refuted at n=0.\n\nThe fix is in jvmcontract's preflight (lib/src/jbmc_gaps.rs). It now names a fifth JBMC defect, throwing-initializer: an application class's <clinit> that may throw an exception other than an Error, together with a handler that tells JBMC's behaviour from the JVM's (one catching that exception, ExceptionInInitializerError or NoClassDefFoundError). The harness's handlers count only when its assertion tells exception classes apart, which a new field JbmcRun.tells_exceptions records (a property with a throws clause, or a regression check). Its final catch (Throwable) never counts. The exceptions an initializer may throw are read from the bytecode it reaches, less what straight-line code shows impossible (stores into a fresh array of constant length at constant indices, fields and virtual calls of this), so enum and constant-array initializers don't count. As with the other defects, a JBMC proof through it is refused under every gap mode, and under --confirm a refutation through it whose witness doesn't reproduce is no verdict, so the own checker's proof stands. Reproducers: the_preflight_names_a_class_initializer_that_throws_where_a_handler_tells_jbmc_from_the_jvm, over new shapes in p/D.java (four named, six not), and the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings, over JBMC's real listings of the two corpus methods kept by the triage job. Both fail with the detection disabled, and the enum case fails without the constant-array reasoning. Unit tests (205) and the tests that aren't ignored in conformance, heap, compare, observations, skill and summaries pass. A first full run also ran integration.rs's tests that aren't ignored, which run JBMC inline (against the rules, not repeated). One of them failed: the own checker alone on Pricing#total, VF-010's wall-clock flake, the native stream's.\n\nThe candidate report is cause 5 in llm-dlc/loops/jbmc-upstream.md, under a new Candidate reports section. The fixture README has the cause and the new shapes. That brief's own 'Where it starts from' table and its Deferred section still call VF-009 untriaged and deferred: they are out of date, but outside the candidate reports, so they are left for that loop. Shared files, by adding: the tells_exceptions line in property.rs and in equivalence.rs.",
+      "log_sha256": "9cb5c0b9766a52002aeab5d3da6f84dfc60f960525d230d92750e3b9cdc4a242"
     }
   ],
   "logs": {
@@ -132,6 +144,12 @@
       "bytes": 944383,
       "lines": 375,
       "gzip_bytes": 173332,
+      "url": null
+    },
+    "9cb5c0b9766a52002aeab5d3da6f84dfc60f960525d230d92750e3b9cdc4a242": {
+      "bytes": 4064874,
+      "lines": 1701,
+      "gzip_bytes": 643505,
       "url": null
     },
     "b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39": {

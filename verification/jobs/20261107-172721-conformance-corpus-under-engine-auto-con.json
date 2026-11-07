@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-172721-conformance-corpus-under-engine-auto-con",
+  "title": "Conformance corpus under --engine auto --confirm: JBMC's word on every proof of the own checker, held to the JVM (closes VF-001 with its sibling when both pass)",
+  "description": "Resubmitted unchanged by the cleanup-jbmc stream after VF-009's fix: VF-001 (verification/findings.md) closes when this job and 20261107-172721-conformance-corpus-under-jbmc-and-engine pass. The steps are the original job's.\n\nStep 1e of llm-dlc/loops/sound-verdicts.md adds --confirm to --engine auto: JBMC proves again, in one run over every input, each statement the tool's own checker proved, and a JBMC refutation is reported as neither verdict (unverifiable, 'the engines disagree'). This job runs the ignored test the_corpus_agrees_with_the_jvm_under_auto_confirm over the 93 claims of the conformance corpus (lib/tests/conformance.rs), under --gaps strict and --gaps assume. Every witness and claim is also run on a real JVM. The test fails on a JBMC confirmation of a claim the JVM refutes, and on a disagreement over a claim the JVM does not refute. Under assume, the class-initializer claims boom and inherited should come out as disagreements (JBMC runs the initializer the own checker assumed had run), and the claims that assumed a JDK call should be not-asked.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/property.rs",
+      "llm-dlc/loops/sound-verdicts.md"
+    ]
+  },
+  "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_auto_confirm passes. The log's table shows a confirmation status per claim; under assume, boom and inherited are Disagreed and the JDK-call claims NotAsked. A failure lists each disagreement with the JVM, a finding about JBMC or the adapter to triage under the brief's Progress, not something to retry.",
+  "submitted": {
+    "at": "2026-11-07T17:27:21+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "timeout": "90m",
+    "notes": "-024336 ran 21m50s, -043420's same test about 22 min, peak 1.2 GiB",
+    "memoryLimit": "3.5G"
+  },
+  "steps": [
+    {
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/conformance-confirm.log"
+  ],
+  "supersedes": "20261106-024336-conformance-corpus-under-engine-auto-con"
+}

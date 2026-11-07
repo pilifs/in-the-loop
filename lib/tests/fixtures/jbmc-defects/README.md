@@ -8,12 +8,17 @@ does. There are two causes, and each also gave a false proof (below). A third, f
 job (`20261106-201041`), is [JBMC's right shifts](#cause-3-jbmc-right-shifts-by-the-whole-distance-a-jbmc-defect):
 `conformance/shiftRight/2`'s counterexample under the `full-range` and `tight` staging policies did not reproduce.
 A fourth, found by the Phase 5 job `20261106-203501` (`conformance/declaring/2`, a false proof), is
-[the initializers JBMC runs](#cause-4-jbmc-runs-initializers-the-jvm-does-not-a-jbmc-defect).
+[the initializers JBMC runs](#cause-4-jbmc-runs-initializers-the-jvm-does-not-a-jbmc-defect). A fifth, VF-009
+(`conformance/boomTwice/1` and `enumBroken/1` under `--confirm`), is
+[a class initializer's exception, unwrapped](#cause-5-jbmc-gives-a-class-initializers-exception-to-its-caller-unwrapped-a-jbmc-defect).
 
 `F.java` is VF-009's triage fixture (`verification/findings.md`): a class initializer that throws, one void method
 per part of what the JVM does then (JVMS §5.5: the exception wrapped in `ExceptionInInitializerError`, the class
 erroneous and `NoClassDefFoundError` at its next use, the initializer run once, an `Error` not wrapped), each
-assertion holding under `java -ea F`. Job `20261107-163056` runs it on stock JBMC 6.11.0; what it shows goes here.
+assertion holding under `java -ea F`. Job `20261107-163056` ran it on stock JBMC 6.11.0: [cause 5](#cause-5-jbmc-gives-a-class-initializers-exception-to-its-caller-unwrapped-a-jbmc-defect).
+`vf009/` keeps that job's `--show-goto-functions` listings of the corpus's `boomTwice` and `enumBroken` under their
+property harness (`PropertyHarness.java`), which `the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings`
+reads.
 
 `p/D.java` is the fixture of `jbmc_gaps`'s tests (`the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm`),
 one method per shape:
@@ -42,6 +47,12 @@ one method per shape:
 | `created` | `new Sub()` | initializes `Holder`, then `Sub`, as the JVM | — |
 | `later` | `Sub.value` after `sipush`, at offset 6, the fifth instruction | initializes `Sub` | `extra-initializer` |
 | `apart` | `Holder.value`, `Quiet.value`, `Loud.value`, each read through its own class | initializes each, as the JVM | — |
+| `boomed` | `Boom.value(n)`, whose initializer throws `IllegalStateException`, under `catch (ExceptionInInitializerError)` | the `IllegalStateException` passes the handler | `throwing-initializer` |
+| `divided` | `Ratio.inverse`, whose initializer divides by `log` (0), under `catch (ArithmeticException)` | catches the `ArithmeticException`, where the JVM's `ExceptionInInitializerError` escapes | `throwing-initializer` |
+| `caughtAll` | `Boom.value(n)` under `catch (Throwable)` | catches it, and leaves `Boom` initialized, where the JVM leaves it erroneous | `throwing-initializer` (not when the harness's own) |
+| `escaped` | `Boom.value(n)`, no handler | escapes, as the JVM's `ExceptionInInitializerError` does | — |
+| `fatal` | `Fatal.value(n)`, whose initializer throws `InternalError`, under `catch (ExceptionInInitializerError)` | an `Error` is not wrapped, as on the JVM | — |
+| `quiet` | `Quiet.value`, whose initializer throws nothing | as the JVM | — |
 
 `conformance/caught/1` is the first shape, the first cause. `nestedHandler/1` has both: its `IllegalArgumentException` escapes
 the `catch (RuntimeException e)`, and its `return 100 / n` the inner `catch (ArithmeticException x)`.
@@ -259,3 +270,37 @@ until they say `VERIFICATION FAILED` for both methods.
 > `putstatic`, and for `invokestatic` of a static method a superclass declares (where `I$Sub.get` also gets a
 > nondeterministic stub in place of `I$Holder.get`). Initializing the class that declares the resolved member, and
 > with a class only the superinterfaces that declare a non-abstract, non-static method, would match the JVM.
+
+## Cause 5: JBMC gives a class initializer's exception to its caller unwrapped (a JBMC defect)
+
+On the JVM (JVMS §5.5), an initializer that completes abruptly with an exception that is not an `Error` is wrapped in
+an `ExceptionInInitializerError` (step 11). The class is then erroneous (step 12): every later use throws
+`NoClassDefFoundError` (step 5), and the initializer doesn't run again. An `Error` is thrown as it is.
+
+JBMC 6.11.0 runs a class's `<clinit>` from a `<clinit_wrapper>`, which sets `clinit_already_run := true` and then
+calls it. The wrapper has no handler around the call, and returns with whatever is in flight (`vf009/`'s listings).
+So the initializer's own exception reaches the caller, and a later use finds the class initialized, its static fields
+at their defaults. Job `20261107-163056` (step 1) shows the first half on `F.java`. Stock JBMC was run with no
+options, with `--throw-runtime-exceptions`, and with jvmcontract's, and gives the same verdicts each way:
+- `wrapped` and `enumWrapped` fail their assertion, since the caller sees the `IllegalStateException` or the
+  `ArithmeticException` itself.
+- `error`, an `InternalError`, is proved, as on the JVM.
+- The copies of `boomTwice` and `enumBroken` fail: the unwrapped exception passes their
+  `catch (ExceptionInInitializerError)`.
+
+The second half is read from the listing. `erroneous` and `once` don't decide it: their `catch (Throwable)` misses JBMC's
+stub of `IllegalStateException` (cause 2).
+
+The preflight names such an initializer as `throwing-initializer` where a handler tells JBMC's behaviour from the JVM's
+(`throwing_initializers`). The initializer is the `<clinit>` of an application class JBMC runs that may throw an
+exception other than an `Error`. That covers the runtime exceptions its instructions raise and the throwables they
+make, in the methods it reaches. The handler is one of the program's that catches that exception, or
+`ExceptionInInitializerError` or `NoClassDefFoundError`.
+- The harness's handlers count only when its assertion tells exceptions apart: a property with a `throws` clause,
+  or a regression check (`JbmcRun::tells_exceptions`).
+- The harness's last `catch (Throwable)` never counts.
+
+With no handler, the exception escapes on both, and the harness fails the same way. As for the other causes, a JBMC
+proof through it is refused under every `--gaps` mode. Under `--confirm`, a JBMC refutation through it whose witness
+doesn't reproduce is no verdict, so the own checker's proof stands, unconfirmed. The candidate report is in
+`llm-dlc/loops/jbmc-upstream.md`.

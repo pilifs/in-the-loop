@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 52, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 16:46 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 17:29 UTC |
 | Prompts | 1,385 |
-| Model calls | 14,142 |
-| Tool calls | 15,115 (277 failed) |
+| Model calls | 14,219 |
+| Tool calls | 15,197 (278 failed) |
 | Compactions | 202 |
 | Subagents | 9 |
-| Tokens written | 16,173,984 |
-| Tokens read | 2,362,198,230 (98.0% from cache) |
-| Commits with a trace | 408 |
-| Log snapshots | 493 (1274.7 MB gzipped, 488 uploaded) |
+| Tokens written | 16,248,331 |
+| Tokens read | 2,377,608,102 (98.0% from cache) |
+| Commits with a trace | 409 |
+| Log snapshots | 494 (1275.3 MB gzipped, 488 uploaded) |
 
 ## Sessions
 
@@ -78,7 +78,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
 | 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 6 |
 | 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 35 | 476 | 501 | 9 | 5 | 282,777 | 15 |
-| 2026-11-07 16:26 UTC | [a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) | open | 19 min | `claude-opus-5-5` | 10 | 103 | 102 | 0 | 2 | 161,587 | 4 |
+| 2026-11-07 16:26 UTC | [a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) | open | 1 h 2 min | `claude-opus-5-5` | 10 | 180 | 184 | 1 | 2 | 261,173 | 5 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -139,15 +139,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 339,102 | 976 | 1,254,533 | 85,418,727 | 98.6% | 256 |
-| [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) | 62,082 | 204 | 269,053 | 9,532,263 | 97.3% | 158 |
+| [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) | 136,429 | 358 | 414,249 | 24,796,785 | 98.4% | 185 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 13,167 | 87.1% | 52 |
-| `Read` | 736 | 4.9% | 27 |
-| `Edit` | 576 | 3.8% | 26 |
+| `Bash` | 13,240 | 87.1% | 52 |
+| `Read` | 740 | 4.9% | 28 |
+| `Edit` | 581 | 3.8% | 27 |
 | `Write` | 379 | 2.5% | 25 |
 | `ToolSearch` | 93 | 0.6% | 22 |
 | `Monitor` | 60 | 0.4% | 17 |
@@ -575,6 +575,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 406 | change `uytnkqst` | VF-019: --confirm's refusal of a domain JBMC is not given is named, and the confirm conformance test reads it as no verdict | [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) ([log](https://terminalvalue.net/raw-traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/01bf92755850780fdc0eebe7d634c30f63a4f1b038bb6c8eb2dbd2961e5c677a.jsonl.gz)) |
 | 407 | change `muznwonp` | VF-018: heap's JBMC tests take their time limit from JVMCONTRACT_HEAP_TIME_LIMIT, and the four that timed out are queued at 1800 s (verification pending) | [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) ([log](https://terminalvalue.net/raw-traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/fb79d60216eabb7ff3d034a744374f88594f801addba5ea779821b88cd5bde65.jsonl.gz)) |
 | 408 | change `lqozoovu` | VF-001 rechecked: each of its parts fixed by a named commit, its two jobs to be resubmitted with VF-009's fix | [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) ([log](https://terminalvalue.net/raw-traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/b340e3994f67293d8e399f026968f8bb05be92716649dd7721b5f70c8afd8d39.jsonl.gz)) |
+| 409 | change `uxxvutup` | VF-009: JBMC gives a throwing class initializer's exception to its caller unwrapped; the preflight names it as throwing-initializer, and the closing jobs of VF-009, VF-019 and VF-001 are resubmitted (verification pending) | [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) ([log](https://terminalvalue.net/raw-traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/9cb5c0b9766a52002aeab5d3da6f84dfc60f960525d230d92750e3b9cdc4a242.jsonl.gz)) |
 
 ## Logs
 
@@ -633,7 +634,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 17 | 41.4 MB | [`9a4c7376723a`](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/9a4c7376723a063bbe8d554629ec7593fb6464570becfffed3745912318daaa2.jsonl.gz) |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 3 | 3 | 0.4 MB | [`d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz) |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 15 | 14 | 19.3 MB | `3f768f3bb246`, not uploaded |
-| [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) | 4 | 0 | 1.3 MB | `b340e3994f67`, not uploaded |
+| [`a8cc612f`](a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/summary.md) | 5 | 0 | 1.9 MB | `9cb5c0b9766a`, not uploaded |
 
 ## Session notes
 

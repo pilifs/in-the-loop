@@ -101,6 +101,61 @@ Open, for the user before the loop runs:
 3. Whether step 5 (a JBMC patch for cause 3, built from source) is in scope.
 4. Where the finished reports go: kept in the fixture README as now, or one file per report for pasting.
 
+## Candidate reports
+
+Added by the cleanup loops, for the user to select (decision 1). Each one is evidence and a draft, never filed.
+
+### Cause 5: a class initializer's exception reaches the caller unwrapped (VF-009)
+
+Added by the `cleanup-jbmc` stream on 2026-11-07. Guarded in the preflight as `throwing-initializer` (`lib/src/jbmc_gaps.rs`).
+
+- **What the JVM does** (JVMS §5.5):
+  - An initializer that completes abruptly with an exception that is not an `Error` is wrapped in
+    `ExceptionInInitializerError` (step 11).
+  - The class is marked erroneous (step 12), so every later use throws `NoClassDefFoundError` (step 5), without
+    running the initializer again.
+  - An `Error` is thrown as it is.
+- **The example**: `lib/tests/fixtures/jbmc-defects/F.java`, one void method per part, each with one assertion.
+  `java -ea F` holds them all on JDK 25.0.5 (`all hold, runs 4`).
+- **What JBMC 6.11.0 does**, in job `20261107-163056-vf-009-triage-a-class-initializer-that-t` (step 1, log
+  `1-the-fixture-on-the-jvm-and-sto.log`). It was run with no options, with `--throw-runtime-exceptions`, and with
+  the options jvmcontract passes, and gives the same verdicts each way:
+
+  | Method | Class | On the JVM | JBMC |
+  |---|---|---|---|
+  | `wrapped` | `F$Wrap`, whose initializer throws an `IllegalStateException` | the caller catches an `ExceptionInInitializerError` | `assertion.1` fails: the `IllegalStateException` reaches the caller as it is |
+  | `enumWrapped` | the enum `F$Divide`, whose constructor divides by zero | the caller catches an `ExceptionInInitializerError` | `assertion.1` fails under `--throw-runtime-exceptions`: the `ArithmeticException` reaches the caller. Without the option, the division is a failed check |
+  | `error` | `F$Fatal`, whose initializer throws an `InternalError` | the caller catches the `InternalError` | `VERIFICATION SUCCESSFUL`, as on the JVM |
+  | `boomTwice`, `enumBroken` | copies of the corpus's | 2 and 12 | `no uncaught exception` fails: the unwrapped exception passes the `catch (ExceptionInInitializerError)` |
+
+- **Where it shows in JBMC's program.** JBMC wraps each `<clinit>` in a `<clinit_wrapper>`. In the
+  `--show-goto-functions` listings that step 2 kept (now `lib/tests/fixtures/jbmc-defects/vf009/`), the wrapper
+  sets `clinit_already_run := true` and then calls `<clinit>` with no handler around the call. When an exception is
+  in flight after it, the wrapper returns with it:
+
+  ```
+  IF ¬(java::conformance.Conformance$Boom::clinit_already_run ⇔ false) THEN GOTO 1
+  ASSIGN java::conformance.Conformance$Boom::clinit_already_run := true
+  CALL java::conformance.Conformance$Boom.<clinit>:()V()
+  IF java::@inflight_exception = NULL THEN GOTO 1
+  1: END_FUNCTION
+  ```
+
+  From that listing,
+  not from a separate run: a later use of the class finds it initialized, and runs on with its static fields at
+  their defaults, where the JVM throws `NoClassDefFoundError`.
+  - `F.erroneous` and `F.once` were meant to test this, but their `catch (Throwable)` misses JBMC's stub of
+    `IllegalStateException`, which has no superclass. That is cause 2, this repository's class path, so they don't
+    decide it.
+- **Through jvmcontract** (step 2, log `2-the-corpus-methods-through-jvm.log`):
+  - `prove` refutes `conformance.Conformance#boomTwice` (`result == 2`) and `#enumBroken` (`result == 12`) on
+    `n=0`, under `--engine jbmc` and under `auto --confirm` (strict and assume).
+  - The interpreter returns 2 and 12, as the JVM does (VF-009).
+- **A suggested fix**, for the report: have the `<clinit_wrapper>` catch what `<clinit>` throws. It would wrap
+  anything that is not an `Error` in a new `ExceptionInInitializerError`, set a per-class `clinit_failed` flag, and
+  throw `NoClassDefFoundError` at entry when the flag is set.
+- **Unchecked**: whether this is reported or fixed upstream, which needs the network (decision 2).
+
 ## Progress
 
 - Nothing yet.
