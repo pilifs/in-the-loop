@@ -1142,7 +1142,9 @@ fn dollars_and_cents() -> jvmcontract::spec::Correspondence {
 fn price_claim(subject: &str, c: jvmcontract::spec::Correspondence) -> jvmcontract::spec::CanonicalClaim {
     use jvmcontract::spec::{Derivation, ExternalInput};
     let mut claim = kernel_claim(subject, &[]);
-    claim.contract.inputs = vec![ExternalInput { name: "p".into(), ty: "prices.Price".into(), derivation: Derivation::Identity }, ExternalInput { name: "n".into(), ty: "int".into(), derivation: Derivation::Identity }];
+    // Each method's own int parameter: `total(Price p, int n)`, `raise(Price p, int by)`, `raised(Price p, int by)`.
+    let int = if subject.ends_with("#total") { "n" } else { "by" };
+    claim.contract.inputs = vec![ExternalInput { name: "p".into(), ty: "prices.Price".into(), derivation: Derivation::Identity }, ExternalInput { name: int.into(), ty: "int".into(), derivation: Derivation::Identity }];
     let domain = claim.domain.as_mut().unwrap();
     domain.classes = vec!["prices.Price".into()];
     domain.bounds.after.input_objects = 1;
@@ -1994,7 +1996,6 @@ fn a_required_result_under_a_relation_that_reads_the_previous_version_is_unresol
     let Some(root) = price_builds() else { return };
     let mut claim = price_claim("prices.Prices#raised", raised_relation(RAISED));
     claim.contract.inputs[0].derivation = Derivation::Stated { expression: "old.p.cents == new.p.dollars * 100 + new.p.cents".into() };
-    claim.contract.inputs[1].name = "by".into();
     let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)).expect("supported");
     // The contract requires the result as it was, a boolean: under the relation it is compared otherwise.
     let o = check("after", &claim);

@@ -39,6 +39,6 @@ the same responses and send the same events; each defect differs from `after` ex
 `outside-domain` not at all through the constructor. The `alias-to-copy` copy first went through the constructor with the new quantity, and so threw where `after` doesn't, for a quantity below 1; it was changed by the reconcile loop, and rechecked the same day on 270 cases (six amounts, five quantities the constructor accepts, and nine new quantities from `Integer.MIN_VALUE` to `Integer.MAX_VALUE`): every field agrees with `after`'s, and `result == q` holds in none of them.
 
 **The golden files** (`golden/`) are the joint example's IR in the shared types of `lib/src/spec/`: the entry point's
-preservation contract and claim, the kernel's contract, domain, correspondence and claim, the environment model, an
+preservation contract and claim, the kernel's contract, domain, correspondence and claim, `discount`'s own claim (over `gross` and `quantity`, which the kernel claim's `q` is not), the environment model, an
 outcome, a hints file, and `expected.json`, the verdict every case must reach. A stream may add to them; changing what
 one says is a note for the reconcile loop.

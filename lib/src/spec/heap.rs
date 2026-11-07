@@ -26,7 +26,8 @@ const DEADLINE_SECONDS: u64 = 300;
 /// under it rather than for equality, so it stays unresolved until a person approves the change in the contract. An input equation that computes a field of an input the contract anchors
 /// (identity), rather than naming the field that holds it, is refused unless a person stated it in the input's
 /// derivation ([`anchored`]). A construction that needs more input objects than a version's bound leaves the result unresolved
-/// rather than proving something outside the claim. Claims about effects (an environment model) are the
+/// rather than proving something outside the claim. A contract input that isn't one of the subject's parameters
+/// ([`foreign_inputs`]) is refused, since the claim would anchor nothing the method receives. Claims about effects (an environment model) are the
 /// observations stream's, and refused.
 pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outcome, Unsupported> {
     check_with(claim, before, after, None, &mut Reused::default())
@@ -108,6 +109,9 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
         // Refused before a statement: a named gap of the check.
         return Err(unsupported(checked.problem.unwrap_or_else(|| "refused".into())));
     };
+    if let Some(gap) = foreign_inputs(&claim.contract, &stated.domain.parameters) {
+        return Err(unsupported(gap));
+    }
     if let (Some(bounds), Some((old, new))) = (claim.domain.as_ref().map(|d| &d.bounds), stated.domain.input_objects) {
         for (version, needed, bound) in [("previous", old, bounds.before.input_objects), ("new", new, bounds.after.input_objects)] {
             if needed > bound {
@@ -194,6 +198,31 @@ fn anchored(correspondence: &Correspondence, contract: &super::PreservationContr
         }
     }
     None
+}
+
+/// The contract's inputs that aren't the subject's own, named with the parameters it takes: a claim is about one
+/// method's inputs, and the kernel claim's `q: shop.Quote` checked against `discount(long gross, int quantity)`
+/// anchors nothing the method receives. Every external input must be one of the parameters (or the receiver,
+/// `this`) by name and type; a parameter no input names is the correspondence's, as for a standalone pair.
+fn foreign_inputs(contract: &super::PreservationContract, parameters: &[crate::statement::Parameter]) -> Option<String> {
+    let foreign: Vec<String> = contract
+        .inputs
+        .iter()
+        .filter(|i| !parameters.iter().any(|p| p.name == i.name && p.ty == i.ty))
+        .map(|i| format!("{}: {}", i.name, i.ty))
+        .collect();
+    if foreign.is_empty() {
+        return None;
+    }
+    let takes: Vec<String> = parameters.iter().map(|p| format!("{}: {}", p.name, p.ty)).collect();
+    let takes = if takes.is_empty() { "no parameters".to_string() } else { takes.join(", ") };
+    Some(format!(
+        "the preservation contract's input{} {} {} not among {}'s parameters ({takes}): a claim anchors the inputs its subject receives",
+        if foreign.len() == 1 { "" } else { "s" },
+        foreign.join(", "),
+        if foreign.len() == 1 { "is" } else { "are" },
+        contract.subject
+    ))
 }
 
 /// Whether two observation ids name the same observation: an identity relation either way round.

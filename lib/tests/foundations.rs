@@ -51,6 +51,7 @@ fn the_golden_files_are_the_shared_types() {
     round_trips::<EnvironmentModel>("environment");
     round_trips::<CanonicalClaim>("claim");
     round_trips::<CanonicalClaim>("kernel-claim");
+    round_trips::<CanonicalClaim>("discount-claim");
     round_trips::<Outcome>("outcome");
     round_trips::<Hints>("hints");
 }
@@ -100,12 +101,12 @@ fn verdict(case: &Value) -> Verdict {
     serde_json::from_value(case["verdict"].clone()).unwrap()
 }
 
-/// The heap part: the kernel subjects (`pkg.Class#method`) under the golden correspondence and domain.
+/// The heap part: the kernel subjects (`pkg.Class#method`) under the golden correspondence and domain, or under
+/// the golden claim a case names (`discount`'s, over its own two parameters).
 fn heap_part(report: &mut Report) {
-    let kernel: CanonicalClaim = golden("kernel-claim");
     for case in expected_cases().iter().filter(|c| !c["subject"].as_str().unwrap().starts_with("POST ")) {
         let (b, subject) = (case["build"].as_str().unwrap(), case["subject"].as_str().unwrap());
-        let mut claim = kernel.clone();
+        let mut claim: CanonicalClaim = golden(case.get("claim").and_then(Value::as_str).unwrap_or("kernel-claim"));
         claim.contract.subject = subject.to_string();
         if let Some(obs) = case.get("observations") {
             let extra: Vec<Observation> = serde_json::from_value(obs.clone()).unwrap();
@@ -134,6 +135,29 @@ fn heap_part(report: &mut Report) {
             }
         });
     }
+}
+
+/// A claim is about its subject's own inputs: the kernel claim, whose input is `q: shop.Quote`, is refused for
+/// `discount(long gross, int quantity)` rather than checked under an input the method doesn't have.
+#[test]
+fn a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused() {
+    if builds().is_none() {
+        return;
+    }
+    let mut claim: CanonicalClaim = golden("kernel-claim");
+    claim.contract.subject = "shop.Pricing#discount".into();
+    match heap::check(&claim, build("before"), build("after")) {
+        Ok(o) => panic!("checked under an input discount doesn't have: {:?}", o.verdict),
+        Err(u) => {
+            let words = u.to_string();
+            for part in ["q: shop.Quote", "gross: long", "quantity: int"] {
+                assert!(words.contains(part), "the refusal doesn't name {part}: {words}");
+            }
+        }
+    }
+    let own: CanonicalClaim = golden("discount-claim");
+    let o = heap::check(&own, build("before"), build("after")).expect("discount's own claim is supported");
+    assert_eq!(o.verdict, Verdict::Verified, "{o:?}");
 }
 
 /// The observations part: the entry points' specs, and two builds compared into obligations.

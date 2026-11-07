@@ -243,8 +243,25 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
     or `test_performance.py`.
 - `vmxqyptp` and `nrvtlrms` (the native stream's session `2324d402`) have no manifest here either, nor does
   `lqozoovu` (the jbmc stream's `a8cc612f`). These are more check errors that aren't this branch's.
-- Next: E4, the three foundations leftovers. E1's five jobs (`20261107-16515x`) and E2's two runs are still pending.
-  E2's third job follows once its two runs are collected.
+- **E4, the second leftover: fixed.** `discount` is checked under a claim of its own. `spec::heap::check` now
+  refuses, as `Unsupported`, a claim whose preservation contract names an input the subject doesn't take, by name
+  and type (`foreign_inputs`). The refusal names the method's parameters. A parameter no input names is still
+  allowed, as for compare's standalone pairs, whose implied contract leaves out a changed-shape input.
+  - The golden files gain `discount-claim.json` (`gross: long`, `quantity: int`, no object domain or
+    correspondence). `expected.json`'s `discount` case names it in a new `claim` field, and the integration
+    contract's heap part checks each kernel case under the claim its case names, the kernel claim by default. The
+    fixture's README lists the new file.
+  - **Reproducer:** `foundations.rs`'s `a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused`. The kernel
+    claim on `discount` came back verified before the fix and is refused after it, naming `q: shop.Quote`,
+    `gross: long` and `quantity: int`. `discount`'s own claim is verified.
+  - The rule caught the same defect in `tests/heap.rs`'s `price_claim`, which gave `raise(Price p, int by)` the input
+    `n` that only `total` takes. The helper now names each method's own int parameter, and the `raised` test's
+    rename to `by` is dropped as redundant.
+  - Inline: `foundations.rs` (4, with the integration contract at 24 passed, 0 unsupported), `heap.rs` (46, 9
+    JBMC tests ignored as before), `compare.rs`, `effects.rs` (17) and the unit tests (203) pass.
+  - Shared file: `lib/README.md`, one sentence added to the heap check's refusals.
+- Next: E4's other two leftovers, the reused proof's source run, then the golden domain's `allocations: 0`. E1's five
+  jobs (`20261107-16515x`) and E2's two runs are still pending. E2's third job follows once its two runs are collected.
 - Status: working
 
 ## Loop settings

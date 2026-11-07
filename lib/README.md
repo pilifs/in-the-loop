@@ -403,7 +403,9 @@ or `old.l.total == new.l.price * new.o.count`) is refused as
 two paths, which says where each version holds the same value, or one among the conjuncts of a derivation a person
 stated for the input, relates an anchored input. A version whose inputs are made of more objects than the claim's input-object bound gives
 an unresolved result rather than one about inputs outside the claim; the allocation bound is not checked, since the
-own checker follows every allocation within the unwinding bound. A claim the check refuses before a statement (a
+own checker follows every allocation within the unwinding bound. A claim whose preservation contract names an input
+the subject doesn't take (by name and type; the receiver is `this`) is refused as `Unsupported`, naming the method's
+parameters: a claim anchors only what its subject receives. A claim the check refuses before a statement (a
 named gap) is `Unsupported` with the gap's words; one about effects or an entry point is the observations stream's.
 
 A target's **code closure** ([`closure`](src/closure.rs)) is what a proof of it reads in one build, as parts, each
