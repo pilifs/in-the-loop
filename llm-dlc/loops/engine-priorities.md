@@ -554,7 +554,8 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   workspaces were copied there before `../in-the-loop-jbmc` and `../in-the-loop-native` were deleted. Each is 7 to 18
   KB, but six of the seven hold unredacted local paths. So they should be published through the redaction pipeline,
   as the traces are (into git beside each session's summary, or to R2 with the logs), rather than by removing them
-  from `.gitignore`. That is a change to `sync.py`, not made here.
+  from `.gitignore`. That is a change to `sync.py`, not made here: VF-013 in `verification/findings.md` records the
+  approach the user chose (a redacted copy beside each session's trace), for after the next feature loop.
 - Status: done
 
 ## Loop settings

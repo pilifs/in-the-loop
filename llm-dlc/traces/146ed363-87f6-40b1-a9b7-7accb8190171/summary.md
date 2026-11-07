@@ -36,6 +36,12 @@ change `oktzykqrqovt` · [log `0a4d23e911c5`](https://terminalvalue.net/raw-trac
 
 Job 20261107-033320 (the own checker's encoding timed whole per word-level operation, rerun after the benchmark's witness fix) passed both steps, as the runner recorded in the previous commit, closing VF-012. 0 of 533 own-checker runs are flagged phasesExcess, against 1 of 356 in job 20261106-201041. The median ratio of seconds is 0.974 (quartiles 0.872 to 1.002) over the 29 runs of 0.1 s or more. The brief's Progress records it, and its status is now done. What is left is deferred by the user as findings (VF-009, VF-010, VF-011), the draft brief llm-dlc/loops/jbmc-upstream.md, and the run records flagged for publishing later. Only Progress changed.
 
+### Record publishing the loops' run records as finding VF-013, deferred until after the next feature loop
+
+change `lsszmmwklwul` · [log `0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)
+
+The run records feature-loop.sh writes to llm-dlc/loop-summaries/ are gitignored and unredacted (six of the seven hold local paths), so they are never published. They are the only record of which commits belong to which run, and of how and when each run stopped. verification/findings.md now has VF-013 with the approach the user chose: sync.py publishes a redacted copy of each record under its session's trace, llm-dlc/traces/&lt;session>/runs/, linked from the session's summary.md and scanned by check. A reproducer comes first, and the redaction rules don't change. Deferred by the user until after the next feature loop. engine-priorities.md's Progress points to it. No code changed.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) has every step in between: reasoning, tool calls and their results.

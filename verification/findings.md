@@ -18,6 +18,36 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-013: the loops' run records are never published: they are gitignored, and unredacted
+
+- **Status**: open (deferred by the user on 2026-11-07, until after the next feature loop; the approach below is
+  chosen)
+- **Raised**: 2026-11-07, while deleting the engine-priorities stream workspaces, whose 6 run records existed nowhere
+  else (copied into `llm-dlc/loop-summaries/` first). Not a job failure.
+- **Found**: `llm-dlc/tools/feature-loop.sh` writes a record of each run to `llm-dlc/loop-summaries/` (gitignored,
+  `.gitignore:47`). It holds the start, cycle limit, session, model and effort, the brief's path and sha256, the
+  instruction every cycle was given, a line per commit as it landed, the session's closing summary, and how the run
+  ended. The summary is also the session's last turn (published, redacted, with its transcript), and the commits are in
+  git. But nothing else records which commits belong to which run, or how and when each run stopped. The 7 records
+  now are 7 to 18 KB each. Six of the seven hold unredacted local paths (the brief's path in the instruction and
+  header), so removing them from `.gitignore` would publish them raw.
+- **Needs** (option 1, chosen by the user): `sync.py` publishes each record redacted, beside the session it belongs to.
+  - It reads the session id from the record's header.
+  - It redacts the record with the same `Redactor` the transcripts use.
+  - It writes the copy to `llm-dlc/traces/<session>/runs/<record>.md`, and links it from that session's `summary.md`
+    (a list of runs: start, end, cycles, how it ended).
+  - `check` scans the published copies like any other published file, and a finding in one is an error as for a log.
+  - A record the loop is still writing (no `Ended` line yet) is republished as it grows, or held back until it ends.
+  - Reproducer first: a test with made-up paths and a made-up session, which shows a record published unredacted, or
+    not at all, before the change.
+  - The redaction rules don't change, so no stamp is needed. `traces-readme-template.md` and `llm-dlc/README.md` say
+    where the runs are.
+  - The 7 existing records are published on the first `sync.py commit` after the change.
+  - Option 2, R2 with the logs, was set aside: the records are small and are best read on GitHub next to the summary.
+- **Tracked in**: `llm-dlc/loops/engine-priorities.md` (Progress, "Flagged for later").
+- **Closes when**: `sync.py`'s tests cover it, and after a commit every record in `llm-dlc/loop-summaries/` has a
+  redacted copy under its session's trace, linked from its summary, with `check` at 0 errors.
+
 ### VF-011: the own checker counts a loop's unwinding over the whole path, so example 052 is left to JBMC
 
 - **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)
