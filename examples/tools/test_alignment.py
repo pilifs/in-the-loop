@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""Tests for alignment.py, the ground truth of alignment inference. Run: python3 examples/tools/test_alignment.py"""
+import copy
+import unittest
+
+import alignment as A
+
+# A made-up entry: a static method moved into a record's instance method, its first parameter gathered into the
+# receiver, its result changed.
+ENTRY = {
+    "example": "900",
+    "verdict": "verified",
+    "before": {"symbol": "p.Old#f", "static": True, "parameters": [["base", "long"], ["n", "int"]], "returns": "boolean"},
+    "after": {"symbol": "p.New#f", "static": False, "parameters": [["n", "int"]], "returns": "long", "receiver": [["base", "long"]]},
+    "parts": [
+        {"kind": "method", "old": "p.Old#f", "new": "p.New#f", "how": "moved", "decide": "infer", "why": "moved"},
+        {"kind": "input", "old": "base", "new": "this.base", "anchor": "internal", "decide": "infer", "why": "into the receiver"},
+        {"kind": "input", "old": "n", "new": "n", "anchor": "anchored", "decide": "infer", "why": "the same parameter"},
+        {"kind": "result", "relation": "changed", "holds": "previous == (result > 0)", "decide": "person", "why": "changed"},
+    ],
+}
+EXAMPLE = {
+    "subject": {"symbol": "p.New#f"},
+    "expected": {"verdict": "verified"},
+    "change": {"previousSymbol": "p.Old#f", "previousArguments": "this.base, n", "resultsAgreeWhen": "previous == (result > 0)"},
+}
+
+
+class Flags(unittest.TestCase):
+    def test_the_parts_amount_to_the_flags(self):
+        self.assertEqual(A.flags_from_parts(ENTRY), A.flags_of(EXAMPLE))
+        self.assertEqual(A.problems(ENTRY, EXAMPLE), [])
+
+    def test_the_defaults_are_left_out(self):
+        same = {
+            "example": "901", "verdict": "verified",
+            "before": {"symbol": "p.C#g", "static": False, "parameters": [["a", "int"]], "returns": "int"},
+            "after": {"symbol": "p.C#g", "static": False, "parameters": [["a", "int"]], "returns": "int"},
+            "parts": [
+                {"kind": "input", "old": "this", "new": "this", "anchor": "anchored", "decide": "infer", "why": "w"},
+                {"kind": "input", "old": "a", "new": "a", "anchor": "anchored", "decide": "infer", "why": "w"},
+                {"kind": "result", "relation": "equal", "decide": "infer", "why": "w"},
+            ],
+        }
+        self.assertEqual(A.flags_from_parts(same), {})
+
+    def test_a_reordering_is_written_out(self):
+        e = copy.deepcopy(ENTRY)
+        e["before"] = {"symbol": "p.New#f", "static": True, "parameters": [["a", "long"], ["b", "int"]], "returns": "long"}
+        e["after"] = {"symbol": "p.New#f", "static": True, "parameters": [["b", "int"], ["a", "long"]], "returns": "long"}
+        e["parts"] = [
+            {"kind": "input", "old": "a", "new": "a", "anchor": "anchored", "decide": "infer", "why": "w"},
+            {"kind": "input", "old": "b", "new": "b", "anchor": "anchored", "decide": "infer", "why": "w"},
+            {"kind": "result", "relation": "equal", "decide": "infer", "why": "w"},
+        ]
+        self.assertEqual(A.flags_from_parts(e), {"previousArguments": "a, b"})
+
+
+class Problems(unittest.TestCase):
+    def test_an_anchored_input_maps_to_itself(self):
+        e = copy.deepcopy(ENTRY)
+        e["parts"][2]["new"] = "n + 1"
+        self.assertTrue(any("is anchored" in p for p in A.problems(e, EXAMPLE)))
+
+    def test_a_changed_result_is_a_persons_decision(self):
+        e = copy.deepcopy(ENTRY)
+        e["parts"][3]["decide"] = "infer"
+        self.assertTrue(any("person's decision" in p for p in A.problems(e, EXAMPLE)))
+
+    def test_parts_that_differ_from_the_flags(self):
+        e = copy.deepcopy(ENTRY)
+        e["parts"][1]["new"] = "this.start"
+        self.assertTrue(any("amount to" in p for p in A.problems(e, EXAMPLE)))
+
+    def test_the_inputs_are_the_old_ones_in_order(self):
+        e = copy.deepcopy(ENTRY)
+        e["parts"][1], e["parts"][2] = e["parts"][2], e["parts"][1]
+        self.assertTrue(any("in order" in p for p in A.problems(e, EXAMPLE)))
+
+    def test_a_scope_is_recorded(self):
+        example = copy.deepcopy(EXAMPLE)
+        example["change"]["intendedInputs"] = "n > 0"
+        self.assertTrue(any("scope" in p for p in A.problems(ENTRY, example)))
+
+
+class TheTable(unittest.TestCase):
+    def test_every_entry_agrees_with_its_example(self):
+        truth = A.load()
+        self.assertEqual(len(truth["examples"]), 19)
+        for entry in truth["examples"]:
+            self.assertEqual(A.problems(entry, A.example_json(entry["example"])), [], entry["example"])
+
+    def test_the_page_is_current(self):
+        self.assertEqual(A.PAGE.read_text(), A.render(A.load()))
+
+    def test_an_unchanged_parameter_is_anchored(self):
+        # Every example whose method kept its parameters has every input anchored: none may be shifted.
+        for entry in A.load()["examples"]:
+            if entry["before"]["parameters"] == entry["after"]["parameters"] and entry["before"]["static"] == entry["after"]["static"]:
+                anchors = {p["anchor"] for p in entry["parts"] if p["kind"] == "input" and p["old"] != "this"}
+                self.assertEqual(anchors, {"anchored"} if anchors else set(), entry["example"])
+
+
+if __name__ == "__main__":
+    unittest.main()

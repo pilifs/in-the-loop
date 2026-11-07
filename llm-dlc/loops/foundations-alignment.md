@@ -117,7 +117,18 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 
 ## Progress
 
-- Nothing yet.
+- **A1 done** (2026-11-07): the ground truth, [`examples/tools/alignment/ground-truth.json`](../../examples/tools/alignment/ground-truth.json),
+  with its page and scoring rules in [`examples/tools/alignment/README.md`](../../examples/tools/alignment/README.md)
+  and its checker `examples/tools/alignment.py` (`check`, `check --signatures`, `render`; tests in
+  `test_alignment.py`). All 19 B9 examples 121–139, 85 parts: 50 anchored inputs, 8 internal inputs, 4 methods
+  (2 renamed, 2 moved), 4 new inputs left free, 15 results equal, 2 record results by component, 2 changed results
+  that are a person's decision; 7 scopes counted as a person's decisions. The parts rebuild each example's flags
+  exactly, and both versions' signatures were checked against the compiled classes (`check --signatures`: 0
+  problems). No example outside 121–139 has a hand-written mapping. Scoring (found, asked, wrong, missed, and wrong
+  and accepted on its own) is defined on the page; its code comes with A2's first output.
+- Shared files changed: `examples/README.md` (one line in its tools list).
+- Next: A2, `jvmcontract align --before DIR --after DIR`, method correspondence written as hints, scored on the
+  four method parts and on the fifteen examples whose method kept its name (where it must propose no other method).
 - Status: working
 
 ## Loop settings

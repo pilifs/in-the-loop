@@ -408,6 +408,7 @@ examples/
   apps/mica/               Mica, with its TLA+ model in spec/
   tools/build.py           the generator: runs the constructed examples, writes their pages and the router
   tools/find.py            the search over index.json
+  tools/alignment.py       the ground truth alignment inference is scored against (alignment/), checked against the examples
   tools/contracts/         the Java verifier for B8, B9 and B10, used by Box Office
   tools/tla/               the generator of a model's state machine from a B8 contract, and the TLA+ standard modules
   setup/                   the toolchain installer for Ubuntu and WSL2

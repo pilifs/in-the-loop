@@ -1,0 +1,1679 @@
+{
+  "version": 1,
+  "examples": [
+    {
+      "example": "121",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.quorum.replication.LastWriterWins#winner",
+        "static": true,
+        "parameters": [
+          [
+            "tsA",
+            "long"
+          ],
+          [
+            "nodeA",
+            "int"
+          ],
+          [
+            "tsB",
+            "long"
+          ],
+          [
+            "nodeB",
+            "int"
+          ]
+        ],
+        "returns": "int"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.quorum.replication.LastWriterWins#winner",
+        "static": true,
+        "parameters": [
+          [
+            "tsA",
+            "long"
+          ],
+          [
+            "tsB",
+            "long"
+          ],
+          [
+            "nodeA",
+            "int"
+          ],
+          [
+            "nodeB",
+            "int"
+          ]
+        ],
+        "returns": "int"
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "tsA",
+          "new": "tsA",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same name and type in both versions; its position moved, the parameters now grouped by kind"
+        },
+        {
+          "kind": "input",
+          "old": "nodeA",
+          "new": "nodeA",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same name and type in both versions; its position moved, the parameters now grouped by kind"
+        },
+        {
+          "kind": "input",
+          "old": "tsB",
+          "new": "tsB",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same name and type in both versions; its position moved, the parameters now grouped by kind"
+        },
+        {
+          "kind": "input",
+          "old": "nodeB",
+          "new": "nodeB",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same name and type in both versions; its position moved, the parameters now grouped by kind"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "122",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+        "static": true,
+        "parameters": [
+          [
+            "writtenAtNanos",
+            "long"
+          ],
+          [
+            "ttlNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ]
+        ],
+        "returns": "boolean"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.cache.Expiry#remainingMillis",
+        "static": true,
+        "parameters": [
+          [
+            "writtenAtNanos",
+            "long"
+          ],
+          [
+            "ttlNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ]
+        ],
+        "returns": "long"
+      },
+      "scope": "!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)",
+      "parts": [
+        {
+          "kind": "method",
+          "old": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+          "new": "net.terminalvalue.crosscut.cache.Expiry#remainingMillis",
+          "how": "renamed",
+          "decide": "infer",
+          "why": "renamed, the same parameters, its result changed from boolean to long; the old method is gone"
+        },
+        {
+          "kind": "input",
+          "old": "writtenAtNanos",
+          "new": "writtenAtNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "ttlNanos",
+          "new": "ttlNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "changed",
+          "decide": "person",
+          "why": "boolean became long (milliseconds left): what the result means changed, so how the two relate is a person's decision; the catalogue's 'a boolean against a comparison of the new result' can propose it, and a proof shows only that it holds",
+          "holds": "previous == (result <= 0)"
+        }
+      ]
+    },
+    {
+      "example": "123",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+        "static": true,
+        "parameters": [
+          [
+            "writtenAtNanos",
+            "long"
+          ],
+          [
+            "ttlNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ]
+        ],
+        "returns": "boolean"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.cache.Expiry#remainingNanos",
+        "static": true,
+        "parameters": [
+          [
+            "writtenAtNanos",
+            "long"
+          ],
+          [
+            "ttlNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ]
+        ],
+        "returns": "long"
+      },
+      "scope": "!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)",
+      "parts": [
+        {
+          "kind": "method",
+          "old": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+          "new": "net.terminalvalue.crosscut.cache.Expiry#remainingNanos",
+          "how": "renamed",
+          "decide": "infer",
+          "why": "renamed, the same parameters, its result changed from boolean to long; the old method is gone"
+        },
+        {
+          "kind": "input",
+          "old": "writtenAtNanos",
+          "new": "writtenAtNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "ttlNanos",
+          "new": "ttlNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "changed",
+          "decide": "person",
+          "why": "boolean became long (nanoseconds left): what the result means changed, so how the two relate is a person's decision; the catalogue's 'a boolean against a comparison of the new result' can propose it, and a proof shows only that it holds",
+          "holds": "previous == (result <= 0)"
+        }
+      ]
+    },
+    {
+      "example": "124",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+        "static": true,
+        "parameters": [
+          [
+            "hash",
+            "int"
+          ],
+          [
+            "numPartitions",
+            "int"
+          ]
+        ],
+        "returns": "int"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+        "static": true,
+        "parameters": [
+          [
+            "hash",
+            "int"
+          ],
+          [
+            "numPartitions",
+            "int"
+          ]
+        ],
+        "returns": "int"
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "hash",
+          "new": "hash",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "numPartitions",
+          "new": "numPartitions",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "125",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+        "static": true,
+        "parameters": [
+          [
+            "nowSeconds",
+            "long"
+          ],
+          [
+            "notBefore",
+            "long"
+          ],
+          [
+            "expiresAt",
+            "long"
+          ],
+          [
+            "skewSeconds",
+            "long"
+          ]
+        ],
+        "returns": "boolean"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+        "static": true,
+        "parameters": [
+          [
+            "nowSeconds",
+            "long"
+          ],
+          [
+            "notBefore",
+            "long"
+          ],
+          [
+            "expiresAt",
+            "long"
+          ],
+          [
+            "skewSeconds",
+            "long"
+          ]
+        ],
+        "returns": "boolean"
+      },
+      "scope": "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)",
+      "parts": [
+        {
+          "kind": "input",
+          "old": "nowSeconds",
+          "new": "nowSeconds",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "notBefore",
+          "new": "notBefore",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "expiresAt",
+          "new": "expiresAt",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "skewSeconds",
+          "new": "skewSeconds",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "126",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "this",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the receiver: the same record class with the same components"
+        },
+        {
+          "kind": "input",
+          "old": "attempt",
+          "new": "attempt",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "127",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "this",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the receiver: the same record class with the same components"
+        },
+        {
+          "kind": "input",
+          "old": "attempt",
+          "new": "attempt",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "128",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+        "static": true,
+        "parameters": [
+          [
+            "batchStart",
+            "long"
+          ],
+          [
+            "batchSize",
+            "int"
+          ],
+          [
+            "failedIndex",
+            "int"
+          ]
+        ],
+        "returns": "long"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+        "static": false,
+        "parameters": [
+          [
+            "failedIndex",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "start",
+            "long"
+          ],
+          [
+            "size",
+            "int"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "method",
+          "old": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+          "new": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+          "how": "moved",
+          "decide": "infer",
+          "why": "moved from a static helper class to an instance method of the new record Batch, the same name; the old class is gone"
+        },
+        {
+          "kind": "input",
+          "old": "batchStart",
+          "new": "this.start",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "a parameter gathered into the new receiver: its component start, the same type, named as the parameter without the class's name"
+        },
+        {
+          "kind": "input",
+          "old": "batchSize",
+          "new": "this.size",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "a parameter gathered into the new receiver: its component size, the same type, named as the parameter without the class's name"
+        },
+        {
+          "kind": "input",
+          "old": "failedIndex",
+          "new": "failedIndex",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name and type; its position moved, the other two having gone into the receiver"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "129",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+        "static": true,
+        "parameters": [
+          [
+            "batchStart",
+            "long"
+          ],
+          [
+            "batchSize",
+            "int"
+          ],
+          [
+            "failedIndex",
+            "int"
+          ]
+        ],
+        "returns": "long"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+        "static": false,
+        "parameters": [
+          [
+            "failedIndex",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "start",
+            "long"
+          ],
+          [
+            "size",
+            "int"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "method",
+          "old": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+          "new": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+          "how": "moved",
+          "decide": "infer",
+          "why": "moved from a static helper class to an instance method of the new record Batch, the same name; the old class is gone"
+        },
+        {
+          "kind": "input",
+          "old": "batchStart",
+          "new": "this.start",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "a parameter gathered into the new receiver: its component start, the same type, named as the parameter without the class's name"
+        },
+        {
+          "kind": "input",
+          "old": "batchSize",
+          "new": "this.size",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "a parameter gathered into the new receiver: its component size, the same type, named as the parameter without the class's name"
+        },
+        {
+          "kind": "input",
+          "old": "failedIndex",
+          "new": "failedIndex",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name and type; its position moved, the other two having gone into the receiver"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "130",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ],
+          [
+            "multiplier",
+            "int"
+          ]
+        ]
+      },
+      "scope": "this.multiplier != 2",
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "new Backoff(this.baseMillis, this.capMillis)",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "the record gained a component: the old record is made from the new one's components of the same name and type",
+          "components": [
+            [
+              "baseMillis",
+              "this.baseMillis"
+            ],
+            [
+              "capMillis",
+              "this.capMillis"
+            ]
+          ]
+        },
+        {
+          "kind": "input",
+          "old": "attempt",
+          "new": "attempt",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "new-input",
+          "new": "this.multiplier",
+          "anchor": "new",
+          "decide": "infer",
+          "why": "no old counterpart: left free, so the claim covers every multiplier the constructor admits; that the change is meant for multipliers other than two is the scope, a person's decision"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "131",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+        "static": false,
+        "parameters": [
+          [
+            "attempt",
+            "int"
+          ]
+        ],
+        "returns": "long",
+        "receiver": [
+          [
+            "baseMillis",
+            "long"
+          ],
+          [
+            "capMillis",
+            "long"
+          ],
+          [
+            "multiplier",
+            "int"
+          ]
+        ]
+      },
+      "scope": "this.multiplier != 2",
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "new Backoff(this.baseMillis, this.capMillis)",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "the record gained a component: the old record is made from the new one's components of the same name and type",
+          "components": [
+            [
+              "baseMillis",
+              "this.baseMillis"
+            ],
+            [
+              "capMillis",
+              "this.capMillis"
+            ]
+          ]
+        },
+        {
+          "kind": "input",
+          "old": "attempt",
+          "new": "attempt",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "new-input",
+          "new": "this.multiplier",
+          "anchor": "new",
+          "decide": "infer",
+          "why": "no old counterpart: left free, so the claim covers every multiplier the constructor admits; that the change is meant for multipliers other than two is the scope, a person's decision"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "132",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+        "static": true,
+        "parameters": [
+          [
+            "tokens",
+            "long"
+          ],
+          [
+            "lastNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "periodNanos",
+            "long"
+          ],
+          [
+            "capacity",
+            "long"
+          ]
+        ],
+        "returns": "long"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+        "static": true,
+        "parameters": [
+          [
+            "tokens",
+            "long"
+          ],
+          [
+            "lastNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "periodNanos",
+            "long"
+          ],
+          [
+            "capacity",
+            "long"
+          ]
+        ],
+        "returns": "long"
+      },
+      "scope": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "parts": [
+        {
+          "kind": "input",
+          "old": "tokens",
+          "new": "tokens",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "lastNanos",
+          "new": "lastNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "periodNanos",
+          "new": "periodNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "capacity",
+          "new": "capacity",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "133",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+        "static": true,
+        "parameters": [
+          [
+            "tokens",
+            "long"
+          ],
+          [
+            "lastNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "periodNanos",
+            "long"
+          ],
+          [
+            "capacity",
+            "long"
+          ]
+        ],
+        "returns": "long"
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+        "static": true,
+        "parameters": [
+          [
+            "tokens",
+            "long"
+          ],
+          [
+            "lastNanos",
+            "long"
+          ],
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "periodNanos",
+            "long"
+          ],
+          [
+            "capacity",
+            "long"
+          ]
+        ],
+        "returns": "long"
+      },
+      "scope": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "parts": [
+        {
+          "kind": "input",
+          "old": "tokens",
+          "new": "tokens",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "lastNanos",
+          "new": "lastNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "periodNanos",
+          "new": "periodNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "capacity",
+          "new": "capacity",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same return type: compared by equality, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "134",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ],
+          [
+            "previousCount",
+            "long"
+          ]
+        ]
+      },
+      "scope": "windowNanos > 0 && this.startNanos % windowNanos != 0",
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "new Window(this.startNanos, this.count)",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "the record gained a component: the old record is made from the new one's components of the same name and type",
+          "components": [
+            [
+              "startNanos",
+              "this.startNanos"
+            ],
+            [
+              "count",
+              "this.count"
+            ]
+          ]
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "windowNanos",
+          "new": "windowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "new-input",
+          "new": "this.previousCount",
+          "anchor": "new",
+          "decide": "infer",
+          "why": "no old counterpart: left free, so the claim covers every previous count the constructor admits"
+        },
+        {
+          "kind": "result",
+          "relation": "components",
+          "decide": "infer",
+          "why": "the record result gained a component: each old component is compared with the same-named new one, so no old observation is dropped; the new previousCount is one the old version doesn't have",
+          "holds": "previous.startNanos == result.startNanos && previous.count == result.count"
+        }
+      ]
+    },
+    {
+      "example": "135",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ],
+          [
+            "previousCount",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "new Window(this.startNanos, this.count)",
+          "anchor": "internal",
+          "decide": "infer",
+          "why": "the record gained a component: the old record is made from the new one's components of the same name and type",
+          "components": [
+            [
+              "startNanos",
+              "this.startNanos"
+            ],
+            [
+              "count",
+              "this.count"
+            ]
+          ]
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "windowNanos",
+          "new": "windowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "new-input",
+          "new": "this.previousCount",
+          "anchor": "new",
+          "decide": "infer",
+          "why": "no old counterpart: left free, so the claim covers every previous count the constructor admits"
+        },
+        {
+          "kind": "result",
+          "relation": "components",
+          "decide": "infer",
+          "why": "the record result gained a component: each old component is compared with the same-named new one, so no old observation is dropped; the new previousCount is one the old version doesn't have",
+          "holds": "previous.startNanos == result.startNanos && previous.count == result.count"
+        }
+      ]
+    },
+    {
+      "example": "136",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "this",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the receiver: the same record class with the same components"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "windowNanos",
+          "new": "windowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same record type: compared component by component, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "137",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "this",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the receiver: the same record class with the same components"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "windowNanos",
+          "new": "windowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same record type: compared component by component, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "138",
+      "verdict": "verified",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "this",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the receiver: the same record class with the same components"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "windowNanos",
+          "new": "windowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same record type: compared component by component, as the contract requires"
+        }
+      ]
+    },
+    {
+      "example": "139",
+      "verdict": "violation",
+      "before": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "after": {
+        "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+        "static": false,
+        "parameters": [
+          [
+            "nowNanos",
+            "long"
+          ],
+          [
+            "windowNanos",
+            "long"
+          ]
+        ],
+        "returns": "net.terminalvalue.crosscut.ratelimit.Window",
+        "receiver": [
+          [
+            "startNanos",
+            "long"
+          ],
+          [
+            "count",
+            "long"
+          ]
+        ]
+      },
+      "parts": [
+        {
+          "kind": "input",
+          "old": "this",
+          "new": "this",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the receiver: the same record class with the same components"
+        },
+        {
+          "kind": "input",
+          "old": "nowNanos",
+          "new": "nowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "input",
+          "old": "windowNanos",
+          "new": "windowNanos",
+          "anchor": "anchored",
+          "decide": "infer",
+          "why": "the same parameter in both versions, name, type and position"
+        },
+        {
+          "kind": "result",
+          "relation": "equal",
+          "decide": "infer",
+          "why": "the same record type: compared component by component, as the contract requires"
+        }
+      ]
+    }
+  ]
+}
