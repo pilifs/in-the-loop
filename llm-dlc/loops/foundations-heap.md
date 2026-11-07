@@ -22,20 +22,22 @@ on the latest combined commits is your next piece of work.
 
 Priority 1: proofs over objects, and between objects of different shapes. In order:
 
-- **H0. Arrays of references**, only if the `engine-priorities` merge left them undone: `anewarray`, `aaload`,
-  `aastore` over known objects, with conformance cases checked on the JVM.
+- **H0. Arrays of references**: done by the `engine-priorities` loop (rechecked 2026-11-07): `anewarray`, `aaload`
+  and `aastore` over known objects or null. Arrays of references as *parameters* are H2's.
 - **H1. Symbolic references.** A reference that may denote one of a finite set of objects, or null, guarded by path
   conditions. `if_acmp`, `ifnull` and `ifnonnull` over such references become formulas; `getfield` and `putfield`
   through one read and write each candidate under its guard. Paths that differ only in a reference merge into one.
   Keep `Val::R` as the fast path: a reference whose target is known stays concrete, and every existing test and verdict
-  must hold inline; the benchmark's formula sizes are a job, submitted for review. The aliasing cases of the conformance corpus (`aliasedLocals`,
-  `aliasedObjects`, `writeThrough`) get verdicts that match the JVM.
+  must hold inline; the benchmark's formula sizes are a job, submitted for review. The aliasing cases among objects a method makes (`aliasedLocals`,
+  `aliasedObjects`, `writeThrough`) keep their verdicts; they need no symbolic reference.
 - **H2. Object inputs.** A parameter of an application class, within Phase 0's domain: classes allowed, an
   input-object bound, nullability, and which parameters may alias. Made as the main brief's
   [decision 2](foundations.md#decisions) settled: by constructor or factory with symbolic arguments. Every result over such inputs carries the domain's label, "objects made by these constructors or
   factories, under these argument constraints"; it never claims states a constructor doesn't make (an `Account` made
   with `balance = 0` says nothing about one after deposits). Fields of reference type point into the same bounded set.
-  Start with classes whose fields are primitives, primitive arrays, or references to such classes; refuse the rest as
+  The conformance corpus's input cases outside the domain today become its first targets: `twoArrays` with the same
+  array twice, and `length` and `lengthOrMinusOne` with a null array, each as the JVM decides it once the domain allows
+  aliasing or null. Start with classes whose fields are primitives, primitive arrays, or references to such classes; refuse the rest as
   named gaps. Both versions get corresponding inputs from the same construction, the old version's objects made under
   `before/` as records are today.
 - **H3. Heap observations.** At the end of a regression check, compare Phase 0's observations: field paths into the

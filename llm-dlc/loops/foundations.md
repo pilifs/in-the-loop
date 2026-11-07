@@ -76,20 +76,26 @@ reported, and a result that says what it established and what it assumed. In add
 
 ## Where it starts from
 
-Recounted from the code at `e42ea83` on 2026-11-06 (file:line as of then). Recheck before relying on a line number.
+Recounted from the code at `e42ea83` on 2026-11-06, and rechecked on 2026-11-07 against `main` at `ea315037`, after the
+`engine-priorities` merge (file:line as of then). Recheck before relying on a line number.
 
 **Objects in the own checker.**
-- A reference is `Val::R(Option<usize>)` (`lib/src/bmc/mod.rs:286`): a concrete index into the path's objects, or
+- A reference is `Val::R(Option<usize>)` (`lib/src/bmc/mod.rs:316`): a concrete index into the path's objects, or
   null. References are never symbolic, so `if_acmp`, `ifnull` and `ifnonnull` are decided concretely, and two paths
-  merge only when every reference is identical and the heaps have the same shape (`same_shape`, `:411`).
+  merge only when every reference is identical and the heaps have the same shape (`same_shape`, `:486`).
 - A check takes primitive parameters and one-dimensional primitive arrays, each array non-null and distinct
-  (`unsupported_parameter`, `:260`). Any other parameter is refused as outside the fragment.
+  (`unsupported_parameter`, `:290`). Any other parameter is refused as outside the fragment.
 - Records are supported only in regression checks, and only when every component is primitive: the harness flattens
-  them into their components and builds them with their constructor (`record_of`, `lib/src/equivalence.rs:591`).
-- `anewarray`, `aaload` and `aastore` are refused. The native stream of `engine-priorities` is adding arrays of
-  references for enums' `$VALUES`, which this loop builds on.
-- The conformance corpus already has aliasing cases (`aliasedLocals`, `aliasedObjects`, `twoArrays`,
-  `writeThrough`), all outside the domain today.
+  them into their components and builds them with their constructor (`record_of`, `lib/src/equivalence.rs:616`).
+- Since the `engine-priorities` merge, `anewarray`, `aaload` and `aastore` work on arrays of references whose cells hold
+  known objects or null; an index that is not a constant splits the path per cell (the module table at the top of
+  `bmc/mod.rs`). Application static fields and class initialization (JVMS §5.5) are implemented too. Arrays of
+  references are still refused as parameters and in a few array operations (`:617`, `:1449`, `:1483`). H0 is done.
+- Aliasing among objects a method makes itself is decided already, since their references are concrete: the
+  conformance cases `aliasedLocals`, `aliasedObjects` and `writeThrough` have verdicts in every mode
+  (`lib/tests/conformance.rs:181-186`). What is outside the domain is aliasing and null among *inputs*: `twoArrays`
+  is outside for the same array passed twice (`[0];@0`, "no two the same array"), and `length` and
+  `lengthOrMinusOne` for a null array.
 
 **What a regression check compares** (`lib/src/harness/mod.rs:902-1016`): the exception category, the results
 (element by element for arrays, component by component for records, or under `--results-agree-when`), and each array
@@ -97,7 +103,7 @@ parameter as both versions leave it. Nothing else on the heap is observed.
 
 **Mappings are all written by hand.** `--before-target`, `--before-arguments` and `--results-agree-when` are the
 user's. Record components correspond by position. The only automation is a refusal message that suggests an
-expression (`equivalence.rs:760-808`). There is no notion of a relation between old and new objects or fields.
+expression (`equivalence.rs:768-810`). There is no notion of a relation between old and new objects or fields.
 
 **Reuse.**
 - Within a run: an identical closure skips the proof, and identical pure static callees become one memoised stub
@@ -200,7 +206,7 @@ The streams fork from the merge of `engine-priorities`, not before:
   Starting both at once would mean a hard merge in the engine's core.
 - Arrays of references are the first step of object support. This loop takes them as given.
 
-If the engines loop stops with arrays of references not done, the heap stream does them first (its phase H0).
+Arrays of references were done by that loop (rechecked on 2026-11-07), so the heap stream's H0 is skipped.
 
 ## Launch prerequisites
 

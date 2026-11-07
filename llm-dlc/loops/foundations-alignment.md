@@ -80,7 +80,7 @@ you). Loop and control-flow alignment and LLM-proposed mappings are [deferred](f
 
 You own the new alignment module, the `align` command, the hints file's reading and writing, and the scoring tool for
 A1, with their tests. You call into `equivalence.rs` to check candidates as a caller, not by changing how a check
-runs. The refusal messages that suggest an expression today (`equivalence.rs:760-808`) may call your inference
+runs. The refusal messages that suggest an expression today (`equivalence.rs:768-810`) may call your inference
 instead of their own matching, as a hook.
 
 The shared files are the main brief's [list](foundations.md#streams). Name every change to one of them under Progress.
