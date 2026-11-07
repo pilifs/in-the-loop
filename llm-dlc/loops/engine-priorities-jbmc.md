@@ -219,8 +219,7 @@ Progress, so the reconcile loop knows where to look.
     - A `GapKind` for defects in `bmc/gaps.rs` could replace the separate `Defect` type, if gaps and defects should
       read alike in `--json`; today a defect shows only in the problem and the notes.
     - 4a's job will run with this guard: a recorded JBMC proof refused for a defect is a difference to report.
-- **4a, the strict job on both engines: JBMC's table measured (`20261106-231837`); the own checker's rerun as
-  `20261107-000039` (pending, below).**
+- **4a, the strict job on both engines: done, `20261107-000039` (passed, below).**
   - The job runs `build.py` on the 41 recorded B9/B11 JBMC examples (Quorum, Crosscut, Mica), the same filter as
     job `-082917`, in two scratch copies of `examples/`:
     - as recorded (`--engine jbmc`, `--gaps strict`);
@@ -367,7 +366,7 @@ Progress, so the reconcile loop knows where to look.
     naming the defect.
   - So Phase 3 is done by its criterion: the cause is known, guarded with tests, and drafted as two reports for the user.
 - **4a's rerun `20261106-231837`: JBMC's table measured; the own checker's step failed on the schema again; rerun as
-  `20261107-000039` (pending).**
+  `20261107-000039` (passed, below).**
   - **Step 1, JBMC under strict: passed.** 43 obligations of the 41 examples, every one run by JBMC under strict:
     27 refuted, 13 established, 3 unresolved. The table is `lib/target/jobs/4a-coverage/jbmc-gaps.json` in the
     default workspace's `verification/results/20261106-231837-…/outputs/`.
@@ -406,6 +405,34 @@ Progress, so the reconcile loop knows where to look.
   - **Job `20261107-000039`** is `-231837`'s three steps unchanged, at this commit. The JBMC step runs again so that
     step 3 compares two tables from one commit.
   - No shared file changed.
-- **Next:** job `-000039`'s results, under 4a: the own checker's table over the 41, and the comparison. Its tables go
-  to the reconcile loop's 4c as they stand. Then this stream's phases are done.
-- Status: waiting on jobs 20261107-000039
+- **4a's job `20261107-000039`: passed** (4 m 22 s, peak 1.1 GiB), all three steps. Phase 4a is done: the measured
+  table, per obligation, replaces job `-082917`'s projection, and no recorded verdict changed.
+  - The outputs are in the default workspace's `lib/target/jobs/4a-coverage/` (and its result's `changes.diff`):
+    `jbmc-gaps.json`, `native-gaps.json`, `compare.txt`, both tables, both build logs and every `result.json`.
+  - **JBMC under strict** (184 s): the same table as `-231837`, row for row. 27 refuted, 13 established, 3 unresolved:
+    `071#0`, `#1` at the stubs, and `037#0` refused at the unmasked shift (above). One example, 037, differs from its
+    expected verdict.
+  - **The own checker under strict** (78 s): 24 refuted, 11 established, 8 unresolved. Six examples differ from their
+    expected verdict:
+    - at a `class-initializer` gap, `TermOrder.<clinit>`: `013#0` and `071#0`–`#2` (Quorum's enum, which 4b counts
+      and Phase 5 models);
+    - at a `jdk-static-method` gap, which strict refuses and only a contract closes: `037#0`
+      (`Integer.numberOfLeadingZeros`) and `127#0` (`Long.numberOfLeadingZeros`, Crosscut's `Backoff.delayMillis:31`);
+    - `035#0`, outside the fragment: a float parameter (the extension 4c names as the known candidate after Phase 5);
+    - `052#0`, a loop not fully unwound with `--unwind 16` (`PropertyHarness.check` at pc 238).
+  - **The comparison:** 5 of 43 obligations differ in status, each decided by JBMC and not by the own checker:
+    `013#0`, `035#0`, `052#0`, `071#2` and `127#0`. Recomputed inline from the two tables (hashes as recorded):
+    - both engines decide 35 obligations, and agree on every one;
+    - only JBMC decides those 5, and none is decided only by the own checker;
+    - neither decides 3: `037#0` (JBMC's proof refused by the guard, the own checker's run at the gap), and `071#0`,
+      `#1` (JBMC at the stubs, the own checker at the initializer).
+  - One own-checker run carries `phasesExcess`, 018's proof again (0.167 s, encoding 0.015 + solving 0.162, 0.010 over
+    the tolerance): the sampled encoding noted above, and the schema now accepts it.
+  - **For the reconcile loop's 4c:** these tables as they stand. Per example, JBMC decides 013, 035, 052, 071's third
+    obligation and 127 where the own checker stops at an enum initializer, a float, an unwinding bound and a JDK
+    method. Neither decides 037 or 071's first two obligations. 035 (floats), Quorum's `TermOrder` (Phase 5) and
+    `numberOfLeadingZeros` (a contract or model) are what stop the own checker.
+  - No shared file changed.
+- **Next:** nothing in this stream. 4b, 4c, 5 and 6, the examples' notes (037's above) and the merge belong to the
+  native stream and the reconcile loop. The two upstream reports drafted in 3 wait on the user.
+- Status: done

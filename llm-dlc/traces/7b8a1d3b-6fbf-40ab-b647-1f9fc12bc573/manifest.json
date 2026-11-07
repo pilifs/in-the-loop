@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-07T00:01:28.030Z",
-  "duration_seconds": 17184,
+  "ended": "2026-11-07T00:10:07.285Z",
+  "duration_seconds": 17703,
   "stats": {
-    "turns": 60,
-    "api_calls": 565,
-    "tool_calls": 563,
+    "turns": 66,
+    "api_calls": 587,
+    "tool_calls": 586,
     "tool_errors": 8,
-    "compactions": 11,
+    "compactions": 12,
     "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 1128,
-      "output_tokens": 436741,
-      "cache_read_input_tokens": 61571758,
-      "cache_creation_input_tokens": 1576860
+      "input_tokens": 1172,
+      "output_tokens": 450594,
+      "cache_read_input_tokens": 63024436,
+      "cache_creation_input_tokens": 1649552
     }
   },
   "tools": {
-    "Bash": 531,
-    "Read": 18,
-    "Edit": 12,
+    "Bash": 549,
+    "Read": 19,
+    "Edit": 16,
     "Write": 2
   },
   "files_touched": [
@@ -201,24 +201,38 @@
     {
       "index": 11,
       "started": "2026-11-06T23:19:52.997Z",
-      "ended": "2026-11-07T00:01:28.030Z",
-      "turns": 5,
-      "api_calls": 42,
+      "ended": "2026-11-07T00:01:56.537Z",
+      "turns": 6,
+      "api_calls": 45,
       "usage": {
-        "input_tokens": 84,
-        "output_tokens": 27159,
-        "cache_read_input_tokens": 4024750,
-        "cache_creation_input_tokens": 120270
+        "input_tokens": 90,
+        "output_tokens": 28935,
+        "cache_read_input_tokens": 4428464,
+        "cache_creation_input_tokens": 124474
       },
-      "peak_context_tokens": 133349
+      "peak_context_tokens": 137553
+    },
+    {
+      "index": 12,
+      "started": "2026-11-07T00:02:33.935Z",
+      "ended": "2026-11-07T00:10:07.285Z",
+      "turns": 5,
+      "api_calls": 19,
+      "usage": {
+        "input_tokens": 38,
+        "output_tokens": 12077,
+        "cache_read_input_tokens": 1048964,
+        "cache_creation_input_tokens": 68488
+      },
+      "peak_context_tokens": 81567
     }
   ],
   "log": {
-    "sha256": "324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8",
-    "bytes": 14984300,
-    "lines": 5882,
-    "gzip_bytes": 2720352,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8.jsonl.gz"
+    "sha256": "65fab7f27030526a959da6e639e6908c31aff391585b0d178c099eaa3a4eb256",
+    "bytes": 15779029,
+    "lines": 6157,
+    "gzip_bytes": 2906013,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/65fab7f27030526a959da6e639e6908c31aff391585b0d178c099eaa3a4eb256.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -325,6 +339,14 @@
       "summary": "The examples' result schema allows a run's phasesExcess; 3's rerun passed, 4a's JBMC table measured, its own-checker step rerun (verification pending)",
       "body": "Job 20261106-231317, the rerun of step 3's job (llm-dlc/loops/engine-priorities.md), passed: 63 integration tests, the corpus under jbmc and auto (98 claims, 196 runs, the unmasked-shift claims and the full-range default included) and under auto --confirm, where the 12 disagreements of -203452 are gone. Phase 3 is done: the cause of the witnesses that don't reproduce is known, guarded with tests, and drafted as reports for the user.\n\nJob 20261106-231837, step 4a's rerun, measured JBMC's per-obligation table under strict over the 41 recorded JBMC examples: 43 obligations, 27 refuted, 13 established, 3 unresolved. 071#0 and #1 are no verdict at the Enum.<init>, List.of and List.copyOf stubs, as job -082917 projected. 037#0, the one example that differs from its expected verdict, is a JBMC proof refused by the unmasked-shift guard at -1 >>> Integer.numberOfLeadingZeros(cap - 1), whose distance is 32 when cap == 1. Checked inline on the JVM over all 2^32 ints: the recorded proof is correct, since JBMC's wrong value for that shift gives the same result there, so the refusal is the guard's breadth, recorded for 037's notes and 4c.\n\nIts own-checker step stopped at example 018: build.py refused the result because the schema's search.runs items did not allow phasesExcess, step 1a's flag on a run whose named phases add up past its seconds. Reproduced inline: the own checker's 0.18 s run of 018 has sampled encoding (lib/src/bmc/bits.rs ENCODING_SAMPLE) and solving 0.013 s past it beyond the tolerance, recorded for the native stream. Each run in examples/schema/result.schema.json may now carry phasesExcess, a positive number. Verified: that real run record, spliced into the 14 committed results with runs, passes build.py's whole check_result validation; negative and string values are refused (42 of 42 as expected); the schema at the previous commit refuses the real record; the run's full search record validates; test_build.py has the same 35 pre-existing errors and test_gap_table.py passes.\n\nJob 20261107-000039 reruns -231837's three steps unchanged at this commit, so the own checker's table and the comparison come from one commit. The stream's status is now waiting on it.",
       "log_sha256": "324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8"
+    },
+    {
+      "change_id": "pmoympwnmukqotrzsosmkqqonovvlppu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "4a's job 20261107-000039 passed: both engines' strict tables over the 41 JBMC examples, and their comparison; the stream's phases are done",
+      "body": "Job 20261107-000039, step 4a of llm-dlc/loops/engine-priorities.md, passed (4 m 22 s, peak 1.1 GiB). It ran build.py on the 41 recorded B9/B11 JBMC examples under --gaps strict on each engine, in scratch copies, and saved gap_table.py --json for each. JBMC's table is row for row the one job -231837 measured: of 43 obligations, 27 refuted, 13 established, 3 unresolved (071#0 and #1 at the Enum.<init>, List.of and List.copyOf stubs; 037#0 a correct proof refused by the unmasked-shift guard). The own checker's: 24 refuted, 11 established, 8 unresolved, at Quorum's TermOrder.<clinit> (013#0, 071#0-#2), at Integer/Long.numberOfLeadingZeros, which strict refuses (037#0, 127#0), at a float parameter (035#0) and at --unwind 16 (052#0). The engines agree on all 35 obligations both decide; JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), the own checker alone none, and neither 3. Recorded verdicts are unchanged; the differences are reported for the reconcile loop's 4c, which takes the tables as they stand from the default workspace's lib/target/jobs/4a-coverage/.",
+      "log_sha256": "65fab7f27030526a959da6e639e6908c31aff391585b0d178c099eaa3a4eb256"
     }
   ],
   "logs": {
@@ -356,6 +378,12 @@
       "bytes": 2872028,
       "lines": 1207,
       "gzip_bytes": 514032,
+      "url": null
+    },
+    "65fab7f27030526a959da6e639e6908c31aff391585b0d178c099eaa3a4eb256": {
+      "bytes": 15779029,
+      "lines": 6157,
+      "gzip_bytes": 2906013,
       "url": null
     },
     "78efdcf926af3af5f3e82d6fb5d3fcd3f82259c3e9f8436d597867063d5dbb83": {

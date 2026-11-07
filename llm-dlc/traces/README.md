@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 29, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 00:01 UTC |
-| Prompts | 894 |
-| Model calls | 8,822 |
-| Tool calls | 9,666 (208 failed) |
-| Compactions | 120 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 00:10 UTC |
+| Prompts | 900 |
+| Model calls | 8,844 |
+| Tool calls | 9,689 (208 failed) |
+| Compactions | 121 |
 | Subagents | 3 |
-| Tokens written | 11,830,219 |
-| Tokens read | 1,481,991,629 (97.9% from cache) |
-| Commits with a trace | 274 |
-| Log snapshots | 335 (1008.8 MB gzipped, 322 uploaded) |
+| Tokens written | 11,844,072 |
+| Tokens read | 1,483,517,043 (97.9% from cache) |
+| Commits with a trace | 275 |
+| Log snapshots | 336 (1011.7 MB gzipped, 322 uploaded) |
 
 ## Sessions
 
@@ -55,7 +55,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-06 15:24 UTC | [setup-repo-on-ryzen-machine](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | open | 39 min | `claude-opus-5-5` | 3 | 34 | 36 | 5 | 0 | 103,564 | 2 |
 | 2026-11-06 16:53 UTC | [Commit and publish to remote](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | ended | 1 h 34 min | `claude-opus-5-5` | 12 | 193 | 187 | 6 | 0 | 289,035 | 14 |
 | 2026-11-06 19:07 UTC | [Agent session transfer warnings](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | open | 4 min | `claude-opus-5-5` | 2 | 13 | 12 | 1 | 0 | 53,617 | 2 |
-| 2026-11-06 19:15 UTC | [Feature loop run review actions](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | open | 4 h 46 min | `claude-opus-5-5` | 60 | 565 | 563 | 8 | 11 | 231,367 | 13 |
+| 2026-11-06 19:15 UTC | [Feature loop run review actions](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | open | 4 h 55 min | `claude-opus-5-5` | 66 | 587 | 586 | 8 | 12 | 231,367 | 14 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -93,15 +93,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 23,386 | 68 | 72,506 | 2,701,932 | 97.4% | 119 |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 123,882 | 410 | 251,410 | 30,843,927 | 99.2% | 251 |
 | [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 4,261 | 28 | 22,899 | 610,433 | 96.4% | 149 |
-| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 436,741 | 1,128 | 1,576,860 | 61,571,758 | 97.5% | 145 |
+| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 450,594 | 1,172 | 1,649,552 | 63,024,436 | 97.4% | 144 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 8,440 | 87.3% | 29 |
-| `Edit` | 424 | 4.4% | 15 |
-| `Read` | 326 | 3.4% | 18 |
+| `Bash` | 8,458 | 87.3% | 29 |
+| `Edit` | 428 | 4.4% | 15 |
+| `Read` | 327 | 3.4% | 18 |
 | `Write` | 309 | 3.2% | 15 |
 | `ToolSearch` | 61 | 0.6% | 14 |
 | `Monitor` | 31 | 0.3% | 5 |
@@ -394,6 +394,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 272 | change `xzvyuwxp` | Under --confirm, a JBMC refutation through a named defect, whose witness does not reproduce, is no verdict; job 20261106-203452 triaged (verification pending) | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b.jsonl.gz)) |
 | 273 | change `tokyzsls` | The examples' result schema allows the statement's SAT solver record; 4a's job rerun (verification pending) | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2.jsonl.gz)) |
 | 274 | change `xyplqrtn` | The examples' result schema allows a run's phasesExcess; 3's rerun passed, 4a's JBMC table measured, its own-checker step rerun (verification pending) | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8.jsonl.gz)) |
+| 275 | change `pmoympwn` | 4a's job 20261107-000039 passed: both engines' strict tables over the 41 JBMC examples, and their comparison; the stream's phases are done | [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) ([log](https://terminalvalue.net/raw-traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/65fab7f27030526a959da6e639e6908c31aff391585b0d178c099eaa3a4eb256.jsonl.gz)) |
 
 ## Logs
 
@@ -429,7 +430,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 2 | 2 | 0.4 MB | [`000c1283aae8`](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz) |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 14 | 14 | 5.4 MB | [`bea739fae396`](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz) |
 | [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 2 | 2 | 0.2 MB | [`3dcf14c608d7`](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/3dcf14c608d7609eb57c72f0ba7e862e5834061d8f8950d4b51a65d17c3befc7.jsonl.gz) |
-| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 13 | 0 | 17.7 MB | `324eb23fd470`, not uploaded |
+| [`7b8a1d3b`](7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/summary.md) | 14 | 0 | 20.6 MB | `65fab7f27030`, not uploaded |
 
 ## Session notes
 
