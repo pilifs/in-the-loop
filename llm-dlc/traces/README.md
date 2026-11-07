@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 51, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 12:44 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 12:45 UTC |
 | Prompts | 1,341 |
-| Model calls | 13,663 |
-| Tool calls | 14,617 (269 failed) |
+| Model calls | 13,668 |
+| Tool calls | 14,622 (269 failed) |
 | Compactions | 195 |
 | Subagents | 9 |
-| Tokens written | 15,822,643 |
-| Tokens read | 2,281,018,835 (97.9% from cache) |
-| Commits with a trace | 393 |
-| Log snapshots | 477 (1252.4 MB gzipped, 403 uploaded) |
+| Tokens written | 15,825,780 |
+| Tokens read | 2,282,272,218 (97.9% from cache) |
+| Commits with a trace | 394 |
+| Log snapshots | 478 (1252.9 MB gzipped, 403 uploaded) |
 
 ## Sessions
 
@@ -76,8 +76,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](be22079e-0c8d-41e4-ace3-12f7f213f1f9/summary.md) | ended | 2 h 46 min | `claude-opus-5-5` | 47 | 560 | 579 | 4 | 9 | 322,777 | 15 |
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 8 h 19 min | `claude-opus-5-5` | 103 | 1,268 | 1,316 | 7 | 19 | 329,169 | 22 |
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
-| 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | open | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 2 |
-| 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 23 min | `claude-opus-5-5` | 1 | 100 | 105 | 1 | 0 | 246,550 | 5 |
+| 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | open | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 3 |
+| 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 24 min | `claude-opus-5-5` | 1 | 105 | 110 | 1 | 0 | 253,135 | 6 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -137,13 +137,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 1,015,945 | 2,572 | 4,274,633 | 230,317,308 | 98.2% | 231 |
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
-| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 49,843 | 202 | 233,471 | 15,062,688 | 98.5% | 307 |
+| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 52,980 | 212 | 240,056 | 16,309,476 | 98.5% | 312 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 12,726 | 87.1% | 51 |
+| `Bash` | 12,731 | 87.1% | 51 |
 | `Read` | 717 | 4.9% | 27 |
 | `Edit` | 558 | 3.8% | 26 |
 | `Write` | 369 | 2.5% | 23 |
@@ -555,9 +555,10 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 388 | change `spwpnwnu` | Alignment Progress: undo the copy of the brief's text that the last commit appended to its Progress | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/37a5ef9021634ea8c01a85415e013cd737c189c7794d3d5c06999a7a54603369.jsonl.gz)) |
 | 389 | change `uvmurzwk` | Record verification results: H1's benchmark comparison fails on a stale recording (VF-014) | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) ([log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz)) |
 | 390 | change `vmlkxxup` | Merge the four foundations streams: heap, summaries, observations and alignment | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) ([log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)), [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
-| 391 | change `yrvvnkqy` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
-| 392 | change `usumnkyr` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
-| 393 | change `vrznnltv` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 391 | change `vyqypuwx` | Foundations Progress: name the streams' commits by change id | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) ([log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)), [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09.jsonl.gz)) |
+| 392 | change `yrvvnkqy` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 393 | change `usumnkyr` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
+| 394 | change `vrznnltv` | Record session traces | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) ([log](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz)) |
 
 ## Logs
 
@@ -615,7 +616,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 22 | 0 | 90.5 MB | `26d304137ac5`, not uploaded |
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 0 | 41.4 MB | `9a4c7376723a`, not uploaded |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 2 | 0 | 0.3 MB | `2031424cb330`, not uploaded |
-| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 5 | 0 | 0.9 MB | `7bd49949a99a`, not uploaded |
+| [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 6 | 0 | 1.4 MB | `84504dad6389`, not uploaded |
 
 ## Session notes
 

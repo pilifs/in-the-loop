@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T12:21:16.525Z",
-  "ended": "2026-11-07T12:44:57.838Z",
-  "duration_seconds": 1421,
+  "ended": "2026-11-07T12:45:56.707Z",
+  "duration_seconds": 1480,
   "stats": {
     "turns": 1,
-    "api_calls": 100,
-    "tool_calls": 105,
+    "api_calls": 105,
+    "tool_calls": 110,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 246550,
+    "peak_context_tokens": 253135,
     "usage": {
-      "input_tokens": 202,
-      "output_tokens": 49843,
-      "cache_read_input_tokens": 15062688,
-      "cache_creation_input_tokens": 233471
+      "input_tokens": 212,
+      "output_tokens": 52980,
+      "cache_read_input_tokens": 16309476,
+      "cache_creation_input_tokens": 240056
     }
   },
   "tools": {
-    "Bash": 94,
+    "Bash": 99,
     "Read": 5,
     "Agent": 4,
     "Edit": 1,
@@ -42,24 +42,24 @@
     {
       "index": 0,
       "started": "2026-11-07T12:21:16.525Z",
-      "ended": "2026-11-07T12:44:57.838Z",
+      "ended": "2026-11-07T12:45:56.707Z",
       "turns": 1,
-      "api_calls": 100,
+      "api_calls": 105,
       "usage": {
-        "input_tokens": 202,
-        "output_tokens": 49843,
-        "cache_read_input_tokens": 15062688,
-        "cache_creation_input_tokens": 233471
+        "input_tokens": 212,
+        "output_tokens": 52980,
+        "cache_read_input_tokens": 16309476,
+        "cache_creation_input_tokens": 240056
       },
-      "peak_context_tokens": 246550
+      "peak_context_tokens": 253135
     }
   ],
   "log": {
-    "sha256": "7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8",
-    "bytes": 2727054,
-    "lines": 784,
-    "gzip_bytes": 500872,
-    "path": "llm-dlc/traces/2df7775c-45a1-40a7-924b-75602d8ad256/logs/7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8.jsonl.gz"
+    "sha256": "84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09",
+    "bytes": 2858637,
+    "lines": 827,
+    "gzip_bytes": 520199,
+    "path": "llm-dlc/traces/2df7775c-45a1-40a7-924b-75602d8ad256/logs/84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09.jsonl.gz"
   },
   "subagents": [
     {
@@ -211,6 +211,14 @@
       "summary": "Merge the four foundations streams: heap, summaries, observations and alignment",
       "body": "The reconcile of llm-dlc/loops/foundations.md. All four streams had stopped with Status: done and nothing deferred by the timebox. Each stream's last turns were recorded on its branch, their logs copied here, and the four branches merged with the default line. The workspaces heap, summaries, observations, alignment and integration were forgotten; their directories stay on disk for the user to delete.\n\nConflicts resolved: equivalence.rs (heap's object inputs, correspondence and identity comparisons against summaries' proof cache, proved helpers and per-callee refinement; summaries' replay_on now carries heap's comparisons), main.rs, examples/tools/build.py, lib/README.md, and the generated examples router (rebuilt with build.py --index-only) and trace files.\n\nThe integration check never ran a test on the combined streams, because every merge from 05:01 on conflicted. The merge found one real disagreement between streams: heap's Domain.may_alias was skipped when empty but had no serde default, so once summaries made Statement deserializable, no result could be stored in the proof cache, and compositional reuse of shop.Pricing#discount in shop.Pricing#total failed. It is fixed with the default.\n\nOther fixes: shared-IR additions threaded through (Outcome.problem filled in effects.rs and the cache's records; Counterexample.differs and .jvm stored by the cache); a proved helper's own check no longer inherits its caller's --correspondence, --nullable and --may-alias; and the canonical claim names those three options outright.\n\nVerified inline: the integration contract (lib/tests/foundations.rs) gives 24 passed, 0 unsupported, 0 failed. The whole Rust suite passes (unit tests and every integration test binary, the conformance cases on a real java among them), and so does every Python suite (verification, llm-dlc/tools, examples/tools, lib/solvers, lib/benchmark).\n\nThe brief's Progress folds the streams' work and lists the 21 jobs they left pending for review. One job came back during the run: heap's H1 benchmark, which failed (VF-014). The next step is Phase 5.\n\nOut of date in the rest of the brief: 'Where it starts from' describes the code before the streams ran. Shared-callee refinement is no longer all or nothing (summaries S5), and objects, nullability and aliasing among inputs are now supported (heap H1-H4).",
       "log_sha256": "7bd49949a99a60b70196cb707059ab5f0bb56a57d3d0ceee7f435930a12829a8"
+    },
+    {
+      "change_id": "vyqypuwxkktustunkpywyvklnvxpqqyn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Foundations Progress: name the streams' commits by change id",
+      "body": "The merge commit's Progress cited the streams' commits by commit id, but sync.py rewrites commit ids when it adds trace lines to earlier commits, and the merge's own trace commit had already done so. Every commit Progress cites is now named by its change id, which stays put, and Progress says why. Checked by resolving each id with jj log.",
+      "log_sha256": "84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09"
     }
   ],
   "logs": {
@@ -236,6 +244,12 @@
       "bytes": 2727054,
       "lines": 784,
       "gzip_bytes": 500872,
+      "url": null
+    },
+    "84504dad63896eeea91e7a0f24b5c2beb8af4a06b0158d9683dba85ac4ee3d09": {
+      "bytes": 2858637,
+      "lines": 827,
+      "gzip_bytes": 520199,
       "url": null
     },
     "bbe2fe3751d5ea61d79acf7dc6487ce96b3a792a0af1fd5ed159287985725aa4": {

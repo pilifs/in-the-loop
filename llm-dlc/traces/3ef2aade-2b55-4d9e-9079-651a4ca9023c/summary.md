@@ -42,6 +42,12 @@ The brief's Progress folds the streams' work and lists the 21 jobs they left pen
 
 Out of date in the rest of the brief: 'Where it starts from' describes the code before the streams ran. Shared-callee refinement is no longer all or nothing (summaries S5), and objects, nullability and aliasing among inputs are now supported (heap H1-H4).
 
+### Foundations Progress: name the streams' commits by change id
+
+change `vyqypuwxkktu` · [log `2031424cb330`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz)
+
+The merge commit's Progress cited the streams' commits by commit id, but sync.py rewrites commit ids when it adds trace lines to earlier commits, and the merge's own trace commit had already done so. Every commit Progress cites is now named by its change id, which stays put, and Progress says why. Checked by resolving each id with jj log.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f.jsonl.gz) has every step in between: reasoning, tool calls and their results.
