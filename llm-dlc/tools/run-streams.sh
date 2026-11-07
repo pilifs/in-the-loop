@@ -73,7 +73,8 @@
 # was made with, so if this one keeps fewer than RUN_STREAMS_HISTORY lines
 # (200000) it raises the session's limit and goes on in a new window,
 # streams-NAME, which keeps them; that window stays open with the output after
-# the run, until Enter (RUN_STREAMS_NEW_WINDOW=no keeps it in this pane). And it
+# the run, until Enter. "- new-window: no" in the brief's Loop settings, or
+# RUN_STREAMS_NEW_WINDOW=no (which wins over the brief), keeps it in this pane. And it
 # shows a status bar at the bottom of the pane, refreshed every
 # RUN_STREAMS_STATUS_EVERY seconds (15): the run's age and spend, then for each
 # loop its current cycle, its commits, its spend, its state, and how long since
@@ -114,25 +115,41 @@ if [[ "$(realpath "$(jj workspace root --ignore-working-copy --name default 2>/d
   exit 2
 fi
 
+# "- key: value" under a brief's "## Loop settings" heading, as feature-loop.sh reads it.
+setting() {
+  awk -v key="$2" '
+    /^## / { inside = ($0 ~ /^## +Loop settings[[:space:]]*$/); next }
+    inside && match($0, "^[-*] +" key ": *") { v = substr($0, RLENGTH + 1); gsub(/[`[:space:]]/, "", v); print v; exit }
+  ' "$1"
+}
+
 # tmux: scrollback and the status bar (see the header).
 PANE=
 HISTORY=${RUN_STREAMS_HISTORY:-200000}
+# Whether to move to a new window: RUN_STREAMS_NEW_WINDOW, else the brief's "- new-window:", else yes.
+NEW_WINDOW=${RUN_STREAMS_NEW_WINDOW:-$(setting "$BRIEF" new-window)}
+NEW_WINDOW=${NEW_WINDOW:-yes}
+[[ "$NEW_WINDOW" == yes || "$NEW_WINDOW" == no ]] || { log "new-window must be yes or no, not '$NEW_WINDOW'"; exit 2; }
 STATUS_EVERY=${RUN_STREAMS_STATUS_EVERY:-15}
 [[ "$HISTORY" =~ ^[0-9]+$ && "$STATUS_EVERY" =~ ^[1-9][0-9]*$ ]] || usage
 if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]] && command -v tmux >/dev/null; then
   tmux set-option -t "$TMUX_PANE" mouse on >/dev/null 2>&1
   have=$(tmux display-message -p -t "$TMUX_PANE" '#{history_limit}' 2>/dev/null)
-  if [[ "$have" =~ ^[0-9]+$ ]] && (( have < HISTORY )) && [[ "${RUN_STREAMS_NEW_WINDOW:-yes}" != no ]]; then
+  if [[ "$have" =~ ^[0-9]+$ ]] && (( have < HISTORY )) && [[ "$NEW_WINDOW" != no ]]; then
     tmux set-option -t "$TMUX_PANE" history-limit "$HISTORY" >/dev/null 2>&1
     passed=()
     while IFS= read -r kv; do passed+=(-e "$kv"); done < <(env | grep -E '^((RUN_STREAMS|FEATURE_LOOP|VERIFICATION_LOOP)_[A-Z_]*|CLAUDE_CONFIG_DIR)=')
-    if tmux new-window -n "streams-$NAME" -c "$ROOT" "${passed[@]}" -e RUN_STREAMS_NEW_WINDOW=no \
+    if tmux new-window -n "streams-$NAME" -c "$ROOT" "${passed[@]}" -e RUN_STREAMS_NEW_WINDOW=no -e RUN_STREAMS_IN_WINDOW=1 \
         bash -c '"$0" "$1"; code=$?; printf "\nrun-streams.sh %s ended with status %s. Scroll back with the mouse wheel or Ctrl-b [; press Enter to close this window.\n" "$1" "$code"; read -r' \
         "$ROOT/llm-dlc/tools/run-streams.sh" "$NAME"; then
       log "this pane keeps only $have lines of history, so the run goes on in the new tmux window streams-$NAME, which keeps $HISTORY"
       exit 0
     fi
     log "could not open a tmux window: going on here, with $have lines of history"
+  fi
+  if [[ "$have" =~ ^[0-9]+$ ]] && (( have < HISTORY )) && [[ "$NEW_WINDOW" == no && -z "${RUN_STREAMS_IN_WINDOW:-}" ]]; then
+    tmux set-option -t "$TMUX_PANE" history-limit "$HISTORY" >/dev/null 2>&1
+    log "this pane keeps $have lines of history; new panes in this tmux session now keep $HISTORY (new-window is no, so the run stays here)"
   fi
   PANE=$TMUX_PANE
   tmux set-option -p -t "$PANE" pane-border-status bottom >/dev/null 2>&1
@@ -142,14 +159,6 @@ if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]] && command -v tmux >/dev/null; th
 else
   log "not in tmux: no status bar, and scrollback is the terminal's; run it inside tmux (tmux new -s streams) for both"
 fi
-
-# "- key: value" under a brief's "## Loop settings" heading, as feature-loop.sh reads it.
-setting() {
-  awk -v key="$2" '
-    /^## / { inside = ($0 ~ /^## +Loop settings[[:space:]]*$/); next }
-    inside && match($0, "^[-*] +" key ": *") { v = substr($0, RLENGTH + 1); gsub(/[`[:space:]]/, "", v); print v; exit }
-  ' "$1"
-}
 project_dir() { printf '%s/%s' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects" "$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"; }
 
 PARENT=
@@ -354,7 +363,7 @@ integrate_once() {
 integrate() {
   local last= heads
   mkdir -p "$(dirname "$INTEGRATION_REPORT")"
-  while :; do
+  while kill -0 "$MAIN" 2>/dev/null; do
     heads=$(stream_heads)
     if [[ "$heads" != "$last" ]]; then
       integrate_once "$heads"
@@ -372,6 +381,7 @@ integrate() {
 # SIGINT, and a loop could neither be stopped by it nor record it.
 set -m
 declare -A PID
+MAIN=$$  # the background loops below end when this script is gone
 VERIFY=
 INTEGRATE=
 STATUS=
@@ -381,7 +391,7 @@ stop_all() {
   [[ -n "$INTEGRATE" ]] && kill -TERM -- "-$INTEGRATE" 2>/dev/null
   [[ -n "$STATUS" ]] && kill -TERM -- "-$STATUS" 2>/dev/null
 }
-trap 'stop_all; wait; exit 130' INT TERM
+trap 'stop_all; wait; exit 130' INT TERM HUP
 
 # One already running for this repo: a bash running the script, which works from the repo's root.
 verification_running() {
@@ -420,7 +430,7 @@ show_status() {
 status_bar() {
   local every=900 logged=0 now
   [[ -n "$PANE" ]] && every=1800
-  while :; do
+  while kill -0 "$MAIN" 2>/dev/null; do
     now=$(date +%s)
     if (( now - logged >= every )); then show_status log; logged=$now; else show_status; fi
     sleep "$STATUS_EVERY"

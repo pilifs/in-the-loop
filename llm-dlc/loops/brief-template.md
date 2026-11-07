@@ -113,6 +113,8 @@ Settled by the user on DATE, numbered.
 - fork: SESSION (streams only: the planning session)
 - integration: SCRIPT (optional, main brief of streams: the integration check)
 - verification: separate (optional: see Verification mode)
+- new-window: no (optional, main brief of streams: run-streams.sh stays in its tmux pane instead of moving to a new
+  window with a long history; RUN_STREAMS_NEW_WINDOW overrides it)
 
 ## Loop until
 

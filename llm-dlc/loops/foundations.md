@@ -254,7 +254,10 @@ closes any gaps with `examples/tools/build.py --render-only`.
 for [`engine-priorities`](engine-priorities.md#streams): it compacts the planning session once, adds the four
 workspaces from the latest commit, runs the streams side by side with the integration check, then this brief's own
 loop. It starts no verification loop (`- verification: separate`). Four loops at 3.5 GB each, and the integration
-check's 3.5 GB, leave about 25 GB of this machine's 46 GB for a verification loop the user may run apart.
+check's 3.5 GB, leave about 25 GB of this machine's 46 GB for a verification loop the user may run apart. It stays in the pane it was started in
+(`- new-window: no`), with the status bar at the bottom of that pane and the mouse turned on for scrolling. A pane
+keeps the history limit it was made with, so start it in a pane made after `tmux set -g history-limit 200000` (or
+with that line in `~/.tmux.conf`), or the pane scrolls back only tmux's default 2000 lines.
 
 **Stopped and finished are different.** A stream's scope going inactive means only that its process stopped. It is
 finished only when its status says `done` or `blocked`. No status here says `waiting on jobs`: no loop stops to wait
@@ -497,6 +500,7 @@ annotations or configuration, which S1 adds.
 - effort: high
 - integration: llm-dlc/tools/foundations-integration.sh
 - verification: separate
+- new-window: no
 
 ## Loop until
 
