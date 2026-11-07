@@ -176,5 +176,38 @@ class ScoringMappings(unittest.TestCase):
         self.assertEqual(self.outcome({"kind": "result", "relation": "equal", "decide": "infer"}, self.mapping([], result=("widened", ["previous == result"], True))), "wrong")
 
 
+class ScoringProofs(unittest.TestCase):
+    """Step A3's second half: what the proofs settled for an example's pair, against its verdict."""
+
+    TABLE = {"before_target": "p.Old#f", "before_arguments": "this.base, n", "results_agree_when": "previous == (result > 0)"}
+    OTHER = {"before_target": "p.Old#f", "before_arguments": "n, this.base", "results_agree_when": "previous == (result > 0)"}
+
+    def report(self, settled, proposals=(TABLE, OTHER)):
+        return {"mappings": [{"before": "p.Old#f", "after": "p.New#f", "proposals": [{"flags": f} for f in proposals]}],
+                "proofs": [{"before": "p.Old#f", "after": "p.New#f", "attempts": [{}] * len(proposals), "settled": settled, "summary": ""}]}
+
+    def score(self, settled, verdict="verified", proposals=(TABLE, OTHER)):
+        entry = dict(ENTRY, verdict=verdict)
+        outcome, _, accepted = A.score_proof(entry, EXAMPLE, self.report(settled, proposals))
+        return outcome, accepted
+
+    def test_the_table_s_mapping_proved_is_found(self):
+        self.assertEqual(self.score({"outcome": "proved", "proposal": 0, "equivalent": []}), ("found", False))
+        self.assertEqual(self.score({"outcome": "proved", "proposal": 1, "equivalent": [0]}), ("found", False), "collapsed with the table's")
+
+    def test_another_mapping_proved_is_wrong_and_accepted(self):
+        self.assertEqual(self.score({"outcome": "proved", "proposal": 1, "equivalent": []}), ("wrong", True))
+
+    def test_a_violation_is_found_only_when_nothing_proves(self):
+        self.assertEqual(self.score({"outcome": "none-proved"}, verdict="violation"), ("found", False))
+        self.assertEqual(self.score({"outcome": "proved", "proposal": 0, "equivalent": []}, verdict="violation"), ("wrong", True))
+        self.assertEqual(self.score({"outcome": "asked", "proved": [0, 1]}, verdict="violation"), ("wrong", True))
+
+    def test_a_verified_example_with_nothing_proved_is_missed_and_a_question_asked(self):
+        self.assertEqual(self.score({"outcome": "none-proved"}), ("missed", False))
+        self.assertEqual(self.score({"outcome": "asked", "proved": [0, 1]}), ("asked", False))
+        self.assertEqual(A.score_proof(ENTRY, EXAMPLE, {"mappings": [], "proofs": []})[0], "missed")
+
+
 if __name__ == "__main__":
     unittest.main()

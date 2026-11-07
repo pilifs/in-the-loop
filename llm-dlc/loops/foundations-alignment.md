@@ -231,10 +231,42 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
       gets no mapping, while the heap part checks it under the same correspondence.
 - Shared files changed: `lib/README.md` (the `align` paragraph and the module sentence); `lib/tests/alignment.rs`
   (the A4 tests).
-- Next: A3's second half. Each proposal is checked by the existing regression proof (`align` calling `equivalence`
-  as a caller, a quick job over 121–139), with collapse by proof, vacuity, and the outcome rules: one proved gives
-  evidence for its claim key, the intent still proposed; several ask; none give the counterexamples. Then the rest of
-  A4, and A5.
+- **A3's second half, code done** (2026-11-07), its score pending job `20261107-053806-alignment-a3-second-half-every-proposal`
+  (quick, priority 10): `align --prove [--subject S] [--unchanged-unless E] [--engine …] [--gaps …] [--unwind N]`
+  (`lib/src/alignment/proofs.rs`) runs `equivalence::run` as a caller on every complete mapping of a pair, with the
+  flags it amounts to.
+  - A vacuous proof counts as none (evidence unknown). A proposal with field equations isn't tried: they have no
+    flag form, and their proof is the heap stream's.
+  - **Collapse by proof:** proved mappings with the same result relation are one candidate. Each makes the old
+    version's observations a function of the new one's on every input of the claim, so the two give the old version
+    the same observations. That is observational equivalence, which is what the review's rationale asks for;
+    "the same old-side value", as the brief has it, is stronger. The first by rank stands for them, the others are
+    named in its `why` and left out of the hints.
+  - **Outcomes:** one proved: evidence `proved` for its claim key, intent still proposed. For a standalone method the
+    note says the relation is proved and whether it is the intended one is unconfirmed; for a changed result, that
+    approving it is a person's decision. Several relations proved: a question. None: each mapping tried, with its
+    counterexample or why it has no verdict. The hints carry each proposal's evidence (refuted ones with their
+    witness).
+  - **The claim key is provisional:** `whole-builds:sha256:` over the tool's binary, every class file of both
+    builds, the pair, the flags and the settings, so any change to either build makes it stale. For the reconcile
+    loop: replace it with `spec::cache::key` once the summaries stream's canonical key exists.
+  - **Tests:** 5 more in `lib/tests/alignment.rs`, by the own checker on methods of one line each (22 pass, 3 s):
+    - the offset defect is refuted, and no mapping hides it;
+    - of a question on type alone, the proof keeps the one mapping that holds, and the rest are refuted;
+    - a sum's two orders are both proved and collapse into one candidate;
+    - a changed result with two relations proved is a question;
+    - the outcome rules on made-up attempts: vacuous counts as none, and a changed result's proof is still a
+      person's decision.
+
+    4 more in `test_alignment.py` for the proof scoring (23 OK). The static scores are unchanged, re-recorded under
+    the new tool's hash. The full cargo suite passes. The integration contract on this branch: 2 passed, 22
+    unsupported, 0 failed.
+  - **The job** runs `alignment.py score --step proofs --record` on 121–139, under each example's scope and proof
+    options. It should give 10 verified examples found (the table's mapping proved; for 123 still a person's
+    decision), 9 violations found (none proved, counterexamples shown), and nothing wrong and accepted.
+- Shared files changed: `lib/src/main.rs` (`align --prove` and its proof options); `lib/README.md` (the `align`
+  example and the module sentence); `lib/tests/alignment.rs` (the proof tests).
+- Next: read the job's result if it comes back within 15 minutes and record it. Then the rest of A4, and A5.
 - Status: working
 
 ## Loop settings

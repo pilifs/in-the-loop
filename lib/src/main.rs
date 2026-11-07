@@ -184,8 +184,8 @@ enum Command {
     /// Propose which method of a new build corresponds to each method of an old one that changed or is gone,
     /// statically, from names, descriptors, body shapes and callers: ranked candidates, each with what ties it to the
     /// old method. Then, for each pair, how its arguments, records and result relate, under the preservation
-    /// contract: an input it fixes is mapped to itself and nothing else. Proves nothing; --hints writes them to a
-    /// hints file as proposed, their evidence unchecked.
+    /// contract: an input it fixes is mapped to itself and nothing else. Proves nothing unless --prove; --hints
+    /// writes them to a hints file as proposed, their evidence unchecked or what --prove showed.
     Align {
         /// The old build's class files.
         #[arg(long)]
@@ -201,6 +201,40 @@ enum Command {
         /// whose subject it names; every other pair is mapped under the contract its two signatures imply.
         #[arg(long)]
         contract: Option<PathBuf>,
+        /// Check every complete mapping by the regression proof (`jvmcontract equivalence` with the flags it amounts
+        /// to), collapse the proved ones that the contract can't tell apart, and settle each pair: one proved
+        /// (evidence for its claim key, intent still proposed), several (a question), or none (each tried, with its
+        /// counterexample). Runs proofs: queue it as a verification job.
+        #[arg(long)]
+        prove: bool,
+        /// With --prove, only the pairs whose new method is this one (`pkg.Class#method`).
+        #[arg(long)]
+        subject: Option<String>,
+        /// With --prove, the inputs the change is declared to affect, as `equivalence --unchanged-unless` takes them:
+        /// a person's decision, part of every proof's claim.
+        #[arg(long = "unchanged-unless")]
+        unchanged_unless: Option<String>,
+        /// With --prove: the checker (`jbmc`, `native` or `auto`), as for `equivalence`.
+        #[arg(long, default_value = "jbmc")]
+        engine: String,
+        /// With --prove: the own checker's gap mode, `strict` or `assume`, as for `equivalence`.
+        #[arg(long, default_value = "strict")]
+        gaps: String,
+        /// With --prove: the loop unwinding bound.
+        #[arg(long, default_value_t = 16)]
+        unwind: u32,
+        /// With --prove: the longest array an array parameter is given.
+        #[arg(long, default_value_t = 8)]
+        max_array_length: u32,
+        /// With --prove: the seconds each proof may take.
+        #[arg(long, default_value_t = 600)]
+        timeout: u64,
+        /// With --prove: the `jbmc` executable.
+        #[arg(long, default_value = "jbmc")]
+        jbmc: String,
+        /// With --prove: a working directory for the proofs, one subdirectory each (temporary ones by default).
+        #[arg(long)]
+        work: Option<PathBuf>,
         /// Print the report as JSON.
         #[arg(long)]
         json: bool,
@@ -809,18 +843,29 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(if checked.ok() { 0 } else { 1 })
         }
-        Command::Align { before, after, hints, contract, json } => {
+        Command::Align { before, after, hints, contract, prove, subject, unchanged_unless, engine, gaps, unwind, max_array_length, timeout, jbmc, work, json } => {
             let contract: Option<jvmcontract::spec::PreservationContract> = match contract {
                 Some(path) => Some(serde_json::from_str(&std::fs::read_to_string(&path)?).map_err(|e| Error::new(format!("{}: not a preservation contract: {e}", path.display())))?),
                 None => None,
             };
-            let (before, after) = (jvmcontract::alignment::Build::load(&before)?, jvmcontract::alignment::Build::load(&after)?);
-            let alignment = jvmcontract::alignment::align(&before, &after, contract.as_ref());
+            let (before_dir, after_dir) = (before, after);
+            let (before, after) = (jvmcontract::alignment::Build::load(&before_dir)?, jvmcontract::alignment::Build::load(&after_dir)?);
+            let mut alignment = jvmcontract::alignment::align(&before, &after, contract.as_ref());
+            if prove {
+                let gaps: jvmcontract::bmc::gaps::GapMode = gaps.parse()?;
+                if gaps == jvmcontract::bmc::gaps::GapMode::Advised {
+                    return Err(Error::new("align --prove takes --gaps strict or assume: advised stops before solving, with contracts to write"));
+                }
+                let settings = jvmcontract::alignment::proofs::Settings { engine: engine.parse()?, gaps, unwind, max_array_length, timeout_seconds: timeout, jbmc, unchanged_unless, work };
+                let subject = subject.or_else(|| contract.as_ref().map(|c| c.subject.clone()));
+                jvmcontract::alignment::prove(&mut alignment, &before_dir, &after_dir, subject.as_deref(), &settings)?;
+            }
             if json {
                 println!("{}", serde_json::to_string_pretty(&alignment).map_err(|e| Error::new(e.to_string()))?);
             } else {
                 print!("{}", jvmcontract::alignment::render(&alignment.methods));
                 print!("{}", jvmcontract::alignment::mappings::render(&alignment.mappings));
+                print!("{}", jvmcontract::alignment::proofs::render(&alignment.proofs));
             }
             if let Some(path) = hints {
                 let merged = jvmcontract::alignment::merge_hints(jvmcontract::alignment::read_hints(&path)?, jvmcontract::alignment::hints(&alignment));

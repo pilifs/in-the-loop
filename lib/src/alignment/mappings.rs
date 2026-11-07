@@ -28,8 +28,8 @@
 //! component is one the old version doesn't have); or a changed meaning, a `boolean` against a comparison of the new
 //! integral result with zero, which is a person's decision: it is put as a question, every candidate listed.
 //!
-//! **Collapse.** Candidates that are the same expression (up to spacing) are one. Collapsing candidates that differ
-//! in form but give every external input the same old-side value needs a proof, and is the regression check's.
+//! **Collapse.** Candidates that are the same expression (up to spacing) are one. Candidates that differ in form are
+//! collapsed only by proof, when `align --prove` checks them ([`super::proofs`]).
 //!
 //! **Accounting.** Every observation the old version is held to is listed with how the mapping compares it; a
 //! mapping can't remove one, and one whose relation is a person's decision stays unresolved until approved.
@@ -39,6 +39,7 @@ use std::collections::BTreeSet;
 use serde::{Deserialize, Serialize};
 
 use super::fields::{self, FieldCorrespondence};
+use super::proofs::{MappingProof, Settled};
 use super::{symbol, Build, Change, MethodReport, HINTS_VERSION};
 use crate::classfile::{ClassFile, Method, Type};
 use crate::spec::{Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, Observation, PreservationContract, Source};
@@ -665,10 +666,24 @@ pub fn mappings(before: &Build, after: &Build, report: &MethodReport, contract: 
 /// The mappings as hints: for each pair whose mapping isn't the tool's default, one correspondence per complete
 /// proposal, ranked where there are several, each inferred, proposed and unchecked.
 pub fn mapping_hints(mappings: &[Mapping]) -> Hints {
+    checked_hints(mappings, &[])
+}
+
+/// The mappings as hints, with what their proofs showed ([`super::proofs`]): each proved, refuted or unknown proposal
+/// with its evidence, its intent still proposed, and the proposals a proof collapsed into another left out, named in
+/// that one's `why`. A pair with no proof is as [`mapping_hints`] writes it.
+pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
     let mut entries = Vec::new();
     for m in mappings.iter().filter(|m| !m.is_default()) {
-        let alone = m.proposals.len() == 1;
-        for (i, p) in m.proposals.iter().enumerate() {
+        let proof = proofs.iter().find(|p| p.before == m.before && p.after == m.after);
+        let collapsed: Vec<usize> = match proof.map(|p| &p.settled) {
+            Some(Settled::Proved { equivalent, .. }) => equivalent.clone(),
+            _ => Vec::new(),
+        };
+        let kept: Vec<usize> = (0..m.proposals.len()).filter(|i| !collapsed.contains(i)).collect();
+        let alone = kept.len() == 1;
+        for (place, &i) in kept.iter().enumerate() {
+            let p = &m.proposals[i];
             let mut correspondence = Correspondence::from_flags(&m.old_inputs(), Some(&p.arguments), p.relation.as_deref());
             // An object related field by field: its fields' equations in place of its own.
             correspondence.inputs = m
@@ -716,13 +731,26 @@ pub fn mapping_hints(mappings: &[Mapping]) -> Hints {
             if !p.fields.is_empty() {
                 why.push("the field equations have no flag form: they are stated in the correspondence only".into());
             }
+            let mut evidence = Evidence::Unchecked;
+            if let Some(proof) = proof {
+                if let Some(a) = proof.attempts.iter().find(|a| a.proposal == i) {
+                    evidence = a.evidence.clone();
+                }
+                if let Settled::Proved { proposal, equivalent, .. } = &proof.settled {
+                    if *proposal == i && !equivalent.is_empty() {
+                        let others: Vec<String> = equivalent.iter().map(|&e| m.proposals[e].arguments.join(", ")).collect();
+                        why.push(format!("proved, as were these, which give the old version the same observations on every input of the claim and so are one candidate with it: {}", others.join("; ")));
+                    }
+                }
+                why.push(format!("outcome: {}", proof.summary));
+            }
             entries.push(Hint {
                 subject: m.after.clone(),
                 content: HintContent::Correspondence { correspondence },
                 source: Source::Inferred,
                 intent: Intent::Proposed,
-                evidence: Evidence::Unchecked,
-                rank: (!alone).then_some(i as u32 + 1),
+                evidence,
+                rank: (!alone).then_some(place as u32 + 1),
                 why,
             });
         }

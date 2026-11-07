@@ -14,6 +14,7 @@ inference may propose). Every later step of alignment inference is scored agains
   python3 examples/tools/alignment.py render              # rewrite the table in alignment/README.md
   python3 examples/tools/alignment.py score               # run `jvmcontract align` on every example and score it
   python3 examples/tools/alignment.py score --record      # and keep the score in alignment/scores/, for the page
+  python3 examples/tools/alignment.py score --step proofs --record   # each proposal proved (a verification job)
 
 What each field means is in alignment/README.md.
 """
@@ -221,10 +222,17 @@ def short(symbol):
     return f"`{head.rsplit('.', 1)[-1]}#{tail}`"
 
 
-def align(before, after):
+def align(before, after, prove=None):
+    """`jvmcontract align` on two class directories; with `prove`, an example, also `--prove` for its subject, under
+    the scope and the proof options build.py gives the example's own proof."""
     sys.path.insert(0, str(HERE))
     import build
-    out = subprocess.run([str(build.jvmcontract()), "align", "--before", str(before), "--after", str(after), "--json"],
+    extra = []
+    if prove is not None:
+        extra = ["--prove", "--subject", prove["subject"]["symbol"]] + build.proof_options(prove)
+        if prove["change"].get("intendedInputs"):
+            extra += ["--unchanged-unless", prove["change"]["intendedInputs"]]
+    out = subprocess.run([str(build.jvmcontract()), "align", "--before", str(before), "--after", str(after), "--json", *extra],
                          capture_output=True, text=True, check=True)
     return json.loads(out.stdout)
 
@@ -335,6 +343,51 @@ def score_mappings(truth, reports=None):
     return rows
 
 
+def find_proof(entry, report):
+    old, new = entry["before"]["symbol"], entry["after"]["symbol"]
+    return next((p for p in report.get("proofs", []) if bare(p["before"]) == old and bare(p["after"]) == new), None)
+
+
+def squash(flags):
+    return {k: "".join(v.split()) for k, v in flags.items() if v}
+
+
+def score_proof(entry, example, report):
+    """Step A3's second half for an example: what the proofs settled for its pair, against the example's verdict.
+    A verified example's hand-written mapping should be the one proved (found), or among a question's (asked); a
+    violation should leave no mapping proved, its counterexamples shown (found). A proved mapping that is not the
+    table's, or any proved mapping of a violation, is wrong, and since a proof accepted it, wrong and accepted.
+    Returns (outcome, what was settled, accepted wrongly)."""
+    proof, mapping = find_proof(entry, report), find_mapping(entry, report)
+    if proof is None or mapping is None:
+        return "missed", "no proof: no complete mapping for the pair", False
+    want = squash({FLAG_NAMES[k]: v for k, v in flags_of(example).items()})
+    flags = lambda i: squash(mapping["proposals"][i]["flags"])
+    settled, verified = proof["settled"], entry["verdict"] == "verified"
+    tried = len(proof["attempts"])
+    if settled["outcome"] == "none-proved":
+        return ("missed" if verified else "found"), f"none of {tried} proved", False
+    if settled["outcome"] == "asked":
+        shown = " | ".join(json.dumps(mapping["proposals"][i]["flags"]) for i in settled["proved"])
+        same = any(flags(i) == want for i in settled["proved"])
+        return ("asked" if verified and same else "wrong"), f"a question, {len(settled['proved'])} proved of {tried}: {shown}", not verified
+    group = [settled["proposal"]] + settled["equivalent"]
+    right = verified and any(flags(i) == want for i in group)
+    note = f"; {settled['note']}" if settled.get("note") else ""
+    collapsed = f", {len(settled['equivalent'])} equivalent collapsed" if settled["equivalent"] else ""
+    return ("found" if right else "wrong"), f"#{settled['proposal'] + 1} of {tried} proved{collapsed}: {json.dumps(mapping['proposals'][settled['proposal']]['flags'])}{note}", not right
+
+
+def score_proofs(truth, reports):
+    rows = []
+    for entry in truth["examples"]:
+        outcome, settled, accepted = score_proof(entry, example_json(entry["example"]), reports[entry["example"]])
+        rows.append({"example": entry["example"], "part": f"proof, {entry['verdict']}", "table": json.dumps(flags_of(example_json(entry["example"]))),
+                     "outcome": outcome, "proposed": settled, "accepted": accepted,
+                     "summary": (find_proof(entry, reports[entry["example"]]) or {}).get("summary", "")})
+    return rows
+
+
 FLAG_NAMES = {"previousSymbol": "before_target", "previousArguments": "before_arguments", "resultsAgreeWhen": "results_agree_when"}
 
 
@@ -363,7 +416,7 @@ def record(step, rows, flags=None):
     tool = hashlib.sha256(Path(build.jvmcontract()).read_bytes()).hexdigest()
     SCORES.mkdir(exist_ok=True)
     out = {"step": step, "date": datetime.date.today().isoformat(), "tool": f"sha256:{tool}",
-           "wrongAndAccepted": [], "counts": tally(rows), "rows": rows}
+           "wrongAndAccepted": [r["example"] for r in rows if r.get("accepted")], "counts": tally(rows), "rows": rows}
     if flags is not None:
         out["flags"] = flags
     (SCORES / f"{step}.json").write_text(json.dumps(out, indent=2) + "\n")
@@ -469,12 +522,25 @@ def main(argv=None):
     sub.add_parser("render")
     sc = sub.add_parser("score")
     sc.add_argument("--record", action="store_true", help="keep the score in alignment/scores/ and rewrite the page")
-    sc.add_argument("--step", choices=("methods", "mappings", "all"), default="all",
-                    help="methods (A2), mappings (A3: the input, new-input and result parts), or both (the default)")
+    sc.add_argument("--step", choices=("methods", "mappings", "proofs", "all"), default="all",
+                    help="methods (A2), mappings (A3: the input, new-input and result parts), both (all, the default), or "
+                         "proofs (A3's second half: each example's proposals proved; runs proofs, so run it as a job)")
     args = p.parse_args(argv)
     truth = load()
     if args.command == "score":
-        reports = {e["example"]: align(*versions(example_json(e["example"]))) for e in truth["examples"]}
+        examples = {e["example"]: example_json(e["example"]) for e in truth["examples"]}
+        prove = args.step == "proofs"
+        reports = {k: align(*versions(ex), prove=ex if prove else None) for k, ex in examples.items()}
+        if prove:
+            rows = score_proofs(truth, reports)
+            print("A3-proofs:")
+            print_scores(rows)
+            for r in rows:
+                print(f"  {r['example']}: {r['summary']}")
+            if args.record:
+                record("A3-proofs", rows)
+                PAGE.write_text(render(truth))
+            return 0
         for step, name, score in (("methods", "A2-methods", score_methods), ("mappings", "A3-mappings", score_mappings)):
             if args.step in (step, "all"):
                 rows = score(truth, reports)

@@ -76,6 +76,12 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 # --hints writes them to a hints file as proposed, their evidence unchecked, keeping every hint a person stated or
 # approved. Proves nothing.
 jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json
+# --prove checks each complete mapping by the regression proof (equivalence with the flags it amounts to, under
+# --engine, --unwind and the scope --unchanged-unless): proved mappings the contract can't tell apart are one
+# candidate; one proved gets evidence "proved for claim key K", its intent still proposed (for a standalone method,
+# the relation holds and whether it is the intended one is unconfirmed); several are a question; none lists each
+# mapping tried with its counterexample. A vacuous proof counts as none. Runs proofs: queue it as a job.
+jvmcontract align --before base/classes --after head/classes --prove --subject 'net.example.Expiry#remaining' --hints build/alignment-hints.json
 
 # A property of one method, proved over every input, or refuted with a witness.
 jvmcontract prove 'net.example.Backoff#delayMillis' --classes build/classes/java/main \
@@ -308,7 +314,8 @@ digests. `Statement` carries them in its optional `spec` field. Each of the loop
 four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`, `align.rs`), which returns a named
 `Unsupported` until that stream implements it; `tests/foundations.rs` checks every part against the joint example in
 `tests/fixtures/foundations/`. Method correspondence and the argument, record and result
-mappings (`align`, `src/alignment.rs` and `src/alignment/mappings.rs`) are scored against the hand-written mappings of
+mappings (`align`, `src/alignment.rs` and `src/alignment/mappings.rs`), and what their proofs settle
+(`src/alignment/proofs.rs`), are scored against the hand-written mappings of
 the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md); field correspondence
 (`src/alignment/fields.rs`), which none of them needs, is checked on the joint example, through `align.rs`.
 

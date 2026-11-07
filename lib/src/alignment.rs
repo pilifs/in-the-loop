@@ -32,6 +32,7 @@ use crate::spec::{Evidence, Hint, HintContent, Hints, Intent, Source};
 use crate::Error;
 
 pub mod fields;
+pub mod proofs;
 pub mod mappings;
 pub use mappings::{mapping_hints, mappings, Mapping};
 
@@ -457,6 +458,9 @@ pub struct Alignment {
     #[serde(flatten)]
     pub methods: MethodReport,
     pub mappings: Vec<Mapping>,
+    /// What the regression proofs showed, for the pairs `--prove` checked ([`proofs`]); none for a static run.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub proofs: Vec<proofs::MappingProof>,
 }
 
 /// Aligns two builds: their methods, then each pair's mapping, under `contract` for the pair it names (every other
@@ -464,13 +468,23 @@ pub struct Alignment {
 pub fn align(before: &Build, after: &Build, contract: Option<&crate::spec::PreservationContract>) -> Alignment {
     let report = methods(before, after);
     let mappings = mappings::mappings(before, after, &report, contract);
-    Alignment { methods: report, mappings }
+    Alignment { methods: report, mappings, proofs: Vec::new() }
+}
+
+/// Checks the proposals of the pairs whose new method is `subject` (every pair when `None`) by the regression proof,
+/// between the class directories `before` and `after` the alignment was made from ([`proofs`]). A pair with no
+/// complete mapping has nothing to prove.
+pub fn prove(alignment: &mut Alignment, before: &Path, after: &Path, subject: Option<&str>, settings: &proofs::Settings) -> Result<(), Error> {
+    let keys = proofs::Keys::new(before, after)?;
+    let wanted = |m: &&Mapping| subject.is_none_or(|s| m.after == s || m.after.split('(').next() == Some(s)) && !m.proposals.is_empty();
+    alignment.proofs = alignment.mappings.iter().filter(wanted).map(|m| proofs::prove(before, after, &keys, m, settings)).collect();
+    Ok(())
 }
 
 /// Every hint an alignment proposes: the methods', then the mappings'.
 pub fn hints(alignment: &Alignment) -> Hints {
     let mut out = method_hints(&alignment.methods);
-    out.entries.extend(mapping_hints(&alignment.mappings).entries);
+    out.entries.extend(mappings::checked_hints(&alignment.mappings, &alignment.proofs).entries);
     out
 }
 

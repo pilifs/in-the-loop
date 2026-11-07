@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use jvmcontract::alignment::mappings::{Anchor, Mapping, ResultKind};
+use jvmcontract::alignment::proofs::{self, Attempt, MappingProof, Settings, Settled, Tried};
 use jvmcontract::alignment::{self, Alignment, Basis, Build, Change, MethodReport};
 use jvmcontract::spec::{Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, PreservationContract, Source};
 
@@ -454,4 +455,131 @@ fn a_constructor_that_computes_or_shifts_what_it_stores_is_never_related() {
         assert!(f.unsupported.iter().any(|u| u.contains("cents")), "{name}: the gap is named: {:?}", f.unsupported);
         assert!(correspondences(&alignment::hints(&a), "Q#f").is_empty());
     }
+}
+
+// Step A3's second half: each proposal checked by the regression proof, by the tool's own checker on methods small
+// enough to take well under a second each.
+
+fn proved(name: &str, before: &[(&str, &str)], after: &[(&str, &str)], contract: Option<&PreservationContract>) -> Option<Alignment> {
+    if !has_javac() {
+        return None;
+    }
+    let dir = scratch(name);
+    let (b, a) = (compile(&dir, "before", before), compile(&dir, "after", after));
+    let mut out = alignment::align(&Build::load(&b).unwrap(), &Build::load(&a).unwrap(), contract);
+    let settings = Settings { engine: jvmcontract::Engine::Native, timeout_seconds: 120, ..Settings::default() };
+    alignment::prove(&mut out, &b, &a, None, &settings).unwrap();
+    Some(out)
+}
+
+fn proof<'a>(alignment: &'a Alignment, before: &str) -> &'a MappingProof {
+    alignment.proofs.iter().find(|p| p.before == before).unwrap_or_else(|| panic!("no proof for {before}: {}", proofs::render(&alignment.proofs)))
+}
+
+#[test]
+fn the_offset_defect_is_refuted_and_no_mapping_hides_it() {
+    let before = [("A.java", "public class A { static long price(long c) { return c; } }")];
+    let after = [("A.java", "public class A { static long price(long c) { return c + 1; } }")];
+    let Some(a) = proved("prove-offset", &before, &after, None) else { return };
+    let p = proof(&a, "A#price");
+    assert_eq!(p.settled, Settled::NoneProved, "{}", proofs::render(&a.proofs));
+    assert_eq!(p.attempts.len(), 1, "the anchored input has one mapping, itself");
+    assert!(matches!(p.attempts[0].tried, Tried::Refuted { .. }), "{:?}", p.attempts[0].tried);
+    assert!(matches!(p.attempts[0].evidence, Evidence::Refuted { .. }));
+    assert!(p.summary.contains("no mapping proved") && p.summary.contains("refuted by"), "{}", p.summary);
+}
+
+#[test]
+fn of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds() {
+    let Some(a) = proved(
+        "prove-untied",
+        &[("C.java", "public class C { static long span(long x, long y) { return y - x; } }")],
+        &[("C.java", "public class C { }"), ("P.java", "public record P(long p, long q) { long span() { return q - p; } }")],
+        None,
+    ) else {
+        return;
+    };
+    let (m, p) = (mapping(&a, "C#span"), proof(&a, "C#span"));
+    let Settled::Proved { proposal, equivalent, note } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
+    assert_eq!(m.proposals[*proposal].arguments, ["this.p", "this.q"]);
+    assert!(equivalent.is_empty());
+    assert!(note.as_deref().is_some_and(|n| n.contains("unconfirmed")), "standalone: {note:?}");
+    assert!(p.attempts.iter().filter(|t| t.proposal != *proposal).all(|t| matches!(t.tried, Tried::Refuted { .. })), "{}", proofs::render(&a.proofs));
+    let hints = alignment::hints(&a);
+    let evidence: Vec<&Evidence> = hints.entries.iter().filter(|h| h.subject == "P#span").map(|h| &h.evidence).collect();
+    assert_eq!(evidence.iter().filter(|e| matches!(e, Evidence::Proved { .. })).count(), 1, "{evidence:?}");
+    assert!(hints.entries.iter().filter(|h| h.subject == "P#span").all(|h| h.intent == Intent::Proposed), "a proof sets the evidence, never the intent");
+}
+
+#[test]
+fn mappings_a_proof_cannot_tell_apart_are_one_candidate() {
+    // A sum: the components in either order give the same result, so both mappings are proved, and the contract
+    // can't tell them apart.
+    let Some(a) = proved(
+        "prove-collapse",
+        &[("C.java", "public class C { static long sum(long x, long y) { return x + y; } }")],
+        &[("C.java", "public class C { }"), ("P.java", "public record P(long p, long q) { long sum() { return p + q; } }")],
+        None,
+    ) else {
+        return;
+    };
+    let p = proof(&a, "C#sum");
+    let Settled::Proved { proposal, equivalent, .. } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
+    assert_eq!(equivalent.len(), 1, "{}", proofs::render(&a.proofs));
+    let m = mapping(&a, "C#sum");
+    let mut both = vec![m.proposals[*proposal].arguments.join(", "), m.proposals[equivalent[0]].arguments.join(", ")];
+    both.sort();
+    assert_eq!(both, ["this.p, this.q", "this.q, this.p"]);
+    let hints = alignment::hints(&a);
+    let mine: Vec<&Hint> = hints.entries.iter().filter(|h| h.subject == "P#sum").collect();
+    assert_eq!(mine.len(), m.proposals.len() - 1, "the collapsed one is left out");
+    let kept = mine.iter().find(|h| matches!(h.evidence, Evidence::Proved { .. })).expect("the proved one");
+    assert!(kept.why.iter().any(|w| w.contains("one candidate with it")), "{:?}", kept.why);
+}
+
+#[test]
+fn several_proved_relations_for_a_changed_result_are_a_question() {
+    // The new result is 0 or 1: `result > 0` and `result != 0` both hold, and only a person can say which is meant.
+    let Some(a) = proved(
+        "prove-asked",
+        &[("A.java", "public class A { static boolean positive(int n) { return n > 0; } }")],
+        &[("A.java", "public class A { static int positive(int n) { return n > 0 ? 1 : 0; } }")],
+        None,
+    ) else {
+        return;
+    };
+    let (m, p) = (mapping(&a, "A#positive"), proof(&a, "A#positive"));
+    let Settled::Asked { proved } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
+    let mut relations: Vec<&str> = proved.iter().map(|&i| m.proposals[i].relation.as_deref().unwrap()).collect();
+    relations.sort();
+    assert_eq!(relations, ["previous == (result != 0)", "previous == (result > 0)"], "{}", proofs::render(&a.proofs));
+}
+
+#[test]
+fn the_outcome_rules_count_no_vacuous_proof_and_name_a_person_s_decision() {
+    let Some(a) = aligned(
+        "settle",
+        &[("A.java", "public class A { static boolean expired(long left) { return left <= 0; } }")],
+        &[("A.java", "public class A { static long expired(long left) { return left; } }")],
+        Some(&PreservationContract {
+            subject: "A#expired".into(),
+            inputs: vec![ExternalInput { name: "left".into(), ty: "long".into(), derivation: Derivation::Identity }],
+            required: vec!["result".into(), "exception".into()],
+            approved_changes: Vec::new(),
+        }),
+    ) else {
+        return;
+    };
+    let m = mapping(&a, "A#expired");
+    let attempt = |i: usize, tried: Tried| Attempt { proposal: i, flags: m.proposals[i].flags.clone(), evidence: proofs::evidence(&tried, "k"), tried };
+    let vacuous = Tried::Vacuous { why: "no input reaches the calls".into() };
+    let refuted = Tried::Refuted { input: "expired(left=0)".into(), before: "true".into(), after: "0".into() };
+    let (settled, summary) = proofs::settle(m, &[attempt(0, vacuous.clone()), attempt(1, refuted)]);
+    assert_eq!(settled, Settled::NoneProved);
+    assert!(summary.contains("#1 vacuous") && summary.contains("#2 refuted by expired(left=0)"), "{summary}");
+    assert!(matches!(proofs::evidence(&vacuous, "k"), Evidence::Unknown { .. }), "a vacuous proof is no evidence");
+    let (settled, summary) = proofs::settle(m, &[attempt(0, Tried::Proved), attempt(1, Tried::Unknown { why: "out of time".into() })]);
+    let Settled::Proved { proposal: 0, note: Some(note), .. } = &settled else { panic!("{settled:?}") };
+    assert!(note.contains("a person's decision") && !m.standalone, "{note}");
+    assert!(summary.contains("intent still proposed"), "{summary}");
 }
