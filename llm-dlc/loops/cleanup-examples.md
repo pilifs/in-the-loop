@@ -361,9 +361,26 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   - If it exits 1 on a JBMC or auto run, that is a finding for the jbmc stream, and `results.json` isn't replaced.
 - `ytqpqomo` and `rzmrlklw` (the verification loop's `ed84ffdf`) have no manifest here either: more check errors that
   aren't this branch's.
-- Next: nothing that needs only this stream's work. E2 closes when the comparison passes. VF-002's 147 and 148 are
-  deferred by the timebox, and every other item is closed.
-- Status: waiting on jobs 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm 20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso
+- **E2, VF-014: closed by its check, and the fresh recording applied.** Both jobs passed on `vm-1` and were
+  collected in the default workspace's `lmxwvplz` ("Record verification results for 3 jobs").
+  - `20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm` (at `7315cda2`), 0.2 s: 557 own-checker runs at H1,
+    24 new (the swaps cases), 0 verdicts changed, 0 formulas grown, 0 paths or merges changed, as the inline try
+    gave. H1 changed no verdict, so the 8 of `20261107-041414` came from the stale recording. The verification loop
+    closed VF-014 in `findings.md`.
+  - `20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso` (at `c9995ae1`), 1h37m: no false success or false
+    alarm on any engine, mode or staging policy. `collect` applied both outputs. The new `results.json` has 2829
+    runs, 557 per engine and staging policy (22 for `auto` under full-range and tight), against the old one's 1802
+    (356 and 11).
+  - Its peak was 6.0 GiB, at its 6G limit and a third above the 4.5G estimate. A later full recording should ask for
+    more, say 6G with an 8G limit.
+  - This workspace's `lib/benchmark/results.json` is still the old one. The new one is on the default line, which
+    this branch doesn't touch, so the merge takes it without conflict.
+- This cycle's prompt again named the default workspace's copy of the brief, whose Progress predates this stream.
+  This workspace's copy is the one updated.
+- Next: nothing. E1's VF-016 and VF-017 are closed by their jobs, and VF-002's 149 too. VF-002's 147 and 148 are
+  deferred by the timebox (above, with the finding in `stage_contracts` and what a further attempt costs). E2, E3
+  and E4 are closed.
+- Status: done
 
 ## Loop settings
 

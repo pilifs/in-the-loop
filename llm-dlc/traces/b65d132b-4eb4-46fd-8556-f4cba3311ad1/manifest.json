@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.451Z",
-  "ended": "2026-11-07T18:37:33.286Z",
-  "duration_seconds": 7847,
+  "ended": "2026-11-07T20:25:22.793Z",
+  "duration_seconds": 14316,
   "stats": {
-    "turns": 56,
-    "api_calls": 429,
-    "tool_calls": 438,
-    "tool_errors": 2,
-    "compactions": 11,
+    "turns": 62,
+    "api_calls": 448,
+    "tool_calls": 457,
+    "tool_errors": 3,
+    "compactions": 12,
     "peak_context_tokens": 171947,
     "usage": {
-      "input_tokens": 858,
-      "output_tokens": 260885,
-      "cache_read_input_tokens": 36576459,
-      "cache_creation_input_tokens": 1134791
+      "input_tokens": 896,
+      "output_tokens": 269538,
+      "cache_read_input_tokens": 37514789,
+      "cache_creation_input_tokens": 1218252
     }
   },
   "tools": {
-    "Bash": 400,
-    "Edit": 23,
-    "Read": 14,
+    "Bash": 416,
+    "Edit": 24,
+    "Read": 16,
     "Write": 1
   },
   "files_touched": [
@@ -202,24 +202,38 @@
     {
       "index": 11,
       "started": "2026-11-07T18:35:39.053Z",
-      "ended": "2026-11-07T18:37:33.286Z",
-      "turns": 4,
-      "api_calls": 17,
+      "ended": "2026-11-07T18:37:54.780Z",
+      "turns": 5,
+      "api_calls": 20,
       "usage": {
-        "input_tokens": 34,
-        "output_tokens": 8439,
-        "cache_read_input_tokens": 968063,
-        "cache_creation_input_tokens": 62783
+        "input_tokens": 40,
+        "output_tokens": 9629,
+        "cache_read_input_tokens": 1198809,
+        "cache_creation_input_tokens": 66047
       },
-      "peak_context_tokens": 75862
+      "peak_context_tokens": 79126
+    },
+    {
+      "index": 12,
+      "started": "2026-11-07T18:38:19.512Z",
+      "ended": "2026-11-07T20:25:22.793Z",
+      "turns": 5,
+      "api_calls": 16,
+      "usage": {
+        "input_tokens": 32,
+        "output_tokens": 7463,
+        "cache_read_input_tokens": 707584,
+        "cache_creation_input_tokens": 80197
+      },
+      "peak_context_tokens": 71441
     }
   ],
   "log": {
-    "sha256": "1129ee3fd81499a67b7133183063e48bf9b92db0c4ceb582a2dc0b7386dc5ecb",
-    "bytes": 11976472,
-    "lines": 4480,
-    "gzip_bytes": 2231756,
-    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/1129ee3fd81499a67b7133183063e48bf9b92db0c4ceb582a2dc0b7386dc5ecb.jsonl.gz"
+    "sha256": "219d39b56cb589b598211211e0fbcf2ae3ca03968dce82e44c3103e81665b72f",
+    "bytes": 12714185,
+    "lines": 4708,
+    "gzip_bytes": 2402631,
+    "path": "llm-dlc/traces/b65d132b-4eb4-46fd-8556-f4cba3311ad1/logs/219d39b56cb589b598211211e0fbcf2ae3ca03968dce82e44c3103e81665b72f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -310,6 +324,14 @@
       "summary": "VF-014's fresh lib/benchmark/results.json queued at the current engine, all three engines, after the isolated comparison (verification pending)",
       "body": "Job 20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso records lib/benchmark/results.json and RESULTS.md again at this commit. VF-014 found the committed recording stale: job 20261106-201041 wrote it at 26227917, before the own checker gained class initializers and before H1's conformance cases. The step is 20261106-201041's, unchanged: native, jbmc and auto, under three gap modes and three JBMC staging policies, so the reference keeps every engine's runs. Both files are the job's outputs and replace the committed ones through collect. The default workspace's copies match this commit's sha256, so collect can apply them.\n\nBudget: 2 CPUs, 4.5G with a 6G limit, about 2 h. 201041 peaked at its 4G limit, and the corpus has grown since. submit's warning that no runner can take 6G came from this workspace's base pipeline.toml. The default workspace's pipeline.local.toml allows 14G a job. pipeline.py validate passes.\n\nThe stream now waits on this job and on the comparison job 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm, which closes VF-014. Every other item is closed, or deferred by the timebox (VF-002's 147 and 148). Progress also records two more check errors that aren't this branch's (ytqpqomo, rzmrlklw).",
       "log_sha256": "1129ee3fd81499a67b7133183063e48bf9b92db0c4ceb582a2dc0b7386dc5ecb"
+    },
+    {
+      "change_id": "swopzxzurvsvlzltxooytozynrrtnzss",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-014 closed by the isolated comparison, and the fresh lib/benchmark/results.json applied on the default line: the examples stream is done",
+      "body": "Both of E2's jobs passed and were collected in the default workspace (lmxwvplz). 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm compared H1's own-checker runs with H1's parent's: 557 runs, 24 new (the swaps cases H1 added), 0 verdicts changed, 0 formulas grown, 0 paths or merges changed. So H1 changed no verdict, and the 8 changed verdicts of 20261107-041414 came from the stale recording. The verification loop closed VF-014 in findings.md.\n\n20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso recorded native, jbmc and auto under every mode and staging policy in 1h37m, with no false success or alarm, and collect applied results.json and RESULTS.md: 2829 runs against the old file's 1802. Its 6.0 GiB peak was at its limit, so the Progress suggests a bigger budget for the next full recording. This branch doesn't touch results.json, so the merge takes the new one.\n\nVerified by reading both jobs' reports (pipeline.py report) and the run counts of the applied results.json. Every item is now closed by its check or deferred by the timebox (VF-002's 147 and 148), so the brief's status is done. This cycle's prompt again named the default workspace's copy of the brief, whose Progress predates this stream; this workspace's copy is the one updated.",
+      "log_sha256": "219d39b56cb589b598211211e0fbcf2ae3ca03968dce82e44c3103e81665b72f"
     }
   ],
   "logs": {
@@ -317,6 +339,12 @@
       "bytes": 11976472,
       "lines": 4480,
       "gzip_bytes": 2231756,
+      "url": null
+    },
+    "219d39b56cb589b598211211e0fbcf2ae3ca03968dce82e44c3103e81665b72f": {
+      "bytes": 12714185,
+      "lines": 4708,
+      "gzip_bytes": 2402631,
       "url": null
     },
     "6221a7a7d693ef747963164a6150dc5645da6c24dd8ea255c8aa3b1dec737f7c": {
