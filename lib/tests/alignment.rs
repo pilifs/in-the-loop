@@ -466,6 +466,46 @@ fn a_value_object_the_constructor_makes_is_related_inside_it() {
 }
 
 #[test]
+fn a_field_whose_own_class_changed_shape_is_related_through_that_class() {
+    // `Q` keeps its fields; the `L` it holds changed. The shape compared is deep, so `Q` changed with it.
+    let before = [
+        ("L.java", "final class L { long cents; L(long cents) { this.cents = cents; } }"),
+        ("Q.java", "final class Q { L line; Q(L line) { this.line = line; } static long f(Q q) { return q.line.cents; } }"),
+    ];
+    let after = [
+        ("M.java", "record M(long cents) {}"),
+        ("L.java", "final class L { M amount; int tag; L(long cents) { this.amount = new M(cents); } }"),
+        ("Q.java", "final class Q { L line; Q(L line) { this.line = line; } static long f(Q q) { return q.line.amount.cents(); } }"),
+    ];
+    let Some(a) = aligned("fields-nested-class", &before, &after, None) else { return };
+    let f = mapping(&a, "Q#f");
+    assert!(f.unsupported.is_empty(), "{}", alignment::mappings::render(&a.mappings));
+    assert_eq!(f.inputs[0].anchor, alignment::mappings::Anchor::Internal, "q's class changed inside, so the signatures don't anchor it");
+    let fc = f.inputs[0].fields.as_ref().expect("q is related field by field");
+    assert_eq!(fc.free, vec!["line.tag".to_string()], "the inner class's new field is left free, at its path");
+    assert!(fc.constructors.iter().any(|(o, _)| o.starts_with("L#")), "the inner class's constructors are named: {:?}", fc.constructors);
+    assert_eq!(f.proposals.len(), 1);
+    assert_eq!(f.proposals[0].fields, vec![equation("old.q.line.cents", "new.q.line.amount.cents")]);
+    assert_eq!(correspondences(&alignment::hints(&a), "Q#f"), vec![&Correspondence { inputs: vec![equation("old.q.line.cents", "new.q.line.amount.cents")], outputs: Vec::new() }]);
+    // An inner class that can't be related leaves the outer one unrelated, with the inner gap named.
+    let shifted = [
+        ("L.java", "final class L { long cents; int pad; L(long cents) { this.cents = cents + 1; } }"),
+        ("Q.java", "final class Q { L line; Q(L line) { this.line = line; } static long f(Q q) { return q.line.cents - 1; } }"),
+    ];
+    let Some(a) = aligned("fields-nested-shifted", &before, &shifted, None) else { return };
+    let f = mapping(&a, "Q#f");
+    assert!(f.proposals.is_empty() && f.inputs[0].fields.is_none(), "{}", alignment::mappings::render(&a.mappings));
+    assert!(f.unsupported.iter().any(|u| u.contains("line is set from line") && u.contains("cents")), "{:?}", f.unsupported);
+    // A class that holds its own class is a relation over a chain of objects, not field paths: named, not followed.
+    let chain = |value: &str, set: &str, read: &str| format!("final class N {{ {value}; N next; N(long v, N next) {{ this.{set}; this.next = next; }} static long f(N n) {{ return n.{read}; }} }}");
+    let (old_chain, new_chain) = (chain("long v", "v = v", "v"), chain("M val", "val = new M(v)", "val.v()"));
+    let Some(a) = aligned("fields-chain", &[("N.java", &old_chain)], &[("M.java", "record M(long v) {}"), ("N.java", &new_chain)], None) else { return };
+    let f = mapping(&a, "N#f");
+    assert!(f.proposals.is_empty(), "{}", alignment::mappings::render(&a.mappings));
+    assert!(f.unsupported.iter().any(|u| u.contains("holding its own class")), "{:?}", f.unsupported);
+}
+
+#[test]
 fn a_constructor_that_shifts_what_it_stores_or_stores_a_constant_is_never_related() {
     let before = [("Q.java", "final class Q { long cents; Q(long cents) { this.cents = cents; } static long f(Q q) { return q.cents; } }")];
     // The field-level offset: the stored value is shifted, so `old.q.cents == new.q.cents` would hide it, and

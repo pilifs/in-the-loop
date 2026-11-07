@@ -18,6 +18,13 @@
 //! - An old path set from old parameter `p`, which maps to `q.c` over the new parameters, where the new constructor
 //!   stores `q` at `g`, is the new object's `g.c`. Old paths go inside objects too: an old `new Money(cents)`
 //!   against a new primitive field is `old.amount.cents == new.cents`.
+//! - An old field set from a parameter whose own class changed shape (a `Quote` holding a `Line` whose `cents`
+//!   became `amount.cents`) is related through that class's correspondence, prefixed with where the new
+//!   constructor stores the parameter: `old.q.line.cents == new.q.line.amount.cents`. A candidate is as sure as the
+//!   less sure of its two steps, and the inner class's free fields are free at their paths. Followed to three
+//!   levels; a class holding its own class (`Node next`) would need a relation over a chain of objects, and is
+//!   named, not followed. A class counts as changed when anything it holds changed shape
+//!   (`super::mappings::same_shape` is deep).
 //!
 //! **A method moved into the value object** ([`within`]): when the new method takes an object of the class a field
 //! `g` of the new class holds (`Quote#cents` became `Money#cents`, and the new `Quote` keeps a `Money` in `amount`),
@@ -225,6 +232,21 @@ fn uncast(expression: &str) -> &str {
 /// The field correspondence of the class `name` (internal name), when both builds declare it and its shape changed;
 /// `None` otherwise.
 pub fn correspondence(before: &Build, after: &Build, report: &MethodReport, name: &str) -> Option<FieldCorrespondence> {
+    correspondence_at(before, after, report, name, DEPTH)
+}
+
+/// An old object's field path inside another object's correspondence: `line` and `(int) count` make
+/// `(int) line.count`.
+fn inside(outer: &str, inner: &str) -> String {
+    match inner.strip_prefix('(').and_then(|r| r.split_once(") ")) {
+        Some((t, rest)) => format!("({t}) {outer}.{rest}"),
+        None => format!("{outer}.{inner}"),
+    }
+}
+
+/// [`correspondence`], following a field whose own class changed shape into that class's correspondence, to
+/// `depth` levels.
+fn correspondence_at(before: &Build, after: &Build, report: &MethodReport, name: &str, depth: usize) -> Option<FieldCorrespondence> {
     let (old, new) = (before.classes.get(name)?, after.classes.get(name)?);
     let t = Type::object(name);
     if same_shape(before, after, &t) {
@@ -234,6 +256,8 @@ pub fn correspondence(before: &Build, after: &Build, report: &MethodReport, name
     // Each old path a constructor stores a parameter at, with its candidates, in the order first met.
     let mut candidates: Vec<(String, Vec<Choice>)> = Vec::new();
     let (mut old_other, mut new_stored): (Vec<String>, BTreeSet<String>) = (Vec::new(), BTreeSet::new());
+    // New paths inside a nested object's correspondence that nothing old reaches.
+    let mut nested_free: Vec<String> = Vec::new();
     for ctor in old.methods.iter().filter(|m| m.is_constructor() && !m.is_synthetic()) {
         let before_symbol = symbol(old, ctor);
         let paired = match after.declares(name, "<init>", &ctor.descriptor) {
@@ -265,7 +289,56 @@ pub fn correspondence(before: &Build, after: &Build, report: &MethodReport, name
                     .map(|(n, _)| if n == pname { Choice { expression: n.clone(), score: 3, why: format!("the same name and type: {n}") } } else { Choice { expression: n.clone(), score: 1, why: format!("the same type: {n}") } })
                     .collect()
             } else {
-                out.unsupported.push(format!("{path} is set from {pname}, a {} whose shape changed too: nested field correspondence is not done yet", pty.java_name()));
+                // An object whose own class changed shape: the new parameters of that class, the same name first,
+                // related inside by that class's own correspondence.
+                let inner = match pty.class_name() {
+                    Some(c) if depth > 1 => correspondence_at(before, after, report, c, depth - 1),
+                    _ => None,
+                };
+                let Some(inner) = inner.filter(FieldCorrespondence::complete) else {
+                    let why = match pty.class_name() {
+                        _ if depth <= 1 => "nested more than three levels deep, or holding its own class (a relation over a chain of objects, not field paths): not followed".to_string(),
+                        Some(c) => match correspondence_at(before, after, report, c, depth - 1) {
+                            Some(i) if !i.unsupported.is_empty() => format!("its fields can't all be related: {}", i.unsupported.join("; ")),
+                            Some(_) => "a field of it has no candidate".to_string(),
+                            None => "one build doesn't declare it".to_string(),
+                        },
+                        None => "not a class".to_string(),
+                    };
+                    out.unsupported.push(format!("{path} is set from {pname}, a {} whose shape changed too: {why}", pty.java_name()));
+                    continue;
+                };
+                let outer: Vec<Choice> = rank(
+                    new_params
+                        .iter()
+                        .filter(|(_, u)| u == pty)
+                        .map(|(n, _)| if n == pname { Choice { expression: n.clone(), score: 3, why: format!("the same name and class: {n}") } } else { Choice { expression: n.clone(), score: 1, why: format!("the same class: {n}") } })
+                        .collect(),
+                );
+                if leads(&outer) {
+                    for at in over_paths(&outer[0].expression, &new_params, &new_paths) {
+                        nested_free.extend(inner.free.iter().map(|f| format!("{at}.{f}")));
+                    }
+                }
+                out.constructors.extend(inner.constructors.iter().filter(|c| !out.constructors.contains(c)).cloned().collect::<Vec<_>>());
+                for f in &inner.fields {
+                    let nested = format!("{path}.{}", f.old);
+                    let rewritten: Vec<Choice> = outer
+                        .iter()
+                        .flat_map(|o| f.candidates.iter().map(move |c| (o, c)))
+                        .flat_map(|(o, c)| {
+                            over_paths(&inside(&o.expression, &c.expression), &new_params, &new_paths).into_iter().map(|at| {
+                                let why = format!("{before_symbol} sets {path} from its parameter {pname}; {after_symbol} takes it as {} ({}) and stores it at {}; inside, {} is {} ({})", o.expression, o.why, uncast(&at).split('.').next().unwrap_or_default(), f.old, c.expression, c.why);
+                                // As sure as the less sure of the two steps.
+                                Choice { expression: at, score: o.score.min(c.score), why }
+                            })
+                        })
+                        .collect();
+                    match candidates.iter_mut().find(|(p, _)| *p == nested) {
+                        Some((_, found)) => found.extend(rewritten),
+                        None => candidates.push((nested, rewritten)),
+                    }
+                }
                 continue;
             };
             let rewritten: Vec<Choice> = options
@@ -314,6 +387,8 @@ pub fn correspondence(before: &Build, after: &Build, report: &MethodReport, name
     out.free = fields(new).into_iter().map(|(n, _)| n).filter(|n| !heads.contains(n)).collect();
     // Inside an object the new constructor makes, a path no old one reaches is free too.
     out.free.extend(new_stored.into_iter().filter(|p| p.contains('.') && heads.contains(&head(p)) && !reached.iter().any(|r| r == p || r.starts_with(&format!("{p}.")))));
+    let nested_free: Vec<String> = nested_free.into_iter().filter(|p| !out.free.contains(p) && !reached.contains(p.as_str())).collect();
+    out.free.extend(nested_free);
     Some(out)
 }
 

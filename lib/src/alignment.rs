@@ -12,7 +12,7 @@
 //! a score, and the candidates are ranked by it ([`Candidate::score`]). The first *leads* when it scores at least
 //! [`LEAD`] and is alone or [`LEAD`] ahead of the second. Where none leads, the choice is a person's, not the tool's.
 //!
-//! For each pair matched, [`mappings`] relates the arguments, records and result under the comparison's
+//! For each pair matched, [`mappings`](mod@mappings) relates the arguments, records and result under the comparison's
 //! preservation contract (step A3): anchored inputs fixed to themselves, internal ones and the result proposed from a
 //! small catalogue. An object whose class changed shape is related field by field ([`fields`], step A4), from how
 //! each version's constructors route their parameters into fields.

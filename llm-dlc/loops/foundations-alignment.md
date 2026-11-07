@@ -301,10 +301,29 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - **Score:** unchanged on 121–139, where no class changed shape behind a constructor. Re-recorded under the new
     tool's hash.
 - Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the A4 tests).
+- **A4: nested shapes, done** (2026-11-07), in `lib/src/alignment/fields.rs` and `mappings.rs`:
+  - **A class counts as changed when anything it holds changed.** `same_shape` compared a class's own fields only, so
+    a `Q` holding an `L` whose `cents` became `amount.cents` counted as unchanged. It is now deep: the members' types
+    too, an array's element type, and a class met again on the way (`N next`) taken as the same where it is met. So
+    such a `q` is no longer anchored by the signatures alone, and a result of such a class is no longer `equal`
+    (it is `changed`, a person's decision, until the next item).
+  - **The field is related through its class.** An old field set from a parameter whose own class changed shape is
+    related by that class's correspondence, prefixed with where the new constructor stores the parameter:
+    `old.q.line.cents == new.q.line.amount.cents`. The parameter is matched by class, the same name first. A
+    candidate is as sure as the less sure of its two steps, so a question inside stays a question. The inner class's
+    free fields are free at their paths (`line.tag`), and its constructors are named with the outer one's. An inner
+    class that can't be related leaves the outer field unsupported, with the inner gap named.
+  - **Not followed:** more than three levels, or a class holding its own class (`N next`). That needs a relation over
+    a chain of objects, not field paths. It is named as such and nothing is proposed.
+  - **Tests:** 1 more in `lib/tests/alignment.rs`: nested, with a free inner field; an inner shift that leaves the
+    outer field unrelated; a chain of `N`, named and not followed. All 26 pass, and the whole cargo suite. The
+    integration contract on this branch: 2 passed, 22 unsupported, 0 failed. Also fixed: an ambiguous rustdoc link in
+    `alignment.rs`.
+  - **Score:** unchanged on 121–139, whose records hold primitives only. Re-recorded under the new tool's hash.
+- Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the nested test).
 - Next, the rest of A4:
-  - nested shapes: an old field set from a parameter whose own class changed shape, named today as "nested field
-    correspondence is not done yet";
-  - a result whose class changed shape, still `changed`, a person's decision;
+  - a result whose class changed shape, still `changed`, a person's decision: output equations from the same
+    correspondence;
   - `Pricing#withQuantity`, unchanged code over changed classes.
 
   Then A5.

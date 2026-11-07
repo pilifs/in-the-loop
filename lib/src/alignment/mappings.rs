@@ -426,12 +426,20 @@ fn implied_contract(old: &Side, new: &Side) -> PreservationContract {
     PreservationContract { subject: symbol(new.class, new.method), inputs, required, approved_changes: Vec::new() }
 }
 
-/// A type means the same in both builds: a primitive or array, a class neither build declares, or one with the same
-/// shape in both.
+/// A type means the same in both builds: a primitive, a class neither build declares, or one with the same shape in
+/// both whose members' types mean the same too (a `Quote` whose `Line` changed shape changed with it); an array, when
+/// its element type does. A class met again on the way (`Node next`) is taken as the same where it is met.
 pub(super) fn same_shape(before: &Build, after: &Build, t: &Type) -> bool {
+    deeply_same(before, after, t, &mut BTreeSet::new())
+}
+
+fn deeply_same(before: &Build, after: &Build, t: &Type, seen: &mut BTreeSet<String>) -> bool {
+    if let Type::Array(element) = t {
+        return deeply_same(before, after, element, seen);
+    }
     match (shape(before, t), shape(after, t)) {
         (None, None) => true,
-        (Some(a), Some(b)) => a == b,
+        (Some(a), Some(b)) if a == b => !seen.insert(t.java_name()) || a.members.iter().all(|(_, m)| deeply_same(before, after, m, seen)),
         _ => false,
     }
 }
@@ -634,7 +642,7 @@ fn result_mapping(old: &Side, new: &Side) -> ResultMapping {
     let one = |kind, expression: String, why: &str| ResultMapping { kind, candidates: vec![Choice { expression, score: 3, why: why.into() }], inferred: true };
     let (a, b) = (&old.ret, &new.ret);
     let (sa, sb) = (shape(old.build, a), shape(new.build, b));
-    if a == b && sa == sb {
+    if a == b && same_shape(old.build, new.build, a) {
         return ResultMapping { kind: ResultKind::Equal, candidates: Vec::new(), inferred: true };
     }
     if widens(a, b) {
