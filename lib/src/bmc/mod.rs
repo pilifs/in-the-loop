@@ -24,7 +24,8 @@
 //! `Integer`/`Long` comparisons, exceptions thrown and caught by class, and strings only as opaque objects (a
 //! message built for an exception). An array of those primitives is an object with a symbolic length and a cell
 //! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
-//! as JBMC's nondeterministic arrays do, a read is a choice among the cells by the index and a write a
+//! as JBMC's nondeterministic arrays do (and is never null nor another parameter's array, unless
+//! [`Options::parameters`] lets it be, a symbolic reference then), a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
 //! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
 //! a constant splits the path per cell. An application class's static fields are path state, and its initializer
@@ -115,11 +116,33 @@ pub struct Options {
     /// [`sat::ENV`] chooses, CaDiCaL unless it names another, and otherwise what a test puts behind the same
     /// interface. Results name the solver by [`solver_signature`], the default's.
     pub solver: fn() -> Box<dyn sat::Sat>,
+    /// Which array parameters may be null and which may be one array ([`Parameters`]); by default each is an
+    /// array of its own, never null.
+    pub parameters: Parameters,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default() }
+    }
+}
+
+/// The harness's array parameters beyond the default domain, by local-variable slot. Each array parameter has an
+/// array of its own, of a fresh length up to the bound with fresh cells; a parameter that may be null, or may be
+/// one array with another, is a symbolic reference ([`Choice`]) among null and the arrays it may be: its own, and
+/// the own array of each parameter before it in its group. Any partition of a group into arrays is so reachable,
+/// each array named by the first parameter holding it, and a witness says which parameters hold one array
+/// ([`Outcome::raw_same`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Parameters {
+    pub nullable: Vec<u32>,
+    /// Groups of parameters any two of which may be one array, each group in slot order.
+    pub may_alias: Vec<Vec<u32>>,
+}
+
+impl Parameters {
+    pub fn is_default(&self) -> bool {
+        self.nullable.is_empty() && self.may_alias.is_empty()
     }
 }
 
@@ -135,9 +158,12 @@ pub struct Outcome {
     pub verdict: Verdict,
     /// The violating input by parameter slot, as decimal numbers (a boolean as 0 or 1, a char by its code).
     pub raw_inputs: BTreeMap<u32, String>,
-    /// The violating input's array parameters by slot, their elements as `raw_inputs` spells values (never
-    /// `None`: an array parameter is not null).
+    /// The violating input's array parameters by slot, their elements as `raw_inputs` spells values, or `None`
+    /// for a null one ([`Parameters::nullable`]).
     pub raw_arrays: BTreeMap<u32, Option<Vec<String>>>,
+    /// The violating input's array parameters that are the same array as an earlier one, by slot: the slot of the
+    /// first parameter holding it ([`Parameters::may_alias`]).
+    pub raw_same: BTreeMap<u32, u32>,
     /// The stage the violating input was found in, as JBMC's `--java-assume-inputs-interval` would spell it;
     /// `None` when only the whole range has one.
     pub stage: Option<String>,
@@ -191,6 +217,7 @@ impl Outcome {
             properties: 1,
             raw_inputs: self.raw_inputs,
             raw_arrays: self.raw_arrays,
+            raw_same: self.raw_same,
             stage: self.stage,
             problem: self.problem,
             log,
@@ -419,6 +446,7 @@ fn class_of(t: &Type) -> String {
 struct Input {
     scalars: BTreeMap<u32, String>,
     arrays: BTreeMap<u32, Option<Vec<String>>>,
+    same: BTreeMap<u32, u32>,
 }
 
 /// A method's decoded code, shared by every frame that runs it.
@@ -669,6 +697,9 @@ struct Engine<'a> {
     /// The harness's array parameters: slot, element type, length and cells, for reading the input off a model
     /// (the cells as made; a path writes into its own copy of the object).
     arrays: Vec<(u32, Type, Bits, Vec<Bits>)>,
+    /// The array parameters that are a choice ([`Parameters`]): slot, and each option's guard with the slot whose
+    /// own array it is, or null.
+    choices: Vec<(u32, Vec<(Lit, Option<u32>)>)>,
     max_array_length: u32,
     /// One literal per entry of [`STAGES`], true when every parameter is in the range; built at the first
     /// violation, so that a proof pays nothing for them.
@@ -754,6 +785,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         paths: 0,
         params: Vec::new(),
         arrays: Vec::new(),
+        choices: Vec::new(),
         max_array_length: options.max_array_length,
         stage_lits: vec![None; STAGES.len()],
         gap_mode: options.gaps,
@@ -773,6 +805,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         verdict,
         raw_inputs: input.scalars,
         raw_arrays: input.arrays,
+        raw_same: input.same,
         stage,
         problem,
         paths: engine.paths,
@@ -806,6 +839,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         let mut objects: Vec<Obj> = Vec::new();
         let mut cond: Vec<Lit> = Vec::new();
         let mut slot = 0u32;
+        // Each array parameter's own array: slot, type and object.
+        let mut own: Vec<(u32, Type, usize)> = Vec::new();
+        let options_in = &options.parameters;
         for t in &descriptor.params {
             if let Some(why) = unsupported_parameter(t) {
                 break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
@@ -819,7 +855,36 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
                 let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
                 engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
                 objects.push(Obj { class: t.descriptor(), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }) });
-                locals.push(Some(Val::R(Some(objects.len() - 1))));
+                own.push((slot, t.clone(), objects.len() - 1));
+                // Null, the own arrays of the parameters before it in its group of the same type, and its own,
+                // one of them under exclusive guards that cover every input.
+                let mut options: Vec<Option<u32>> = Vec::new();
+                if options_in.nullable.contains(&slot) {
+                    options.push(None);
+                }
+                if let Some(group) = options_in.may_alias.iter().find(|g| g.contains(&slot)) {
+                    options.extend(own.iter().filter(|(s, ty, _)| *s != slot && ty == t && group.contains(s)).map(|(s, _, _)| Some(*s)));
+                }
+                options.push(Some(slot));
+                let mut guarded = Vec::new();
+                let mut none_before = TRUE;
+                for (i, option) in options.iter().enumerate() {
+                    let g = if i + 1 == options.len() {
+                        none_before
+                    } else {
+                        let pick = engine.b.var();
+                        let g = engine.b.and(none_before, pick);
+                        none_before = engine.b.and(none_before, -pick);
+                        g
+                    };
+                    guarded.push((g, *option));
+                }
+                let object_of = |s: Option<u32>| s.map(|s| own.iter().find(|(o, _, _)| *o == s).expect("an own array").2);
+                let value = choice(&mut engine.b, guarded.iter().map(|(g, s)| (*g, object_of(*s))).collect());
+                if guarded.len() > 1 {
+                    engine.choices.push((slot, guarded));
+                }
+                locals.push(Some(value));
                 slot += 1;
                 continue;
             }
@@ -960,9 +1025,10 @@ pub fn solver_signature() -> String {
 /// and their class path (not the JDK classes extracted for JBMC: a JDK method is modelled here, never run), with
 /// the tool's models; the result is in JBMC's shape, and a line goes to `work/bmc.log`.
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
-pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+#[allow(clippy::too_many_arguments)]
+pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), parameters: parameters.clone(), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -1210,9 +1276,34 @@ impl<'a> Engine<'a> {
         for (slot, t, bits) in &self.params {
             input.scalars.insert(*slot, unsigned(t, self.b.eval(bits)).to_string());
         }
-        for (slot, element, length, cells) in &self.arrays {
+        let contents = |own: u32| -> Option<Vec<String>> {
+            let (_, element, length, cells) = self.arrays.iter().find(|(s, ..)| *s == own)?;
             let n = usize::try_from(self.b.eval(length)).unwrap_or(0).min(cells.len());
-            input.arrays.insert(*slot, Some(cells[..n].iter().map(|c| unsigned(element, self.b.eval(c)).to_string()).collect()));
+            Some(cells[..n].iter().map(|c| unsigned(element, self.b.eval(c)).to_string()).collect())
+        };
+        // Which array each parameter holds (its own, unless it is a choice), and the first parameter to hold each.
+        let mut first: BTreeMap<u32, u32> = BTreeMap::new();
+        for (slot, ..) in &self.arrays {
+            let held = match self.choices.iter().find(|(s, _)| s == slot) {
+                Some((_, options)) => options.iter().find(|(g, _)| self.b.value(*g)).and_then(|(_, s)| *s),
+                None => Some(*slot),
+            };
+            match held {
+                None => {
+                    input.arrays.insert(*slot, None);
+                }
+                Some(own) => {
+                    input.arrays.insert(*slot, contents(own));
+                    match first.get(&own) {
+                        Some(&earlier) => {
+                            input.same.insert(*slot, earlier);
+                        }
+                        None => {
+                            first.insert(own, *slot);
+                        }
+                    }
+                }
+            }
         }
         input
     }
@@ -3223,6 +3314,75 @@ mod tests {
 
     fn run(cp: &ClassPath) -> Outcome {
         check(cp, "Check", "check", &Options::default()).unwrap()
+    }
+
+    /// `a[0] = 1; b[0] = 2; a[0] == 1`, which holds unless `a` and `b` are one array, over arrays of length 1 at
+    /// least: a parameter that may be the same array as another is a choice between its own and the other's.
+    #[test]
+    fn array_parameters_that_may_be_one_array_are_a_choice_and_the_witness_says_which() {
+        let cp = harness("([I[I)V", |code, _, fail| {
+            let skip = code.label();
+            for a in [0, 1] {
+                code.load(Kind::Ref, a);
+                code.op(0xbe); // arraylength
+                code.if_zero(Cond::Eq, skip);
+            }
+            for (a, v) in [(0, 1), (1, 2)] {
+                code.load(Kind::Ref, a);
+                code.iconst(0);
+                code.iconst(v);
+                code.op(0x4f); // iastore
+            }
+            code.load(Kind::Ref, 0);
+            code.iconst(0);
+            code.op(0x2e); // iaload
+            code.iconst(1);
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(skip);
+        });
+        let distinct = run(&cp);
+        assert_eq!(distinct.verdict, Verdict::Verified, "{:?}", distinct.problem);
+        for merge_after in [0, u64::MAX] {
+            let parameters = Parameters { nullable: Vec::new(), may_alias: vec![vec![0, 1]] };
+            let out = check(&cp, "Check", "check", &Options { parameters, merge_after, ..Options::default() }).unwrap();
+            assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+            assert_eq!(out.raw_same, BTreeMap::from([(1, 0)]), "b is a's array");
+            assert_eq!(out.raw_arrays[&1], out.raw_arrays[&0], "and has its elements");
+        }
+    }
+
+    /// `a.length >= 0`, which an array parameter that may be null refutes with a `NullPointerException` the
+    /// harness doesn't catch: the engine says so, and with the null checked first, the claim holds.
+    #[test]
+    fn an_array_parameter_that_may_be_null_is_null_on_some_path() {
+        let length = |guarded: bool| {
+            harness("([I)V", move |code, _, fail| {
+                let done = code.label();
+                if guarded {
+                    code.load(Kind::Ref, 0);
+                    code.if_null(done);
+                }
+                code.load(Kind::Ref, 0);
+                code.op(0xbe); // arraylength
+                code.if_zero(Cond::Lt, fail);
+                code.bind(done);
+            })
+        };
+        let nullable = |cp: &ClassPath| check(cp, "Check", "check", &Options { parameters: Parameters { nullable: vec![0], may_alias: Vec::new() }, ..Options::default() }).unwrap();
+        assert_eq!(run(&length(false)).verdict, Verdict::Verified, "never null by default");
+        let unguarded = nullable(&length(false));
+        assert_eq!(unguarded.verdict, Verdict::Unverifiable);
+        assert!(unguarded.problem.as_deref().unwrap_or("").contains("NullPointerException"), "{:?}", unguarded.problem);
+        assert_eq!(nullable(&length(true)).verdict, Verdict::Verified);
+        // A null that fails the claim is the witness's.
+        let fails_on_null = harness("([I)V", |code, _, fail| {
+            code.load(Kind::Ref, 0);
+            code.if_null(fail);
+        });
+        let out = nullable(&fails_on_null);
+        assert_eq!(out.verdict, Verdict::Violation);
+        assert_eq!(out.raw_arrays[&0], None);
+        assert!(out.raw_same.is_empty());
     }
 
     #[test]

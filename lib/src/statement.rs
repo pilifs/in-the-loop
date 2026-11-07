@@ -121,9 +121,13 @@ impl Vacuity {
 pub struct Domain {
     /// The target's receiver and parameters, as the target takes them (a record as one, built from its components).
     pub parameters: Vec<Parameter>,
-    /// Whether two array parameters may be one array. Never today: each is an array of its own in both engines
-    /// (JBMC under `--java-assume-inputs-non-null`), so a claim refuted only by aliased arrays is outside D.
+    /// Whether two array parameters may be one array. Only where a property's domain says which may
+    /// (`--may-alias`, the own checker alone): otherwise each is an array of its own in both engines (JBMC under
+    /// `--java-assume-inputs-non-null`), so a claim refuted only by aliased arrays is outside D.
     pub shared_arrays: bool,
+    /// The groups of array parameters any two of which may be one array, by name.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub may_alias: Vec<Vec<String>>,
     /// The domain as the proof line writes it: `a: int[] of length ≤ 8, not null × n: int`.
     pub text: String,
 }
@@ -136,8 +140,8 @@ pub struct Parameter {
     #[serde(rename = "type")]
     pub ty: String,
     pub kind: ParameterKind,
-    /// Whether `null` is among its values: never today, an array being a fresh array and a record one its
-    /// constructor built.
+    /// Whether `null` is among its values: only for an array parameter a property's domain lets be null
+    /// (`--nullable`); otherwise an array is a fresh array and a record one its constructor built.
     pub null: bool,
     /// The longest array it is given, for an array.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -316,13 +320,20 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
             },
         })
         .collect();
-    Domain { parameters, shared_arrays: false, text: layout.domain(max_array_length) }
+    Domain { parameters, shared_arrays: false, may_alias: Vec::new(), text: layout.domain(max_array_length) }
 }
 
 /// The domain of a method of plain parameters (a property's).
 pub fn plain_domain(params: &[Param], max_array_length: u32) -> Domain {
-    let text = harness::domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))).collect(), max_array_length);
-    Domain { parameters: params.iter().map(|p| parameter(p, max_array_length)).collect(), shared_arrays: false, text }
+    plain_domain_of(params, max_array_length, &[], &[])
+}
+
+/// [`plain_domain`], with the array parameters that may be null (`nullable`) and the groups that may be one array
+/// (`may_alias`), by name ([`harness::domain_of`]).
+pub fn plain_domain_of(params: &[Param], max_array_length: u32, nullable: &[String], may_alias: &[Vec<String>]) -> Domain {
+    let text = harness::domain_of(params, max_array_length, nullable, may_alias);
+    let parameters = params.iter().map(|p| Parameter { null: nullable.contains(&p.name), ..parameter(p, max_array_length) }).collect();
+    Domain { parameters, shared_arrays: !may_alias.is_empty(), may_alias: may_alias.to_vec(), text }
 }
 
 fn parameter(p: &Param, max_array_length: u32) -> Parameter {

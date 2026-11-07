@@ -23,6 +23,9 @@
 //! body holds (an `int`), and `\max` and `\min` take the extreme of a numeric body; over an empty range they are
 //! 0, 0, the smallest value of the body's type and the largest, as in JML.
 //!
+//! Where a property's domain lets an array parameter be null or one array with another (`--nullable`,
+//! `--may-alias`), `a == null`, `a != null`, `a == b` and `a != b` say which it is.
+//!
 //! A property reads an array parameter after the call, so `\old(a[i])` and `\old(a.length)` (JML's `\old`) are
 //! the element and the length before it, from a copy the harness takes before the call; `\old(a)` passes that
 //! copy to a call. That is how a method that writes into an array is held to what it changed and what it left:
@@ -86,6 +89,9 @@ pub enum Expr {
     Index(String, u16, Type, Box<Expr>),
     /// `\forall int i; range; body` or `\exists ...`.
     Quantifier(Box<Quantifier>),
+    /// `a == null`, `a != b`: whether two array parameters (each by name and slot, or `null` as `None`) are the same
+    /// array, or not (`false`), where a domain lets one be null or one array with another.
+    Same(Option<(String, u16)>, Option<(String, u16)>, bool),
 }
 
 /// The quantifiers: the two boolean ones, and JML's generalized ones, which fold a value over the range.
@@ -213,6 +219,7 @@ impl Expr {
             Expr::Var(_, t, _) => *t,
             Expr::Call(callee, _) => callee.ret,
             Expr::Length(..) => Ty::Int,
+            Expr::Same(..) => Ty::Boolean,
             Expr::Index(_, _, t, _) => ty_of(t).unwrap_or(Ty::Int),
             Expr::Quantifier(q) => q.ty(),
             Expr::Neg(e) | Expr::BitNot(e) => e.ty(),
@@ -250,6 +257,7 @@ impl Expr {
             Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => 0,
             Expr::Var(_, Ty::Long, slot) => slot + 2,
             Expr::Var(_, _, slot) | Expr::Length(_, slot) => slot + 1,
+            Expr::Same(l, r, _) => l.iter().chain(r).map(|(_, s)| s + 1).max().unwrap_or(0),
             Expr::Index(_, slot, _, index) => (slot + 1).max(index.slots_used()),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.slots_used(),
             Expr::Binary(_, l, r) => l.slots_used().max(r.slots_used()),
@@ -265,7 +273,7 @@ impl Expr {
     /// Whether the expression calls the method under proof, which only the harness can evaluate.
     pub fn has_call(&self) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) => false,
             Expr::Call(..) => true,
             Expr::Index(_, _, _, index) => index.has_call(),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.has_call(),
@@ -278,7 +286,7 @@ impl Expr {
     /// Whether the expression passes the array in `slot` to a call, which sees its whole length.
     pub fn passes(&self, slot: u16) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) => false,
             Expr::Index(_, _, _, index) => index.passes(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.passes(slot),
             Expr::Binary(_, l, r) => l.passes(slot) || r.passes(slot),
@@ -293,6 +301,7 @@ impl Expr {
         match self {
             Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => false,
             Expr::Var(_, _, s) | Expr::Length(_, s) => *s == slot,
+            Expr::Same(l, r, _) => l.iter().chain(r).any(|(_, s)| *s == slot),
             Expr::Index(_, s, _, index) => *s == slot || index.mentions(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.mentions(slot),
             Expr::Binary(_, l, r) => l.mentions(slot) || r.mentions(slot),
@@ -605,6 +614,7 @@ impl Parser<'_> {
             Token::Ident(name) => match name.as_str() {
                 "true" => Ok(Expr::Bool(true)),
                 "false" => Ok(Expr::Bool(false)),
+                "null" => self.same(None),
                 _ if self.callee.is_some_and(|c| c.name == name) && self.peek() == &Token::Op("(") => {
                     let callee = self.callee.expect("checked");
                     self.next();
@@ -681,6 +691,9 @@ impl Parser<'_> {
                     }
                     if let Type::Array(element) = &param.ty {
                         let element = (**element).clone();
+                        if !self.in_old && matches!(self.peek(), Token::Op("==") | Token::Op("!=")) {
+                            return self.same(Some((name.clone(), param.slot)));
+                        }
                         element_ty(&param.ty).ok_or_else(|| Error::new(format!("parameter {name} has type {}; only arrays of integral or boolean elements can appear in the expression", param.ty.java_name())))?;
                         let (shown, slot) = self.array_state(name.clone(), param.slot)?;
                         if self.eat(".") {
@@ -706,6 +719,27 @@ impl Parser<'_> {
             },
             other => Err(Error::new(format!("unexpected {other:?} in expression"))),
         }
+    }
+
+    /// The rest of `a == b`, `a != null` or `null == a`, after its left operand: an array parameter or `null`.
+    fn same(&mut self, left: Option<(String, u16)>) -> Result<Expr, Error> {
+        let equal = if self.eat("==") {
+            true
+        } else if self.eat("!=") {
+            false
+        } else {
+            return Err(Error::new(format!("null is compared with an array parameter by == or !=, found {:?}", self.peek())));
+        };
+        let right = match self.next() {
+            Token::Ident(n) if n == "null" => None,
+            Token::Ident(n) => match self.params.iter().find(|p| p.name == n) {
+                Some(p) if matches!(p.ty, Type::Array(_)) => Some((n, p.slot)),
+                _ => return Err(Error::new(format!("{n} is not an array parameter; an array parameter is compared with null or another array parameter"))),
+            },
+            other => return Err(Error::new(format!("expected an array parameter or null after == or !=, found {other:?}"))),
+        };
+        require(left.is_some() || right.is_some(), "null == null says nothing")?;
+        Ok(Expr::Same(left, right, equal))
     }
 
     /// `int i; range; body`, after `\forall`, `\exists`, `\sum`, `\num_of`, `\max` or `\min`.
@@ -927,6 +961,21 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -
         Expr::Int(v) => Value::Int(*v),
         Expr::Long(v) => Value::Long(*v),
         Expr::Bool(b) => Value::Int(*b as i32),
+        Expr::Same(l, r, equal) => {
+            let reference = |operand: &Option<(String, u16)>| -> Result<Value, Error> {
+                match operand {
+                    None => Ok(Value::Null),
+                    Some((name, slot)) => locals.get(usize::from(*slot)).copied().ok_or_else(|| Error::new(format!("no value for {name}"))),
+                }
+            };
+            let same = match (reference(l)?, reference(r)?) {
+                (Value::Null, Value::Null) => true,
+                (Value::Ref(a), Value::Ref(b)) => a == b,
+                (Value::Null, Value::Ref(_)) | (Value::Ref(_), Value::Null) => false,
+                _ => return Err(Error::new("an array parameter has no reference to compare")),
+            };
+            Value::Int(i32::from(same == *equal))
+        }
         Expr::Var(name, t, slot) => {
             let v = *locals.get(*slot as usize).ok_or_else(|| Error::new(format!("no value for {name}")))?;
             match (t, v) {
@@ -1033,6 +1082,21 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
         Expr::Int(v) => emit_int(*v, code, pool),
         Expr::Long(v) => emit_long(*v, code, pool),
         Expr::Bool(b) => code.iconst(*b as i32),
+        Expr::Same(l, r, equal) => {
+            for operand in [l, r] {
+                match operand {
+                    Some((_, slot)) => code.load(Kind::Ref, *slot),
+                    None => code.op(0x01), // aconst_null
+                }
+            }
+            let (differ, end) = (code.label(), code.label());
+            code.if_acmpne(differ);
+            code.iconst(i32::from(*equal));
+            code.goto(end);
+            code.bind(differ);
+            code.iconst(i32::from(!*equal));
+            code.bind(end);
+        }
         Expr::Var(_, Ty::Long, slot) => code.load(Kind::Long, *slot),
         Expr::Var(_, _, slot) => code.load(Kind::Int, *slot),
         Expr::Length(_, slot) => {

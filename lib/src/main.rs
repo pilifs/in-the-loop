@@ -412,6 +412,14 @@ struct ProveArgs {
     /// repeated; the first clause whose condition holds is the one expected.
     #[arg(long = "throws")]
     throws: Vec<String>,
+    /// An array parameter that may be null; may be repeated. Every other array parameter is an array. Only the
+    /// tool's own checker takes such a domain (`--engine native` or `auto`).
+    #[arg(long)]
+    nullable: Vec<String>,
+    /// Two array parameters that may be one array, `a,b`; may be repeated, and any two of a chain may be. Every
+    /// other array parameter is an array of its own. Only the tool's own checker takes such a domain.
+    #[arg(long = "may-alias")]
+    may_alias: Vec<String>,
     /// A working directory for the harness and JBMC logs (a temporary one by default).
     #[arg(long)]
     work: Option<PathBuf>,
@@ -642,6 +650,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.contract_library = !args.no_contract_library;
                 options.max_trust = args.max_trust;
                 options.confirm = confirm_option(args.confirm, options.engine)?;
+                options.nullable = args.nullable.clone();
+                options.may_alias = args.may_alias.iter().map(|pair| pair.split_once(',').map(|(a, b)| (a.trim().to_string(), b.trim().to_string())).ok_or_else(|| Error::new(format!("--may-alias {pair}: give two parameters, `a,b`")))).collect::<Result<_, _>>()?;
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

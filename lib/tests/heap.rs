@@ -4,6 +4,10 @@
 //! reference that differs between the paths that meet is a choice among objects; never merged, every path keeps
 //! its references known, as before symbolic references. Both must give the same verdict, the merged one in far
 //! fewer paths, and every violation's input must fail the claim on a real JVM too.
+//!
+//! Object inputs (H2) start with array parameters that may be null or one array with another
+//! (`--nullable`, `--may-alias`): their claims are in the conformance corpus, and here a witness with one array
+//! passed twice, or a null, is run on the JVM as it is.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -154,4 +158,49 @@ fn a_read_through_a_reference_that_may_be_null_throws_where_it_is() {
 fn instanceof_is_a_formula_over_the_choice_and_a_call_on_it_splits_the_path() {
     both_ways("classesHold", Verdict::Verified);
     both_ways("classesOdd", Verdict::Violation);
+}
+
+/// A harness that fails where its two arrays are one, and a method that writes through both.
+const ALIASES: &str = r#"
+public class AliasCheck {
+    public static void check(int[] a, int[] b) { if (a == b) throw new AssertionError(); }
+    public static int first(int[] a, int[] b) { a[0] = 1; b[0] = 2; return a[0]; }
+}
+"#;
+
+/// A witness whose arrays are one array, or one of them null, runs on the JVM as it is: the same array passed
+/// twice, a write through one seen through the other (`jvm_witness::run`, which the property check uses where the
+/// interpreter cannot replay a witness).
+#[test]
+fn a_witness_with_one_array_twice_or_null_runs_on_the_jvm_as_it_is() {
+    use jvmcontract::classfile::Type;
+    use jvmcontract::interp::Value;
+    use jvmcontract::jbmc::Argument;
+    use jvmcontract::jvm_witness::{self, Check, DirectCall};
+    if compiled().is_none() {
+        return;
+    }
+    let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-aliases");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("AliasCheck.java"), ALIASES).unwrap();
+    let status = Command::new("javac").args(["-g", "-proc:none", "-d"]).arg(&dir).arg(dir.join("AliasCheck.java")).status().expect("javac runs");
+    assert!(status.success());
+    let types = [Type::Array(Box::new(Type::Int)), Type::Array(Box::new(Type::Int))];
+    let call = DirectCall { owner: "AliasCheck".into(), name: "first".into(), descriptor: "([I[I)I".into(), ret: Type::Int };
+    let run = |arguments: &[Argument]| jvm_witness::run(&dir.join("run"), "AliasCheck", &types, &[0, 1], arguments, std::slice::from_ref(&call), std::slice::from_ref(&dir)).unwrap();
+
+    let same = run(&[Argument::Array(vec![Value::Int(0)]), Argument::Same(0)]);
+    assert_eq!(same.check, Check::Refuted, "the harness is given one array twice");
+    assert_eq!(same.calls[0].outcome, "2", "the second write is seen through the first name");
+    assert_eq!(same.calls[0].arrays_after, vec![(0, vec![Value::Int(2)]), (1, vec![Value::Int(2)])]);
+
+    let distinct = run(&[Argument::Array(vec![Value::Int(0)]), Argument::Array(vec![Value::Int(0)])]);
+    assert_eq!(distinct.check, Check::Holds);
+    assert_eq!(distinct.calls[0].outcome, "1");
+
+    let null = run(&[Argument::Array(vec![Value::Int(0)]), Argument::Null]);
+    assert_eq!(null.check, Check::Holds);
+    assert_eq!(null.calls[0].thrown.as_deref(), Some("java/lang/NullPointerException"));
+    assert_eq!(null.calls[0].arrays_after, vec![(0, vec![Value::Int(1)])], "the null leaves nothing, the array what was written before the throw");
 }

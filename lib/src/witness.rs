@@ -16,14 +16,56 @@ use crate::jbmc::Argument;
 use crate::shrink::{self, Shrunk};
 use crate::Error;
 
-/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`.
+/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`; the same object as argument `i`
+/// is `@i` (by name in [`call`]).
 pub fn argument(argument: &Argument, t: &Type) -> String {
     match (argument, t) {
         (Argument::Scalar(v), _) => render::witness(*v, t),
         (Argument::Array(data), Type::Array(element)) => array(data, element),
         (Argument::Array(_), _) => "<array>".into(),
         (Argument::Null, _) => "null".into(),
+        (Argument::Same(i), _) => format!("@{i}"),
     }
+}
+
+/// An argument as [`call`] shows it among `names`: the same object as an earlier argument by that one's name.
+fn shown(argument: &Argument, t: &Type, names: &[&str]) -> String {
+    match argument {
+        Argument::Same(i) => names.get(*i).map(|n| format!("the same array as {n}")).unwrap_or_else(|| format!("@{i}")),
+        other => self::argument(other, t),
+    }
+}
+
+/// The locals and the arrays by slot that an expression over `params` is evaluated on ([`harness::expr::eval_with`])
+/// for `arguments`: each array a distinct reference in its local (the same one for an argument that is the same
+/// array as an earlier one, and null for a null one), with its elements, `arrays_after` where the call left them.
+pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16, Vec<Value>)]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
+    let mut locals = Vec::new();
+    let mut arrays = Vec::new();
+    let mut refs: Vec<Value> = Vec::new();
+    for (k, (a, p)) in arguments.iter().zip(params).enumerate() {
+        let data = |slot: u16, data: &Vec<Value>| arrays_after.iter().find(|(s, _)| *s == slot).map(|(_, d)| d.clone()).unwrap_or_else(|| data.clone());
+        let value = match a {
+            Argument::Scalar(v) => *v,
+            Argument::Array(d) => {
+                arrays.push((p.slot, data(p.slot, d)));
+                Value::Ref(k as Ref + 1)
+            }
+            Argument::Null => Value::Null,
+            Argument::Same(i) => {
+                if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
+                    arrays.push((p.slot, d));
+                }
+                refs.get(*i).copied().unwrap_or(Value::Null)
+            }
+        };
+        refs.push(value);
+        locals.push(value);
+        if value.is_wide() {
+            locals.push(Value::Int(0));
+        }
+    }
+    (locals, arrays)
 }
 
 pub fn array(data: &[Value], element: &Type) -> String {
@@ -32,7 +74,8 @@ pub fn array(data: &[Value], element: &Type) -> String {
 
 /// `method(a=[1, 2], n=3)`: the arguments by parameter name, and the rendering of each.
 pub fn call(method: &str, params: &[Param], arguments: &[Argument]) -> (String, Vec<String>) {
-    let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| argument(a, &p.ty)).collect();
+    let names: Vec<&str> = params.iter().map(|p| p.name.as_str()).collect();
+    let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| shown(a, &p.ty, &names)).collect();
     let rendered = format!("{method}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
     (rendered, witnesses)
 }
@@ -40,7 +83,8 @@ pub fn call(method: &str, params: &[Param], arguments: &[Argument]) -> (String, 
 /// `method(this=Backoff[baseMillis=1, capMillis=1], attempt=63)`: the receiver and the arguments by name, a
 /// record as Java prints it, and the rendering of each flat parameter.
 pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String, Vec<String>) {
-    let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| argument(a, &p.ty)).collect();
+    let names: Vec<&str> = layout.params.iter().map(|p| p.name.as_str()).collect();
+    let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| shown(a, &p.ty, &names)).collect();
     let shown = |s: &Slot| match s {
         Slot::Plain(i) => format!("{}={}", layout.params[*i].name, witnesses[*i]),
         Slot::Record { name, record, first, .. } => {
@@ -63,8 +107,8 @@ pub struct Typed {
     pub ty: String,
     /// The value: a boolean; a number for `byte`, `short` and `int`, and for `char` its UTF-16 code unit; a string
     /// for `long` (in decimal, exact past 2^53) and for `float` and `double` (Java's `toString` of it, which reads
-    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; or null. Absent for a record,
-    /// whose components give it.
+    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; null; or `{"same": i}` for
+    /// the same array as the `i`th input. Absent for a record, whose components give it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
     /// A record's components, in declaration order: the arguments of its canonical constructor.
@@ -123,9 +167,10 @@ pub fn exact(v: Value, t: &Type) -> serde_json::Value {
     }
 }
 
-/// The exact value of an argument: a primitive, an array of them, or null.
+/// The exact value of an argument: a primitive, an array of them, null, or `{"same": i}`.
 pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
     match (argument, t) {
+        (Argument::Same(i), _) => serde_json::json!({ "same": i }),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
         (Argument::Array(data), _) => serde_json::Value::Array(data.iter().map(|v| exact(*v, &Type::Int)).collect()),
@@ -208,14 +253,15 @@ impl Replayed {
     }
 }
 
-/// The argument values for a call in the interpreter, with each array allocated afresh.
+/// The argument values for a call in the interpreter, with each array allocated afresh, once: an argument that is
+/// the same array as an earlier one is passed that one.
 fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Value> {
-    arguments
-        .iter()
-        .zip(types)
-        .map(|(argument, t)| match argument {
+    let mut values: Vec<Value> = Vec::with_capacity(arguments.len());
+    for (argument, t) in arguments.iter().zip(types) {
+        let v = match argument {
             Argument::Scalar(v) => *v,
             Argument::Null => Value::Null,
+            Argument::Same(i) => values.get(*i).copied().unwrap_or(Value::Null),
             Argument::Array(data) => {
                 let element = match t {
                     Type::Array(e) => (**e).clone(),
@@ -223,8 +269,10 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
                 };
                 m.new_array_of(element, data.clone())
             }
-        })
-        .collect()
+        };
+        values.push(v);
+    }
+    values
 }
 
 /// Runs the counterexample through `class_internal.method` in the interpreter, with the effect monitor off.

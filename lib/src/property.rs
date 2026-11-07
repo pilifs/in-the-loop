@@ -91,6 +91,11 @@ pub struct Options {
     /// Under `--engine auto`, whether a proof of the tool's own checker is checked by JBMC too
     /// ([`crate::equivalence::Confirmation`]); off by default, since JBMC takes ten to a hundred times longer.
     pub confirm: bool,
+    /// Array parameters that may be null (`--nullable`); every other is an array.
+    pub nullable: Vec<String>,
+    /// Pairs of array parameters that may be one array (`--may-alias a,b`), closed under transitivity: any two of
+    /// a group may be; every other parameter is an array of its own. Only the own checker takes such a domain.
+    pub may_alias: Vec<(String, String)>,
 }
 
 impl Options {
@@ -122,6 +127,8 @@ impl Options {
             contract_library: true,
             max_trust: None,
             confirm: false,
+            nullable: Vec::new(),
+            may_alias: Vec::new(),
         }
     }
 }
@@ -277,7 +284,17 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let params = harness::params(&names, &descriptor.params);
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
-    let domain = harness::domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))).collect(), options.max_array_length);
+    let (parameters, groups) = match parameter_domain(&params, &options.nullable, &options.may_alias) {
+        Ok(p) => p,
+        Err(problem) => return refuse(&mut out, line, problem),
+    };
+    let domain = harness::domain_of(&params, options.max_array_length, &options.nullable, &groups);
+    // JBMC gives each array parameter an array of its own, never null: it would prove a narrower claim.
+    let widened = !parameters.is_default();
+    if widened && (options.engine == crate::Engine::Jbmc || options.confirm) {
+        let how = if options.confirm { "--confirm would have JBMC check a narrower claim than this one" } else { "JBMC is not given it" };
+        return refuse(&mut out, line, format!("the domain {domain} lets an array parameter be null or one array with another, which only the tool's own checker takes, and {how}: check it with --engine native or auto"));
+    }
 
     // 2. The statement. A declared exception is named as in Java, `java.lang.ArithmeticException`, or by its simple
     // name when it is in java.lang or the target's package.
@@ -314,7 +331,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let statement = harness_dir.join(format!("{}.java", harness::PROPERTY_CLASS));
     std::fs::write(&statement, &harness.source)?;
     let assertion = harness.assertion_text.clone();
-    let stated_domain = crate::statement::plain_domain(&params, options.max_array_length);
+    let stated_domain = crate::statement::plain_domain_of(&params, options.max_array_length, &options.nullable, &groups);
     let observations = crate::statement::property_observations(&assertion, &throws_checked);
     let stated = |last: Option<&crate::jbmc::JbmcResult>, search: Option<&crate::equivalence::Search>, complete: bool| crate::statement::Statement {
         kind: "property".into(),
@@ -401,11 +418,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &work)?;
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &work)?;
         runs.push(Run::of(&result, "proof", budget));
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) {
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                let _ = writeln!(out, "{}", crate::equivalence::NOT_JBMC);
+                let _ = writeln!(out, "{}", if widened { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
             }
             stages.clear();
             last = Some(result);
@@ -577,7 +594,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let mut entries = options.classes.clone();
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&descriptor.params).ok().map(|found| witness::call(&method_name, &params, &found).0);
-                let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &work, "failing the assumption (--assume)", &render, &mut search)?;
+                let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &parameters, &work, "failing the assumption (--assume)", &render, &mut search)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
             } else {
@@ -594,23 +611,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // The throws clause that applies to an input: the first whose condition holds; `None` when none does
             // or a condition cannot be evaluated outside the harness (it calls the method).
             let applying = |arguments: &[Argument]| -> Option<usize> {
-                let mut locals = Vec::new();
-                let mut arrays = Vec::new();
-                for (a, p) in arguments.iter().zip(&params) {
-                    match a {
-                        Argument::Scalar(v) => {
-                            locals.push(*v);
-                            if v.is_wide() {
-                                locals.push(Value::Int(0));
-                            }
-                        }
-                        Argument::Array(data) => {
-                            locals.push(Value::Null);
-                            arrays.push((p.slot, data.clone()));
-                        }
-                        Argument::Null => locals.push(Value::Null),
-                    }
-                }
+                let (locals, arrays) = witness::locals_of(&params, arguments, &[]);
                 harness.signals.iter().position(|(_, when)| matches!(harness::expr::eval_with(when, &locals, &arrays), Ok(Value::Int(1))))
             };
             // A counterexample on which the interpreter finds the property holding is no counterexample: JBMC has
@@ -619,26 +620,19 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // array parameter after the call, as the harness does, so a method that writes into it is held to
             // what it wrote.
             let assertion_on = |arguments: &[Argument], result: Value, result_array: &Option<Vec<Value>>, arrays_after: &[(u16, Vec<Value>)]| -> Result<Value, Error> {
-                let mut locals = Vec::new();
-                let mut arrays = Vec::new();
+                let (mut locals, mut arrays) = witness::locals_of(&params, arguments, arrays_after);
+                // What \old(a) reads: the array as the call received it.
                 for (a, p) in arguments.iter().zip(&params) {
-                    match a {
-                        Argument::Scalar(v) => {
-                            locals.push(*v);
-                            if v.is_wide() {
-                                locals.push(Value::Int(0));
-                            }
-                        }
-                        Argument::Array(data) => {
-                            locals.push(Value::Null);
-                            let after = arrays_after.iter().find(|(slot, _)| *slot == p.slot).map(|(_, d)| d.clone());
-                            arrays.push((p.slot, after.unwrap_or_else(|| data.clone())));
-                            // What \old(a) reads: the array as the call received it.
-                            if let Some((_, copy)) = harness.old.iter().find(|(slot, _)| *slot == p.slot) {
-                                arrays.push((*copy, data.clone()));
-                            }
-                        }
-                        Argument::Null => locals.push(Value::Null),
+                    let before = match a {
+                        Argument::Array(data) => Some(data),
+                        Argument::Same(i) => match arguments.get(*i) {
+                            Some(Argument::Array(data)) => Some(data),
+                            _ => None,
+                        },
+                        _ => None,
+                    };
+                    if let (Some(data), Some((_, copy))) = (before, harness.old.iter().find(|(slot, _)| *slot == p.slot)) {
+                        arrays.push((*copy, data.clone()));
                     }
                 }
                 let result_slot = locals.len() as u16;
@@ -812,6 +806,49 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     })
 }
 
+
+const NOT_JBMC_DOMAIN: &str = "note: the domain lets an array parameter be null or one array with another, which JBMC is not given, so JBMC is not asked";
+
+/// The own checker's [`crate::bmc::Parameters`] for `--nullable` and `--may-alias`, and the groups of parameters
+/// that may be one array, by name in parameter order: each name an array parameter, and the two of a pair of the
+/// same type and different.
+fn parameter_domain(params: &[harness::Param], nullable: &[String], may_alias: &[(String, String)]) -> Result<(crate::bmc::Parameters, Vec<Vec<String>>), String> {
+    let array = |name: &str, flag: &str| -> Result<&harness::Param, String> {
+        match params.iter().find(|p| p.name == name) {
+            Some(p) if matches!(p.ty, Type::Array(_)) => Ok(p),
+            Some(p) => Err(format!("{flag} {name}: {name} is a {}, and only an array parameter may be null or one array with another", p.ty.java_name())),
+            None => Err(format!("{flag} {name}: no parameter is named {name}; the parameters are {}", params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))),
+        }
+    };
+    let mut out = crate::bmc::Parameters::default();
+    for name in nullable {
+        let p = array(name, "--nullable")?;
+        if !out.nullable.contains(&u32::from(p.slot)) {
+            out.nullable.push(u32::from(p.slot));
+        }
+    }
+    // Groups, merged pair by pair.
+    let mut groups: Vec<Vec<u16>> = Vec::new();
+    for (a, b) in may_alias {
+        let (pa, pb) = (array(a, "--may-alias")?, array(b, "--may-alias")?);
+        if pa.slot == pb.slot {
+            return Err(format!("--may-alias {a},{b}: name two different parameters"));
+        }
+        if pa.ty != pb.ty {
+            return Err(format!("--may-alias {a},{b}: a {} and a {} are never one array", pa.ty.java_name(), pb.ty.java_name()));
+        }
+        let joined: Vec<u16> = groups.iter().filter(|g| g.contains(&pa.slot) || g.contains(&pb.slot)).flatten().copied().chain([pa.slot, pb.slot]).collect();
+        groups.retain(|g| !g.contains(&pa.slot) && !g.contains(&pb.slot));
+        let mut group: Vec<u16> = joined;
+        group.sort_unstable();
+        group.dedup();
+        groups.push(group);
+    }
+    groups.sort();
+    out.may_alias = groups.iter().map(|g| g.iter().map(|s| u32::from(*s)).collect()).collect();
+    let named = groups.iter().map(|g| g.iter().map(|s| params.iter().find(|p| p.slot == *s).expect("a parameter").name.clone()).collect()).collect();
+    Ok((out, named))
+}
 
 /// What the interpreter made of a witness of JBMC's that refutes a proof of the own checker's, which shares its
 /// models: evidence for a person, not a verdict.

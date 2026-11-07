@@ -77,9 +77,6 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
             return Err(format!("a parameter of type {} is not one the JVM run passes", t.java_name()));
         }
     }
-    if arguments.iter().any(|a| matches!(a, Argument::Null)) {
-        return Err("a null argument is not one the JVM run passes".into());
-    }
     let home = crate::jimage::JImage::find_java_home().ok_or("no JVM to run it on (set JAVA_HOME)")?;
     let java = home.join("bin").join("java");
     let jdk = crate::bmc::gaps::jdk_release().unwrap_or_else(|| "of unknown version".into());
@@ -97,10 +94,9 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     // The harness's check.
     {
         let (start, end, assertion, any, done) = (main.label(), main.label(), main.label(), main.label(), main.label());
+        let locals = references(arguments, types, first_array_local, &mut main, &mut writer);
         main.bind(start);
-        for (a, t) in arguments.iter().zip(types) {
-            push(a, t, &mut main, &mut writer);
-        }
+        pass(arguments, types, &locals, &mut main, &mut writer);
         let check = writer.pool.method_ref(harness_class, crate::harness::METHOD, &check_descriptor);
         main.op_u16(0xb8, check);
         main.bind(end);
@@ -122,23 +118,11 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
 
     for (k, call) in calls.iter().enumerate() {
         let (start, end, thrown, done) = (main.label(), main.label(), main.label(), main.label());
-        // Fresh arrays for the call, kept in locals to print what it leaves in them.
-        let mut array_locals = Vec::new();
-        for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
-            if matches!(t, Type::Array(_)) {
-                push(a, t, &mut main, &mut writer);
-                let local = first_array_local + i as u16;
-                main.store(Kind::Ref, local);
-                array_locals.push((i, local));
-            }
-        }
+        // Fresh arrays for the call, kept in locals to print what it leaves in them (a null one leaves nothing).
+        let locals = references(arguments, types, first_array_local, &mut main, &mut writer);
+        let array_locals: Vec<(usize, u16)> = locals.iter().enumerate().filter_map(|(i, l)| l.filter(|_| holds_array(arguments, i)).map(|l| (i, l))).collect();
         main.bind(start);
-        for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
-            match array_locals.iter().find(|(j, _)| *j == i) {
-                Some((_, local)) => main.load(Kind::Ref, *local),
-                None => push(a, t, &mut main, &mut writer),
-            }
-        }
+        pass(arguments, types, &locals, &mut main, &mut writer);
         let m = writer.pool.method_ref(&call.owner, &call.name, &call.descriptor);
         main.op_u16(0xb8, m);
         main.bind(end);
@@ -397,7 +381,49 @@ fn print_elements(code: &mut CodeBuilder, writer: &mut ClassWriter, local: u16, 
     code.op_u16(0xb6, println);
 }
 
-/// Pushes an argument: a constant, or a new array of constants.
+/// Makes the arguments that are references, each into a local of its own from `first`: a new array, null, or the
+/// array an earlier argument is. `None` for a primitive.
+fn references(arguments: &[Argument], types: &[Type], first: u16, code: &mut CodeBuilder, writer: &mut ClassWriter) -> Vec<Option<u16>> {
+    let mut locals: Vec<Option<u16>> = Vec::new();
+    for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
+        let local = first + i as u16;
+        match a {
+            Argument::Scalar(_) => {
+                locals.push(None);
+                continue;
+            }
+            Argument::Same(j) => match locals.get(*j).copied().flatten() {
+                Some(earlier) => code.load(Kind::Ref, earlier),
+                None => code.op(0x01),
+            },
+            _ => push(a, t, code, writer),
+        }
+        code.store(Kind::Ref, local);
+        locals.push(Some(local));
+    }
+    locals
+}
+
+/// Whether argument `i` is an array, its own or an earlier argument's, rather than null.
+fn holds_array(arguments: &[Argument], i: usize) -> bool {
+    match arguments.get(i) {
+        Some(Argument::Array(_)) => true,
+        Some(Argument::Same(j)) => holds_array(arguments, *j),
+        _ => false,
+    }
+}
+
+/// Passes the arguments: each primitive as a constant, each reference from its local ([`references`]).
+fn pass(arguments: &[Argument], types: &[Type], locals: &[Option<u16>], code: &mut CodeBuilder, writer: &mut ClassWriter) {
+    for (i, (a, t)) in arguments.iter().zip(types).enumerate() {
+        match locals[i] {
+            Some(local) => code.load(Kind::Ref, local),
+            None => push(a, t, code, writer),
+        }
+    }
+}
+
+/// Pushes an argument: a constant, a new array of constants, or null.
 fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter) {
     match (a, t) {
         (Argument::Scalar(v), t) => push_scalar(*v, t, code, writer),
@@ -419,7 +445,7 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
                 code.op(store);
             }
         }
-        _ => code.op(0x01), // aconst_null; refused before
+        _ => code.op(0x01), // aconst_null
     }
 }
 

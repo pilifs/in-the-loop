@@ -134,9 +134,37 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Shared files changed: `lib/README.md` (the merging paragraph), `lib/tests/conformance.rs` and
     `lib/tests/conformance/conformance/Conformance.java` (three cases), `lib/tests/heap.rs` (new), and the generated
     `lib/benchmark/conformance.json`.
-- Next: H2, object inputs made by constructors, starting with the domain's parameter kinds in the harness and
-  `unsupported_parameter`, and the conformance inputs outside the domain today (`twoArrays` with one array twice,
-  `length` and `lengthOrMinusOne` with null).
+- **H2, first step (2026-11-07): null and one-array parameters in property checks.** `jvmcontract prove` takes
+  `--nullable a` and `--may-alias a,b` (closed under chains) for array parameters; the domain line says so
+  (`a: int[] of length ≤ 8, or null`; `a and b may be the same array`), and so does the statement (`null`,
+  `shared_arrays`, the new `may_alias` groups). The own checker alone takes such a domain
+  ([`bmc::Parameters`](../../lib/src/bmc/mod.rs)): each such parameter is an H1 choice among null, its own array
+  and the own arrays of the parameters before it in its group, and a witness reads back which it holds
+  (`raw_same`, `Argument::Same`). `--engine jbmc` and `--confirm` refuse it (JBMC would prove a narrower claim), and
+  `auto` doesn't fall back to JBMC. Properties say which it is with `a == null` and `a == b` (new in the
+  expression language). Witnesses keep identity: `twoArrays(a=[0], b=the same array as a)` passes one array twice in
+  the interpreter, the shrinker (which never splits or joins arrays) and the JVM run (`jvm_witness.rs` now passes
+  null and shared arrays). The harness's `\old` copy of a null array is null.
+  - Evidence inline: the conformance corpus's outside-the-domain calls became claims: `twoArrays` under
+    `--may-alias a,b` (`result == (a == b ? 2 : 1)` V; `result == 1` X, witness `[0]` twice, refuted on the JVM),
+    `length` and `lengthOrMinusOne` under `--nullable a` (two V, two X with a null witness); the default-domain
+    claims keep their verdicts and their domain words. Unit tests for the engine's choices (merged and unmerged)
+    and a JVM run with one array twice and with null (`lib/tests/heap.rs`). Unit tests (185), `integration.rs`,
+    `conformance.rs`, `foundations.rs` and `heap.rs` pass. One run of `integration.rs` under the other streams'
+    load (617 s) failed `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` at a native regression check
+    (no output kept); alone it passed in 17 s. A stream that sees it again should suspect a budget under load first.
+  - *For review*: job `20261107-043420`, the corpus's ignored tests (JBMC, `auto`, `auto --confirm`): expected to
+    pass, the six widened claims refused (unverifiable) under JBMC and `--confirm`, and as the own checker says
+    under `auto`.
+  - Shared files changed: `lib/src/main.rs` (two flags), `property.rs` (the options), `equivalence.rs` (its
+    `locals_of` now the witness module's, and the vacuity probe takes the parameters), `statement.rs` (`may_alias`
+    on `Domain`, skipped when empty), `lib/README.md` (a paragraph), `lib/tests/conformance.rs` (claims with a
+    domain, six of them; left out of the benchmark's group 1, whose runner passes no domain flags), and
+    `lib/tests/heap.rs`. `jbmc.rs` gained `raw_same` and `Argument::Same` (owned by no stream; a witness type).
+- Next: H2's object inputs: a parameter of an application class made by its constructor in the harness, with
+  symbolic arguments (as records are, through `Layout`), nullability and aliasing among such parameters, the
+  domain's label in the result; first in property checks, then regression checks with the old version's objects
+  under `before/`, then `spec::heap::check`.
 - Status: working
 
 ## Loop settings

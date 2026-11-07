@@ -270,6 +270,42 @@ pub fn domain(parts: Vec<(String, bool)>, max_array_length: u32) -> String {
     }
 }
 
+/// [`domain`] for plain parameters, some arrays among them null perhaps (`nullable`, by name: `a: int[] of length
+/// ≤ 8, or null`) or one array with others (`groups`, by name: `; a and b may be the same array`), the rest of
+/// them no two the same array. With neither, it is [`domain`]'s text.
+pub fn domain_of(params: &[Param], max_array_length: u32, nullable: &[String], groups: &[Vec<String>]) -> String {
+    let is_array = |p: &Param| matches!(p.ty, Type::Array(_));
+    if nullable.is_empty() && groups.is_empty() {
+        return domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), is_array(p))).collect(), max_array_length);
+    }
+    let joined = params
+        .iter()
+        .map(|p| match (is_array(p), nullable.contains(&p.name)) {
+            (true, true) => format!("{}: {} of length ≤ {max_array_length}, or null", p.name, p.ty.java_name()),
+            (true, false) => format!("{}: {} of length ≤ {max_array_length}, not null", p.name, p.ty.java_name()),
+            (false, _) => format!("{}: {}", p.name, p.ty.java_name()),
+        })
+        .collect::<Vec<_>>()
+        .join(" × ");
+    let listed = |names: &[String]| match names {
+        [one] => one.clone(),
+        [init @ .., last] => format!("{} and {last}", init.join(", ")),
+        [] => String::new(),
+    };
+    let mut tail: Vec<String> = groups.iter().map(|g| format!("{} may be the same array", listed(g))).collect();
+    let arrays: Vec<&Param> = params.iter().filter(|p| is_array(p)).collect();
+    let together = |a: &str, b: &str| groups.iter().any(|g| g.iter().any(|n| n == a) && g.iter().any(|n| n == b));
+    let others = arrays.iter().enumerate().any(|(i, a)| arrays[i + 1..].iter().any(|b| !together(&a.name, &b.name)));
+    if others {
+        tail.push(if groups.is_empty() { "no two the same array" } else { "no other two the same array" }.to_string());
+    }
+    if tail.is_empty() {
+        joined
+    } else {
+        format!("{joined}; {}", tail.join("; "))
+    }
+}
+
 /// The relation between the previous version's result and the new one's (`--results-agree-when`): a boolean
 /// expression over the new parameters, `previous` (the previous version's result, in the slot `previous`) and
 /// `result` (the new version's, in the slot `result`), which must hold whenever both versions return. A result
@@ -1432,6 +1468,11 @@ fn generate_property_in(class_internal: &str, method: &str, params: &[Param], re
         let skip = code.label();
         let done = code.label();
         let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
+        // A null array has no copy: the copy is null too, where a domain lets the array be null.
+        code.op(0x01); // aconst_null
+        code.store(Kind::Ref, *copy);
+        code.load(Kind::Ref, *slot);
+        code.if_null(done);
         if assertion_expr.passes(*copy) {
             code.load(Kind::Ref, *slot);
             code.op(0xbe); // arraylength

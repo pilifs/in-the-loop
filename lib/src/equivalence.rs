@@ -578,13 +578,14 @@ pub struct Replay {
 /// status with how it is known (non-vacuous with the probe's witness, vacuous, or unknown when the probe gave no
 /// verdict), each with its line under `✓`.
 #[allow(clippy::too_many_arguments)] // the settings of the proof it probes
-pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &crate::bmc::gaps::GapSetting, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>, search: &mut Option<Search>) -> Result<(Option<String>, Vacuity), Error> {
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &crate::bmc::gaps::GapSetting, parameters: &crate::bmc::Parameters, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>, search: &mut Option<Search>) -> Result<(Option<String>, Vacuity), Error> {
     let probe_dir = work.join("probe");
     std::fs::create_dir_all(&probe_dir)?;
     std::fs::write(probe_dir.join(format!("{class}.class")), probe)?;
     let mut probe_entries = vec![probe_dir.clone()];
     probe_entries.extend(entries.iter().cloned());
-    let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, gaps, &probe_dir)?;
+    let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, gaps, parameters, &probe_dir)?;
     if let Some(s) = search {
         s.runs.push(Run::of(&result, "probe", timeout));
     }
@@ -631,24 +632,7 @@ fn record_of(cp: &ClassPath, t: &Type) -> Result<Option<harness::RecordType>, Er
 }
 
 fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
-    let mut locals = Vec::new();
-    let mut arrays = Vec::new();
-    for (a, p) in arguments.iter().zip(params) {
-        match a {
-            Argument::Scalar(v) => {
-                locals.push(*v);
-                if v.is_wide() {
-                    locals.push(Value::Int(0));
-                }
-            }
-            Argument::Array(data) => {
-                locals.push(Value::Null);
-                arrays.push((p.slot, data.clone()));
-            }
-            Argument::Null => locals.push(Value::Null),
-        }
-    }
-    (locals, arrays)
+    witness::locals_of(params, arguments, &[])
 }
 
 /// The value an expression gives, as the parameter of type `t` receives it: widened to `long`, or narrowed as a
@@ -1042,7 +1026,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &work)?;
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &crate::bmc::Parameters::default(), &work)?;
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
@@ -1367,7 +1351,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
-                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &work, &ways.join(" or "), &render, &mut search)?;
+                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &crate::bmc::Parameters::default(), &work, &ways.join(" or "), &render, &mut search)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
             } else {
