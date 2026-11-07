@@ -95,6 +95,11 @@ under Progress.
   for every long job, go on: it is *for review* after the run, and you don't wait for, poll or read it again. A step
   is done when its code, its inline tests and its jobs are committed; a criterion only an unreturned job can show is
   met pending review.
+- **The timebox** (the main brief's [rule](foundations.md#how-to-work-through-it)): an item that fails its verification
+  twice in a row (two quick jobs that came back, or two inline attempts) is logged under Progress as *deferred by the
+  timebox*, with both jobs or attempts, the finding, and what a further attempt would try and cost; then move on to
+  work that doesn't depend on it. No third attempt: it has very likely been underestimated, and a person handles it
+  separately, in another session. If it is part of your core, your status at the end is `blocked: ...` naming it.
 - **Status.** The last line of `## Progress` is a status, kept current in every commit and read by `run-streams.sh`:
   `- Status: working` while there is work you can do, `- Status: done` when your phases are finished, or
   `- Status: blocked: ...` with what needs the user. Never `waiting on jobs`. `done` requires that your part of the
@@ -124,4 +129,4 @@ under Progress.
 Go on while one of your phases has a step that needs nothing but your own work. Your core is above: don't stop before
 it unless a step needs the user. When a step's evidence is a long job, submit it and go on; a job is never a reason to stop, and a quick one is awaited only as above. Stop
 with `done` when your phases are finished, or `blocked: ...` when what is left needs the user and is recorded under
-Progress. Don't go on to polish, and don't start another stream's work.
+Progress. Items deferred by the timebox count as recorded deferrals, never as a reason to keep going. Don't go on to polish, and don't start another stream's work.

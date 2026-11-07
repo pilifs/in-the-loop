@@ -33,6 +33,7 @@ llm-dlc/
   tools/profile_rules.py            a cold scan's cost rule by rule, the measurements behind performance.md
   tools/metrics.py                  turns logs into the metrics tables; test_metrics.py tests it
   loops/                            briefs for feature-loop.sh: markdown instructions a loop works through
+  loops/brief-template.md           the skeleton of a brief and the standing rules every brief starts with, the timebox included
   tools/feature-loop.sh             runs a named instruction or a brief unattended: instruction, commit, compact, repeat, then a summary
   tools/verification-loop.sh        keeps the verification queue empty: a fresh Sonnet session per run of /run-verification
   tools/loop-common.sh              what the two loops share: log lines and the live display of a session

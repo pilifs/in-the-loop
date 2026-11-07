@@ -184,6 +184,13 @@ In addition:
   Nothing is decided from a long job's result: where a choice would depend on one, take the conservative option and
   record the job that would confirm it. Waiting never ends a cycle or sets a status: no loop of this brief says
   `waiting on jobs`.
+- **The timebox** ([template](brief-template.md#the-timebox)): an item that fails its verification twice in a row (two
+  quick jobs that came back, or two attempts at its inline check, failing, timing out or running out of memory) is
+  logged under Progress as *deferred by the timebox*, with both jobs or attempts, the finding, and what a further
+  attempt would try and cost, and the loop moves on to work that doesn't depend on it. There is no third attempt in
+  this run: an item that fails twice has very likely been underestimated (its proof may need far more depth than the
+  plan allowed), and it is handled separately, in another session, after careful consideration by a person. In the
+  joint example, a row whose item the timebox deferred makes Phase 5 partial.
 
 ## When it starts
 
@@ -286,7 +293,8 @@ last turns, copy their logs, merge with
 `jj new @- heap@- summaries@- observations@- alignment@-`, commit, fold their Progress here, and forget the
 workspaces (and `integration`). Where the streams extended the shared IR in different directions, reconcile the IR
 first, then the code that uses it, and say under Progress what was chosen. Nothing waits for the streams' jobs: fold
-them, with their ids and expected results, into one *for review* list in this brief's Progress. If a verification
+them, with their ids and expected results, into one *for review* list in this brief's Progress, and put above it
+every item a stream deferred by the timebox, with its finding, so the person reviewing the run sees those first. If a verification
 loop the user runs apart has left uncommitted files in this working copy, wait for it to commit them before merging,
 rather than moving or committing them (as `engine-priorities`'s step 4 says); results it collected are evidence for
 the review, not inputs to this loop.
@@ -497,4 +505,4 @@ the user. Keep the last line of Progress a status: `working`, `done`, or `blocke
 never `waiting on jobs`: a quick job is awaited only within a cycle, and a long one not at all. After the merge, Phase 5 is the core: `done` only when the joint example passes every row; if a
 row can't pass without the user or a later brief, stop with `blocked: Phase 5 partial: ...` naming the rows. Then go
 on while a cycle can still realize a substantial part of what is left; stop when the rest is small or speculative
-next to what is done, or needs the user and is recorded as deferred. Don't go on to polish.
+next to what is done, or needs the user and is recorded as deferred. Items deferred by the timebox count as recorded deferrals, never as a reason to keep going. Don't go on to polish.
