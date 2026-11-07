@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T16:26:46.424Z",
-  "ended": "2026-11-07T16:31:17.703Z",
-  "duration_seconds": 271,
+  "ended": "2026-11-07T16:38:05.641Z",
+  "duration_seconds": 679,
   "stats": {
     "turns": 5,
-    "api_calls": 35,
-    "tool_calls": 35,
+    "api_calls": 66,
+    "tool_calls": 67,
     "tool_errors": 0,
     "compactions": 1,
-    "peak_context_tokens": 113075,
+    "peak_context_tokens": 156851,
     "usage": {
-      "input_tokens": 68,
-      "output_tokens": 20830,
-      "cache_read_input_tokens": 2465170,
-      "cache_creation_input_tokens": 117643
+      "input_tokens": 130,
+      "output_tokens": 39211,
+      "cache_read_input_tokens": 6555617,
+      "cache_creation_input_tokens": 161419
     }
   },
   "tools": {
-    "Bash": 34,
+    "Bash": 66,
     "Write": 1
   },
   "files_touched": [
@@ -53,24 +53,24 @@
     {
       "index": 1,
       "started": "2026-11-07T16:26:43.700Z",
-      "ended": "2026-11-07T16:31:17.703Z",
+      "ended": "2026-11-07T16:38:05.641Z",
       "turns": 5,
-      "api_calls": 35,
+      "api_calls": 66,
       "usage": {
-        "input_tokens": 68,
-        "output_tokens": 20830,
-        "cache_read_input_tokens": 2465170,
-        "cache_creation_input_tokens": 117643
+        "input_tokens": 130,
+        "output_tokens": 39211,
+        "cache_read_input_tokens": 6555617,
+        "cache_creation_input_tokens": 161419
       },
-      "peak_context_tokens": 113075
+      "peak_context_tokens": 156851
     }
   ],
   "log": {
-    "sha256": "69f636d2bc199d770e622f1c701b9332c7cc1c0ca02311101e1c222093cd769d",
-    "bytes": 944383,
-    "lines": 375,
-    "gzip_bytes": 173332,
-    "path": "llm-dlc/traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/logs/69f636d2bc199d770e622f1c701b9332c7cc1c0ca02311101e1c222093cd769d.jsonl.gz"
+    "sha256": "01bf92755850780fdc0eebe7d634c30f63a4f1b038bb6c8eb2dbd2961e5c677a",
+    "bytes": 1476453,
+    "lines": 641,
+    "gzip_bytes": 241570,
+    "path": "llm-dlc/traces/a8cc612f-0606-4d4c-af9c-ef4ccb4bfee3/logs/01bf92755850780fdc0eebe7d634c30f63a4f1b038bb6c8eb2dbd2961e5c677a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -81,9 +81,23 @@
       "summary": "VF-009 triage: a fixture of a throwing class initializer, checked on the JVM, queued on JBMC (verification pending)",
       "body": "VF-009 (verification/findings.md): under auto --confirm, JBMC 6.11.0 refutes the conformance corpus's boomTwice and enumBroken at n=0, where the JVM and the tool's own checker hold. Both run a class initializer that throws. The new fixture lib/tests/fixtures/jbmc-defects/F.java has one void method per part of the JVM's semantics for such an initializer (JVMS 5.5: the exception wrapped in ExceptionInInitializerError, the class erroneous with NoClassDefFoundError at the next use, the initializer run once, an Error passed through unwrapped), plus copies of the two corpus methods. Every assertion holds on JDK 25.0.5, run inline (java -ea F: 'all hold, runs 4').\n\nJob 20261107-163056-vf-009-triage-a-class-initializer-that-t (priority 10) runs the fixture on stock JBMC with no flags, with --throw-runtime-exceptions, and with the flags jvmcontract passes, prints the goto listings of the two copies, and runs the corpus's methods through jvmcontract prove under --engine jbmc and auto --confirm with their work directories kept. It tells JBMC's semantics from a flag or the adapter's reading of the trace. The fixture README and the cleanup-jbmc brief's Progress say so.",
       "log_sha256": "69f636d2bc199d770e622f1c701b9332c7cc1c0ca02311101e1c222093cd769d"
+    },
+    {
+      "change_id": "uytnkqstzuktkvktrnnusokmtoqsopqs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-019: --confirm's refusal of a domain JBMC is not given is named, and the confirm conformance test reads it as no verdict",
+      "body": "VF-019 (verification/findings.md): under auto --confirm, H2's six nullable and may-alias claims gave 'no engine wrote a harness' in the_corpus_agrees_with_the_jvm_under_auto_confirm (job 20261107-043420), and then 'the corpus says it is refuted, the JVM does not' for the refuted ones. --confirm and --engine jbmc already refused such a domain, with a reason in words, but before writing the harness, so the test had nothing to run on the JVM and could not tell the refusal from a run that went wrong.\n\nproperty::Outcome gains refused, the name of the rule that refused the property before any checker ran: WIDENED_DOMAIN ('widened-domain', also in prove --json), and None for every other refusal and for any run a checker made. The conformance driver treats a claim with no harness whose every run is Unverifiable and refused by name as no verdict, not judged against the JVM in that test (the test under JBMC and auto, whose plain auto runs write the harness, judges it). Any other missing harness still fails. lib/README.md says the refusal's name.",
+      "log_sha256": "01bf92755850780fdc0eebe7d634c30f63a4f1b038bb6c8eb2dbd2961e5c677a"
     }
   ],
   "logs": {
+    "01bf92755850780fdc0eebe7d634c30f63a4f1b038bb6c8eb2dbd2961e5c677a": {
+      "bytes": 1476453,
+      "lines": 641,
+      "gzip_bytes": 241570,
+      "url": null
+    },
     "69f636d2bc199d770e622f1c701b9332c7cc1c0ca02311101e1c222093cd769d": {
       "bytes": 944383,
       "lines": 375,

@@ -204,7 +204,16 @@ pub struct Outcome {
     /// ([`crate::advice`]): the run stopped before solving.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub advice: Option<crate::advice::Advice>,
+    /// The name of the rule that refused the property before any checker ran, where it has one, so that a caller
+    /// can tell a refusal from a run that went wrong: [`WIDENED_DOMAIN`]. None for every other refusal, and for a
+    /// property a checker ran on.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refused: Option<&'static str>,
 }
+
+/// The refusal of a domain JBMC is not given, where an array parameter may be null or one array with another
+/// (`--nullable`, `--may-alias`), under `--engine jbmc` or `--confirm`: JBMC would prove a narrower claim.
+pub const WIDENED_DOMAIN: &str = "widened-domain";
 
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
@@ -256,6 +265,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             replay: None,
             stated: None,
             advice: None,
+            refused: None,
         })
     };
 
@@ -348,7 +358,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let widened = !parameters.is_default();
     if widened && (options.engine == crate::Engine::Jbmc || options.confirm) {
         let how = if options.confirm { "--confirm would have JBMC check a narrower claim than this one" } else { "JBMC is not given it" };
-        return refuse(&mut out, line, format!("the domain {domain} lets an array parameter be null or one array with another, which only the tool's own checker takes, and {how}: check it with --engine native or auto"));
+        let mut refused = refuse(&mut out, line, format!("the domain {domain} lets an array parameter be null or one array with another, which only the tool's own checker takes, and {how}: check it with --engine native or auto"))?;
+        refused.refused = Some(WIDENED_DOMAIN);
+        return Ok(refused);
     }
 
     // 2. The statement. A declared exception is named as in Java, `java.lang.ArithmeticException`, or by its simple
@@ -459,7 +471,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let mut s = stated(None, None, false);
         s.checker = crate::statement::scan_checker();
         s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), assume: options.assume.clone(), assert: Some(assertion.clone()), throws: options.throws.clone(), throws_checked: throws_checked.clone(), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), assume: options.assume.clone(), assert: Some(assertion.clone()), throws: options.throws.clone(), throws_checked: throws_checked.clone(), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice), refused: None })
     };
     if options.engine != crate::Engine::Jbmc {
         // Under advised, what the harness may reach first: the contract library closes only gaps it reaches.
@@ -630,7 +642,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let call = witness::typed_call(&target, &layout, &found, false, &[]);
         let counterexample = Some(Counterexample { input: rendered, outcome, expected: None, values, found: None, shrink_runs: 0, inputs: witness::typed_inputs(&flat, &found), found_inputs: None, call });
         let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -747,7 +759,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 }
                 let by = if jvm_ran { "jvm" } else { "interpreter" };
                 let replay = Some(crate::equivalence::Replay { by: by.into(), reproduced: false });
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None });
             }
             // Over objects the property reads the heap, which only the harness can: the interpreter runs the harness
             // itself on the witness, which makes the objects as the checker did.
@@ -774,7 +786,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
                 let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -809,7 +821,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                             sarif::write(&report.join("property.sarif"), &findings)?;
                         }
                         let replay = Some(crate::equivalence::Replay { by: "jvm".into(), reproduced: false });
-                        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
+                        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None });
                     }
                     Ok(run) => jvm_note = Some((false, format!("not confirmed on a JVM, where the harness threw {}", match run.check { crate::jvm_witness::Check::Threw(c) => c, _ => unreachable!() }))),
                     Err(e) => jvm_note = Some((false, format!("not run on a JVM: {e}"))),
@@ -896,6 +908,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         replay,
         stated,
         advice: None,
+        refused: None,
     })
 }
 

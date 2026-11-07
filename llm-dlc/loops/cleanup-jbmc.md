@@ -128,6 +128,24 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
   `20261107-163056-vf-009-triage-a-class-initializer-that-t` (priority 10) runs the fixture on stock JBMC with no
   flags, `--throw-runtime-exceptions`, and the adapter's flags, and the corpus's two methods through `jvmcontract
   prove` under `jbmc` and `auto --confirm`, keeping JBMC's traces. Next: VF-019, which doesn't wait on it.
+- **J1, VF-019: fixed, its job waits on VF-009's fix** (2026-11-07). Read in the code: `--confirm` (and `--engine
+  jbmc`) already refused the six claims with a reason in words (`property.rs`, "the domain … lets an array parameter
+  be null or one array with another, which only the tool's own checker takes"), but before writing the harness, so
+  the confirm test found no harness for them under any of its runs. It then also failed them as "the corpus says it
+  is refuted, the JVM does not": 6 more failures in `-043420` beside the 12 the entry counts. Now the refusal is
+  named: `property::Outcome::refused`, `Some(WIDENED_DOMAIN)` (`"widened-domain"`, in `--json` too), None for every
+  other refusal and every run a checker made. In `conformance()`, a claim with no harness whose every run is
+  `Unverifiable` and refused by name has no verdict and isn't judged against the JVM there (the test under JBMC and
+  auto, whose plain `auto` runs write its harness, judges it). Any other missing harness is still a failure.
+  Reproducer: `a_domain_jbmc_is_not_given_is_refused_by_name` (not ignored, no JBMC run) checks the six claims under
+  `auto --confirm` strict and assume and `--engine jbmc`, and that plain `auto` decides them as the corpus records.
+  It fails with `refused` left None (checked inline), and the conformance suite's 10 tests pass. Shared files, by
+  adding: `lib/README.md` (one clause naming the refusal), and `Outcome`'s new field in `property.rs`. The closing
+  resubmission of `20261107-043420-…` waits on VF-009's fix, since the same test carries VF-009's 8 disagreements.
+- Not this stream's: `sync.py commit`'s check in this workspace reports 4 errors, none on this branch's own commits.
+  They are the planning session's base commit `oqqwvmqy`, whose log `3f768f3bb246` is stored only in the default
+  workspace, and other workspaces' commits (`ruvmymplmmoo`, native; `syqpoxomnynk`, the verification loop) whose
+  manifests are there. The foundations streams saw the same, and it resolved at the merge.
 - Status: working
 
 ## Loop settings

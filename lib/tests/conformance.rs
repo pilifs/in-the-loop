@@ -598,10 +598,22 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
             checks.push((Some(runs.iter().position(|r| std::ptr::eq(r, run)).unwrap()), run.case, run.claim, format!("check\t{}\t{}", dir.display(), runner_arguments(&witness.inputs))));
         }
     }
+    // A claim that every run refused by name before writing its harness (`property::Outcome::refused`: under
+    // `--confirm`, a domain JBMC is not given) has no verdict here, and no harness for the JVM to run, so the JVM's
+    // word on it is left to the tests that run the own checker alone. A harness missing for any other reason fails.
+    let mut unjudged = std::collections::BTreeSet::new();
+    let mut refused_by_name = Vec::new();
     for (c, case) in corpus.iter().enumerate() {
         for k in 0..case.claims.len() {
             let Some(dir) = harness_of.get(&(c, k)) else {
-                failures.push(format!("{} [{}]: no engine wrote a harness", case.method, claim_text(&case.claims[k])));
+                let mut of_claim = runs.iter().filter(|r| r.case == c && r.claim == k).peekable();
+                let named = of_claim.peek().is_some() && of_claim.all(|r| r.outcome.verdict == Verdict::Unverifiable && r.outcome.refused.is_some());
+                if named {
+                    unjudged.insert((c, k));
+                    refused_by_name.push(format!("{} [{}]", case.method, claim_text(&case.claims[k])));
+                } else {
+                    failures.push(format!("{} [{}]: no engine wrote a harness", case.method, claim_text(&case.claims[k])));
+                }
                 continue;
             };
             let outside = case.outside.iter().filter(|_| case.claims[k].widened()).map(|(arguments, _, _)| arguments);
@@ -643,7 +655,7 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
         let verdict = run.outcome.verdict;
         let confirmation = run.outcome.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status);
         let _ = writeln!(table, "{:<16} {:?}/{:?}{}{} {:<12} {}", case.method, run.engine, run.gaps, match run.contracts { Contracts::None => "", Contracts::File => "+contracts", Contracts::Library => "+library" }, confirmation.map(|c| format!(" {c:?}")).unwrap_or_default(), format!("{verdict:?}"), claim_text(claim));
-        if refuted != claim.refuted {
+        if refuted != claim.refuted && !unjudged.contains(&(run.case, run.claim)) {
             failures.push(format!("{label}: the corpus says it is {}, the JVM {}", if claim.refuted { "refuted" } else { "not refuted" }, if refuted { "refutes it" } else { "does not on any of its calls" }));
         }
         let gaps = run.outcome.search.as_ref().map(|s| s.gaps.len()).unwrap_or(0);
@@ -727,6 +739,9 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
     let claims: usize = corpus.iter().map(|c| c.claims.len()).sum();
     let refuted = corpus.iter().flat_map(|c| &c.claims).filter(|c| c.refuted).count();
     eprintln!("{} cases, {claims} claims ({refuted} refuted on the JVM), {} runs; the interpreter refuses {}", corpus.len(), runs.len(), refused.join(", "));
+    if !refused_by_name.is_empty() {
+        eprintln!("refused by name before a harness, so no verdict, on {} claims: {}", refused_by_name.len(), refused_by_name.join("; "));
+    }
     if !advised.is_empty() {
         eprintln!("--gaps advised asks for contracts on {} claims: {}", advised.len(), advised.join("; "));
     }
@@ -843,6 +858,29 @@ fn the_corpus_agrees_with_the_jvm_under_jbmc_and_auto() {
     }
     let Some(failures) = conformance(&[(Engine::Jbmc, GapMode::Strict, false, Contracts::None), (Engine::Auto, GapMode::Strict, false, Contracts::None)], false) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
+}
+
+/// VF-019 (`verification/findings.md`): under `--confirm` and `--engine jbmc`, a claim over a domain JBMC is not given
+/// (`--nullable`, `--may-alias`) is refused by name before any checker runs, with no harness, so the test above reads
+/// it as no verdict rather than as a run that wrote no harness. With the own checker alone it is decided.
+#[test]
+fn a_domain_jbmc_is_not_given_is_refused_by_name() {
+    let Some(compiled) = compile() else { return };
+    let corpus = corpus();
+    let mut seen = 0;
+    for case in corpus.iter().filter(|c| ["length", "lengthOrMinusOne", "twoArrays"].contains(&c.method)) {
+        for (k, claim) in case.claims.iter().enumerate().filter(|(_, c)| c.widened()) {
+            for mode in [(Engine::Auto, GapMode::Strict, true, Contracts::None), (Engine::Auto, GapMode::Assume, true, Contracts::None), (Engine::Jbmc, GapMode::Strict, false, Contracts::None)] {
+                let o = prove(case, claim, 100 + k, mode, &compiled.classes);
+                assert_eq!((o.verdict, o.refused), (Verdict::Unverifiable, Some(jvmcontract::property::WIDENED_DOMAIN)), "{} [{}] {mode:?}: {}", case.method, claim_text(claim), o.output);
+                assert!(o.statement.is_none() && o.search.is_none() && o.problem.as_deref().is_some_and(|p| p.contains("only the tool's own checker takes")), "{}", o.output);
+            }
+            let o = prove(case, claim, 100 + k, (Engine::Auto, GapMode::Strict, false, Contracts::None), &compiled.classes);
+            assert!(o.refused.is_none() && o.verdict == claim.native && o.statement.is_some(), "{} [{}] auto: {}", case.method, claim_text(claim), o.output);
+            seen += 1;
+        }
+    }
+    assert_eq!(seen, 6, "H2's six claims over a domain JBMC is not given");
 }
 
 /// `--engine auto --confirm` under strict and assume, on the same corpus: JBMC proves again every claim the own
