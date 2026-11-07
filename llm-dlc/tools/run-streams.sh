@@ -67,6 +67,22 @@
 # says it waits on jobs anyway is counted as finished, with the jobs listed for
 # that review.
 #
+# In tmux, it makes the run easy to follow over ssh. It turns the mouse on for
+# the tmux session, so the wheel scrolls back through the output (or Ctrl-b [,
+# then PgUp, PgDn and the arrows; q to leave). A pane keeps the history limit it
+# was made with, so if this one keeps fewer than RUN_STREAMS_HISTORY lines
+# (200000) it raises the session's limit and goes on in a new window,
+# streams-NAME, which keeps them; that window stays open with the output after
+# the run, until Enter (RUN_STREAMS_NEW_WINDOW=no keeps it in this pane). And it
+# shows a status bar at the bottom of the pane, refreshed every
+# RUN_STREAMS_STATUS_EVERY seconds (15): the run's age and spend, then for each
+# loop its current cycle, its commits, its spend, its state, and how long since
+# its last output line, and the integration check's last result. The same line
+# is logged every half hour (every quarter hour outside tmux, where there is no
+# bar). Spend is the sum of the "turn done" figures the loops print, kept with
+# the rest of the state in llm-dlc/loop-summaries/run-streams-NAME/, so it
+# survives a restart. llm-dlc/tools/streams_status.py reads and renders it.
+#
 # Exits 0 when the brief's own loop is finished, 1 if it is blocked or the setup
 # fails, 2 for a bad argument and 130 if interrupted.
 
@@ -96,6 +112,35 @@ source llm-dlc/tools/loop-common.sh
 if [[ "$(realpath "$(jj workspace root --ignore-working-copy --name default 2>/dev/null)")" != "$ROOT" ]]; then
   log "run this from the default workspace's copy of the script, not $ROOT"
   exit 2
+fi
+
+# tmux: scrollback and the status bar (see the header).
+PANE=
+HISTORY=${RUN_STREAMS_HISTORY:-200000}
+STATUS_EVERY=${RUN_STREAMS_STATUS_EVERY:-15}
+[[ "$HISTORY" =~ ^[0-9]+$ && "$STATUS_EVERY" =~ ^[1-9][0-9]*$ ]] || usage
+if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]] && command -v tmux >/dev/null; then
+  tmux set-option -t "$TMUX_PANE" mouse on >/dev/null 2>&1
+  have=$(tmux display-message -p -t "$TMUX_PANE" '#{history_limit}' 2>/dev/null)
+  if [[ "$have" =~ ^[0-9]+$ ]] && (( have < HISTORY )) && [[ "${RUN_STREAMS_NEW_WINDOW:-yes}" != no ]]; then
+    tmux set-option -t "$TMUX_PANE" history-limit "$HISTORY" >/dev/null 2>&1
+    passed=()
+    while IFS= read -r kv; do passed+=(-e "$kv"); done < <(env | grep -E '^((RUN_STREAMS|FEATURE_LOOP|VERIFICATION_LOOP)_[A-Z_]*|CLAUDE_CONFIG_DIR)=')
+    if tmux new-window -n "streams-$NAME" -c "$ROOT" "${passed[@]}" -e RUN_STREAMS_NEW_WINDOW=no \
+        bash -c '"$0" "$1"; code=$?; printf "\nrun-streams.sh %s ended with status %s. Scroll back with the mouse wheel or Ctrl-b [; press Enter to close this window.\n" "$1" "$code"; read -r' \
+        "$ROOT/llm-dlc/tools/run-streams.sh" "$NAME"; then
+      log "this pane keeps only $have lines of history, so the run goes on in the new tmux window streams-$NAME, which keeps $HISTORY"
+      exit 0
+    fi
+    log "could not open a tmux window: going on here, with $have lines of history"
+  fi
+  PANE=$TMUX_PANE
+  tmux set-option -p -t "$PANE" pane-border-status bottom >/dev/null 2>&1
+  tmux set-option -p -t "$PANE" pane-border-format ' #{@run_streams} ' >/dev/null 2>&1
+  tmux set-option -p -t "$PANE" @run_streams "run-streams.sh $NAME: starting" >/dev/null 2>&1
+  log "tmux: the mouse wheel scrolls (or Ctrl-b [, then PgUp/PgDn; q to leave); the status bar is at the bottom of this pane"
+else
+  log "not in tmux: no status bar, and scrollback is the terminal's; run it inside tmux (tmux new -s streams) for both"
 fi
 
 # "- key: value" under a brief's "## Loop settings" heading, as feature-loop.sh reads it.
@@ -168,6 +213,15 @@ jobs_back() {
   done
 }
 
+# The status bar's state (see the header): spend and the run's start survive a
+# restart; phases, cycles and activity are this invocation's.
+STATE=$ROOT/llm-dlc/loop-summaries/run-streams-$NAME
+mkdir -p "$STATE" || exit 1
+rm -f "$STATE"/*.phase "$STATE"/*.cycle "$STATE"/*.last
+[[ -s "$STATE/start" ]] || date +%s >"$STATE/start"
+START=$(<"$STATE/start")
+phase() { printf '%s\n' "$2" >"$STATE/$1.phase"; }
+
 # Run one loop until it is finished, as the header says: LABEL, the workspace it
 # runs in, its name for feature-loop.sh, and its brief there. Exits 0 when its
 # brief says done, 3 when it is blocked, 130 if interrupted.
@@ -183,6 +237,7 @@ supervise() {
     if [[ "$status" == "waiting on jobs"* ]]; then
       read -ra ids <<<"$(tr ',;' '  ' <<<"${status#waiting on jobs}")"
       if (( ${#ids[@]} )) && ! jobs_back "${ids[@]}"; then
+        phase "$label" "waiting for jobs"
         log "[$label] waiting for ${ids[*]}, checking every ${POLL}s"
         waited=0
         until jobs_back "${ids[@]}"; do
@@ -197,7 +252,8 @@ supervise() {
       fi
     fi
     log "[$label] starting feature-loop.sh $loop in $dir"
-    "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | sed -u "s/^/[$label] /"
+    phase "$label" running
+    "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
     code=${PIPESTATUS[0]}
     (( code == 130 )) && exit 130
     status=$(status_of "$brief")
@@ -318,10 +374,12 @@ set -m
 declare -A PID
 VERIFY=
 INTEGRATE=
+STATUS=
 stop_all() {
   log "stopping every loop"
   for p in "${PID[@]}" $VERIFY; do kill -INT -- "-$p" 2>/dev/null; done
   [[ -n "$INTEGRATE" ]] && kill -TERM -- "-$INTEGRATE" 2>/dev/null
+  [[ -n "$STATUS" ]] && kill -TERM -- "-$STATUS" 2>/dev/null
 }
 trap 'stop_all; wait; exit 130' INT TERM
 
@@ -343,16 +401,44 @@ else
   VERIFY=$!
 fi
 
+# The status line: each stream, then the merge, from the state above.
+STATUS_LOOPS=()
+for s in "${STREAMS[@]}"; do STATUS_LOOPS+=("$s=${DIR[$s]}=${BRIEF%.md}-$s.md"); done
+STATUS_LOOPS+=("merge=$ROOT=$BRIEF")
+status_line() {
+  python3 "$ROOT/llm-dlc/tools/streams_status.py" render --name "$NAME" --state "$STATE" --start "$START" \
+    ${INTEGRATION:+--integration "$INTEGRATION_REPORT"} "${STATUS_LOOPS[@]}" 2>/dev/null
+}
+show_status() {
+  local text
+  text=$(status_line) || return 0
+  [[ -n "$PANE" ]] && tmux set-option -p -t "$PANE" @run_streams "$text" >/dev/null 2>&1
+  [[ -n "${1:-}" ]] && log "[status] $text"
+  return 0
+}
+# Runs until killed: the bar every STATUS_EVERY seconds, the log every half hour (quarter hour without a bar).
+status_bar() {
+  local every=900 logged=0 now
+  [[ -n "$PANE" ]] && every=1800
+  while :; do
+    now=$(date +%s)
+    if (( now - logged >= every )); then show_status log; logged=$now; else show_status; fi
+    sleep "$STATUS_EVERY"
+  done
+}
 for s in "${STREAMS[@]}"; do
   brief=${BRIEF%.md}-$s.md
   status=$(status_of "${DIR[$s]}/$brief")
   if finished "$status"; then
     log "[$s] its brief says $status: not run again"
+    phase "$s" "finished: $status"
     continue
   fi
   supervise "$s" "${DIR[$s]}" "$NAME-$s" "$brief" &
   PID[$s]=$!
 done
+status_bar &
+STATUS=$!
 if [[ -n "$INTEGRATION" ]] && (( ${#PID[@]} )); then
   log "[integration] checking the streams together as they commit, into $INTEGRATION_REPORT"
   integrate &
@@ -364,6 +450,7 @@ for s in "${!PID[@]}"; do
   code=$?
   (( code == 130 )) && { log "[$s] interrupted"; stop_all; wait; exit 130; }
   log "[$s] finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
+  phase "$s" "finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
 done
 PID=()
 if [[ -n "$INTEGRATE" ]]; then
@@ -377,6 +464,7 @@ code=0
 status=$(status_of "$ROOT/$BRIEF")
 if finished "$status"; then
   log "[merge] its brief says $status: not run again"
+  phase merge "finished: $status"
 else
   log "every stream is finished: the brief's own loop merges them"
   supervise merge "$ROOT" "$NAME" "$BRIEF" &
@@ -384,12 +472,19 @@ else
   wait "${PID[merge]}"
   code=$?
   PID=()
+  phase merge "finished: $(status_of "$ROOT/$BRIEF")"
 fi
 if [[ -n "$VERIFY" ]]; then
   log "stopping the verification loop after its run under way"
   kill -USR1 "$VERIFY" 2>/dev/null
   wait "$VERIFY"
 fi
+if [[ -n "$STATUS" ]]; then
+  kill -TERM -- "-$STATUS" 2>/dev/null
+  wait "$STATUS" 2>/dev/null
+  STATUS=
+fi
+show_status log
 (( code == 130 )) && exit 130
 status=$(status_of "$ROOT/$BRIEF")
 log "finished: the brief $BRIEF says ${status:-no status}"
