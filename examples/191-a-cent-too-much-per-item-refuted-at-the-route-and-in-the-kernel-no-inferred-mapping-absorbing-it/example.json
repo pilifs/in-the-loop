@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "191",
+  "title": "A cent too much per item, refuted at the route and in the kernel, no inferred mapping absorbing it",
+  "summary": "The value-object refactor of 190, with `total` charging one cent more per item. The input mapping `old.cents == new.amount.cents + 1` would make the totals agree, is not vacuous and is even a bijection, and it would hide the regression; the tool never proposes it. The route and the kernel's `total` are both refuted on one cent for one item, each witness replayed on the JVM.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "payments",
+    "spring-boot",
+    "off-by-one",
+    "joint-run",
+    "object-inputs",
+    "own-checker"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Shop",
+    "file": "examples/apps/shop/src/main/java/shop/Pricing.java",
+    "symbol": "shop.Pricing#total"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "`Quote`'s amount, a `long` of cents, becomes a value object, `Money`, so `Quote(long cents, int quantity)` is now `Quote(Money amount, int quantity)`; `Pricing.total` reads `q.amount.cents()` where it read `q.cents`; the pure helper `Pricing.discount` (a tenth off ten items or more) is rewritten as an early return; and the route `POST /quotes` makes the quote with `new Money(cents)`. Nothing is meant to change: not the total, not the event the route sends, not what `Pricing.withQuantity` hands back. In this version `total` also adds a cent to the amount before multiplying: `(q.amount.cents() + 1) * q.quantity`.",
+    "patch": "change.patch"
+  },
+  "risk": "A proof of a reshaped object needs a relation between the old and new objects, and a tool that infers one could pick whichever makes the proof go through. Here `old.q.cents == new.q.amount.cents + 1` does: the totals agree under it on every input. The regression is then explained away, not found.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "Alignment proposes only equations that copy a field into the field it was routed to, never arithmetic, so `old.q.cents == new.q.amount.cents` is the only candidate, and the request's inputs at the route are anchored by its observation spec, so no mapping is involved there at all. Under them, `total` returns 0 before and 1 after for a quote of 0 cents and one item, and `POST /quotes` answers 0 and sends nothing before, 1 and a `QuoteEvent(total=1, quantity=1)` after.",
+  "resolution": "Remove the extra cent. The app's tests catch this one too (four of five fail): the point of the example is that no automation layer of the run can hide it.",
+  "notes": [
+    "Checked by `jvmcontract compare`, which build.py runs as the B9 check of the shop app (`run_tool_compare`): the unpatched build against the patched one, twice under one fresh proof cache, the verdict read from the rerun and the page's output from the first run. The verdict is the subject's; the page lists every other part the run checked.",
+    "The joint example of `llm-dlc/loops/foundations.md`'s Phase 5, made an example: the app's sources are the fixture's `before` build (`lib/tests/fixtures/foundations/`), and the patch turns them into its `after` build with the offset defect (`defects/offset/`) overlaid. `lib/tests/compare.rs` holds `jvmcontract compare` to the same builds inline; this is the same run by build.py, with the app's tests run too.",
+    "Nothing in the run is written by hand. The entry points' external inputs (`cents`, `quantity`) are anchored by their observation specs, so no mapping is involved at the boundary. The kernel's relation between the old and new quotes (`old.q.cents == new.q.amount.cents`, `old.q.quantity == new.q.quantity`) is alignment's proposal, inferred from how the two constructors route their parameters into the fields; it stays *proposed*, its evidence the proof under its claim key, and since nothing external anchors a kernel method's inputs, a proved relation there is reported as proved and not as the intended one.",
+    "What stays unresolved in every example of the set, by name: `POST /quotes/text` (its string concatenation isn't modeled), `Quote#cents` moved to `Money#cents` (a method of a class the old build doesn't have) and the instance method `Quote#quantity` (the regression check takes static methods, or a record's over its primitive components).",
+    "Run inline on 2026-11-07 (JDK 25.0.5), `jvmcontract compare` on the app compiled unpatched and patched, as build.py compiles it, and on the fixture's builds, with the same verdicts (the times are the fixture's): `POST /quotes` refuted on `cents=0, quantity=1` and `Pricing#total` refuted on `new Quote(new Money(0), 1)`, both replayed on a JVM; `withQuantity` and `discount` verified. 1.5 s cold; the rerun took 0.2 s, the refutations reused and their witnesses replayed again.",
+    "`total`'s proof is made again, under a claim key of its own, not taken from 190's: the closure digests of the changed `total` differ (`lib/tests/compare.rs`)."
+  ],
+  "provenance": "Constructed for Phase 5 of `llm-dlc/loops/foundations.md` (the joint example, made an example under the numbers 190-199). Examples 190 to 196 share the refactor: 190 is the refactor alone, and 191 to 196 each add one of the fixture's defects to it.",
+  "references": [
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    },
+    {
+      "title": "Barthe, Crespo and Kunz, Relational verification using product programs (2011)",
+      "url": "https://doi.org/10.1007/978-3-642-21437-0_17"
+    }
+  ]
+}

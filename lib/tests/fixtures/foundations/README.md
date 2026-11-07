@@ -10,6 +10,10 @@ and `alias-to-copy`, which changes only a method the route doesn't reach, reuses
 defect at the boundary (a changed trace bound, snapshot, `@ResponseStatus` or handler) is `tests/effects.rs`'s
 `an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged`.
 
+**As examples.** The [shop app](../../../../examples/apps/shop/README.md) is `before/` as an app, and the examples
+tagged [`joint-run`](../../../../examples/README.md#tag-joint-run) patch it into `after/` and each defect (the defects'
+marker comments left out), run by `build.py` through `jvmcontract compare` with a fresh proof cache and a rerun.
+
 **The change.** A small pricing kernel behind one thin, real annotated entry point (`POST /quotes`, which returns the
 total and sends a `QuoteEvent` on the `quotes` topic when the total is positive). The refactor from `before/` to
 `after/` turns the primitive amount of `Quote` into a value object, `Money`, and rewrites the pure helper

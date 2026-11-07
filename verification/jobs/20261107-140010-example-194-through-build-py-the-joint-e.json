@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-140010-example-194-through-build-py-the-joint-e",
+  "title": "Example 194 through build.py: the joint example's run by jvmcontract compare",
+  "description": "Runs example 194 (Phase 5 of llm-dlc/loops/foundations.md: the joint example made an example on the new shop app) through build.py's new runner run_tool_compare: the app compiled unpatched and patched, its tests run, then jvmcontract compare twice under one fresh proof cache, the verdict read from the rerun's JSON and the page from the first run's text and SARIF. The same verdicts came inline from jvmcontract compare on the app's builds; this run is build.py's first on the runner, so it checks the runner and the page too. Expected: violation: POST /quotes refuted on a quote of ten items or more, the old build sending one QuoteEvent and the new two; every part of the rerun an exact hit apart from the unresolved ones; matchesExpected true.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:compare"
+  ],
+  "links": {
+    "examples": [
+      "194"
+    ]
+  },
+  "expected": "build.py exits 0 and the result matches the example's expected verdict: violation: POST /quotes refuted on a quote of ten items or more, the old build sending one QuoteEvent and the new two",
+  "submitted": {
+    "at": "2026-11-07T14:00:10+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "3m",
+    "notes": "two compare runs of under a second each on seven small classes, plus javac and the app's tests; a cargo build of jvmcontract if the release binary is missing"
+  },
+  "steps": [
+    {
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order"
+  ]
+}

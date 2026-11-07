@@ -798,6 +798,128 @@
         }
       }
     },
+    "joint": {
+      "description": "For a B9 example on the joint example's app (run_tool_compare): the rest of the `jvmcontract compare` run, read from its warm rerun on the same proof cache. Null when the run reached no verdict; absent for every other runner.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "parts",
+        "obligations",
+        "decisions",
+        "questions",
+        "assumed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "parts": {
+          "description": "Every part the run checked, in its order: each old entry point, then each changed kernel method pair alignment matched.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "subject",
+              "symbol",
+              "verdict",
+              "why",
+              "reused",
+              "callees"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "entry point",
+                  "kernel"
+                ]
+              },
+              "subject": {
+                "description": "The entry point's id (`POST /quotes`), or the kernel pair as the new method, with the old one when it differs.",
+                "type": "string"
+              },
+              "symbol": {
+                "description": "The method the part is about, `pkg.Class#method`: an entry point's old handler, a kernel pair's new method. The example's subject.symbol picks its verdict among them.",
+                "type": "string"
+              },
+              "verdict": {
+                "type": "string",
+                "enum": [
+                  "verified",
+                  "violation",
+                  "unverifiable"
+                ]
+              },
+              "why": {
+                "description": "Why it has no verdict, or for a refuted entry point the run's reason; null for a verified part.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reused": {
+                "description": "Whether the rerun's result was an exact hit of the stored proof of the same claim.",
+                "type": "boolean"
+              },
+              "callees": {
+                "description": "The changed helpers proved equivalent by a check of their own and taken as one function in both versions of this part's check.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "obligations": {
+          "description": "The obligations, one per observation of an old entry point, counted by change (preserved, changed, removed, unresolved, new).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "decisions": {
+          "description": "The decisions a person made, by category, every category counted, zero included.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "questions": {
+          "description": "The decisions the run leaves for a person.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "subject",
+              "category",
+              "decide"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "decide": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "assumed": {
+          "description": "What the verdicts rest on that no person decided: the environment model's restrictions and the recording stubs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "helpers": {
       "description": "For a B9 proof run with the proof cache (the example's `approach.cache`): each changed helper of the target the tool offered for a regression proof of its own before the caller's, from the tool's note about it. Null when the run reached no verdict; absent without the cache.",
       "type": ["array", "null"],

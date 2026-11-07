@@ -228,6 +228,16 @@ enum Command {
         /// Print the report as JSON instead of text.
         #[arg(long)]
         json: bool,
+        /// Write `compare.sarif` into this directory: an `effects-changed` finding per refuted entry point and a
+        /// `behaviour-changed` one per refuted kernel pair.
+        #[arg(long)]
+        report: Option<PathBuf>,
+        /// The new build's source roots, which a finding is anchored in (repeatable).
+        #[arg(long = "sources")]
+        sources: Vec<PathBuf>,
+        /// Make a finding's path relative to this directory.
+        #[arg(long)]
+        base: Option<PathBuf>,
     },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
@@ -998,9 +1008,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let all = checks.iter().all(|c| c.checked.as_ref().is_some_and(|k| k.outcome.verdict == jvmcontract::spec::Verdict::Verified));
             Ok(if all { 0 } else { 1 })
         }
-        Command::Compare { before, after, cache, unwind, max_array_length, json } => {
+        Command::Compare { before, after, cache, unwind, max_array_length, json, report: report_dir, sources, base } => {
             let options = jvmcontract::compare::Options { before, after, cache, bounds: jvmcontract::spec::ClaimBounds { unwind, max_array_length } };
             let report = jvmcontract::compare::run(&options).map_err(|u| Error::new(u.to_string()))?;
+            if let Some(dir) = &report_dir {
+                jvmcontract::sarif::write(&dir.join("compare.sarif"), &jvmcontract::compare::findings(&report, &sources, base.as_deref()))?;
+            }
             if json {
                 println!("{}", serde_json::to_string_pretty(&report).expect("serializable"));
             } else {

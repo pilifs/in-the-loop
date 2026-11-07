@@ -80,6 +80,9 @@ TOOL_APPS = {
     # framework stand-ins under `stubs`, which are on the class path but never part of the build checked.
     "deliveries": {"root": "examples/apps/deliveries", "tests": "net.terminalvalue.deliveries.Tests",
                    "stubs": "src/stubs/java", "uses": ["examples/apps/crosscut"]},
+    # The foundations loop's joint example as an app: a pricing kernel behind one thin Spring route, compared whole
+    # (`jvmcontract compare`), against the same kind of framework stand-ins.
+    "shop": {"root": "examples/apps/shop", "tests": "shop.Tests", "stubs": "src/stubs/java"},
 }
 IGNORE = shutil.ignore_patterns("build", ".gradle", ".kotlin", "*.class")
 
@@ -444,10 +447,13 @@ def proof_options(example, approach=None):
     if approach not in ("B9", "B11"):
         return []
     a = example["approach"]
-    if approach == "B9" and RUNNERS.get(app_of(example), {}).get("B9") is run_tool_effects:
-        # The effect check always runs the tool's own checker, strict: only its bounds are the example's to set.
-        return [flag for key, name in (("unwind", "--unwind"), ("maxArrayLength", "--max-array-length")) if a.get(key)
-                for flag in (name, str(a[key]))]
+    runner = RUNNERS.get(app_of(example), {}).get("B9")
+    if approach == "B9" and runner in (run_tool_effects, run_tool_compare):
+        # The effect check and the joint run always run the tool's own checker, strict: only its bounds are the
+        # example's to set. The joint run always has the proof cache, a fresh one, which its rerun reuses.
+        bounds = [flag for key, name in (("unwind", "--unwind"), ("maxArrayLength", "--max-array-length")) if a.get(key)
+                  for flag in (name, str(a[key]))]
+        return bounds + (["--cache", PROOF_CACHE_DIR] if runner is run_tool_compare else [])
     flags = ["--engine", a["engine"]] if a.get("engine") else []
     if gap_mode(example):
         flags += ["--gaps", gap_mode(example)]
@@ -2034,6 +2040,124 @@ def run_tool_effects(folder, example, root, module, result):
     })
 
 
+COMPARE_VERDICT = {"verified": "verified", "refuted": "violation", "unresolved": "unverifiable"}
+
+
+def compare_parts(report):
+    """Every part a `jvmcontract compare --json` report checked, in its order: each old entry point and each changed
+    kernel method pair, with its verdict (verified, violation or unverifiable, the last for an unresolved or
+    unsupported part), why it has no verdict, whether it was an exact hit of a stored proof (`reused`), and the
+    changed helpers proved on their own and taken as one function in it (`callees`)."""
+    parts = []
+    for e in report["entries"]:
+        checked = e.get("checked")
+        outcome = (checked or {}).get("outcome") or {}
+        why = e.get("unsupported") or (checked or {}).get("reason") or outcome.get("problem")
+        parts.append({"kind": "entry point", "subject": e["entry"], "symbol": e["handler"],
+                      "verdict": COMPARE_VERDICT.get(outcome.get("verdict"), "unverifiable"),
+                      "why": why if outcome.get("verdict") != "verified" else None,
+                      "reused": ((checked or {}).get("reuse") or {}).get("kind") == "exact", "callees": []})
+    for k in report["kernel"]:
+        outcome = k.get("outcome") or {}
+        parts.append({"kind": "kernel", "subject": k["subject"] if k["subject"] == k["before"] else f"{k['subject']} (was {k['before']})",
+                      "symbol": k["subject"], "verdict": COMPARE_VERDICT.get(outcome.get("verdict"), "unverifiable"),
+                      "why": k.get("unsupported") or outcome.get("problem"),
+                      "reused": (k.get("reuse") or {}).get("kind") == "exact",
+                      "callees": [c["callee"] for c in k.get("callees") or [] if c.get("kind") == "callee"]})
+    return parts
+
+
+def run_tool_compare(folder, example, root, module, result):
+    """B9 on the joint example's app (Phase 5 of llm-dlc/loops/foundations.md): `jvmcontract compare` between the
+    unpatched and the patched classes, which runs the foundations' four parts together with nothing written by hand:
+    each entry point checked under the claim its own observation spec makes (as `effects` does), and each changed
+    kernel method pair alignment matches checked over objects under the correspondence alignment proposes, every
+    proof under one fresh proof cache. It runs twice: once for the text the page shows and the SARIF report, then
+    again, warm, for the JSON the result is read from, so that the rerun's exact hits are recorded too. The verdict
+    is the subject's (`subject.symbol`, an entry point's handler or a kernel method); every other part is recorded
+    in `joint`, with the obligations, the decisions a person made and the questions left for one. Each run is a few
+    proofs of a few paths, seconds in all."""
+    app = app_of(example)
+    build = root / TOOL_APPS[app]["root"]
+    classes = {"before": tool_before_classes(app), "after": build / "build/main"}
+    report_dir = build / "build/reports"
+    shutil.rmtree(build / PROOF_CACHE_DIR, ignore_errors=True)
+    (report_dir / "compare.sarif").unlink(missing_ok=True)  # only this run's report shows a violation
+    command = ["compare", str(classes["before"]), str(classes["after"]), *proof_options(example)]
+    proc, output = tool(app, root, *command, "--report", str(report_dir), "--sources", str(build / "src/main/java"),
+                        "--base", str(root), anchored=False, setup=False)
+    output = output.replace(str(classes["before"]), "before/classes")
+    reported = write_evidence(folder, output, report_dir / "compare.sarif", result)
+    json_proc = stage("jvmcontract compare --json, rerun on the same cache", [jvmcontract(), *command, "--json"], cwd=build)
+    # The paths in the report are the run's own: the unpatched classes as the text names them, the rest from the copy's root.
+    text = json_proc.stdout.replace(str(classes["before"]), "before/classes").replace(str(root) + "/", "")
+    try:
+        report = json.loads(text) if json_proc.returncode in (0, 1) else None
+    except json.JSONDecodeError:
+        report = None
+    symbol = example["subject"]["symbol"]
+    parts = compare_parts(report) if isinstance(report, dict) else []
+    subject = next((p for p in parts if p["symbol"] == symbol), None)
+    execution = execution_status(proc.returncode, output)
+    counterexamples = []
+    if subject and subject["verdict"] == "violation":
+        if subject["kind"] == "entry point":
+            e = next(e for e in report["entries"] if e["entry"] == subject["subject"])
+            checked = e["checked"]
+            m = re.search(r" on (.*?): the old build", checked["outcome"].get("witness") or "")
+            trace = lambda t: "; ".join([t["outcome"], *(a[2] for a in t["attempts"])]) if t["attempts"] else f"{t['outcome']}; no modeled call"
+            counterexamples.append({"input": f"{e['entry']}: {m.group(1) if m else checked['outcome'].get('witness')}",
+                                    "contract": trace(checked["before"]), "actual": trace(checked["after"])})
+        else:
+            k = next(k for k in report["kernel"] if k["subject"] == symbol)
+            witness = k["outcome"].get("witness") or ""
+            call, _, rest = witness.partition(": before, ")
+            was, _, now = rest.partition("; after, ")
+            counterexamples.append({"input": call, "contract": was, "actual": now})
+    result["counterexamples"] = counterexamples
+    if execution["status"] != "completed":
+        result["execution"], result["verdict"] = execution, None
+    elif subject is None:
+        result["execution"], result["verdict"] = {"status": "invalid-output", "exitCode": proc.returncode, "reason": (
+            f"the rerun's --json output names no part checked for {symbol}" if parts else
+            "the rerun's --json output is not a report the runner can read")}, None
+    elif subject["verdict"] == "violation":
+        result["execution"], result["verdict"] = violation(execution, counterexamples, reported)
+    else:
+        result["execution"], result["verdict"] = execution, subject["verdict"]
+    completed = result["verdict"] is not None
+    result["replay"] = {"by": "jvm", "reproduced": True} if completed and result["verdict"] == "violation" else None
+    result["search"] = None
+    result["stated"] = None
+    outcome = None
+    if subject and subject["kind"] == "entry point":
+        outcome = (next(e for e in report["entries"] if e["entry"] == subject["subject"]).get("checked") or {})
+        domain, proof = (outcome.get("outcome") or {}).get("domain"), outcome.get("proof")
+    elif subject:
+        k = next(k for k in report["kernel"] if k["subject"] == symbol)
+        domain, proof = (k.get("outcome") or {}).get("domain"), None
+    else:
+        domain = proof = None
+    if completed:
+        changes = {}
+        for o in report["obligations"]:
+            changes[o["change"]] = changes.get(o["change"], 0) + 1
+        result["joint"] = {"parts": parts, "obligations": changes,
+                           "decisions": report["effort"]["decisions"],
+                           "questions": [{"subject": q["subject"], "category": q["category"], "decide": q["decide"]} for q in report["effort"]["questions"]],
+                           "assumed": report["effort"]["assumed"]}
+    else:
+        result["joint"] = None
+    fields = {"domain": domain or None, "proof": proof,
+              "problem": subject["why"] if subject and subject["verdict"] == "unverifiable" else None,
+              "vacuous": None}
+    finish_symbolic(folder, result, None, fields, {
+        "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
+        "verified": f"{VERDICT_LABEL['verified']}: preserved on every input of the stated domain, with nothing written by hand",
+        "unverifiable": VERDICT_LABEL["unverifiable"],
+    })
+
+
 # The gap scan (step 1a of llm-dlc/loops/sound-verdicts.md): what the tool's own checker approximates rather than
 # implements in the bytecode an example's proof reaches, found by `jvmcontract gaps` from the classes alone, nothing
 # proved. It is recorded in the example's notes, so that how strict mode would move the recorded examples is known
@@ -3208,6 +3332,8 @@ RUNNERS = {
     **{app: TOOL_RUNNERS for app in TOOL_APPS},
     # The route app's subjects are entry points: its regression check is the effect trace of each.
     "deliveries": {"B9": run_tool_effects},
+    # The joint example's app: its regression check is the joint run of every part, entry points and kernel.
+    "shop": {"B9": run_tool_compare},
 }
 
 
@@ -3742,7 +3868,59 @@ def helper_lines(res):
     return ["", "The changed helpers, each checked before the caller (`--cache`):", "", *out] if out else []
 
 
+def joint_lines(res):
+    """The rest of a joint run (run_tool_compare), for its page: every part it checked with its verdict, what the
+    rerun took from the proof cache, the obligations by change, and the effort: the decisions a person made, the
+    questions left for one, and what the verdicts rest on that nobody decided."""
+    joint = res.get("joint")
+    if not joint:
+        return []
+    label = {"verified": "verified", "violation": "refuted", "unverifiable": "unresolved"}
+    out = ["", "Every part the run checked, nothing written by hand (the entry points under their observation specs, "
+           "each kernel pair under the correspondence alignment proposed), and what the rerun on the same proof cache "
+           "took from the first run:", "", "| Part | Kind | Verdict | On the rerun | Why not verified |", "|---|---|---|---|---|"]
+    for p in joint["parts"]:
+        rerun = "an exact hit" if p["reused"] else "proved again" if p["verdict"] != "unverifiable" or not p["why"] else "not a proof"
+        if p["callees"]:
+            rerun += "; " + ", ".join(f"`{c}` proved on its own and taken as one function" for c in p["callees"])
+        out.append(f"| {code(p['subject'])} | {p['kind']} | {label[p['verdict']]} | {rerun} | {code(p['why']) if p['why'] else ''} |")
+    changes = ", ".join(f"{n} {c}" for c, n in sorted(joint["obligations"].items()))
+    decided = ", ".join(f"{c} {n}" for c, n in joint["decisions"].items())
+    out += ["", f"Obligations, one per observation of an old entry point: {changes}. Decisions a person made, by "
+                f"category: {decided}."]
+    if joint["questions"]:
+        out += ["", "Questions left for a person (the result stays unresolved until one answers):", ""]
+        out += [f"- {code(q['subject'])} ({q['category']}): {q['decide']}" for q in joint["questions"]]
+    else:
+        out += ["", "No question is left for a person."]
+    if joint["assumed"]:
+        out += ["", "What the verdicts rest on that nobody decided (assumed, not approved):", ""]
+        out += [f"- {a}" for a in joint["assumed"]]
+    return out
+
+
+def findings_compare(ex, res):
+    """B9 on the joint example's app (run_tool_compare): the subject's verdict, then the rest of the joint run."""
+    domain = res.get("domain") or "all inputs"
+    symbol = ex["subject"]["symbol"]
+    if res["verdict"] == "violation":
+        out = [f"The two builds disagree on `{symbol}`. The checker found this input, and the verifier replayed it on "
+               "the JVM against both builds (an entry point under the same recording stubs, a kernel method with its "
+               "objects made by their constructors):", "",
+               "| Input | Before | After |", "|---|---|---|"]
+        out += [f"| {code(c['input'])} | {code(c['contract'])} | {code(c['actual'])} |" for c in res["counterexamples"]]
+        out += ["", f"The domain is `{domain}`."]
+    elif res["verdict"] == "unverifiable":
+        out = [f"The run left `{symbol}` without a verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
+    else:
+        out = [f"`{symbol}` is preserved: for every input of its domain the new build does what the old one did, as its "
+               "claim observes it, under a relation nobody wrote.", "", f"The domain is `{domain}`."]
+    return out + joint_lines(res)
+
+
 def findings_equivalence(ex, res):
+    if RUNNERS.get(app_of(ex), {}).get("B9") is run_tool_compare:
+        return findings_compare(ex, res)
     if RUNNERS.get(app_of(ex), {}).get("B9") is run_tool_effects:
         return findings_effects(ex, res)
     return findings_equivalence_body(ex, res) + helper_lines(res)

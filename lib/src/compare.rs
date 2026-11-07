@@ -236,6 +236,22 @@ fn check_kernel(m: &alignment::mappings::Mapping, hints: &[Hint], b: &Build, opt
     k
 }
 
+/// The SARIF findings of a report: an `effects-changed` per refuted entry point, as `effects --report` writes them,
+/// and a `behaviour-changed` per refuted kernel pair, its witness the message, anchored at the new method's class
+/// when its source is under one of `sources` (the path made relative to `base`).
+pub fn findings(report: &Report, sources: &[PathBuf], base: Option<&Path>) -> Vec<crate::sarif::Finding> {
+    let mut out = crate::effects::findings(&report.entries, sources, base);
+    for k in &report.kernel {
+        let Some(o) = k.outcome.as_ref().filter(|o| o.verdict == Verdict::Refuted) else { continue };
+        let class = k.subject.split_once('#').map(|(class, _)| class.replace('.', "/")).unwrap_or_default();
+        let file = crate::sarif::source_file(&class, sources);
+        let uri = file.map(|f| base.map(|b| crate::sarif::relative_uri(b, &f)).unwrap_or_else(|| f.display().to_string()));
+        let message = format!("{} no longer preserves what {} did under the correspondence alignment proposed: {}", k.subject, k.before, o.witness.as_deref().unwrap_or("a counterexample"));
+        out.push(crate::sarif::Finding::new("behaviour-changed", message, uri, 1));
+    }
+    out
+}
+
 fn verdict_word(v: Verdict) -> &'static str {
     match v {
         Verdict::Verified => "verified",

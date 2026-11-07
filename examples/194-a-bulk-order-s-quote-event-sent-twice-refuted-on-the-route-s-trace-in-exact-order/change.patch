@@ -1,0 +1,84 @@
+diff --git a/examples/apps/shop/src/main/java/shop/Money.java b/examples/apps/shop/src/main/java/shop/Money.java
+new file mode 100644
+--- /dev/null
++++ b/examples/apps/shop/src/main/java/shop/Money.java
+@@ -0,0 +1,4 @@
++package shop;
++
++/** An amount of money, in cents: the value object the refactor introduces. */
++public record Money(long cents) {}
+diff --git a/examples/apps/shop/src/main/java/shop/Pricing.java b/examples/apps/shop/src/main/java/shop/Pricing.java
+--- a/examples/apps/shop/src/main/java/shop/Pricing.java
++++ b/examples/apps/shop/src/main/java/shop/Pricing.java
+@@ -1,16 +1,17 @@
+ package shop;
+ 
+-/** The pricing kernel. */
++/** The pricing kernel, over money. */
+ public final class Pricing {
+     private Pricing() {}
+ 
+-    /** A tenth off an order of ten items or more. */
++    /** A tenth off an order of ten items or more, written the other way round: the changed pure helper. */
+     static long discount(long gross, int quantity) {
+-        return quantity >= 10 ? gross / 10 : 0;
++        if (quantity < 10) return 0;
++        return gross / 10;
+     }
+ 
+     public static long total(Quote q) {
+-        long gross = q.cents * q.quantity;
++        long gross = q.amount.cents() * q.quantity;
+         return gross - discount(gross, q.quantity);
+     }
+ 
+diff --git a/examples/apps/shop/src/main/java/shop/Quote.java b/examples/apps/shop/src/main/java/shop/Quote.java
+--- a/examples/apps/shop/src/main/java/shop/Quote.java
++++ b/examples/apps/shop/src/main/java/shop/Quote.java
+@@ -1,17 +1,17 @@
+ package shop;
+ 
+-/** A quote: an amount in cents for each item, and how many items. Mutable, as many domain classes are. */
++/** A quote: the amount for each item, as money, and how many items. */
+ public final class Quote {
+-    long cents;
++    Money amount;
+     int quantity;
+ 
+-    public Quote(long cents, int quantity) {
++    public Quote(Money amount, int quantity) {
+         if (quantity <= 0) throw new IllegalArgumentException();
+-        this.cents = cents;
++        this.amount = amount;
+         this.quantity = quantity;
+     }
+ 
+-    public long cents() { return cents; }
++    public Money amount() { return amount; }
+ 
+     public int quantity() { return quantity; }
+ }
+diff --git a/examples/apps/shop/src/main/java/shop/QuotesController.java b/examples/apps/shop/src/main/java/shop/QuotesController.java
+--- a/examples/apps/shop/src/main/java/shop/QuotesController.java
++++ b/examples/apps/shop/src/main/java/shop/QuotesController.java
+@@ -16,14 +16,17 @@
+ 
+     @PostMapping("/quotes")
+     public long quote(@RequestParam long cents, @RequestParam int quantity) {
+-        long total = Pricing.total(new Quote(cents, quantity));
+-        if (total > 0) kafka.send("quotes", new QuoteEvent(total, quantity));
++        long total = Pricing.total(new Quote(new Money(cents), quantity));
++        if (total > 0) {
++            kafka.send("quotes", new QuoteEvent(total, quantity));
++            if (quantity >= 10) kafka.send("quotes", new QuoteEvent(total, quantity));
++        }
+         return total;
+     }
+ 
+     /** The case this loop leaves unresolved: a string response, built by string concatenation. */
+     @PostMapping("/quotes/text")
+     public String quoteText(@RequestParam long cents, @RequestParam int quantity) {
+-        return "total " + Pricing.total(new Quote(cents, quantity));
++        return "total " + Pricing.total(new Quote(new Money(cents), quantity));
+     }
+ }

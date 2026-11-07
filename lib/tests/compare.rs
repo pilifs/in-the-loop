@@ -177,6 +177,15 @@ fn the_joint_example_passes_every_row() {
     assert!(matches!(&unreached.reuse, Some(Reuse::Exact { key, .. }) if Some(key) == cold_quotes.key.as_ref()), "alias-to-copy: a change POST /quotes doesn't reach is a hit: {:?}", unreached.reuse);
     assert_eq!(unreached.outcome.verdict, Verdict::Verified);
 
+    // The report's findings: one per refuted part, of the kind its check is, anchored at the source given; none for
+    // the correct refactor.
+    let sources = [root().join("after")];
+    assert!(compare::findings(&cold, &sources, Some(&root())).is_empty(), "the correct refactor has no finding");
+    let found = compare::findings(offset, &sources, Some(&root()));
+    let rules: Vec<(&str, Option<&str>)> = found.iter().map(|f| (f.rule_id.as_str(), f.uri.as_deref())).collect();
+    assert_eq!(rules, [("effects-changed", Some("after/shop/QuotesController.java")), ("behaviour-changed", Some("after/shop/Pricing.java"))], "offset: {found:?}");
+    assert!(found[1].message.contains("shop.Pricing#total"), "{}", found[1].message);
+
     // Effort: the correct refactor asks nothing; the route change asks about each of the old route's observations.
     assert!(cold.effort.questions.is_empty(), "{:?}", cold.effort.questions);
     assert!(!cold.effort.assumed.is_empty(), "what the verdicts rest on is listed");

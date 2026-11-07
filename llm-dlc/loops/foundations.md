@@ -684,15 +684,40 @@ annotations or configuration, which S1 adds.
     - alias-to-copy reuses it, rightly: it changes only `withQuantity`, which the route doesn't reach.
   - A reuse names the run it came from with the rewritten copies' temporary paths, not the builds given. That is true
     but less useful than it could be.
-- Every row of Phase 5's table now passes inline. What Phase 0 also asks of Phase 5 is still open: the fixture made an
-  example under the numbers 190–199.
-- **Next**, in order:
-  - Examples 190–199 for the joint example, run by `build.py` through `compare`.
+- Every row of Phase 5's table now passes inline.
+- **The joint example as examples 190–196** (2026-11-07, this loop's fourth cycle), what Phase 0 also asked of Phase 5:
+  - The app `examples/apps/shop` is the fixture's `before/`, with the Spring stand-ins and plain tests through the
+    route. Each example's patch turns it into `after/` (190) or one defect overlaid on `after/`, the defect's marker
+    comment left out: offset (191), alias-to-copy (192), dropped-effect (193), duplicated-effect (194),
+    outside-domain (195), route-change (196). The stale-cache defect has no example: it needs two runs on different
+    claims, and stays in `tests/effects.rs` and `tests/compare.rs`. The new technique tag is `joint-run`.
+  - `build.py`'s `run_tool_compare` runs `jvmcontract compare` twice under one fresh proof cache: the page's text and
+    SARIF come from the first run, the verdict from the rerun's JSON. The verdict is the subject's (an entry point's
+    handler or a kernel method). Every other part goes into the result's new `joint` field: its verdict, whether the
+    rerun was an exact hit, its proved helpers, and the obligations, decisions, questions and assumptions. Six
+    mocked tests in `test_build.py`.
+  - `compare --report DIR` writes `compare.sarif`, because `build.py` needs a report to record a violation: an
+    `effects-changed` finding per refuted entry point and a `behaviour-changed` one per refuted kernel pair. It is
+    checked in `tests/compare.rs`.
+  - Inline, `jvmcontract compare` on the app built unpatched and patched gave each example's expected verdict, every
+    decided proof an exact hit on the rerun. The app's tests pass on every version but offset.
+  - The `build.py` runs are seven quick jobs, for review: no runner was active, so none came back within the cycle.
+    Each should give its example's expected verdict with `matchesExpected` true:
+    - `20261107-140010-example-190-through-build-py-the-joint-e` (verified);
+    - `-191-` and `-192-` (violations: `total`, and `withQuantity` on identity alone);
+    - `-193-` and `-194-` (violations: the dropped and the duplicated event);
+    - `20261107-140011-example-195-…` (verified within the constructor-made domain);
+    - `-196-` (unverifiable, with four questions).
+    The ids of 191–194 begin `20261107-140010-`.
+  - 197–199 stay free.
+- **Phase 5 passes every row**, and the joint example is examples 190–196, their `build.py` runs pending review
+  (above). What is left is small, and doesn't bear on any row:
   - Heap's two remaining fixture notes:
     - the golden domain's `allocations: 0` is not checked;
     - the integration contract checks `discount` under the kernel claim, whose input `q` it doesn't have. The joint
       run derives each pair's claim, so it isn't affected.
-- Status: working
+  - A reuse names the run it came from with the rewritten copies' temporary paths (above).
+- Status: done
 
 ## Loop settings
 

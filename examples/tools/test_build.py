@@ -2843,5 +2843,147 @@ class EffectsRunnerTest(unittest.TestCase):
         self.assertEqual(result["execution"]["status"], "tool-error")
 
 
+def compare_report(quote="verified", total="verified", reused=False):
+    """A `jvmcontract compare --json` report on the shop app: POST /quotes (verified, refuted or unresolved for want
+    of a counterpart), the string route unresolved, Pricing#total (verified or refuted, discount's proof used in it)
+    and a moved method no check takes."""
+    exact = {"kind": "exact", "key": "sha256:k", "from": "jvmcontract 0.1.0, at 2026-11-07T00:00:00Z, on /tmp/x"} if reused else None
+    route = {"entry": "POST /quotes", "handler": "shop.QuotesController#quote", "source_line": 18}
+    outcome = {"verdict": "verified" if quote == "verified" else quote, "domain": "cents: long × quantity: int (the request's inputs, the same in both builds)",
+               "accounting": [{"observation": "result", "state": "preserved"}]}
+    checked = {"outcome": outcome, "reason": None, "assumptions": ["every modeled call returns normally"], "before": None, "after": None,
+               "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s", "key": "sha256:k"}
+    if exact:
+        checked["reuse"] = exact
+    if quote == "refuted":
+        outcome["witness"] = ("POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 "
+                              "and attempts KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1). Replayed on a JVM")
+        checked["before"] = {"outcome": "returns 0", "kind": 0, "result": 0, "attempts": [], "unresolved": []}
+        checked["after"] = {"outcome": "returns 1", "kind": 0, "result": 1, "unresolved": [],
+                            "attempts": [[0, [0, 2, 1, 1], "KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1)"]]}
+    if quote == "unresolved":
+        checked["reason"] = "POST /quotes has no counterpart in /tmp/after: removed, renamed, or not told apart from another"
+    text = {"entry": "POST /quotes/text", "handler": "shop.QuotesController#quoteText",
+            "checked": {"outcome": {"verdict": "unresolved", "domain": "", "accounting": []}, "reason": "string concatenation", "assumptions": [], "before": None, "after": None}}
+    kernel_outcome = {"verdict": total, "domain": "q: a Quote made by its constructor", "accounting": [{"observation": "result", "state": "preserved"}]}
+    if total == "refuted":
+        kernel_outcome["witness"] = "total(q=new Quote(new Money(0), 1)): before, 0; after, 1"
+    kernel = [{"subject": "shop.Pricing#total", "before": "shop.Pricing#total", "standalone": True, "claim": {}, "outcome": kernel_outcome,
+               "callees": [{"kind": "callee", "callee": "Pricing.discount", "key": "sha256:d"}], **({"reuse": exact} if exact else {})},
+              {"subject": "shop.Money#cents", "before": "shop.Quote#cents", "standalone": True, "claim": {}, "unsupported": "class not found in the previous version: shop.Money"}]
+    questions = [{"category": "observation change", "subject": "POST /quotes", "decide": "POST /quotes is gone from the new build: approve its result as removed, or it stays unresolved"}] if quote == "unresolved" else []
+    obligations = [{"entry": "POST /quotes", "observation": "result", "change": "removed" if quote == "unresolved" else "preserved"},
+                   {"entry": "POST /quotes/text", "observation": "unresolved", "change": "unresolved"}]
+    return {"before": "/tmp/before", "after": "/tmp/after", "obligations": obligations, "entries": [{**route, "checked": checked}, text], "kernel": kernel,
+            "effort": {"decisions": {"mapping": 0, "observation change": 0}, "questions": questions, "assumed": ["every modeled call returns normally"]}}
+
+
+class CompareRunnerTest(unittest.TestCase):
+    """The B9 runner of the joint example's app: `jvmcontract compare` under a fresh proof cache, once for its text
+    and report, then again for its JSON, the verdict the subject's."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.folder = self.dir / "example"
+        self.folder.mkdir()
+        self.root = self.dir / "root"
+        self.build = self.root / build.TOOL_APPS["shop"]["root"]
+        (self.build / "build/reports").mkdir(parents=True)
+        (self.build / build.PROOF_CACHE_DIR).mkdir(parents=True)
+        (self.build / build.PROOF_CACHE_DIR / "stale").write_text("an earlier run's")
+        self.patches = [mock.patch.object(build, "jvmcontract", return_value="jvmcontract"),
+                        mock.patch.object(build, "tool_before_classes", return_value=self.dir / "before")]
+        for p in self.patches:
+            p.start()
+
+    def tearDown(self):
+        for p in self.patches:
+            p.stop()
+        shutil.rmtree(self.dir)
+
+    def example(self, symbol, verdict):
+        file = "Pricing.java" if "Pricing" in symbol else "QuotesController.java"
+        return {"id": "999", "origin": "constructed", "approach": {"id": "B9", "engine": "native"},
+                "change": {"behaviourChangeIntended": False},
+                "subject": {"file": f"examples/apps/shop/src/main/java/shop/{file}", "symbol": symbol},
+                "expected": {"verdict": verdict}}
+
+    def run_compare(self, code, report, ex, report_file=True):
+        commands, cache_at_first = [], []
+        def fake(command, **kwargs):
+            commands.append(command)
+            if "--json" in command:
+                return proc(code, report if isinstance(report, str) else json.dumps(report))
+            cache_at_first.append((self.build / build.PROOF_CACHE_DIR / "stale").exists())
+            if report_file:
+                (self.build / "build/reports/compare.sarif").write_text(json.dumps({"version": "2.1.0", "runs": []}))
+            return proc(code, "comparing ...\n")
+        result = empty_result()
+        with mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_compare(self.folder, ex, self.root, "shop", result)
+        build.finish(result, ex)
+        stores_whole(self, result, self.folder)
+        self.assertEqual(cache_at_first, [False], "the first run starts on an empty proof cache")
+        return result, commands
+
+    def test_the_plan_runs_the_joint_run_with_a_proof_cache(self):
+        p = build.plan(self.example("shop.QuotesController#quote", "verified"))
+        self.assertEqual((p["runner"], p["engine"], p["options"]), ("run_tool_compare", "native", ["--cache", build.PROOF_CACHE_DIR]))
+        self.assertEqual(p["build"]["copies"], ["examples/apps/shop"])
+        self.assertNotIn("jbmc", p["tools"]["required"] + p["tools"]["optional"])
+
+    def test_a_verified_subject_is_verified_while_other_parts_stay_unresolved(self):
+        result, commands = self.run_compare(1, compare_report(reused=True), self.example("shop.QuotesController#quote", "verified"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("completed", "verified"))
+        self.assertTrue(result["matchesExpected"])
+        self.assertIn("nothing written by hand", result["verdictLabel"])
+        self.assertTrue(result["domain"].startswith("cents: long"))
+        self.assertEqual([c[:2] for c in commands], [["jvmcontract", "compare"]] * 2)
+        self.assertIn("--report", commands[0])
+        self.assertIn("--json", commands[1])
+        for c in commands:
+            self.assertEqual(c[c.index("--cache") + 1], build.PROOF_CACHE_DIR, "both runs share the cache")
+        parts = {p["subject"]: p for p in result["joint"]["parts"]}
+        self.assertEqual(parts["POST /quotes"]["verdict"], "verified")
+        self.assertTrue(parts["POST /quotes"]["reused"] and parts["shop.Pricing#total"]["reused"])
+        self.assertEqual(parts["shop.Pricing#total"]["callees"], ["Pricing.discount"])
+        self.assertEqual((parts["POST /quotes/text"]["verdict"], parts["POST /quotes/text"]["why"]), ("unverifiable", "string concatenation"))
+        self.assertEqual(parts["shop.Money#cents (was shop.Quote#cents)"]["verdict"], "unverifiable")
+        self.assertEqual(result["joint"]["obligations"], {"preserved": 1, "unresolved": 1})
+        page = "\n".join(build.findings_compare(self.example("shop.QuotesController#quote", "verified"), result))
+        self.assertIn("an exact hit; `Pricing.discount` proved on its own", page)
+        self.assertIn("No question is left for a person.", page)
+
+    def test_a_refuted_kernel_subject_is_a_violation_with_its_witness(self):
+        result, _ = self.run_compare(1, compare_report(quote="refuted", total="refuted"), self.example("shop.Pricing#total", "violation"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("completed", "violation"))
+        self.assertEqual(result["counterexamples"], [{"input": "total(q=new Quote(new Money(0), 1))", "contract": "0", "actual": "1"}])
+        self.assertEqual(result["replay"], {"by": "jvm", "reproduced": True})
+        self.assertTrue((self.folder / "result.sarif").exists())
+
+    def test_a_refuted_entry_point_subject_shows_both_builds_attempts(self):
+        result, _ = self.run_compare(1, compare_report(quote="refuted"), self.example("shop.QuotesController#quote", "violation"))
+        self.assertEqual(result["verdict"], "violation")
+        self.assertEqual(result["counterexamples"], [{"input": "POST /quotes: cents=0, quantity=1", "contract": "returns 0; no modeled call",
+                                                      "actual": "returns 1; KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1)"}])
+
+    def test_an_entry_point_with_no_counterpart_is_no_proof_and_a_question(self):
+        result, _ = self.run_compare(1, compare_report(quote="unresolved"), self.example("shop.QuotesController#quote", "unverifiable"))
+        self.assertEqual(result["verdict"], "unverifiable")
+        self.assertIn("no counterpart", result["problem"])
+        self.assertEqual([q["category"] for q in result["joint"]["questions"]], ["observation change"])
+        self.assertEqual(result["joint"]["obligations"], {"removed": 1, "unresolved": 1})
+
+    def test_a_subject_the_run_did_not_check_or_unreadable_output_is_no_verdict(self):
+        result, _ = self.run_compare(1, compare_report(), self.example("shop.Pricing#nothing", "verified"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        self.assertIn("shop.Pricing#nothing", result["execution"]["reason"])
+        self.assertIsNone(result["joint"])
+        result, _ = self.run_compare(1, "garbage", self.example("shop.Pricing#total", "verified"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        result, _ = self.run_compare(1, compare_report(total="refuted"), self.example("shop.Pricing#total", "violation"), report_file=False)
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+
+
 if __name__ == "__main__":
     unittest.main()
