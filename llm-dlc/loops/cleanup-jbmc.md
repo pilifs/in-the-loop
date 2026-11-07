@@ -5,7 +5,7 @@ branch. The others are [`cleanup-native.md`](cleanup-native.md) and [`cleanup-ex
 Once all three are finished, the main brief's loop merges them ([Reconciling](cleanup.md#reconciling)).
 
 Started with the others by `llm-dlc/tools/run-streams.sh cleanup` from the default workspace, or alone with
-`llm-dlc/tools/feature-loop.sh cleanup-jbmc` from this stream's workspace (`jj workspace root --name jbmc`). The loop
+`llm-dlc/tools/feature-loop.sh cleanup-jbmc` from this stream's workspace (`jj workspace root --name cleanup-jbmc`). The loop
 refuses any other.
 
 **The main brief is the instruction.** Read [`cleanup.md`](cleanup.md) in full every cycle, and its inputs. Its
@@ -128,7 +128,7 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
 - model: claude-opus-5-5
 - effort: high
 - memory: 4G
-- workspace: jbmc
+- workspace: cleanup-jbmc
 - fork: 2df7775c-45a1-40a7-924b-75602d8ad256
 
 ## Loop until

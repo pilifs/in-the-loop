@@ -128,17 +128,22 @@ default workspace. The streams fork from it.
 3. **This brief and its three stream briefs committed** (done) on the default line, with the session ids in their
    Loop settings.
 4. **Push** (done, at the user's request).
-5. **Close the planning session**. The user then runs `CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh cleanup` from the default
+5. **Close the planning session**. The user then runs `FEATURE_LOOP_MEMORY_MAX=4G CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh cleanup` from the default
    workspace, in a tmux pane with a long history. It compacts the planning session once, before the forks.
 
 ## Streams
 
 | Loop | Brief | jj workspace | Items | Owns |
 |---|---|---|---|---|
-| `cleanup-native` | [`cleanup-native.md`](cleanup-native.md) | `native` | VF-010, VF-011, VF-015 | `lib/src/bmc/`, `lib/src/interp/`, `harness/`, `witness.rs`, `jvm_witness.rs`, `shrink.rs`, `lib/tests/integration.rs`'s own-checker tests |
-| `cleanup-jbmc` | [`cleanup-jbmc.md`](cleanup-jbmc.md) | `jbmc` | VF-009, VF-019, VF-001, VF-018 | `jbmc.rs`, `jbmc_gaps.rs`, `jbmc_contracts.rs`, `models.rs`, `lib/models/`, `lib/tests/conformance.rs` and its fixtures, `auto` and `--confirm`'s code in `property.rs` and `equivalence.rs`, `jbmc-upstream.md` |
-| `cleanup-examples` | [`cleanup-examples.md`](cleanup-examples.md) | `examples` | VF-002, VF-016, VF-017, VF-014, VF-013, the foundations leftovers | `examples/` (tools and examples), `lib/benchmark/`, `llm-dlc/tools/sync.py` and its tests and docs, `effects.rs`, `compare.rs`, `spec/heap.rs`, `lib/tests/foundations*`, `compare.rs`'s and `effects.rs`'s tests |
+| `cleanup-native` | [`cleanup-native.md`](cleanup-native.md) | `cleanup-native` | VF-010, VF-011, VF-015 | `lib/src/bmc/`, `lib/src/interp/`, `harness/`, `witness.rs`, `jvm_witness.rs`, `shrink.rs`, `lib/tests/integration.rs`'s own-checker tests |
+| `cleanup-jbmc` | [`cleanup-jbmc.md`](cleanup-jbmc.md) | `cleanup-jbmc` | VF-009, VF-019, VF-001, VF-018 | `jbmc.rs`, `jbmc_gaps.rs`, `jbmc_contracts.rs`, `models.rs`, `lib/models/`, `lib/tests/conformance.rs` and its fixtures, `auto` and `--confirm`'s code in `property.rs` and `equivalence.rs`, `jbmc-upstream.md` |
+| `cleanup-examples` | [`cleanup-examples.md`](cleanup-examples.md) | `cleanup-examples` | VF-002, VF-016, VF-017, VF-014, VF-013, the foundations leftovers | `examples/` (tools and examples), `lib/benchmark/`, `llm-dlc/tools/sync.py` and its tests and docs, `effects.rs`, `compare.rs`, `spec/heap.rs`, `lib/tests/foundations*`, `compare.rs`'s and `effects.rs`'s tests |
 | `cleanup` | this brief | `default` | | the merge, the reruns at the merge, the publishing of the run records |
+
+**Workspace names** are the brief's own, `cleanup-STREAM`, at `../in-the-loop-cleanup-STREAM`. jj workspace names
+are repository-wide, and earlier runs left `native`, `jbmc`, `examples`, `integration` and the foundations streams'
+directories behind (forgotten in jj, still on disk, the user's to delete). `run-streams.sh` stops before compacting
+anything if a workspace's directory is already taken.
 
 **Shared files.** Any stream may touch these by adding rather than rewriting: new options, variants, cases, tests and
 functions, with no reorganization. Name each change under the stream's Progress. They are `lib/src/main.rs`,
@@ -166,8 +171,9 @@ of `lib/` peaked at 3.1 GiB, page cache included, with cargo's default of 28 par
 memory, that is close to the 4 GB cap. So the streams run with `CARGO_BUILD_JOBS=8`, set on the command below and
 inherited by every session and its commands. Don't raise it in a stream.
 
-**Running it all**, by the user, from the default workspace in tmux: `CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh
-cleanup`. It does
+**Running it all**, by the user, from the default workspace in tmux: `FEATURE_LOOP_MEMORY_MAX=4G CARGO_BUILD_JOBS=8
+llm-dlc/tools/run-streams.sh cleanup`. The memory setting is spelled out because a shell started before
+`~/.profile` changed still has the old 8G, which would override the briefs' `- memory: 4G`. It does
 four things:
 - compacts the planning session once;
 - adds the three workspaces from the latest commit;
@@ -179,7 +185,8 @@ A stream that ends `waiting on jobs ID ...` is rerun once those results are coll
 
 ### The integration check
 
-`run-streams.sh` merges the three streams' current `@-` in its `integration` workspace whenever one moves, at most
+`run-streams.sh` merges the three streams' current `@-` in its `cleanup-integration` workspace
+(`../in-the-loop-cleanup-integration`) whenever one moves, at most
 hourly, and runs [`cleanup-integration.sh`](../tools/cleanup-integration.sh) on the merge. That script runs the unit
 and integration-contract tests and the Python suites the streams touch, compiling and unit-level only. The report
 goes to `llm-dlc/loop-summaries/cleanup-integration.md` in the default workspace. Each stream reads it at the start of
@@ -194,9 +201,10 @@ This follows [`foundations.md`](foundations.md#streams)'s steps, for three strea
 2. Wait for the verification loop to commit anything it left uncommitted in this working copy. Don't move or commit
    its files.
 3. Record each stream's last turns, and copy their logs.
-4. Merge with `jj new @- native@- jbmc@- examples@-`, and commit.
+4. Merge with `jj new @- cleanup-native@- cleanup-jbmc@- cleanup-examples@-`, and commit.
 5. Fold their Progress here, with every item the timebox deferred first.
-6. Forget the workspaces and `integration`. Their directories are the user's to delete.
+6. Forget the workspaces `cleanup-native`, `cleanup-jbmc`, `cleanup-examples` and `cleanup-integration`. Their
+   directories are the user's to delete.
 
 ## The plan
 
@@ -256,7 +264,9 @@ Settled by the user on 2026-11-07:
 
 ## Progress
 
-- Drafted 2026-11-07 by the planning session. The afternoon run was triaged into VF-015 to VF-019, and launch
+- Drafted 2026-11-07 by the planning session. A first launch stopped before any stream started: the workspace
+  `integration`'s directory was left over from the foundations run. `run-streams.sh` now names workspaces after the
+  brief (`cleanup-STREAM`, `cleanup-integration`), and checks every directory before compacting anything. The afternoon run was triaged into VF-015 to VF-019, and launch
   prerequisites 1 to 3 are done.
 - Status: working
 

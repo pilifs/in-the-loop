@@ -69,7 +69,7 @@ Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the co
 
 ### Record session traces
 
-change `rmstpyrkzono` · [log `d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz)
+[`cbf183acbf20`](https://github.com/pilifs/in-the-loop/commit/cbf183acbf20208a827f46b81d6494606e4bef98) · [log `d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

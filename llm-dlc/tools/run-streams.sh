@@ -16,8 +16,12 @@
 #  1. Before any stream has a session, it compacts the conversation that planned
 #     the streams, once. Each stream's brief forks its session from it ("- fork:"
 #     in its Loop settings), so every stream starts from that conversation.
-#  2. It adds a workspace per stream that doesn't have one, ../REPO-STREAM, from
-#     the latest commit (@-).
+#  2. It adds a workspace per stream that doesn't have one, from the latest
+#     commit (@-), named by the stream brief's "- workspace: NAME" and made at
+#     ../REPO-NAME. The names must differ from every other workspace's, so a
+#     brief names them after itself (cleanup-native); a directory already at
+#     that path, such as a forgotten workspace's, stops the run before anything
+#     starts.
 #  3. It starts verification-loop.sh, unless one already runs here, so the jobs
 #     the loops submit are run, collected and committed.
 #  4. It runs each stream's loop, feature-loop.sh NAME-STREAM, from its
@@ -48,7 +52,7 @@
 #
 # The integration check, for a brief that names one, shows while the streams
 # run whether their work fits together, rather than only at the merge. It keeps
-# a workspace of its own, integration (../REPO-integration), used for nothing
+# a workspace of its own, NAME-integration (../REPO-NAME-integration), used for nothing
 # else: never committed from or pushed. Whenever a stream's @- has moved since the
 # last check, at most once every RUN_STREAMS_INTEGRATION_EVERY seconds, it makes
 # there a merge of every stream's @- and runs SCRIPT (a path in the repo, run
@@ -59,7 +63,7 @@
 # (NAME being the brief's), which each stream reads every cycle. A merge with
 # conflicts is reported, not resolved, and SCRIPT isn't run on it. The previous
 # check's merge is abandoned at the next; the reconcile loop forgets the
-# workspace. Neither the streams' branches nor the default workspace change.
+# workspace. (Before 2026-11-07 it was named integration, for every brief.) Neither the streams' branches nor the default workspace change.
 #
 # A brief whose Loop settings say "- verification: separate" runs without the
 # pipeline: step 3 is skipped, and this script waits for no job. Its loops submit
@@ -169,23 +173,52 @@ MODEL=$(setting "$BRIEF" model)
 VERIFICATION=$(setting "$BRIEF" verification)
 [[ -z "$VERIFICATION" || "$VERIFICATION" == separate ]] || { log "$BRIEF: '- verification: $VERIFICATION' is not a setting this knows (only separate)"; exit 1; }
 EFFORT=$(setting "$BRIEF" effort)
-declare -A DIR SESSION
+declare -A DIR SESSION WS
 fresh=0
 for s in "${STREAMS[@]}"; do
   brief=${BRIEF%.md}-$s.md
   [[ -f "$brief" ]] || { log "no brief $brief"; exit 1; }
   ws=$(setting "$brief" workspace)
-  [[ "$ws" == "$s" ]] || { log "$brief names workspace '${ws}', expected $s"; exit 1; }
+  [[ -n "$ws" ]] || { log "$brief has no '- workspace:' in its Loop settings"; exit 1; }
+  [[ "$ws" != default && "$ws" != "$NAME-integration" ]] || { log "$brief names workspace '$ws', which this script keeps for itself"; exit 1; }
+  for other in "${!WS[@]}"; do
+    [[ "${WS[$other]}" != "$ws" ]] || { log "the streams $other and $s both name workspace '$ws'"; exit 1; }
+  done
+  WS[$s]=$ws
   fork=$(setting "$brief" fork)
   [[ -n "$fork" ]] || { log "$brief has no '- fork:' in its Loop settings"; exit 1; }
   [[ -z "$PARENT" || "$fork" == "$PARENT" ]] || { log "the streams fork different sessions: $PARENT and $fork"; exit 1; }
   PARENT=$fork
   SESSION[$s]=$(setting "$brief" session)
-  DIR[$s]=$(jj workspace root --ignore-working-copy --name "$s" 2>/dev/null) || DIR[$s]=
+  DIR[$s]=$(jj workspace root --ignore-working-copy --name "$ws" 2>/dev/null) || DIR[$s]=
   if [[ -z "${DIR[$s]}" || ! -e "$(project_dir "${DIR[$s]}")/${SESSION[$s]}.jsonl" ]]; then
     fresh=$(( fresh + 1 ))
   fi
 done
+
+# A workspace to add needs its directory free: a forgotten workspace's directory
+# stays on disk, and jj would refuse it only after the planning session was compacted.
+INTEGRATION=$(setting "$BRIEF" integration)
+INTEGRATION_WS=$NAME-integration
+INTEGRATION_DIR=
+if [[ -n "$INTEGRATION" ]]; then
+  INTEGRATION_DIR=$(jj workspace root --ignore-working-copy --name "$INTEGRATION_WS" 2>/dev/null) || INTEGRATION_DIR=
+fi
+taken=0
+for s in "${STREAMS[@]}" ${INTEGRATION:+integration}; do
+  if [[ "$s" == integration ]]; then
+    [[ -z "$INTEGRATION_DIR" ]] || continue
+    want=$(dirname "$ROOT")/$(basename "$ROOT")-$INTEGRATION_WS
+  else
+    [[ -z "${DIR[$s]}" ]] || continue
+    want=$(dirname "$ROOT")/$(basename "$ROOT")-${WS[$s]}
+  fi
+  if [[ -e "$want" ]]; then
+    log "$want already exists, but no jj workspace here is at it: a forgotten workspace's directory? Delete it, or name another workspace in the brief"
+    taken=1
+  fi
+done
+(( taken == 0 )) || exit 1
 
 # The planning session, compacted once: before the first fork, when no stream has a session yet.
 if (( fresh == ${#STREAMS[@]} )); then
@@ -203,9 +236,9 @@ fi
 
 for s in "${STREAMS[@]}"; do
   if [[ -z "${DIR[$s]}" ]]; then
-    DIR[$s]=$(dirname "$ROOT")/$(basename "$ROOT")-$s
-    log "adding jj workspace $s at ${DIR[$s]}"
-    jj workspace add --name "$s" -r @- "${DIR[$s]}" >/dev/null || { log "could not add workspace $s"; exit 1; }
+    DIR[$s]=$(dirname "$ROOT")/$(basename "$ROOT")-${WS[$s]}
+    log "adding jj workspace ${WS[$s]} at ${DIR[$s]}"
+    jj workspace add --name "${WS[$s]}" -r @- "${DIR[$s]}" >/dev/null || { log "could not add workspace ${WS[$s]}"; exit 1; }
   fi
 done
 
@@ -301,14 +334,12 @@ supervise() {
 }
 
 # The integration check (see the header), when the brief names a script for it.
-INTEGRATION=$(setting "$BRIEF" integration)
 if [[ -n "$INTEGRATION" ]]; then
   [[ -x "$INTEGRATION" ]] || { log "the brief's integration script $INTEGRATION isn't an executable file here"; exit 1; }
-  INTEGRATION_DIR=$(jj workspace root --ignore-working-copy --name integration 2>/dev/null) || INTEGRATION_DIR=
   if [[ -z "$INTEGRATION_DIR" ]]; then
-    INTEGRATION_DIR=$(dirname "$ROOT")/$(basename "$ROOT")-integration
-    log "adding jj workspace integration at $INTEGRATION_DIR, for the integration check"
-    jj workspace add --name integration -r @- "$INTEGRATION_DIR" >/dev/null || { log "could not add workspace integration"; exit 1; }
+    INTEGRATION_DIR=$(dirname "$ROOT")/$(basename "$ROOT")-$INTEGRATION_WS
+    log "adding jj workspace $INTEGRATION_WS at $INTEGRATION_DIR, for the integration check"
+    jj workspace add --name "$INTEGRATION_WS" -r @- "$INTEGRATION_DIR" >/dev/null || { log "could not add workspace $INTEGRATION_WS"; exit 1; }
   fi
   INTEGRATION_REPORT=$ROOT/llm-dlc/loop-summaries/$(basename "$BRIEF" .md)-integration.md
   INTEGRATION_SCOPE=feature-loop-$(basename "$BRIEF" .md)-integration
@@ -318,21 +349,21 @@ fi
 stream_heads() {
   local s
   for s in "${STREAMS[@]}"; do
-    jj log --ignore-working-copy --no-graph -r "$s@-" -T 'commit_id.short(12) ++ " "' 2>/dev/null || printf '? '
+    jj log --ignore-working-copy --no-graph -r "${WS[$s]}@-" -T 'commit_id.short(12) ++ " "' 2>/dev/null || printf '? '
   done
 }
 
 # One check of the streams' current commits: merge, run the script, report.
 integrate_once() {
   local heads=$1 s revs=() previous conflicted code tmp
-  for s in "${STREAMS[@]}"; do revs+=("$s@-"); done
+  for s in "${STREAMS[@]}"; do revs+=("${WS[$s]}@-"); done
   tmp=$(mktemp) || return 1
   {
     printf '# Integration check of %s\n\n' "$BRIEF"
     printf -- '- When: %s\n' "$(date '+%F %T')"
     printf -- '- Merged: '
-    for s in "${!STREAMS[@]}"; do printf '%s@- %s; ' "${STREAMS[$s]}" "$(cut -d' ' -f$(( s + 1 )) <<<"$heads")"; done
-    printf '\n- Where: the workspace integration, %s\n' "$INTEGRATION_DIR"
+    for s in "${!STREAMS[@]}"; do printf '%s@- %s; ' "${WS[${STREAMS[$s]}]}" "$(cut -d' ' -f$(( s + 1 )) <<<"$heads")"; done
+    printf '\n- Where: the workspace %s, %s\n' "$INTEGRATION_WS" "$INTEGRATION_DIR"
   } >"$tmp"
   previous=$(cd "$INTEGRATION_DIR" && jj log --no-graph -r @ -T 'if(description, "", change_id)' 2>/dev/null)
   if ! (cd "$INTEGRATION_DIR" && jj new --quiet "${revs[@]}" >/dev/null 2>&1); then
