@@ -254,6 +254,17 @@ status_of() {
 }
 finished() { [[ "$1" == done* || "$1" == blocked* ]]; }
 
+# The job ids in a "waiting on jobs ..." status: the words shaped like one
+# (20261107-172721-...). Others, such as the template's own "ID" copied in
+# ("waiting on jobs ID 2026..."), are skipped: as an id, "ID" never comes back,
+# and the loop would wait RUN_STREAMS_JOB_WAIT for nothing (cleanup-jbmc, 2026-11-07).
+job_ids() {
+  local w
+  for w in $(tr ',;' '  ' <<<"${1#waiting on jobs}"); do
+    [[ "$w" =~ ^[0-9]{8}-[0-9]{6} ]] && printf '%s ' "$w"
+  done
+}
+
 # Whether every job named has its result collected here, by id or id prefix.
 jobs_back() {
   local id
@@ -284,7 +295,7 @@ supervise() {
       exit 0
     fi
     if [[ "$status" == "waiting on jobs"* ]]; then
-      read -ra ids <<<"$(tr ',;' '  ' <<<"${status#waiting on jobs}")"
+      read -ra ids <<<"$(job_ids "$status")"
       if (( ${#ids[@]} )) && ! jobs_back "${ids[@]}"; then
         phase "$label" "waiting for jobs"
         log "[$label] waiting for ${ids[*]}, checking every ${POLL}s"
@@ -316,7 +327,7 @@ supervise() {
       exit 0
     fi
     if [[ "$status" == "waiting on jobs"?* ]]; then
-      read -ra ids <<<"$(tr ',;' '  ' <<<"${status#waiting on jobs}")"
+      read -ra ids <<<"$(job_ids "$status")"
       if ! jobs_back "${ids[@]}"; then
         failed=0
         continue

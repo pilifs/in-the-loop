@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-07T21:09:59.845Z",
-  "duration_seconds": 8048,
+  "ended": "2026-11-07T21:13:44.685Z",
+  "duration_seconds": 8273,
   "stats": {
-    "turns": 7,
-    "api_calls": 44,
-    "tool_calls": 49,
+    "turns": 8,
+    "api_calls": 56,
+    "tool_calls": 60,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 173062,
+    "peak_context_tokens": 185107,
     "usage": {
-      "input_tokens": 96,
-      "output_tokens": 51819,
-      "cache_read_input_tokens": 4941141,
-      "cache_creation_input_tokens": 265032
+      "input_tokens": 122,
+      "output_tokens": 58370,
+      "cache_read_input_tokens": 7085819,
+      "cache_creation_input_tokens": 277077
     }
   },
   "tools": {
-    "Bash": 37,
+    "Bash": 48,
     "Write": 8,
     "Agent": 1,
     "Edit": 1,
@@ -50,24 +50,24 @@
     {
       "index": 0,
       "started": "2026-11-07T18:55:51.567Z",
-      "ended": "2026-11-07T21:09:59.845Z",
-      "turns": 7,
-      "api_calls": 44,
+      "ended": "2026-11-07T21:13:44.685Z",
+      "turns": 8,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 51819,
-        "cache_read_input_tokens": 4941141,
-        "cache_creation_input_tokens": 265032
+        "input_tokens": 122,
+        "output_tokens": 58370,
+        "cache_read_input_tokens": 7085819,
+        "cache_creation_input_tokens": 277077
       },
-      "peak_context_tokens": 173062
+      "peak_context_tokens": 185107
     }
   ],
   "log": {
-    "sha256": "306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a",
-    "bytes": 1718014,
-    "lines": 418,
-    "gzip_bytes": 350363,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a.jsonl.gz"
+    "sha256": "6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44",
+    "bytes": 1865336,
+    "lines": 495,
+    "gzip_bytes": 371562,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44.jsonl.gz"
   },
   "subagents": [
     {
@@ -122,6 +122,14 @@
       "summary": "Loops print their session when they end",
       "body": "feature-loop.sh logs 'session: ID' from its EXIT trap, so the session to resume or read is the last line however the loop ended: done, out of cycles, no commit, an error or Ctrl-C. run-streams.sh logs, after its final status, the planning session, the merge loop's session (the main brief's, or FEATURE_LOOP_SESSION) and each stream's. The integration check is a script and has no session. Both scripts were replaced by rename, since run-streams.sh cleanup is still running from this workspace on the old copy, which therefore won't print them; checked with bash -n.",
       "log_sha256": "306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a"
+    },
+    {
+      "change_id": "xrtpyzpswunowlllvxutspkxkwlkpyky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "run-streams.sh reads only job-id-shaped words from a 'waiting on jobs' status",
+      "body": "The cleanup-jbmc stream ended its Progress with 'Status: waiting on jobs ID 20261107-...', copying the template's literal ID. run-streams.sh took every word after 'waiting on jobs' as a job id, so it waited for verification/results/ID*/result.json, which never comes. All nine real jobs were collected by about 18:00, and the stream sat waiting from 17:31 toward the 12-hour RUN_STREAMS_JOB_WAIT. A new job_ids keeps only words shaped like an id (YYYYMMDD-HHMMSS...), and both places that parse the status use it. Tested on that status line, and on an empty one; bash -n. Replaced by rename: the run under way keeps the old copy, so it stays stuck until it is restarted.",
+      "log_sha256": "6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44"
     }
   ],
   "logs": {
@@ -129,6 +137,12 @@
       "bytes": 1718014,
       "lines": 418,
       "gzip_bytes": 350363,
+      "url": null
+    },
+    "6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44": {
+      "bytes": 1865336,
+      "lines": 495,
+      "gzip_bytes": 371562,
       "url": null
     },
     "6f89d360f610a5be1ca9cd2651251958d74acc882617a0924ed1aa583a2aee1e": {
