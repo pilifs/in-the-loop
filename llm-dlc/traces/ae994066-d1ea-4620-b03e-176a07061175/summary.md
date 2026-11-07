@@ -268,6 +268,20 @@ Reproducer: two new methods in lib/tests/fixtures/jbmc-defects/p/D.java, run thr
 
 Job 20261107-024759 is 20261107-012013 resubmitted unchanged, as VF-005 asks. The notes of 071 and 013 record jobs -203501 and -012013. Job 20261107-022319 (exact numberOfLeadingZeros) came back passed, and 037's and 127's notes and the brief's Progress now say so. VF-009 (boomTwice, enumBroken under --confirm) is a different cause, initializers that throw, and is next.
 
+### Allow list: Filip Stankovic approved 493d8c56, 70e2f6e5, 71a780ce, 76947b3d, acb2d832, b9e8252b, c7295890
+
+change `uzsprqurpsux` · [log `0f67bfab9526`](https://terminalvalue.net/raw-traces/ae994066-d1ea-4620-b03e-176a07061175/0f67bfab952631961809e625c6479d908f3ee06f02092ea3424867f67031f3a7.jsonl.gz)
+
+Filip Stankovic approved 7 value(s) at their terminal with sync.py allow; the command committed the decision itself.
+
+493d8c56  long-token  _ZZ…ns (45 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+70e2f6e5  long-token  _ZT…EE (48 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+71a780ce  long-token  _ZT…EE (53 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+76947b3d  long-token  _ZZ…ex (82 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+acb2d832  long-token  _ZZ…ex (107 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+b9e8252b  long-token  _ZT…gt (40 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+c7295890  long-token  _ZZ…ex (102 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/ae994066-d1ea-4620-b03e-176a07061175/0f67bfab952631961809e625c6479d908f3ee06f02092ea3424867f67031f3a7.jsonl.gz) has every step in between: reasoning, tool calls and their results.
