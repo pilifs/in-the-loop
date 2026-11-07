@@ -1,0 +1,417 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-022319-the-own-checker-models-numberofleadingze",
+  "title": "The own checker models numberOfLeadingZeros exactly: examples 037 and 127 on it under strict, and the conformance corpus under JBMC and auto",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 12m48s, peak 1.1 GiB (estimated 20m00s, 3.0 GiB); 6 output file(s) changed; signals: example:as-expected×1; cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-022319-the-own-checker-models-numberofleadingze.json",
+    "sha256": "ff5c40f6eeab774d7b03b6b8e9b62af1ca731c9bdc7312aa6fc8f290e7f47c98",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-022319-the-own-checker-models-numberofleadingze",
+      "title": "The own checker models numberOfLeadingZeros exactly: examples 037 and 127 on it under strict, and the conformance corpus under JBMC and auto",
+      "description": "Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension 4c's coverage inventory (examples/coverage.md) ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker, which under strict left examples 037 (tableSizeFor) and 127 (a backoff's guarded shift) to JBMC alone, and 037 to neither (JBMC's proof is refused by its unmasked-shift guard). The own checker now computes both exactly, as a priority encoder over the argument's bits (Engine::call_jdk_static in lib/src/bmc/mod.rs), so they are no gaps; the contract library's two proved contracts for them are taken out with their records, since a contract for a call the checker reproduces is refused. Checked inline: two conformance cases (leadingZeros, leadingZerosLong) on a real JVM (JDK 25.0.5), whose five claims gave no verdict under strict before and are now proved or refuted as the JVM decides; the Rust suite (unit 178, conformance 9 with 2 ignored, integration 64 with the known Pricing#total wall-clock flake passing alone); build.py --scan-gaps finds no gap in 037 or 127. Steps: build; 037 and 127 under strict with approach.engine set to native in a copy of examples/ (nothing recorded changes), each obligation verified by the own checker with no gap; the conformance corpus under JBMC and auto, strict (the ignored test), which must agree with the JVM on the new cases too.",
+      "kind": "model",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "037",
+          "127"
+        ],
+        "paths": [
+          "lib/src/bmc/mod.rs"
+        ],
+        "jobs": [
+          "20261107-000039"
+        ]
+      },
+      "expected": "037 and 127: established by the own checker under strict with no gap; the conformance test under JBMC and auto passes",
+      "submitted": {
+        "at": "2026-11-07T02:23:19+00:00",
+        "session": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+        "by": "claude (engines loop)"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "memoryLimit": "3.5G",
+        "timeout": "90m",
+        "notes": "the JBMC conformance test took about 11 min in job 20261106-203501 and peaked at 1.0 GiB with JBMC capped at 2 GiB; the own checker ran the 41 recorded JBMC examples in minutes in job 20261107-000039; 127 unwinds its loop 32 times"
+      },
+      "steps": [
+        {
+          "name": "build jvmcontract",
+          "run": "cd lib && cargo build --release",
+          "cwd": "."
+        },
+        {
+          "name": "037 and 127 under strict on the own checker",
+          "run": "set -eo pipefail\nW=lib/target/jobs/nlz; rm -rf \"$W\"; mkdir -p \"$W/repo\" \"$W/results\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\npython3 - \"$W/repo/examples\" 037 127 <<'PY'\nimport glob, json, sys\nroot, ids = sys.argv[1], sys.argv[2:]\nfor i in ids:\n    (path,) = glob.glob(f\"{root}/{i}-*/example.json\")\n    example = json.load(open(path))\n    assert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", f\"{i} is not a JBMC example\"\n    example[\"approach\"][\"engine\"] = \"native\"\n    open(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(f\"{len(ids)} examples set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 037 127 > \"$W/build.txt\" 2>&1 || status=$?\ntail -n 6 \"$W/build.txt\"\nfor i in 037 127; do cp \"$W\"/repo/examples/$i-*/result.json \"$W/results/$i.json\"; cp \"$W\"/repo/examples/$i-*/verifier-output.txt \"$W/results/$i-output.txt\" || true; done\npython3 - \"$W/results\" <<'PY'\nimport json, sys\nfor i in (\"037\", \"127\"):\n    r = json.load(open(f\"{sys.argv[1]}/{i}.json\"))\n    # An equivalence result: its conclusion, and the search that decided it.\n    search = r[\"evidence\"].get(\"search\") or {}\n    got = (r[\"conclusion\"][\"status\"], search.get(\"engine\"), search.get(\"gapMode\"), [g[\"id\"] for g in search.get(\"gaps\") or []])\n    print(i, got)\n    assert got == (\"established\", \"native\", \"strict\", []), f\"{i}: {got}\"\nprint(\"ok: 037 and 127 proved by the own checker under strict, with no gap\")\nPY\ntest \"$status\" -le 1 || { echo \"build.py exited $status\"; exit 1; }",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-nlz.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/jobs/nlz/results",
+        "lib/target/jobs/nlz/build.txt",
+        "lib/target/conformance-jbmc-nlz.log"
+      ]
+    }
+  },
+  "sourceCommit": "d8cd7864321bd4ff7e3889e32e51fdc7da8711b2",
+  "startedAt": "2026-11-07T02:26:55+00:00",
+  "finishedAt": "2026-11-07T02:39:43+00:00",
+  "wallSeconds": 768.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2052084,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "the JBMC conformance test took about 11 min in job 20261106-203501 and peaked at 1.0 GiB with JBMC capped at 2 GiB; the own checker ran the 41 recorded JBMC examples in minutes in job 20261107-000039; 127 unwinds its loop 32 times"
+  },
+  "usage": {
+    "peakMemoryBytes": 1131466752,
+    "wallSeconds": 768.0,
+    "cpuSeconds": 795.0,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.64
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 91.844,
+      "cpuSeconds": 121.111,
+      "cpuThrottledSeconds": 0.593,
+      "peakMemoryBytes": 1131466752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-jvmcontract.log",
+        "lines": 46,
+        "bytes": 1544,
+        "sha256": "4a7df2b4a6a0e1c999222ea94fa24596ce6e552f13310483a94ade38fbaab6a7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling unicode-ident v1.0.27",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling memchr v2.8.3",
+        "   Compiling cc v1.10.0",
+        "   Compiling syn v3.0.9",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling psm v0.1.32",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling cfg-if v1.0.5",
+        "   Compiling zmij v1.0.23",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling serde v1.0.229",
+        "   Compiling heck v0.5.0",
+        "   Compiling strsim v0.11.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-022319-the-own-checker-models-numberofleadingze/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 31s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "037 and 127 under strict on the own checker",
+      "run": "set -eo pipefail\nW=lib/target/jobs/nlz; rm -rf \"$W\"; mkdir -p \"$W/repo\" \"$W/results\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\npython3 - \"$W/repo/examples\" 037 127 <<'PY'\nimport glob, json, sys\nroot, ids = sys.argv[1], sys.argv[2:]\nfor i in ids:\n    (path,) = glob.glob(f\"{root}/{i}-*/example.json\")\n    example = json.load(open(path))\n    assert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", f\"{i} is not a JBMC example\"\n    example[\"approach\"][\"engine\"] = \"native\"\n    open(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(f\"{len(ids)} examples set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 037 127 > \"$W/build.txt\" 2>&1 || status=$?\ntail -n 6 \"$W/build.txt\"\nfor i in 037 127; do cp \"$W\"/repo/examples/$i-*/result.json \"$W/results/$i.json\"; cp \"$W\"/repo/examples/$i-*/verifier-output.txt \"$W/results/$i-output.txt\" || true; done\npython3 - \"$W/results\" <<'PY'\nimport json, sys\nfor i in (\"037\", \"127\"):\n    r = json.load(open(f\"{sys.argv[1]}/{i}.json\"))\n    # An equivalence result: its conclusion, and the search that decided it.\n    search = r[\"evidence\"].get(\"search\") or {}\n    got = (r[\"conclusion\"][\"status\"], search.get(\"engine\"), search.get(\"gapMode\"), [g[\"id\"] for g in search.get(\"gaps\") or []])\n    print(i, got)\n    assert got == (\"established\", \"native\", \"strict\", []), f\"{i}: {got}\"\nprint(\"ok: 037 and 127 proved by the own checker under strict, with no gap\")\nPY\ntest \"$status\" -le 1 || { echo \"build.py exited $status\"; exit 1; }",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 6.614,
+      "cpuSeconds": 10.077,
+      "cpuThrottledSeconds": 1.136,
+      "peakMemoryBytes": 147202048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-037-and-127-under-strict-on-th.log",
+        "lines": 10,
+        "bytes": 514,
+        "sha256": "2b95418305d14cb7e29902333110eaaff3d501134f44922b4f4caeddca5ca47e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 7,
+          "text": "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)",
+          "groups": [
+            "127",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "2 examples set to --engine native, in the copy",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.9 s",
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)",
+        "037 ('established', 'native', 'strict', [])",
+        "127 ('established', 'native', 'strict', [])",
+        "ok: 037 and 127 proved by the own checker under strict, with no gap"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-nlz.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 669.592,
+      "cpuSeconds": 663.859,
+      "cpuThrottledSeconds": 0.408,
+      "peakMemoryBytes": 942039040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-conformance-corpus-under-jbmc.log",
+        "lines": 323,
+        "bytes": 23621,
+        "sha256": "ee89aa89c4b1e205511f7cb85d80020699475c0aa2f485609d3ed42f57a2608a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 322,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 644.60s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "leadingZeros     Jbmc/Strict Verified     assert (x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)",
+        "leadingZeros     Auto/Strict Verified     assert (x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)",
+        "leadingZeros     Jbmc/Strict Violation    assert result < 32",
+        "leadingZeros     Auto/Strict Violation    assert result < 32",
+        "leadingZeros     Jbmc/Strict Violation    assume x > 0; assert (-1 >>> (result - 1)) == x - 1",
+        "leadingZeros     Auto/Strict Violation    assume x > 0; assert (-1 >>> (result - 1)) == x - 1",
+        "leadingZerosLong Jbmc/Strict Verified     assert (x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)",
+        "leadingZerosLong Auto/Strict Verified     assert (x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)",
+        "leadingZerosLong Jbmc/Strict Violation    assert result < 64",
+        "leadingZerosLong Auto/Strict Violation    assert result < 64",
+        "",
+        "81 cases, 152 claims (80 refuted on the JVM), 304 runs; the interpreter refuses firstByte([0]), listChange(7)",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 644.60s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/jobs/nlz/results/037-output.txt",
+      "change": "added",
+      "bytes": 220,
+      "sha256": "0e067b035399db941b555cada1e6f1d9cf07cfd097db89a045704e4a96eb054d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/nlz/results/037.json",
+      "change": "added",
+      "bytes": 10372,
+      "sha256": "526f695107c70b96adbd990a812627add0a053496b406211e0a3d433d6670d0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/nlz/results/127-output.txt",
+      "change": "added",
+      "bytes": 663,
+      "sha256": "10875457a7a2b64744be94945f7eee7608dd4ac8f2d2ea992faab979ecda2829",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/nlz/results/127.json",
+      "change": "added",
+      "bytes": 11766,
+      "sha256": "d5daa4153515e5506c7f4948a498bf7aad0189a7ad597ae32212d8a8632b6aa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/nlz/build.txt",
+      "change": "added",
+      "bytes": 1354,
+      "sha256": "cc1ce726f6b94cb5ff95d6aa8822e0a09d4f7d3415e29d5edfdad8c08e96cbda",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/conformance-jbmc-nlz.log",
+      "change": "added",
+      "bytes": 23621,
+      "sha256": "ee89aa89c4b1e205511f7cb85d80020699475c0aa2f485609d3ed42f57a2608a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T02:40:09+00:00",
+    "applied": [
+      "lib/target/jobs/nlz/results/037-output.txt",
+      "lib/target/jobs/nlz/results/037.json",
+      "lib/target/jobs/nlz/results/127-output.txt",
+      "lib/target/jobs/nlz/results/127.json",
+      "lib/target/jobs/nlz/build.txt",
+      "lib/target/conformance-jbmc-nlz.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

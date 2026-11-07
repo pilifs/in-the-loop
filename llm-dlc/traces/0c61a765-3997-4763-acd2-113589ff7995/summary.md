@@ -18,12 +18,6 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Record verification results: benchmark corpus passes; escaping-exceptions, 071/013 strict and 41-example jobs fail (VF-005 to VF-008)
-
-change `zstyztslkmpl` · [log `8db89b15b99b`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/8db89b15b99be29c208f6ae119031c47ed8ecfb7f78de60261206038eeb8b58f.jsonl.gz)
-
-Ran 4 queued jobs on vm-1. The benchmark corpus job (engine-priorities step 2b) passed in 1h31m and its outputs (lib/benchmark/RESULTS.md, results.json) were applied. Three jobs failed and are recorded as open findings: VF-005 (example 071 under strict is unverifiable on JDK 25.0.5 where verified was expected), VF-006 (the 41-example gap-table job stops on a result-schema error on 'sat'), VF-007 (auto --confirm disagrees with the JVM on 12 caught-exception claims; one integration test times out) and VF-008 (JBMC under strict says Verified on conformance case 'declaring', which the JVM refutes). No job was changed or resubmitted.
-
 ### Run application class initializers in the own checker, as JVMS 5.5 does (Phase 5, step 1)
 
 change `kumppqkzlvwn` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz)
@@ -58,22 +52,6 @@ The own checker's solver is now reached only through a Sat trait (lib/src/bmc/sa
 
 No behaviour changes. A new engine test runs a check on a test double that logs everything crossing the trait: it gives the plain run's outcome, its clauses and calls match the outcome's counts and the transcript's, and a replay on the logged solver gives the same clauses and calls again. End to end, held/lower-bound (equivalence --engine native, unwind 9, arrays up to 8) writes the same transcripts by count as before the change: 460 calls over 43,478 clauses and 13,025 variables, verified, plus a 5-call check, both replaying with no contradiction. Unit (153), integration (64) and skill tests pass. Conformance fails only its two known tests: 12 library-record claims (JDK 25.0.5 against a record made on 25.0.4.1) and the JBMC stream's benchmark file. The brief's Progress records this, the shared file changed (lib/README.md), and the next step: enums in the own checker.
 
-### Run enums in the own checker: arrays of references, Enum's model, switch maps (Phase 5, step 3)
-
-change `ulstzomtvuxt` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz)
-
-The own checker (lib/src/bmc) now has arrays of references: anewarray, aaload and aastore, a cell holding an object or null. An index that is an input splits the path per cell, since a reference is not a choice among bits, and a path that runs the instruction again at a join does so without waiting there, so that merging does not make its constant a choice again. An array's clone() is a copy, an aastore that would throw ArrayStoreException is refused, and arrays are named by descriptor, as ClassPath::is_subtype names them. The model of java.lang.Enum in lib/models, until now on JBMC's class path only, is run by the own checker too (models::CHECKER_RUNS, ClassPath::checker_model, checker_method, checker_runs); the interpreter keeps its natives and JBMC's class path is unchanged. Enum initializers, $VALUES and javac's $SwitchMap classes therefore run where the JVM runs them. The gap scan agrees: anewarray is no longer refused, an array clone is exact, and an abstract application method is no longer counted as a JDK gap (an earlier flaw that an enum with constant bodies showed under --gaps advised).
-
-Checked: five new conformance cases (enumValues, enumSwitch, enumBodies, enumBroken, enumValueOf) were run on JVM 25.0.5 first. The own checker decides the first four, and enumState, as the JVM does in every native mode; valueOf stays a gap. The models test covers the four that go through Enum's model. A new engine unit test covers the per-cell split merged and unmerged, and the ArrayStoreException refusal. initializer_shapes.py (static) counts 0 class-initializer gaps over the four apps, where 4b counted 49, and none over the recorded examples (013 and 071 reached four Quorum enums). Unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record claims on JDK 25.0.5, and lib/benchmark/conformance.json, the JBMC stream's file, which is now 10 more claims behind. Three integration fixtures that used a String[] to keep an initializer out now use a double[].
-
-The main brief's Phase 5 text says the own checker refuses arrays of references; that is no longer so, though it still refuses List.of and copyOf, whose models stay JBMC-only.
-
-### Put Bitwuzla behind the own checker's solver interface, chosen by JVMCONTRACT_SOLVER (Phase 6c, step 1)
-
-change `osspkxkzomwy` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz)
-
-lib/src/bmc/bitwuzla.rs (new) gives Bitwuzla 0.8.2 the engine's own bit-blasted clauses through the Sat trait: each variable is a Boolean constant, each clause an 'or', each call check_sat_assuming, with the per-call limit as a termination callback. Nothing links it: the C API is loaded at run time from JVMCONTRACT_BITWUZLA or ~/tools/bitwuzla/current, and any version other than 0.8.2 is refused. JVMCONTRACT_SOLVER=bitwuzla runs every check of a process on it, and 'jvmcontract transcript --solver bitwuzla' replays a transcript on it. Results now name the solver the check ran on: solver_signature() is the configured solver's, and the outcome's short solver name comes from the solver's signature instead of a literal, so it is unchanged under CaDiCaL.
-
 ### JBMC lets a runtime exception past its handler in two shapes: the preflight names them and refuses a JBMC proof through one (verification pending)
 
 change `svvrpymrpslx` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz)
@@ -93,6 +71,28 @@ change `xrrrwlrmqqpu` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-trac
 Step 4a of llm-dlc/loops/engine-priorities.md, in the engines-jbmc stream. Job 20261106-204220 runs build.py on the 41 recorded B9/B11 examples JBMC proves (Quorum, Crosscut, Mica) in two scratch copies of examples/: as recorded (--engine jbmc, --gaps strict), and with only approach.engine set to native. It saves examples/tools/gap_table.py --json for each engine, every result.json, both build logs, and a comparison of the two tables. This replaces job 20261106-082917's projection, made under assume and rebuilt by hand, with a measured table. Recorded verdicts don't change: a verdict that differs from its expected one is reported in the table, not counted as a failure, and nothing in examples/ is written.
 
 gap_table.py's rows now name their engine and checker, the example's expectation, and, for an obligation with no verdict, its problem and whether it is a JBMC proof refused at a construct JBMC runs otherwise than the JVM. That is step 3's guard, which records the defect only in the problem text. The summary counts the obligations with no verdict at a gap (under strict, a refused proof is already unresolved), those refused at a JBMC defect, and the examples that differ from their expected verdict. --compare lists the obligations whose status differs between two tables, the input to step 4c's coverage inventory.
+
+### Run enums in the own checker: arrays of references, Enum's model, switch maps (Phase 5, step 3)
+
+change `ulstzomtvuxt` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz)
+
+The own checker (lib/src/bmc) now has arrays of references: anewarray, aaload and aastore, a cell holding an object or null. An index that is an input splits the path per cell, since a reference is not a choice among bits, and a path that runs the instruction again at a join does so without waiting there, so that merging does not make its constant a choice again. An array's clone() is a copy, an aastore that would throw ArrayStoreException is refused, and arrays are named by descriptor, as ClassPath::is_subtype names them. The model of java.lang.Enum in lib/models, until now on JBMC's class path only, is run by the own checker too (models::CHECKER_RUNS, ClassPath::checker_model, checker_method, checker_runs); the interpreter keeps its natives and JBMC's class path is unchanged. Enum initializers, $VALUES and javac's $SwitchMap classes therefore run where the JVM runs them. The gap scan agrees: anewarray is no longer refused, an array clone is exact, and an abstract application method is no longer counted as a JDK gap (an earlier flaw that an enum with constant bodies showed under --gaps advised).
+
+Checked: five new conformance cases (enumValues, enumSwitch, enumBodies, enumBroken, enumValueOf) were run on JVM 25.0.5 first. The own checker decides the first four, and enumState, as the JVM does in every native mode; valueOf stays a gap. The models test covers the four that go through Enum's model. A new engine unit test covers the per-cell split merged and unmerged, and the ArrayStoreException refusal. initializer_shapes.py (static) counts 0 class-initializer gaps over the four apps, where 4b counted 49, and none over the recorded examples (013 and 071 reached four Quorum enums). Unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record claims on JDK 25.0.5, and lib/benchmark/conformance.json, the JBMC stream's file, which is now 10 more claims behind. Three integration fixtures that used a String[] to keep an initializer out now use a double[].
+
+The main brief's Phase 5 text says the own checker refuses arrays of references; that is no longer so, though it still refuses List.of and copyOf, whose models stay JBMC-only.
+
+### Put Bitwuzla behind the own checker's solver interface, chosen by JVMCONTRACT_SOLVER (Phase 6c, step 1)
+
+change `osspkxkzomwy` · [log `ed051ee17c4e`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz)
+
+lib/src/bmc/bitwuzla.rs (new) gives Bitwuzla 0.8.2 the engine's own bit-blasted clauses through the Sat trait: each variable is a Boolean constant, each clause an 'or', each call check_sat_assuming, with the per-call limit as a termination callback. Nothing links it: the C API is loaded at run time from JVMCONTRACT_BITWUZLA or ~/tools/bitwuzla/current, and any version other than 0.8.2 is refused. JVMCONTRACT_SOLVER=bitwuzla runs every check of a process on it, and 'jvmcontract transcript --solver bitwuzla' replays a transcript on it. Results now name the solver the check ran on: solver_signature() is the configured solver's, and the outcome's short solver name comes from the solver's signature instead of a literal, so it is unchanged under CaDiCaL.
+
+### Record verification results: benchmark corpus passes; escaping-exceptions, 071/013 strict and 41-example jobs fail (VF-005 to VF-008)
+
+change `zstyztslkmpl` · [log `8db89b15b99b`](https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/8db89b15b99be29c208f6ae119031c47ed8ecfb7f78de60261206038eeb8b58f.jsonl.gz)
+
+Ran 4 queued jobs on vm-1. The benchmark corpus job (engine-priorities step 2b) passed in 1h31m and its outputs (lib/benchmark/RESULTS.md, results.json) were applied. Three jobs failed and are recorded as open findings: VF-005 (example 071 under strict is unverifiable on JDK 25.0.5 where verified was expected), VF-006 (the 41-example gap-table job stops on a result-schema error on 'sat'), VF-007 (auto --confirm disagrees with the JVM on 12 caught-exception claims; one integration test times out) and VF-008 (JBMC under strict says Verified on conformance case 'declaring', which the JVM refutes). No job was changed or resubmitted.
 
 ## Conversation
 

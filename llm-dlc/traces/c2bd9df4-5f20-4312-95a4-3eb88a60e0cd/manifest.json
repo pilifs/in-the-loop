@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T02:25:40.840Z",
-  "duration_seconds": 8040,
+  "ended": "2026-11-07T02:39:49.846Z",
+  "duration_seconds": 8889,
   "stats": {
-    "turns": 35,
-    "api_calls": 393,
-    "tool_calls": 401,
+    "turns": 41,
+    "api_calls": 432,
+    "tool_calls": 439,
     "tool_errors": 7,
-    "compactions": 6,
-    "peak_context_tokens": 199035,
+    "compactions": 7,
+    "peak_context_tokens": 206242,
     "usage": {
-      "input_tokens": 802,
-      "output_tokens": 232277,
-      "cache_read_input_tokens": 43899316,
-      "cache_creation_input_tokens": 943237
+      "input_tokens": 882,
+      "output_tokens": 255691,
+      "cache_read_input_tokens": 47796631,
+      "cache_creation_input_tokens": 1066172
     }
   },
   "tools": {
-    "Bash": 361,
-    "Read": 18,
-    "Edit": 10,
+    "Bash": 396,
+    "Read": 20,
+    "Edit": 11,
     "Monitor": 4,
     "ToolSearch": 4,
     "TaskStop": 3,
@@ -131,24 +131,38 @@
     {
       "index": 6,
       "started": "2026-11-07T01:47:41.193Z",
-      "ended": "2026-11-07T02:25:40.840Z",
-      "turns": 4,
-      "api_calls": 90,
+      "ended": "2026-11-07T02:32:00.743Z",
+      "turns": 6,
+      "api_calls": 94,
       "usage": {
-        "input_tokens": 180,
-        "output_tokens": 48827,
-        "cache_read_input_tokens": 12174937,
-        "cache_creation_input_tokens": 185956
+        "input_tokens": 190,
+        "output_tokens": 50375,
+        "cache_read_input_tokens": 12986048,
+        "cache_creation_input_tokens": 193163
       },
-      "peak_context_tokens": 199035
+      "peak_context_tokens": 206242
+    },
+    {
+      "index": 7,
+      "started": "2026-11-07T02:32:46.803Z",
+      "ended": "2026-11-07T02:39:49.846Z",
+      "turns": 4,
+      "api_calls": 35,
+      "usage": {
+        "input_tokens": 70,
+        "output_tokens": 21866,
+        "cache_read_input_tokens": 3086204,
+        "cache_creation_input_tokens": 115728
+      },
+      "peak_context_tokens": 128807
     }
   ],
   "log": {
-    "sha256": "2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48",
-    "bytes": 9800728,
-    "lines": 3514,
-    "gzip_bytes": 1880585,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48.jsonl.gz"
+    "sha256": "350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4",
+    "bytes": 10992458,
+    "lines": 3891,
+    "gzip_bytes": 2123665,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -239,6 +253,14 @@
       "summary": "The own checker computes Integer and Long.numberOfLeadingZeros exactly, so examples 037 and 127 meet no gap under strict (verification pending)",
       "body": "Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension that 4c's coverage inventory ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker. Under strict that left example 127 (a backoff's guarded shift) to JBMC alone, and 037 (tableSizeFor) to neither engine, since JBMC's proof there is refused by the unmasked-shift guard. Engine::call_jdk_static (lib/src/bmc/mod.rs) now computes both as a priority encoder over the argument's bits, the width for zero, and models_jdk_static lists them, so the gap scan counts them as reproduced exactly.\n\nThe reproducer came first: two conformance cases, leadingZeros and leadingZerosLong (Conformance.java), whose calls and five claims were checked on a real JVM (JDK 25.0.5). Before the change all five gave no verdict under strict. Now each is proved or refuted as the JVM decides, and lib/benchmark/conformance.json is regenerated from the corpus (152 claims). build.py --scan-gaps finds no gap in 037 or 127, and their gap-scan notes say so.\n\nA contract for a call the checker reproduces is refused, so the contract library's two proved contracts for these calls are taken out: java.lang.Long.contracts is gone and Integer keeps numberOfTrailingZeros. checked.json was rewritten by jvmcontract gap-contracts --dir lib/models/contracts --record (8 accepted, 0 refused). It drops exactly the four numberOfLeadingZeros records; the one other record it measured again keeps job 20261106-203501's timing, so the diff is removals only. The unit and integration tests that took numberOfLeadingZeros as the example of a gap or of a proved contract now take numberOfTrailingZeros. lib/README.md and lib/models/contracts/README.md follow. Examples 147, 148 and 149, never recorded (VF-002), gave a contract for numberOfLeadingZeros; their notes say a run now refuses it with a note and rests on the Random contracts alone.\n\nVerified inline: Rust unit tests 178 passed; conformance 9 passed (2 ignored); integration 63 passed plus the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, which failed once on Pricing#total's known wall-clock flake (item 8) and passed alone; skill 1; lib/benchmark/test_run.py 26.\n\nJob 20261107-022319 runs examples 037 and 127 under strict on the own checker, with approach.engine set to native in a copy of examples/ so nothing recorded changes. Each must be established with no gap. It also runs the conformance corpus under JBMC and auto, the new cases included. The examples' engines stay JBMC: moving recorded examples is the user's decision.\n\nThe Progress also records what the runner collected meanwhile. Job 20261107-012013 failed step 3 (VF-005): 071's obligations 1 and 2 are still unverifiable, with no gap left. Job 20261107-010728 failed step 2 (VF-009): JBMC refutes boomTwice and enumBroken at n = 0 under auto --confirm, where the own checker proves them. Both are next.",
       "log_sha256": "2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48"
+    },
+    {
+      "change_id": "vpvqksyoozlvltmzklkqzmzszqkyxkuo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the numberOfLeadingZeros job: 037 and 127 under strict and the conformance corpus under JBMC and auto all pass",
+      "body": "Job 20261107-022319-the-own-checker-models-numberofleadingze passed all 3 steps in 12m48s (peak 1.1 GiB, estimated 20m, 3.0 GiB) at d8cd7864321b on vm-1. The corpus (81 cases, 152 claims) agrees with the JVM under JBMC and auto. No findings opened or changed.",
+      "log_sha256": "350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4"
     }
   ],
   "logs": {
@@ -258,6 +280,12 @@
       "bytes": 9800728,
       "lines": 3514,
       "gzip_bytes": 1880585,
+      "url": null
+    },
+    "350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4": {
+      "bytes": 10992458,
+      "lines": 3891,
+      "gzip_bytes": 2123665,
       "url": null
     },
     "7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8": {
