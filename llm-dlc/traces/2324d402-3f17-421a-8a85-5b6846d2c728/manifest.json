@@ -1,0 +1,93 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "2324d402-3f17-421a-8a85-5b6846d2c728",
+  "status": "open",
+  "title": null,
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T16:26:46.363Z",
+  "ended": "2026-11-07T16:31:13.335Z",
+  "duration_seconds": 267,
+  "stats": {
+    "turns": 5,
+    "api_calls": 27,
+    "tool_calls": 26,
+    "tool_errors": 2,
+    "compactions": 1,
+    "peak_context_tokens": 100458,
+    "usage": {
+      "input_tokens": 52,
+      "output_tokens": 18138,
+      "cache_read_input_tokens": 1864398,
+      "cache_creation_input_tokens": 105017
+    }
+  },
+  "tools": {
+    "Bash": 26
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T16:26:46.363Z",
+      "ended": "2026-11-07T16:26:46.365Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-07T16:26:43.700Z",
+      "ended": "2026-11-07T16:31:13.335Z",
+      "turns": 5,
+      "api_calls": 27,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 18138,
+        "cache_read_input_tokens": 1864398,
+        "cache_creation_input_tokens": 105017
+      },
+      "peak_context_tokens": 100458
+    }
+  ],
+  "log": {
+    "sha256": "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c",
+    "bytes": 813849,
+    "lines": 246,
+    "gzip_bytes": 161093,
+    "path": "llm-dlc/traces/2324d402-3f17-421a-8a85-5b6846d2c728/logs/b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ruvmymplmmookmzwqknvlzqqvqpxnwmv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-010's reproducer: Pricing#total's regression proof on the own checker, run 8 times alike (verification pending)",
+      "body": "The cleanup loop's native stream, item N1, step 1. VF-010 says the own checker's branch probes are budgeted by wall-clock time (Engine::probe gives a probe as long as all the solver calls so far took, at least a second), so which side of a branch stays undecided, and with it the path order, depends on the machine: of 8 identical runs of Pricing#total's regression proof on cvm, 6 found the violation in about 4 s and 2 ran out of time. The new script lib/tests/reproducers/vf-010.sh compiles lib/tests/integration.rs's Pricing fixture and its rounding refactor, runs the entry's 'jvmcontract equivalence --target fixtures.Pricing#total --engine native --timeout 40' N times, prints each run's exit and the own checker's numbers, and exits 0 only when every run finds the violation. Tried once inline with a debug build: the violation in 2.7 s.\n\nVerification pending: job 20261107-163057-vf-010-s-reproducer-before-the-fix-prici (verification/jobs/) runs it 8 times at this commit, before the fix, expecting exit 1. The fix comes next, and the same script at the fixing commit is VF-010's closing check, with the integration tests.",
+      "log_sha256": "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c"
+    }
+  ],
+  "logs": {
+    "b64fabff131e78eb11fe09363996d031287bc00b72222edcfe24b03d6b677f0c": {
+      "bytes": 813849,
+      "lines": 246,
+      "gzip_bytes": 161093,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

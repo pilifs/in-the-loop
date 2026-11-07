@@ -92,7 +92,13 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
 
 ## Progress
 
-- Nothing yet.
+- **N1, step 1: the reproducer, before the fix.** New script `lib/tests/reproducers/vf-010.sh`: it compiles
+  `integration.rs`'s Pricing fixture and its rounding refactor, runs the entry's `jvmcontract equivalence ...
+  --engine native --timeout 40` N times, prints each run's exit and the own checker's numbers, and exits 0 only when
+  every run finds the violation. Job `20261107-163057-vf-010-s-reproducer-before-the-fix-prici` runs it 8 times at
+  this commit, expecting exit 1 (runs that differ). One debug run here found the violation in 2.7 s (13 solver calls,
+  1 of 2 divisions built in full). Next: the fix. CaDiCaL's per-call `conflicts` limit (`cadical::Solver::set_limit`)
+  can budget a probe by solver work; the deadline stays the terminate callback's wall-clock.
 - Status: working
 
 ## Loop settings
