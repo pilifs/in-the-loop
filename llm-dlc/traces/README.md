@@ -12,14 +12,14 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Sessions | 46, plus 1 empty |
 | Period | 2026-10-24 14:07 UTC to 2026-11-07 06:32 UTC |
 | Prompts | 1,105 |
-| Model calls | 11,056 |
-| Tool calls | 11,922 (247 failed) |
+| Model calls | 11,061 |
+| Tool calls | 11,927 (247 failed) |
 | Compactions | 151 |
 | Subagents | 5 |
-| Tokens written | 13,585,724 |
-| Tokens read | 1,825,601,112 (97.9% from cache) |
-| Commits with a trace | 335 |
-| Log snapshots | 412 (1078.2 MB gzipped, 404 uploaded) |
+| Tokens written | 13,587,259 |
+| Tokens read | 1,826,508,296 (97.9% from cache) |
+| Commits with a trace | 336 |
+| Log snapshots | 413 (1080.8 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 2 h 30 min | `claude-opus-5-5` | 34 | 445 | 457 | 5 | 6 | 329,169 | 7 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 2 h 31 min | `claude-opus-5-5` | 34 | 450 | 462 | 5 | 6 | 329,169 | 8 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,13 +127,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 379,135 | 902 | 1,446,975 | 81,685,117 | 98.3% | 219 |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 380,670 | 912 | 1,450,433 | 82,588,833 | 98.3% | 221 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,476 | 87.9% | 46 |
+| `Bash` | 10,481 | 87.9% | 46 |
 | `Edit` | 472 | 4.0% | 22 |
 | `Read` | 418 | 3.5% | 23 |
 | `Write` | 343 | 2.9% | 20 |
@@ -490,6 +490,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 333 | change `xnozsxqv` | Results of classes made by their constructor compared by their fields, and identity relations within each version compared as holds-before-iff-holds-now (H3, first step) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/5a72306835501044095ecb7ff9231701e11c37a495b616942a22d1bbd723d4d3.jsonl.gz)) |
 | 334 | change `ntqqzttl` | A correspondence's input equations relate objects of different shapes in a regression check, and spec::heap::check runs the joint example's kernel claims (H5, narrow case) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/aa2bc8c9ad349553eba77be093a78173f978e6468d7ed27e0d3a6025bea8340a.jsonl.gz)) |
 | 335 | change `xmwsurtu` | Regression witnesses over objects run on a real JVM with their identities, the application's classes opened for the harness (H4, first step) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/ede9e3b7ac91d52c49d69eaa7faf2e12a95ebc9de8d383bbcd640cefe162fd15.jsonl.gz)) |
+| 336 | change `yzzyzymt` | Propose a false public-ip finding for the allow list: a JVMS section number in a doc comment | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d.jsonl.gz)) |
 
 ## Logs
 
@@ -542,7 +543,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 7 | 0 | 9.8 MB | `ede9e3b7ac91`, not uploaded |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 8 | 0 | 12.3 MB | `ca85746d0b9d`, not uploaded |
 
 ## Session notes
 
