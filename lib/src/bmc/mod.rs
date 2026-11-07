@@ -25,8 +25,11 @@
 //! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
 //! as JBMC's nondeterministic arrays do, a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
-//! division by zero is. Floating point, arrays of references, static state and the rest of the JDK are refused
-//! with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
+//! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
+//! a constant splits the path per cell. An application class's static fields are path state, and its initializer
+//! runs where the JVM runs it (JVMS §5.5); an enum's is one, its constants made through `java.lang.Enum`'s model
+//! and its `$VALUES` an array of references. Floating point, the JDK's static state and the rest of the
+//! JDK are refused with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
 //!
 //! Every instruction, and every call it can make, is implemented as the JVM does it, modelled (by a model whose
@@ -38,20 +41,23 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
+//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
-//! | `getstatic` of a compile-time constant (an application field with a `ConstantValue`, `Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`) | implemented |
-//! | class initialization, at the first `new`, `getstatic` or `invokestatic` of an application class whose initialization runs a `<clinit>` ([`gaps::initializers`]) | gap: `class-initializer`, since the engine runs no initializer; a JDK class is taken to be initialized already |
+//! | `getstatic`, `putstatic` of an application class's field; `getstatic` of a JDK compile-time constant (`Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`, or a field with a `ConstantValue`) | implemented: a field is resolved as the JVM resolves it, and holds what the path wrote, else its `ConstantValue`, else zero or null |
+//! | class initialization (JVMS §5.5), at the first `new`, `getstatic`, `putstatic` or `invokestatic` of an application class | implemented ([`Engine::initialise`]): the class's superclass, then the superinterfaces that declare a default method ([`gaps::initialization_supers`]), then its `<clinit>`, run as bytecode; a use from inside its own initialization goes on; an exception that leaves a `<clinit>` is thrown as an `ExceptionInInitializerError` (an `Error` as it is), and a later use of the class, or of one that waited on it, throws `NoClassDefFoundError`. A JDK class is taken to be initialized already |
+//! | a `<clinit>` outside the fragment ([`gaps::runs_initializer`]: one that reaches what the engine refuses, or reads or writes a static of a class whose `<clinit>` is outside; a gap inside one it runs is met there) | gap: `class-initializer`, met where the JVM would run it; under assume, or closed by a contract that it throws nothing, taken to have run, its static fields then known only as constants |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
+//! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives (the result an opaque string); an object argument it would convert is a gap, `string-conversion` |
 //! | `ldc` of a string or a class | implemented: one opaque object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class |
-//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic`, any other `getstatic`, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
@@ -66,8 +72,11 @@
 //! a primitive result a fresh value, and end a path the contract's assertion excludes; an initializer whose contract throws nothing is taken to have run.
 //! The outcome names every gap a contract closed, with the contract (treatment `contract`).
 
+pub mod bitwuzla;
 pub mod bits;
 pub mod gaps;
+pub mod sat;
+pub mod transcript;
 
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
@@ -98,11 +107,18 @@ pub struct Options {
     /// Under advised, the contracts that close gaps (`--contracts`, [`crate::gap_contracts`]): the engine applies
     /// each at its gap in place of refusing it.
     pub contracts: std::sync::Arc<BTreeMap<Gap, Closure>>,
+    /// The file to write the run's solver calls to ([`transcript`]); when `None`, the directory the environment
+    /// variable [`transcript::ENV`] names, if it is set.
+    pub transcript: Option<std::path::PathBuf>,
+    /// Makes the SAT solver the check is run on, empty ([`sat`]): by default the one the environment variable
+    /// [`sat::ENV`] chooses, CaDiCaL unless it names another, and otherwise what a test puts behind the same
+    /// interface. Results name the solver by [`solver_signature`], the default's.
+    pub solver: fn() -> Box<dyn sat::Sat>,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default() }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured }
     }
 }
 
@@ -142,6 +158,9 @@ pub struct Outcome {
     pub refined: u64,
     pub multiplications: u64,
     pub refined_multiplications: u64,
+    /// How many word-level operations the solver was given as terms, when it takes terms ([`sat::Terms`]); zero
+    /// when it is given clauses.
+    pub word_operations: u64,
     pub seconds: f64,
     /// The phases the solving and evaluating above are not: reading and parsing class files, decoding methods,
     /// building circuits (the encoding, as the paths are explored), and reading a witness out of a model; the
@@ -155,6 +174,8 @@ pub struct Outcome {
     /// The gaps the run met, each refused (strict: a path ended there) or assumed, with where.
     pub gaps: Vec<GapRecord>,
     pub gap_mode: GapMode,
+    /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
+    pub transcript: Option<std::path::PathBuf>,
 }
 
 impl Outcome {
@@ -202,6 +223,7 @@ impl Outcome {
             divisions_built: self.refined,
             multiplications: self.multiplications,
             multiplications_built: self.refined_multiplications,
+            word_operations: self.word_operations,
             variables: self.variables,
             clauses: self.clauses,
             seconds: self.seconds,
@@ -226,13 +248,18 @@ impl Outcome {
                 format!(", {n} gap{} {what} (--gaps {})", if n == 1 { "" } else { "s" }, self.gap_mode.name())
             }
         };
-        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {}{} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, if self.word_operations > 0 { format!("{} word-level operations given as terms, ", self.word_operations) } else { String::new() }, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+            + &self.transcript.as_ref().map(|t| format!("; solver calls written to {}", t.display())).unwrap_or_default()
     }
 }
 
 /// What the engine's search took, as [`Outcome::summary`] prints it: the paths it explored and merged, the solver's
 /// calls and time, the gates evaluated in path models instead, the divisions and multiplications left to the solver
 /// and those whose circuit had to be built, and the size of the last formula.
+fn is_zero(n: &u64) -> bool {
+    *n == 0
+}
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct Stats {
     pub paths: u64,
@@ -245,6 +272,9 @@ pub struct Stats {
     pub divisions_built: u64,
     pub multiplications: u64,
     pub multiplications_built: u64,
+    /// Absent for a solver given clauses.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub word_operations: u64,
     pub variables: i32,
     pub clauses: u64,
     pub seconds: f64,
@@ -304,15 +334,32 @@ struct Obj {
     array: Option<Array>,
 }
 
-/// An array of primitives: its length, and a cell for every index it may have (as many as its length can be),
-/// each as wide as [`cell_width`] says. A read at a symbolic index is a choice among the cells, and a write
-/// updates each cell under the condition that the index is its own; an index at or beyond the length is out of
-/// bounds whatever its cell holds.
+/// An array: its length, and a cell for every index it may have (as many as its length can be). An array of
+/// primitives has `cells`, each as wide as [`cell_width`] says: a read at a symbolic index is a choice among them,
+/// and a write updates each under the condition that the index is its own. An array of references has `refs`,
+/// the object in each cell or null, and no `cells`: a reference is not a choice among bits, so an index into one
+/// is made a constant first, the path split per cell ([`Engine::concrete_index`]). An index at or beyond the
+/// length is out of bounds whatever its cell holds.
 #[derive(Debug, Clone)]
 struct Array {
     element: Type,
     length: Bits,
     cells: Vec<Bits>,
+    refs: Vec<Option<usize>>,
+}
+
+/// Whether an array of `element`s holds references.
+fn holds_references(element: &Type) -> bool {
+    matches!(element, Type::Object(_) | Type::Array(_))
+}
+
+/// The class an object of type `t` has, as [`ClassPath::is_subtype`] names classes: an internal name, or an
+/// array's descriptor (`[I`, `[Lcom/example/Color;`).
+fn class_of(t: &Type) -> String {
+    match t {
+        Type::Object(name) => name.clone(),
+        other => other.descriptor(),
+    }
 }
 
 /// A violating input: the scalar parameters' values and the array parameters' elements, by slot.
@@ -345,9 +392,20 @@ struct Frame {
     at: usize,
     locals: Vec<Option<Val>>,
     stack: Vec<Val>,
+    /// The class whose `<clinit>` the frame runs: when it returns the class is initialized, and when an exception
+    /// leaves it the class is erroneous (JVMS §5.5, steps 10 and 11).
+    initializes: Option<String>,
+    /// The classes the instruction being executed began to initialize and that wait for their superclasses' and
+    /// superinterfaces' initializers to finish (JVMS §5.5, step 7), outermost first: the instruction runs again
+    /// each time one of those returns, and an exception that leaves it makes them erroneous.
+    entered: Vec<String>,
 }
 
 impl Frame {
+    fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new() }
+    }
+
     fn pc(&self) -> u32 {
         self.code.pcs[self.at]
     }
@@ -376,9 +434,26 @@ struct Path {
     /// The object each string or class literal loaded so far is, so that every load of one literal is the same
     /// reference, as the JVM's interned strings and `Class` objects are.
     literals: BTreeMap<Literal, usize>,
-    /// The application classes whose initialization the path has reached ([`gaps::initializers`]), so that a
-    /// `class-initializer` gap is met once per class, where the JVM would run the initializer.
-    initialised: std::collections::BTreeSet<String>,
+    /// The state of initialization of each application class the path has used (JVMS §5.5); a class absent is not
+    /// initialized yet.
+    classes: BTreeMap<String, ClassState>,
+    /// The static fields of application classes the path has written, by declaring class and name; one it has not
+    /// is its `ConstantValue`, or zero or null.
+    statics: BTreeMap<(String, String), Val>,
+}
+
+/// Where a class is in its initialization (JVMS §5.5).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ClassState {
+    /// Begun and not finished: a use of the class from its own initialization goes on as if it were initialized.
+    InProgress,
+    /// Its `<clinit>` ran and returned, or it has none.
+    Done,
+    /// Taken to be initialized, its `<clinit>` not run: a `class-initializer` gap assumed, or closed by a contract.
+    /// Only its constants are known.
+    Assumed,
+    /// Its initialization threw: a later use throws `NoClassDefFoundError`.
+    Erroneous,
 }
 
 /// A string or class literal, the identity of what an `ldc` of it loads.
@@ -416,15 +491,19 @@ fn same_shape(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| f.initializes == g.initializes && f.entered == g.entered)
         && a.objects.len() == b.objects.len()
         && a.literals == b.literals
+        && a.classes == b.classes
+        && a.statics.len() == b.statics.len()
+        && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
         && a.objects.iter().zip(&b.objects).all(|(o, q)| {
             o.class == q.class
                 && o.fields.len() == q.fields.len()
                 && o.fields.iter().zip(&q.fields).all(|((k, x), (l, y))| k == l && mergeable(x, y))
                 && match (&o.array, &q.array) {
                     (None, None) => true,
-                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len(),
+                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len() && x.refs == y.refs,
                     _ => false,
                 }
         })
@@ -453,6 +532,18 @@ enum Stop {
 }
 
 type Step = Result<Option<End>, Stop>;
+
+/// Where a use of a class leaves its initialization ([`Engine::initialise_class`]).
+enum Initialising {
+    /// Initialized, or being initialized by an enclosing use: the instruction goes on.
+    Ready,
+    /// A `<clinit>` was pushed to run first.
+    Running,
+    /// The class, or one it needs first, is erroneous: `NoClassDefFoundError`.
+    Erroneous,
+    /// A gap ended the path.
+    End(End),
+}
 
 /// Which sides of a branch are feasible under the path condition.
 enum Sides {
@@ -501,8 +592,10 @@ struct Engine<'a> {
     /// Whether an object of a class has a field that a subclass along its chain declares again, by class: only
     /// then does an access need the field's resolution to find its key ([`ClassPath::field_key`]).
     hides: HashMap<String, bool>,
-    /// The application classes whose `<clinit>` initializing a class would run, by class ([`gaps::initializers`]).
-    initializers: HashMap<String, Rc<Vec<String>>>,
+    /// What the JVM initializes before a class, by class ([`gaps::initialization_supers`]).
+    supers: HashMap<String, Rc<Vec<String>>>,
+    /// Whether the engine runs a class's `<clinit>`, by class ([`gaps::runs_initializer`]).
+    runs: HashMap<String, bool>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
     witness: Duration,
@@ -539,9 +632,26 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     };
     let m = harness.method_by_name(method).ok_or_else(|| Error::new(format!("no method {method} in {class}")))?.clone();
     let descriptor = MethodDescriptor::parse(&m.descriptor)?;
+    sat::configuration()?;
+    let mut solver = (options.solver)();
+    let transcript = match transcript::destination(options.transcript.as_deref()) {
+        None => None,
+        Some(path) if solver.terms().is_some() => {
+            return Err(Error::new(format!("cannot write the transcript {}: it records clauses, and {} is given the engine's terms", path.display(), solver.signature())));
+        }
+        Some(path) => {
+            let header = [
+                format!("jvmcontract {}: the own checker's solver calls, in order ({})", env!("CARGO_PKG_VERSION"), "lib/src/bmc/transcript.rs"),
+                format!("solver: {}", solver.signature()),
+                format!("check: {class}.{method}{}", m.descriptor),
+                format!("options: unwind {}, max array length {}, max paths {}, merge after {}, timeout {:.3} s, gaps {}", options.unwind, options.max_array_length, options.max_paths, options.merge_after, options.timeout.as_secs_f64(), options.gaps.name()),
+            ];
+            Some(transcript::Transcript::create(&path, &header).map_err(|e| Error::new(format!("cannot write the transcript {}: {e}", path.display())))?)
+        }
+    };
     let mut engine = Engine {
         cp,
-        b: Blaster::new(),
+        b: Blaster::over(solver, transcript),
         codes: HashMap::new(),
         pending: Vec::new(),
         deferred: Vec::new(),
@@ -561,7 +671,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         contracts: options.contracts.clone(),
         applied: BTreeMap::new(),
         hides: HashMap::new(),
-        initializers: HashMap::new(),
+        supers: HashMap::new(),
+        runs: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
     };
@@ -586,6 +697,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         refined: engine.b.divisions().1,
         multiplications: engine.b.multiplications().0,
         refined_multiplications: engine.b.multiplications().1,
+        word_operations: engine.b.word_operations() as u64,
         seconds: started.elapsed().as_secs_f64(),
         loading: (cp.loading() - loading_before).as_secs_f64(),
         decoding: engine.decoding.as_secs_f64(),
@@ -594,124 +706,137 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         solver: solver.clone(),
         gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })).into_iter().chain(gaps::contract_records(&engine.applied, &engine.contracts, jdk.as_deref())).collect(),
         gap_mode: engine.gap_mode,
+        transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
-    // The inputs: fresh bits per parameter, in its range; an array parameter is an object of a fresh length up to
-    // the bound (the first path's condition) with fresh cells.
-    let mut locals: Vec<Option<Val>> = Vec::new();
-    let mut objects: Vec<Obj> = Vec::new();
-    let mut cond: Vec<Lit> = Vec::new();
-    let mut slot = 0u32;
-    for t in &descriptor.params {
-        if let Some(why) = unsupported_parameter(t) {
-            return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
+    let result = 'search: {
+        // The inputs: fresh bits per parameter, in its range; an array parameter is an object of a fresh length up to
+        // the bound (the first path's condition) with fresh cells.
+        let mut locals: Vec<Option<Val>> = Vec::new();
+        let mut objects: Vec<Obj> = Vec::new();
+        let mut cond: Vec<Lit> = Vec::new();
+        let mut slot = 0u32;
+        for t in &descriptor.params {
+            if let Some(why) = unsupported_parameter(t) {
+                break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
+            }
+            if let Type::Array(element) = t {
+                let length = engine.b.fresh(32);
+                let zero = engine.b.constant(0, 32);
+                let most = engine.b.constant(i64::from(options.max_array_length), 32);
+                cond.push(engine.b.sle(&zero, &length));
+                cond.push(engine.b.sle(&length, &most));
+                let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
+                engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
+                objects.push(Obj { class: t.descriptor(), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }) });
+                locals.push(Some(Val::R(Some(objects.len() - 1))));
+                slot += 1;
+                continue;
+            }
+            let bits = match t {
+                Type::Boolean => {
+                    let mut v = vec![FALSE; 32];
+                    v[0] = engine.b.var();
+                    v
+                }
+                Type::Byte => {
+                    let small = engine.b.fresh(8);
+                    engine.b.sext(&small, 32)
+                }
+                Type::Char => {
+                    let small = engine.b.fresh(16);
+                    engine.b.zext(&small, 32)
+                }
+                Type::Short => {
+                    let small = engine.b.fresh(16);
+                    engine.b.sext(&small, 32)
+                }
+                Type::Int => engine.b.fresh(32),
+                Type::Long => engine.b.fresh(64),
+                _ => unreachable!(),
+            };
+            engine.params.push((slot, t.clone(), bits.clone()));
+            locals.push(Some(if *t == Type::Long { Val::J(bits) } else { Val::I(bits) }));
+            if *t == Type::Long {
+                locals.push(None);
+            }
+            slot += u32::from(t.slots());
         }
-        if let Type::Array(element) = t {
-            let length = engine.b.fresh(32);
-            let zero = engine.b.constant(0, 32);
-            let most = engine.b.constant(i64::from(options.max_array_length), 32);
-            cond.push(engine.b.sle(&zero, &length));
-            cond.push(engine.b.sle(&length, &most));
-            let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
-            engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
-            objects.push(Obj { class: format!("{}[]", element.java_name()), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells }) });
-            locals.push(Some(Val::R(Some(objects.len() - 1))));
-            slot += 1;
-            continue;
-        }
-        let bits = match t {
-            Type::Boolean => {
-                let mut v = vec![FALSE; 32];
-                v[0] = engine.b.var();
-                v
-            }
-            Type::Byte => {
-                let small = engine.b.fresh(8);
-                engine.b.sext(&small, 32)
-            }
-            Type::Char => {
-                let small = engine.b.fresh(16);
-                engine.b.zext(&small, 32)
-            }
-            Type::Short => {
-                let small = engine.b.fresh(16);
-                engine.b.sext(&small, 32)
-            }
-            Type::Int => engine.b.fresh(32),
-            Type::Long => engine.b.fresh(64),
-            _ => unreachable!(),
-        };
-        engine.params.push((slot, t.clone(), bits.clone()));
-        locals.push(Some(if *t == Type::Long { Val::J(bits) } else { Val::I(bits) }));
-        if *t == Type::Long {
-            locals.push(None);
-        }
-        slot += u32::from(t.slots());
-    }
-    let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
-    locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), initialised: Default::default() };
-    engine.pending.push(first);
+        let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
+        locals.resize(code.max_locals.max(locals.len()), None);
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new() };
+        engine.pending.push(first);
 
-    // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
-    // search, since another path may have one in the first stage, as it does when the first path to fail is an
-    // overflow and the second a rounding. The search for a better one is given as long again as the first took,
-    // within the deadline; the violation stands whatever the remaining paths do.
-    let mut best: Option<(usize, Input)> = None;
-    let violation = |engine: &Engine, best: Option<(usize, Input)>| {
-        let (stage, input) = best.expect("a violation");
-        let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
-        outcome(engine, Verdict::Violation, input, stage, None)
-    };
-    loop {
-        let path = match engine.next_path() {
-            Ok(Some(path)) => path,
-            Ok(None) => break,
-            Err(stop) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
+        // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
+        // search, since another path may have one in the first stage, as it does when the first path to fail is an
+        // overflow and the second a rounding. The search for a better one is given as long again as the first took,
+        // within the deadline; the violation stands whatever the remaining paths do.
+        let mut best: Option<(usize, Input)> = None;
+        let violation = |engine: &Engine, best: Option<(usize, Input)>| {
+            let (stage, input) = best.expect("a violation");
+            let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
+            outcome(engine, Verdict::Violation, input, stage, None)
         };
-        if engine.paths > engine.max_paths {
-            return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
-        }
-        match engine.run(path) {
-            Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) => {}
-            Ok(End::Violation(cond)) => {
-                let (stage, input) = match engine.staged_input(&cond) {
-                    Ok(found) => found,
-                    Err(stop) if best.is_some() => {
-                        let _ = stop;
-                        return Ok(violation(&engine, best));
+        loop {
+            let path = match engine.next_path() {
+                Ok(Some(path)) => path,
+                Ok(None) => break,
+                Err(stop) => break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
+            };
+            if engine.paths > engine.max_paths {
+                break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
+            }
+            match engine.run(path) {
+                Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) => {}
+                Ok(End::Violation(cond)) => {
+                    let (stage, input) = match engine.staged_input(&cond) {
+                        Ok(found) => found,
+                        Err(stop) if best.is_some() => {
+                            let _ = stop;
+                            break 'search Ok(violation(&engine, best));
+                        }
+                        Err(stop) => break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop)))),
+                    };
+                    if best.as_ref().is_none_or(|(s, _)| stage < *s) {
+                        if best.is_none() {
+                            let elapsed = started.elapsed();
+                            engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                        }
+                        best = Some((stage, input));
                     }
-                    Err(stop) => return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop)))),
-                };
-                if best.as_ref().is_none_or(|(s, _)| stage < *s) {
-                    if best.is_none() {
-                        let elapsed = started.elapsed();
-                        engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                    if stage == 0 {
+                        break 'search Ok(violation(&engine, best));
                     }
-                    best = Some((stage, input));
                 }
-                if stage == 0 {
-                    return Ok(violation(&engine, best));
+                Ok(End::Unwound(what)) => {
+                    break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
                 }
+                Err(Stop::Unsupported(what)) => {
+                    break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {what}"))) })
+                }
+                Err(Stop::Budget(what)) => break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(what)) }),
             }
-            Ok(End::Unwound(what)) => {
-                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
-            }
-            Err(Stop::Unsupported(what)) => {
-                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {what}"))) })
-            }
-            Err(Stop::Budget(what)) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(what)) }),
+        }
+        if best.is_some() {
+            break 'search Ok(violation(&engine, best));
+        }
+        if !engine.met.is_empty() && (engine.gap_mode.refuses() || engine.met.keys().any(|g| !g.kind.assumable())) {
+            let refused: BTreeMap<Gap, std::collections::BTreeSet<Site>> = engine.met.iter().filter(|(g, _)| engine.gap_mode.refuses() || !g.kind.assumable()).map(|(g, s)| (g.clone(), s.clone())).collect();
+            let problem = refused_gaps(&gaps::records(&refused, jdk.as_deref(), None), engine.gap_mode);
+            break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
+        }
+        Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
+    };
+    // The transcript ends with how the run ended; one that could not be written fails the run, which was asked for it.
+    let mut result = result;
+    if let Ok(out) = &mut result {
+        let last = format!("{:?}{}", out.verdict, out.problem.as_deref().map(|p| format!(": {p}")).unwrap_or_default());
+        if let Some(written) = engine.b.finish_transcript(&last.replace('\n', " ")) {
+            let path = out.transcript.clone().unwrap_or_default();
+            written.map_err(|e| Error::new(format!("cannot write the transcript {}: {e}", path.display())))?;
         }
     }
-    if best.is_some() {
-        return Ok(violation(&engine, best));
-    }
-    if !engine.met.is_empty() && (engine.gap_mode.refuses() || engine.met.keys().any(|g| !g.kind.assumable())) {
-        let refused: BTreeMap<Gap, std::collections::BTreeSet<Site>> = engine.met.iter().filter(|(g, _)| engine.gap_mode.refuses() || !g.kind.assumable()).map(|(g, s)| (g.clone(), s.clone())).collect();
-        let problem = refused_gaps(&gaps::records(&refused, jdk.as_deref(), None), engine.gap_mode);
-        return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
-    }
-    Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
+    result
 }
 
 /// Why a run that refused gaps has no verdict: each gap by its id, with the call and where.
@@ -732,12 +857,12 @@ pub fn refused_gaps(gaps: &[GapRecord], mode: GapMode) -> String {
     format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps {mode}): {list}. {after}", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" }, mode = mode.name())
 }
 
-/// The SAT solver the engine is built with, by name and version: `CaDiCaL 1.9.5 (bundled)`.
+/// The SAT solver checks run on by default, by name and version: `CaDiCaL 1.9.5 (bundled)`, unless the environment
+/// variable [`sat::ENV`] chooses another.
 pub fn solver_signature() -> String {
-    let signature = cadical::Solver::<cadical::Timeout>::new().signature().to_string();
-    match signature.strip_prefix("cadical-") {
-        Some(version) => format!("CaDiCaL {version} (bundled)"),
-        None => format!("{signature} (bundled)"),
+    match sat::configuration() {
+        Ok(make) => make().signature(),
+        Err(e) => format!("none: {}", e.0),
     }
 }
 
@@ -1114,7 +1239,6 @@ impl<'a> Engine<'a> {
         let either = self.b.or(takes_into, takes_other);
         into.cond.truncate(prefix);
         into.cond.extend(common);
-        into.initialised.extend(other.initialised.iter().cloned());
         if either != TRUE {
             into.cond.push(either);
         }
@@ -1131,6 +1255,9 @@ impl<'a> Engine<'a> {
             for (x, y) in f.stack.iter_mut().zip(&g.stack) {
                 choose(&mut self.b, x, y);
             }
+        }
+        for (x, y) in into.statics.values_mut().zip(other.statics.values()) {
+            choose(&mut self.b, x, y);
         }
         for (o, q) in into.objects.iter_mut().zip(&other.objects) {
             for (name, x) in o.fields.iter_mut() {
@@ -1250,6 +1377,52 @@ impl<'a> Engine<'a> {
                 self.advance(path);
                 Ok(None)
             }
+            Insn::ArrayLoad(ArrayKind::Ref) => {
+                if let Some(step) = self.concrete_index(path, 0) {
+                    return step;
+                }
+                let index = self.pop_int(path)?;
+                let o = match self.pop_array(path) {
+                    Ok(o) => o,
+                    Err(step) => return step,
+                };
+                let array = path.objects[o].array.clone().expect("an array");
+                if !holds_references(&array.element) {
+                    return unsupported(format!("an aaload from a {}[]", array.element.java_name()));
+                }
+                let Some(value) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).and_then(|k| array.refs.get(k).copied()) else {
+                    // No cell there: out of bounds whatever the length.
+                    return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                };
+                let in_bounds = self.b.ult(&index, &array.length);
+                self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", Val::R(value))
+            }
+            Insn::ArrayStore(ArrayKind::Ref) => {
+                if let Some(step) = self.concrete_index(path, 1) {
+                    return step;
+                }
+                let value = self.pop_ref(path)?;
+                let index = self.pop_int(path)?;
+                let o = match self.pop_array(path) {
+                    Ok(o) => o,
+                    Err(step) => return step,
+                };
+                let array = path.objects[o].array.as_ref().expect("an array");
+                if !holds_references(&array.element) {
+                    return unsupported(format!("an aastore into a {}[]", array.element.java_name()));
+                }
+                let Some(cell) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).filter(|&k| k < array.refs.len()) else {
+                    return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                };
+                if value.is_some_and(|v| !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element))) {
+                    return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[value.expect("an object")].class.replace('/', "."), array.element.java_name()));
+                }
+                let in_bounds = self.b.ult(&index, &array.length);
+                self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
+                    path.objects[o].array.as_mut().expect("an array").refs[cell] = value;
+                    engine.advance(path);
+                })
+            }
             Insn::ArrayLoad(kind) => {
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
@@ -1310,34 +1483,123 @@ impl<'a> Engine<'a> {
                     ArrayKind::Ref => return unsupported("arrays of references"),
                 };
                 let count = self.pop_int(path)?;
-                let cells = match self.b.constant_value(&count) {
-                    Some(n) if n < 0 => 0,
-                    Some(n) if n <= 1 << 16 => n as usize,
-                    Some(n) => return unsupported(format!("an array of {n} elements")),
-                    None => {
-                        // A computed size: within the bound, as a copy of a parameter is, or beyond the engine.
-                        let most = self.b.constant(i64::from(self.max_array_length), 32);
-                        let beyond = self.b.slt(&most, &count);
-                        let mut assumptions = path.cond.clone();
-                        assumptions.push(beyond);
-                        if self.solve(&assumptions)? {
-                            return unsupported(format!("an array of computed size, not known to be within {} elements", self.max_array_length));
-                        }
-                        self.max_array_length as usize
-                    }
-                };
+                let cells = self.new_array_cells(path, &count)?;
                 let negative = self.b.negative(&count);
                 let width = cell_width(&element);
                 self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
                     let zero = engine.b.constant(0, width);
-                    path.objects.push(Obj { class: format!("{}[]", element.java_name()), fields: BTreeMap::new(), array: Some(Array { element, length: count, cells: vec![zero; cells] }) });
+                    let class = Type::Array(Box::new(element.clone())).descriptor();
+                    path.objects.push(Obj { class, fields: BTreeMap::new(), array: Some(Array { element, length: count, cells: vec![zero; cells], refs: Vec::new() }) });
                     let o = path.objects.len() - 1;
                     engine.push(path, Val::R(Some(o)));
                     engine.advance(path);
                 })
             }
-            _ => unsupported("arrays of references"),
+            // Every cell null; the element class is not initialized (JVMS §6.5 anewarray).
+            Insn::ANewArray(index) => {
+                let frame = path.frames.last().expect("a frame");
+                let name = frame.class.pool.class_name(*index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
+                let element = if name.starts_with('[') { Type::parse(&name).map_err(|e| Stop::Unsupported(e.to_string()))? } else { Type::Object(name) };
+                let count = self.pop_int(path)?;
+                let cells = self.new_array_cells(path, &count)?;
+                let negative = self.b.negative(&count);
+                self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
+                    let class = Type::Array(Box::new(element.clone())).descriptor();
+                    path.objects.push(Obj { class, fields: BTreeMap::new(), array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![None; cells] }) });
+                    let o = path.objects.len() - 1;
+                    engine.push(path, Val::R(Some(o)));
+                    engine.advance(path);
+                })
+            }
+            _ => unsupported("a multi-dimensional array"),
         }
+    }
+
+    /// How many cells a new array of `count` elements has: its size when that is a constant (none when it is
+    /// negative, which throws), and otherwise the bound, once the solver shows the size is within it on the path.
+    fn new_array_cells(&mut self, path: &Path, count: &Bits) -> Result<usize, Stop> {
+        Ok(match self.b.constant_value(count) {
+            Some(n) if n < 0 => 0,
+            Some(n) if n <= 1 << 16 => n as usize,
+            Some(n) => return unsupported(format!("an array of {n} elements")),
+            None => {
+                // A computed size: within the bound, as a copy of a parameter is, or beyond the engine.
+                let most = self.b.constant(i64::from(self.max_array_length), 32);
+                let beyond = self.b.slt(&most, count);
+                let mut assumptions = path.cond.clone();
+                assumptions.push(beyond);
+                if self.solve(&assumptions)? {
+                    return unsupported(format!("an array of computed size, not known to be within {} elements", self.max_array_length));
+                }
+                self.max_array_length as usize
+            }
+        })
+    }
+
+    /// Makes the index of an `aaload` (`depth` 0) or an `aastore` (`depth` 1, under the value) a constant, when
+    /// it is not one and the array below it is an array: a reference is not a choice among bits, as an int is, so
+    /// the path is split on `index == i` for each cell `i` in turn, as a switch is. Each side that takes a cell
+    /// runs the instruction again with `i` in place of the index, and the path on which the index is none of
+    /// them throws `ArrayIndexOutOfBoundsException`, since the array's length is at most its cells. `None` when
+    /// there is nothing to split, and the instruction goes on (or throws, on a null array).
+    fn concrete_index(&mut self, path: &mut Path, depth: usize) -> Option<Step> {
+        let stack = &path.frames.last().expect("a frame").stack;
+        let n = stack.len();
+        if n < depth + 2 {
+            return None;
+        }
+        let at = n - 1 - depth;
+        let (Val::I(index), Val::R(Some(o))) = (&stack[at], &stack[at - 1]) else { return None };
+        if self.b.constant_value(index).is_some() {
+            return None;
+        }
+        let array = path.objects[*o].array.as_ref().filter(|a| holds_references(&a.element))?;
+        let cells = array.refs.len();
+        let index = index.clone();
+        Some(self.split_index(path, index, at, cells))
+    }
+
+    /// [`Engine::concrete_index`]'s split. A path that runs the instruction again does so rather than wait at it,
+    /// as one taken from a join point does (`Path::resumed`): merged with the others there, its constant would
+    /// be a choice again.
+    fn split_index(&mut self, path: &mut Path, index: Bits, at: usize, cells: usize) -> Step {
+        let fix = |path: &mut Path, k: &Bits| {
+            path.frames.last_mut().expect("a frame").stack[at] = Val::I(k.clone());
+            path.resumed = true;
+        };
+        for i in 0..cells {
+            let k = self.b.constant(i as i64, 32);
+            let c = self.b.eq(&index, &k);
+            match self.sides(path, c)? {
+                Sides::Both { then_models, else_models } => {
+                    let mut twin = self.split(path, c, then_models, else_models, true);
+                    fix(&mut twin, &k);
+                    // Counted here, since it does not come back from `next_path` as a new path.
+                    self.paths += 1;
+                    self.pending.push(twin);
+                }
+                Sides::Then => {
+                    path.cond.push(c);
+                    fix(path, &k);
+                    return Ok(None);
+                }
+                Sides::Else => path.cond.push(-c),
+                Sides::Undecided { model_takes_then: true } => {
+                    // The twin takes the other cells: it runs the instruction again, this cell decided against.
+                    let mut twin = self.split_undecided(path, c, true);
+                    twin.resumed = true;
+                    self.pending.push(twin);
+                    fix(path, &k);
+                    return Ok(None);
+                }
+                Sides::Undecided { model_takes_then: false } => {
+                    let mut twin = self.split_undecided(path, c, false);
+                    fix(&mut twin, &k);
+                    self.pending.push(twin);
+                }
+            }
+        }
+        self.raise(path, "java/lang/ArrayIndexOutOfBoundsException")
     }
 
     /// A jump within the top frame, counting back edges against the bound.
@@ -1413,9 +1675,16 @@ impl<'a> Engine<'a> {
 
     /// Unwinds to the nearest handler of the object's class; a path the harness's `AssertionError` leaves is a
     /// violation, and any other uncaught exception is outside what the engine can judge.
-    fn throw(&mut self, path: &mut Path, obj: usize) -> Step {
-        let class = path.objects[obj].class.clone();
+    ///
+    /// An exception that leaves a `<clinit>` makes its class erroneous and, unless it is an `Error`, is replaced by
+    /// an `ExceptionInInitializerError`; the classes the instruction that ran it was initializing are erroneous
+    /// too (JVMS §5.5, steps 7 and 11).
+    fn throw(&mut self, path: &mut Path, mut obj: usize) -> Step {
+        let mut class = path.objects[obj].class.clone();
         while let Some(frame) = path.frames.last_mut() {
+            for c in std::mem::take(&mut frame.entered) {
+                path.classes.insert(c, ClassState::Erroneous);
+            }
             let pc = frame.pc();
             let handler = frame.code.handlers.iter().find(|h| u32::from(h.start_pc) <= pc && pc < u32::from(h.end_pc) && h.catch_type.as_deref().is_none_or(|t| self.cp.is_subtype(&class, t))).cloned();
             if let Some(h) = handler {
@@ -1425,7 +1694,13 @@ impl<'a> Engine<'a> {
                 frame.at = to;
                 return Ok(None);
             }
-            path.frames.pop();
+            if let Some(c) = path.frames.pop().and_then(|f| f.initializes) {
+                path.classes.insert(c, ClassState::Erroneous);
+                if !self.cp.is_subtype(&class, "java/lang/Error") {
+                    class = "java/lang/ExceptionInInitializerError".to_string();
+                    obj = self.alloc(path, &class);
+                }
+            }
         }
         if self.cp.is_subtype(&class, "java/lang/AssertionError") {
             let feasible = self.solve(&path.cond.clone())?;
@@ -1697,9 +1972,14 @@ impl<'a> Engine<'a> {
                     Some(_) => Some(self.pop(path)?),
                     None => None,
                 };
-                path.frames.pop();
+                let returned = path.frames.pop().expect("a frame");
                 if path.frames.is_empty() {
                     return Ok(Some(End::Returned));
+                }
+                // A `<clinit>` returned: its class is initialized, and the instruction that ran it runs again.
+                if let Some(c) = returned.initializes {
+                    path.classes.insert(c, ClassState::Done);
+                    return Ok(None);
                 }
                 if let Some(v) = value {
                     self.push(path, v);
@@ -1707,16 +1987,34 @@ impl<'a> Engine<'a> {
                 self.advance(path);
                 return Ok(None);
             }
+            // The class that declares the resolved field is initialized first (JVMS §5.5).
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
-                if let Some(end) = self.initialise(path, &declaring) {
-                    return Ok(Some(end));
+                if let Some(step) = self.initialise(path, &declaring) {
+                    return step;
                 }
-                let v = self.get_static(&member.owner, &member.name, &member.descriptor)?;
+                let v = match self.application_static(path, &declaring, &member.name, &member.descriptor) {
+                    Some(v) => v?,
+                    None => self.get_static(&member.owner, &member.name, &member.descriptor)?,
+                };
                 self.push(path, v);
             }
-            Insn::PutStatic(_) => return unsupported("writes a static field"),
+            Insn::PutStatic(index) => {
+                let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if crate::classpath::is_jdk_name(&declaring) || !self.cp.is_application(&declaring) {
+                    return unsupported(format!("writes static field {}.{} of the JDK", declaring.replace('/', "."), member.name));
+                }
+                if let Some(step) = self.initialise(path, &declaring) {
+                    return step;
+                }
+                if path.classes.get(&declaring) == Some(&ClassState::Assumed) {
+                    return unsupported(format!("writes static field {}.{} of a class whose initializer was not run", declaring.replace('/', "."), member.name));
+                }
+                let v = self.pop(path)?;
+                path.statics.insert((declaring, member.name.clone()), v);
+            }
             Insn::GetField(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let r = self.pop_ref(path)?;
@@ -1745,17 +2043,19 @@ impl<'a> Engine<'a> {
             Insn::InvokeStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                if self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS {
+                    // The class that declares the method is initialized first (JVMS §5.5), the arguments still on
+                    // the stack, so that the instruction can run again once its initializer returns.
+                    let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
+                    if let Some(step) = self.initialise(path, &declaring) {
+                        return step;
+                    }
+                    let args = self.pop_args(path, descriptor.params.len())?;
+                    return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+                }
                 let args = self.pop_args(path, descriptor.params.len())?;
                 if member.owner == crate::gap_contracts::INTRINSICS {
                     return self.intrinsic(path, &member.name, args);
-                }
-                if self.cp.is_application(&member.owner) {
-                    // The class that declares the method is initialized first (JVMS §5.5).
-                    let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
-                    if let Some(end) = self.initialise(path, &declaring) {
-                        return Ok(Some(end));
-                    }
-                    return self.call(path, &member.owner, &member.name, &member.descriptor, args);
                 }
                 // A JDK class the tool models (Character.digit, say) runs as bytecode here too, so that the
                 // engine and the interpreter that replays its witnesses agree on it.
@@ -1786,8 +2086,18 @@ impl<'a> Engine<'a> {
                     Err(step) => return step,
                 };
                 let special = matches!(insn, Insn::InvokeSpecial(_));
+                // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
+                if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].array.is_some() {
+                    let copy = Obj { class: path.objects[o].class.clone(), fields: BTreeMap::new(), array: path.objects[o].array.clone() };
+                    path.objects.push(copy);
+                    let r = path.objects.len() - 1;
+                    self.push(path, Val::R(Some(r)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 let owner = if special { member.owner.clone() } else { path.objects[o].class.clone() };
-                if let Some((cf, m)) = self.cp.bytecode_method(&owner, &member.name, &member.descriptor).filter(|(cf, _)| self.cp.is_application(&cf.name)) {
+                // An application method, or one of `java.lang.Enum`'s, which its model runs ([`ClassPath::checker_runs`]).
+                if let Some((cf, m)) = self.cp.checker_method(&owner, &member.name, &member.descriptor).filter(|(cf, _)| self.cp.checker_runs(&cf.name)) {
                     if m.code.is_some() {
                         let mut full = vec![Val::R(Some(o))];
                         full.extend(args);
@@ -1843,8 +2153,8 @@ impl<'a> Engine<'a> {
             }
             Insn::New(index) => {
                 let name = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
-                if let Some(end) = self.initialise(path, &name) {
-                    return Ok(Some(end));
+                if let Some(step) = self.initialise(path, &name) {
+                    return step;
                 }
                 let r = self.alloc(path, &name);
                 self.push(path, Val::R(Some(r)));
@@ -1950,35 +2260,123 @@ impl<'a> Engine<'a> {
         Ok(None)
     }
 
-    /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `invokestatic`): each
-    /// application class whose `<clinit>` that would run, and the path has not reached before, is a
-    /// `class-initializer` gap, since the engine runs no initializer. Under assume it is taken to have run already.
-    fn initialise(&mut self, path: &mut Path, class: &str) -> Option<End> {
-        if path.initialised.contains(class) || crate::classpath::is_jdk_name(class) {
+    /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `putstatic`,
+    /// `invokestatic`), from the instruction at the top frame: `None` when the class is initialized, or being
+    /// initialized by an enclosing use, and the instruction goes on; otherwise what the instruction does instead,
+    /// having pushed a `<clinit>` to run first (the instruction runs again when it returns), thrown
+    /// `NoClassDefFoundError` for an erroneous class, or ended at a gap. The engine runs an application class's
+    /// `<clinit>` when it is in the fragment ([`gaps::runs_initializer`]); any other is a `class-initializer` gap,
+    /// which under assume, or closed by a contract that it throws nothing, is taken to have run. A JDK class is
+    /// taken to be initialized already.
+    fn initialise(&mut self, path: &mut Path, class: &str) -> Option<Step> {
+        if crate::classpath::is_jdk_name(class) || !self.cp.is_application(class) {
             return None;
         }
-        let classes = match self.initializers.get(class) {
-            Some(c) => c.clone(),
+        match self.initialise_class(path, class) {
+            Ok(Initialising::Ready) => {
+                debug_assert!(path.frames.last().expect("a frame").entered.is_empty());
+                None
+            }
+            Ok(Initialising::Running) => Some(Ok(None)),
+            Ok(Initialising::Erroneous) => Some(self.raise(path, "java/lang/NoClassDefFoundError")),
+            Ok(Initialising::End(end)) => Some(Ok(Some(end))),
+            Err(stop) => Some(Err(stop)),
+        }
+    }
+
+    /// The procedure of JVMS §5.5 for `class`, from the top frame's instruction, resumed where it stopped each
+    /// time a `<clinit>` it pushed returns.
+    fn initialise_class(&mut self, path: &mut Path, class: &str) -> Result<Initialising, Stop> {
+        let top = path.frames.len() - 1;
+        match path.classes.get(class) {
+            Some(ClassState::Done | ClassState::Assumed) => return Ok(Initialising::Ready),
+            Some(ClassState::Erroneous) => return Ok(Initialising::Erroneous),
+            // Being initialized by this thread, from an enclosing use: go on (step 3).
+            Some(ClassState::InProgress) if !path.frames[top].entered.iter().any(|c| c == class) => return Ok(Initialising::Ready),
+            // Begun by this instruction, which runs again: resume.
+            Some(ClassState::InProgress) => {}
             None => {
-                let c = Rc::new(gaps::initializers(self.cp, class));
-                self.initializers.insert(class.to_string(), c.clone());
-                c
-            }
-        };
-        let fresh: Vec<String> = classes.iter().filter(|c| !path.initialised.contains(*c)).cloned().collect();
-        path.initialised.insert(class.to_string());
-        path.initialised.extend(classes.iter().cloned());
-        for c in &fresh {
-            let gap = Gap { kind: GapKind::ClassInitializer, owner: c.clone(), name: "<clinit>".into(), descriptor: "()V".into() };
-            if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
-                self.apply(path, gap);
-                continue;
-            }
-            if let Some(end) = self.meet(path, GapKind::ClassInitializer, c, "<clinit>", "()V") {
-                return Some(end);
+                if !self.cp.is_application(class) {
+                    return Ok(Initialising::Ready);
+                }
+                path.classes.insert(class.to_string(), ClassState::InProgress);
+                path.frames[top].entered.push(class.to_string());
             }
         }
-        None
+        let supers = match self.supers.get(class) {
+            Some(s) => s.clone(),
+            None => {
+                let s = Rc::new(gaps::initialization_supers(self.cp, class));
+                self.supers.insert(class.to_string(), s.clone());
+                s
+            }
+        };
+        for s in supers.iter() {
+            match self.initialise_class(path, s)? {
+                Initialising::Ready => {}
+                other => return Ok(other),
+            }
+        }
+        path.frames[top].entered.retain(|c| c != class);
+        let Some(cf) = self.cp.application(class).ok().flatten() else {
+            path.classes.insert(class.to_string(), ClassState::Done);
+            return Ok(Initialising::Ready);
+        };
+        if cf.method("<clinit>", "()V").is_none() {
+            path.classes.insert(class.to_string(), ClassState::Done);
+            return Ok(Initialising::Ready);
+        }
+        let runs = match self.runs.get(class) {
+            Some(&r) => r,
+            None => {
+                let r = gaps::runs_initializer(self.cp, class);
+                self.runs.insert(class.to_string(), r);
+                r
+            }
+        };
+        if runs {
+            self.call(path, class, "<clinit>", "()V", Vec::new())?;
+            path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
+            return Ok(Initialising::Running);
+        }
+        let gap = Gap { kind: GapKind::ClassInitializer, owner: class.to_string(), name: "<clinit>".into(), descriptor: "()V".into() };
+        if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
+            self.apply(path, gap);
+        } else if let Some(end) = self.meet(path, GapKind::ClassInitializer, class, "<clinit>", "()V") {
+            return Ok(Initialising::End(end));
+        }
+        path.classes.insert(class.to_string(), ClassState::Assumed);
+        Ok(Initialising::Ready)
+    }
+
+    /// The value of the static field `name` that `declaring`, an application class, declares, once the class is
+    /// initialized: what the path wrote, else its `ConstantValue`, else zero or null. `None` for a JDK class, read
+    /// by [`Engine::get_static`]. A class taken to be initialized has only its constants.
+    fn application_static(&mut self, path: &mut Path, declaring: &str, name: &str, descriptor: &str) -> Option<Result<Val, Stop>> {
+        if crate::classpath::is_jdk_name(declaring) || !self.cp.is_application(declaring) {
+            return None;
+        }
+        if path.classes.get(declaring) == Some(&ClassState::Assumed) {
+            return Some(self.get_static(declaring, name, descriptor));
+        }
+        if let Some(v) = path.statics.get(&(declaring.to_string(), name.to_string())) {
+            return Some(Ok(v.clone()));
+        }
+        let constant = self.cp.application(declaring).ok().flatten().and_then(|cf| {
+            let field = cf.field(name).filter(|f| f.is_static())?;
+            let attr = field.attributes.iter().find(|a| a.name == "ConstantValue").filter(|a| a.data.len() == 2)?;
+            cf.pool.loadable(u16::from_be_bytes([attr.data[0], attr.data[1]])).ok()
+        });
+        Some(match constant {
+            Some(BootstrapArg::Int(v)) => Ok(Val::I(self.b.constant(i64::from(v), 32))),
+            Some(BootstrapArg::Long(v)) => Ok(Val::J(self.b.constant(v, 64))),
+            Some(BootstrapArg::Str(text)) => {
+                let o = self.literal(path, Literal::Str(text), "java/lang/String");
+                Ok(Val::R(Some(o)))
+            }
+            Some(_) => unsupported("floating point"),
+            None => self.default_value(descriptor),
+        })
     }
 
     /// The object a string or class literal is on this path: made at its first load.
@@ -2057,7 +2455,7 @@ impl<'a> Engine<'a> {
 
     /// Calls an application method: a new frame with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
-        let (cf, m) = self.cp.bytecode_method(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
+        let (cf, m) = self.cp.checker_method(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
         }
@@ -2074,7 +2472,7 @@ impl<'a> Engine<'a> {
             }
         }
         locals.resize(code.max_locals.max(locals.len()), None);
-        path.frames.push(Frame { class: cf.clone(), method: name.to_string(), code, at: 0, locals, stack: Vec::new() });
+        path.frames.push(Frame::new(cf.clone(), name.to_string(), code, locals));
         Ok(None)
     }
 
@@ -2377,8 +2775,9 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
 }
 
 impl Blaster {
+    /// The solver by name alone, as [`Outcome::solver`] gives it: the first word of its signature (`CaDiCaL`).
     fn signature(&self) -> String {
-        "CaDiCaL".to_string()
+        self.solver_signature().split_whitespace().next().unwrap_or_default().to_string()
     }
 
     /// A cell of an array of `element`s as the value a load pushes: extended to an int, without sign for a
@@ -2448,7 +2847,7 @@ mod tests {
                 Insn::TableSwitch { .. } => "`tableswitch`",
                 Insn::LookupSwitch { .. } => "`lookupswitch`",
                 Insn::Return(_) => "`ireturn` … `return`",
-                Insn::GetStatic(_) => "`getstatic` of a compile-time constant",
+                Insn::GetStatic(_) => "`getstatic`",
                 Insn::PutStatic(_) => "`putstatic`",
                 Insn::GetField(_) => "`getfield`",
                 Insn::PutField(_) => "`putfield`",
@@ -2869,6 +3268,185 @@ mod tests {
         assert!(out.summary().contains(&format!("{} of 1 divisions and 0 of 0 multiplications built in full", out.refined)));
     }
 
+    /// A run that writes its solver calls is the same run, and the transcript holds every clause and call it made,
+    /// which give the same answers when run again ([`transcript`]).
+    #[test]
+    fn a_transcript_holds_every_clause_and_call_and_replays_with_the_same_answers() {
+        // x / y == 3 claimed impossible, behind two branches: refuted, after calls on both branches and the
+        // division's facts, perhaps its circuit too.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("deeper/check.icnf");
+        let plain = run(&cp);
+        let recorded = check(&cp, "Check", "check", &Options { transcript: Some(path.clone()), ..Options::default() }).unwrap();
+        let same = |o: &Outcome| (o.verdict, o.paths, o.solves, o.clauses, o.variables, o.raw_inputs.clone(), o.refined);
+        assert_eq!(same(&recorded), same(&plain));
+        assert_eq!((plain.transcript.as_ref(), recorded.transcript.as_ref()), (None, Some(&path)));
+        assert!(recorded.summary().ends_with(&format!("; solver calls written to {}", path.display())), "{}", recorded.summary());
+
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.starts_with(&format!("c jvmcontract {}: the own checker's solver calls, in order", env!("CARGO_PKG_VERSION"))), "{text}");
+        assert!(text.contains(&format!("\nc solver: {}\n", solver_signature())), "{text}");
+        assert!(text.contains("\nc check: Check.check(II)V\nc options: unwind 16, max array length 8, max paths 200000, merge after 512, timeout 600.000 s, gaps strict\np inccnf\n1 0\n"), "{text}");
+        let replay = transcript::replay(&path, None).unwrap();
+        assert!(replay.calls.len() >= 2 && replay.calls.len() as u64 <= recorded.solves, "{} calls of {}", replay.calls.len(), recorded.solves);
+        assert_eq!(replay.clauses, recorded.clauses);
+        assert_eq!(replay.variables, recorded.variables);
+        assert_eq!((replay.contradictions, replay.undecided, replay.decided), (0, 0, 0), "{}", replay.summary());
+        assert!(replay.calls.iter().all(|c| c.limit.is_some_and(|l| l > 0.0 && l <= 600.0)), "{:?}", replay.calls);
+        assert_eq!(replay.calls.last().map(|c| c.recorded), Some("sat"), "the violation's input is the last model asked for");
+        assert_eq!(replay.ending, Some(format!("end: {} clauses, {} calls; Violation", recorded.clauses, replay.calls.len())));
+
+        // One that cannot be written stops the run before it starts, since it was asked for.
+        let blocked = dir.path().join("file");
+        std::fs::write(&blocked, "").unwrap();
+        let e = check(&cp, "Check", "check", &Options { transcript: Some(blocked.join("x.icnf")), ..Options::default() }).unwrap_err();
+        assert!(e.to_string().starts_with("cannot write the transcript"), "{e}");
+    }
+
+
+    #[test]
+    fn the_engine_gives_its_solver_nothing_but_clauses_limits_and_calls() {
+        // The same refuted division as the transcript's test, on a solver behind the interface that logs what it is
+        // given: the outcome is the plain run's, and the clauses and calls it saw are the outcome's and the
+        // transcript's, in the same order.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let plain = run(&cp);
+        sat::Logged::take();
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("logged.icnf");
+        let logged = check(&cp, "Check", "check", &Options { solver: sat::Logged::boxed, transcript: Some(path.clone()), ..Options::default() }).unwrap();
+        let events = sat::Logged::take();
+        let same = |o: &Outcome| (o.verdict, o.paths, o.solves, o.clauses, o.variables, o.raw_inputs.clone(), o.refined);
+        assert_eq!(same(&logged), same(&plain));
+
+        let clauses: Vec<&Vec<Lit>> = events.iter().filter_map(|e| if let sat::Event::Clause(c) = e { Some(c) } else { None }).collect();
+        let calls: Vec<(&Vec<Lit>, Option<bool>)> = events.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a, *r)) } else { None }).collect();
+        assert_eq!(clauses.len() as u64, logged.clauses);
+        assert_eq!(clauses.first().map(|c| c.as_slice()), Some(&[TRUE][..]), "the constant first");
+        assert!(calls.len() >= 2 && calls.len() as u64 <= logged.solves, "{} calls of {}", calls.len(), logged.solves);
+        // Every call is made under the limit last set, and the limit is within the check's budget.
+        let mut limit = None;
+        for e in &events {
+            match e {
+                sat::Event::Limit(l) => limit = *l,
+                sat::Event::Solve(..) => assert!(limit.is_some_and(|l| l > 0.0 && l <= 600.0), "{events:?}"),
+                sat::Event::Clause(_) => {}
+            }
+        }
+
+        // The transcript names the solver the check ran on, and holds what that solver was given.
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.contains(&format!("\nc solver: logged {}\n", solver_signature())), "{text}");
+        let replay = transcript::replay_on(&mut sat::Cadical::new(), &path, None).unwrap();
+        assert_eq!(replay.clauses, logged.clauses);
+        assert_eq!(replay.calls.iter().map(|c| c.recorded).collect::<Vec<_>>(), calls.iter().map(|(_, r)| transcript::answer_name(*r)).collect::<Vec<_>>());
+        assert_eq!(replay.calls.iter().map(|c| c.assumptions).collect::<Vec<_>>(), calls.iter().map(|(a, _)| a.len()).collect::<Vec<_>>());
+        assert_eq!(replay.contradictions, 0, "{}", replay.summary());
+
+        // A replay goes through the interface too: on the logged solver it gives the same clauses and calls again.
+        let again = transcript::replay_on(&mut *sat::Logged::boxed(), &path, None).unwrap();
+        assert_eq!(again.solver, format!("logged {}", solver_signature()));
+        let replayed = sat::Logged::take();
+        assert_eq!(replayed.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>(), events.iter().filter(|e| matches!(e, sat::Event::Clause(_))).cloned().collect::<Vec<_>>());
+        assert_eq!(replayed.iter().filter_map(|e| if let sat::Event::Solve(a, r) = e { Some((a.clone(), *r)) } else { None }).collect::<Vec<_>>(), calls.iter().map(|(a, r)| ((*a).clone(), *r)).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls() {
+        // Bitwuzla given the engine's clauses (Phase 6c's SAT-only comparison), and given its terms (the word-level
+        // prototype), when it is installed here. Its models may differ from CaDiCaL's, and so the lemmas and the
+        // input found, but not the verdicts.
+        if let Err(e) = bitwuzla::available() {
+            eprintln!("skipped: {}", e.0);
+            return;
+        }
+        let division = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let product = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.iconst(8);
+            code.if_icmp(Cond::Ne, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x68); // imul
+            code.load(Kind::Int, 0);
+            code.iconst(3);
+            code.op(0x78); // ishl
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let dir = tempfile::tempdir().unwrap();
+        for (name, cp, expected) in [("division", &division, Verdict::Violation), ("product", &product, Verdict::Verified)] {
+            let cadical_path = dir.path().join(format!("{name}-cadical.icnf"));
+            let bitwuzla_path = dir.path().join(format!("{name}-bitwuzla.icnf"));
+            let on_cadical = check(cp, "Check", "check", &Options { solver: sat::cadical, transcript: Some(cadical_path.clone()), ..Options::default() }).unwrap();
+            let on_bitwuzla = check(cp, "Check", "check", &Options { solver: bitwuzla::boxed, transcript: Some(bitwuzla_path.clone()), ..Options::default() }).unwrap();
+            assert_eq!(on_cadical.verdict, expected, "{name}: {}", on_cadical.summary());
+            assert_eq!(on_bitwuzla.verdict, expected, "{name}: {}", on_bitwuzla.summary());
+            assert_eq!((on_cadical.solver.as_str(), on_bitwuzla.solver.as_str()), ("CaDiCaL", "Bitwuzla"));
+            if expected == Verdict::Violation {
+                // The input Bitwuzla's model gives is a violation too: x >= 0, y != 0 and x / y == 3.
+                let (x, y): (i32, i32) = (on_bitwuzla.raw_inputs[&0].parse().unwrap(), on_bitwuzla.raw_inputs[&1].parse().unwrap());
+                assert!(x >= 0 && y != 0 && x.wrapping_div(y) == 3, "{x} / {y}");
+            }
+            // Each transcript names its solver, and CaDiCaL's calls, replayed on Bitwuzla, get CaDiCaL's answers.
+            let text = std::fs::read_to_string(&bitwuzla_path).unwrap();
+            assert!(text.contains("\nc solver: Bitwuzla 0.8.2 "), "{text}");
+            let replay = transcript::replay_on(&mut bitwuzla::Bitwuzla::new().unwrap(), &cadical_path, None).unwrap();
+            assert_eq!(replay.clauses, on_cadical.clauses);
+            assert_eq!(replay.contradictions, 0, "{name}: {}", replay.summary());
+            assert!(replay.solver.starts_with("Bitwuzla 0.8.2 "), "{}", replay.solver);
+            // Given terms: the same verdict, a real input, the operations as terms and no lemma, and no transcript,
+            // since there are no clauses to record.
+            let on_terms = check(cp, "Check", "check", &Options { solver: bitwuzla::boxed_words, ..Options::default() }).unwrap();
+            assert_eq!(on_terms.verdict, expected, "{name}: {}", on_terms.summary());
+            assert_eq!(on_terms.clauses, 1, "{name}: only the constant's unit clause");
+            assert_eq!((on_terms.divisions, on_terms.multiplications), (0, 0), "{name}: {}", on_terms.summary());
+            if expected == Verdict::Violation {
+                let (x, y): (i32, i32) = (on_terms.raw_inputs[&0].parse().unwrap(), on_terms.raw_inputs[&1].parse().unwrap());
+                assert!(x >= 0 && y != 0 && x.wrapping_div(y) == 3, "{x} / {y}");
+            }
+            let refused = check(cp, "Check", "check", &Options { solver: bitwuzla::boxed_words, transcript: Some(dir.path().join("terms.icnf")), ..Options::default() }).unwrap_err();
+            assert!(refused.0.contains("it records clauses"), "{}", refused.0);
+        }
+    }
     #[test]
     fn a_multiplication_is_built_in_full_only_when_the_solver_gets_it_wrong() {
         // x * y == x << 3 for y == 8: what holds of every product proves it, with no multiplier.
@@ -3061,6 +3639,116 @@ mod tests {
         });
         let out = run(&cp);
         assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+    }
+
+    /// Phase 5 of `llm-dlc/loops/engine-priorities.md`, enums: an array of references holds an object or null per
+    /// cell, an index that is an input splits the path per cell, at a join too and with the paths merged there, and
+    /// `clone()` is another array with the same cells.
+    #[test]
+    fn an_array_of_references_holds_its_objects_and_an_input_index_splits_the_path() {
+        // For 0 <= n <= 2: a = new Object[3]; a[0] = "x"; a[1] = a; r = a[n > 0 ? n : 0], the index chosen at a join.
+        // r is null exactly when n == 2; b = a.clone() has r at n, and b[0] = b leaves a[0] the literal.
+        // `violate` adds `assert r != a`, which n == 1 refutes.
+        let build = |violate: bool| {
+            harness("(I)V", move |code, w, fail| {
+                let (done, zero, index, some, next) = (code.label(), code.label(), code.label(), code.label(), code.label());
+                let object = w.pool.class("java/lang/Object");
+                let objects = w.pool.class("[Ljava/lang/Object;");
+                let x = w.pool.string("x");
+                let clone = w.pool.method_ref("[Ljava/lang/Object;", "clone", "()Ljava/lang/Object;");
+                code.load(Kind::Int, 0);
+                code.if_zero(Cond::Lt, done);
+                code.load(Kind::Int, 0);
+                code.iconst(2);
+                code.if_icmp(Cond::Gt, done);
+                code.iconst(3);
+                code.op_u16(0xbd, object); // anewarray
+                code.store(Kind::Ref, 1);
+                code.load(Kind::Ref, 1);
+                code.iconst(0);
+                code.ldc(x);
+                code.op(0x53); // aastore
+                code.load(Kind::Ref, 1);
+                code.iconst(1);
+                code.load(Kind::Ref, 1);
+                code.op(0x53);
+                code.load(Kind::Ref, 1);
+                code.load(Kind::Int, 0);
+                code.if_zero(Cond::Le, zero);
+                code.load(Kind::Int, 0);
+                code.goto(index);
+                code.bind(zero);
+                code.iconst(0);
+                code.bind(index);
+                code.op(0x32); // aaload
+                code.store(Kind::Ref, 2);
+                code.load(Kind::Ref, 2);
+                code.if_nonnull(some);
+                code.load(Kind::Int, 0);
+                code.iconst(2);
+                code.if_icmp(Cond::Ne, fail);
+                code.goto(next);
+                code.bind(some);
+                code.load(Kind::Int, 0);
+                code.iconst(2);
+                code.if_icmp(Cond::Eq, fail);
+                code.bind(next);
+                code.load(Kind::Ref, 1);
+                code.op_u16(0xb6, clone);
+                code.op_u16(0xc0, objects); // checkcast
+                code.store(Kind::Ref, 3);
+                code.load(Kind::Ref, 3);
+                code.load(Kind::Int, 0);
+                code.op(0x32);
+                code.load(Kind::Ref, 2);
+                code.if_acmpne(fail);
+                code.load(Kind::Ref, 3);
+                code.iconst(0);
+                code.load(Kind::Ref, 3);
+                code.op(0x53);
+                code.load(Kind::Ref, 1);
+                code.iconst(0);
+                code.op(0x32);
+                code.ldc(x);
+                code.if_acmpne(fail);
+                if violate {
+                    let fine = code.label();
+                    code.load(Kind::Ref, 2);
+                    code.load(Kind::Ref, 1);
+                    code.if_acmpne(fine);
+                    code.goto(fail);
+                    code.bind(fine);
+                }
+                code.bind(done);
+            })
+        };
+        let merged = Options { merge_after: 0, ..Options::default() };
+        for options in [Options::default(), merged.clone()] {
+            let out = check(&build(false), "Check", "check", &options).unwrap();
+            assert_eq!(out.verdict, Verdict::Verified, "merge after {}: {:?} {}", options.merge_after, out.problem, out.summary());
+            let out = check(&build(true), "Check", "check", &options).unwrap();
+            assert_eq!(out.verdict, Verdict::Violation, "merge after {}: {:?} {}", options.merge_after, out.problem, out.summary());
+            assert_eq!(out.raw_inputs.get(&0).map(String::as_str), Some("1"), "{:?}", out.raw_inputs);
+        }
+        let out = check(&build(false), "Check", "check", &merged).unwrap();
+        assert!(out.merges > 0, "the paths met at the index's join and were merged: {}", out.summary());
+
+        // An object stored into an array of another element type (ArrayStoreException) is refused.
+        let cp = harness("(I)V", |code, w, _| {
+            let strings = w.pool.class("java/lang/String");
+            let object = w.pool.class("java/lang/Object");
+            let init = w.pool.method_ref("java/lang/Object", "<init>", "()V");
+            code.iconst(1);
+            code.op_u16(0xbd, strings);
+            code.iconst(0);
+            code.op_u16(0xbb, object);
+            code.op(0x59);
+            code.op_u16(0xb7, init);
+            code.op(0x53);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.as_deref().unwrap_or("").contains("ArrayStoreException"), "{:?}", out.problem);
     }
 
     #[test]

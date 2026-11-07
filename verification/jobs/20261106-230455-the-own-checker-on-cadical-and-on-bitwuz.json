@@ -1,0 +1,65 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-230455-the-own-checker-on-cadical-and-on-bitwuz",
+  "title": "The own checker on CaDiCaL and on Bitwuzla given the engine's word-level terms: five workloads, full checks (Phase 6c, part 2)",
+  "description": "Phase 6c of llm-dlc/loops/engine-priorities.md (the native stream), its second part: Bitwuzla on word-level terms for the workloads where the formula's size dominates. The prototype is JVMCONTRACT_SOLVER=bitwuzla-words: the solver interface gains Terms (lib/src/bmc/sat.rs), and over a solver that takes terms the engine's encoding (lib/src/bmc/bits.rs) builds no circuits. Each gate is defined to Bitwuzla as a Boolean term, and each addition, subtraction, multiplication, signed division and remainder, comparison, shift by a symbolic amount, bitwise operation of two non-constant values and ite of two values as one bit-vector term (bvadd, bvsdiv, bvult, ite, ...), whose result bits are extracts of it (lib/src/bmc/bitwuzla.rs). Constants fold as before, and nothing is left to the engine's lazy division and multiplication: the solver is given the operation itself. Arrays stay the engine's bounded cells, read and written through ites over the index (no array theory). lib/solvers/compare.py --words runs the own checker's full checks of the benchmark's five workloads (real/midpoint/search-within-bound, the bounded binary search; example/141; example/142; held/reverse; held/prefix-sums) under strict, with the benchmark's own command lines (lib/benchmark/run.py, imported, not changed), three times each on three solvers: the bundled CaDiCaL 1.9.5 (the baseline, on the same machine), bitwuzla-words with Bitwuzla 0.8.2's defaults (sat-solver cadical, produce-models), and bitwuzla-words with preprocess=0. Bitwuzla is loaded with dlopen from ~/tools/bitwuzla/current, the install job 20261106-194049 made on this runner. There are no transcripts: the solver isn't given clauses. The script writes lib/solvers/comparison/word-level.json (every run, with each check's word-level operation count, the solvers' signatures, the library's path and sha256, the commit, the machine) and word-level.md (the table). It fails if CaDiCaL misses a case's expected verdict, if any decisive verdict is wrong, or if the solvers' decisive verdicts differ; a Bitwuzla run out of time is a measurement, listed as not decided. The bit-blasted part is job 20261106-224616. Times are taken on a shared runner, so other jobs may run beside it. No network.",
+  "kind": "other",
+  "capabilities": [
+    "solver:bitwuzla",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/solvers/compare.py",
+      "lib/src/bmc/bitwuzla.rs",
+      "lib/src/bmc/bits.rs",
+      "lib/src/bmc/sat.rs"
+    ],
+    "jobs": [
+      "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical",
+      "20261106-224616-the-own-checker-on-cadical-and-on-bitwuz"
+    ]
+  },
+  "expected": "exits 0: all five cases verified on CaDiCaL, every decisive verdict on bitwuzla-words verified; word-level.json and word-level.md written with the three solvers' signatures",
+  "submitted": {
+    "at": "2026-11-06T23:04:55+00:00",
+    "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+    "by": "claude (engines-native stream)"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "30m",
+    "memoryLimit": "3G",
+    "timeout": "3h",
+    "notes": "Measured inline on this machine, one run each: reverse 0.18 s on CaDiCaL and 0.12 s on bitwuzla-words, prefix sums 0.05 and 0.06 s, example 141 2.35 s on bitwuzla-words (CaDiCaL about 2.2 s); peak 73 MB. The five checks on CaDiCaL take 8.3 s together, so three runs on three solvers come to a few minutes unless a case runs out of time on Bitwuzla (600 s each at most); the build is a few minutes."
+  },
+  "steps": [
+    {
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": "."
+    },
+    {
+      "name": "Bitwuzla loads here, and the word-level operations are the JVM's on it",
+      "run": "cd lib && out=$(cargo test --release --lib bitwuzla -- --nocapture 2>&1); status=$?; echo \"$out\"; test $status -eq 0 && ! grep -q \"skipped:\" <<< \"$out\"",
+      "cwd": "."
+    },
+    {
+      "name": "the word-level comparison",
+      "run": "python3 lib/solvers/compare.py --words --out lib/solvers/comparison",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/solvers/comparison/word-level.json",
+    "lib/solvers/comparison/word-level.md"
+  ]
+}

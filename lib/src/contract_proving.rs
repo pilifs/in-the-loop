@@ -138,7 +138,7 @@ fn provable(shape: &Shape, cp: &ClassPath) -> Result<Vec<u8>, String> {
     let gap = &shape.gap;
     match gap.kind {
         GapKind::JdkStaticMethod => {}
-        GapKind::ClassInitializer => return Err("an initializer's contract is not proved: the checker does not run initializers".into()),
+        GapKind::ClassInitializer => return Err("an initializer's contract is not proved: the checker does not run this initializer".into()),
         _ => return Err("only a static method's contract is proved against the JDK's bytecode: the call has an object whose state the tool's own checker does not keep".into()),
     }
     if let Some((name, t)) = shape.names.iter().zip(&shape.descriptor.params).find(|(_, t)| !t.is_primitive()) {

@@ -204,25 +204,110 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
         format!("{}.{}", run.class, run.function),
         "--classpath".into(),
         classpath,
-        "--trace".into(),
-        "--throw-runtime-exceptions".into(),
         "--unwind".into(),
         run.unwind.to_string(),
-        "--unwinding-assertions".into(),
     ];
-    // The time of each message, which the phases of the run are read from ([`crate::phases::of_jbmc`]).
-    cmd.extend(["--json-ui".into(), "--timestamp".into(), "monotonic".into()]);
+    cmd.extend(standing_options(run.refine_strings, run.sat_solver.as_deref()));
     if let Some(stage) = &run.stage {
         cmd.extend(["--java-assume-inputs-interval".into(), stage.clone()]);
     }
-    if !run.refine_strings {
-        cmd.push("--no-refine-strings".into());
-    }
-    if let Some(solver) = &run.sat_solver {
-        cmd.extend(["--sat-solver".into(), solver.clone()]);
-    }
     cmd.extend(run.extra_args.iter().cloned());
     cmd
+}
+
+/// The options every run of a check passes, whatever its program, bounds and input interval (which the result
+/// records with its bounds and runs): what JBMC checks and how it reports, and which solver it uses. The result's
+/// evidence names them ([`sat`]).
+pub fn standing_options(refine_strings: bool, sat_solver: Option<&str>) -> Vec<String> {
+    let mut options: Vec<String> = ["--trace", "--throw-runtime-exceptions", "--unwinding-assertions"].map(String::from).into();
+    // The time of each message, which the phases of the run are read from ([`crate::phases::of_jbmc`]).
+    options.extend(["--json-ui", "--timestamp", "monotonic"].map(String::from));
+    if !refine_strings {
+        options.push("--no-refine-strings".into());
+    }
+    if let Some(solver) = sat_solver {
+        options.extend(["--sat-solver".into(), solver.to_string()]);
+    }
+    options
+}
+
+/// The SAT solver JBMC runs on, for a result's evidence: the one asked for with `--sat-solver`, its version as
+/// linked into the executable, and the options the runs pass. A JBMC built without it answers "unknown solver"
+/// and [`run`] repeats the run with JBMC's default: an executable that holds no CaDiCaL is recorded so.
+pub fn sat(executable: &str, sat_solver: Option<&str>, refine_strings: bool) -> crate::statement::Sat {
+    let path = executable_path(executable);
+    let (linked, executable) = (linked_cadical(&path), path.display());
+    let (solver, version, sat_solver, source) = match sat_solver {
+        None => (DEFAULT_SOLVER.to_string(), None, None, format!("JBMC's own ({executable})")),
+        Some(s) if s.eq_ignore_ascii_case("cadical") => match linked {
+            Linked::Binary(Some(v)) => ("CaDiCaL".to_string(), Some(v), sat_solver, format!("linked into JBMC ({executable}), the version as its signature there reads")),
+            Linked::Binary(None) => (DEFAULT_SOLVER.to_string(), None, None, format!("JBMC's own ({executable}): it holds no CaDiCaL, so the runs fell back to its default")),
+            Linked::Unread => ("CaDiCaL".to_string(), None, sat_solver, format!("linked into JBMC ({executable}), whose version could not be read from the executable")),
+        },
+        Some(s) => (s.to_string(), None, sat_solver, format!("linked into JBMC ({executable})")),
+    };
+    crate::statement::Sat { solver, version, source, configuration: standing_options(refine_strings, sat_solver) }
+}
+
+/// The solver JBMC 6 uses when not asked for another, with its string solver off.
+const DEFAULT_SOLVER: &str = "JBMC's default (MiniSat 2)";
+
+/// What an executable says of the CaDiCaL linked into it.
+#[derive(Debug, Clone, PartialEq)]
+enum Linked {
+    /// A compiled program (ELF or Mach-O), with CaDiCaL's version, or none when it holds no CaDiCaL.
+    Binary(Option<String>),
+    /// Not one (a script standing in for JBMC, say), or not found: nothing is known.
+    Unread,
+}
+
+/// The executable's path: as given when it has a directory, otherwise found on `PATH`.
+fn executable_path(executable: &str) -> PathBuf {
+    let given = Path::new(executable);
+    if given.components().count() > 1 {
+        return given.to_path_buf();
+    }
+    std::env::var_os("PATH").and_then(|paths| std::env::split_paths(&paths).map(|d| d.join(executable)).find(|p| p.is_file())).unwrap_or_else(|| given.to_path_buf())
+}
+
+/// CaDiCaL's version as linked into an executable, read once per path: CaDiCaL compiles its signature,
+/// `cadical-` and the version, into the library (`Solver::signature`).
+fn linked_cadical(path: &Path) -> Linked {
+    static READ: std::sync::OnceLock<std::sync::Mutex<BTreeMap<PathBuf, Linked>>> = std::sync::OnceLock::new();
+    let read = READ.get_or_init(Default::default);
+    if let Some(known) = read.lock().ok().and_then(|r| r.get(path).cloned()) {
+        return known;
+    }
+    let linked = match std::fs::read(path) {
+        Ok(bytes) if is_compiled(&bytes) => Linked::Binary(cadical_signature(&bytes)),
+        _ => Linked::Unread,
+    };
+    if let Ok(mut r) = read.lock() {
+        r.insert(path.to_path_buf(), linked.clone());
+    }
+    linked
+}
+
+fn is_compiled(bytes: &[u8]) -> bool {
+    const MAGIC: [&[u8]; 5] = [b"\x7fELF", b"\xcf\xfa\xed\xfe", b"\xce\xfa\xed\xfe", b"\xca\xfe\xba\xbe", b"MZ"];
+    MAGIC.iter().any(|m| bytes.starts_with(m))
+}
+
+/// The version in the first `cadical-X.Y.Z` string of a binary, a NUL-terminated C string.
+fn cadical_signature(bytes: &[u8]) -> Option<String> {
+    const PREFIX: &[u8] = b"cadical-";
+    let mut from = 0;
+    while let Some(at) = bytes[from..].windows(PREFIX.len()).position(|w| w == PREFIX).map(|i| from + i) {
+        let start = at + PREFIX.len();
+        let end = bytes[start..].iter().position(|&b| b == 0).map_or(bytes.len(), |n| start + n);
+        let version = &bytes[start..end];
+        let preceded = at == 0 || bytes[at - 1] == 0;
+        if preceded && version.first().is_some_and(u8::is_ascii_digit) && version.len() <= 32 && version.iter().all(|b| b.is_ascii_alphanumeric() || b"._-".contains(b)) {
+            return Some(String::from_utf8_lossy(version).into_owned());
+        }
+        from = start;
+    }
+    None
 }
 
 /// The address space, in MiB, a JBMC run may use. One proof of a small method has reached 5.7 GB, and nothing in the
@@ -392,7 +477,7 @@ pub fn parse_json(output: &str, class: &str, function: &str, unwind: u32, stage:
 
 /// The elements of the JSON array JBMC prints, up to the first that does not parse (a run cut off, or text from
 /// standard error in between).
-fn json_items(output: &str) -> Vec<serde_json::Value> {
+pub(crate) fn json_items(output: &str) -> Vec<serde_json::Value> {
     let Some(start) = output.lines().scan(0, |at, line| { let here = *at; *at += line.len() + 1; Some((here, line)) }).find(|(_, l)| l.trim_start().starts_with('[')).map(|(at, l)| at + l.find('[').unwrap_or(0)) else {
         return Vec::new();
     };
@@ -616,6 +701,59 @@ mod tests {
         assert_eq!(executable("/usr/bin/jbmc"), "/usr/bin/jbmc");
         assert_eq!(PathBuf::from(executable("bin/jbmc")), here.join("bin/jbmc"));
         assert_eq!(PathBuf::from(executable("./jbmc")), here.join("./jbmc"));
+    }
+
+    #[test]
+    fn cadicals_version_is_read_from_its_signature_in_a_binary() {
+        // As JBMC 6.11.0's executable holds it, among CaDiCaL's source file names.
+        let binary = b"\x7fELF\x02\x01cadical-src/src/solver.cpp\0xcadical-9.9\0cadical-3.0.0\0cadical-src/src/external.cpp\0";
+        assert_eq!(cadical_signature(binary), Some("3.0.0".into()));
+        assert_eq!(cadical_signature(b"\x7fELF\x02\x01cadical-src/src/solver.cpp\0xcadical-9.9\0"), None, "a file name, or the tail of another string");
+        assert_eq!(cadical_signature(b"\x7fELF minisat\0"), None);
+        assert!(is_compiled(binary) && !is_compiled(b"#!/bin/sh\nexec jbmc \"$@\"\n"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn jbmcs_solver_is_recorded_with_its_version_and_the_options_every_run_passes() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = |name: &str| dir.path().join(name).to_string_lossy().into_owned();
+        std::fs::write(dir.path().join("with"), b"\x7fELF\x02\x01\0cadical-3.0.0\0").unwrap();
+        std::fs::write(dir.path().join("without"), b"\x7fELF\x02\x01\0minisat\0").unwrap();
+        std::fs::write(dir.path().join("script"), b"#!/bin/sh\nexec /usr/bin/jbmc \"$@\"\n").unwrap();
+
+        let with = sat(&path("with"), Some("cadical"), false);
+        assert_eq!((with.solver.as_str(), with.version.as_deref()), ("CaDiCaL", Some("3.0.0")));
+        assert!(with.source.starts_with("linked into JBMC ("), "{with:?}");
+        let standing = ["--trace", "--throw-runtime-exceptions", "--unwinding-assertions", "--json-ui", "--timestamp", "monotonic", "--no-refine-strings", "--sat-solver", "cadical"];
+        assert_eq!(with.configuration, standing);
+        // The command passes the same options, besides the program, its bounds and its input interval.
+        let run = JbmcRun {
+            executable: path("with"),
+            class: "H".into(),
+            function: "check".into(),
+            classpath: Vec::new(),
+            unwind: 16,
+            timeout: Duration::from_secs(1),
+            stage: Some("[0:20]".into()),
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
+            log: dir.path().join("jbmc.log"),
+            extra_args: vec!["--max-nondet-array-length".into(), "8".into()],
+        };
+        let cmd = command(&run);
+        assert!(cmd.windows(standing.len()).any(|w| w == standing), "{cmd:?}");
+        assert!(cmd.ends_with(&["--java-assume-inputs-interval", "[0:20]", "--max-nondet-array-length", "8"].map(String::from)), "{cmd:?}");
+
+        // An executable without CaDiCaL answers "unknown solver", and the runs fall back to JBMC's default.
+        let without = sat(&path("without"), Some("cadical"), false);
+        assert_eq!((without.solver.as_str(), without.version.as_deref()), (DEFAULT_SOLVER, None));
+        assert!(!without.configuration.contains(&"--sat-solver".to_string()) && without.source.contains("fell back"), "{without:?}");
+        // A script standing in for JBMC says nothing of what it runs: the solver asked for, with no version.
+        let script = sat(&path("script"), Some("cadical"), true);
+        assert_eq!((script.solver.as_str(), script.version.as_deref()), ("CaDiCaL", None));
+        assert!(!script.configuration.contains(&"--no-refine-strings".to_string()) && script.source.contains("could not be read"), "{script:?}");
+        assert_eq!(sat(&path("with"), None, false).solver, DEFAULT_SOLVER);
     }
 
     /// What JBMC 6.11.0 prints under `--json-ui`, in the shape `report_util.cpp` and `json_goto_trace.cpp` give it:

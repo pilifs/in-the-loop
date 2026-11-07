@@ -10,7 +10,7 @@
 //! | `lowering` | decoding methods into the engine's instructions | `Generating GOTO Program` to `Starting Bounded Model Checking`: the GOTO program and its passes |
 //! | `symbolic` | exploring the paths: interpretation, path management and merging, and evaluating gates in path models | `Runtime Symex` and `Runtime Postprocess Equation` |
 //! | `encoding` | building circuits and handing their clauses to the solver, which happens as the paths are explored: estimated from one word-level operation in 64, timed (a clock read costs about 0.3 µs on the WSL2 machine, as much as a small operation) | `Runtime Convert SSA` and `Runtime Post-process` |
-//! | `solving` | CaDiCaL's calls | `Runtime Solver` |
+//! | `solving` | CaDiCaL's calls | `Runtime Solver`, less the `Runtime Post-process` inside it |
 //! | `trace` | reading the witness out of the solver's model | `Building error trace` to the message after it |
 //! | `other` | the rest | the rest: starting, printing, and what the messages do not cover |
 //!
@@ -18,6 +18,17 @@
 //! (read from CBMC 6.11.0's `ui_message.cpp`, and seen in its output). A run cut off by its budget has no
 //! `Runtime` line for the phase it was in: that phase gets the time from its first message to the run's end, so
 //! a timeout says where it was spent.
+//!
+//! JBMC's timers nest, so they are read per solver call ([`of_jbmc`]). A call starts at `Running propositional
+//! reduction` and ends at `Runtime Solver`, which times all of it, the post-processing of the formula
+//! (`finish_eager_conversion`, `Runtime Post-process`) included: that is counted under `encoding` alone. A call
+//! that printed neither `Runtime Post-process` nor CaDiCaL's `N variables, M clauses` never reached the SAT
+//! solver (it ran out of memory post-processing), and its time is `encoding`. The fixtures in
+//! `lib/tests/fixtures/jbmc-phases/` are real runs that show each case.
+//!
+//! The phases are not scaled to fit the run: [`Phases::excess`] says by how much the named ones add up past it,
+//! beyond [`TOLERANCE_SHARE`] and [`TOLERANCE_SECONDS`], and a run whose phases do is flagged with that excess
+//! ([`crate::deadline::Run`]).
 //!
 //! A check is more than its checker runs: extracting JDK classes and models, generating the harness, scanning for gaps, checking contracts, JBMC's
 //! preflight, replaying and shrinking a witness, and running it on a JVM. [`Check`] times those, in the drivers
@@ -43,12 +54,25 @@ pub struct Phases {
 impl Phases {
     /// The phases rounded to the millisecond, with `other` what is left of `seconds`.
     pub fn completed(mut self, seconds: f64) -> Phases {
-        let named = self.loading + self.lowering + self.symbolic + self.encoding + self.solving + self.trace;
-        self.other = (seconds - named).max(0.0);
+        self.other = (seconds - self.named_total()).max(0.0);
         for v in [&mut self.loading, &mut self.lowering, &mut self.symbolic, &mut self.encoding, &mut self.solving, &mut self.trace, &mut self.other] {
             *v = round(*v);
         }
         self
+    }
+
+    /// The named phases' seconds, `other` aside.
+    pub fn named_total(&self) -> f64 {
+        self.loading + self.lowering + self.symbolic + self.encoding + self.solving + self.trace
+    }
+
+    /// The seconds by which the named phases add up past a run's `seconds`, when that is more than the tolerance
+    /// (a share of the run, [`TOLERANCE_SHARE`], and [`TOLERANCE_SECONDS`]); `None` when they fit. The tolerance
+    /// covers rounding each phase to the millisecond and reading two clocks, the run's and JBMC's messages': the
+    /// checker's timers run inside the process the run times, so exclusive phases never add up past it by more.
+    pub fn excess(&self, seconds: f64) -> Option<f64> {
+        let over = self.named_total() - seconds;
+        (over > TOLERANCE_SHARE * seconds + TOLERANCE_SECONDS).then(|| round(over))
     }
 
     /// The phases by name, in the table's order.
@@ -78,6 +102,11 @@ pub struct Profile {
     pub formula: Formula,
 }
 
+/// How far a run's named phases may add up past its seconds before it is flagged, as a share of them...
+pub const TOLERANCE_SHARE: f64 = 0.01;
+/// ... and in seconds besides.
+pub const TOLERANCE_SECONDS: f64 = 0.005;
+
 fn round(s: f64) -> f64 {
     (s * 1000.0).round() / 1000.0
 }
@@ -89,9 +118,9 @@ fn jbmc_phase_started(text: &str) -> Option<&'static str> {
         Some("lowering")
     } else if text.starts_with("Starting Bounded Model Checking") {
         Some("symbolic")
-    } else if text.starts_with("Passing problem to propositional reduction") || text.starts_with("converting SSA") || text.starts_with("Running propositional reduction") {
+    } else if text.starts_with("Passing problem to ") || text.starts_with("converting SSA") || solver_call_started(text) {
         Some("encoding")
-    } else if text.starts_with("Runtime Post-process:") {
+    } else if text.starts_with("Runtime Post-process:") || solver_started(text) {
         Some("solving")
     } else if text.starts_with("Building error trace") {
         Some("trace")
@@ -100,6 +129,18 @@ fn jbmc_phase_started(text: &str) -> Option<&'static str> {
     } else {
         None
     }
+}
+
+/// Whether a message starts one of JBMC's solver calls, which its `Runtime Solver` times: `Running propositional
+/// reduction`, or `Running string refinement loop with ...` when strings are refined.
+fn solver_call_started(text: &str) -> bool {
+    text.starts_with("Running propositional reduction") || text.starts_with("Running string refinement loop")
+}
+
+/// Whether a message is the SAT solver's, printed as it starts solving: `N variables, M clauses`.
+fn solver_started(text: &str) -> bool {
+    let mut words = text.split(' ');
+    matches!((words.next(), words.next(), words.next(), words.next()), (Some(v), Some("variables,"), Some(c), Some("clauses")) if v.parse::<u64>().is_ok() && c.parse::<u64>().is_ok())
 }
 
 /// JBMC's run read from its `--json-ui` output, which `run_seconds` took from start to end.
@@ -119,19 +160,31 @@ pub fn of_jbmc(items: &[serde_json::Value], run_seconds: f64) -> Profile {
     let Some(first) = messages.iter().find_map(|(t, _)| *t) else {
         return Profile { phases: None, formula };
     };
-    // JBMC's own account of the phases it times.
+    // JBMC's own account of the phases it times, per solver call: what the call's `Runtime Solver` times less the
+    // post-processing inside it, which is encoding; all of it, when the SAT solver never started.
     let mut p = Phases::default();
+    let (mut post_processing, mut solver_ran) = (0.0, false);
     for (_, text) in &messages {
-        let (phase, v) = if let Some(v) = number(text, "Runtime Symex:").or_else(|| number(text, "Runtime Postprocess Equation:")) {
-            ("symbolic", v)
-        } else if let Some(v) = number(text, "Runtime Convert SSA:").or_else(|| number(text, "Runtime Post-process:")) {
-            ("encoding", v)
+        if let Some(v) = number(text, "Runtime Symex:").or_else(|| number(text, "Runtime Postprocess Equation:")) {
+            p.symbolic += v;
+        } else if let Some(v) = number(text, "Runtime Convert SSA:") {
+            p.encoding += v;
+        } else if let Some(v) = number(text, "Runtime Post-process:") {
+            p.encoding += v;
+            post_processing += v;
+            solver_ran = true;
         } else if let Some(v) = number(text, "Runtime Solver:") {
-            ("solving", v)
-        } else {
-            continue;
-        };
-        *slot(&mut p, phase) += v;
+            if solver_ran {
+                p.solving += (v - post_processing).max(0.0);
+            } else {
+                p.encoding += v;
+            }
+            (post_processing, solver_ran) = (0.0, false);
+        } else if solver_call_started(text) {
+            (post_processing, solver_ran) = (0.0, false);
+        } else if solver_started(text) {
+            solver_ran = true;
+        }
     }
     // The times between messages for those it does not time: an interval belongs to the phase JBMC was in at its
     // start, and the trace to the message after `Building error trace`.
@@ -339,6 +392,79 @@ mod tests {
         assert!(p.symbolic > 59.9, "{p:?}");
         let p = of_jbmc(&counterexample()[..3], 60.0).phases.unwrap();
         assert!(p.loading > 59.9, "still parsing: {p:?}");
+    }
+
+    /// A real run of JBMC 6.11.0 (`lib/tests/fixtures/jbmc-phases/`), read as the adapter reads its log.
+    fn fixture(name: &str) -> Vec<serde_json::Value> {
+        let path = format!("{}/tests/fixtures/jbmc-phases/{name}", env!("CARGO_MANIFEST_DIR"));
+        crate::jbmc::json_items(&std::fs::read_to_string(&path).expect("fixture"))
+    }
+
+    fn assert_near(actual: f64, expected: f64, what: &str) {
+        assert!((actual - expected).abs() <= 0.0015, "{what}: {actual} is not {expected}");
+    }
+
+    #[test]
+    fn jbmc_post_processing_inside_its_solver_call_is_counted_once() {
+        // held/prefix-sums proved: Convert SSA 0.017704 s, Post-process 0.175236 s inside Solver 2.95533 s.
+        let p = of_jbmc(&fixture("proof.log"), 3.160).phases.unwrap();
+        assert_near(p.encoding, 0.017704 + 0.175236, "encoding: converting SSA and post-processing");
+        assert_near(p.solving, 2.95533 - 0.175236, "solving: the solver call less its post-processing");
+        assert_near(p.symbolic, 0.0851402 + 0.000294842, "symbolic");
+        assert_eq!(p.excess(3.160), None, "the phases add up to the run: {p:?}");
+        assert!(p.named_total() <= 3.160);
+        // Counted twice, as before, the same run is flagged.
+        let twice = Phases { solving: p.solving + 0.175236, ..p.clone() };
+        assert_eq!(twice.excess(3.160), Some(0.078), "{twice:?}");
+    }
+
+    #[test]
+    fn a_jbmc_run_cut_off_while_solving_gives_the_solver_the_time_after_post_processing() {
+        // The same, with a budget of 1.921 s: killed after `Runtime Post-process: 0.232285s`, as CaDiCaL ran.
+        let p = of_jbmc(&fixture("timeout.log"), 1.980).phases.unwrap();
+        assert!(p.encoding >= 0.232 && p.encoding < 0.3, "post-processing is encoding: {p:?}");
+        assert!(p.solving > 1.5, "the rest of the run was the solver's: {p:?}");
+        assert_eq!(p.excess(1.980), None, "{p:?}");
+    }
+
+    #[test]
+    fn a_jbmc_solver_call_out_of_memory_before_the_sat_solver_started_is_encoding() {
+        // held/reverse under 700 MiB: `Runtime Solver: 0.622319s`, with no post-processing time nor CaDiCaL's line.
+        let p = of_jbmc(&fixture("memory.log"), 1.104).phases.unwrap();
+        assert_eq!(p.solving, 0.0, "{p:?}");
+        assert_near(p.encoding, 0.0479503 + 0.622319, "converting SSA and the call that ran out of memory");
+        assert_eq!(p.excess(1.104), None, "{p:?}");
+    }
+
+    #[test]
+    fn each_of_jbmc_solver_calls_is_read_on_its_own() {
+        // Two counterexamples, so two calls: the first post-processes (3.566e-06 s of its 5.1126e-05 s), the second
+        // does not (1.4477e-05 s). Their times are microseconds, so they are scaled by 10^4 to stand above rounding.
+        let scaled: Vec<serde_json::Value> = fixture("two-calls.log").into_iter().map(|mut item| {
+            if let Some(t) = item.get("timestamp").and_then(timestamp) {
+                item["timestamp"] = json!(t * 1e4);
+            }
+            if let Some(text) = item.get("messageText").and_then(|t| t.as_str()).map(str::to_string) {
+                if let Some((name, v)) = text.strip_prefix("Runtime ").and_then(|r| r.split_once(": ")) {
+                    let v: f64 = v.trim_end_matches('s').parse().unwrap();
+                    item["messageText"] = json!(format!("Runtime {name}: {}s", v * 1e4));
+                }
+            }
+            item
+        }).collect();
+        let p = of_jbmc(&scaled, 0.010 * 1e4).phases.unwrap();
+        assert_near(p.solving, (5.1126e-05 - 3.566e-06 + 1.4477e-05) * 1e4, "both calls, less the first's post-processing");
+        assert_near(p.encoding, (0.000467265 + 3.566e-06) * 1e4, "converting SSA and the first call's post-processing");
+    }
+
+    #[test]
+    fn phases_past_their_run_beyond_the_tolerance_are_flagged() {
+        let p = Phases { encoding: 7.980, solving: 13.753, ..Default::default() };
+        assert_eq!(p.excess(15.887), Some(5.846), "held/reverse in job -102624: 22.0 s of phases in 15.9 s");
+        let rounding = Phases { loading: 0.0005, solving: 1.0045, ..Default::default() };
+        assert_eq!(rounding.excess(1.0), None, "rounding and two clocks are within the tolerance");
+        assert_eq!(Phases { solving: 1.016, ..Default::default() }.excess(1.0), Some(0.016));
+        assert_eq!(Phases::default().completed(2.0).other, 2.0);
     }
 
     #[test]

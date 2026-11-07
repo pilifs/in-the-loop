@@ -44,6 +44,29 @@ class GapTableTest(unittest.TestCase):
         self.assertEqual([r["example"] for r in gap_table.table(self.dir, "native") if r["gaps"]], ["128"])
         self.assertEqual([r["example"] for r in gap_table.table(self.dir, ids={"128"})], ["128"])
 
+    def test_a_row_names_its_engine_its_expectation_and_why_it_has_no_verdict_and_two_tables_compare(self):
+        defect = ("JBMC proved it, but runs 1 construct otherwise than the JVM (return-past-handler at p.D.f:7: "
+                  "ArithmeticException), so the proof is refused under every --gaps mode")
+        jbmc = {"engine": "jbmc", "checker": "JBMC 6.11.0", "gapMode": "strict"}
+        self.write("120-jbmc", {"format": 2, "conclusion": {"status": "unresolved", "expectation": "no"},
+                                "evidence": {"search": jbmc, "problem": defect}})
+        self.write("121-jbmc", {"format": 2, "conclusion": {"status": "established", "expectation": "yes"},
+                                "evidence": {"search": jbmc, "problem": "not shown: it has a verdict"}})
+        rows = gap_table.table(self.dir)
+        self.assertEqual([(r["engine"], r["checker"], r["expectation"], r["jbmcDefect"]) for r in rows],
+                         [("jbmc", "JBMC 6.11.0", "no", True), ("jbmc", "JBMC 6.11.0", "yes", False)])
+        self.assertEqual(rows[0]["problem"], defect)
+        self.assertIsNone(rows[1]["problem"], "only an obligation with no verdict carries its problem")
+        native = [dict(rows[0], status="refuted", engine="native", problem=None), dict(rows[1], engine="native")]
+        self.assertEqual([(k, x["status"], y["status"]) for k, x, y in gap_table.compare(rows, native)],
+                         [(("120", 0), "unresolved", "refuted")])
+        self.assertEqual([(k, y) for k, x, y in gap_table.compare(rows, native[1:])], [(("120", 0), None)],
+                         "an obligation only one table has is listed")
+        a, b = self.dir / "a.json", self.dir / "b.json"
+        a.write_text(json.dumps(rows))
+        b.write_text(json.dumps(native))
+        self.assertEqual(gap_table.main(["--compare", str(a), str(b)]), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

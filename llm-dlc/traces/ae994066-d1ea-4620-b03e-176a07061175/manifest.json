@@ -142,6 +142,22 @@
       "summary": "Record verification results: Phase 6c checker comparisons and JBMC defects rerun pass (closing VF-007); 41-example job fails again (VF-006)",
       "body": "Collected four jobs run at vm-1. 20261106-224616 and -230455 (own checker on CaDiCaL and Bitwuzla, bit-blasted and word-level, Phase 6c) passed; their comparison tables under lib/solvers/comparison/ were applied. 20261106-231317 (rerun of the JBMC escaping-exceptions job, same three commands) passed, closing VF-007. 20261106-231837 (41 JBMC examples under strict) failed again, now on a result-schema complaint about 'phasesExcess' and only 12 of 41 examples in the table; VF-006 updated. Verified by pipeline.py status showing nothing pending or uncollected.",
       "log_sha256": "350f90610005038cc50aa58c86fab33f349f19a2e5ff7734a6836c63ff601c8a"
+    },
+    {
+      "change_id": "wnktqxrtllpwzvmpqtmsqrkzmvwxtzyr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the own checker's solver calls as replayable incremental CNF transcripts (Phase 6a)",
+      "body": "A check by the own checker can now write every clause it gives CaDiCaL and every call it makes, in order, as CaDiCaL's incremental CNF (p inccnf), each call followed by a comment with its answer, its time and its per-call limit, under a header naming the tool, the solver, the method and the engine's options. The new lib/src/bmc/transcript.rs writes and replays them. bmc::Options::transcript names a file; otherwise JVMCONTRACT_TRANSCRIPTS names a directory and each check writes PID-N.icnf there, which reaches prove, equivalence and the benchmark's runner without a flag. jvmcontract transcript FILE runs one again on the bundled CaDiCaL with the recorded limits and reports times and contradicting answers (exit 1). Phase 6c judges solvers on these sequences, since a check is hundreds of incremental calls with model-dependent lemmas between them.",
+      "log_sha256": "350f90610005038cc50aa58c86fab33f349f19a2e5ff7734a6836c63ff601c8a"
+    },
+    {
+      "change_id": "syntvmqpxlzsmysprspuuxwnoqxzmpww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the own checker's SAT solver behind a narrow interface (Phase 6b)",
+      "body": "The own checker's solver is now reached only through a Sat trait (lib/src/bmc/sat.rs: signature, add_clause, set_limit, solve under assumptions, value, variables), with CaDiCaL 1.9.5 as the bundled crate gives it as its one implementation. That separates the engine's three layers: scheduling the queries (Engine in bmc/mod.rs: probes, deferred paths, the refinement loop), encoding them (Blaster in bmc/bits.rs, which now holds a Box<dyn Sat> and calls nothing else of the solver), and solving them. bmc::Options::solver chooses the solver a check runs on (CaDiCaL by default), and transcript::replay_on replays a transcript on any solver behind the trait, so Phase 6c can put Bitwuzla's SAT mode behind it without touching the engine. The transcript's header now names the solver the check ran on. Results still name CaDiCaL through solver_signature(), since nothing outside tests sets another solver.\n\nNo behaviour changes. A new engine test runs a check on a test double that logs everything crossing the trait: it gives the plain run's outcome, its clauses and calls match the outcome's counts and the transcript's, and a replay on the logged solver gives the same clauses and calls again. End to end, held/lower-bound (equivalence --engine native, unwind 9, arrays up to 8) writes the same transcripts by count as before the change: 460 calls over 43,478 clauses and 13,025 variables, verified, plus a 5-call check, both replaying with no contradiction. Unit (153), integration (64) and skill tests pass. Conformance fails only its two known tests: 12 library-record claims (JDK 25.0.5 against a record made on 25.0.4.1) and the JBMC stream's benchmark file. The brief's Progress records this, the shared file changed (lib/README.md), and the next step: enums in the own checker.",
+      "log_sha256": "350f90610005038cc50aa58c86fab33f349f19a2e5ff7734a6836c63ff601c8a"
     }
   ],
   "logs": {

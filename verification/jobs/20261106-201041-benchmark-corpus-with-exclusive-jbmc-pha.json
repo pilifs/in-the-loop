@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-201041-benchmark-corpus-with-exclusive-jbmc-pha",
+  "title": "Benchmark corpus with exclusive JBMC phases and JBMC's three staging policies (engine-priorities step 2b)",
+  "description": "Step 2b of llm-dlc/loops/engine-priorities.md. Reruns the whole benchmark corpus (groups 1-4: 93 conformance claims, 13 real regressions, 12 held-out cases, examples 141 and 142) on the own checker, JBMC and auto, under strict, assume and advised, with matched settings (unwind 16, arrays up to 8, a 120 s deadline per check). Two things changed since the last benchmark job (20261106-102624, whose figures stand as recorded): JBMC's phases are now exclusive (step 1a: Runtime Post-process is counted once, inside Runtime Solver, and a run whose phases add up past its time is flagged and left out of the phase tables), and JBMC checks take a staging policy (step 2a, --jbmc-staging): staged (every interval stage that restricts the inputs, then the full range; today's default), full-range (the full range alone, its counterexample shrunk in the interpreter), and tight (the first restricting stage on a fortieth of the check, then the full range). Every jbmc run is made under all three; every auto run under staged, and again under the other two where the own checker gave no verdict and JBMC's fallback ran. The corpus's tables, 'Where the time goes' among them, are over staged; a new section 'JBMC's staging policies' compares the policies per engine and mode, proofs and counterexamples apart: verdicts, time, class changes from staged, witness size after lib/src/shrink.rs (array elements and largest magnitude), and auto fallbacks whose full range got under a second. Its results decide JBMC's default (step 2c). Known in advance: the JDK on cvm is 25.0.5 while the contract library's records are for 25.0.4.1, so advised runs may stop on a contract not on its record; that is reported, not a failure. Every expected answer and every witness is checked on the JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "benchmark",
+    "own-checker",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark",
+      "lib/src/deadline.rs",
+      "lib/src/phases.rs"
+    ],
+    "examples": [
+      "141",
+      "142"
+    ]
+  },
+  "expected": "exits 0: no false success and no false alarm on any engine, mode or staging policy, and the JVM bears out every expected answer of groups 2 and 3. RESULTS.md names this job and its commit in its first line, has the correctness table, 'Where the time goes, by workload, under strict' with rows for native, jbmc and auto, 'The recorded examples', and 'JBMC's staging policies' with rows for jbmc under each mode and policy, proofs and counterexamples apart, and auto rows for the cases where it fell back. Runs out of time or memory on JBMC (141, 142, reverse, the floor-mod cases) are findings, not failures.",
+  "submitted": {
+    "at": "2026-11-06T20:10:41+00:00",
+    "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+    "by": "claude (engines-jbmc stream)"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3.5G",
+    "duration": "2h30m",
+    "memoryLimit": "4G",
+    "timeout": "6h",
+    "notes": "job -102624 took about 40 minutes: JBMC about 33 min over 356 runs, the own checker about 7. Here JBMC runs three times (full-range and tight should be no slower than staged, so up to about 100 min), auto adds the own checker's 7 min again and its fallbacks (about 10-20 cases per mode, each up to 30 s, under each policy: up to about 50 min more). JBMC runs are capped at 3 GiB each; one runs at a time."
+  },
+  "steps": [
+    {
+      "name": "benchmark",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native,jbmc,auto --jbmc-staging staged,full-range,tight --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/results.json",
+    "lib/benchmark/RESULTS.md"
+  ]
+}

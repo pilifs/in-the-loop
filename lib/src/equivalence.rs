@@ -88,6 +88,9 @@ pub struct Options {
     pub refine_strings: bool,
     /// The SAT solver to ask JBMC for ([`crate::jbmc::JbmcRun::sat_solver`]); CaDiCaL by default.
     pub sat_solver: Option<String>,
+    /// Which of JBMC's interval stages run before the full range ([`crate::deadline::Staging`]); the full range
+    /// alone by default. The own checker's stages and `--confirm`'s one run do not follow it.
+    pub jbmc_staging: crate::deadline::Staging,
     /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
     /// where the harness is within its fragment and JBMC elsewhere.
     pub engine: crate::Engine,
@@ -140,6 +143,7 @@ impl Options {
             models: true,
             refine_strings: false,
             sat_solver: Some("cadical".into()),
+            jbmc_staging: crate::deadline::Staging::FullRange,
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
             contracts: None,
@@ -242,6 +246,9 @@ pub struct Search {
     pub max_array_length: u32,
     /// The input range of the run the verdict comes from, as `[0:20]`; none for the whole range.
     pub stage: Option<String>,
+    /// The policy JBMC's interval stages followed (`--jbmc-staging`), when the verdict is JBMC's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub staging: Option<crate::deadline::Staging>,
     /// Why the own checker gave no verdict before JBMC was run, under `--engine auto`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fallback: Option<String>,
@@ -322,7 +329,13 @@ pub(crate) struct ConfirmContracts<'a> {
 /// JBMC applies the same ones at the same calls (`contracts`), so that both checkers prove the statement on the
 /// contracts' word: the confirmation checks the reasoning given the contracts, whose own evidence (proved, tested,
 /// trusted) is the verdict's. Returns the confirmation, and JBMC's result when it refutes the statement.
-pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<ConfirmContracts<'_>>) -> Result<(Confirmation, Option<JbmcResult>), Error> {
+///
+/// A refutation is a disagreement, unless JBMC's preflight finds a construct the harness reaches that JBMC runs
+/// otherwise than the JVM ([`crate::jbmc_gaps::Defect`]) and its witness does not reproduce in the interpreter
+/// (`reproduces`, the caller's replay of it in the harness): then the refutation is the defect's, as a proof
+/// through one is refused, and JBMC gives no verdict. The own checker's proof stands, not confirmed. A witness that
+/// reproduces is a disagreement whatever JBMC reaches.
+pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<ConfirmContracts<'_>>, reproduces: &dyn Fn(&JbmcResult) -> Result<Option<bool>, Error>) -> Result<(Confirmation, Option<JbmcResult>), Error> {
     let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.jbmc && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
     let (assumed, contracted) = (approximated(false), approximated(true));
     let not_asked = |reason: String| Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }, None));
@@ -369,6 +382,18 @@ pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<Conf
     match result.verdict {
         Verdict::Verified => Ok((confirmation, None)),
         Verdict::Violation => {
+            let pre = crate::jbmc_gaps::preflight(&run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
+            let defects = pre.found.as_ref().map(|f| f.defects.as_slice()).unwrap_or_default();
+            if !defects.is_empty() && reproduces(&result)? == Some(false) {
+                let n = defects.len();
+                confirmation.status = Confirmed::NoVerdict;
+                confirmation.reason = Some(format!(
+                    "its counterexample does not reproduce in the interpreter, and on the way it runs {n} construct{} otherwise than the JVM: {}",
+                    if n == 1 { "" } else { "s" },
+                    defects.iter().map(crate::jbmc_gaps::Defect::line).collect::<Vec<_>>().join("; ")
+                ));
+                return Ok((confirmation, None));
+            }
             confirmation.status = Confirmed::Disagreed;
             Ok((confirmation, Some(result)))
         }
@@ -871,7 +896,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         observations: observations.clone(),
         bounds: crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete),
         models: crate::statement::models(options.models && last.is_some()),
-        checker: crate::statement::checker(search, options.sat_solver.as_deref()),
+        checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
         vacuity: None,
@@ -980,8 +1005,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut runs = Vec::new();
     let mut last = None;
     // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
-    // `auto`), or that is the answer (under `native`). JBMC's interval stages run only where they bound an input.
-    let mut stages = crate::deadline::stages_for(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
+    // `auto`), or that is the answer (under `native`). JBMC's interval stages run only where they bound an input,
+    // and only those its staging policy picks ([`crate::deadline::Staging`]).
+    let mut stages = options.jbmc_staging.stages(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
@@ -1082,7 +1108,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         for stage in &stages {
-            let budget = deadline.for_stage(*stage);
+            let budget = deadline.for_stage(*stage, options.jbmc_staging);
             let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{tag}{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..first.clone() };
             let result = jbmc::run(&run)?;
             runs.push(Run::of(&result, purpose, budget));
@@ -1229,7 +1255,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base(&classpath, "") };
         let rewrite: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         let contracts = ConfirmContracts { setting: &gap_setting, rewrite, cp: &contract_cp, dir: work.join("jbmc-confirm-contracts") };
-        let (c, refuting) = confirm(&last, &run, Some(contracts))?;
+        let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+        let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &r.arguments(&flat_types)?)) };
+        let (c, refuting) = confirm(&last, &run, Some(contracts), &reproduces)?;
         (Some(c), refuting)
     } else {
         (None, None)
@@ -1242,6 +1270,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         unwind: options.unwind,
         max_array_length: options.max_array_length,
         stage: last.stage.clone(),
+        staging: last.native.is_none().then_some(options.jbmc_staging),
         fallback,
         native: last.native.clone(),
         gap_mode: last.gap_mode,

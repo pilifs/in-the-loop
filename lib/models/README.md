@@ -26,6 +26,9 @@ as a class path entry for any other tool.
 | `java.nio.charset.Charset` | a charset as a name: `name`, `displayName`, `equals`, `hashCode`, `compareTo`, `toString`, `isRegistered`, `isSupported`, `forName` (by canonical name and the JDK's aliases of the six standard charsets, else `UnsupportedCharsetException`), `defaultCharset` (UTF-8, as since JDK 18) | encoders, decoders, providers, `aliases`, `availableCharsets`, `contains`, `canEncode`: JBMC treats a call of a missing method as nondeterministic, as it did for the whole class before | the real class resolves charsets through `sun.nio.cs` and the provider interface |
 | `java.nio.charset.StandardCharsets` | the six standard charsets as instances of the model (`StandardCharsets$Standard`) | nothing | a static initializer that reads one used to read a stub reference |
 | `java.nio.charset.IllegalCharsetNameException`, `UnsupportedCharsetException` | the real classes, written out | nothing | the JDK generates them from a template at build time |
+| `java.lang.Enum` (JBMC only, and run by the tool's own checker) | the `name` and `ordinal` fields, the constructor `Enum(String, int)` that sets them (the name is the very string it is given), `name()`, `ordinal()`, `toString()`, `equals` (identity) | `compareTo` (the JDK's throws `ClassCastException` across two enum classes, which needs `Class`), `hashCode` (identity, as `Object`'s), `getDeclaringClass`, `valueOf(Class, String)`, `clone`, serialization: JBMC's stubs, named as gaps | every enum constant's constructor calls `Enum.<init>(String, int)`, which JBMC stubbed as a constructor that sets nothing, so `ordinal()` and `name()` returned any value. Example 071's property proofs reach it through the Quorum enums |
+| `java.util.List` (JBMC only) | the static factories `of` (every arity, and varargs) and `copyOf`, step for step as the JDK's; the instance methods the model's lists define, declared abstract | `listIterator`, `subList`, `reversed`, `spliterator`, `getFirst`, `getLast`, `addFirst`, `addLast`; `java.util.Collection` stays JBMC's own | JBMC stubbed `List.of` and `List.copyOf` as returning any list or `null`. Every Quorum kernel returns a `Decision`, which calls both |
+| `java.util.ImmutableCollections` and its `List12`, `ListN`, `AbstractImmutableList`, `ListItr` (JBMC only) | the JDK's immutable lists: `List12` for one or two elements, `ListN` over an array of its own otherwise, one `EMPTY_LIST`; no `null` element (`NullPointerException` when made, and on `contains`, `indexOf`, `lastIndexOf` of `null`); `UnsupportedOperationException` on every change, `remove` of the iterator included; `get` out of range throws `IndexOutOfBoundsException` from a `List12`, `ArrayIndexOutOfBoundsException` from a `ListN`, as the JDK's do; `iterator`, `toArray()`, `equals`, `hashCode` over the elements; `copyOf` of one of them is the list itself | exception messages (built by string concatenation, which JBMC stubs), the views (`subList`, `reversed`), `toArray(T[])`, `forEach`, `stream`, `toString`, `containsAll`, serialization (what JBMC makes of `java.util.AbstractCollection`, a stub), and the `ListN` that allows `null`s, which only `Stream.toList` makes | what `List.of` and `copyOf` return, written without a JDK call (not even `Objects.requireNonNull`), so that nothing in them is a stub |
 
 ## Where the models are used
 
@@ -40,6 +43,15 @@ as a class path entry for any other tool.
   bundles and which settles that proof in a second (`--sat-solver`; a JBMC built without it is run again with its
   default).
 - **The tool's own checker** (`--engine native`/`auto`, [`src/bmc`](../src/bmc/mod.rs)) runs a model's bytecode symbolically for the static methods it defines, as JBMC does from the class path.
+- **Models marked JBMC only** (`Model::jbmc_only` in [`src/models.rs`](../src/models.rs): `Enum`, `List` and the
+  immutable lists) are on JBMC's class path and nowhere else. The interpreter keeps its natives for these classes,
+  because the state they stand for (an enum's name and ordinal, a list's elements) is part of every object it
+  allocates. The tool's own checker runs `Enum`'s bytecode for an enum's constructor and accessors
+  (`CHECKER_RUNS` in `src/models.rs`, `ClassPath::checker_method`), since an enum's name and ordinal are two fields
+  of its objects there, and keeps its handling of the lists, which refuses what it does not have. The conformance
+  corpus checks those natives against a JVM, and its test `the_models_only_jbmc_runs_agree_with_the_jvm` checks the
+  models themselves: relocated out of `java.*`, with the corpus's references to them, its calls give the outcomes
+  the JDK's classes give.
 - **The interpreter** (`verify`, `derive`, and the replay of counterexamples) runs a model's bytecode for the methods
   the model defines, and its natives for the rest of the class. A model is not an application class: `is_application`
   is false for it, so capability and API contracts, purity and the closed-world walks are unchanged. A model's shape
@@ -62,9 +74,13 @@ states what a call does, for the own checker, and says at which level that is kn
 1. Write the class under `java/`, in its real package, with the behaviour programs observe and none of the
    machinery. No loops over tables (JBMC unwinds them, and a 256-element cache exceeded `--unwind 16`); assign
    static fields in a static block, not as constants; say in the Javadoc what is kept and what is left out.
-2. Run `build.sh` (it needs a `javac` that accepts `--release 8`, the class file version JBMC 6 reads best).
+2. Run `build.sh` (it needs a `javac` that accepts `--release 8`, the class file version JBMC 6 reads best). The
+   models of each package compile in a run of their own.
 3. Add the class to `MODELS` in [`src/models.rs`](../src/models.rs), with a note, and a case to the integration test
    `proofs_over_modelled_jdk_classes_are_decided_by_the_models` or `the_interpreter_runs_the_models_where_the_jdk_is_modelled`.
+   A model only for JBMC's class path (`model!(jbmc ...)`) gets conformance cases instead, checked against the
+   JVM in the interpreter and, through the test above, on the model itself; JBMC's verdicts on them are a pipeline
+   job (`cargo test --release --test conformance -- --ignored`).
 4. `cargo test` checks that the embedded class files match the sources (as disassembly, so a javac of another
    version does not fail it) and that the interpreter and JBMC compute the same function on the fixture.
 
@@ -78,4 +94,5 @@ The `java.nio.charset` models carry the OpenJDK header (GPL v2 with the Classpat
 [`LICENSE-GPL-2.0-WITH-CLASSPATH-EXCEPTION.txt`](LICENSE-GPL-2.0-WITH-CLASSPATH-EXCEPTION.txt)): they were written
 for the CProver [models library](https://github.com/diffblue/java-models-library), which is distributed under it, and
 their Javadoc follows the JDK's. The Classpath exception is what lets the compiled classes be embedded in a binary
-under another licence. The `java.lang` models are this repository's own, under its licence.
+under another licence. The `java.util` models carry it too: their code follows OpenJDK's `List` and
+`ImmutableCollections` (JDK 25) step for step. The `java.lang` models are this repository's own, under its licence.

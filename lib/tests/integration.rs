@@ -352,7 +352,8 @@ fn a_rounding_refactor_is_refuted_with_a_replayed_counterexample() {
     let search = outcome.search.expect("the checker run");
     assert_eq!((search.engine.as_str(), search.unwind, search.native.is_none()), ("jbmc", 16, true));
     assert!(search.checker.starts_with("JBMC"), "{}", search.checker);
-    assert!(search.stage.is_some(), "a small witness is found in a bounded range first");
+    // JBMC searches every input at once, its default since job 20261106-201041; the shrinker makes the witness small.
+    assert!(search.stage.is_none(), "{search:?}");
     let replay = outcome.replay.expect("the witness's replay");
     assert_eq!((replay.by.as_str(), replay.reproduced), ("interpreter", true));
     assert_eq!((json["replay"]["by"].as_str(), json["search"]["engine"].as_str()), (Some("interpreter"), Some("jbmc")), "{json}");
@@ -621,8 +622,9 @@ fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_th
     assert_eq!((c.before.as_str(), c.after.as_str()), ("false", "0"), "{}", outcome.output);
     assert!(outcome.output.contains("✗ fixtures.Expiry#remainingMillis differs from the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) outside the intended inputs"), "{}", outcome.output);
     assert!(outcome.output.contains("\n    the results are not related by previous == (result <= 0)\n"), "{}", outcome.output);
-    assert!(outcome.output.contains(" searching inputs in [0:20]"), "{}", outcome.output);
-    // The tool's own checker looks in the same stages, so it reports the same input without the shrinker's help.
+    // JBMC searches every input at once (its default since job 20261106-201041), and its witness is shrunk to this one.
+    assert!(!outcome.output.contains(" searching inputs in "), "{}", outcome.output);
+    // The tool's own checker looks in its stages, so it reports the same input without the shrinker's help.
     let mut options = equivalence::Options::new(&before, &after, "fixtures.Expiry#remainingMillis");
     options.before_target = Some("fixtures.Expiry#isExpired".into());
     options.results_agree_when = Some("previous == (result <= 0)".into());
@@ -886,7 +888,8 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
     // The witness was replayed in the interpreter, where the property fails on it too.
     let replay = refuted.replay.as_ref().unwrap();
     assert_eq!((replay.by.as_str(), replay.reproduced), ("interpreter", true));
-    assert_eq!(refuted.search.as_ref().unwrap().stage.as_deref(), Some("[0:20]"), "{}", refuted.output);
+    // Found over every input, JBMC's default since job 20261106-201041, and shrunk to the smallest above.
+    assert_eq!(refuted.search.as_ref().unwrap().stage.as_deref(), None, "{}", refuted.output);
     assert!(std::fs::read_to_string(refuted.work.join("report/property.sarif")).unwrap().contains("property-violated"));
 
     // Without the assumption, the exception on n <= 0 violates the property.
@@ -2091,7 +2094,7 @@ public class Gaps {
     static class A { int x; }
     static class B extends A { int x; }
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
         static int first() { return 7; }
     }
     record Point(int x, int y) {}
@@ -2112,6 +2115,12 @@ public class Gaps {
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
     public static boolean concatIsNull(int n) { return ("n=" + n) == null; }
     public static boolean sameRecord(int n) { return new Point(n, n).equals(new Point(n, n)); }
+    static class Primes {
+        static final int[] PRIMES = { 2, 3, 5 };
+        static int count; static { count = PRIMES.length; }
+        static int first() { return 7 + count; }
+    }
+    public static int ran(int n) { return Primes.first() + n; }
 }
 "#;
 
@@ -2147,9 +2156,15 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     assert!(ids.is_empty(), "{ids:?}");
     let (ids, _) = scan("sameLiteral");
     assert!(ids.is_empty(), "{ids:?}");
+    // An initializer outside the engine's fragment (floating point) is a gap, and is not walked; one in
+    // it is walked, as the engine runs it, with the static fields it writes and reads.
     let (ids, s) = scan("initialised");
     assert_eq!(ids, ["class-initializer:fixtures.Gaps$Table.<clinit>()V"]);
     assert!(s.refused.is_empty(), "{:?}", s.refused);
+    let (ids, s) = scan("ran");
+    assert!(ids.is_empty(), "{ids:?}");
+    assert!(s.refused.is_empty(), "{:?}", s.refused);
+    assert!(s.methods.contains("fixtures.Gaps$Primes.<clinit>()V"), "{:?}", s.methods);
     // javac from JDK 19 on converts the object with `String.valueOf` before the concatenation, which the engine
     // refuses; the bytecode of JDK 9 to 18 passes the object itself, a `string-conversion` gap.
     let (ids, s) = scan("described");
@@ -2170,6 +2185,76 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     if let Some(jdk) = &s.jdk {
         assert_eq!(s.records()[0].id, format!("jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-{jdk}"));
     }
+}
+
+const SHAPES: &str = r#"package fixtures;
+public class Shapes {
+    static class Table { static final int[] PRIMES = { 2, 3, 5 }; static final String NAME = new String("t"); }
+    static class Literal { static final int[] PRIMES = { 2, 3, 5 }; }
+    static class Boom { static final int[] TABLE = table(); static int[] table() { throw new IllegalStateException(); } }
+    static class Reader { static final int[] COPY = Literal.PRIMES; }
+    public static int light(Light l) { switch (l) { case RED: return 1; default: return 2; } }
+    public static int mass(Mass m) { return m.ordinal(); }
+    public static int literal(int n) { return Literal.PRIMES[0] + n; }
+    public static int table(int n) { return Table.PRIMES[0] + n; }
+    public static int boom(int n) { return Boom.TABLE.length + n; }
+    public static int reader(int n) { return Reader.COPY.length + n; }
+}
+"#;
+
+/// Phase 4b of `llm-dlc/loops/engine-priorities.md`: the scan gives each `class-initializer` gap's `<clinit>` a
+/// shape, read from its bytecode and the application methods it calls: an enum's, javac's `$SwitchMap` class for a
+/// switch over an enum (which reads the enum's constants), one that only assigns a literal table, one that throws
+/// through a method it calls, one that reads another class's static field, and one that calls the JDK. Since Phase 5
+/// the engine runs them all ([`jvmcontract::bmc::gaps::runs_initializer`]), the enum and its switch map since its
+/// last step, enums; an enum whose initializer is outside the fragment (a `double` field) stays a gap, its shape named.
+#[test]
+fn the_gap_scan_gives_each_class_initializer_a_shape() {
+    let dir = target_tmp().join("shapes-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Shapes.java"), SHAPES).unwrap();
+    // In a file of its own, as in the apps: javac makes a `$SwitchMap` class for a switch over an enum of another
+    // compilation unit.
+    std::fs::write(dir.join("Light.java"), "package fixtures;\nenum Light { RED, GREEN }\n").unwrap();
+    std::fs::write(dir.join("Mass.java"), "package fixtures;\nenum Mass { ONE(1.5); final double kg; Mass(double kg) { this.kg = kg; } }\n").unwrap();
+    let Some(classes) = compile("shapes", &[dir.join("Shapes.java"), dir.join("Light.java"), dir.join("Mass.java")]) else { return };
+    let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap().with_models(true);
+    let shapes = |method: &str| {
+        let targets = vec![format!("fixtures.Shapes#{method}")];
+        let roots = jvmcontract::bmc::gaps::roots(&cp, &targets).unwrap();
+        let s = jvmcontract::bmc::gaps::scan(&cp, &roots).unwrap();
+        s.initializers.values().map(|i| (i.class.clone(), i.shape.name(), i.traits.iter().copied().collect::<Vec<_>>())).collect::<Vec<_>>()
+    };
+    let mass = shapes("mass");
+    let names: Vec<_> = mass.iter().map(|(c, s, _)| (c.as_str(), *s)).collect();
+    assert_eq!(names, [("fixtures.Mass", "enum")]);
+    assert!(mass[0].2.contains(&"arrays-of-references"), "{mass:?}");
+    // The engine runs the others, so the scan walks them, and they are no gaps; their shapes are still read from
+    // their bytecode.
+    for method in ["light", "literal", "table", "boom", "reader"] {
+        assert!(shapes(method).is_empty(), "{method}: {:?}", shapes(method));
+    }
+    let shape = |class: &str| {
+        let i = jvmcontract::bmc::gaps::initializer_shape(&cp, class).unwrap();
+        (i.shape.name(), i.traits.iter().copied().collect::<Vec<_>>())
+    };
+    assert_eq!(shape("fixtures/Shapes$Literal"), ("constants", vec![]));
+    assert_eq!(shape("fixtures/Shapes$Table"), ("other", vec!["calls-jdk", "constructs"]));
+    let (boom, traits) = shape("fixtures/Shapes$Boom");
+    assert_eq!(boom, "throws");
+    assert!(traits.contains(&"athrow") && traits.contains(&"calls-application"), "{traits:?}");
+    assert_eq!(shape("fixtures/Shapes$Reader"), ("other-statics", vec!["reads-other-statics"]));
+    let (light, traits) = shape("fixtures/Light");
+    assert_eq!(light, "enum");
+    assert!(traits.contains(&"arrays-of-references"), "{traits:?}");
+    let (map, traits) = shape("fixtures/Shapes$1");
+    assert_eq!(map, "other-statics");
+    assert!(traits.contains(&"switch-map") && traits.contains(&"handlers"), "{traits:?}");
+    for class in ["fixtures/Shapes$Literal", "fixtures/Shapes$Table", "fixtures/Shapes$Boom", "fixtures/Shapes$Reader", "fixtures/Light", "fixtures/Shapes$1"] {
+        assert!(jvmcontract::bmc::gaps::runs_initializer(&cp, class), "{class}");
+    }
+    assert!(!jvmcontract::bmc::gaps::runs_initializer(&cp, "fixtures/Mass"));
 }
 
 /// Step 1b of llm-dlc/loops/sound-verdicts.md: the tool's own checker meets the gaps as it runs. Under `--gaps strict`
@@ -2714,7 +2799,7 @@ package fixtures;
 
 public class Contracted {
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
         static int first() { return 7; }
     }
 
@@ -3242,6 +3327,10 @@ public class Identity {
         static final int[] TABLE = { 1, 2 };
         static int value(int n) { return n; }
     }
+    static class Names {
+        static final double[] ALL = { 0.5, 1.5 };
+        static int value(int n) { return n; }
+    }
 
     public static int hiding(int n) { B b = new B(); b.x = n; ((A) b).x = 2; return b.x; }
     public static int hidden(int n) { B b = new B(); b.x = n; ((A) b).x = 2; return ((A) b).x; }
@@ -3251,6 +3340,7 @@ public class Identity {
     public static int boom(int n) { return Boom.value(n); }
     public static int inherited(int n) { return Derived.value(n); }
     public static int quiet(int n) { return Quiet.value(n); }
+    public static int named(int n) { return Names.value(n); }
 }
 "#;
 
@@ -3258,8 +3348,10 @@ public class Identity {
 /// declares again is a second field, and every load of a string or class literal is one object, so the tool's own
 /// checker and the interpreter that replays its witnesses agree with the JVM on each claim below; before, both kept
 /// one field per name, and the engine made each literal a new object, so a claim the JVM refutes was `Verified`.
-/// A class whose initializer the engine does not run is a `class-initializer` gap: refused by name under strict
-/// (the JVM throws `ExceptionInInitializerError` from it), named as an assumption under assume, and under
+/// Since Phase 5 of llm-dlc/loops/engine-priorities.md the engine runs a class's initializer, as the JVM does, so an
+/// initializer that throws is a violation (`ExceptionInInitializerError`) whose witness replays, and one that
+/// throws nothing is verified, with no gap. An initializer outside the engine's fragment (an array of references)
+/// is a `class-initializer` gap: refused by name under strict, named as an assumption under assume, and under
 /// `--engine auto` handed to JBMC, which runs initializers.
 #[test]
 fn identity_and_initialization_agree_with_the_jvm() {
@@ -3279,13 +3371,14 @@ fn identity_and_initialization_agree_with_the_jvm() {
             + "System.out.println(fixtures.Identity.sameClass(0));\n"
             + "try { System.out.println(fixtures.Identity.boom(3)); } catch (Throwable t) { System.out.println(t.getClass().getName()); }\n"
             + "try { System.out.println(fixtures.Identity.inherited(3)); } catch (Throwable t) { System.out.println(t.getClass().getName()); }\n"
-            + "System.out.println(fixtures.Identity.quiet(3)); } }\n";
+            + "System.out.println(fixtures.Identity.quiet(3));\n"
+            + "System.out.println(fixtures.Identity.named(3)); } }\n";
         std::fs::write(dir.join("Probe.java"), probe).unwrap();
         let status = Command::new("javac").args(["-proc:none", "-cp"]).arg(&classes).arg("-d").arg(&classes).arg(dir.join("Probe.java")).status().expect("javac runs");
         assert!(status.success());
         let run = Command::new("java").arg("-cp").arg(&classes).arg("Probe").output().expect("java runs");
         let lines = String::from_utf8_lossy(&run.stdout).lines().map(str::to_string).collect::<Vec<_>>();
-        assert_eq!(lines, ["5", "2", "true", "false", "true", "java.lang.ExceptionInInitializerError", "java.lang.ExceptionInInitializerError", "3"]);
+        assert_eq!(lines, ["5", "2", "true", "false", "true", "java.lang.ExceptionInInitializerError", "java.lang.ExceptionInInitializerError", "3", "3"]);
     }
     let prove = |method: &str, assert: &str, engine: Engine, gaps: GapMode| {
         let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Identity#{method}"));
@@ -3309,27 +3402,35 @@ fn identity_and_initialization_agree_with_the_jvm() {
         }
     }
     let ids = |o: &property::Outcome| -> Vec<String> { o.search.as_ref().expect("a checker ran").gaps.iter().map(|g| g.id.clone()).collect() };
-    // An initializer the engine does not run: refused by name, the superclass's for a subclass, and refused even
-    // where it would have thrown nothing (what strictness costs).
-    for (method, id) in [("boom", "class-initializer:fixtures.Identity$Boom.<clinit>()V"), ("inherited", "class-initializer:fixtures.Identity$Base.<clinit>()V"), ("quiet", "class-initializer:fixtures.Identity$Quiet.<clinit>()V")] {
-        let o = prove(method, "result == n", Engine::Native, GapMode::Strict);
-        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
-        assert_eq!(ids(&o), [id], "{method}: {}", o.output);
-        assert!(o.problem.as_deref().unwrap().contains(&format!("refused it (--gaps strict): {id}")), "{method}: {}", o.output);
-        let o = prove(method, "result == n", Engine::Native, GapMode::Assume);
-        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
-        assert_eq!(ids(&o), [id], "{method}: {}", o.output);
-        assert_eq!(o.search.as_ref().unwrap().gaps[0].treatment, Some(GapTreatment::Assumed));
-        assert!(o.output.contains("has run already, and threw nothing"), "{method}: {}", o.output);
+    // An initializer the engine runs: the error it throws, from the class's own or its superclass's, is a violation
+    // the interpreter replays, and one that throws nothing is verified; no gap in either mode.
+    for gaps in [GapMode::Strict, GapMode::Assume] {
+        for (method, verdict) in [("boom", Verdict::Violation), ("inherited", Verdict::Violation), ("quiet", Verdict::Verified)] {
+            let o = prove(method, "result == n", Engine::Native, gaps);
+            assert_eq!(o.verdict, verdict, "{method}: {}", o.output);
+            assert!(ids(&o).is_empty(), "{method}: {}", o.output);
+            if verdict == Verdict::Violation {
+                assert!(o.counterexample.as_ref().unwrap().outcome.contains("ExceptionInInitializerError"), "{method}: {}", o.output);
+            }
+        }
     }
-    // JBMC runs initializers, so `--engine auto` asks it, and it finds the error the JVM throws.
+    // An initializer the engine does not run, since it is outside its fragment (floating point): refused by name under
+    // strict, and named as an assumption under assume.
+    let id = "class-initializer:fixtures.Identity$Names.<clinit>()V";
+    let o = prove("named", "result == n", Engine::Native, GapMode::Strict);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert_eq!(ids(&o), [id], "{}", o.output);
+    assert!(o.problem.as_deref().unwrap().contains(&format!("refused it (--gaps strict): {id}")), "{}", o.output);
+    let o = prove("named", "result == n", Engine::Native, GapMode::Assume);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(ids(&o), [id], "{}", o.output);
+    assert_eq!(o.search.as_ref().unwrap().gaps[0].treatment, Some(GapTreatment::Assumed));
+    assert!(o.output.contains("has run already, and threw nothing"), "{}", o.output);
+    // JBMC runs initializers, so `--engine auto` asks it about the one the engine does not run.
     if has("jbmc") {
-        let o = prove("boom", "result == n", Engine::Auto, GapMode::Strict);
-        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
-        assert_eq!(o.search.as_ref().unwrap().engine, "jbmc", "{}", o.output);
-        assert!(o.counterexample.as_ref().unwrap().outcome.contains("ExceptionInInitializerError"), "{}", o.output);
-        let o = prove("quiet", "result == n", Engine::Auto, GapMode::Strict);
+        let o = prove("named", "result == n", Engine::Auto, GapMode::Strict);
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert_eq!(o.search.as_ref().unwrap().engine, "jbmc", "{}", o.output);
     }
 }
 

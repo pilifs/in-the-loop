@@ -10,4 +10,5 @@ mkdir -p classes
 # compiles the other models against the model rather than the JDK's class.
 javac --release 8 -Xlint:-options -g -d classes java/lang/*.java
 javac --release 8 -Xlint:-options -g -d classes java/nio/charset/*.java
+javac --release 8 -Xlint:-options -g -d classes java/util/*.java
 find classes -name '*.class' | sort

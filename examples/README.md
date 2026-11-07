@@ -433,6 +433,11 @@ method the proof calls, and replaces the example's `Gap scan (...)` note with wh
 version that meets it, or that there is none, so strict mode doesn't move the verdict
 ([`sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md), step 1a). It takes a minute for all of them.
 
+[`tools/initializer_shapes.py`](tools/initializer_shapes.py) runs the same scan over those examples and over each
+javac app as a whole (every method a target, and Box Office's `ticketing-domain`), writes no note, and counts the class
+initializers it reaches by the shape `jvmcontract gaps` gives each: `enum`, `throws`, `other-statics`, `constants` or
+`other` ([`engine-priorities.md`](../llm-dlc/loops/engine-priorities.md), Phase 4b).
+
 `--plan` prints the run's plan, which `plan()` in `build.py` resolves from `example.json` alone, without building or
 running anything. The plan names the app and its build (Gradle or javac), the runner, the claim, and the engine with the
 flags the proof is given. It lists the tools the run calls: `required` ones, and `optional` ones it calls only in some

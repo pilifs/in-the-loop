@@ -5,6 +5,7 @@ phase by phase (README.md says what each means).
 
     python3 lib/benchmark/run.py                       # every case, native and JBMC, strict, assume and advised
     python3 lib/benchmark/run.py --engines native --groups 2,3 --out /tmp/b.json --table /tmp/b.md
+    python3 lib/benchmark/run.py --engines native,jbmc,auto --jbmc-staging staged,full-range,tight   # step 2b
 
 JBMC runs are proofs: the full run is a pipeline job, not something to run inline.
 """
@@ -27,6 +28,11 @@ REPO = LIB.parent
 CONFORMANCE_SOURCE = LIB / "tests/conformance/conformance/Conformance.java"
 RUNNER_SOURCE = LIB / "tests/conformance/Runner.java"
 ENGINES = ("native", "jbmc")
+# JBMC's staging policies (lib/src/deadline.rs's Staging, `--jbmc-staging`): which of its interval stages a check runs.
+# A run of an engine that may call JBMC (jbmc, auto) is made once per policy asked for; the first is the one the
+# tables of the corpus are over, and the others are compared with it (step 2b of llm-dlc/loops/engine-priorities.md).
+STAGING = ("staged", "full-range", "tight")
+JBMC_ENGINES = ("jbmc", "auto")
 MODES = ("strict", "assume", "advised")
 GROUPS = {1: "semantic conformance", 2: "real regressions", 3: "held-out performance cases", 4: "recorded examples"}
 # Group 4: recorded examples step 5b names, by number, with their workload: the reviews' case studies, run under the
@@ -35,6 +41,10 @@ RECORDED = {"141": "binary-search", "142": "utf8"}
 # The phases of a run (lib/src/phases.rs), the checker's own and the driver's around it: the record's `phases`.
 RUN_PHASES = ("loading", "lowering", "symbolic", "encoding", "solving", "trace")
 PHASES = RUN_PHASES + ("checker-other", "gaps", "contracts", "replay", "jvm", "harness", "setup", "driver")
+# How far a run's phases may add up past its seconds before it is flagged: a share of them, and seconds besides
+# (lib/src/phases.rs's TOLERANCE_SHARE and TOLERANCE_SECONDS). A flagged run is left out of the phase tables, never
+# scaled to fit.
+PHASE_TOLERANCE = (0.01, 0.005)
 # The configuration both engines are given: the same harness, bounds, models and deadline.
 UNWIND = 16
 MAX_ARRAY_LENGTH = 8
@@ -111,10 +121,13 @@ def javac(sources, target):
     return target
 
 
-def command(case, engine, mode, classes, work, options):
-    """The jvmcontract command line for one case: the same for both engines but for --engine."""
+def command(case, engine, mode, classes, work, options, staging=None):
+    """The jvmcontract command line for one case: the same for both engines but for --engine, and for JBMC's staging
+    policy when one is given."""
     common = ["--engine", engine, "--gaps", mode, "--work", str(work), "--timeout", str(options.timeout),
               "--unwind", str(UNWIND), "--max-array-length", str(MAX_ARRAY_LENGTH), "--jbmc", options.jbmc, "--json"]
+    if staging:
+        common += ["--jbmc-staging", staging]
     if mode == "advised":
         # The protocol with no agent: the contract library's contracts only, none of them trusted.
         common += ["--max-trust", "0"]
@@ -226,8 +239,30 @@ def stats_of(data):
     keep = {k: native[k] for k in ("paths", "merges", "solver_calls", "solving_seconds", "variables", "clauses") if k in native}
     runs = search.get("runs") or []
     if runs:
-        keep["runs"] = [{k: r.get(k) for k in ("checker", "purpose", "stage", "seconds", "ending", "phases", "formula")} for r in runs]
+        keep["runs"] = [{k: r.get(k) for k in ("checker", "purpose", "stage", "seconds", "ended", "ending", "phases", "formula")} for r in runs]
+        for kept, r in zip(keep["runs"], runs):
+            if r.get("budget_seconds") is not None:
+                kept["budget"] = r["budget_seconds"]
+        for kept, r in zip(keep["runs"], runs):
+            if r.get("phases_excess"):
+                kept["phasesExcess"] = r["phases_excess"]
     return keep
+
+
+def sat_of(data):
+    """The SAT solver the verdict was solved on, as the result's evidence names it (`stated.checker.sat`, the shape of
+    `Sat` in lib/src/statement.rs): solver, version, source and configuration. None when no checker ran."""
+    return (((data or {}).get("stated") or {}).get("checker") or {}).get("sat")
+
+
+def sat_solvers(runs):
+    """Per engine, each SAT solver its runs were solved on, once: the environment's record of them."""
+    out = {}
+    for r in runs:
+        sat = r.get("sat")
+        if sat and sat not in out.setdefault(r["engine"], []):
+            out[r["engine"]].append(sat)
+    return {engine: sats for engine, sats in out.items() if sats}
 
 
 def phases_of(data, seconds):
@@ -251,6 +286,18 @@ def phases_of(data, seconds):
     return {k: round(v, 3) for k, v in out.items()}
 
 
+def phases_excess(data, phases, seconds):
+    """The seconds by which a run's phases add up past its time, beyond PHASE_TOLERANCE: its checker runs' own
+    excess (`phases_excess`, flagged by lib/src/phases.rs), or its phases short of `driver` past the process's
+    seconds. None when they fit."""
+    runs = sum(r.get("phases_excess") or 0.0 for r in ((data or {}).get("search") or {}).get("runs") or [])
+    over = sum(v for k, v in phases.items() if k != "driver") - seconds
+    if over <= PHASE_TOLERANCE[0] * seconds + PHASE_TOLERANCE[1]:
+        over = 0.0
+    worst = max(runs, over)
+    return round(worst, 3) if worst > 0 else None
+
+
 def formula_of(data):
     """The largest formula of a run's checker runs: JBMC's SSA steps, and the variables and clauses."""
     out = {}
@@ -271,6 +318,49 @@ def token(value):
     if isinstance(value, str) and len(value) == 1:
         return str(ord(value))
     return str(value)
+
+
+def witness_size(inputs):
+    """How big a witness is: the elements of its arrays, and the largest magnitude among its values (a `true`
+    counts as 1, a `long` or a floating-point value written as a string is read back, a non-finite one is left out).
+    None when there is no witness. The record of each run's witness as reported (`witnessSize`, shrunk by
+    lib/src/shrink.rs when JBMC found it) and as JBMC found it (`foundSize`)."""
+    if inputs is None:
+        return None
+    size = {"elements": 0, "largest": 0}
+
+    def walk(value):
+        if isinstance(value, list):
+            size["elements"] += len(value)
+            for v in value:
+                walk(v)
+            return
+        if isinstance(value, bool):
+            number = int(value)
+        elif isinstance(value, (int, float)):
+            number = value
+        elif isinstance(value, str):
+            try:
+                number = int(value)
+            except ValueError:
+                try:
+                    number = float(value)
+                except ValueError:
+                    return
+        else:
+            return
+        if number == number and abs(number) != float("inf"):
+            magnitude = abs(number)
+            size["largest"] = max(size["largest"], int(magnitude) if magnitude == int(magnitude) else magnitude)
+
+    def visit(typed):
+        walk(typed.get("value"))
+        for component in typed.get("components") or []:
+            visit(component)
+
+    for typed in inputs:
+        visit(typed)
+    return size
 
 
 def witness_arguments(data):
@@ -370,6 +460,9 @@ def environment(options):
         "machine": platform.machine(),
         "cpu": cpu,
         "cpus": os.cpu_count(),
+        # The pipeline job the run is, and the commit it ran at, when it is one (verification/pipeline.py sets them).
+        "job": os.environ.get("VERIFY_JOB_ID"),
+        "commit": os.environ.get("VERIFY_SOURCE_COMMIT"),
     }
 
 
@@ -377,6 +470,10 @@ def run(options):
     groups = {int(g) for g in options.groups.split(",")}
     engines = options.engines.split(",")
     modes = options.modes.split(",")
+    stagings = options.jbmc_staging.split(",")
+    unknown = [p for p in stagings if p not in STAGING]
+    if unknown:
+        raise SystemExit(f"unknown JBMC staging policy {', '.join(unknown)}: {', '.join(STAGING)}")
     cases = load_cases(groups, options.cases)
     cases_by_id = {c["id"]: c for c in cases}
     build = Path(options.build).resolve()
@@ -389,35 +486,68 @@ def run(options):
             for mode in modes:
                 if mode not in case.get("modes", modes):
                     continue
-                work = build / "work" / case["id"].replace("/", "_") / f"{engine}-{mode}"
-                if work.exists():
-                    shutil.rmtree(work)
-                work.mkdir(parents=True)
-                cmd = command(case, engine, mode, classes, work, options)
-                measured = measure(cmd, options.timeout * 1.5 + 60)
-                data = outcome_of(case, measured["stdout"])
-                record = {"case": case["id"], "engine": engine, "mode": mode, "work": str(work),
-                          **{k: measured[k] for k in ("exit", "seconds", "cpuSeconds", "peakMB")}}
-                record.update(classify(case, data, measured))
-                record["witness"] = witness_arguments(data) if record["verdict"] == "violation" else None
-                record["solver"] = stats_of(data)
-                record["phases"] = phases_of(data, measured["seconds"])
-                record["formula"] = formula_of(data)
-                runs.append(record)
-                if not options.quiet:
-                    print(f"{case['id']:<44} {engine:<6} {mode:<7} {record['verdict']:<12} {record['class']:<22} {record['seconds']:>7.2f} s {record['peakMB']:>7.1f} MB", flush=True)
+                first = None
+                for staging in stagings if engine in JBMC_ENGINES else [None]:
+                    if engine == "auto" and first is not None and not first.get("fallback"):
+                        # The own checker decided under the first policy, so JBMC never ran: the policy changes nothing.
+                        continue
+                    record = run_one(case, engine, mode, staging, classes, build, options)
+                    first = first or record
+                    runs.append(record)
+                    if not options.quiet:
+                        print(f"{case['id']:<44} {engine:<6} {mode:<7} {staging or '':<10} {record['verdict']:<12} {record['class']:<22} "
+                              f"{record['seconds']:>7.2f} s {record['peakMB']:>7.1f} MB", flush=True)
     check_witnesses(runs, cases_by_id, build, classes)
     for r in runs:
         r.pop("work", None)
     return {
         "about": "Results of lib/benchmark/run.py: see lib/benchmark/README.md.",
-        "environment": environment(options),
+        "environment": {**environment(options), "sat": sat_solvers(runs)},
         "settings": {"timeout": options.timeout, "unwind": UNWIND, "maxArrayLength": MAX_ARRAY_LENGTH, "referenceSearch": options.search,
-                     "engines": engines, "modes": modes, "groups": sorted(groups)},
+                     "engines": engines, "modes": modes, "groups": sorted(groups), "jbmcStaging": stagings},
         "cases": [{k: c[k] for k in ("id", "group", "workload", "kind", "expected")} for c in cases],
         "reference": answers,
         "runs": runs,
     }
+
+
+def run_one(case, engine, mode, staging, classes, build, options):
+    """One case on one engine under one gap mode (and one JBMC staging policy, for an engine that may call JBMC):
+    its command run and measured, and its record."""
+    work = build / "work" / case["id"].replace("/", "_") / "-".join(filter(None, (engine, mode, staging)))
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
+    cmd = command(case, engine, mode, classes, work, options, staging)
+    measured = measure(cmd, options.timeout * 1.5 + 60)
+    data = outcome_of(case, measured["stdout"])
+    return record_of(case, engine, mode, staging, data, measured, work)
+
+
+def record_of(case, engine, mode, staging, data, measured, work):
+    record = {"case": case["id"], "engine": engine, "mode": mode, "work": str(work),
+              **{k: measured[k] for k in ("exit", "seconds", "cpuSeconds", "peakMB")}}
+    if staging:
+        record["staging"] = staging
+    record.update(classify(case, data, measured))
+    if engine == "auto":
+        # Whether the own checker gave no verdict and JBMC's fallback ran: only then does the staging policy count.
+        record["fallback"] = bool(((data or {}).get("search") or {}).get("fallback"))
+    record["witness"] = witness_arguments(data) if record["verdict"] == "violation" else None
+    if record["verdict"] == "violation":
+        counterexample = (data or {}).get("counterexample") or {}
+        record["witnessSize"] = witness_size(counterexample.get("inputs"))
+        if counterexample.get("found_inputs") is not None:
+            record["foundSize"] = witness_size(counterexample["found_inputs"])
+            record["shrinkRuns"] = counterexample.get("shrink_runs")
+    record["solver"] = stats_of(data)
+    record["sat"] = sat_of(data)
+    record["phases"] = phases_of(data, measured["seconds"])
+    excess = phases_excess(data, record["phases"], measured["seconds"])
+    if excess:
+        record["phasesExcess"] = excess
+    record["formula"] = formula_of(data)
+    return record
 
 
 # The tables.
@@ -485,7 +615,7 @@ def by_phase(results, mode="strict", groups=(1, 2, 3), key="workload"):
     for name in sorted({c[key] if key in c else c["id"] for c in results["cases"] if c["group"] in groups}):
         for engine in results["settings"]["engines"]:
             rs = [r for r in results["runs"] if cases[r["case"]]["group"] in groups and (cases[r["case"]].get(key) or cases[r["case"]]["id"]) == name
-                  and r["engine"] == engine and r["mode"] == mode and r.get("phases")]
+                  and r["engine"] == engine and r["mode"] == mode and r.get("phases") and not r.get("phasesExcess")]
             if not rs:
                 continue
             total = sum(r["seconds"] for r in rs)
@@ -511,6 +641,160 @@ def phase_table(rows, key):
     return out
 
 
+# JBMC's staging policies (step 2b of llm-dlc/loops/engine-priorities.md).
+
+def staging_policies(results):
+    """The staging policies the runs of jbmc and auto were made under, the first the tables of the corpus are over;
+    none for a results file from before the option."""
+    return results["settings"].get("jbmcStaging") or []
+
+
+def primary(results):
+    """The results as the corpus's tables read them: every engine's runs under the first staging policy alone, the
+    own checker's (which has none) included."""
+    policies = staging_policies(results)
+    if len(policies) < 2:
+        return results
+    return {**results, "runs": [r for r in results["runs"] if r.get("staging") in (None, policies[0])]}
+
+
+def staged_cases(results, engine, mode):
+    """Per case, its runs of `engine` under `mode` by staging policy. For auto, only the cases whose first run fell
+    back to JBMC: on the others the own checker decided, and the policy changed nothing."""
+    out = {}
+    for r in results["runs"]:
+        if r["engine"] == engine and r["mode"] == mode and r.get("staging"):
+            out.setdefault(r["case"], {})[r["staging"]] = r
+    first = staging_policies(results)[0]
+    if engine == "auto":
+        out = {case: by for case, by in out.items() if by.get(first, {}).get("fallback")}
+    return out
+
+
+def larger(size, than):
+    """Whether a witness is larger than another: more elements, or a larger value."""
+    return bool(size and than) and (size["elements"] > than["elements"] or size["largest"] > than["largest"])
+
+
+def starved(run):
+    """Whether a run without a verdict never gave JBMC's full range a second: it did not run, or its budget was
+    under 1 s (step 2a's note: under auto, staged stages out of time can leave the fallback's full range nothing)."""
+    if run["class"] != "unsupported":
+        return False
+    jbmc = [r for r in (run.get("solver") or {}).get("runs") or [] if r.get("checker") == "jbmc"]
+    if not jbmc:
+        return False
+    full = [r for r in jbmc if r.get("stage") is None]
+    return not full or (full[-1].get("budget") is not None and full[-1]["budget"] < 1.0)
+
+
+def by_staging(results):
+    """Per engine that may call JBMC, mode and staging policy, the proofs and the counterexamples apart (by the
+    case's expected answer): how many are decided correctly, without a verdict, or wrong, the seconds they took,
+    how many verdicts differ from the first policy's, and, for the counterexamples, how many witnesses are larger
+    than the first policy's after shrinking."""
+    policies = staging_policies(results)
+    expected = {c["id"]: c["expected"] for c in results["cases"]}
+    rows = []
+    for engine in (e for e in results["settings"]["engines"] if e in JBMC_ENGINES):
+        for mode in results["settings"]["modes"]:
+            cases = staged_cases(results, engine, mode)
+            if not cases:
+                continue
+            for side, answer in (("proofs", "verified"), ("counterexamples", "violation")):
+                ids = [c for c in cases if expected[c] == answer]
+                for policy in policies:
+                    rs = [cases[c][policy] for c in ids if policy in cases[c]]
+                    if not rs:
+                        continue
+                    base = [cases[c].get(policies[0]) for c in ids if policy in cases[c]]
+                    seconds = [r["seconds"] for r in rs]
+                    rows.append({
+                        "engine": engine, "mode": mode, "side": side, "staging": policy, "cases": len(rs),
+                        "correct": sum(r["class"] in CORRECT for r in rs),
+                        "unsupported": sum(r["class"] == "unsupported" for r in rs),
+                        "wrong": sum(r["class"] not in CORRECT + ("unsupported",) for r in rs),
+                        "seconds": round(sum(seconds), 1), "medianSeconds": round(statistics.median(seconds), 2),
+                        "changed": sum(b is not None and r["class"] != b["class"] for r, b in zip(rs, base)),
+                        "largerWitnesses": sum(larger(r.get("witnessSize"), (b or {}).get("witnessSize")) for r, b in zip(rs, base)),
+                        "shrunk": sum("foundSize" in r for r in rs),
+                        "starved": sum(starved(r) for r in rs),
+                        "reasons": reasons(rs),
+                    })
+    return rows
+
+
+def size_text(size):
+    if not size:
+        return ""
+    return f"{size['elements']} el., max {size['largest']}" if size["elements"] else f"max {size['largest']}"
+
+
+def staged_cell(run):
+    if run is None:
+        return ""
+    text = cell(run)
+    if run.get("witness") is not None:
+        text += f", `{run['witness']}` ({size_text(run.get('witnessSize'))}"
+        if run.get("foundSize"):
+            text += f"; found {size_text(run['foundSize'])}"
+        text += ")"
+    if starved(run):
+        text += ", full range starved"
+    return text
+
+
+def staging_section(results):
+    policies = staging_policies(results)
+    out = ["", "## JBMC's staging policies", "",
+           "Step 2b of [`engine-priorities.md`](../../llm-dlc/loops/engine-priorities.md): every run of `jbmc`, and of `auto` "
+           "where the own checker gave no verdict and JBMC's fallback ran, under each of the policies of `--jbmc-staging` "
+           "(`lib/src/deadline.rs`): `staged` runs every interval stage that restricts the inputs before the full range, "
+           "`full-range` the full range alone, `tight` the first restricting stage on a fortieth of the check, then the full "
+           "range. Everything else is the same: the deadline, the bounds, the models and the evidence rules. Proofs (cases "
+           "expected `verified`) and counterexamples (expected `violation`) are counted apart. A witness is measured as "
+           "reported, after `lib/src/shrink.rs` shrank it in the interpreter: the elements of its arrays and its largest "
+           "magnitude. *Changed* counts the runs whose class differs from the same case's under "
+           f"`{policies[0]}`, *larger* the witnesses bigger than its, and *starved* the runs left without a verdict that "
+           "gave the full range less than a second, or none.", "",
+           "| engine | mode | kind | policy | correct | no verdict | wrong | total s | median s | changed | larger witnesses | shrunk | starved | no verdict, why |",
+           "|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|"]
+    rows = by_staging(results)
+    if not rows:
+        out[-2:] = ["No run of `jbmc` was made, and no run of `auto` fell back to JBMC."]
+    for row in rows:
+        why = ", ".join(f"{n} {w}" for w, n in row["reasons"].items())
+        larger_cell = row["largerWitnesses"] if row["side"] == "counterexamples" else "·"
+        shrunk_cell = row["shrunk"] if row["side"] == "counterexamples" else "·"
+        out.append(f"| {row['engine']} | {row['mode']} | {row['side']} | `{row['staging']}` | {row['correct']} of {row['cases']} | {row['unsupported']} | "
+                   f"{row['wrong']} | {row['seconds']} | {row['medianSeconds']} | {row['changed']} | {larger_cell} | {shrunk_cell} | {row['starved']} | {why} |")
+    expected = {c["id"]: c["expected"] for c in results["cases"]}
+    for engine in (e for e in results["settings"]["engines"] if e in JBMC_ENGINES):
+        for mode in results["settings"]["modes"]:
+            cases = staged_cases(results, engine, mode)
+            if not cases:
+                continue
+            differ = [c for c, by in cases.items() if len({r["class"] for r in by.values()}) > 1]
+            if differ:
+                out += ["", f"Cases whose class differs between the policies, {engine} under {mode}: " + ", ".join(f"`{c}`" for c in differ) + "."]
+    for engine in (e for e in results["settings"]["engines"] if e in JBMC_ENGINES):
+        cases = staged_cases(results, engine, "strict")
+        if not cases:
+            continue
+        what = "case" if engine == "jbmc" else "case where JBMC's fallback ran"
+        for side, answer in (("Proofs", "verified"), ("Counterexamples", "violation")):
+            ids = [c for c in (c["id"] for c in results["cases"]) if c in cases and expected[c] == answer]
+            if not ids:
+                continue
+            count = f"{len(ids)} case" + ("s" if len(ids) != 1 else "")
+            out += ["", f"<details><summary>{side}, {engine} under strict, {count}: each {what}, per policy</summary>", "",
+                    "| case | " + " | ".join(f"`{p}`" for p in policies) + " |", "|---|" + "---|" * len(policies)]
+            for c in ids:
+                out.append(f"| `{c}` | " + " | ".join(staged_cell(cases[c].get(p)) for p in policies) + " |")
+            out += ["", "</details>"]
+    return out
+
+
 MARK = {"correct": "✓", "correct-assuming": "✓ₐ", "unsupported": "–", "false-success": "✗", "false-success-assuming": "✗ₐ", "false-alarm": "!"}
 
 
@@ -523,13 +807,26 @@ def cell(run):
 
 
 def render(results):
+    every = results
+    results = primary(results)
     s = results["settings"]
     env = results["environment"]
+    job = f" as pipeline job `{env['job']}`, at commit `{(env.get('commit') or 'unknown')[:12]}`," if env.get("job") else ""
     out = ["# Benchmark results", "",
-           f"Written by `lib/benchmark/run.py` on {env['date']}, on {env['cpus']} × {env['cpu']} ({env['machine']}), with "
+           f"Written by `lib/benchmark/run.py` on {env['date']},{job} on {env['cpus']} × {env['cpu']} ({env['machine']}), with "
            f"{env['jvmcontract']}, JBMC {env['jbmc']} and {env['java']}. Every run had a deadline of {s['timeout']} s, loops unwound "
            f"{s['unwind']} times and arrays of up to {s['maxArrayLength']} elements, on both engines. What the columns mean is in "
            "[README.md](README.md).", ""]
+    policies = staging_policies(every)
+    if len(policies) > 1:
+        out[-1:-1] = ["", f"Every run of an engine that may call JBMC was made under each of JBMC's staging policies, "
+                          f"{', '.join(f'`{p}`' for p in policies)}. The tables of the corpus are over `{policies[0]}`, and "
+                          "[JBMC's staging policies](#jbmcs-staging-policies) compares the others with it."]
+    if env.get("sat"):
+        names = {"native": "the own checker", "jbmc": "JBMC"}
+        solved = "; ".join(f"{names.get(engine, engine)} on " + " and ".join(f"{sat['solver']} {sat.get('version') or '(version unknown)'}, {sat['source']}" for sat in sats)
+                           for engine, sats in env["sat"].items())
+        out[-1:-1] = ["", f"SAT solvers: {solved}. Their configuration is under `environment.sat` in `results.json`."]
     out += ["## Correctness and coverage", "",
             "| group | engine | mode | cases | correct | of them assuming a gap | unsupported | false success | false alarm | total s | median s | max s | peak MB |",
             "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
@@ -558,6 +855,11 @@ def render(results):
         if recorded:
             out += ["", "### The recorded examples", ""]
             out += phase_table(recorded, "id")
+        flagged = [r for r in results["runs"] if r["mode"] == "strict" and r.get("phasesExcess")]
+        if flagged:
+            out += ["", f"Left out of these tables, because their phases add up to more than their time (beyond "
+                        f"{round(100 * PHASE_TOLERANCE[0])}% and {round(1000 * PHASE_TOLERANCE[1])} ms): "
+                        + ", ".join(f"`{r['case']}` on {r['engine']} (by {r['phasesExcess']} s)" for r in flagged) + "."]
     runs = {(r["case"], r["engine"], r["mode"]): r for r in results["runs"]}
     columns = [(e, m) for e in s["engines"] for m in s["modes"]]
     header = "| case | expected | the JVM | " + " | ".join(f"{e} {m}" for e, m in columns) + " |"
@@ -574,14 +876,17 @@ def render(results):
             out.append(f"| `{c['id']}` | {c['expected']} | {jvm} | " + " | ".join(cell(runs.get((c["id"], e, m))) for e, m in columns) + " |")
         if group == 1:
             out += ["", "</details>"]
+    if len(policies) > 1:
+        out += staging_section(every)
     disagreements = [cid for cid, a in results["reference"].items() if not a["agrees"]]
     out += ["", "## The JVM against the corpus", ""]
     out.append("Every expected answer of groups 2 and 3 is borne out on the JVM." if not disagreements else
                "The JVM does not bear out the expected answer of: " + ", ".join(f"`{d}`" for d in disagreements) + ".")
-    unreproduced = [r for r in results["runs"] if r.get("witnessOnTheJvm") is not None and r["class"] == "false-alarm"]
+    unreproduced = [r for r in every["runs"] if r.get("witnessOnTheJvm") is not None and r["class"] == "false-alarm"]
     out.append("")
     out.append("Every witness an engine reported reproduces on the JVM." if not unreproduced else
-               "Witnesses the JVM does not reproduce: " + "; ".join(f"`{r['case']}` {r['engine']} {r['mode']} ({r['witness']})" for r in unreproduced) + ".")
+               "Witnesses the JVM does not reproduce: " + "; ".join(f"`{r['case']}` {r['engine']} {r['mode']}{' ' + r['staging'] if r.get('staging') else ''} ({r['witness']})"
+                                                                     for r in unreproduced) + ".")
     return "\n".join(out) + "\n"
 
 
@@ -590,6 +895,10 @@ def main(argv=None):
     parser.add_argument("--engines", default=",".join(ENGINES))
     parser.add_argument("--modes", default=",".join(MODES))
     parser.add_argument("--groups", default="1,2,3,4")
+    parser.add_argument("--jbmc-staging", default="full-range",
+                        help="JBMC's staging policies to run jbmc and auto under, comma-separated (staged, full-range, tight); "
+                             "the corpus's tables are over the first, and the others are compared with it. By default the "
+                             "tool's own default, full-range, since job 20261106-201041")
     parser.add_argument("--cases", help="only the cases whose id contains this")
     parser.add_argument("--timeout", type=int, default=120, help="seconds each run may take, on either engine")
     parser.add_argument("--search", type=int, default=200000, help="random inputs the JVM tries on each expected proof")

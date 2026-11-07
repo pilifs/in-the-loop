@@ -80,7 +80,9 @@ impl Value {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Base {
     Object,
-    Enum { name: String, ordinal: i32 },
+    /// `text` is the `String` object the constructor was given, which `name()` returns, so that two calls give one
+    /// object as on a JVM; `None` before the constructor runs.
+    Enum { name: String, ordinal: i32, text: Option<Ref> },
     Throwable { message: Option<Ref>, cause: Option<Ref> },
 }
 

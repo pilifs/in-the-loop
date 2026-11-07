@@ -73,6 +73,8 @@ pub struct Cost {
 enum InitState {
     InProgress,
     Done,
+    /// Its initialization threw: a later use throws `NoClassDefFoundError` (JVMS §5.5, step 5).
+    Erroneous,
 }
 
 /// Decoded bytecode of one method, cached.
@@ -106,6 +108,19 @@ pub struct Machine<'a> {
     pub cost: Cost,
     /// Whether the effect monitor is on. Off for class initialisation and for the replay of counterexamples.
     pub monitor: bool,
+    /// The lists `List.of` and `List.copyOf` made, with the JDK class each is: its `get` out of range and its search
+    /// for `null` throw as that class does, and `copyOf` hands back only these.
+    immutable_lists: HashMap<Ref, ImmutableList>,
+    /// The one empty list `List.of()` returns, the JDK's `ImmutableCollections.EMPTY_LIST`.
+    empty_list: Option<Ref>,
+}
+
+/// The JDK class of a list `List.of` or `List.copyOf` made: `ImmutableCollections.List12` for one or two elements,
+/// `ListN` for any other number.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ImmutableList {
+    List12,
+    ListN,
 }
 
 impl<'a> Machine<'a> {
@@ -128,6 +143,8 @@ impl<'a> Machine<'a> {
             limits: Limits::default(),
             cost: Cost::default(),
             monitor: true,
+            immutable_lists: HashMap::new(),
+            empty_list: None,
         }
     }
 
@@ -145,7 +162,34 @@ impl<'a> Machine<'a> {
     pub fn end_case(&mut self, mark: usize) {
         if !self.pinned_in_case {
             self.heap.truncate(mark);
+            self.immutable_lists.retain(|r, _| (*r as usize) < mark);
         }
+    }
+
+    /// An immutable list as `List.of` makes it over `elements`, none of them `null`: the one empty list, else a new
+    /// `List12` or `ListN`.
+    pub(crate) fn immutable_list(&mut self, elements: Vec<Value>) -> Value {
+        if elements.is_empty() {
+            if let Some(r) = self.empty_list {
+                return Value::Ref(r);
+            }
+            let saved = self.clinit_depth;
+            self.clinit_depth += 1; // global state, as the JDK's constant is, not the case's own
+            let r = self.alloc_native(Native::List { elements, mutable: false });
+            self.clinit_depth = saved;
+            self.empty_list = Some(r);
+            self.immutable_lists.insert(r, ImmutableList::ListN);
+            return Value::Ref(r);
+        }
+        let kind = if elements.len() <= 2 { ImmutableList::List12 } else { ImmutableList::ListN };
+        let r = self.alloc_native(Native::List { elements, mutable: false });
+        self.immutable_lists.insert(r, kind);
+        Value::Ref(r)
+    }
+
+    /// The JDK class of a list `List.of` or `List.copyOf` made, if `r` is one.
+    pub(crate) fn immutable_list_kind(&self, r: Ref) -> Option<ImmutableList> {
+        self.immutable_lists.get(&r).copied()
     }
 
     pub(crate) fn alloc(&mut self, object: Object) -> Ref {
@@ -231,19 +275,24 @@ impl<'a> Machine<'a> {
 
     // Class initialisation
 
-    /// Runs the static initialiser of an application class (and its superclasses) once.
+    /// Runs the static initialiser of an application class once, after its superclass's and those of its
+    /// superinterfaces that declare a default method (JVMS §5.5). An exception that leaves an initialiser makes
+    /// the class erroneous, and those that waited on it, and is wrapped in `ExceptionInInitializerError` unless it
+    /// is an `Error`; a later use of an erroneous class throws `NoClassDefFoundError`.
     pub fn ensure_initialized(&mut self, class: &str) -> Exec<()> {
-        if self.init.contains_key(class) {
-            return Ok(());
+        match self.init.get(class) {
+            Some(InitState::Done | InitState::InProgress) => return Ok(()),
+            Some(InitState::Erroneous) => {
+                let error = self.alloc(Object::Native(Native::Throwable { class: "java/lang/NoClassDefFoundError".into(), message: None, cause: None }));
+                return Err(Fault::Throw(error));
+            }
+            None => {}
         }
         let Some(cf) = self.cp.bytecode(class).map_err(|e| Fault::Unsupported(e.to_string()))? else {
             self.init.insert(class.to_string(), InitState::Done); // JDK classes without a model have no state here
             return Ok(());
         };
         self.init.insert(class.to_string(), InitState::InProgress);
-        if let Some(sup) = &cf.super_class {
-            self.ensure_initialized(sup)?;
-        }
         let mut fields = BTreeMap::new();
         for field in cf.fields.iter().filter(|f| f.is_static()) {
             let t = Type::parse(&field.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
@@ -264,6 +313,16 @@ impl<'a> Machine<'a> {
             fields.insert(field.name.clone(), value);
         }
         self.statics.insert(class.to_string(), fields);
+        let mut first: Vec<String> = cf.super_class.iter().cloned().collect();
+        first.extend(crate::bmc::gaps::initialization_supers(self.cp, class).into_iter().filter(|i| Some(i) != cf.super_class.as_ref()));
+        for s in first {
+            if let Err(e) = self.ensure_initialized(&s) {
+                if matches!(e, Fault::Throw(_)) {
+                    self.init.insert(class.to_string(), InitState::Erroneous);
+                }
+                return Err(e);
+            }
+        }
         if let Some(clinit) = cf.method("<clinit>", "()V") {
             self.clinit_depth += 1;
             let result = self.invoke(&cf, clinit, Vec::new());
@@ -271,6 +330,10 @@ impl<'a> Machine<'a> {
             match result {
                 Ok(_) => {}
                 Err(Fault::Throw(exception)) => {
+                    self.init.insert(class.to_string(), InitState::Erroneous);
+                    if self.is_instance(exception, "java/lang/Error") {
+                        return Err(Fault::Throw(exception));
+                    }
                     // ExceptionInInitializerError wraps it; the class stays unusable, as on a JVM.
                     let wrapped = self.alloc(Object::Native(Native::Throwable {
                         class: "java/lang/ExceptionInInitializerError".into(),
@@ -286,42 +349,41 @@ impl<'a> Machine<'a> {
         Ok(())
     }
 
-    /// Reads a static field of an initialised application class, searching superclasses and interfaces.
+    /// The class that declares the static field `class.name` as the JVM resolves it (JVMS §5.4.3.2): `class`, else
+    /// its superinterfaces, else its superclass; `None` for a JDK class without a model.
+    fn static_declarer(&self, class: &str, name: &str) -> Option<String> {
+        let cf = self.cp.bytecode(class).ok()??;
+        if cf.fields.iter().any(|f| f.is_static() && f.name == name) {
+            return Some(class.to_string());
+        }
+        for i in &cf.interfaces {
+            if let Some(d) = self.static_declarer(i, name) {
+                return Some(d);
+            }
+        }
+        cf.super_class.as_deref().and_then(|s| self.static_declarer(s, name))
+    }
+
+    /// Reads a static field: the class that declares it is initialised first, and only that one (JVMS §5.5).
     pub fn get_static(&mut self, class: &str, name: &str) -> Exec<Value> {
-        self.ensure_initialized(class)?;
-        let mut current = Some(class.to_string());
-        while let Some(c) = current {
-            if let Some(v) = self.statics.get(&c).and_then(|f| f.get(name)) {
+        if let Some(declaring) = self.static_declarer(class, name) {
+            self.ensure_initialized(&declaring)?;
+            if let Some(v) = self.statics.get(&declaring).and_then(|f| f.get(name)) {
                 return Ok(*v);
             }
-            let Ok(Some(cf)) = self.cp.bytecode(&c) else { break };
-            for iface in &cf.interfaces {
-                self.ensure_initialized(iface)?;
-                if let Some(v) = self.statics.get(iface).and_then(|f| f.get(name)) {
-                    return Ok(*v);
-                }
-            }
-            current = cf.super_class.clone();
         }
+        self.ensure_initialized(class)?;
         natives::get_static_jdk(self, class, name)
     }
 
     fn put_static(&mut self, class: &str, name: &str, value: Value) -> Exec<()> {
-        self.ensure_initialized(class)?;
+        let declaring = self.static_declarer(class, name).ok_or_else(|| Fault::Unsupported(format!("putstatic to unknown field {class}.{name}")))?;
+        self.ensure_initialized(&declaring)?;
         if self.monitor && self.clinit_depth == 0 {
             return Err(Fault::Impure(format!("writes static field {}.{name}", class.replace('/', "."))));
         }
-        let mut current = Some(class.to_string());
-        while let Some(c) = current {
-            if let Some(fields) = self.statics.get_mut(&c) {
-                if fields.contains_key(name) {
-                    fields.insert(name.to_string(), value);
-                    return Ok(());
-                }
-            }
-            current = self.cp.application(&c).ok().flatten().and_then(|cf| cf.super_class.clone());
-        }
-        Err(Fault::Unsupported(format!("putstatic to unknown field {class}.{name}")))
+        self.statics.entry(declaring).or_default().insert(name.to_string(), value);
+        Ok(())
     }
 
     /// The enum constants of an application enum, in declaration order.
@@ -359,7 +421,7 @@ impl<'a> Machine<'a> {
                 }
                 None => {
                     if c == "java/lang/Enum" {
-                        base = Base::Enum { name: String::new(), ordinal: 0 };
+                        base = Base::Enum { name: String::new(), ordinal: 0, text: None };
                     } else if self.cp.is_subtype(&c, "java/lang/Throwable") {
                         base = Base::Throwable { message: None, cause: None };
                     } else if c != "java/lang/Object" && c != "java/lang/Record" {

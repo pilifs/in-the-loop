@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref",
+  "title": "JBMC's escaping exceptions named and refused: corpus under JBMC, auto and --confirm, and the integration tests (engine-priorities step 3)",
+  "description": "Step 3 of llm-dlc/loops/engine-priorities.md. JBMC's counterexamples to conformance/caught/1 and nestedHandler/1 (n=0) did not reproduce, because JBMC 6.11.0 lets a runtime exception past the handler that catches it on the JVM, in two shapes (lib/tests/fixtures/jbmc-defects/README.md). (1) return-past-handler, a JBMC defect: for 'try { return 10 / n; } catch (ArithmeticException e)', javac ends the handler's range before ireturn, and JBMC computes the quotient and its division-by-zero check at the ireturn, after pop_catch. (2) stubbed-handler: JBMC's stub of a JDK exception class has no superclass, so 'catch (RuntimeException e)' misses an ArithmeticException or IllegalArgumentException. Both also gave false proofs under strict with --engine jbmc (caught and a new method caughtAsRuntime, with --throws 'ArithmeticException when n == 0', where the JVM returns -1). The JBMC preflight (lib/src/jbmc_gaps.rs, Defect) now finds both shapes in the bytecode JBMC reaches and refuses a JBMC proof through one under every gap mode; a counterexample is still replayed, and its message names the defect. The corpus gains conformance/caught/3, caughtAsRuntime/1 and caughtAsRuntime/2 (checked on the JVM inline, with the own checker). This job runs what needs JBMC: the integration tests, and the ignored conformance tests under --engine jbmc and auto (strict) and under auto --confirm (strict and assume). Steps run on even if one fails. Known on cvm: the JDK is 25.0.5 and the contract library's records are 25.0.4.1, which fails advised runs that use the library (the inline own-checker conformance test has 12 such disagreements); the steps here are strict and assume, but an integration test under advised may meet it.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/jbmc_gaps.rs",
+      "lib/tests/fixtures/jbmc-defects/README.md",
+      "lib/tests/conformance.rs",
+      "llm-dlc/loops/engine-priorities-jbmc.md"
+    ]
+  },
+  "expected": "Each step exits 0. Under --engine jbmc, conformance/caught/3 and caughtAsRuntime/2 are no verdict (the proof refused, naming return-past-handler and stubbed-handler), caught/1 and nestedHandler/1 unverifiable with the defect named as the cause; under auto all four are decided by the own checker. A claim JBMC says Verified that the JVM refutes is a finding to triage, as is any integration test that now fails because a JBMC proof it expects is refused for a defect.",
+  "submitted": {
+    "at": "2026-11-06T20:34:52+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "45m",
+    "memoryLimit": "3.5G",
+    "timeout": "2h",
+    "notes": "the earlier JBMC conformance job (-021741) took 18 min for 93 claims; the corpus has about 135 claims now, and --confirm another run per own-checker proof; the integration tests took under 3 min in -015449"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test integration 2>&1 | tee target/integration-step3.log",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-step3.log",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-step3.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/integration-step3.log",
+    "lib/target/conformance-jbmc-step3.log",
+    "lib/target/conformance-confirm-step3.log"
+  ]
+}

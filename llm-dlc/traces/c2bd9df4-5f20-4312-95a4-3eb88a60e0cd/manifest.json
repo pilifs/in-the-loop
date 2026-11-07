@@ -1,0 +1,99 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Work on the brief in `llm-dlc/loops/engine-priorities.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remembe",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T00:11:40.870Z",
+  "ended": "2026-11-07T00:20:20.789Z",
+  "duration_seconds": 520,
+  "stats": {
+    "turns": 1,
+    "api_calls": 42,
+    "tool_calls": 43,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 123502,
+    "usage": {
+      "input_tokens": 84,
+      "output_tokens": 15418,
+      "cache_read_input_tokens": 3911258,
+      "cache_creation_input_tokens": 110423
+    }
+  },
+  "tools": {
+    "Bash": 41,
+    "Edit": 1,
+    "Read": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/engine-priorities.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T00:11:40.870Z",
+      "ended": "2026-11-07T00:20:20.789Z",
+      "turns": 1,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 84,
+        "output_tokens": 15418,
+        "cache_read_input_tokens": 3911258,
+        "cache_creation_input_tokens": 110423
+      },
+      "peak_context_tokens": 123502
+    }
+  ],
+  "log": {
+    "sha256": "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444",
+    "bytes": 1145678,
+    "lines": 350,
+    "gzip_bytes": 238309,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lukovtllxsolyurkoyotkpxruqkxumsv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The engines-jbmc stream's last turns, recorded by the reconcile loop of engine-priorities.md before the merge, so its conversation follows its last commit on its branch. No code changed.",
+      "log_sha256": "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444"
+    },
+    {
+      "change_id": "ulsslrtxrxzvrsvrvmnonrqyrwolrswx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The engines-native stream's last turns, recorded by the reconcile loop of engine-priorities.md before the merge, so its conversation follows its last commit on its branch. No code changed.",
+      "log_sha256": "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444"
+    },
+    {
+      "change_id": "pkyqqotroryqyoksvmywyxpyrqxyqpkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the engines-jbmc and engines-native streams",
+      "body": "Reconcile steps 1-5 of llm-dlc/loops/engine-priorities.md. Both stream loops had stopped with status done. Their final session traces were recorded on their own branches first, their logs copied into this workspace, and the default line merged with jbmc@- and native@-. The generated trace files were taken from the default side and rewritten by this commit. lib/README.md's one conflict keeps both streams' text: the native stream's transcript and solver-interface paragraphs, then the JBMC stream's --confirm paragraph with its defect rule.\n\nTwo fixes the merge needed: the JBMC stream's test confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict pinned the source line of Conformance.caught (82), which the native stream's new cases moved to 291, so it now reads the line from the corpus; and lib/benchmark/conformance.json, the JBMC stream's file, was regenerated from the native stream's corpus with JVMCONTRACT_BLESS=1 (146 claims, 48 new, boom/inherited/quiet and enumState with their new own-checker verdicts).",
+      "log_sha256": "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444"
+    }
+  ],
+  "logs": {
+    "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444": {
+      "bytes": 1145678,
+      "lines": 350,
+      "gzip_bytes": 238309,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

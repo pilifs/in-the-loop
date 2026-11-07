@@ -272,8 +272,27 @@ impl ClassPath {
     }
 
     /// The tool's model of a JDK class, if it has one and models are on. This is the class to *execute* for the
-    /// name; for its shape, [`load`](Self::load) prefers the application and the JDK image.
+    /// name; for its shape, [`load`](Self::load) prefers the application and the JDK image. A model that is only
+    /// for JBMC's class path ([`Model::jbmc_only`](crate::models::Model::jbmc_only)) is not given: the interpreter
+    /// and the tool's own checker keep their own handling of the class.
     pub fn model(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if crate::models::find(name).is_some_and(|m| m.jbmc_only) {
+            return None;
+        }
+        self.any_model(name)
+    }
+
+    /// The model the tool's own checker runs for a JDK class: [`model`](Self::model)'s, and also the models only
+    /// for JBMC's class path that the checker runs as bytecode ([`crate::models::CHECKER_RUNS`], `java.lang.Enum`),
+    /// where the interpreter keeps its natives.
+    pub fn checker_model(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if crate::models::find(name).is_some_and(|m| m.jbmc_only && !crate::models::CHECKER_RUNS.contains(&name)) {
+            return None;
+        }
+        self.any_model(name)
+    }
+
+    fn any_model(&self, name: &str) -> Option<Rc<ClassFile>> {
         if !self.models {
             return None;
         }
@@ -307,10 +326,30 @@ impl ClassPath {
     /// superclass or interface that has bytecode here (an application class or a model). The search stops at the
     /// first JDK class in the chain: what is inherited from the JDK is the natives' business.
     pub fn bytecode_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        self.method_in(owner, name, descriptor, &|c| self.bytecode(c).ok().flatten())
+    }
+
+    /// [`bytecode_method`](Self::bytecode_method) as the tool's own checker finds a method: through its models
+    /// too ([`checker_model`](Self::checker_model)), so that an enum's `ordinal()` is `java.lang.Enum`'s model.
+    pub fn checker_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        self.method_in(owner, name, descriptor, &|c| match self.application(c) {
+            Ok(Some(class)) => Some(class),
+            _ => self.checker_model(c),
+        })
+    }
+
+    /// Whether the tool's own checker runs the instance methods of the class as bytecode: an application class's,
+    /// and those of the models it runs although they are only for JBMC's class path ([`crate::models::CHECKER_RUNS`],
+    /// `java.lang.Enum`). The other models it runs for static calls alone.
+    pub fn checker_runs(&self, name: &str) -> bool {
+        self.is_application(name) || (crate::models::CHECKER_RUNS.contains(&name) && self.checker_model(name).is_some())
+    }
+
+    fn method_in(&self, owner: &str, name: &str, descriptor: &str, bytecode: &dyn Fn(&str) -> Option<Rc<ClassFile>>) -> Option<(Rc<ClassFile>, Method)> {
         let mut current = Some(owner.to_string());
         let mut hops = 0;
         while let Some(c) = current {
-            let Ok(Some(class)) = self.bytecode(&c) else { break };
+            let Some(class) = bytecode(&c) else { break };
             if let Some(m) = class.method(name, descriptor) {
                 return Some((class.clone(), m.clone()));
             }
@@ -321,7 +360,7 @@ impl ClassPath {
             }
         }
         for iface in self.all_interfaces(owner) {
-            if let Ok(Some(class)) = self.bytecode(&iface) {
+            if let Some(class) = bytecode(&iface) {
                 if let Some(m) = class.method(name, descriptor) {
                     return Some((class.clone(), m.clone()));
                 }
@@ -618,6 +657,11 @@ mod model_tests {
         assert_eq!(method.descriptor, "()Ljava/lang/String;");
         assert!(cp.bytecode_method("java/nio/charset/Charset", "hashCode", "()I").is_some());
         assert!(cp.bytecode_method("java/nio/charset/Charset", "getClass", "()Ljava/lang/Class;").is_none(), "inherited from Object: the natives' business");
+        // The models only for JBMC's class path are neither executed nor a shape here.
+        for name in ["java/lang/Enum", "java/util/List", "java/util/ImmutableCollections$ListN"] {
+            assert!(crate::models::find(name).is_some_and(|m| m.jbmc_only), "{name}");
+            assert!(cp.model(name).is_none() && !cp.has_bytecode(name), "{name}");
+        }
         let off = ClassPath::new().with_models(false);
         assert!(off.model("java/nio/charset/Charset").is_none());
         assert!(!off.has_bytecode("java/lang/Character"));

@@ -381,6 +381,22 @@ Settled by the user on 2026-11-06:
 
 - The streams `engines-jbmc` and `engines-native` work the plan in parallel ([Streams](#streams)); the reconcile
   comes next, once both have stopped.
+- **Reconcile, steps 1–5: merged.** Both streams stopped with `done`. Their last turns were recorded on their branches
+  (`lukovtll`, `ulsslrtx`), their logs copied here, and the three lines merged.
+  - Conflicts: the generated trace files (taken from the default side, rewritten by the commit), and `lib/README.md`,
+    where the native stream's transcript and solver-interface paragraphs go before the JBMC stream's `--confirm`
+    paragraph.
+  - Fixed at the merge: `confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict` (JBMC stream) pinned
+    `caught`'s line, 82, which the native stream's cases moved to 291. It now reads the line from the corpus.
+    `lib/benchmark/conformance.json` was regenerated (`JVMCONTRACT_BLESS=1`): 146 claims, with the native stream's
+    48 new ones and its changed `nativeStrict` verdicts.
+  - Tests: unit 174, integration 64, skill 1 pass. Conformance fails only
+    `the_corpus_agrees_with_the_jvm_on_the_tools_own_checker`, on the 12 known library-record claims (JDK 25.0.5
+    against `checked.json`'s 25.0.4.1). Python: `test_run`, `test_compare`, `test_gap_table`, `test_pipeline`,
+    `test_metrics`, `test_review` pass. `test_build` has the 35 `KeyError: 'verdict'` errors both branches had, and
+    `test_performance` one failure (`test_the_exporter_stops_at_the_first_failure`), in files the merge doesn't touch.
+  - **Next:** fold the streams' Progress here (step 6), forget the workspaces (step 7), then `checked.json` from job
+    `-203501`, the examples' notes and 4c.
 - Status: working
 
 ## Loop settings

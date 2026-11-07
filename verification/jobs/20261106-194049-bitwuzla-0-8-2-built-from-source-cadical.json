@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical",
+  "title": "Bitwuzla 0.8.2 built from source, CaDiCaL linked static (fetches from the network)",
+  "description": "Phase 1c of llm-dlc/loops/engine-priorities.md (the native stream), resubmitted after job 20261106-192008, which built and installed Bitwuzla 0.8.2 but whose binary could not load libcadical.so: the project-wide -Ddefault_library=shared reached the CaDiCaL subproject, and meson does not install a subproject's library. build.sh now passes -Dcadical:default_library=static (CaDiCaL's own default; a configure-only meson check showed the cadical target becoming a static library linked into Bitwuzla's shared ones), and fails with the missing libraries named if ldd still finds any. This job fetches from the network: git ls-remote and the release tarball of github.com/bitwuzla/bitwuzla at tag 0.8.2, meson and ninja from PyPI into a venv in the job, and CaDiCaL 2.1.2 and SymFPU through Bitwuzla's own meson wrap files. It installs into ~/tools/bitwuzla/bitwuzla-0.8.2 (replacing the broken install there; ~/tools/bitwuzla/current points at it; nothing else on the machine changes), and writes lib/solvers/bitwuzla/build.json: the tag's commit, the tarball's sha256, each subproject's wrap (the CaDiCaL it links, with its digest), GMP, the compiler, the build tools, the machine, the answers of three smoke queries (bit-vector sat, bit-vector unsat, read over write unsat), and the version the C API reports when a C program is linked through pkg-config. Phase 6 runs on this install. The brief says ARM64; this runner is x86_64, and the record names the architecture.",
+  "kind": "other",
+  "capabilities": [
+    "solver:bitwuzla",
+    "build:from-source"
+  ],
+  "links": {
+    "paths": [
+      "lib/solvers/bitwuzla/build.sh"
+    ],
+    "jobs": [
+      "20261106-192008-bitwuzla-0-8-2-built-from-source-for-the"
+    ]
+  },
+  "expected": "exits 0; build.json written with smoke answers sat, unsat, unsat and a C API version of 0.8.2",
+  "submitted": {
+    "at": "2026-11-06T19:40:49+00:00",
+    "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+    "by": "claude (engines-native stream)"
+  },
+  "requires": [
+    "git",
+    "curl",
+    "c++",
+    "pkg-config"
+  ],
+  "resources": {
+    "cpus": 8.0,
+    "memory": "2.5G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "notes": "Measured on the failed run 20261106-192008: the whole build took 23.7 s at 8 jobs with a peak of 1.9 GiB; the margin covers the downloads"
+  },
+  "steps": [
+    {
+      "name": "build Bitwuzla 0.8.2",
+      "run": "lib/solvers/bitwuzla/build.sh 0.8.2",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/solvers/bitwuzla/build.json"
+  ]
+}

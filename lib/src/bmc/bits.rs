@@ -2,9 +2,17 @@
 //! them, fed to a SAT solver clause by clause as they are built. A value is a `Vec<Lit>` of its bits, least
 //! significant first; a bit that is known is one of two constant literals, so that arithmetic over constants
 //! folds away and only what depends on an input reaches the solver.
+//!
+//! Over a solver that takes terms ([`super::sat::Terms`], the word-level prototype of Phase 6c), the same operations
+//! build no circuits: each gate is defined to the solver as a Boolean term, and each arithmetic operation, comparison,
+//! shift by a symbolic amount and `ite` of two values as one word-level term, whose result bits the engine handles as
+//! it handles any others. Constants fold as before, and a model is evaluated the same way, a word-level operation by
+//! its real result on its operands' values.
 
 use std::collections::HashMap;
 use std::fmt;
+
+use super::sat::{Gate, WordOp};
 
 /// A propositional literal: a positive or negative variable number, as a SAT solver numbers them.
 pub type Lit = i32;
@@ -27,6 +35,49 @@ enum Def {
     Ite(Lit, Lit, Lit),
     /// An output bit of a division left to the solver ([`Lazy`]), by the division's index.
     Lazy(u32),
+    /// An output bit of a word-level operation given to a solver that takes terms ([`Word`]), by its index.
+    Word(u32),
+}
+
+/// A word-level operation as a solver that takes terms was given it: its operands' bits and its result's.
+struct Word {
+    op: WordOp,
+    operands: Vec<Bits>,
+    out: Bits,
+}
+
+/// What `op` gives on operands of `width` bits with these values (sign-extended, a condition nonzero when set), as
+/// the JVM computes it, and a division by zero as SMT-LIB does ([`WordOp`]); the low bits of the result are the
+/// operation's.
+fn word_value(op: WordOp, width: usize, v: &[i64]) -> i64 {
+    let mask = if width >= 64 { u64::MAX } else { (1u64 << width) - 1 };
+    let u = |x: i64| (x as u64) & mask;
+    let s = |x: i64| {
+        let x = u(x);
+        if width < 64 && x >> (width - 1) & 1 == 1 { (x | !mask) as i64 } else { x as i64 }
+    };
+    let (a, b) = (v[0], v.get(1).copied().unwrap_or(0));
+    match op {
+        WordOp::Add => a.wrapping_add(b),
+        WordOp::Sub => a.wrapping_sub(b),
+        WordOp::Mul => a.wrapping_mul(b),
+        WordOp::Div | WordOp::Rem if s(b) == 0 => match op {
+            WordOp::Div => if s(a) < 0 { 1 } else { -1 },
+            _ => a,
+        },
+        WordOp::Div => real_division(width, s(a), s(b)).0,
+        WordOp::Rem => real_division(width, s(a), s(b)).1,
+        WordOp::Shl => (u(a) << u(b).min(63)) as i64,
+        WordOp::Shr => s(a) >> u(b).min(63),
+        WordOp::Ushr => (u(a) >> u(b).min(63)) as i64,
+        WordOp::And => a & b,
+        WordOp::Or => a | b,
+        WordOp::Xor => a ^ b,
+        WordOp::Ite => if a != 0 { b } else { v[2] },
+        WordOp::Ult => i64::from(u(a) < u(b)),
+        WordOp::Slt => i64::from(s(a) < s(b)),
+        WordOp::Eq => i64::from(u(a) == u(b)),
+    }
 }
 
 /// A division or multiplication whose circuit is not built unless it is needed: its result (quotient and
@@ -142,9 +193,9 @@ impl Model {
     }
 }
 
-/// The solver with the circuits built over it.
+/// The circuits, built over a solver ([`super::sat::Sat`]) that is given nothing but their clauses and the calls.
 pub struct Blaster {
-    solver: cadical::Solver,
+    solver: Box<dyn super::sat::Sat>,
     next: i32,
     /// What each variable is, by number (0 is no variable, 1 the constant true).
     defs: Vec<Def>,
@@ -174,6 +225,16 @@ pub struct Blaster {
     timing: bool,
     /// The state of the generator that picks which operations are timed.
     sampling: u64,
+    /// Where every clause and call goes as well, when the check is recorded ([`super::transcript`]).
+    transcript: Option<super::transcript::Transcript>,
+    /// Whether the solver takes terms ([`super::sat::Terms`]): gates and word-level operations are then defined to
+    /// it, not bit-blasted.
+    words: bool,
+    /// The word-level operations given to it, and which one is of which operands.
+    word_ops: Vec<Word>,
+    word_keys: HashMap<(WordOp, Vec<Bits>), usize>,
+    /// The per-call time limit last given to the solver, for the transcript.
+    limit: Option<f32>,
     /// What reading the clock around nothing takes, which each timed operation's time includes once.
     clock: std::time::Duration,
 }
@@ -205,6 +266,11 @@ fn is_const(l: Lit) -> bool {
     l == TRUE || l == FALSE
 }
 
+/// Whether the bits are the constant zero.
+fn is_zero_const(bits: &Bits) -> bool {
+    bits.iter().all(|&l| l == FALSE)
+}
+
 impl Default for Blaster {
     fn default() -> Self {
         Self::new()
@@ -213,14 +279,92 @@ impl Default for Blaster {
 
 impl Blaster {
     pub fn new() -> Blaster {
-        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost() };
+        Self::recorded(None)
+    }
+
+    /// A blaster over CaDiCaL whose clauses and calls also go to `transcript`, from the first: the unit clause of the
+    /// constant.
+    pub fn recorded(transcript: Option<super::transcript::Transcript>) -> Blaster {
+        Self::over(Box::new(super::sat::Cadical::new()), transcript)
+    }
+
+    /// A blaster over `solver`, which must hold no clauses yet, and whose clauses and calls also go to `transcript`.
+    /// A solver that takes terms is given the gates and word-level operations as terms, and no transcript can be
+    /// kept of them: `transcript` must then be `None`.
+    pub fn over(mut solver: Box<dyn super::sat::Sat>, transcript: Option<super::transcript::Transcript>) -> Blaster {
+        let words = solver.terms().is_some();
+        assert!(!(words && transcript.is_some()), "a transcript records clauses, and this solver is given terms");
+        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None };
         b.clause(&[TRUE]);
         b
     }
 
+    /// Ends the transcript, if there is one, with `last` as its closing comment: where it is, or why it could not be
+    /// written.
+    pub fn finish_transcript(&mut self, last: &str) -> Option<std::io::Result<std::path::PathBuf>> {
+        self.transcript.take().map(|t| t.finish(last))
+    }
+
+    /// Where the transcript is being written, if there is one.
+    pub fn transcript_path(&self) -> Option<&std::path::Path> {
+        self.transcript.as_ref().map(|t| t.path())
+    }
+
+    /// The solver the circuits are built over, by name and version.
+    pub fn solver_signature(&self) -> String {
+        self.solver.signature()
+    }
+
+    /// Whether the solver is given terms, not clauses ([`super::sat::Terms`]).
+    pub fn takes_terms(&self) -> bool {
+        self.words
+    }
+
+    /// How many word-level operations the solver was given as terms.
+    pub fn word_operations(&self) -> usize {
+        self.word_ops.len()
+    }
+
+    /// Defines a gate to a solver that takes terms.
+    fn define(&mut self, out: Lit, gate: Gate) {
+        self.solver.terms().expect("a solver that takes terms").gate(out, gate);
+    }
+
+    /// `op` over `operands` as one word-level operation for a solver that takes terms: its result's bits (one for a
+    /// comparison), the operands' width otherwise. Constant operands fold, and the same operation on the same
+    /// operands (in either order, where they commute) is the same bits.
+    fn word(&mut self, op: WordOp, operands: &[&Bits]) -> Bits {
+        let width = operands[operands.len() - 1].len();
+        let out_width = if op.compares() { 1 } else { width };
+        if operands.iter().all(|o| o.iter().all(|&l| is_const(l))) {
+            let values: Vec<i64> = operands.iter().map(|o| self.constant_value(o).expect("constant")).collect();
+            return self.constant(word_value(op, width, &values), out_width);
+        }
+        let mut key: Vec<Bits> = operands.iter().map(|&o| o.clone()).collect();
+        if op.commutes() && key[1] < key[0] {
+            key.swap(0, 1);
+        }
+        let key = (op, key);
+        if let Some(&i) = self.word_keys.get(&key) {
+            return self.word_ops[i].out.clone();
+        }
+        let i = self.word_ops.len();
+        let out: Bits = (0..out_width).map(|_| self.gate(Def::Word(i as u32))).collect();
+        let operands: Vec<&[Lit]> = key.1.iter().map(|b| b.as_slice()).collect();
+        self.solver.terms().expect("a solver that takes terms").word(&out, op, &operands);
+        self.word_ops.push(Word { op, operands: key.1.clone(), out: out.clone() });
+        self.word_keys.insert(key, i);
+        out
+    }
+
+    fn word_bit(&mut self, op: WordOp, a: &Bits, b: &Bits) -> Lit {
+        self.word(op, &[a, b])[0]
+    }
+
     /// Stops the solver after this many seconds on any one call.
     pub fn set_timeout(&mut self, seconds: f32) {
-        self.solver.set_callbacks(Some(cadical::Timeout::new(seconds)));
+        self.limit = Some(seconds);
+        self.solver.set_limit(Some(seconds));
     }
 
     /// Runs `build`, an operation that builds circuits: one in [`ENCODING_SAMPLE`] of those not built inside
@@ -248,8 +392,11 @@ impl Blaster {
     }
 
     fn clause(&mut self, lits: &[Lit]) {
-        self.solver.add_clause(lits.iter().copied());
+        self.solver.add_clause(lits);
         self.clauses += 1;
+        if let Some(t) = &mut self.transcript {
+            t.clause(lits);
+        }
     }
 
     /// A fresh variable: an input.
@@ -324,9 +471,13 @@ impl Blaster {
             return o;
         }
         let o = self.gate(Def::And(a, b));
-        self.clause(&[-o, a]);
-        self.clause(&[-o, b]);
-        self.clause(&[o, -a, -b]);
+        if self.words {
+            self.define(o, Gate::And(a, b));
+        } else {
+            self.clause(&[-o, a]);
+            self.clause(&[-o, b]);
+            self.clause(&[o, -a, -b]);
+        }
         self.gates.insert(key, o);
         o
     }
@@ -367,10 +518,14 @@ impl Blaster {
             None => {
                 let (x, y) = (x.abs(), y.abs());
                 let o = self.gate(Def::Xor(x, y));
-                self.clause(&[-o, x, y]);
-                self.clause(&[-o, -x, -y]);
-                self.clause(&[o, -x, y]);
-                self.clause(&[o, x, -y]);
+                if self.words {
+                    self.define(o, Gate::Xor(x, y));
+                } else {
+                    self.clause(&[-o, x, y]);
+                    self.clause(&[-o, -x, -y]);
+                    self.clause(&[o, -x, y]);
+                    self.clause(&[o, x, -y]);
+                }
                 self.gates.insert(key, o);
                 o
             }
@@ -401,10 +556,14 @@ impl Blaster {
             return o;
         }
         let o = self.gate(Def::Ite(c, a, b));
-        self.clause(&[-c, -a, o]);
-        self.clause(&[-c, a, -o]);
-        self.clause(&[c, -b, o]);
-        self.clause(&[c, b, -o]);
+        if self.words {
+            self.define(o, Gate::Ite(c, a, b));
+        } else {
+            self.clause(&[-c, -a, o]);
+            self.clause(&[-c, a, -o]);
+            self.clause(&[c, -b, o]);
+            self.clause(&[c, b, -o]);
+        }
         self.gates.insert(key, o);
         o
     }
@@ -417,18 +576,37 @@ impl Blaster {
     // Bit-vector operations. Every operand has the width of its result unless said otherwise.
 
     pub fn ite_bits(&mut self, c: Lit, a: &Bits, b: &Bits) -> Bits {
+        if self.words && !is_const(c) && a != b {
+            let c = vec![c];
+            return self.encoding(|s| s.word(WordOp::Ite, &[&c, a, b]));
+        }
         self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.ite(c, x, y)).collect())
     }
 
+    /// Whether a bitwise operation goes to a solver that takes terms as one word-level operation: when neither operand
+    /// is a constant, which folds bit by bit into wiring and negations.
+    fn bitwise_word(&self, a: &Bits, b: &Bits) -> bool {
+        self.words && !a.iter().all(|&l| is_const(l)) && !b.iter().all(|&l| is_const(l))
+    }
+
     pub fn and_bits(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.bitwise_word(a, b) {
+            return self.encoding(|s| s.word(WordOp::And, &[a, b]));
+        }
         self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.and(x, y)).collect())
     }
 
     pub fn or_bits(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.bitwise_word(a, b) {
+            return self.encoding(|s| s.word(WordOp::Or, &[a, b]));
+        }
         self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.or(x, y)).collect())
     }
 
     pub fn xor_bits(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.bitwise_word(a, b) {
+            return self.encoding(|s| s.word(WordOp::Xor, &[a, b]));
+        }
         self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.xor(x, y)).collect())
     }
 
@@ -451,10 +629,16 @@ impl Blaster {
     }
 
     pub fn add(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.words {
+            return if is_zero_const(b) { a.clone() } else if is_zero_const(a) { b.clone() } else { self.encoding(|s| s.word(WordOp::Add, &[a, b])) };
+        }
         self.encoding(|s| s.add_carry(a, b, FALSE).0)
     }
 
     pub fn sub(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.words {
+            return if is_zero_const(b) { a.clone() } else { self.encoding(|s| s.word(WordOp::Sub, &[a, b])) };
+        }
         let nb = self.not_bits(b);
         self.encoding(|s| s.add_carry(a, &nb, TRUE).0)
     }
@@ -466,7 +650,19 @@ impl Blaster {
 
     /// Two's-complement multiplication, modulo the width (as `imul` and `lmul` are).
     pub fn mul(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.words {
+            return self.mul_word(a, b);
+        }
         self.encoding(|s| s.mul_built(a, b))
+    }
+
+    /// A product for a solver that takes terms: a factor of zero or one folds, any other is one word-level operation.
+    fn mul_word(&mut self, a: &Bits, b: &Bits) -> Bits {
+        match (self.constant_value(a), self.constant_value(b)) {
+            (Some(0), _) | (_, Some(1)) => a.clone(),
+            (_, Some(0)) | (Some(1), _) => b.clone(),
+            _ => self.encoding(|s| s.word(WordOp::Mul, &[a, b])),
+        }
     }
 
     fn mul_built(&mut self, a: &Bits, b: &Bits) -> Bits {
@@ -488,6 +684,9 @@ impl Blaster {
 
     /// Unsigned `a < b`: the borrow of `a - b`.
     pub fn ult(&mut self, a: &Bits, b: &Bits) -> Lit {
+        if self.words {
+            return if a == b { FALSE } else { self.encoding(|s| s.word_bit(WordOp::Ult, a, b)) };
+        }
         self.encoding(|s| s.ult_built(a, b))
     }
 
@@ -499,6 +698,9 @@ impl Blaster {
 
     /// Signed `a < b`: unsigned, with the sign bits flipped.
     pub fn slt(&mut self, a: &Bits, b: &Bits) -> Lit {
+        if self.words {
+            return if a == b { FALSE } else { self.encoding(|s| s.word_bit(WordOp::Slt, a, b)) };
+        }
         let mut fa = a.clone();
         let mut fb = b.clone();
         let last = a.len() - 1;
@@ -512,6 +714,15 @@ impl Blaster {
     }
 
     pub fn eq(&mut self, a: &Bits, b: &Bits) -> Lit {
+        if self.words {
+            if a == b {
+                return TRUE;
+            }
+            if a.iter().zip(b).any(|(&x, &y)| x == -y) {
+                return FALSE;
+            }
+            return self.encoding(|s| s.word_bit(WordOp::Eq, a, b));
+        }
         self.encoding(|s| s.eq_built(a, b))
     }
 
@@ -549,7 +760,7 @@ impl Blaster {
     }
 
     fn sdivrem_lazy_built(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
-        if a.iter().chain(b).all(|&l| is_const(l)) {
+        if a.iter().chain(b).all(|&l| is_const(l)) || self.words {
             return self.sdivrem(a, b);
         }
         if let Some(&i) = self.divisions.get(&(a.clone(), b.clone())) {
@@ -577,6 +788,9 @@ impl Blaster {
     }
 
     fn mul_lazy_built(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if self.words {
+            return self.mul_word(a, b);
+        }
         if a.iter().all(|&l| is_const(l)) || b.iter().all(|&l| is_const(l)) {
             return self.mul(a, b);
         }
@@ -783,10 +997,10 @@ impl Blaster {
             Op::DivRem => self.sdivrem(&a, &b),
             Op::Mul => (self.mul(&a, &b), Vec::new()),
         };
-        for (&chosen, &real) in self.lazy[i].q.iter().zip(&q).chain(self.lazy[i].r.iter().zip(&r)) {
-            self.solver.add_clause([-chosen, real]);
-            self.solver.add_clause([chosen, -real]);
-            self.clauses += 2;
+        let ties: Vec<(Lit, Lit)> = self.lazy[i].q.iter().zip(&q).chain(self.lazy[i].r.iter().zip(&r)).map(|(&c, &r)| (c, r)).collect();
+        for (chosen, real) in ties {
+            self.clause(&[-chosen, real]);
+            self.clause(&[chosen, -real]);
         }
         self.lazy[i].refined = true;
     }
@@ -835,6 +1049,9 @@ impl Blaster {
     }
 
     fn sdivrem_built(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
+        if self.words {
+            return (self.word(WordOp::Div, &[a, b]), self.word(WordOp::Rem, &[a, b]));
+        }
         let sa = self.negative(a);
         let sb = self.negative(b);
         let na = self.neg(a);
@@ -859,6 +1076,13 @@ impl Blaster {
     fn shift_built(&mut self, a: &Bits, amount: &Bits, left: bool, arith: bool) -> Bits {
         let width = a.len();
         let steps = width.trailing_zeros() as usize; // 5 for 32, 6 for 64
+        if self.words && !amount[..steps].iter().all(|&l| is_const(l)) {
+            // The amount masked to the width, at the width.
+            let mut masked = amount[..steps].to_vec();
+            masked.resize(width, FALSE);
+            let op = if left { WordOp::Shl } else if arith { WordOp::Shr } else { WordOp::Ushr };
+            return self.word(op, &[a, &masked]);
+        }
         let fill = if arith { self.negative(a) } else { FALSE };
         let mut cur = a.clone();
         for s in 0..steps {
@@ -913,8 +1137,12 @@ impl Blaster {
             return Some(false);
         }
         let started = std::time::Instant::now();
-        let answer = self.solver.solve_with(assumptions.into_iter());
-        self.solving += started.elapsed();
+        let answer = self.solver.solve(&assumptions);
+        let took = started.elapsed();
+        self.solving += took;
+        if let Some(t) = &mut self.transcript {
+            t.call(&assumptions, self.limit, answer, took);
+        }
         answer
     }
 
@@ -984,6 +1212,23 @@ impl Blaster {
                         }
                     }
                 }
+                Def::Word(i) => {
+                    // The real operation on the operands' values, every bit of the result at once.
+                    let w = &self.word_ops[i as usize];
+                    let mut ready = true;
+                    for &x in w.operands.iter().flatten() {
+                        ready &= need(model, &mut stack, x).is_some();
+                    }
+                    if ready {
+                        let values: Vec<i64> = w.operands.iter().map(|o| value_in(model, o).expect("ready")).collect();
+                        let v = word_value(w.op, w.operands[w.operands.len() - 1].len(), &values);
+                        for (k, &bit) in w.out.iter().enumerate() {
+                            model.set(bit as usize, (v >> k.min(63)) & 1 == 1);
+                        }
+                        stack.pop();
+                        done += 1;
+                    }
+                }
                 Def::Lazy(i) => {
                     // The real operation on the operands' values, every bit of the result at once.
                     let l = &self.lazy[i as usize];
@@ -1039,10 +1284,11 @@ impl Blaster {
 mod tests {
     use super::*;
 
-    /// Runs `op` on fresh inputs pinned to `x` and `y` by assumptions, so that the circuits are exercised rather
-    /// than folded away, and reads the result back from the model.
-    fn circuit(width: usize, x: i64, y: i64, op: impl Fn(&mut Blaster, &Bits, &Bits) -> Bits) -> i64 {
-        let mut b = Blaster::new();
+    /// Runs `op` on a blaster `new` makes, on fresh inputs pinned to `x` and `y` by assumptions, so that the
+    /// circuits are exercised rather than folded away, and reads the result back from the model. That result is
+    /// also the one the blaster evaluates from the inputs' values alone, as a path's kept model is evaluated.
+    fn circuit_on(new: &dyn Fn() -> Blaster, width: usize, x: i64, y: i64, op: impl Fn(&mut Blaster, &Bits, &Bits) -> Bits) -> i64 {
+        let mut b = new();
         let a = b.fresh(width);
         let c = b.fresh(width);
         let out = op(&mut b, &a, &c);
@@ -1052,11 +1298,15 @@ mod tests {
             assumptions.push(if (y >> i) & 1 == 1 { c[i] } else { -c[i] });
         }
         assert_eq!(b.solve_with(&assumptions), Some(true));
-        b.eval(&out)
+        let value = b.eval(&out);
+        let mut model = b.snapshot();
+        let evaluated: Vec<Lit> = out.iter().map(|&l| if b.holds(&mut model, l) { TRUE } else { FALSE }).collect();
+        assert_eq!(b.constant_value(&evaluated), Some(value), "the model's value is the evaluated one ({x}, {y})");
+        value
     }
 
-    fn bit(width: usize, x: i64, y: i64, op: impl Fn(&mut Blaster, &Bits, &Bits) -> Lit) -> bool {
-        circuit(width, x, y, |b, a, c| vec![op(b, a, c)]) & 1 == 1
+    fn bit_on(new: &dyn Fn() -> Blaster, width: usize, x: i64, y: i64, op: impl Fn(&mut Blaster, &Bits, &Bits) -> Lit) -> bool {
+        circuit_on(new, width, x, y, |b, a, c| vec![op(b, a, c)]) & 1 == 1
     }
 
     const INTS: &[i32] = &[0, 1, -1, 2, 3, 7, -7, 10, 100, 1000, 65535, 65536, -65536, 1 << 30, i32::MAX, i32::MIN, i32::MIN + 1, 0x5555_5555, -0x1234_5678];
@@ -1064,49 +1314,119 @@ mod tests {
 
     #[test]
     fn int_arithmetic_is_the_jvms() {
-        for &x in INTS {
-            for &y in INTS {
-                let (x64, y64) = (i64::from(x), i64::from(y));
-                assert_eq!(circuit(32, x64, y64, |b, a, c| b.add(a, c)) as i32, x.wrapping_add(y), "{x} + {y}");
-                assert_eq!(circuit(32, x64, y64, |b, a, c| b.sub(a, c)) as i32, x.wrapping_sub(y), "{x} - {y}");
-                assert_eq!(circuit(32, x64, y64, |b, a, c| b.mul(a, c)) as i32, x.wrapping_mul(y), "{x} * {y}");
-                if y != 0 {
-                    assert_eq!(circuit(32, x64, y64, |b, a, c| b.sdivrem(a, c).0) as i32, x.wrapping_div(y), "{x} / {y}");
-                    assert_eq!(circuit(32, x64, y64, |b, a, c| b.sdivrem(a, c).1) as i32, x.wrapping_rem(y), "{x} % {y}");
-                }
-                assert_eq!(circuit(32, x64, y64, |b, a, c| b.shl(a, c)) as i32, x.wrapping_shl(y as u32), "{x} << {y}");
-                assert_eq!(circuit(32, x64, y64, |b, a, c| b.shr(a, c)) as i32, x.wrapping_shr(y as u32), "{x} >> {y}");
-                assert_eq!(circuit(32, x64, y64, |b, a, c| b.ushr(a, c)) as i32, ((x as u32).wrapping_shr(y as u32)) as i32, "{x} >>> {y}");
-                assert_eq!(bit(32, x64, y64, |b, a, c| b.slt(a, c)), x < y, "{x} < {y}");
-                assert_eq!(bit(32, x64, y64, |b, a, c| b.sle(a, c)), x <= y, "{x} <= {y}");
-                assert_eq!(bit(32, x64, y64, |b, a, c| b.eq(a, c)), x == y, "{x} == {y}");
-                assert_eq!(bit(32, x64, y64, |b, a, c| b.ult(a, c)), (x as u32) < (y as u32), "{x} <u {y}");
-            }
-            assert_eq!(circuit(32, i64::from(x), 0, |b, a, _| b.neg(a)) as i32, x.wrapping_neg());
-            assert_eq!(circuit(32, i64::from(x), 0, |b, a, _| b.sext(&b.trunc(a, 8), 32)) as i32, x as i8 as i32, "i2b");
-            assert_eq!(circuit(32, i64::from(x), 0, |b, a, _| b.zext(&b.trunc(a, 16), 32)) as i32, x as u16 as i32, "i2c");
-            assert_eq!(circuit(32, i64::from(x), 0, |b, a, _| b.sext(&b.trunc(a, 16), 32)) as i32, x as i16 as i32, "i2s");
-        }
+        int_arithmetic_on(&Blaster::new);
     }
 
     #[test]
     fn long_arithmetic_is_the_jvms() {
+        long_arithmetic_on(&Blaster::new);
+    }
+
+    /// A blaster over Bitwuzla given terms, if it is installed here.
+    fn over_words() -> Option<impl Fn() -> Blaster> {
+        if let Err(e) = super::super::bitwuzla::available() {
+            eprintln!("skipped: {}", e.0);
+            return None;
+        }
+        Some(|| Blaster::over(super::super::bitwuzla::boxed_configured(&[], true), None))
+    }
+
+    #[test]
+    fn word_level_operations_on_bitwuzla_are_the_jvms() {
+        let Some(new) = over_words() else { return };
+        assert!(new().takes_terms());
+        int_arithmetic_on(&new);
+        long_arithmetic_on(&new);
+    }
+
+    #[test]
+    fn word_level_operations_fold_constants_and_are_built_once() {
+        let Some(new) = over_words() else { return };
+        let mut b = new();
+        let (x, y) = (b.fresh(32), b.fresh(32));
+        let zero = b.constant(0, 32);
+        let one = b.constant(1, 32);
+        assert_eq!(b.add(&x, &zero), x);
+        assert_eq!(b.sub(&x, &zero), x);
+        assert_eq!(b.mul(&x, &one), x);
+        assert_eq!(b.mul(&zero, &y), zero);
+        assert_eq!(b.eq(&x, &x), TRUE);
+        assert_eq!(b.ult(&x, &x), FALSE);
+        let seven = b.constant(7, 32);
+        let six = b.constant(6, 32);
+        assert_eq!(b.add(&seven, &six), b.constant(13, 32));
+        assert_eq!(b.word_operations(), 0);
+        let p = b.mul(&x, &y);
+        let q = b.mul_lazy(&y, &x);
+        assert_eq!(p, q, "a product in either order is one operation");
+        let (d, r) = b.sdivrem_lazy(&x, &y);
+        assert_eq!(b.sdivrem(&x, &y), (d.clone(), r.clone()));
+        assert_eq!(b.word_operations(), 3);
+        assert_eq!(b.divisions(), (0, 0), "nothing is left to refinement");
+        // A product a model gets wrong cannot happen: the solver is given the operation itself.
+        let (x7, y6) = (b.eq(&x, &seven), b.eq(&y, &six));
+        let p42 = b.eq(&p, &b.constant(42, 32).clone());
+        assert_eq!(b.solve_with(&[x7, y6, -p42]), Some(false));
+        assert_eq!(b.solve_with(&[x7, y6]), Some(true));
+        assert_eq!((b.eval(&p), b.eval(&d), b.eval(&r)), (42, 1, 1));
+        assert_eq!(b.wrong_operation(), None);
+        assert_eq!(b.clauses, 1, "the constant's unit clause, and nothing else");
+    }
+
+    fn int_arithmetic_on(new: &dyn Fn() -> Blaster) {
+        let circuit = |w, x, y, op: &dyn Fn(&mut Blaster, &Bits, &Bits) -> Bits| circuit_on(new, w, x, y, op);
+        let bit = |w, x, y, op: &dyn Fn(&mut Blaster, &Bits, &Bits) -> Lit| bit_on(new, w, x, y, op);
+        for &x in INTS {
+            for &y in INTS {
+                let (x64, y64) = (i64::from(x), i64::from(y));
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.add(a, c)) as i32, x.wrapping_add(y), "{x} + {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.sub(a, c)) as i32, x.wrapping_sub(y), "{x} - {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.mul(a, c)) as i32, x.wrapping_mul(y), "{x} * {y}");
+                if y != 0 {
+                    assert_eq!(circuit(32, x64, y64, &|b, a, c| b.sdivrem(a, c).0) as i32, x.wrapping_div(y), "{x} / {y}");
+                    assert_eq!(circuit(32, x64, y64, &|b, a, c| b.sdivrem(a, c).1) as i32, x.wrapping_rem(y), "{x} % {y}");
+                }
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.shl(a, c)) as i32, x.wrapping_shl(y as u32), "{x} << {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.shr(a, c)) as i32, x.wrapping_shr(y as u32), "{x} >> {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.ushr(a, c)) as i32, ((x as u32).wrapping_shr(y as u32)) as i32, "{x} >>> {y}");
+                assert_eq!(bit(32, x64, y64, &|b, a, c| b.slt(a, c)), x < y, "{x} < {y}");
+                assert_eq!(bit(32, x64, y64, &|b, a, c| b.sle(a, c)), x <= y, "{x} <= {y}");
+                assert_eq!(bit(32, x64, y64, &|b, a, c| b.eq(a, c)), x == y, "{x} == {y}");
+                assert_eq!(bit(32, x64, y64, &|b, a, c| b.ult(a, c)), (x as u32) < (y as u32), "{x} <u {y}");
+            }
+            assert_eq!(circuit(32, i64::from(x), 0, &|b, a, _| b.neg(a)) as i32, x.wrapping_neg());
+            assert_eq!(circuit(32, i64::from(x), 0, &|b, a, _| b.sext(&b.trunc(a, 8), 32)) as i32, x as i8 as i32, "i2b");
+            assert_eq!(circuit(32, i64::from(x), 0, &|b, a, _| b.zext(&b.trunc(a, 16), 32)) as i32, x as u16 as i32, "i2c");
+            assert_eq!(circuit(32, i64::from(x), 0, &|b, a, _| b.sext(&b.trunc(a, 16), 32)) as i32, x as i16 as i32, "i2s");
+            for &y in &[0x0F0F_0F0F, -1, i32::MIN] {
+                let (x64, y64) = (i64::from(x), i64::from(y));
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.and_bits(a, c)) as i32, x & y, "{x} & {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.or_bits(a, c)) as i32, x | y, "{x} | {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| b.xor_bits(a, c)) as i32, x ^ y, "{x} ^ {y}");
+                assert_eq!(circuit(32, x64, y64, &|b, a, c| { let less = b.slt(a, c); b.ite_bits(less, a, c) }) as i32, x.min(y), "min({x}, {y})");
+            }
+        }
+    }
+
+    fn long_arithmetic_on(new: &dyn Fn() -> Blaster) {
+        let circuit = |w, x, y, op: &dyn Fn(&mut Blaster, &Bits, &Bits) -> Bits| circuit_on(new, w, x, y, op);
+        let bit = |w, x, y, op: &dyn Fn(&mut Blaster, &Bits, &Bits) -> Lit| bit_on(new, w, x, y, op);
         for &x in LONGS {
             for &y in LONGS {
-                assert_eq!(circuit(64, x, y, |b, a, c| b.add(a, c)), x.wrapping_add(y), "{x} + {y}");
-                assert_eq!(circuit(64, x, y, |b, a, c| b.mul(a, c)), x.wrapping_mul(y), "{x} * {y}");
+                assert_eq!(circuit(64, x, y, &|b, a, c| b.add(a, c)), x.wrapping_add(y), "{x} + {y}");
+                assert_eq!(circuit(64, x, y, &|b, a, c| b.mul(a, c)), x.wrapping_mul(y), "{x} * {y}");
                 if y != 0 {
-                    assert_eq!(circuit(64, x, y, |b, a, c| b.sdivrem(a, c).0), x.wrapping_div(y), "{x} / {y}");
-                    assert_eq!(circuit(64, x, y, |b, a, c| b.sdivrem(a, c).1), x.wrapping_rem(y), "{x} % {y}");
+                    assert_eq!(circuit(64, x, y, &|b, a, c| b.sdivrem(a, c).0), x.wrapping_div(y), "{x} / {y}");
+                    assert_eq!(circuit(64, x, y, &|b, a, c| b.sdivrem(a, c).1), x.wrapping_rem(y), "{x} % {y}");
                 }
-                assert_eq!(bit(64, x, y, |b, a, c| b.slt(a, c)), x < y, "{x} < {y}");
+                assert_eq!(bit(64, x, y, &|b, a, c| b.slt(a, c)), x < y, "{x} < {y}");
             }
             for &s in &[0i64, 1, 31, 32, 63, 64, 100, -1] {
-                assert_eq!(circuit(64, x, s, |b, a, c| b.shl(a, &b.trunc(c, 32))), x.wrapping_shl(s as u32), "{x} << {s}");
-                assert_eq!(circuit(64, x, s, |b, a, c| b.shr(a, &b.trunc(c, 32))), x.wrapping_shr(s as u32), "{x} >> {s}");
-                assert_eq!(circuit(64, x, s, |b, a, c| b.ushr(a, &b.trunc(c, 32))), ((x as u64).wrapping_shr(s as u32)) as i64, "{x} >>> {s}");
+                assert_eq!(circuit(64, x, s, &|b, a, c| b.shl(a, &b.trunc(c, 32))), x.wrapping_shl(s as u32), "{x} << {s}");
+                assert_eq!(circuit(64, x, s, &|b, a, c| b.shr(a, &b.trunc(c, 32))), x.wrapping_shr(s as u32), "{x} >> {s}");
+                assert_eq!(circuit(64, x, s, &|b, a, c| b.ushr(a, &b.trunc(c, 32))), ((x as u64).wrapping_shr(s as u32)) as i64, "{x} >>> {s}");
             }
-            assert_eq!(circuit(64, x, 0, |b, a, _| b.sext(&b.trunc(a, 32), 64)), x as i32 as i64, "l2i then i2l");
+            assert_eq!(circuit(64, x, 0, &|b, a, _| b.sext(&b.trunc(a, 32), 64)), x as i32 as i64, "l2i then i2l");
         }
     }
 

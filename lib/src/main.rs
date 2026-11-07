@@ -188,6 +188,23 @@ enum Command {
         #[arg(long)]
         code: bool,
     },
+    /// Run a transcript of the own checker's solver calls again on the bundled CaDiCaL, or on another solver, call
+    /// by call, and compare the answers with the recorded ones. A check writes one when the environment variable
+    /// JVMCONTRACT_TRANSCRIPTS names a directory. Exits 1 when an answer contradicts the recorded one.
+    Transcript {
+        /// The transcript (`p inccnf`, with each call's recorded answer in a comment after it).
+        file: PathBuf,
+        /// Give every call this many seconds, instead of the limit recorded for it.
+        #[arg(long)]
+        limit: Option<f32>,
+        /// The solver to run it on: `cadical` (bundled), or `bitwuzla`, loaded from JVMCONTRACT_BITWUZLA or
+        /// ~/tools/bitwuzla/current, with Bitwuzla's options after a colon if any (`bitwuzla:preprocess=0`).
+        #[arg(long, default_value = "cadical")]
+        solver: String,
+        /// Print JSON, with every call.
+        #[arg(long)]
+        json: bool,
+    },
 }
 
 #[derive(Args, Clone)]
@@ -314,6 +331,12 @@ struct EquivalenceArgs {
     /// named is run again with its default.
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
+    /// Which of JBMC's interval stages run before its run over every input: `full-range` (the default: that run
+    /// alone, its counterexample shrunk in the interpreter), `staged` (`[0:20]`, then `[-100000:100000]`, each on at
+    /// most an eighth of the check, where they leave out an input), or `tight` (`[0:20]` on at most a fortieth of
+    /// the check, then that run). The own checker's stages and `--confirm` do not follow it.
+    #[arg(long, default_value = "full-range")]
+    jbmc_staging: String,
     /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
     /// for methods over integers, arrays of them and records, without floating point), or `auto` (the tool's own
     /// where it applies, JBMC elsewhere).
@@ -428,6 +451,12 @@ struct ProveArgs {
     /// named is run again with its default.
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
+    /// Which of JBMC's interval stages run before its run over every input: `full-range` (the default: that run
+    /// alone, its counterexample shrunk in the interpreter), `staged` (`[0:20]`, then `[-100000:100000]`, each on at
+    /// most an eighth of the check, where they leave out an input), or `tight` (`[0:20]` on at most a fortieth of
+    /// the check, then that run). The own checker's stages and `--confirm` do not follow it.
+    #[arg(long, default_value = "full-range")]
+    jbmc_staging: String,
     /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
     /// for methods over integers, arrays of them and records, without floating point), or `auto` (the tool's own
     /// where it applies, JBMC elsewhere).
@@ -548,6 +577,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.models = !args.no_models;
             options.refine_strings = args.refine_strings;
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
+            options.jbmc_staging = args.jbmc_staging.parse()?;
             options.engine = args.engine.parse()?;
             options.gaps = args.gaps.parse()?;
             options.contracts = args.contracts;
@@ -605,6 +635,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.models = !args.no_models;
                 options.refine_strings = args.refine_strings;
                 options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
+                options.jbmc_staging = args.jbmc_staging.parse()?;
                 options.engine = args.engine.parse()?;
                 options.gaps = args.gaps.parse()?;
                 options.contracts = args.contracts.clone();
@@ -759,6 +790,16 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let class = jvmcontract::classfile::ClassFile::parse(&bytes)?;
             print!("{}", jvmcontract::classfile::describe(&class, code)?);
             Ok(0)
+        }
+        Command::Transcript { file, limit, solver, json } => {
+            let make = jvmcontract::bmc::sat::named(&solver)?;
+            let replay = jvmcontract::bmc::transcript::replay_on(&mut *make(), &file, limit)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&replay).map_err(|e| Error::new(e.to_string()))?);
+            } else {
+                println!("{}", replay.summary());
+            }
+            Ok(if replay.contradictions > 0 { 1 } else { 0 })
         }
     }
 }

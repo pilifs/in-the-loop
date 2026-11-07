@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-192008-bitwuzla-0-8-2-built-from-source-for-the",
+  "title": "Bitwuzla 0.8.2 built from source for the solver comparison (fetches from the network)",
+  "description": "Phase 1c of llm-dlc/loops/engine-priorities.md (the native stream). This job fetches from the network: git ls-remote and the release tarball of github.com/bitwuzla/bitwuzla at tag 0.8.2, meson and ninja from PyPI into a venv in the job, and CaDiCaL and SymFPU through Bitwuzla's own meson wrap files. It builds Bitwuzla shared, in release mode, installs it into ~/tools/bitwuzla/bitwuzla-0.8.2 (with ~/tools/bitwuzla/current pointing at it; nothing else on the machine changes), and writes lib/solvers/bitwuzla/build.json: the tag's commit, the tarball's sha256, each subproject's wrap (the CaDiCaL it links, with its digest), GMP, the compiler, the build tools, the machine, and the answers of three smoke queries (bit-vector sat, bit-vector unsat, read over write unsat) plus the version the C API reports when a C program is linked through pkg-config. Phase 6 (transcripts against Bitwuzla, then word-level terms) runs on this install. The brief says ARM64; this runner is x86_64, and the record names the architecture. If tag 0.8.2 does not exist, the script lists the latest tags and exits 3: resubmit pinned to one of them. If the job has no network, the fetch fails at the first step, and that needs the user.",
+  "kind": "other",
+  "capabilities": [
+    "solver:bitwuzla",
+    "build:from-source"
+  ],
+  "links": {
+    "paths": [
+      "lib/solvers/bitwuzla/build.sh"
+    ]
+  },
+  "expected": "exits 0; build.json written with smoke answers sat, unsat, unsat and a C API version of 0.8.2",
+  "submitted": {
+    "at": "2026-11-06T19:20:08+00:00",
+    "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+    "by": "claude (engines-native stream)"
+  },
+  "requires": [
+    "git",
+    "curl",
+    "c++",
+    "pkg-config"
+  ],
+  "resources": {
+    "cpus": 8.0,
+    "memory": "4G",
+    "duration": "15m",
+    "memoryLimit": "8G",
+    "notes": "No measurement: about 300 C++ translation units for Bitwuzla and CaDiCaL at -O3 with g++ 15, perhaps 500 MB each, 8 at a time; downloads of a few tens of MB"
+  },
+  "steps": [
+    {
+      "name": "build Bitwuzla 0.8.2",
+      "run": "lib/solvers/bitwuzla/build.sh 0.8.2",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/solvers/bitwuzla/build.json"
+  ]
+}

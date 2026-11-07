@@ -67,8 +67,595 @@ are yours, but say under Progress which JBMC results they may change.
 
 ## Progress
 
-- Nothing yet.
-- Status: working
+- **1c, resubmitted.**
+  - **The first job failed.** Job `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` ran
+    `lib/solvers/bitwuzla/build.sh 0.8.2` on vm-1 (x86_64; 23.7 s at 8 jobs, peak 1.9 GiB). The fetch, the build and
+    the install into `~/tools/bitwuzla/bitwuzla-0.8.2` worked. Then the binary exited 127 on `libcadical.so`: the
+    project-wide `-Ddefault_library=shared` reached the CaDiCaL subproject, and meson doesn't install a subproject's
+    library. `build.json` wasn't written.
+  - **The fix.** `build.sh` now passes `-Dcadical:default_library=static`, CaDiCaL's own default, so CaDiCaL is
+    linked into Bitwuzla's shared libraries. A configure-only meson run on the failed job's tree showed the `cadical`
+    target static and Bitwuzla's four libraries shared. The script also fails, naming the libraries, if `ldd` still
+    finds one missing.
+  - **The CaDiCaL inside it is 2.1.2** (Bitwuzla 0.8.2's wrap), not the engine's 1.9.5. 6c has to keep the two
+    apart.
+  - **Resubmitted** as job `20261106-194049-bitwuzla-0-8-2-built-from-source-cadical`. It brings back
+    `lib/solvers/bitwuzla/build.json`: the commit, the tarball digest, the CaDiCaL it links, smoke answers and the C
+    API version. It fetches from the network, and says so. The runner is x86_64, not the ARM64 the brief names.
+  - **Passed** (job `-194049`, 24.7 s, peak 1.9 GiB). Bitwuzla 0.8.2, commit `61bdc637`, tarball sha256 `637ed0b8…`,
+    installed in `~/tools/bitwuzla/bitwuzla-0.8.2`. The C API reports 0.8.2. It links CaDiCaL 2.1.2 static (and
+    SymFPU), with GMP 6.3.0 from the system, built by GCC 15.2.0 with meson 1.12.1 and ninja 1.13.2. The smoke answers
+    are sat, unsat, unsat. The record reaches this branch at the merge, with the job's outputs. Phase 6c can use it.
+- **4b, counted** (static, inline, JDK 25.0.5).
+  - **The tool.** `jvmcontract gaps` now gives each `class-initializer` gap's `<clinit>` a shape (`initializer_shape` in
+    `lib/src/bmc/gaps.rs`), read from the initializer's bytecode and the application methods it calls. The shapes are
+    `enum`, `throws`, `other-statics`, `constants` or `other`, with traits such as `switch-map` and
+    `arrays-of-references`.
+  - **The count's driver.** `examples/tools/initializer_shapes.py` (new) runs the scan two ways:
+    - over the 59 recorded examples the gap scan applies to (B9 and B11 on the javac apps), writing no notes;
+    - over each app as a whole, every method a target. Box Office is its `ticketing-domain`, the module javac builds
+      alone.
+  - **Apps:** 49 initializers, all reached.
+    - 36 `enum`.
+    - 13 `other-statics`, every one a javac `$SwitchMap` class for a switch over an enum. It calls `values()` and
+      `ordinal()`, fills an `int[]`, and catches `NoSuchFieldError`.
+    - 0 `throws`, 0 `constants`, 0 `other`.
+    - By app (enum + switch map): Mica 5+2, Crosscut 9+3, Quorum 19+7, Box Office 3+1.
+  - **Recorded examples:** 2 of the 59 reach an initializer, 013 and 071 (both JBMC proofs). Each reaches the same four
+    Quorum `raft` enums: `Ballot`, `LogOrder`, `TermOrder` and `VoteEffect`.
+  - **The benchmark:** its only initializers are the conformance cases'. `Boom` and `Base` are `throws`, each
+    through the static method its initializer calls; `Quiet` is `constants`, an `int` literal table.
+  - **Phase 5's scope, from this count:** full JVMS §5.5. Constants-first would close `quiet` alone and nothing in
+    the apps, while enums are three in four of the apps' initializers. Today the own checker also refuses any
+    `getstatic` of a field that isn't a compile-time constant, so code that reads an enum constant is outside its
+    fragment whatever the gaps. The order:
+    1. application static fields as path state, and `<clinit>` run at the first `new`, `getstatic`, `putstatic` or
+       `invokestatic`, with `ExceptionInInitializerError` and then `NoClassDefFoundError`. This closes `boom`,
+       `inherited` and `quiet`.
+    2. enums: the `Enum.<init>` model, and `$VALUES`, an array of references, which the engine refuses today.
+    3. switch maps, if (2) brings arrays of references in.
+    What stays out stays a named `class-initializer` gap.
+  - **Limit:** the scan doesn't walk an initializer's body, so a class that only another initializer initializes is
+    not counted. Over the apps every class is a target, so none is missed there.
+  - **Shared files changed:** `lib/tests/integration.rs` (a new test,
+    `the_gap_scan_gives_each_class_initializer_a_shape`), `lib/README.md` (a clause on `gaps`), `examples/README.md` (a
+    paragraph on the new script), `examples/tools/initializer_shapes.py` (new). `jvmcontract gaps --json` gains an
+    `initializers` list, which is absent when empty. `build.py` and `gap_table.py` don't read it.
+  - **Not caused by this:** `examples/tools/test_build.py` fails 35 tests with `KeyError: 'verdict'` on committed
+    results. This change touches nothing that test reads.
+  - **Also not caused by this:** `the_corpus_agrees_with_the_jvm_on_the_tools_own_checker` fails 12 claims on this
+    machine. The JDK is now 25.0.5, and `lib/models/contracts/checked.json` records its checks on 25.0.4.1, so the
+    library's contracts for `capacity`, `builderCapacity`, `mapCapacity`, `setCapacity` and `firstByte` are not
+    applied. Every other test passes: unit, integration (64) and skill.
+  - **Before Phase 5's conformance cases:** record the library again on 25.0.5 with `gap-contracts --record`. That
+    runs proofs, so it is a queued job.
+- **5, step 1: class initializers in the own checker** (inline; JVM 25.0.5).
+  - **What the engine does now.** An application class's static fields are path state, merged like locals. Its
+    initialization follows JVMS §5.5: at the first `new`, `getstatic`, `putstatic` or `invokestatic`, the superclass
+    and the superinterfaces with a default method go first, then the `<clinit>` runs as bytecode. A use from inside
+    the class's own initialization goes on. An exception leaving a `<clinit>` becomes `ExceptionInInitializerError`
+    (an `Error` stays as it is). A later use of that class, or of one that waited on it, throws
+    `NoClassDefFoundError`.
+  - **What stays a gap.** A `<clinit>` outside the fragment stays a `class-initializer` gap
+    (`gaps::runs_initializer`): one that reaches a refused construct, or reads or writes a static of a class whose
+    initializer doesn't run. Over the apps that is all 49 (36 enums, through `$VALUES`, an array of references, and
+    13 switch maps). `initializer_shapes.py --apps-only` still counts the same 49 as gaps.
+  - **The gap scan** (`jvmcontract gaps`) walks the initializers the engine runs, like methods. It refuses a static
+    field only of the JDK, or of a class whose initializer doesn't run. The refusal reasons for static fields are
+    renamed to say which of those it is. Superinterfaces are now initialized in JVMS's order (an interface's
+    superinterfaces before it); the old walk put them after.
+  - **Conformance, checked on the JVM:**
+    - `boom` and `inherited` are now violations whose witnesses replay, and `quiet` is verified, in every mode.
+    - 8 new cases, 16 claims, all as the JVM decides them in every native mode: `counter`, `constructed`,
+      `superFirst`, `cycle`, `declaring` (only the declaring class is initialized), `defaults`, `fatal` (an `Error`
+      stays as it is) and `boomTwice` (`NoClassDefFoundError`).
+    - The old engine gives none of them a verdict.
+    - The test still fails only its 12 pre-existing library-record claims (above).
+  - **Interpreter fixes, needed for the witnesses to replay as on the JVM** (`lib/src/interp/mod.rs`,
+    `ensure_initialized`, `get_static`, `put_static`, a new `static_declarer`):
+    - an erroneous state, and `NoClassDefFoundError` at a later use;
+    - an `Error` not wrapped;
+    - a superclass's failure making the class erroneous;
+    - superinterfaces with default methods initialized;
+    - `getstatic`/`putstatic` initializing the declaring class only.
+    JBMC's witnesses are replayed by the same interpreter, so a JBMC counterexample through an erroneous class now
+    replays as the JVM runs it. No model changed, so no JBMC result changes otherwise.
+  - **Shared files changed:**
+    - `lib/src/interp/mod.rs`, above.
+    - `lib/tests/conformance.rs`: the cases, three recorded verdicts, and the comment on the corpus's contracts,
+      whose two initializer contracts now close nothing.
+    - `lib/tests/conformance/conformance/Conformance.java`: the cases' classes and methods.
+    - `lib/tests/integration.rs`:
+      - `identity_and_initialization_agree_with_the_jvm` has a new `Names` fixture, still a gap;
+      - `the_gap_scan_names_what_the_own_checker_approximates` has `Primes`, walked;
+      - `the_gap_scan_gives_each_class_initializer_a_shape` reads the shapes directly;
+      - `a_contract_closes_its_gap_and_the_verdict_rests_on_it` adds a `String[]` to `Contracted.Table`, so it stays
+        a gap.
+    - `lib/README.md`: the fragment, the gap list, and the corpus's contract count, which is now 5 of 6.
+    - Also changed, outside the listed shared files: `lib/src/advice.rs` and `lib/src/contract_proving.rs` (one
+      wording each), and `examples/tools/initializer_shapes.py` (its docstring).
+  - **For the reconcile loop:** `lib/benchmark/conformance.json` belongs to the JBMC stream, and it's now behind the
+    corpus. `the_benchmark_takes_its_first_group_from_this_corpus` fails here until that file is regenerated with
+    `JVMCONTRACT_BLESS=1 cargo test --test conformance the_benchmark_takes_its_first_group_from_this_corpus`: 16
+    new claims, and `nativeStrict` for boom, inherited and quiet. All other tests pass: unit (145), integration (64),
+    skill.
+- **5, step 2: the `Enum.<init>`, `List.of` and `List.copyOf` models** (inline; JVM 25.0.5; JBMC's side queued).
+  - **The models**, in `lib/models`, for JBMC's class path only:
+    - `java/lang/Enum.java`: the `name` and `ordinal` fields, set exactly by `Enum(String, int)`; `name()`,
+      `ordinal()`, `toString()` and `equals` (identity). `compareTo`, `hashCode`, `getDeclaringClass` and
+      `valueOf(Class, String)` are left out, so they stay JBMC's stubs and are named as gaps.
+    - `java/util/List.java`: `of` (every arity, and varargs) and `copyOf`, as the JDK 25 source does them, plus the
+      list methods the model lists define, declared abstract.
+    - `java/util/ImmutableCollections.java`: the JDK's `List12` (one or two elements), `ListN` (none, or three or
+      more, over an array of its own) and the one `EMPTY_LIST`. As in the JDK:
+      - a `null` element throws NPE when the list is made, and so does a search for `null`;
+      - every change throws UOE, the iterator's `remove` included;
+      - `get` out of range throws IOOBE from a `List12` and AIOOBE from a `ListN`;
+      - `copyOf` of one of them returns the list itself.
+
+      The model calls no JDK method, not even `Objects.requireNonNull`, and builds no exception message (JDK messages
+      are concatenations, and JBMC stubs `StringBuilder`).
+    - The two `java.util` files carry the OpenJDK header (GPL v2 with the Classpath exception), since they follow
+      OpenJDK's code.
+  - **Why JBMC only.** `Model::jbmc_only` is new: `ClassPath::model` doesn't give such a model to the interpreter or
+    to the own checker. The interpreter's natives already implement these classes, and an enum's state and a list's
+    elements are part of every object it allocates. The own checker still refuses what it refused: enums through
+    `$VALUES` (an array of references) and the varargs array of `List.of`. Using the `Enum` model in the own checker
+    belongs to the next step, enums.
+  - **Conformance, checked on the JVM.** 11 new cases and 22 claims: `enumState`, `listSizes`, `listNull`,
+    `listChange`, `listCopySame`, `listCopyMutable`, `listGet`, `listSearch`, `listEquals`, `listIterate` and
+    `listOfArray`. Their 47 calls all give the outcome recorded for them.
+    - **The interpreter** disagreed with the JVM on 11 of those calls before the fixes, and agrees on all of them
+      now. It still refuses one, `listChange(7)` (`Iterator.remove`), which is a refusal, not a disagreement.
+    - **The own checker** gives `Unverifiable` on all 22 claims in every native mode, at the named gaps.
+    - **The models themselves** are checked by a new test, `the_models_only_jbmc_runs_agree_with_the_jvm`. It moves
+      the models out of `java.*` with `relocate::class_file`, along with the corpus's references to them, and the
+      cases' calls must give the outcomes the JDK's own classes give. They do. A mutated model (`List12.get` throwing
+      AIOOBE) fails it on two calls.
+  - **Interpreter fixes** (`lib/src/interp/`), each a disagreement with the JVM that a case above showed:
+    - `Base::Enum` gains `text`, the string the constructor was given, which `name()` and `toString()` now return,
+      so that `name() == name()`.
+    - The `Machine` keeps the JDK class (`List12` or `ListN`) of each list `List.of` and `copyOf` make
+      (`immutable_list`, `immutable_list_kind`), and one empty list, which is global, as interned literals are.
+      `end_case` drops the entries of the objects it discards.
+    - `get` out of range throws as the JDK class would. `contains`, `indexOf` and `lastIndexOf` of `null` throw NPE.
+    - `copyOf` hands back only a list `List.of` or `copyOf` made. Before, it also handed back a `subList` view
+      unchanged, where the JDK copies it.
+  - **JBMC results the models may change:**
+    - The models are on the class path of every JBMC proof (`equivalence`, `prove`), so the models digest in every
+      statement changes.
+    - A verdict changes only where a proof reaches `java.lang.Enum` or `java.util.List`. Among the recorded examples
+      that is 013 and 071: job `-082917` found that no other recorded JBMC example reaches a JBMC stub.
+    - Beyond those, the conformance corpus's JBMC runs and the benchmark's JBMC cases over the corpus.
+    - A JBMC proof that makes a list some other way (an `ArrayList`, say) still reaches that class's stubs, and under
+      strict that is no verdict, as before.
+    - **Two risks the job will show.** The preflight in `jbmc_gaps.rs` walks JBMC's call graph without following
+      paths. Through JBMC's virtual dispatch it may reach stubs that no path takes:
+      - `Collection.isEmpty` and `toArray`, which `listCopy` calls on a list that isn't one of the model's;
+      - the abstract `List.get`, through the model's own iterator and `equals`.
+      If it does, 071's first two proofs stay no verdict under strict, now on those stubs. The way out would be in
+      `jbmc_gaps.rs` (the JBMC stream's) or a different shape for the model.
+  - **Queued:** job `20261106-203501-examples-071-and-013-under-strict-with-t`. It runs:
+    1. 071 under strict: expected a violation, with obligations 1 and 2 verified with no gap and 3 a violation;
+    2. 013 under strict: expected a violation;
+    3. `gap-contracts --record` over the library on JDK 25.0.5;
+    4. the conformance corpus under JBMC and `--engine auto`, with the log kept.
+
+    The two examples' notes are the reconcile loop's to update, from the job's outputs.
+  - **Shared files changed:**
+    - `lib/src/interp/mod.rs`, `natives.rs` and `value.rs`, as above.
+    - `lib/tests/conformance.rs`: the cases, `NPE`/`UOE`, `ON_THE_MODELS` and the new test.
+    - `lib/tests/conformance/conformance/Conformance.java`: the methods, the `Shade` enum and four imports.
+    - `lib/src/classpath.rs`: `model` skips the JBMC-only models, and its test checks that.
+    - `lib/README.md`: two sentences.
+  - **Also changed:** `lib/src/models.rs` (the field, the macro arm, seven entries, the `util` package in the
+    source test), `lib/models/build.sh` and `lib/models/README.md` (the catalogue, where the models are used, how to
+    add one, and the licence).
+  - **For the reconcile loop:** `lib/benchmark/conformance.json` is now 22 more claims behind the corpus
+    (`JVMCONTRACT_BLESS=1`, as in step 1).
+  - **Tests:** unit (145), integration (64) and skill pass, and so does conformance, apart from its two known
+    failures: the 12 library-record claims, and the benchmark file.
+- **6a: transcripts of the own checker's solver calls** (inline; CaDiCaL 1.9.5, bundled).
+  - **What is recorded.** `lib/src/bmc/transcript.rs` (new) writes every clause the engine gives CaDiCaL and every
+    call it makes, in order. The format is CaDiCaL's own incremental CNF (`p inccnf`; a call is an `a` line of its
+    assumptions). After each call, a comment gives the answer, the seconds and the per-call time limit. The header
+    comments name the tool's version, the solver, the method and the engine's options, and a last comment says how
+    the check ended. A call that the engine settles without the solver (a constant-false assumption) isn't written.
+  - **When.** `bmc::Options::transcript` names a file. Otherwise the environment variable `JVMCONTRACT_TRANSCRIPTS`
+    names a directory, and each check in the process writes `PID-N.icnf` there. The variable reaches the checks of
+    `prove`, `equivalence`, the benchmark's runner and a job without a flag of their own, so 6c needs no change in
+    the JBMC stream's `lib/benchmark/`. A transcript that can't be created, or can't be written in full, fails the
+    check, since it was asked for. Without one, nothing changes.
+  - **Replay.** `jvmcontract transcript FILE [--limit S] [--json]` runs a transcript again on the bundled CaDiCaL,
+    call by call, each with its recorded limit. It reports the time against the recorded time, and the calls whose
+    answers contradict the recorded ones (exit 1), or were decided on one side only.
+  - **Checked.**
+    - Unit tests: the parser, a hand-written transcript, a contradiction, and truncated or out-of-order files.
+    - An engine test (`a_transcript_holds_every_clause_and_call_and_replays_with_the_same_answers`): a recorded check
+      gives the same outcome as an unrecorded one (verdict, paths, calls, clauses, variables, input). The transcript
+      holds every clause and variable, and replays with no contradiction.
+    - End to end on the benchmark's `held/lower-bound` (`equivalence --engine native`, unwind 9, arrays up to 8).
+      The run wrote two transcripts: the proof (460 calls, 43,478 clauses, verified) and a 5-call check (Violation).
+      Both replay with no contradiction, and the proof replays in 0.178 s of solving against 0.179 s recorded.
+  - **Not yet:** the transcripts of the five 6c workloads (binary search, 141, 142, reverse, prefix sums). They are
+    the 6c job's first step, run with the variable set.
+  - **A flaky test, fixed.** `the_models_only_jbmc_runs_agree_with_the_jvm` (step 2) failed once out of three runs of
+    the conformance suite. Every test's `compile()` deleted and rebuilt the shared `conformance-classes` directory,
+    so a test running in parallel could read it half-written. The corpus is now compiled once per run (a
+    `OnceLock`). Both full runs since passed it.
+  - **Shared files changed:**
+    - `lib/src/main.rs`: the `transcript` command (new).
+    - `lib/README.md`: a command line and a paragraph in "The tool's own checker".
+    - `lib/tests/conformance.rs`: `compile()` caches `compile_now()`, and `Compiled` derives `Clone`.
+  - **Also changed (mine):** `lib/src/bmc/bits.rs` (`Blaster::recorded`, the clause and call hooks, the refined
+    operation's ties going through `clause`) and `lib/src/bmc/mod.rs` (the module, `Options::transcript`,
+    `Outcome::transcript`, and `check`'s search as a labelled block, so the transcript is closed on every way out).
+  - **JBMC results:** none change; nothing on JBMC's side was touched.
+  - **Tests:** unit (151), integration (64) and skill pass. Conformance passes apart from its two known failures (the
+    12 library-record claims, and the benchmark file).
+    - In one run of the whole suite, `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` (integration, through
+      JBMC) failed, in a 614 s run. It then passed alone (12 s) and in a full rerun of the integration suite (64 of
+      64, 44 s). The failing run's message wasn't kept, so the cause isn't known. The test doesn't go near the
+      transcript code unless the variable is set.
+- **6b: the narrow solver interface** (inline; CaDiCaL 1.9.5, bundled).
+  - **The interface.** `lib/src/bmc/sat.rs` (new) is a `Sat` trait: `signature`, `add_clause`, `set_limit`,
+    `solve` under assumptions, `value`, `variables`. `Cadical` implements it over the `cadical` crate. The engine's
+    three layers are now apart:
+    - scheduling, in `Engine` (`mod.rs`): the probes, the deferred paths, the refinement loop in `solve_until`;
+    - encoding, in `Blaster` (`bits.rs`): it holds a `Box<dyn Sat>` and calls nothing else of the solver;
+    - solving, behind `Sat`.
+  - **Where a solver is chosen.** `bmc::Options::solver` makes the solver a check runs on, CaDiCaL by default.
+    `Blaster::over(solver, transcript)` is the constructor behind it. A transcript's header names the solver the
+    check ran on. `transcript::replay_on(solver, …)` replays a transcript on any `Sat` solver; `replay` and
+    `jvmcontract transcript` stay on CaDiCaL. 6c can put Bitwuzla's SAT mode behind the trait, and replay the
+    transcripts or run whole checks on it, with no change to the engine.
+  - **What stays CaDiCaL's.** `solver_signature()` and the results' `solver` field (`statement.rs`) still name
+    CaDiCaL, since nothing outside tests sets another solver. If 6c runs checks on another solver, the statement has
+    to take the name from the check.
+  - **No behaviour change.** The transcript recording stays in `Blaster`, on what crosses the interface, so it is
+    unchanged. One more indirect call per clause and per solver call.
+  - **Checked.**
+    - A unit test of `Cadical` behind the trait: incremental answers, assumptions per call, limits set and cleared.
+    - An engine test (`the_engine_gives_its_solver_nothing_but_clauses_limits_and_calls`): a check on `Logged`, a
+      test double that logs every event behind the trait, gives the plain run's outcome. The logged clauses are the
+      outcome's count, and every call is under a limit within the budget. The transcript names the logged solver,
+      and its calls are the logged calls, answer by answer. A replay on the logged solver gives the same clauses and
+      calls again.
+    - End to end, as in 6a: `held/lower-bound` (`equivalence --engine native`, unwind 9, arrays up to 8) writes
+      the same two transcripts by count: the proof's 460 calls over 43,478 clauses and 13,025 variables, verified,
+      and the 5-call check. Both replay with no contradiction (0.176 s of solving against 0.179 s recorded).
+    - Unit (153), integration (64) and skill pass. Conformance fails only its two known tests: the same 12
+      library-record claims, and the benchmark file.
+  - **Shared files changed:** `lib/README.md` (a paragraph, "The solver interface").
+  - **Also changed (mine):** `lib/src/bmc/bits.rs`, `mod.rs` and `transcript.rs`, as above.
+  - **JBMC results:** none change.
+- **5, step 3: enums in the own checker** (inline; JVM 25.0.5). With it, 4b's order for Phase 5 is done: the switch
+  maps came with the enums.
+  - **Arrays of references.** The engine now has `anewarray`, `aaload` and `aastore`: a cell holds an object or
+    `null`. A reference is not a choice among bits, so an index that is an input splits the path per cell
+    (`Engine::concrete_index`), as a switch does. Each side runs the instruction again with its constant, and an
+    index no cell has throws `ArrayIndexOutOfBoundsException`.
+    - At a join, the side that runs the instruction again does so without waiting there. Merged with the paths at
+      that join, its constant would be a choice again.
+    - An array's `clone()` is a copy.
+    - An `aastore` that would throw `ArrayStoreException` is refused.
+    - Arrays are now named by descriptor (`[I`, `[Lp/Color;`), as `ClassPath::is_subtype` names them. Before, an
+      `int[]` was named `int[]`, which a `checkcast [I` never matched.
+  - **`java.lang.Enum`'s model runs in the own checker.**
+    - `models::CHECKER_RUNS` lists it. `ClassPath::checker_model` and `checker_method` find it, and
+      `checker_runs` says the checker runs its instance methods: the constructor, `name()`, `ordinal()`, `toString()`
+      and `equals`.
+    - The interpreter keeps its natives, and JBMC's class path is unchanged. `bytecode_method` behaves as before;
+      it is now `method_in` with the interpreter's lookup.
+    - `compareTo`, `hashCode` and `valueOf` stay JDK gaps.
+  - **The gap scan agrees.**
+    - `anewarray` is no longer refused. `multianewarray` still is.
+    - An array's `clone()` counts as reproduced exactly.
+    - The walk goes through `Enum`'s model.
+    - **An earlier flaw, fixed.** An abstract application method (an enum constant's body, an interface's method)
+      was classed as a JDK call, and so as a gap. The walk already follows its overrides. `enumBodies` showed it,
+      under advised.
+  - **What it closes** (static, `initializer_shapes.py`):
+    - Over the apps, the 49 `class-initializer` gaps are now 0: all 36 enums and 13 switch maps run.
+    - Over the recorded examples, no example reaches one; before, 013 and 071 did, through the four Quorum enums.
+    - In the apps, what keeps code from the checker is now mostly `invokedynamic` (lambdas, 106 sites over the four
+      apps), floating point and array results of JDK methods (30 sites, all in Mica), and JDK gaps.
+  - **Conformance, checked on the JVM.**
+    - `enumState` is now verified and violated as the JVM decides; it was unverifiable.
+    - Five new cases, ten claims:
+      - `enumValues`: `values()` at an input index, and AIOOBE;
+      - `enumSwitch`: through `Conformance$1`'s `$SwitchMap`, over `Hue`, a top-level enum. javac 25 switches on
+        `ordinal()` directly over an enum nested in the same class;
+      - `enumBodies`: constant bodies, and a field `name` beside `Enum`'s private one;
+      - `enumBroken`: `ExceptionInInitializerError`, then `NoClassDefFoundError`;
+      - `enumValueOf`: a gap in every mode.
+    - The own checker decides the first four in every native mode as the JVM does.
+    - `the_models_only_jbmc_runs_agree_with_the_jvm` now also runs the four that go through the model; they agree.
+    - The test still fails only its 12 library-record claims.
+  - **Tests.**
+    - A unit test, `an_array_of_references_holds_its_objects_and_an_input_index_splits_the_path`, merged and
+      unmerged. It also checks the `ArrayStoreException` refusal.
+    - Three integration fixtures kept an initializer out with a `String[]`, which now runs. They use a `double[]`
+      now: `Gaps.Table`, `Contracted.Table` and `Identity.Names`.
+    - `the_gap_scan_gives_each_class_initializer_a_shape` now has the enum and its switch map running, and `Mass`, an
+      enum with a `double` field, still a gap.
+  - **Shared files changed:**
+    - `lib/tests/conformance.rs`: the cases, `enumState`'s verdicts, `ON_THE_MODELS`.
+    - `lib/tests/conformance/conformance/Conformance.java`: the methods, the `Step` and `Broken` enums, and `Hue` at the
+      end of the file.
+    - `lib/tests/integration.rs`: as above.
+    - `lib/README.md`: the fragment, the limits, the gap list and the models paragraph.
+    - Also changed: `lib/src/classpath.rs` (above; `model` is unchanged in what it gives) and `lib/src/models.rs`
+      (`CHECKER_RUNS`).
+  - **Also changed (mine):** `lib/src/bmc/mod.rs` (the engine and its module docs), `lib/src/bmc/gaps.rs`, and
+    `lib/models/README.md`.
+  - **JBMC results:**
+    - JBMC's own runs don't change. Its class path, its models and `exact_jdk_call` are as they were.
+    - Under `--engine auto`, a proof through an enum is now decided by the own checker. Before, it refused the
+      `class-initializer` gap and asked JBMC.
+    - The new cases have not run under JBMC, `auto` or `--confirm`. Those are the ignored conformance tests, for the
+      next conformance job.
+  - **For the reconcile loop:** `lib/benchmark/conformance.json` falls 10 more claims behind the corpus, and
+    `enumState`'s two claims change `nativeStrict`.
+  - **Tests:** unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12
+    library-record claims, and the benchmark file.
+  - **Not in scope:** the own checker still refuses `List.of` and `copyOf` (JBMC-only models over JDK list
+    classes). 4b's order didn't include them; they're a candidate for 4c's inventory.
+- **6c, step 1: Bitwuzla behind the `Sat` trait** (inline; Bitwuzla 0.8.2 from job `-194049`'s install, CaDiCaL
+  1.9.5 bundled).
+  - **The binding.** `lib/src/bmc/bitwuzla.rs` (new) gives Bitwuzla the engine's own clauses: a variable is a Boolean
+    constant, a clause the `or` of its literals, and a call is `check_sat_assuming`. The per-call limit is a
+    termination callback, and a model's values are read with `get_value`. The options are `produce-models` and
+    `sat-solver cadical`, otherwise Bitwuzla's defaults, and the signature says so. Only the solver differs, not the
+    encoding.
+  - **Nothing links it.** The C API is loaded at run time (`dlopen`) from `JVMCONTRACT_BITWUZLA` (the library or its
+    install directory), or else from `~/tools/bitwuzla/current`. Its enum values were printed by a C program
+    compiled against the installed headers. A version other than 0.8.2 is refused. The build and its tests don't
+    need Bitwuzla: its tests say "skipped" where it isn't installed.
+  - **Choosing it.** `JVMCONTRACT_SOLVER` is `cadical` (the default) or `bitwuzla`. Like the transcripts' variable, it
+    reaches every check of the process, so 6c's job needs no change in `lib/benchmark/`.
+    - It is read once (`sat::configuration`). `Options::default().solver` is now `sat::configured`, and `check`
+      fails on a choice that can't load.
+    - `jvmcontract transcript --solver bitwuzla FILE` replays a transcript on it.
+  - **Results name the solver the check ran on.** This was 6b's open point:
+    - `bmc::solver_signature()`, which the statement's `checker.solver` uses, is now the configured solver's.
+    - `Outcome::solver` was the literal `"CaDiCaL"`. It is now the first word of the solver's signature, so it is
+      unchanged under CaDiCaL, and so are the messages built from it.
+  - **Checked.**
+    - Unit tests of `Bitwuzla` behind the trait: incremental answers, assumptions per call, no model after `unsat`,
+      the empty clause. A call past its limit (pigeonhole 10/9, 0.05 s) stops with no answer.
+    - An engine test, `a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls`:
+      - a refuted division and a verified product get the same verdicts on both solvers;
+      - Bitwuzla's violating input is a real one;
+      - CaDiCaL's transcripts replay on Bitwuzla with no contradiction.
+    - The engine's 46 unit tests with `JVMCONTRACT_SOLVER=bitwuzla`: 44 pass. The two that fail pin CaDiCaL's
+      models: a different violating input (12, 4 against 15, 5), and one solver call fewer, since a path keeps its
+      models and `Engine::sides` splits without a call when they fall on both sides.
+    - End to end, `held/lower-bound` (`equivalence --engine native`, unwind 9, arrays up to 8):
+      - Under each solver it is verified, with the same two transcripts by count (460 calls over 43,478 clauses,
+        and 5 over 3,037). The statement names Bitwuzla under Bitwuzla.
+      - CaDiCaL's transcripts replay on Bitwuzla with no contradiction.
+    - Unit (157), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record
+      claims, and the benchmark file.
+  - **What the job has to measure, from one inline run** (indicative only, not evidence):
+    - CaDiCaL's 460 calls take 0.18 s replayed on CaDiCaL, and 6.2 s on Bitwuzla with its defaults.
+    - Bitwuzla's per-call cost grows with the formula (median 18 ms, 5.5 s in the second half of the calls).
+    - With Bitwuzla's `preprocess` off, it takes 1.06 s; `rewrite-level 0` alone doesn't help.
+    - So 6c's job runs Bitwuzla in both configurations, and compares whole replays, not only time inside calls.
+      Bitwuzla does its share of the encoding inside `check_sat`, while CaDiCaL takes clauses in `add_clause`,
+      which the replay doesn't time.
+    - The binding has no way to set `preprocess` yet. That comes with the job's script.
+  - **Shared files changed:** `lib/src/main.rs` (`transcript --solver`) and `lib/README.md` (a command line and the
+    solver-interface paragraph).
+  - **Also changed (mine):** `lib/src/bmc/bitwuzla.rs` (new), `sat.rs`, `mod.rs` (the module, the default solver,
+    `solver_signature`, the outcome's solver name, the test), and `lib/solvers/bitwuzla/README.md`.
+  - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
+- **5, the strict rerun: job `20261106-203501`, failed** (at `7457928`, Phase 5 step 2; vm-1, 14 min, peak 1.0 GiB).
+  - **What stands.** 071 and 013 give their expected violations under strict, and 071's third property is a
+    violation whose witness replays. `Enum.<init>`, `List.of` and `List.copyOf` are no longer gaps in either example:
+    the models are used.
+  - **071's properties 1 and 2 stay unverifiable under strict**, on two other JBMC stubs, as step 2 warned:
+    `Collection.isEmpty()` and `Collection.toArray()`. `jbmc_gaps.rs` finds them at `ImmutableCollections.listCopy:82`
+    and `:85`. No path of these proofs reaches them:
+    - `Decision.Transition`'s constructor calls `List.copyOf(effects)`;
+    - its `effects` come from `List.of`, through `Decision.transition`;
+    - so `listCopy` returns at its first branch.
+
+    The preflight walks JBMC's call graph, not its paths. 013 names the same two gaps in a note beside its
+    violation.
+  - **So Phase 5's last criterion, 071's two proofs standing under strict, is not met, and the fix isn't in my
+    files.** A model can't remove those stubs without hiding them: on a collection that isn't one of the model's, a
+    call has to reach JBMC's stub. The way out is a gap check in `jbmc_gaps.rs` (the JBMC stream's) that follows
+    paths, for instance by asking JBMC whether a stub's call site is reachable before refusing the proof. For the
+    reconcile loop.
+  - **The library, recorded on JDK 25.0.5:**
+    - 10 contracts checked, all 10 accepted: 3 proved, 7 tested.
+    - The new `lib/models/contracts/checked.json` is among the job's outputs and reaches this branch at the merge.
+    - The 12 library-record claims that conformance fails here should then pass. That is expected, not yet seen.
+  - **Conformance under JBMC and `auto`** (73 cases, 131 claims, 262 runs) has one disagreement with the JVM, on
+    `declaring`. JBMC 6.11.0 proves `result == n + 107` under strict, and the JVM refutes it: the method returns
+    `n + 7`.
+    - **The cause.** `Sub.value` is declared in `Holder`. On the JVM, the `getstatic` initializes `Holder` alone
+      (JVMS §5.5), and JBMC runs `Sub.<clinit>` too.
+    - **This is a false success of the JBMC route under strict.** The other claim (`n + 7`) is unverifiable under
+      JBMC: its counterexample doesn't replay.
+    - **`auto` decides both as the JVM does,** through the own checker.
+    - **The fix is the adapter's.** It should name a gap in `jbmc_gaps.rs` for a static field reached through a
+      class other than its declaring one, when a class from there up to the declarer has a `<clinit>`. That is for
+      the JBMC stream and the reconcile loop, and an upstream report could be drafted for the user. The reproducer is
+      the case itself, in `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto`.
+  - **The enum and list cases agree with the JVM** under JBMC and under `auto`. Under JBMC strict, the 20 list claims
+    are 1 verified, 8 refuted and 11 unverifiable; the log doesn't keep their gaps. Step 3's cases weren't in the
+    corpus at that commit.
+  - The two examples' pages and results are the reconcile loop's to take from the job's outputs.
+- **6c, step 2: Bitwuzla's options, and the bit-blasted comparison queued** (inline; Bitwuzla 0.8.2, CaDiCaL 1.9.5
+  bundled).
+  - **Options by name.** `JVMCONTRACT_SOLVER` and `transcript --solver` take `bitwuzla:` followed by Bitwuzla's
+    options, by the long names of its command line: `bitwuzla:preprocess=0,rewrite-level=0`.
+    - The binding reads each option's range or modes from the library (`bitwuzla_get_option_info`, a struct whose C
+      layout a test checks). It refuses a value outside them before setting it, since the C API aborts the process
+      on one.
+    - It also refuses the options it sets itself (`produce-models`, `time-limit-per`, `sat-solver`) and string
+      options.
+    - The signature lists the options, so the statement's `checker.solver` and the transcripts' headers name the
+      configuration.
+    - `sat::named` now returns a `Maker` (a shared closure), not a function pointer. `Options::solver` is unchanged.
+  - **The comparison's script,** `lib/solvers/compare.py`, with `test_compare.py`.
+    - It imports `lib/benchmark/run.py`'s cases, compilation, command lines and measurement, and changes none of
+      them.
+    - It runs the five workloads (`real/midpoint/search-within-bound`, `example/141`, `example/142`,
+      `held/reverse`, `held/prefix-sums`) under strict, on `cadical`, `bitwuzla` and `bitwuzla:preprocess=0`, with
+      three runs of each full check.
+    - The first run of each check records its transcripts. CaDiCaL's are replayed on all three solvers, three times
+      each.
+    - It writes `bit-blasted.json` and `bit-blasted.md`.
+    - It fails on a wrong decisive verdict, on solvers that disagree, on CaDiCaL missing an expected verdict, or on a
+      replay contradiction. A Bitwuzla run out of time is listed as not decided.
+  - **Checked.**
+    - Unit tests: the option layout; settings parsed, checked and named; a refused range, mode, name, an own option
+      and a string option; solver names with options. Unit (160), integration (64) and skill pass. Conformance fails
+      only its two known tests (the 12 library-record claims, and the benchmark file). The script's 4 tests pass.
+    - `held/lower-bound` end to end under `bitwuzla:preprocess=0`: verified, with the same two transcripts by
+      count, and the statement names the option. Its 460 replayed calls take 1.19 s, and 0.89 s with
+      `rewrite-level=0` too, against 0.18 s on CaDiCaL.
+    - The script inline, on `held/prefix-sums` and `held/reverse` on all three solvers, run twice: all verified, no
+      contradiction. On reverse, a whole check takes 0.16 s on CaDiCaL, 3.90 s on Bitwuzla's defaults and 1.48 s with
+      `preprocess=0`. These are indicative only; the job's figures are the evidence.
+    - All five workloads on CaDiCaL alone: verified, in 942, 115, 18, 1,044 (plus a 5-call check) and 1,885 calls.
+      942 and 1,044 are the review's counts for binary search and 141.
+  - **Queued:** job `20261106-224616-the-own-checker-on-cadical-and-on-bitwuz`. Phase 6c's single job is now two: this one (SAT only), and a later one for word-level
+    terms.
+  - **Shared files changed:** `lib/src/main.rs` (the doc of `transcript --solver`) and `lib/README.md` (the
+    solver-interface paragraph).
+  - **Also changed (mine):** `lib/src/bmc/bitwuzla.rs`, `sat.rs`, `lib/solvers/compare.py` and `test_compare.py`
+    (new), and `lib/solvers/bitwuzla/README.md`.
+  - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
+- **6c, part 2: the word-level prototype, and its job queued** (inline; Bitwuzla 0.8.2, CaDiCaL 1.9.5 bundled).
+  - **The interface.** `sat.rs` gains `Terms`, which a solver may offer through `Sat::terms`. It has two methods:
+    - `gate` defines a variable as an `and`, `xor` or `ite` of literals;
+    - `word` defines a run of variables as the bits of a word-level operation (`WordOp`) over operand bits.
+  - **The encoding** (`bits.rs`). Over a solver with terms, the blaster builds no circuits:
+    - Each gate is defined to the solver instead of getting Tseitin clauses.
+    - These are one word-level operation each: addition, subtraction, multiplication, signed division and
+      remainder, the comparisons, a shift by a symbolic amount, a bitwise operation of two non-constant values, and
+      an `ite` of two values.
+    - Constants fold as before, and so do a few identities (`x + 0`, `x * 1`, `x == x`). The same operation on the
+      same operands is one operation.
+    - Nothing goes to the lazy division and multiplication: the solver is given the operation itself, so there is
+      no refinement.
+    - A path's model is evaluated as before, a word-level operation by its real result on the operands' values. A
+      division by zero follows SMT-LIB's rule, as Bitwuzla does.
+    - The scheduling (`Engine`) is unchanged.
+  - **Bitwuzla's side** (`bitwuzla.rs`, `JVMCONTRACT_SOLVER=bitwuzla-words[:options]`):
+    - a gate is a Boolean term, and an operation one bit-vector term (`bvadd`, `bvsdiv`, `bvult`, `ite`, ...);
+    - its result bits are `extract`s of that term;
+    - operand bits that are a run of one term's bits are read back as the term, or an `extract` of it, so a
+      method's arithmetic reaches Bitwuzla as terms over its inputs;
+    - the kind numbers were printed by a C program against the installed headers.
+  - **What it leaves out:**
+    - **No array theory.** Arrays stay the engine's bounded cells, read and written through `ite`s over the index.
+      Using arrays would change the engine's state, not only the encoding, so it is left for the recommendation
+      to weigh.
+    - **No transcripts.** A check that asks for one on this solver fails, saying why, since there are no clauses
+      to record.
+  - **Results** report the count as `word_operations` in the outcome and in `--json`'s stats. The field is left
+    out when it is zero, so output under CaDiCaL is unchanged.
+  - **Checked.**
+    - The blaster's arithmetic tests run on `bitwuzla-words` too (`word_level_operations_on_bitwuzla_are_the_jvms`):
+      every int and long operation over edge values, plus bitwise operations and `ite`. Each result is read from
+      Bitwuzla's model and also evaluated from the inputs alone, and the test checks that the two agree. Constant
+      folding and building an operation once are tested as well.
+    - The engine test `a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls` now checks
+      `bitwuzla-words` too: the same verdicts and a real violating input, one clause, no lazy operation, and the
+      refused transcript.
+    - **The engine's 51 unit tests with `JVMCONTRACT_SOLVER=bitwuzla-words`:** 46 pass. Four fail by design: two
+      pin the lazy refinement, and two the transcripts or the clauses the solver is given. A fifth,
+      `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed`, failed once in that run and passed
+      alone under either solver. It doesn't go near the solver.
+    - **Inline, one run each** (indicative only):
+
+      | Case | CaDiCaL | `bitwuzla-words` | Calls (CaDiCaL / words) |
+      |---|---:|---:|---:|
+      | `held/reverse` | 0.18 s | 0.12 s | 115 / 125 |
+      | `held/prefix-sums` | 0.05 s | 0.06 s | 18 / 19 |
+      | `example/141` | – | 2.35 s | – / 1,124 |
+
+      - All verified.
+      - Bit-blasted Bitwuzla took 3.9 s on reverse.
+      - `bitwuzla-words` has more calls, since it folds less than the circuits do.
+    - **The suites:** unit (162), integration (64) and skill pass. Conformance fails only its two known tests: the 12
+      library-record claims, and the benchmark file.
+  - **Queued:** job `20261106-230455-the-own-checker-on-cadical-and-on-bitwuz`, `compare.py --words`. It runs the
+    five workloads' full checks three times each on `cadical`, `bitwuzla-words` and `bitwuzla-words:preprocess=0`,
+    and writes `word-level.json` and `.md`. It fails on a wrong or disagreeing decisive verdict.
+  - **Shared files changed:** `lib/README.md` (the solver-interface paragraph).
+  - **Also changed (mine):** `lib/src/bmc/sat.rs`, `bits.rs`, `bitwuzla.rs` and `mod.rs` (the transcript refusal,
+    the field, the test), `lib/solvers/compare.py` (`--words`), and `lib/solvers/bitwuzla/README.md`.
+  - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
+- **6c, the two comparisons: jobs `20261106-224616` (bit-blasted, at `09739e6`) and `20261106-230455`
+  (word-level, at `bbb3062`), both passed.** Both ran on vm-1 (x86_64, 28 CPUs), taking 22m41s and 3m51s, with a
+  peak of 1.0 and 1.1 GiB.
+  - **The checks.** Every check of the five workloads is verified on every solver, with the same paths and merges.
+    There are no problems: no wrong or disagreeing verdict, and no replay contradiction.
+  - **Bit-blasted.** Bitwuzla is 2 to 43 times slower than CaDiCaL on the engine's clauses with its defaults, and
+    1.7 to 14 times slower with `preprocess=0`.
+    - Replaying CaDiCaL's transcripts gives the same picture.
+    - In the replays, 1 to 7 calls of binary search and 142 ran past CaDiCaL's recorded per-call limit on Bitwuzla.
+      These are listed as not decided.
+  - **Word-level.** `bitwuzla-words:preprocess=0` against CaDiCaL, whole check, medians:
+
+    | Case | CaDiCaL | `bitwuzla-words:preprocess=0` | Speed-up |
+    |---|---:|---:|---:|
+    | binary search | 1.736 s | 0.900 s | 1.93× |
+    | `example/141` | 1.316 s | 1.279 s | 1.03× |
+    | `example/142` | 4.696 s | 3.594 s | 1.31× |
+    | `held/reverse` | 0.153 s | 0.092 s | 1.66× |
+    | `held/prefix-sums` | 0.051 s | 0.051 s | 1.00× |
+
+    - With Bitwuzla's default preprocessing, 141 and 142 are slower than CaDiCaL: 2.037 s and 10.086 s.
+    - The solver is given 25 to 3,633 word-level operations, where CaDiCaL gets 5,637 to 240,144 clauses.
+  - **The record.** Both tables say `at ?` for the commit. The runner's export has no git, so `compare.py` found no
+    HEAD. The jobs' records give the commits (above). The outputs, `lib/solvers/comparison/*.json` and `.md`, reach
+    this branch at the merge.
+- **6d: the recommendation** (inline; written from the two jobs, nothing run). [`lib/solvers/README.md`](../../lib/solvers/README.md)
+  (new) argues against moving the engine to word-level solving now. It keeps CaDiCaL 1.9.5 and bit-blasting as the
+  default, and keeps `bitwuzla-words` as an opt-in prototype. No default changes.
+  - **The argument:**
+    - **The solver alone gains nothing.** Bitwuzla is slower on the engine's own clauses everywhere.
+    - **Terms gain at most 1.9×, and only with a default turned off.** With Bitwuzla's defaults, two of the five
+      workloads are slower.
+    - **No case moves from undecided to decided.** The own checker already takes 0.05 to 4.7 s on these five,
+      against JBMC's 58.6 s, 65.2 s and out of memory (job `-102624`).
+    - **A migration would cost more than it gains.** It would cost 6a's clause transcripts and the bundled solver.
+      The array theory, which is what would make it architectural, is unbuilt and unmeasured.
+  - **The page also says what would reopen the question:** a slow or undecided check where solving dominates, such
+    as nonlinear arithmetic or arrays past the bounded cells, measured first with `compare.py --words`. It names the
+    evidence's limits:
+    - one machine, three runs each;
+    - Bitwuzla's CaDiCaL 2.1.2 against the engine's 1.9.5, which isn't separated, because no standalone CaDiCaL 2.x
+      is installed and the brief's bar for trying it isn't met;
+    - a prototype with no array theory;
+    - workloads that are integer and array code.
+  - **Fixed:** `compare.py` now takes the commit from the runner's `VERIFY_SOURCE_COMMIT` before trying git. The
+    test is `test_a_job_records_the_runners_commit_since_its_tree_has_no_git`. The recorded tables stand as they
+    are.
+  - **Checked:** the script's tests (5), the skill test, and the new page's relative links. Every figure on the
+    page was recomputed from the jobs' JSON. Rust is unchanged.
+  - **Shared files changed:** `lib/README.md`, one sentence pointing at the recommendation.
+  - **Also changed (mine):** `lib/solvers/README.md` (new), `compare.py`, `test_compare.py` and
+    `lib/solvers/bitwuzla/README.md` (a pointer).
+- **Where the phases stand.**
+  - 1c, 4b, 5, 6a, 6b, 6c and 6d are done. Every job submitted along the way is back. `-192008` and `-203501`
+    failed, and both are explained above.
+  - **Phase 5's last criterion is not met:** 071's two proofs standing under strict. The fix is a path-aware gap
+    check in `jbmc_gaps.rs`, the JBMC stream's file, as recorded above.
+  - **Left for the reconcile loop:**
+    - that `jbmc_gaps.rs` fix;
+    - the `declaring` gap, JBMC's false success under strict, with a possible upstream report to draft for the user;
+    - `lib/benchmark/conformance.json` (`JVMCONTRACT_BLESS=1`);
+    - 071's and 013's notes, from job `-203501`;
+    - Bitwuzla's version, fitted into 1b's record.
+- Status: done
 
 ## Loop settings
 

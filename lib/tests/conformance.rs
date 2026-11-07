@@ -86,6 +86,8 @@ impl Case {
 
 const MIN: &str = "-2147483648";
 const IAE: &str = "throws java.lang.IllegalArgumentException";
+const NPE: &str = "throws java.lang.NullPointerException";
+const UOE: &str = "throws java.lang.UnsupportedOperationException";
 
 /// The corpus. A claim's native verdict is what the engine gives today; `U` on a claim the JVM refutes is a gap or
 /// a construct refused by name, which is the correct answer under strict.
@@ -107,12 +109,59 @@ fn corpus() -> Vec<Case> {
         Case::new("otherLiteral", &[("0", "returns 0")]).holds(None, "!result", &[], V).refuted(None, "result", &[], X),
         Case::new("sameClass", &[("0", "returns 1")]).holds(None, "result", &[], V).refuted(None, "!result", &[], X),
         Case::new("concatenated", &[("0", "returns 0")]).holds(None, "!result", &[], V).refuted(None, "result", &[], X),
-        Case::new("boom", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], U),
-        Case::new("inherited", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], U),
-        Case::new("quiet", &[("3", "returns 3")]).holds(None, "result == n", &[], U),
+        Case::new("boom", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], X),
+        Case::new("inherited", &[("3", "throws java.lang.ExceptionInInitializerError")]).refuted(None, "result == n", &[], X),
+        Case::new("quiet", &[("3", "returns 3")]).holds(None, "result == n", &[], V),
+        // Class initialization (Phase 5 of llm-dlc/loops/engine-priorities.md).
+        Case::new("counter", &[("3", "returns 8")]).holds(None, "result == n + 5", &[], V).refuted(None, "result == n", &[], X),
+        Case::new("constructed", &[("3", "returns 6")]).holds(None, "result == n + 3", &[], V).refuted(None, "result == n + 1", &[], X),
+        Case::new("superFirst", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 21", &[], X),
+        Case::new("cycle", &[("3", "returns 5")]).holds(None, "result == n + 2", &[], V).refuted(None, "result == n + 1", &[], X),
+        Case::new("declaring", &[("3", "returns 10")]).holds(None, "result == n + 7", &[], V).refuted(None, "result == n + 107", &[], X),
+        Case::new("defaults", &[("3", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 34", &[], X),
+        Case::new("fatal", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
+        Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
+        // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): the calls lib/models models for
+        // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them.
+        Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], V).refuted(None, "result < 20", &[], X),
+        // Enums in the own checker (Phase 5, its last step): `$VALUES` at an index that is an input, a switch through
+        // javac's `$SwitchMap` class, constants with bodies and a field named as `Enum`'s private one, an enum whose
+        // initializer throws, and `valueOf`, which stays a gap (`Enum.valueOf(Class, String)` is reflection).
+        Case::new("enumValues", &[("0", "returns 1003"), ("2", "returns 1023"), ("3", "throws java.lang.ArrayIndexOutOfBoundsException"), ("-1", "throws java.lang.ArrayIndexOutOfBoundsException")])
+            .holds(None, "result == 1003 + n * 10", &["ArrayIndexOutOfBoundsException when n < 0 || n > 2"], V)
+            .refuted(Some("n >= 0 && n <= 2"), "result < 1020", &[], X),
+        Case::new("enumSwitch", &[("0", "returns 10"), ("1", "returns 21"), ("101", "returns 32"), ("-7", "returns 21")]).holds(Some("n > 100"), "result == 32", &[], V).refuted(None, "result != 21", &[], X),
+        Case::new("enumBodies", &[("5", "returns 1160"), ("0", "returns 1181"), ("-3", "returns 1151")])
+            .holds(Some("n > 0 && n < 1000"), "result == n * 10 + 1110", &[], V)
+            .refuted(Some("n <= 0 && n > -1000"), "result == 1181", &[], X),
+        Case::new("enumBroken", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 13", &[], X),
+        Case::new("enumValueOf", &[("4", "returns 5")]).holds(None, "result == n + 1", &[], U).refuted(None, "result == n", &[], U),
+        Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
+            .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], U)
+            .refuted(None, "result >= 10", &[], U),
+        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], U).refuted(None, "result == 5", &[], U),
+        Case::new("listChange", &[("0", "returns 1"), ("1", UOE), ("2", UOE), ("3", UOE), ("4", UOE), ("5", UOE), ("6", UOE), ("7", UOE), ("8", "returns 1"), ("10", "returns 3"), ("13", UOE), ("-1", "returns 1")])
+            .holds(Some("n == 0 || n == 8"), "result == 1", &[], U)
+            .refuted(None, "result >= 1", &[], U),
+        Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], U).refuted(None, "result == 1", &[], U),
+        Case::new("listCopyMutable", &[("0", "returns 1"), ("1", "returns 10"), ("2", NPE), ("9", NPE)])
+            .holds(Some("n <= 0"), "result == 1", &[], U)
+            .refuted(None, "result <= 10", &[], U),
+        Case::new("listGet", &[("0", "returns 1"), ("1", "throws java.lang.IndexOutOfBoundsException"), ("-1", "throws java.lang.IndexOutOfBoundsException"), ("10", "returns 2"), ("12", "returns 1"), ("13", "throws java.lang.ArrayIndexOutOfBoundsException"), ("20", "throws java.lang.ArrayIndexOutOfBoundsException")])
+            .holds(Some("n == 0 || n == 12"), "result == 1", &[], U)
+            .refuted(None, "result >= 1", &[], U),
+        Case::new("listSearch", &[("0", NPE), ("2", "returns -1089"), ("5", "returns 90"), ("7", "returns -1110")])
+            .holds(Some("n == 5"), "result == 90", &[], U)
+            .refuted(None, "result < 0", &[], U),
+        Case::new("listEquals", &[("2", "returns 11"), ("3", "returns 0")]).holds(Some("n != 2"), "result == 0", &[], U).refuted(None, "result == 0", &[], U),
+        Case::new("listIterate", &[("0", "returns 6"), ("1", "throws java.util.NoSuchElementException")]).holds(Some("n <= 0"), "result == 6", &[], U).refuted(None, "result == 6", &[], U),
+        Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], U).refuted(None, "result == 111", &[], U),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
-        Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X),
+        Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X)
+            // JBMC 6.11.0 computes the returned quotient past the handler, so it proved this (tests/fixtures/jbmc-defects).
+            .refuted(None, "result == 10 / n", &["ArithmeticException when n == 0"], X),
+        Case::new("caughtAsRuntime", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result == 10 / n", &["ArithmeticException when n == 0"], X),
         Case::new("nestedHandler", &[("0", "returns -2"), ("3", "returns 33")]).holds(None, "n != 0 || result == -2", &[], V).refuted(None, "result != -2", &[], X),
         Case::new("element", &[("[];0", "throws java.lang.ArrayIndexOutOfBoundsException"), ("[4,5];1", "returns 5")])
             .holds(None, "result == a[i]", &["ArrayIndexOutOfBoundsException when i < 0 || i >= a.length"], V)
@@ -175,12 +224,16 @@ fn corpus() -> Vec<Case> {
             .holds(Some("s == 64"), "result == x", &[], V)
             .refuted(Some("s == 64"), "result == 0", &[], X)
             .holds(Some("s == 32 && x == 1"), "result > 2147483647", &[], V),
-        Case::new("shiftRight", &[("-1;7", "returns -1"), ("-1;33", "returns -1")])
+        // JBMC 6.11.0 right-shifts by the whole distance, unmasked: it proved the third claim of each (an
+        // `unmasked-shift` defect, which its preflight now names and refuses a proof through).
+        Case::new("shiftRight", &[("-1;7", "returns -1"), ("-1;33", "returns -1"), ("4;33", "returns 2")])
             .holds(Some("x == -1"), "result == -1", &[], V)
-            .refuted(Some("s == 33"), "result == x / 2", &[], X),
+            .refuted(Some("s == 33"), "result == x / 2", &[], X)
+            .refuted(Some("s == 33"), "result == 0 || result == -1", &[], X),
         Case::new("shiftUnsigned", &[("-1;32", "returns -1"), ("-1;1", "returns 2147483647")])
             .refuted(Some("x < 0 && s == 32"), "result > 0", &[], X)
-            .holds(Some("x < 0 && s == 1"), "result > 0", &[], V),
+            .holds(Some("x < 0 && s == 1"), "result > 0", &[], V)
+            .refuted(Some("s == 32"), "result == 0", &[], X),
         Case::new("square", &[("46341", "returns -2147479015")]).refuted(None, "result >= 0", &[], X),
         Case::new("negate", &[(MIN, "returns -2147483648")]).refuted(Some("x < 0"), "result > 0", &[], X),
         Case::new("toByte", &[("128", "returns -128"), ("-129", "returns 127")])
@@ -199,12 +252,20 @@ fn corpus() -> Vec<Case> {
 }
 
 /// The corpus and the runner, compiled.
+#[derive(Clone)]
 struct Compiled {
     classes: PathBuf,
     runner: PathBuf,
 }
 
+/// The corpus and the runner, compiled once for every test of the run: the tests run in parallel, and one that
+/// compiled again would delete the classes another is reading.
 fn compile() -> Option<Compiled> {
+    static COMPILED: std::sync::OnceLock<Option<Compiled>> = std::sync::OnceLock::new();
+    COMPILED.get_or_init(compile_now).clone()
+}
+
+fn compile_now() -> Option<Compiled> {
     if !has("javac") || !has("java") {
         return None;
     }
@@ -316,10 +377,10 @@ enum Contracts {
 type Mode = (Engine, GapMode, bool, Contracts);
 
 /// Contracts for the corpus's gaps, each stating what the JDK's call does as the corpus's calls show it on the JVM
-/// (step 3b of the sound-verdicts brief), written by an agent: the session that wrote the step. The initializers
-/// that throw are given contracts that say so, which the own checker refuses (it applies an initializer's only
-/// when it throws nothing), so those claims stay without a verdict. Since 3c each is tested on the JVM before it is
-/// applied, and the test fails if one is refuted or left untested.
+/// (step 3b of the sound-verdicts brief), written by an agent: the session that wrote the step. The initializers'
+/// contracts close nothing since Phase 5 of llm-dlc/loops/engine-priorities.md: the own checker runs those
+/// initializers, so they are no gaps, and the claims are decided as under strict. Since 3c each is tested on the JVM
+/// before it is applied, and the test fails if one is refuted or left untested.
 const CORPUS_CONTRACTS: &str = "kind: gap-contracts
 
 jdk-constructor:java.util.ArrayList.<init>(I)V@{jdk}
@@ -616,6 +677,49 @@ fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 
+/// The cases whose calls go through the models of `lib/models` that only JBMC runs (`Model::jbmc_only`:
+/// `java.lang.Enum`, the factories of `java.util.List` and the immutable lists they return).
+const ON_THE_MODELS: &[&str] = &["enumState", "enumValues", "enumSwitch", "enumBodies", "enumBroken", "listSizes", "listNull", "listChange", "listCopySame", "listCopyMutable", "listGet", "listSearch", "listEquals", "listIterate", "listOfArray"];
+
+/// The models only JBMC runs, run on a JVM. The interpreter keeps its own natives for these classes, so the corpus
+/// above checks those natives, and this test checks the models themselves: relocated out of `java.*` (a JVM loads
+/// no class of its own there), with the corpus's references to them following, the calls of [`ON_THE_MODELS`] give
+/// the outcomes they give on the JDK's own classes.
+#[test]
+fn the_models_only_jbmc_runs_agree_with_the_jvm() {
+    let Some(compiled) = compile() else { return };
+    let own: std::collections::BTreeSet<String> = jvmcontract::models::MODELS.iter().filter(|m| m.jbmc_only).map(|m| m.name.to_string()).collect();
+    assert!(own.contains("java/lang/Enum") && own.contains("java/util/List"), "{own:?}");
+    let relocated = target_tmp().join("conformance-on-the-models");
+    let _ = std::fs::remove_dir_all(&relocated);
+    let mut renamed = 0;
+    for entry in std::fs::read_dir(compiled.classes.join("conformance")).unwrap() {
+        let path = entry.unwrap().path();
+        let bytes = std::fs::read(&path).unwrap();
+        let out = jvmcontract::relocate::class_file(&bytes, &own, "model").unwrap();
+        renamed += usize::from(out != bytes);
+        let target = relocated.join("conformance").join(path.file_name().unwrap());
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        std::fs::write(target, out).unwrap();
+    }
+    assert!(renamed >= 2, "the corpus and its enum refer to the models");
+    for model in jvmcontract::models::MODELS.iter().filter(|m| m.jbmc_only) {
+        let target = relocated.join("model").join(format!("{}.class", model.name));
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        std::fs::write(target, jvmcontract::relocate::class_file(model.bytes, &own, "model").unwrap()).unwrap();
+    }
+    let corpus = corpus();
+    let mut lines = Vec::new();
+    for name in ON_THE_MODELS {
+        let case = corpus.iter().find(|c| c.method == *name).unwrap_or_else(|| panic!("{name} is not in the corpus"));
+        lines.extend(case.calls.iter().map(|(arguments, _)| format!("call\t{CLASS}#{name}\t{arguments}")));
+    }
+    let on_the_jdk = on_the_jvm(&compiled, &lines, "on-the-jdk");
+    let on_the_models = on_the_jvm(&Compiled { classes: relocated, runner: compiled.runner.clone() }, &lines, "on-the-models");
+    let differences: Vec<String> = lines.iter().zip(on_the_jdk.iter().zip(&on_the_models)).filter(|(_, (a, b))| a != b).map(|(line, (a, b))| format!("{}: the JDK's classes: {a}; the models: {b}", line.replace('\t', " "))).collect();
+    assert!(differences.is_empty(), "{} calls differ on the models:\n{}", differences.len(), differences.join("\n"));
+}
+
 /// The benchmark corpus of step 5a (`lib/benchmark/`) takes its first group from this corpus, as
 /// `lib/benchmark/conformance.json`: each claim with its method, the answer the JVM gives (`violation` for a claim
 /// one of the case's calls refutes, which the test above checks on a JVM, `verified` otherwise), and the native
@@ -687,16 +791,139 @@ fn the_corpus_agrees_with_the_jvm_under_auto_confirm() {
 }
 
 /// A stand-in for JBMC that answers every run with `answer.txt` next to it and keeps the arguments it was given in
-/// `args.txt`: what `--confirm` does with each answer is then tested without running JBMC.
+/// `args.txt`: what `--confirm` does with each answer is then tested without running JBMC. Its program, for the
+/// preflight, is `goto.txt` next to it where there is one, and otherwise the harness's function alone.
 fn fake_jbmc(name: &str) -> PathBuf {
     let dir = target_tmp().join(format!("fake-jbmc-{name}"));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let script = dir.join("jbmc");
-    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) [ -f \"$d/goto.txt\" ] && { cat \"$d/goto.txt\"; exit 0; }; p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
     script
+}
+
+/// A stand-in for JBMC that answers each interval stage from a file of its own next to it: `small.json` for
+/// `[0:20]`, `wide.json` for `[-100000:100000]` and `full.json` for every input. Where `STAGE.sleep` is there
+/// instead, the run outlasts any budget. Each run's stage is appended to `calls.txt`.
+fn staged_jbmc(name: &str) -> PathBuf {
+    let dir = target_tmp().join(format!("staged-jbmc-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let script = dir.join("jbmc");
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\ns=full; p=; for a in \"$@\"; do [ \"$p\" = --java-assume-inputs-interval ] && s=$a; p=$a; done\ncase \"$s\" in '[0:20]') s=small;; '[-100000:100000]') s=wide;; esac\necho $s >> \"$d/calls.txt\"\n[ -f \"$d/$s.sleep\" ] && exec sleep 20\ncat \"$d/$s.json\"\n").unwrap();
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
+    script
+}
+
+/// `--jbmc-staging` (step 2a of `llm-dlc/loops/engine-priorities.md`): each policy runs its own interval stages,
+/// each on its own budget out of the one deadline, on property proofs and regression checks alike. Only the full
+/// range proves, a preliminary stage out of its budget hands on, a violation stops the search, and a witness from
+/// the full range is shrunk as any other. JBMC is a stand-in script answering stage by stage.
+#[test]
+fn jbmcs_staging_policy_picks_the_stages_it_runs_and_their_budgets() {
+    use jvmcontract::deadline::Staging;
+    let Some(compiled) = compile() else { return };
+    let jbmc = staged_jbmc("staging");
+    let dir = jbmc.parent().unwrap().to_path_buf();
+    // What each stage answers: `None` outlasts its budget.
+    let answer = |small: Option<&Answer>, wide: Option<&Answer>, full: &Answer| {
+        for (stage, a) in [("small", small), ("wide", wide), ("full", Some(full))] {
+            let _ = std::fs::remove_file(dir.join(format!("{stage}.sleep")));
+            match a {
+                Some(a) => std::fs::write(dir.join(format!("{stage}.json")), &a.json).unwrap(),
+                None => std::fs::write(dir.join(format!("{stage}.sleep")), "").unwrap(),
+            }
+        }
+    };
+    let calls = || {
+        let c = std::fs::read_to_string(dir.join("calls.txt")).unwrap_or_default();
+        let _ = std::fs::remove_file(dir.join("calls.txt"));
+        c.lines().map(str::to_string).collect::<Vec<_>>().join(" ")
+    };
+    let work = |name: &str| {
+        let work = target_tmp().join(format!("staging-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        Some(work)
+    };
+    let prove = |staging: Staging, assert: &str, name: &str| {
+        let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#increment"));
+        options.assert = Some(assert.to_string());
+        options.jbmc = jbmc.display().to_string();
+        options.jbmc_staging = staging;
+        options.timeout_seconds = 8;
+        options.work = work(&format!("{name}-{staging}"));
+        let outcome = property::run(&options).unwrap();
+        let search = outcome.search.clone().expect("JBMC's search");
+        (outcome, search)
+    };
+    let regress = |staging: Staging, name: &str| {
+        let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#increment"));
+        options.shared_callees = false;
+        options.jbmc = jbmc.display().to_string();
+        options.jbmc_staging = staging;
+        options.timeout_seconds = 8;
+        options.work = work(&format!("regress-{name}-{staging}"));
+        let outcome = jvmcontract::equivalence::run(&options).unwrap();
+        let search = outcome.search.clone().expect("JBMC's search");
+        (outcome, search)
+    };
+    let all = [Staging::Staged, Staging::FullRange, Staging::Tight];
+    let expected_calls = |staging: Staging| match staging {
+        Staging::Staged => "small wide full",
+        Staging::FullRange => "full",
+        Staging::Tight => "small full",
+    };
+
+    // Every stage proves: each policy runs its stages to the full range, the preliminary ones on their share
+    // (an eighth of 8 s staged, a fortieth tight), the last on what is left.
+    answer(Some(&proved()), Some(&proved()), &proved());
+    for staging in all {
+        let (o, search) = prove(staging, "result == x + 1", "proved");
+        assert_eq!(o.verdict, V, "{staging}: {}", o.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}");
+        assert_eq!(search.staging, Some(staging));
+        assert_eq!(search.stage, None, "{staging}: the proof is the full range's");
+        let (last, preliminary) = search.runs.split_last().unwrap();
+        assert!(last.stage.is_none() && last.budget_seconds > 7.0, "{staging}: {:?}", search.runs);
+        let share = if staging == Staging::Tight { 0.2 } else { 1.0 };
+        assert!(preliminary.iter().all(|r| r.stage.is_some() && r.budget_seconds <= share && r.ended == "verified"), "{staging}: {:?}", search.runs);
+        assert_eq!(serde_json::to_value(&o).unwrap()["search"]["staging"], staging.to_string());
+
+        let (r, search) = regress(staging, "proved");
+        assert_eq!(r.verdict, V, "{staging}: {}", r.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}: the regression check follows the same policy");
+        assert_eq!(search.staging, Some(staging));
+    }
+
+    // `[0:20]` outlasts its budget: it hands on, and the full range still proves.
+    answer(None, Some(&proved()), &proved());
+    for staging in all {
+        let (o, search) = prove(staging, "result == x + 1", "slow");
+        assert_eq!(o.verdict, V, "{staging}: {}", o.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}");
+        if staging != Staging::FullRange {
+            assert_eq!(search.runs[0].ended, "out-of-time", "{staging}: {:?}", search.runs);
+        }
+        let (r, _) = regress(staging, "slow");
+        assert_eq!(r.verdict, V, "{staging}: {}", r.output);
+        assert_eq!(calls(), expected_calls(staging), "{staging}");
+    }
+
+    // `result < 100` fails from 99 up. The wide stage finds 5000, the full range 1000000: a violation stops the
+    // search, and either witness is shrunk in the interpreter to the same 99.
+    answer(Some(&proved()), Some(&refuted_by_jbmc("PropertyHarness", "(I)V", 5000)), &refuted_by_jbmc("PropertyHarness", "(I)V", 1_000_000));
+    for (staging, stage, found) in [(Staging::Staged, Some("[-100000:100000]"), "5000"), (Staging::FullRange, None, "1000000"), (Staging::Tight, None, "1000000")] {
+        let (o, search) = prove(staging, "result < 100", "refuted");
+        assert_eq!(o.verdict, X, "{staging}: {}", o.output);
+        assert_eq!(calls(), expected_calls(staging).replace(" full", if staging == Staging::Staged { "" } else { " full" }), "{staging}");
+        assert_eq!(search.stage.as_deref(), stage, "{staging}");
+        let witness = o.counterexample.as_ref().expect("a witness");
+        assert_eq!(runner_arguments(&witness.inputs), "99", "{staging}: {}", o.output);
+        assert_eq!(witness.found_inputs.as_deref().map(runner_arguments).as_deref(), Some(found), "{staging}: as JBMC found it");
+    }
 }
 
 /// What a stand-in JBMC answers: `text` as JBMC prints it, `json` as it prints it under `--json-ui`, the one the
@@ -832,6 +1059,60 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     assert!(String::from_utf8_lossy(&cli.stderr).contains("--confirm needs --engine auto"), "{}", String::from_utf8_lossy(&cli.stderr));
 }
 
+/// `--confirm` where JBMC refutes the own checker's proof through a construct it runs otherwise than the JVM
+/// (`jbmc_gaps::Defect`, step 3 of `llm-dlc/loops/engine-priorities.md`), on a witness the interpreter does not
+/// reproduce: the refutation is the defect's, so JBMC gives no verdict and the proof stands, not confirmed. The
+/// stand-in JBMC answers `caught(0)` (javac's `return 10 / n` inside `try`), where the real one lets the
+/// division's exception past the handler; without the defect in its program, the same answer is a disagreement
+/// (`confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker`).
+#[test]
+fn confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict() {
+    let Some(compiled) = compile() else { return };
+    let jbmc = fake_jbmc("confirm-defect");
+    let dir = jbmc.parent().unwrap().to_path_buf();
+    let program = |harness: &str| format!("{harness}.check(int) /* java::{harness}.check:(I)V */\n        // 1 file {harness}.java line 1 function java::{harness}.check:(I)V bytecode-index 1\n     1: CALL java::{CLASS}.caught:(I)I(java::{harness}.check:(I)V::arg0i)\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n{CLASS}.caught(int) /* java::{CLASS}.caught:(I)I */\n        SKIP\n");
+    std::fs::write(dir.join("goto.txt"), program("PropertyHarness")).unwrap();
+    write_answer(&dir, &refuted_by_jbmc("PropertyHarness", "(I)V", 0));
+    let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#caught"));
+    options.assert = Some("n != 0 || result == -1".into());
+    options.engine = Engine::Auto;
+    options.confirm = true;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("confirm-defect-property");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    // The defect is named at the line of `caught`'s `return 10 / n`, read from the corpus so that cases added above
+    // it don't move the expectation.
+    let source = std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/conformance/conformance/Conformance.java")).unwrap();
+    let line = source.lines().position(|l| l.trim() == "return 10 / n;").expect("caught's return in the corpus") + 1;
+    let at = format!("return-past-handler at conformance.Conformance.caught:{line}");
+    let outcome = property::run(&options).unwrap();
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    let confirmation = outcome.search.as_ref().and_then(|s| s.confirmation.as_ref()).expect("a confirmation");
+    assert_eq!(confirmation.status, Confirmed::NoVerdict, "{}", outcome.output);
+    assert!(outcome.output.contains("  not confirmed: JBMC 6.11.0 gave no verdict"), "{}", outcome.output);
+    assert!(outcome.output.contains(&format!("its counterexample does not reproduce in the interpreter, and on the way it runs 1 construct otherwise than the JVM: {at}")), "{}", outcome.output);
+    assert!(outcome.counterexample.is_none() && !outcome.output.contains("the engines disagree"), "{}", outcome.output);
+    let json = serde_json::to_value(&outcome).unwrap();
+    assert_eq!(json["search"]["confirmation"]["status"], "no-verdict");
+
+    // A regression proof of the method against itself, as written: the same.
+    std::fs::write(dir.join("goto.txt"), program("EquivalenceHarness")).unwrap();
+    write_answer(&dir, &refuted_by_jbmc("EquivalenceHarness", "(I)V", 0));
+    let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#caught"));
+    options.engine = Engine::Auto;
+    options.confirm = true;
+    options.shared_callees = false;
+    options.jbmc = jbmc.display().to_string();
+    let work = target_tmp().join("confirm-defect-equivalence");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let equivalence = jvmcontract::equivalence::run(&options).unwrap();
+    assert_eq!(equivalence.verdict, Verdict::Verified, "{}", equivalence.output);
+    assert_eq!(equivalence.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status), Some(Confirmed::NoVerdict), "{}", equivalence.output);
+    assert!(equivalence.output.contains(&at), "{}", equivalence.output);
+}
+
 /// Step 4a of the brief: JBMC's interval stages run only where they bound an input, and a check has one deadline,
 /// each run a budget out of it. JBMC is a stand-in script that logs every run it is given, and can be made to hang
 /// on the interval stages, or on every run.
@@ -859,6 +1140,8 @@ fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
         let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#{method}"));
         options.assert = Some(assert.to_string());
         options.engine = Engine::Jbmc;
+        // The stages are `staged`'s; the default policy runs the full range alone since job 20261106-201041.
+        options.jbmc_staging = jvmcontract::deadline::Staging::Staged;
         options.timeout_seconds = timeout;
         options.jbmc = jbmc.display().to_string();
         let work = target_tmp().join(format!("stages-{name}"));
