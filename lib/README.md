@@ -359,6 +359,17 @@ javac apps: for each example, every claim of its app against the unpatched build
 judged against what the class files show independently of the closure walk (which classes' bytes changed, and which
 application classes each target's class refers to or may dispatch to).
 
+Every check with `--cache` notes its own time with the cache, apart from the checker's (`search.seconds`): computing
+the claim's key (both versions' closures, the harness's digest and the tools') and looking it up, a refuted hit's
+replay included. The note is this run's even on an exact hit, whose report is otherwise the stored one. Each changed
+helper's own check is timed in a note too. [`examples/tools/economics.py`](../examples/tools/economics.py) measures
+what the cache saves on the recorded B9 and B11 examples of the javac apps. It runs a cold run, a warm rerun, and
+runs after four kinds of change to each app (an unrelated edit, a behaviour-preserving helper rewrite, a
+representation change, a real regression; [`examples/tools/economics/`](../examples/tools/economics/README.md)). For
+each run it reports how each claim was served (an exact hit, nothing to prove, a changed helper's proof found or made
+in the run, proved or refuted again), the checker's, the cache's, the helpers' and the remaining time, and whether
+every warm verdict is the cold one. It is heavy, so it runs as a pipeline job.
+
 ## Limits
 
 - The interpreter models a subset of the JDK. Code outside it is *unverifiable*, never wrong; the message names the method. JBMC's view of the JDK is narrower still: it gets six JDK classes (`Byte`, `Short`, `Integer`, `Long`, `Math`, `StrictMath`) and the tool's [models](models/README.md) of a few more (the boxing caches, `Character.digit`, `java.nio.charset`, `Enum`, `List.of` and `List.copyOf`), and treats every other JDK class as a stub with nondeterministic fields and results, so a class whose static initializer reads a JDK static the tool does not model, or a call into a JDK method it does not, can end in a `NullPointerException` or an arbitrary result the JVM never produces. The replay in the interpreter is the check that catches most of these (a witness the interpreter cannot reproduce is reported as unverifiable, not as a violation); the fix is a model. Enum `hashCode` is deterministic here (the constant's name hash) where a JVM's is identity-based, and `ClassCastException` messages omit the class-loader suffix a JVM adds.

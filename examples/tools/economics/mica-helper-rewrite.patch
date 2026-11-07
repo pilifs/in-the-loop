@@ -1,0 +1,12 @@
+diff --git a/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java b/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
+@@ -11,7 +11,7 @@
+ 
+     /** The index halfway between {@code low} and {@code high}, both inclusive. */
+     public static int midpoint(int low, int high) {
+-        return (low + high) >>> 1;
++        return (int) (((low + high) & 0xffffffffL) / 2);
+     }
+ 
+     /** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */

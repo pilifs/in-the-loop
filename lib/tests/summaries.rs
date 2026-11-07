@@ -668,8 +668,16 @@ fn a_rerun_of_the_same_claim_is_an_exact_hit() {
     assert_eq!((warm.vacuous.clone(), warm.shared.clone()), (cold.vacuous.clone(), cold.shared.clone()));
     assert!(warm.proof.as_deref().is_some_and(|p| p.starts_with("reused from the proof cache")), "{:?}", warm.proof);
     // The result as it was reported, without what the cache said then.
-    let reported: String = cold.output.lines().filter(|l| !l.starts_with("note: the proof cache has no result") && !l.starts_with("note: stored in the proof cache")).map(|l| format!("{l}\n")).collect();
+    let reported: String = cold.output.lines().filter(|l| !l.starts_with("note: the proof cache has no result") && !l.starts_with("note: stored in the proof cache") && !l.starts_with("note: the proof cache took")).map(|l| format!("{l}\n")).collect();
     assert!(warm.output.starts_with(&reported) && !warm.output.contains("has no result"), "{}", warm.output);
+    // Each run names its own time with the cache, once, apart from the checker's: the stored report has none.
+    for run in [&cold, &warm] {
+        let timings: Vec<&str> = run.output.lines().filter(|l| l.starts_with("note: the proof cache took")).collect();
+        assert_eq!(timings.len(), 1, "{}", run.output);
+        assert!(timings[0].contains(" s to compute this claim's key (both versions' closures, the harness's digest and the tools') and "), "{}", timings[0]);
+    }
+    assert!(warm.output.ends_with(" s to look it up\n"), "this run's, after the reuse: {}", warm.output);
+    assert_eq!(cold.output.matches("note: Fee.base's own check took ").count(), 1, "{}", cold.output);
 }
 
 #[test]
@@ -934,6 +942,9 @@ fn a_changed_helper_proved_once_is_one_function_in_each_of_its_callers() {
     let second = check_target(&before, &after, &dir, "split-per-row", "h.Split#perRow");
     assert_eq!(second.verdict, jvmcontract::Verdict::Verified, "{}", second.output);
     assert!(second.output.contains(&format!("found in the proof cache (claim {key}); one function in both versions")), "{}", second.output);
+    // The helper's own check is timed apart from the caller's, just before what came of it.
+    let timed = second.output.lines().position(|l| l.starts_with("note: Split.share's own check took ") && l.ends_with(" s")).expect("the helper's time");
+    assert!(second.output.lines().nth(timed + 1).is_some_and(|l| l.starts_with("note: Split.share, changed: ")), "{}", second.output);
     assert_eq!(callee_assumptions(&second).iter().map(|a| a.2.clone()).collect::<Vec<_>>(), vec![Some(key.clone())]);
     // The helper proof is part of each caller's claim: its stored statement names it.
     let rerun = check_target(&before, &after, &dir, "split-per-seat-again", "h.Split#perSeat");

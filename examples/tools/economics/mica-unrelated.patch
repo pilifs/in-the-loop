@@ -1,0 +1,17 @@
+diff --git a/examples/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java b/examples/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java
+@@ -13,12 +13,7 @@
+ 
+     /** The smallest power of two that is at least {@code cap}, between 1 and {@link #MAXIMUM_CAPACITY}. */
+     public static int tableSizeFor(int cap) {
+-        int n = cap - 1;
+-        n |= n >>> 1;
+-        n |= n >>> 2;
+-        n |= n >>> 4;
+-        n |= n >>> 8;
+-        n |= n >>> 16;
++        int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);
+         return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+     }
+ }

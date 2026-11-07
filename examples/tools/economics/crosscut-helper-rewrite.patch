@@ -1,0 +1,12 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
+@@ -22,6 +22,7 @@
+      * That part is kept, so that a bucket polled more often than it refills still refills.
+      */
+     public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {
+-        return nowNanos - (nowNanos - lastNanos) % periodNanos;
++        long periods = (nowNanos - lastNanos) / periodNanos;
++        return lastNanos + periods * periodNanos;
+     }
+ }

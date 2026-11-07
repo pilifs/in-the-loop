@@ -410,6 +410,7 @@ impl<'a> Regression<'a> {
     pub fn lookup(self, out: &mut String) -> Result<(Entry, Option<Outcome>), Error> {
         let inert = Entry { place: None };
         let Some(dir) = self.options.cache.clone() else { return Ok((inert, None)) };
+        let keying = Instant::now();
         let key = match self.claim().and_then(|c| cache::key(&c)) {
             Ok(k) => k,
             Err(u) => {
@@ -430,6 +431,8 @@ impl<'a> Regression<'a> {
         );
         let required = [Observation::Result, Observation::Exception].iter().map(Observation::id).chain(self.observations.arrays.iter().map(|a| Observation::ArrayParameter { parameter: a.clone() }.id())).collect();
         let mut place = Place { dir, key, replay, models: self.options.models, types: self.layout.types(), domain: self.shown.domain.to_string(), required, provenance, note: String::new() };
+        let keyed = keying.elapsed();
+        let looking = Instant::now();
         let found = match cache::lookup_detail(&place.dir, &place.key) {
             Ok(found) => found,
             Err(u) => {
@@ -438,13 +441,24 @@ impl<'a> Regression<'a> {
             }
         };
         let before = out.len();
-        let hit = match found {
+        let mut hit = match found {
             None => {
                 let _ = writeln!(out, "note: the proof cache has no result for this claim ({}); proving", place.key.0);
                 None
             }
             Some((record, detail)) => self.reuse(&place, record, detail, out)?,
         };
+        // This run's own time with the cache, apart from the checker's: never stored, so a reuse names its own.
+        let timing = format!(
+            "note: the proof cache took {:.3} s to compute this claim's key (both versions' closures, the harness's digest and the tools') and {:.3} s to look it up{}\n",
+            keyed.as_secs_f64(),
+            looking.elapsed().as_secs_f64(),
+            if hit.as_ref().is_some_and(|h| h.counterexample.is_some()) { ", its stored witness replayed included" } else { "" }
+        );
+        match &mut hit {
+            Some(h) => h.output.push_str(&timing),
+            None => out.push_str(&timing),
+        }
         place.note = out[before..].to_string();
         Ok((Entry { place: Some(place) }, hit))
     }
@@ -650,6 +664,11 @@ impl<'a> Helpers<'a> {
         let outcome = crate::equivalence::run(&helper);
         PROVING.with(|p| p.borrow_mut().pop());
         self.spent += started.elapsed();
+        // What its check took, apart from the caller's own: an exact hit of its claim, or a proof made now.
+        let _ = writeln!(self.notes, "note: {name}'s own check took {:.3} s", started.elapsed().as_secs_f64());
+        let mut note = |why: String| {
+            let _ = writeln!(self.notes, "note: {name}, changed, stays as written in both versions: {why}");
+        };
         let outcome = match outcome {
             Ok(o) => o,
             Err(e) => {

@@ -12,32 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.542Z",
-  "ended": "2026-11-07T06:20:59.399Z",
-  "duration_seconds": 8380,
+  "ended": "2026-11-07T06:46:09.884Z",
+  "duration_seconds": 9890,
   "stats": {
-    "turns": 36,
-    "api_calls": 467,
-    "tool_calls": 478,
+    "turns": 42,
+    "api_calls": 553,
+    "tool_calls": 572,
     "tool_errors": 4,
-    "compactions": 7,
-    "peak_context_tokens": 277743,
+    "compactions": 8,
+    "peak_context_tokens": 318093,
     "usage": {
-      "input_tokens": 938,
-      "output_tokens": 426194,
-      "cache_read_input_tokens": 80481122,
-      "cache_creation_input_tokens": 1609124
+      "input_tokens": 1114,
+      "output_tokens": 528720,
+      "cache_read_input_tokens": 99230949,
+      "cache_creation_input_tokens": 1916864
     }
   },
   "tools": {
-    "Bash": 415,
-    "Read": 43,
-    "Edit": 10,
-    "Write": 6,
-    "Monitor": 2,
-    "ToolSearch": 2
+    "Bash": 485,
+    "Read": 53,
+    "Edit": 18,
+    "Write": 9,
+    "Monitor": 3,
+    "ToolSearch": 3,
+    "TaskStop": 1
   },
   "files_touched": [
+    "examples/tools/economics.py",
+    "examples/tools/economics/README.md",
     "examples/tools/impact_check.py",
+    "examples/tools/test_economics.py",
     "lib/README.md",
     "lib/src/closure.rs",
     "lib/src/impact.rs",
@@ -148,24 +152,38 @@
     {
       "index": 7,
       "started": "2026-11-07T05:53:01.752Z",
-      "ended": "2026-11-07T06:20:59.399Z",
-      "turns": 4,
-      "api_calls": 66,
+      "ended": "2026-11-07T06:21:18.097Z",
+      "turns": 5,
+      "api_calls": 68,
       "usage": {
-        "input_tokens": 132,
-        "output_tokens": 49847,
-        "cache_read_input_tokens": 11280742,
-        "cache_creation_input_tokens": 217527
+        "input_tokens": 136,
+        "output_tokens": 51037,
+        "cache_read_input_tokens": 11742892,
+        "cache_creation_input_tokens": 220253
       },
-      "peak_context_tokens": 230606
+      "peak_context_tokens": 233332
+    },
+    {
+      "index": 8,
+      "started": "2026-11-07T06:21:57.156Z",
+      "ended": "2026-11-07T06:46:09.884Z",
+      "turns": 5,
+      "api_calls": 84,
+      "usage": {
+        "input_tokens": 172,
+        "output_tokens": 101336,
+        "cache_read_input_tokens": 18287677,
+        "cache_creation_input_tokens": 305014
+      },
+      "peak_context_tokens": 318093
     }
   ],
   "log": {
-    "sha256": "24f0b9b0bccb67c9f098bbe6fc02e3a9465566f44bff89db818a0b16fa71a57c",
-    "bytes": 14663325,
-    "lines": 4953,
-    "gzip_bytes": 2942051,
-    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/24f0b9b0bccb67c9f098bbe6fc02e3a9465566f44bff89db818a0b16fa71a57c.jsonl.gz"
+    "sha256": "4490bbfcd79cc8cf6d958594ef0cdc6b8693c4d77e243aaf7a7fb5d56db0df59",
+    "bytes": 17269556,
+    "lines": 5897,
+    "gzip_bytes": 3420025,
+    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/4490bbfcd79cc8cf6d958594ef0cdc6b8693c4d77e243aaf7a7fb5d56db0df59.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -280,6 +298,14 @@
       "summary": "Summaries Progress: name the 27 errors sync.py check reports after S5, none from this branch's work",
       "body": "The S5 commit's check reported 27 errors: the 22 named after S4b, and five sessions with no manifest behind other streams' newest commits (heap ntqqzttlykmy; observations kxkxxrovypzs, upkxnrotoxsk; alignment pxuuumryquny, llvlkvuqtooy). None is an ancestor of this branch's @; each manifest lives on its stream's branch, so they clear at the merge.",
       "log_sha256": "24f0b9b0bccb67c9f098bbe6fc02e3a9465566f44bff89db818a0b16fa71a57c"
+    },
+    {
+      "change_id": "kkqoyoqrtrrvworowoyoqqxkyoxknwns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summaries S6: the proof cache's economics on the recorded examples, cold, warm and after four kinds of change (verification pending)",
+      "body": "examples/tools/economics.py (new) measures what the proof cache saves on the 61 recorded B9 and B11 examples of the javac apps (8 more are real-world or Box Office). The cache serves 17 of them, the B9 examples the tool's own checker proves. The other 44 are listed with the reason and not run: B9 under JBMC (JBMC's identity is not in the key) and B11 (prove has no cache). The script runs the 17 claims cold on an empty cache, then warm on it. Then, for Crosscut and Mica, it runs one change of each kind (examples/tools/economics/: an unrelated edit, a behaviour-preserving helper rewrite, a representation change, a real regression). Each change is checked rebased (each example with the change beneath it on both sides) and as its own claims on the served targets, each set cold and warm. Per run and claim it reports how the claim was served (exact hit, nothing to prove, a changed helper's proof found or made in the run, proved or refuted again) and the time: wall, checker, the cache's own, the helpers' checks, and the rest. It also checks that every warm verdict is the cold one, and exits 1 when an expectation fails.\n\nFor the times, lib/src/proof_cache.rs notes how long a check's key and lookup took. The note is this run's even on an exact hit, and is never stored. Each changed helper's own check is timed in a note too. Tests: two existing summaries.rs tests gain assertions (40 pass), and examples/tools/test_economics.py (new, 11) covers note parsing, which claims are served, and the whole sequence of runs and expectations against a fake jvmcontract. It also shows the expectations fail when a warm verdict differs or a warm rerun proves again. economics.py --plan built all 90 trees inline (17 s). jvmcontract impact confirms each change reaches the claims it was meant to, and both helper rewrites' own proofs hold (0.06 s and 0.22 s). The unit tests (183), conformance (9), foundations (3), integration (64), skill (1), summaries (40) and test_build.py (168) pass. build.py is unchanged, and so are the recorded results.\n\nAlso fixes this brief: S5's commit had spliced its Progress in at the '- Status: working' the Status rule quotes, leaving a second copy of that rule's tail and of the old Progress. Outside Progress the brief is again as before S5. With S6, all of this stream's phases are done, and the Status is done.\n\nVerification pending: job 20261107-064135-the-proof-cache-s-economics-on-the-recor (verification/jobs/), a long job, for review: it should exit 0 with every expectation in examples/tools/economics/report.md met.",
+      "log_sha256": "4490bbfcd79cc8cf6d958594ef0cdc6b8693c4d77e243aaf7a7fb5d56db0df59"
     }
   ],
   "logs": {
@@ -305,6 +331,12 @@
       "bytes": 12549567,
       "lines": 4252,
       "gzip_bytes": 2491841,
+      "url": null
+    },
+    "4490bbfcd79cc8cf6d958594ef0cdc6b8693c4d77e243aaf7a7fb5d56db0df59": {
+      "bytes": 17269556,
+      "lines": 5897,
+      "gzip_bytes": 3420025,
       "url": null
     },
     "472982d3adf890c5900c66a7c6834718f74db3d6a5b70ef27dd796b7334864fd": {
