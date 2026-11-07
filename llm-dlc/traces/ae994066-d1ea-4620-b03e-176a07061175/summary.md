@@ -388,7 +388,7 @@ Verified inline: cargo build; the spec unit tests (3); tests/foundations.rs (3 t
 
 ### Record session traces
 
-change `lnnwpumqprwz` · [log `83a8fc8b7e7a`](https://terminalvalue.net/raw-traces/ae994066-d1ea-4620-b03e-176a07061175/83a8fc8b7e7ac9d6a4dc29eecbf432860b9ba1484e8316c35ebaeb987879a732.jsonl.gz)
+[`baac70d592a4`](https://github.com/pilifs/in-the-loop/commit/baac70d592a4381a1d8b7752b3f495cbdc5c4793) · [log `83a8fc8b7e7a`](https://terminalvalue.net/raw-traces/ae994066-d1ea-4620-b03e-176a07061175/83a8fc8b7e7ac9d6a4dc29eecbf432860b9ba1484e8316c35ebaeb987879a732.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
