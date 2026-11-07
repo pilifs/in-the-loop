@@ -166,7 +166,9 @@ fn the_kernel_keeps_its_methods_and_its_constructor_takes_the_value_object() {
         let m = entry(&report, kept);
         assert_eq!((m.change, m.candidates.len(), m.candidates[0].after.as_str()), (Change::Changed, 1, kept));
     }
-    assert!(!report.methods.iter().any(|m| m.before == "shop.Pricing#withQuantity"), "unchanged: {}", alignment::render(&report));
+    // Its code is unchanged, but it takes and returns a Quote, whose shape changed: itself, as reshaped.
+    let reshaped = entry(&report, "shop.Pricing#withQuantity");
+    assert_eq!((reshaped.change, reshaped.candidates[0].after.as_str()), (Change::Reshaped, "shop.Pricing#withQuantity"), "{}", alignment::render(&report));
     let init = entry(&report, "shop.Quote#<init>");
     assert!(init.leads, "{}", alignment::render(&report));
     assert_eq!(init.candidates[0].after, "shop.Quote#<init>");
@@ -547,6 +549,45 @@ fn a_result_whose_class_changed_shape_is_compared_field_by_field() {
         assert!(m.result.gaps.iter().any(|g| g.contains(gap)), "{name}: the gap is named: {:?}", m.result.gaps);
         assert!(alignment::mappings::render(&a.mappings).contains(gap), "{name}: and shown");
     }
+}
+
+#[test]
+fn code_that_did_not_change_over_a_class_that_did_is_mapped_through_the_class() {
+    let (Some(before), Some(after)) = (kernel("reshaped", "before"), kernel("reshaped", "after")) else { return };
+    let a = alignment::align(&Build::load(&before).unwrap(), &Build::load(&after).unwrap(), Some(&kernel_contract()));
+    let change = |s: &str| a.methods.methods.iter().find(|m| m.before == s).map(|m| (m.change, m.leading().map(|c| c.after.clone())));
+    // The same code, but it takes or returns a Quote, whose shape changed: mapped onto itself, not counted unchanged.
+    for s in ["shop.Pricing#withQuantity", "shop.Quote#quantity"] {
+        assert_eq!(change(s), Some((Change::Reshaped, Some(s.to_string()))), "{}", alignment::render(&a.methods));
+    }
+    // Code that is the same over classes that kept their shape is still unchanged.
+    assert_eq!(change("shop.Pricing#<init>"), None);
+    assert!(a.methods.unchanged >= 1);
+    assert!(alignment::render(&a.methods).contains("reshaped  shop.Pricing#withQuantity"));
+    let q = vec![equation("old.q.cents", "new.q.amount.cents"), equation("old.q.quantity", "new.q.quantity")];
+    let m = mapping(&a, "shop.Pricing#withQuantity");
+    assert!(m.standalone && m.unsupported.is_empty() && m.free.is_empty(), "{}", alignment::mappings::render(&a.mappings));
+    assert_eq!(m.inputs.iter().map(|i| (i.old.as_str(), i.anchor)).collect::<Vec<_>>(), vec![("q", Anchor::Internal), ("quantity", Anchor::Anchored)]);
+    assert_eq!(m.result.kind, ResultKind::Fields);
+    let relation = "previous.cents == result.amount.cents && previous.quantity == result.quantity";
+    assert_eq!((m.proposals.len(), m.proposals[0].fields.clone(), m.proposals[0].relation.as_deref()), (1, q.clone(), Some(relation)));
+    let hints = alignment::hints(&a);
+    let want = Correspondence {
+        inputs: q.into_iter().chain([equation("old.quantity", "new.quantity")]).collect(),
+        outputs: vec![Relation { observation: "result".into(), holds: "old.result.cents == new.result.amount.cents && old.result.quantity == new.result.quantity".into() }],
+    };
+    assert_eq!(correspondences(&hints, "shop.Pricing#withQuantity"), vec![&want]);
+    // The receiver's class changed: `this` is internal and related field by field, and the int result is equal.
+    let m = mapping(&a, "shop.Quote#quantity");
+    assert_eq!((m.inputs[0].anchor, m.result.kind), (Anchor::Internal, ResultKind::Equal), "{}", alignment::mappings::render(&a.mappings));
+    assert_eq!(m.proposals.iter().map(|p| p.fields.clone()).collect::<Vec<_>>(), vec![vec![equation("old.this.cents", "new.this.amount.cents"), equation("old.this.quantity", "new.this.quantity")]]);
+    // The same code over a class whose constructor now shifts what it stores: named, and nothing proposed.
+    let shifted = |stored: &str| format!("final class Q {{ long cents; {} Q(long cents) {{ this.cents = {stored}; }} static Q same(Q q) {{ return q; }} }}", if stored == "cents" { "" } else { "int pad;" });
+    let (old, new) = (shifted("cents"), shifted("cents + 1"));
+    let Some(a) = aligned("reshaped-shifted", &[("Q.java", old.as_str())], &[("Q.java", new.as_str())], None) else { return };
+    let m = mapping(&a, "Q#same");
+    assert!(m.proposals.is_empty() && m.unsupported.iter().any(|u| u.contains("cents")), "{}", alignment::mappings::render(&a.mappings));
+    assert!(correspondences(&alignment::hints(&a), "Q#same").is_empty());
 }
 
 fn expressions_of(choices: &[alignment::mappings::Choice]) -> Vec<&str> {

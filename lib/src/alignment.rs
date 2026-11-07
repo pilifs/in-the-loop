@@ -113,6 +113,10 @@ pub enum Change {
     Changed,
     /// The new build doesn't declare it.
     Vanished,
+    /// The new build declares it with the same code and access flags, but a class it takes or returns (its receiver's
+    /// class, a parameter's or the result's) changed shape between the builds: the same code over different objects,
+    /// mapped like a changed method, its objects related field by field.
+    Reshaped,
 }
 
 /// One static fact tying an old method to a candidate.
@@ -191,7 +195,8 @@ pub struct Candidate {
     pub basis: Vec<Basis>,
 }
 
-/// One old method that changed or is gone, and its candidates, best first.
+/// One old method that changed, is gone, or kept its code over a class that changed shape, and its candidates, best
+/// first.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MethodMatch {
     pub before: String,
@@ -210,9 +215,10 @@ impl MethodMatch {
 /// The method correspondence of two builds.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MethodReport {
-    /// The old methods that changed or are gone, in the old build's order.
+    /// The old methods that changed, are gone, or kept their code over a class that changed shape, in the old build's
+    /// order.
     pub methods: Vec<MethodMatch>,
-    /// How many old methods are unchanged.
+    /// How many old methods are unchanged: the same code, over classes that kept their shape.
     pub unchanged: usize,
     /// The new build's methods that are new and that no old method's candidates lead to.
     pub added: Vec<String>,
@@ -227,12 +233,14 @@ pub fn methods(before: &Build, after: &Build) -> MethodReport {
     for (bc, bm) in before.methods() {
         let old = symbol(bc, bm);
         if let Some((ac, am)) = after.declares(&bc.name, &bm.name, &bm.descriptor) {
-            if bm.access == am.access && tokens(bc, bm, true) == tokens(ac, am, true) {
+            let same_code = bm.access == am.access && tokens(bc, bm, true) == tokens(ac, am, true);
+            if same_code && !reshaped(before, after, bc, bm) {
                 report.unchanged += 1;
             } else {
                 let after = symbol(ac, am);
                 led.insert(after.clone());
-                report.methods.push(MethodMatch { before: old, change: Change::Changed, candidates: vec![Candidate { after, score: Basis::SameNameAndDescriptor.weight(), basis: vec![Basis::SameNameAndDescriptor] }], leads: true });
+                let change = if same_code { Change::Reshaped } else { Change::Changed };
+                report.methods.push(MethodMatch { before: old, change, candidates: vec![Candidate { after, score: Basis::SameNameAndDescriptor.weight(), basis: vec![Basis::SameNameAndDescriptor] }], leads: true });
             }
             continue;
         }
@@ -261,6 +269,15 @@ pub fn methods(before: &Build, after: &Build) -> MethodReport {
     }
     report.added = new.iter().map(|(c, m)| symbol(c, m)).filter(|s| !led.contains(s)).collect();
     report
+}
+
+/// Whether a class the old method takes or returns (its receiver's, a parameter's, the result's) changed shape between
+/// the builds, as [`mappings::same_shape`] has it: deeply, so a class holding one that changed counts too.
+fn reshaped(before: &Build, after: &Build, class: &ClassFile, method: &Method) -> bool {
+    let Ok(d) = method.parsed_descriptor() else { return false };
+    let receiver = (!method.is_static()).then(|| crate::classfile::Type::object(&class.name));
+    let changed = receiver.iter().chain(&d.params).chain([&d.ret]).any(|t| t.is_reference() && !mappings::same_shape(before, after, t));
+    changed
 }
 
 /// The facts tying an old method to a new one, or `None` when nothing does: a candidate needs the same name, the
@@ -511,6 +528,7 @@ pub fn render(report: &MethodReport) -> String {
     for m in &report.methods {
         match (m.change, m.candidates.as_slice()) {
             (Change::Changed, _) => out.push_str(&format!("changed   {}: itself, the same name and descriptor\n", m.before)),
+            (Change::Reshaped, _) => out.push_str(&format!("reshaped  {}: itself, its code unchanged, over a class that changed shape\n", m.before)),
             (Change::Vanished, []) => out.push_str(&format!("vanished  {}: no candidate\n", m.before)),
             (Change::Vanished, candidates) => {
                 let verdict = if m.leads { "" } else { " (none leads: a person's choice)" };
@@ -527,8 +545,9 @@ pub fn render(report: &MethodReport) -> String {
     }
     let vanished: Vec<&MethodMatch> = report.methods.iter().filter(|m| m.change == Change::Vanished).collect();
     out.push_str(&format!(
-        "{} changed, {} vanished ({} with a leading candidate, {} without, {} with none), {} unchanged, {} new methods no candidate leads to\n",
-        report.methods.len() - vanished.len(),
+        "{} changed, {} reshaped, {} vanished ({} with a leading candidate, {} without, {} with none), {} unchanged, {} new methods no candidate leads to\n",
+        report.methods.iter().filter(|m| m.change == Change::Changed).count(),
+        report.methods.iter().filter(|m| m.change == Change::Reshaped).count(),
         vanished.len(),
         vanished.iter().filter(|m| m.leads).count(),
         vanished.iter().filter(|m| !m.leads && !m.candidates.is_empty()).count(),

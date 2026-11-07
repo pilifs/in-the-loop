@@ -345,8 +345,38 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - **Score:** unchanged on 121–139, whose results are primitives or records of primitives. Re-recorded under the new
     tool's hash.
 - Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the result test).
-- Next, the rest of A4: `Pricing#withQuantity`, unchanged code over changed classes (A2 says unchanged, so it gets no
-  mapping; it returns a `Quote`, which this step now relates). Then A5.
+- **A4: unchanged code over a class that changed shape, done** (2026-11-07), in `lib/src/alignment.rs`. With it A4
+  is done: every item listed under its narrow case above is now covered.
+  - **A2 no longer calls such a method unchanged.** An old method the new build declares with the same code and
+    access flags is still unchanged only if every class it takes or returns (its receiver's, a parameter's, the
+    result's) keeps its shape, as `same_shape` has it (deeply). Otherwise a new change kind, `reshaped`, matches it
+    to itself, and A3 and A4 map it like a changed method. On the kernel: `Pricing#withQuantity` and `Quote#quantity`
+    are reshaped, and `align` prints them as such.
+  - **What they get.** `withQuantity(Quote q, int quantity)`, standalone: `q` internal, related field by field
+    (`old.q.cents == new.q.amount.cents`, `old.q.quantity == new.q.quantity`), `quantity` anchored, and the result
+    compared by `fields` (`previous.cents == result.amount.cents && previous.quantity == result.quantity`), one
+    proposal. `Quote#quantity()`: `this` related the same way, the `int` result equal. The method changes `q` in
+    place; here that is seen only through the result it hands back. Observing a parameter object's fields is the
+    heap stream's (H3). A reshaped method over a class whose constructor shifts what it stores is named, and nothing
+    is proposed.
+  - **Tests:** 1 more in `lib/tests/alignment.rs` (the kernel's two reshaped methods, their mappings and hint, a
+    method over unchanged classes still unchanged, and the shifted constructor). The A2 kernel test asserted that
+    `withQuantity` is unchanged, which was the gap this step closes; it now asserts `reshaped`. All 28 pass. Also
+    passing: the unit (185), foundations (3), skill (1) and conformance (9, 2 ignored) suites, and every test target
+    compiles. `tests/integration.rs` wasn't rerun: it runs no alignment code, and its JBMC case ran out of time last
+    cycle under load. The integration contract on this branch: 2 passed, 22 unsupported, 0 failed.
+  - **Score:** unchanged on 121–139, where no unchanged method takes a class that changed shape. Re-recorded under the
+    new tool's hash.
+  - **For A5:** two cases where the output doesn't put the question well yet. Both are visible on the kernel compiled
+    without `-parameters`, where every field is matched on type alone:
+    - a field question with a single candidate still gives one proposal and one result relation;
+    - a field reached only by a question's candidate is listed as free ("not compared: amount"), because `free` counts
+      what the leading candidates reach.
+- Shared files changed: `lib/README.md` (the `align` comment); `lib/tests/alignment.rs` (the reshaped test, and the
+  A2 kernel test's `withQuantity` assertion).
+- Next: A5, the question well put. Each decision gets its candidates, what each would mean, and a one-line approval in
+  the hints file. Approving sets intent only, and a run whose hints are all approved and proved asks nothing. Start
+  with the two cases above.
 - Status: working
 
 ## Loop settings
