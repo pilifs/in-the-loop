@@ -31,17 +31,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md); see also VF-001.
 - **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 6 pass.
 
-### VF-006: engine-priorities step 4a: the 41-example gap-table job fails on a schema error, so no table exists
-
-- **Status**: open
-- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-204220-the-41-recorded-jbmc-examples-under-stri` (at `61f5e48d1abf`).
-- **Found**: steps 1 and 2 stop at "result.json: Additional properties are not allowed ('sat' was unexpected)" on
-  example 013, in the result schema check of `build.py`'s attempt. Only 9 of the 41 examples reached the table (32 skipped as "not format 2"), so step 3's assertion `9 examples in the table, not 41` also fails. The same schema complaint ('newProblems' unexpected) is in older B12 results, so the result schema may lag the writer.
-- **Update 2026-11-06**: rerun `20261106-231837-the-41-recorded-jbmc-examples-under-stri` (at `835d5f28cbfd`, `vm-1`) fails again in a new way: step 2 (own checker) exits 1 at "result.json: Additional properties are not allowed ('phasesExcess' was unexpected)" on a `jvmcontract prove` attempt (attempt 018), so `sat` is fixed but the schema still lags the writer on another field. Steps 1 passed. Only 12 of 41 examples reach the table (29 skipped as "not format 2"), so step 3 again fails with `12 examples in the table, not 41`. Example 013 differs from its expected verdict (013#0 unresolved on `TermOrder.<clinit>`); 071#0 and 071#1 are unresolved on `Enum.<init>`, `List.copyOf`, `List.of` (see VF-005).
-- **Needs**: the submitter (engine-priorities step 4a): add `sat` and `phasesExcess` to the result schema (or stop writing them; check every field the writer emits against it), check that the 41 examples carry format-2 results with gaps recorded, then resubmit.
-- **Tracked in**: [`llm-dlc/loops/engine-priorities.md`](../llm-dlc/loops/engine-priorities.md).
-- **Closes when**: the job, resubmitted, passes with 41 examples in the table.
-
 ### VF-005: example 071 under strict: the first two proofs are `unverifiable` on JDK 25.0.5 where the job expects `verified` with no gap
 
 - **Status**: open
@@ -115,6 +104,17 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   the `Pricing#total` test needs a larger solver limit or a fixed expectation.
 - **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md).
 - **Closes when**: the same job, resubmitted unchanged, passes all three steps.
+
+### VF-006: engine-priorities step 4a: the 41-example gap-table job fails on a schema error, so no table exists
+
+- **Status**: closed by job `20261107-000039-the-41-recorded-jbmc-examples-under-stri` (at `98bab48570e6`, 2026-11-07, `vm-1`): all three steps passed (4m22s, peak 1.1 GiB); 41 examples, 43 obligations in the table on both engines. 5 of 43 obligations differ in status between jbmc and native (013#0, 035#0, 052#0, 071#2, 127#0), as the brief wanted listed; 6 native obligations have no verdict at a gap (013#0, 037#0, 071#0, 071#1, 071#2, 127#0), and 037#0 is refused at a JBMC defect. Those are results for step 4a, not failures of the job.
+- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-204220-the-41-recorded-jbmc-examples-under-stri` (at `61f5e48d1abf`).
+- **Found**: steps 1 and 2 stop at "result.json: Additional properties are not allowed ('sat' was unexpected)" on
+  example 013, in the result schema check of `build.py`'s attempt. Only 9 of the 41 examples reached the table (32 skipped as "not format 2"), so step 3's assertion `9 examples in the table, not 41` also fails. The same schema complaint ('newProblems' unexpected) is in older B12 results, so the result schema may lag the writer.
+- **Update 2026-11-06**: rerun `20261106-231837-the-41-recorded-jbmc-examples-under-stri` (at `835d5f28cbfd`, `vm-1`) fails again in a new way: step 2 (own checker) exits 1 at "result.json: Additional properties are not allowed ('phasesExcess' was unexpected)" on a `jvmcontract prove` attempt (attempt 018), so `sat` is fixed but the schema still lags the writer on another field. Steps 1 passed. Only 12 of 41 examples reach the table (29 skipped as "not format 2"), so step 3 again fails with `12 examples in the table, not 41`. Example 013 differs from its expected verdict (013#0 unresolved on `TermOrder.<clinit>`); 071#0 and 071#1 are unresolved on `Enum.<init>`, `List.copyOf`, `List.of` (see VF-005).
+- **Needs**: the submitter (engine-priorities step 4a): add `sat` and `phasesExcess` to the result schema (or stop writing them; check every field the writer emits against it), check that the 41 examples carry format-2 results with gaps recorded, then resubmit.
+- **Tracked in**: [`llm-dlc/loops/engine-priorities.md`](../llm-dlc/loops/engine-priorities.md).
+- **Closes when**: the job, resubmitted, passes with 41 examples in the table.
 
 ### VF-004: the CBMC 6.11.0 source-reading job's grep for `run_property_decider` matches nothing
 

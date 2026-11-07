@@ -1,0 +1,1056 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-000039-the-41-recorded-jbmc-examples-under-stri",
+  "title": "The 41 recorded JBMC examples under strict on both engines, with a per-obligation gap table (engine-priorities step 4a, rerun of 20261106-231837)",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 4m22s, peak 1.1 GiB (estimated 20m00s, 2.0 GiB); 90 output file(s) changed; signals: example:as-expected×1; example:differ×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-000039-the-41-recorded-jbmc-examples-under-stri.json",
+    "sha256": "54947a0615e35f14ead0f4ac381e755f7a56b71227822f9a907b8f19c4579372",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-000039-the-41-recorded-jbmc-examples-under-stri",
+      "title": "The 41 recorded JBMC examples under strict on both engines, with a per-obligation gap table (engine-priorities step 4a, rerun of 20261106-231837)",
+      "description": "A rerun of job 20261106-231837, itself a rerun of 20261106-204220. Its JBMC step passed (43 obligations of the 41, all under jbmc and strict); its own-checker step stopped at example 018, where build.py refused the result against examples/schema/result.schema.json: 'phasesExcess' was unexpected. That is step 1a's flag on a checker run whose named phases add up past its seconds beyond the tolerance (lib/src/phases.rs Phases::excess; on 018 the own checker's 0.180 s run has 0.019 s of sampled encoding and 0.174 s of solving), which the schema's runs did not allow yet; it does now. What the job does is unchanged from -231837, at this commit; the JBMC step is run again so that the comparison in step 3 reads two tables from one commit. Step 4a of llm-dlc/loops/engine-priorities.md (stream brief engine-priorities-jbmc.md). Job 20261106-082917 ran the 41 recorded B9/B11 examples JBMC proves (on the javac apps Quorum, Crosscut and Mica) under --gaps assume and projected what strict would refuse; its per-obligation table was rebuilt by hand and never published. This job measures it instead, under --gaps strict (the recorded default), on both engines. Step 1 copies examples/ to a scratch directory and runs build.py there on the 41 as recorded (--engine jbmc); step 2 runs the same examples, claims and bounds in a second copy with approach.engine set to native (the tool's own checker), changing nothing else. Each step saves examples/tools/gap_table.py --json: a row per obligation with its status, the gaps it reaches, the engine and checker, the example's expectation, and for an obligation with no verdict the problem, which names a refused gap or a construct JBMC runs otherwise than the JVM (jbmcDefect: step 3's preflight, lib/src/jbmc_gaps.rs, refuses a JBMC proof through an exception JBMC lets past its handler). Step 3 lists the obligations whose status differs between the engines (gap_table.py --compare), the input to step 4c's coverage inventory. Recorded verdicts don't change: build.py exits 1 when a verdict differs from the expected one, which is reported here, not a failure, and nothing in the repository's examples is written. The own checker is expected to give no verdict on several (floating point in 035, JDK calls it has no model of); under JBMC, 071's first two property proofs should be no verdict at the JDK stubs Enum.<init>, List.of and List.copyOf, and a recorded JBMC proof refused at a defect would show as jbmcDefect.",
+      "kind": "library",
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/gap_table.py",
+          "lib/src/jbmc_gaps.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md",
+          "examples/tools/build.py",
+          "examples/schema/result.schema.json",
+          "lib/src/phases.rs"
+        ]
+      },
+      "expected": "every step exits 0. Steps 1 and 2 each print build.py's last lines, a gap table (a line per obligation that reaches a gap or a JBMC defect, a total, and 'N example(s) differ from their expected verdict: ...'), and 'ok: N obligations of 41 examples, every one run by ENGINE under strict'. Step 3 prints each obligation whose status differs between JBMC and the own checker and a count. A step that fails means build.py stopped before finishing (exit above 1), an example published no result, or a run was not the engine or gap mode named; build.txt says where.",
+      "submitted": {
+        "at": "2026-11-07T00:00:39+00:00",
+        "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+        "by": "claude (engines-jbmc loop)"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "20m",
+        "memoryLimit": "3.5G",
+        "timeout": "2h",
+        "notes": "job -231837 ran the JBMC step over the 41 in about 2 minutes and stopped the own checker's at its fifth example, 3m11s in all, peak 1.1 GiB; job -082917 ran the 41 under JBMC in 8m10s at peak 1.4 GiB on 1 CPU; the own checker is faster than JBMC on every case both decide (job -102624); JBMC is capped at 3 GiB"
+      },
+      "steps": [
+        {
+          "name": "41 recorded JBMC examples under strict, on JBMC, with the gap table",
+          "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage; rm -rf \"$W\"; mkdir -p \"$W/jbmc/repo\" \"$W/native/repo\" \"$W/results/jbmc\" \"$W/results/native\"\n# build.py writes results into the examples folder it runs from: one copy per engine, so nothing recorded changes.\ncp -r examples \"$W/jbmc/repo/\"; cp -r examples \"$W/native/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\npython3 examples/tools/build.py --plan | python3 -c 'import json, sys; print(\" \".join(p[\"example\"] for p in json.load(sys.stdin) if p[\"approach\"] in (\"B9\", \"B11\") and p.get(\"engine\") == \"jbmc\" and p.get(\"app\") in (\"quorum\", \"crosscut\", \"mica\") and p[\"executable\"]))' > \"$W/ids.txt\"\nIDS=$(cat \"$W/ids.txt\"); echo \"examples ($(wc -w < \"$W/ids.txt\")): $IDS\"\ntest \"$(wc -w < \"$W/ids.txt\")\" -eq 41 || { echo \"expected the 41 recorded JBMC examples\"; exit 1; }\n# As recorded: --engine jbmc (the tool's default), --gaps strict (build.py's RECORDED_GAP_MODE).\nstatus=0; python3 \"$W/jbmc/repo/examples/tools/build.py\" $IDS > \"$W/jbmc/build.txt\" 2>&1 || status=$?\ntail -n 4 \"$W/jbmc/build.txt\"\nfor i in $IDS; do cp \"$W\"/jbmc/repo/examples/$i-*/result.json \"$W/results/jbmc/$i.json\"; done\npython3 examples/tools/gap_table.py --examples \"$W/jbmc/repo/examples\" --json \"$W/jbmc-gaps.json\" $IDS | tee \"$W/jbmc-table.txt\"\npython3 - \"$W/jbmc-gaps.json\" jbmc <<'PY'\nimport json, sys\nrows, engine = json.load(open(sys.argv[1])), sys.argv[2]\nassert len({r[\"example\"] for r in rows}) == 41, f\"{len({r['example'] for r in rows})} examples in the table, not 41\"\nassert all(r[\"engine\"] in (engine, None) for r in rows), f\"a row not run by {engine}: {[r for r in rows if r['engine'] not in (engine, None)]}\"\nassert all(set(r[\"gapModes\"]) <= {\"strict\"} for r in rows), \"every run is under --gaps strict\"\nprint(f\"ok: {len(rows)} obligations of 41 examples, every one run by {engine} under strict\")\nPY\n# build.py exits 1 when a verdict differs from the example's expected one: reported above, the recorded one stands.\ntest \"$status\" -le 1 || { echo \"build.py exited $status: it stopped before finishing (see jbmc/build.txt)\"; exit 1; }",
+          "cwd": "."
+        },
+        {
+          "name": "the same 41 under strict on the tool's own checker, with the gap table",
+          "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage; IDS=$(cat \"$W/ids.txt\")\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\n# The same examples, the same claims and bounds, asked of the tool's own checker: only approach.engine changes, in the copy.\npython3 - \"$W/native/repo/examples\" $IDS <<'PY'\nimport glob, json, sys\nroot, ids = sys.argv[1], sys.argv[2:]\nfor i in ids:\n    (path,) = glob.glob(f\"{root}/{i}-*/example.json\")\n    example = json.load(open(path))\n    assert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", f\"{i} is not a JBMC example\"\n    example[\"approach\"][\"engine\"] = \"native\"\n    open(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(f\"{len(ids)} examples set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/native/repo/examples/tools/build.py\" $IDS > \"$W/native/build.txt\" 2>&1 || status=$?\ntail -n 4 \"$W/native/build.txt\"\nfor i in $IDS; do cp \"$W\"/native/repo/examples/$i-*/result.json \"$W/results/native/$i.json\"; done\npython3 examples/tools/gap_table.py --examples \"$W/native/repo/examples\" --json \"$W/native-gaps.json\" $IDS | tee \"$W/native-table.txt\"\npython3 - \"$W/native-gaps.json\" native <<'PY'\nimport json, sys\nrows, engine = json.load(open(sys.argv[1])), sys.argv[2]\nassert len({r[\"example\"] for r in rows}) == 41, f\"{len({r['example'] for r in rows})} examples in the table, not 41\"\nassert all(r[\"engine\"] in (engine, None) for r in rows), f\"a row not run by {engine}: {[r for r in rows if r['engine'] not in (engine, None)]}\"\nassert all(set(r[\"gapModes\"]) <= {\"strict\"} for r in rows), \"every run is under --gaps strict\"\nprint(f\"ok: {len(rows)} obligations of 41 examples, every one run by {engine} under strict\")\nPY\ntest \"$status\" -le 1 || { echo \"build.py exited $status: it stopped before finishing (see native/build.txt)\"; exit 1; }",
+          "cwd": "."
+        },
+        {
+          "name": "the obligations whose status differs between the engines",
+          "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage\npython3 examples/tools/gap_table.py --compare \"$W/jbmc-gaps.json\" \"$W/native-gaps.json\" | tee \"$W/compare.txt\"",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/jobs/4a-coverage/jbmc-gaps.json",
+        "lib/target/jobs/4a-coverage/native-gaps.json",
+        "lib/target/jobs/4a-coverage/compare.txt",
+        "lib/target/jobs/4a-coverage/jbmc-table.txt",
+        "lib/target/jobs/4a-coverage/native-table.txt",
+        "lib/target/jobs/4a-coverage/jbmc/build.txt",
+        "lib/target/jobs/4a-coverage/native/build.txt",
+        "lib/target/jobs/4a-coverage/results",
+        "lib/target/jobs/4a-coverage/ids.txt"
+      ]
+    }
+  },
+  "sourceCommit": "98bab48570e65c751ff4777b143834da68bfe567",
+  "startedAt": "2026-11-07T00:02:21+00:00",
+  "finishedAt": "2026-11-07T00:06:44+00:00",
+  "wallSeconds": 263.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1545662,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 21474836480,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 1200.0,
+    "notes": "job -231837 ran the JBMC step over the 41 in about 2 minutes and stopped the own checker's at its fifth example, 3m11s in all, peak 1.1 GiB; job -082917 ran the 41 under JBMC in 8m10s at peak 1.4 GiB on 1 CPU; the own checker is faster than JBMC on every case both decide (job -102624); JBMC is capped at 3 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1128607744,
+    "wallSeconds": 262.2,
+    "cpuSeconds": 399.2,
+    "memoryOfEstimate": 0.53,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "41 recorded JBMC examples under strict, on JBMC, with the gap table",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage; rm -rf \"$W\"; mkdir -p \"$W/jbmc/repo\" \"$W/native/repo\" \"$W/results/jbmc\" \"$W/results/native\"\n# build.py writes results into the examples folder it runs from: one copy per engine, so nothing recorded changes.\ncp -r examples \"$W/jbmc/repo/\"; cp -r examples \"$W/native/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\npython3 examples/tools/build.py --plan | python3 -c 'import json, sys; print(\" \".join(p[\"example\"] for p in json.load(sys.stdin) if p[\"approach\"] in (\"B9\", \"B11\") and p.get(\"engine\") == \"jbmc\" and p.get(\"app\") in (\"quorum\", \"crosscut\", \"mica\") and p[\"executable\"]))' > \"$W/ids.txt\"\nIDS=$(cat \"$W/ids.txt\"); echo \"examples ($(wc -w < \"$W/ids.txt\")): $IDS\"\ntest \"$(wc -w < \"$W/ids.txt\")\" -eq 41 || { echo \"expected the 41 recorded JBMC examples\"; exit 1; }\n# As recorded: --engine jbmc (the tool's default), --gaps strict (build.py's RECORDED_GAP_MODE).\nstatus=0; python3 \"$W/jbmc/repo/examples/tools/build.py\" $IDS > \"$W/jbmc/build.txt\" 2>&1 || status=$?\ntail -n 4 \"$W/jbmc/build.txt\"\nfor i in $IDS; do cp \"$W\"/jbmc/repo/examples/$i-*/result.json \"$W/results/jbmc/$i.json\"; done\npython3 examples/tools/gap_table.py --examples \"$W/jbmc/repo/examples\" --json \"$W/jbmc-gaps.json\" $IDS | tee \"$W/jbmc-table.txt\"\npython3 - \"$W/jbmc-gaps.json\" jbmc <<'PY'\nimport json, sys\nrows, engine = json.load(open(sys.argv[1])), sys.argv[2]\nassert len({r[\"example\"] for r in rows}) == 41, f\"{len({r['example'] for r in rows})} examples in the table, not 41\"\nassert all(r[\"engine\"] in (engine, None) for r in rows), f\"a row not run by {engine}: {[r for r in rows if r['engine'] not in (engine, None)]}\"\nassert all(set(r[\"gapModes\"]) <= {\"strict\"} for r in rows), \"every run is under --gaps strict\"\nprint(f\"ok: {len(rows)} obligations of 41 examples, every one run by {engine} under strict\")\nPY\n# build.py exits 1 when a verdict differs from the example's expected one: reported above, the recorded one stands.\ntest \"$status\" -le 1 || { echo \"build.py exited $status: it stopped before finishing (see jbmc/build.txt)\"; exit 1; }",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 184.037,
+      "cpuSeconds": 266.189,
+      "cpuThrottledSeconds": 20.797,
+      "peakMemoryBytes": 1128607744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-41-recorded-jbmc-examples-unde.log",
+        "lines": 13,
+        "bytes": 1951,
+        "sha256": "4af5904f70708a95fadaa4f2b69bcc2d90546cd39bb17e35bdc0222f10767f5b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 4,
+          "text": "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+          "groups": [
+            "134",
+            "violation"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 5,
+          "text": "Verdicts differ from expectations: 037-table-size-rewritten-with-leading-zeros-proved-equal",
+          "groups": [
+            "037-table-size-rewritten-with-leading-zeros-proved-equal"
+          ]
+        }
+      ],
+      "tail": [
+        "examples (41): 013 015 016 017 018 022 023 024 027 031 032 033 034 035 036 037 044 045 046 047 048 049 050 051 052 053 054 055 056 071 120 121 122 123 126 127 128 129 130 131 134",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.4 s",
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+        "Verdicts differ from expectations: 037-table-size-rewritten-with-leading-zeros-proved-equal",
+        "013#0 refuted: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;",
+        "037#0 unresolved (a JBMC defect): JBMC proved it, but runs 1 construct otherwise than the JVM (unmasked-shift at net.terminalvalue.mica.rt.SymbolTable.tableSizeFor:18), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
+        "071#0 unresolved: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;",
+        "071#1 unresolved: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;",
+        "071#2 refuted: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;",
+        "41 examples, 43 obligations; 2 examples reach a gap; strict would refuse 0 obligation(s); 2 with no verdict at a gap: 071#0, 071#1; 1 refused at a JBMC defect: 037#0",
+        "1 example(s) differ from their expected verdict: 037",
+        "ok: 43 obligations of 41 examples, every one run by jbmc under strict"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the same 41 under strict on the tool's own checker, with the gap table",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage; IDS=$(cat \"$W/ids.txt\")\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\n# The same examples, the same claims and bounds, asked of the tool's own checker: only approach.engine changes, in the copy.\npython3 - \"$W/native/repo/examples\" $IDS <<'PY'\nimport glob, json, sys\nroot, ids = sys.argv[1], sys.argv[2:]\nfor i in ids:\n    (path,) = glob.glob(f\"{root}/{i}-*/example.json\")\n    example = json.load(open(path))\n    assert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", f\"{i} is not a JBMC example\"\n    example[\"approach\"][\"engine\"] = \"native\"\n    open(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(f\"{len(ids)} examples set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/native/repo/examples/tools/build.py\" $IDS > \"$W/native/build.txt\" 2>&1 || status=$?\ntail -n 4 \"$W/native/build.txt\"\nfor i in $IDS; do cp \"$W\"/native/repo/examples/$i-*/result.json \"$W/results/native/$i.json\"; done\npython3 examples/tools/gap_table.py --examples \"$W/native/repo/examples\" --json \"$W/native-gaps.json\" $IDS | tee \"$W/native-table.txt\"\npython3 - \"$W/native-gaps.json\" native <<'PY'\nimport json, sys\nrows, engine = json.load(open(sys.argv[1])), sys.argv[2]\nassert len({r[\"example\"] for r in rows}) == 41, f\"{len({r['example'] for r in rows})} examples in the table, not 41\"\nassert all(r[\"engine\"] in (engine, None) for r in rows), f\"a row not run by {engine}: {[r for r in rows if r['engine'] not in (engine, None)]}\"\nassert all(set(r[\"gapModes\"]) <= {\"strict\"} for r in rows), \"every run is under --gaps strict\"\nprint(f\"ok: {len(rows)} obligations of 41 examples, every one run by {engine} under strict\")\nPY\ntest \"$status\" -le 1 || { echo \"build.py exited $status: it stopped before finishing (see native/build.txt)\"; exit 1; }",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 77.972,
+      "cpuSeconds": 133.011,
+      "cpuThrottledSeconds": 20.527,
+      "peakMemoryBytes": 227913728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-same-41-under-strict-on-th.log",
+        "lines": 14,
+        "bytes": 1470,
+        "sha256": "1ba2a2c73b3d2310e55ae3a3a63e9d0e73c54e347e3c8b7c24d791e8be607436",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 4,
+          "text": "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+          "groups": [
+            "134",
+            "violation"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 5,
+          "text": "Verdicts differ from expectations: 013-longest-log-wins-breaks-election-safety, 035-nan-compared-with-equals-turns-fcmpl-into-fcmpg, 037-table-size-rewritten-with-leading-zeros-proved-equal, 052-max-stack-that-checks-the-depth-only-after-a-push, 071-vote-rule-that-compares-log-length-before-term-gra",
+          "groups": [
+            "013-longest-log-wins-breaks-election-safety, 035-nan-compared-with-equals-turns-fcmpl-into-fcmpg, 037-table-size-rewritten-with-leading-zeros-proved-equal, 052-max-stack-that-checks-the-depth-only-after-a-push, 071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse, 127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components"
+          ]
+        }
+      ],
+      "tail": [
+        "41 examples set to --engine native, in the copy",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 2.5 s",
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+        "Verdicts differ from expectations: 013-longest-log-wins-breaks-election-safety, 035-nan-compared-with-equals-turns-fcmpl-into-fcmpg, 037-table-size-rewritten-with-leading-zeros-proved-equal, 052-max-stack-that-checks-the-depth-only-after-a-push, 071-vote-rule-that-compares-log-length-before-term-gra",
+        "013#0 unresolved: class-initializer:before.net.terminalvalue.quorum.raft.TermOrder.<clinit>()V",
+        "037#0 unresolved: jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I",
+        "071#0 unresolved: class-initializer:net.terminalvalue.quorum.raft.TermOrder.<clinit>()V",
+        "071#1 unresolved: class-initializer:net.terminalvalue.quorum.raft.TermOrder.<clinit>()V",
+        "071#2 unresolved: class-initializer:net.terminalvalue.quorum.raft.TermOrder.<clinit>()V",
+        "127#0 unresolved: jdk-static-method:java.lang.Long.numberOfLeadingZeros(J)I",
+        "41 examples, 43 obligations; 4 examples reach a gap; strict would refuse 0 obligation(s); 6 with no verdict at a gap: 013#0, 037#0, 071#0, 071#1, 071#2, 127#0",
+        "6 example(s) differ from their expected verdict: 013, 035, 037, 052, 071, 127",
+        "ok: 43 obligations of 41 examples, every one run by native under strict"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "the obligations whose status differs between the engines",
+      "run": "set -eo pipefail\nW=lib/target/jobs/4a-coverage\npython3 examples/tools/gap_table.py --compare \"$W/jbmc-gaps.json\" \"$W/native-gaps.json\" | tee \"$W/compare.txt\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.047,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 10178560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-obligations-whose-status-d.log",
+        "lines": 6,
+        "bytes": 1863,
+        "sha256": "ec4a06ded15e5cecc2be815440f754834ea16f76c3ab0294c9006af1f1fba9f0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "013#0: refuted on jbmc | unresolved on native: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.net.terminalvalue.quorum.raft.TermOrder.<clinit>()V (before.net.terminalvalue.quorum.raft.TermOrder.<clinit>() ",
+        "035#0: refuted on jbmc | unresolved on native: outside the fragment: a float parameter",
+        "052#0: established on jbmc | unresolved on native: a loop was not fully unwound with --unwind 16 (PropertyHarness.check at pc 238)",
+        "071#2: refuted on jbmc | unresolved on native: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:net.terminalvalue.quorum.raft.TermOrder.<clinit>()V (net.terminalvalue.quorum.raft.TermOrder.<clinit>() at net.termina",
+        "127#0: established on jbmc | unresolved on native: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Long.numberOfLeadingZeros(J)I@jdk-25.0.5 (java.lang.Long.numberOfLeadingZeros(long) at net.terminalvalue",
+        "5 of 43 obligations differ in status between lib/target/jobs/4a-coverage/jbmc-gaps.json and lib/target/jobs/4a-coverage/native-gaps.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/jobs/4a-coverage/jbmc-gaps.json",
+      "change": "added",
+      "bytes": 13303,
+      "sha256": "42251ead84fb9a6f93e2d0730e639bce15127600cd0bbf326875dfe3a1c3b7f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/native-gaps.json",
+      "change": "added",
+      "bytes": 15569,
+      "sha256": "e9fb837acff9c0c20d3d65d4ffcdd87d756877e20d84bdcace86f6d014db172e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/compare.txt",
+      "change": "added",
+      "bytes": 1863,
+      "sha256": "ec4a06ded15e5cecc2be815440f754834ea16f76c3ab0294c9006af1f1fba9f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/jbmc-table.txt",
+      "change": "added",
+      "bytes": 1422,
+      "sha256": "9442fbb891d1ab375a6376e7d2800d7c7e22c07b0deeb2f24e7aa4b9ab42ce19",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/native-table.txt",
+      "change": "added",
+      "bytes": 751,
+      "sha256": "c837865eb7136e6bebcab0d4952dd97fc910227fe814ad89218c1dc1985f1d6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/jbmc/build.txt",
+      "change": "added",
+      "bytes": 21469,
+      "sha256": "3fe5e156e573adbb84ea40ab402f0c02dd8a329432842f37b26472f545bd3132",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/native/build.txt",
+      "change": "added",
+      "bytes": 21779,
+      "sha256": "9513757b8ada152ca1f51da4039be0a0bf6aa4e74d233f0ed3322bdb241c5c3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/013.json",
+      "change": "added",
+      "bytes": 20615,
+      "sha256": "83ba939aa4a329f3136a8c8eca3f3387493a068473e1e6e9044eca31b6eb54d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/015.json",
+      "change": "added",
+      "bytes": 12316,
+      "sha256": "959fd3cd13d4eb8c3cd31215e1171ec63c12ab19d9b373e6d754ccc126b94453",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/016.json",
+      "change": "added",
+      "bytes": 16554,
+      "sha256": "7a609d4da7c5547d43dcc2ebbde661872f426531cb04109394c63ce859843818",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/017.json",
+      "change": "added",
+      "bytes": 12964,
+      "sha256": "24929cfdbe8b54a701105e1fbdba13d6c76eb07cb1f5c5894c7ef4e482ff1403",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/018.json",
+      "change": "added",
+      "bytes": 16956,
+      "sha256": "20ebb9b714b7d0b480d764cbf867c15863496c6e2af629b2b144e11b7ea4c17b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/022.json",
+      "change": "added",
+      "bytes": 15067,
+      "sha256": "10b8599bab9cd1547a422bc938cb41548a87feb21bbe21082e43842010c6691c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/023.json",
+      "change": "added",
+      "bytes": 14355,
+      "sha256": "09c176f3caef49df0c01a651e3b0f135a4f263b638df92b9fe2ff44c7679c813",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/024.json",
+      "change": "added",
+      "bytes": 17604,
+      "sha256": "612068c2c553381dc1777da0b660e248505e20dfafc6872db5c690f9280e9cfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/027.json",
+      "change": "added",
+      "bytes": 13983,
+      "sha256": "17f713e62261b7c926362e3facb70d172d4f20e00c9f414aebf84e1856662eb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/031.json",
+      "change": "added",
+      "bytes": 19464,
+      "sha256": "9334f796665a192035ab0d561afa4d406d3f23f55c97a7b192e7c821fc82ea96",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/032.json",
+      "change": "added",
+      "bytes": 15393,
+      "sha256": "8f5f818d35a70a8e80ff01e3477d15630dc35e99351c7dae87981b9370845df9",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/033.json",
+      "change": "added",
+      "bytes": 12084,
+      "sha256": "2862840e7bbed5b1e3fa73c55d7fc7ecc3eb9ffdab5362391bfee86d47fd32ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/034.json",
+      "change": "added",
+      "bytes": 14088,
+      "sha256": "25c13c649d7a7a8d438df5046fefdca708e607875ed0df37ca10dcea15c942df",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/035.json",
+      "change": "added",
+      "bytes": 12821,
+      "sha256": "81adc5208d96960ac2b478f130094dfa2c8301fd6f90b1e7e636c919501a39b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/036.json",
+      "change": "added",
+      "bytes": 12690,
+      "sha256": "b06c0735bd3888c1fef6bd838e32dc39c27f0ec712eb27f40ce325404cf7f017",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/037.json",
+      "change": "added",
+      "bytes": 9265,
+      "sha256": "a6d9206e82b526c248984245117c0e46b649c5d11d509ff5c75696ee868a5dad",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/044.json",
+      "change": "added",
+      "bytes": 13955,
+      "sha256": "b19ba03fd7b9ef7748a9b290a5b75e2861bfedc78d683b2d5c653fa8575112cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/045.json",
+      "change": "added",
+      "bytes": 11337,
+      "sha256": "1e1b7d6661dffb80ee091fadbabc7b184154ab2eef808a4c319396ea8ce67ef0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/046.json",
+      "change": "added",
+      "bytes": 12861,
+      "sha256": "6fc1e7c9e9fde7fbf38834f5a0b4314d58dc862026b11a25acb81f3c14a65bea",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/047.json",
+      "change": "added",
+      "bytes": 19128,
+      "sha256": "1a4b64f8997ee5c418a00a7ba91dceea7f5d3f2302d86908d06bc97f67afb288",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/048.json",
+      "change": "added",
+      "bytes": 19163,
+      "sha256": "cc81baec891aa61e0426f4d3a2bac5a3edecd23d0e893f83fc54b1e9cfebbae7",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/049.json",
+      "change": "added",
+      "bytes": 12398,
+      "sha256": "3f2651519f3525963182d51d8316171d6530a40743321dd80633178071357168",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/050.json",
+      "change": "added",
+      "bytes": 19715,
+      "sha256": "b04dfe708888d30ee3215335aff4c1c8c081b2370e8a0a6e90734332f2288cc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/051.json",
+      "change": "added",
+      "bytes": 14592,
+      "sha256": "5a8ae19c554e83be2021ea759c981dcb73405a10014f01aa0a989799a11f1f7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/052.json",
+      "change": "added",
+      "bytes": 11864,
+      "sha256": "5e58031dc0eb8074eb742768555445d1034991679ec29cb7449a35562cd488b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/053.json",
+      "change": "added",
+      "bytes": 11713,
+      "sha256": "6a024bd1363d4ecfe8314621ed512043ec775f5930b00b43fb7207b7a53c5cd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/054.json",
+      "change": "added",
+      "bytes": 17993,
+      "sha256": "02d40c9fe01641a7f8a26464ded8fa8f4e61eeb43db20897f17c03e70fb4ea7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/055.json",
+      "change": "added",
+      "bytes": 16576,
+      "sha256": "68f3c9d426660c431c52ecdc1bc82b5efd328527bf3bf3bc0267b3c3aabd5a49",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/056.json",
+      "change": "added",
+      "bytes": 16950,
+      "sha256": "2de74af17b191559daf890959b30300bd5ee5b5e630e81ea0ac97625f306a7ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/071.json",
+      "change": "added",
+      "bytes": 42120,
+      "sha256": "9617d895ee465d16fba1c50d2f34bab6cdda2c8698964347d05b67d881d0403a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/120.json",
+      "change": "added",
+      "bytes": 11117,
+      "sha256": "0f4b857ea41bc17ebb9ad36021500380b8e5cf9ce30f74f8cc0b1499b9864c13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/121.json",
+      "change": "added",
+      "bytes": 11246,
+      "sha256": "16d26cac03d933907b3ab7e20a92444222a790ebc2854d46e61383ed8d6b034f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/122.json",
+      "change": "added",
+      "bytes": 13824,
+      "sha256": "7154c17ec11e0ca1a2735dea7eb9953da903c23ed9d0530773507372a81570f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/123.json",
+      "change": "added",
+      "bytes": 12112,
+      "sha256": "90ea7abaf84c3389ddf7723e249d0dad4109dfa33db596b1cf341bc76efebbae",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/126.json",
+      "change": "added",
+      "bytes": 13674,
+      "sha256": "711ad4d234dd8a475e630dd8b35a1b3a682f8436547d434106a122c20464f282",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/127.json",
+      "change": "added",
+      "bytes": 11189,
+      "sha256": "8def9866fece83b5702b2a6d1b9713792831dadd866f486858fc927f7803a395",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/128.json",
+      "change": "added",
+      "bytes": 15516,
+      "sha256": "daf5890548e009faea723f2f7232b2fd2d36026f552ae51aaf81f148362f7940",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/129.json",
+      "change": "added",
+      "bytes": 12955,
+      "sha256": "b71d2ec511dcbe5e189d31b367fa1e2685e9c51b5e81a1509d7132c9f2e6a42d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/130.json",
+      "change": "added",
+      "bytes": 17291,
+      "sha256": "6ca9099df100fa9b488a8d45dd3018ba221f0ecbd6d63509fbf0a940e7fdc1d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/131.json",
+      "change": "added",
+      "bytes": 14034,
+      "sha256": "91a273ac604d170fdf73e74efc2ee07dcaa2625860509233bff2d6a8bbb38e95",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/jbmc/134.json",
+      "change": "added",
+      "bytes": 19700,
+      "sha256": "1a96af89e3b5b96c08ab8b7b90f772c1346557e8f29aa952a2abde0cea763dcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/013.json",
+      "change": "added",
+      "bytes": 13058,
+      "sha256": "45a2f875a15f4cb5b97e185729d5e0a4a6470bd056742884fbae5548eda26325",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/015.json",
+      "change": "added",
+      "bytes": 12705,
+      "sha256": "06a14244180dcc4e22257b3989e6f2d204a487c19cdd6db92b5d561a42c72dc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/016.json",
+      "change": "added",
+      "bytes": 16648,
+      "sha256": "23dc53e89ef62ac0767f105cf46e811282509f333e1f8748c313914027455095",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/017.json",
+      "change": "added",
+      "bytes": 13357,
+      "sha256": "6446a74e4164f013d363c941da219372f97dcd1d86f10897511d2cfce9044e5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/018.json",
+      "change": "added",
+      "bytes": 17144,
+      "sha256": "bfa4c87f059049f6c3aed0bee03cdfbb05d22c3c98efdf0bfdaf9e5aa5cc690d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/022.json",
+      "change": "added",
+      "bytes": 16938,
+      "sha256": "526bc6826fcca2fe5d9bab51be3cf42e0a3964fe16919cb50e404f8829ecec01",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/023.json",
+      "change": "added",
+      "bytes": 14713,
+      "sha256": "0410c5e3b98e6d7681a91adc49c87cb3cb2f18f39dc919e27d276011e13e2d13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/024.json",
+      "change": "added",
+      "bytes": 18080,
+      "sha256": "ac357d77496f4eaf4226c55a96321394300d830777705cd4a673d9696bea509a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/027.json",
+      "change": "added",
+      "bytes": 14349,
+      "sha256": "e27e206baed2c54dbb48af40d5238316f8cee9106b822202ff326931a709710d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/031.json",
+      "change": "added",
+      "bytes": 19678,
+      "sha256": "c85f1642ed7231fdb6f398933f4a679acaab2125aeec5567b2bad55a30f20d12",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/032.json",
+      "change": "added",
+      "bytes": 17107,
+      "sha256": "d289b965bf09dd2215b43824f460335f7d5ce108850c22018141fddf9daaf067",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/033.json",
+      "change": "added",
+      "bytes": 12464,
+      "sha256": "1a333ceeb32c05db897ace22c60e6f847e99f391d81a8acf55c0bb41004cd87c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/034.json",
+      "change": "added",
+      "bytes": 14473,
+      "sha256": "721bf91906e13fca665be11f48fd31d623c41626d7535c3fdbeaf5d7ff8b51f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/035.json",
+      "change": "added",
+      "bytes": 9893,
+      "sha256": "9196bcf5413f3c0fd36eda0af240592c1c5558ffe8e3063eb4e9c72e4ffd5470",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/036.json",
+      "change": "added",
+      "bytes": 12990,
+      "sha256": "7dbe94bacd7ca0ae8a2f486bc2b56a72ec2b8b40f820ecd1c15affd9d39806da",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/037.json",
+      "change": "added",
+      "bytes": 10250,
+      "sha256": "c4efca9799b8eac6efdbf4ac929eb1bc728e2b8468dc67543658fdcdb990f1cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/044.json",
+      "change": "added",
+      "bytes": 14390,
+      "sha256": "06b4047594ad820c76666092c7e1d9da1da759842fc1d076e01c5e61b00884cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/045.json",
+      "change": "added",
+      "bytes": 11714,
+      "sha256": "1de2499f5295b26dca447ee62761badcaab9a4cba705a9374e1656796635f4b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/046.json",
+      "change": "added",
+      "bytes": 13254,
+      "sha256": "af0106e86a6d29dbe3a0e9f28b5267200dbd43d23ca3c9979942c71b5333da5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/047.json",
+      "change": "added",
+      "bytes": 18820,
+      "sha256": "3c767535cf3de097b179686d52488b3cc8fcea8b8dd31c24bf3ec726af99ee92",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/048.json",
+      "change": "added",
+      "bytes": 19568,
+      "sha256": "591102fb3546c5a873133f0bb87232c5ea4d1d689e8dc43384a8f9ec6f7ef8d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/049.json",
+      "change": "added",
+      "bytes": 12796,
+      "sha256": "829cc55f45eb1892fb374baa6fbd99128fd9b656fa54448c11668b067c185e02",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/050.json",
+      "change": "added",
+      "bytes": 19560,
+      "sha256": "87aa9e327295a923c662d921d7706c93f87edaa3fa177351e6cfb184f913e255",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/051.json",
+      "change": "added",
+      "bytes": 15086,
+      "sha256": "c99159e843d13a8bcca1bd601f0b6c4897732592f87032a7ba57a1928cd8555c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/052.json",
+      "change": "added",
+      "bytes": 11123,
+      "sha256": "ea2f835350805bb854ba525af1e5a6d86f777b6ae45c04ddfd7b6b885e6705fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/053.json",
+      "change": "added",
+      "bytes": 12086,
+      "sha256": "541967e4216ed34f6864d3ff885d5bdb05cd14a3427458d1fc99810797007e27",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/054.json",
+      "change": "added",
+      "bytes": 18405,
+      "sha256": "604fd454976900d9e287eae85b304a1c0fbbc0ea1e1cbbc23ff8284dc6e5b5dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/055.json",
+      "change": "added",
+      "bytes": 16633,
+      "sha256": "ff5e64525b38ffdb77097f55024c9acfc4a9bc44678abc679c22ac6e17109aab",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/056.json",
+      "change": "added",
+      "bytes": 17142,
+      "sha256": "531d3f122f59432cae2d07988db0debdc64e7454ae97a2aa8d46ff4285ceffc2",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/071.json",
+      "change": "added",
+      "bytes": 28986,
+      "sha256": "947f9f640f44fdb88b5ec368f679d8788fe6c11816095f3dedba2f3df40b26c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/120.json",
+      "change": "added",
+      "bytes": 11182,
+      "sha256": "c2730993bb220b3126caf87263ae26301fcadfbd8bc8d387bf7c8b4d939198ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/121.json",
+      "change": "added",
+      "bytes": 11529,
+      "sha256": "63f673982b1ed8f5434250ba20bb34a004e83f7275c51e863e7c4035c81e18dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/122.json",
+      "change": "added",
+      "bytes": 14754,
+      "sha256": "fa10ae782d9a0b886f133623df95cdd00a56f133c0040d3b9995426f8ef81e6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/123.json",
+      "change": "added",
+      "bytes": 12404,
+      "sha256": "5bb9dd23bde1573e32a29e9f8dcd4e95bff483402f97cf6cd24467a04a8300a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/126.json",
+      "change": "added",
+      "bytes": 14010,
+      "sha256": "c34f3cef3634cf128edd020ad5f7a8302de02461657d757b6f287a393464713e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/127.json",
+      "change": "added",
+      "bytes": 11344,
+      "sha256": "1f2861c4c85f21eb9e73f27d7c90a2f7024489927fe48f1d1601085d3982598f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/128.json",
+      "change": "added",
+      "bytes": 15734,
+      "sha256": "8efb36084ec431dccd334f49d92c820d4ad41177f1f7958978df30847a53312d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/129.json",
+      "change": "added",
+      "bytes": 13239,
+      "sha256": "925409de78344d048a44ecf8c5db464255cebd11108d32d6abb3dff57be670e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/130.json",
+      "change": "added",
+      "bytes": 17624,
+      "sha256": "2ffd3f5cd98618d6c858c4bc95190101261c51ab4d647efacf725ada32184029",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/131.json",
+      "change": "added",
+      "bytes": 14341,
+      "sha256": "c9014a27d117816dcabbcb030592321e2d372bc1ab740826972171d9ebd07689",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/results/native/134.json",
+      "change": "added",
+      "bytes": 19895,
+      "sha256": "8bbe73fe9f3e8c2775671a8484264c50176ed85f3f5e2100c7333e35f0f61fa6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/4a-coverage/ids.txt",
+      "change": "added",
+      "bytes": 164,
+      "sha256": "cd8d6f89cc21ac639d106028144407e763e11796c86fce1d608545a47f681e64",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T00:07:22+00:00",
+    "applied": [
+      "lib/target/jobs/4a-coverage/jbmc-gaps.json",
+      "lib/target/jobs/4a-coverage/native-gaps.json",
+      "lib/target/jobs/4a-coverage/compare.txt",
+      "lib/target/jobs/4a-coverage/jbmc-table.txt",
+      "lib/target/jobs/4a-coverage/native-table.txt",
+      "lib/target/jobs/4a-coverage/jbmc/build.txt",
+      "lib/target/jobs/4a-coverage/native/build.txt",
+      "lib/target/jobs/4a-coverage/results/jbmc/013.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/015.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/016.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/017.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/018.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/022.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/023.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/024.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/027.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/031.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/032.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/033.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/034.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/035.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/036.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/037.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/044.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/045.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/046.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/047.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/048.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/049.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/050.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/051.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/052.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/053.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/054.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/055.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/056.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/071.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/120.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/121.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/122.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/123.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/126.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/127.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/128.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/129.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/130.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/131.json",
+      "lib/target/jobs/4a-coverage/results/jbmc/134.json",
+      "lib/target/jobs/4a-coverage/results/native/013.json",
+      "lib/target/jobs/4a-coverage/results/native/015.json",
+      "lib/target/jobs/4a-coverage/results/native/016.json",
+      "lib/target/jobs/4a-coverage/results/native/017.json",
+      "lib/target/jobs/4a-coverage/results/native/018.json",
+      "lib/target/jobs/4a-coverage/results/native/022.json",
+      "lib/target/jobs/4a-coverage/results/native/023.json",
+      "lib/target/jobs/4a-coverage/results/native/024.json",
+      "lib/target/jobs/4a-coverage/results/native/027.json",
+      "lib/target/jobs/4a-coverage/results/native/031.json",
+      "lib/target/jobs/4a-coverage/results/native/032.json",
+      "lib/target/jobs/4a-coverage/results/native/033.json",
+      "lib/target/jobs/4a-coverage/results/native/034.json",
+      "lib/target/jobs/4a-coverage/results/native/035.json",
+      "lib/target/jobs/4a-coverage/results/native/036.json",
+      "lib/target/jobs/4a-coverage/results/native/037.json",
+      "lib/target/jobs/4a-coverage/results/native/044.json",
+      "lib/target/jobs/4a-coverage/results/native/045.json",
+      "lib/target/jobs/4a-coverage/results/native/046.json",
+      "lib/target/jobs/4a-coverage/results/native/047.json",
+      "lib/target/jobs/4a-coverage/results/native/048.json",
+      "lib/target/jobs/4a-coverage/results/native/049.json",
+      "lib/target/jobs/4a-coverage/results/native/050.json",
+      "lib/target/jobs/4a-coverage/results/native/051.json",
+      "lib/target/jobs/4a-coverage/results/native/052.json",
+      "lib/target/jobs/4a-coverage/results/native/053.json",
+      "lib/target/jobs/4a-coverage/results/native/054.json",
+      "lib/target/jobs/4a-coverage/results/native/055.json",
+      "lib/target/jobs/4a-coverage/results/native/056.json",
+      "lib/target/jobs/4a-coverage/results/native/071.json",
+      "lib/target/jobs/4a-coverage/results/native/120.json",
+      "lib/target/jobs/4a-coverage/results/native/121.json",
+      "lib/target/jobs/4a-coverage/results/native/122.json",
+      "lib/target/jobs/4a-coverage/results/native/123.json",
+      "lib/target/jobs/4a-coverage/results/native/126.json",
+      "lib/target/jobs/4a-coverage/results/native/127.json",
+      "lib/target/jobs/4a-coverage/results/native/128.json",
+      "lib/target/jobs/4a-coverage/results/native/129.json",
+      "lib/target/jobs/4a-coverage/results/native/130.json",
+      "lib/target/jobs/4a-coverage/results/native/131.json",
+      "lib/target/jobs/4a-coverage/results/native/134.json",
+      "lib/target/jobs/4a-coverage/ids.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
