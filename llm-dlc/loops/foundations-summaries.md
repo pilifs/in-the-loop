@@ -218,6 +218,13 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     - A field another stream adds to `Statement` must deserialize, or be `skip_deserializing`. If not, the merge
       fails to compile, loudly.
     - Another stream's new field on `equivalence::Outcome` goes beside `reuse` in the same literals.
+- `sync.py check` after S2b reports 6 errors, none from this branch. Each is a session with no manifest, behind
+  another stream's commit:
+  - heap: `uyqkxslyysrm`;
+  - observations: `lslmmpwrvxuz`, `zmqrplsqzwmm`;
+  - alignment: `yomwzkpyqppx`, `prrxuoknonuz`, `szkpqzylrnmv`.
+
+  None of them is an ancestor of `@`. Each manifest lives on its stream's branch, so the errors clear at the merge.
 - Next: S3, `jvmcontract impact --before DIR --after DIR`. For a set of claims (a `build.py` run's), it names those
   a change invalidates and why: the parts of each closure that changed, from `Closure::changes`. It is checked on the
   recorded examples' own before and after builds.
