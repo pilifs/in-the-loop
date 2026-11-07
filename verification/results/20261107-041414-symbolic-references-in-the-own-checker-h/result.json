@@ -1,0 +1,305 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-041414-symbolic-references-in-the-own-checker-h",
+  "title": "Symbolic references in the own checker (H1): the benchmark's own-checker runs keep every verdict, with paths, merges and formula sizes against job 20261106-201041",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 2m47s, peak 1.1 GiB (estimated 30m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 2 (compare with job 20261106-201041) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-041414-symbolic-references-in-the-own-checker-h.json",
+    "sha256": "3469bbb99f709976b4d7dcd3586948aa3d0e0e9103cf8deb7142f4d668304d39",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-041414-symbolic-references-in-the-own-checker-h",
+      "title": "Symbolic references in the own checker (H1): the benchmark's own-checker runs keep every verdict, with paths, merges and formula sizes against job 20261106-201041",
+      "description": "The own checker (lib/src/bmc/mod.rs) gained symbolic references (step H1 of llm-dlc/loops/foundations-heap.md): where paths that differ only in which object a reference denotes meet, they now merge, the reference becoming a choice among the objects (or null) under each path's condition, where before such paths stayed apart. if_acmp, ifnull, ifnonnull and instanceof on such a reference are formulas, getfield and putfield read and write each candidate under its guard, and anything else that needs the object splits the path per candidate. A known reference stays the fast path, so a run in which no merge meets two different references must be the same run as before: same verdict, paths, merges and clauses. Every unit, integration and conformance test passed inline, including three new conformance cases (swaps, swapsOrNull, swapsThenNull) that the JVM checks. This job runs the whole benchmark on the own checker and compares each run with the recorded results (job 20261106-201041, lib/benchmark/results.json): the verdicts, and the paths, merges and clauses of every run whose numbers moved.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/tests/heap.rs",
+          "lib/benchmark"
+        ]
+      },
+      "expected": "exits 0: no own-checker run's verdict differs from lib/benchmark/results.json. The second step lists the new cases (the three swaps cases of the conformance group, Verified or Violation as lib/tests/conformance.rs records them), every run whose paths or merges changed (expected: few or none outside the new cases, since only merges that meet different references are new, and those happen only past 512 paths), and every run whose clauses grew by more than 10% (expected: none). A changed verdict fails the job; a grown formula or changed path count is a finding to read.",
+      "submitted": {
+        "at": "2026-11-07T04:14:14+00:00",
+        "session": "750c8a36-92b9-44e3-adad-ef96dc6aa676",
+        "by": "claude (foundations-heap)"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "30m",
+        "memoryLimit": "3G",
+        "timeout": "2h",
+        "notes": "job 20261107-033320's step 1 took 143 s for 533 own-checker runs; three new cases, about a second each"
+      },
+      "steps": [
+        {
+          "name": "benchmark, own checker only",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+          "cwd": "."
+        },
+        {
+          "name": "compare with job 20261106-201041",
+          "run": "python3 - <<'PY'\nimport json, sys\nnew = [r for r in json.load(open(\"lib/target/benchmark-native.json\"))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(\"lib/benchmark/results.json\"))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nfor r in new:\n    o = old.get((r[\"case\"], r[\"mode\"]))\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed else 0)\nPY",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/benchmark-native.json",
+        "lib/target/benchmark-native.md"
+      ]
+    }
+  },
+  "sourceCommit": "73c514ad00a70d8515d8566934feacb12f0442d8",
+  "startedAt": "2026-11-07T04:40:56+00:00",
+  "finishedAt": "2026-11-07T04:43:44+00:00",
+  "wallSeconds": 168.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2530951,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 1800.0,
+    "notes": "job 20261107-033320's step 1 took 143 s for 533 own-checker runs; three new cases, about a second each"
+  },
+  "usage": {
+    "peakMemoryBytes": 1174097920,
+    "wallSeconds": 167.4,
+    "cpuSeconds": 206.1,
+    "memoryOfEstimate": 0.55,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 167.175,
+      "cpuSeconds": 206.012,
+      "cpuThrottledSeconds": 3.025,
+      "peakMemoryBytes": 1174097920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-benchmark-own-checker-only.log",
+        "lines": 557,
+        "bytes": 71296,
+        "sha256": "8a487c39efcafec51860b410fa262871255040a14f37030988c60bc5551c50c7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "real/checksum/fix-confined                   native assume             verified     correct                   0.51 s    41.9 MB",
+        "real/checksum/fix-confined                   native advised            verified     correct                   0.51 s    43.9 MB",
+        "held/saturating                              native strict             verified     correct                   0.06 s    31.0 MB",
+        "held/saturating                              native assume             verified     correct                   0.06 s    31.0 MB",
+        "held/saturating                              native advised            verified     correct                   0.07 s    31.7 MB",
+        "held/average/bits                            native strict             verified     correct                   0.06 s    31.1 MB",
+        "held/average/bits                            native assume             verified     correct                   0.06 s    31.1 MB",
+        "held/average/bits                            native advised            verified     correct                   0.07 s    31.5 MB",
+        "held/average/unsigned-shift                  native strict             violation    correct                   0.07 s    36.7 MB",
+        "held/average/unsigned-shift                  native assume             violation    correct                   0.06 s    36.7 MB",
+        "held/average/unsigned-shift                  native advised            violation    correct                   0.08 s    36.7 MB",
+        "held/floor-mod/wide-modulus                  native strict             violation    correct                   0.66 s    43.3 MB",
+        "held/floor-mod/wide-modulus                  native assume             violation    correct                   0.71 s    45.9 MB",
+        "held/floor-mod/wide-modulus                  native advised            violation    correct                   0.72 s    48.8 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.07 s    36.9 MB",
+        "held/floor-mod/jdk                           native assume             verified     correct                   0.06 s    37.1 MB",
+        "held/floor-mod/jdk                           native advised            verified     correct                   0.08 s    37.1 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.07 s    36.8 MB",
+        "held/ceil-div                                native assume             verified     correct                   0.07 s    36.8 MB",
+        "held/ceil-div                                native advised            verified     correct                   0.08 s    37.0 MB",
+        "held/lower-bound                             native strict             verified     correct                   0.29 s    40.3 MB",
+        "held/lower-bound                             native assume             verified     correct                   0.28 s    41.7 MB",
+        "held/lower-bound                             native advised            verified     correct                   0.30 s    44.5 MB",
+        "held/utf8-length                             native strict             verified     correct                   0.35 s    34.6 MB",
+        "held/utf8-length                             native assume             verified     correct                   0.34 s    34.6 MB",
+        "held/utf8-length                             native advised            verified     correct                   0.35 s    40.1 MB",
+        "held/reverse                                 native strict             verified     correct                   0.18 s    39.6 MB",
+        "held/reverse                                 native assume             verified     correct                   0.17 s    39.6 MB",
+        "held/reverse                                 native advised            verified     correct                   0.17 s    44.8 MB",
+        "held/prefix-sums                             native strict             verified     correct                   0.06 s    31.0 MB",
+        "held/prefix-sums                             native assume             verified     correct                   0.06 s    31.1 MB",
+        "held/prefix-sums                             native advised            verified     correct                   0.07 s    32.2 MB",
+        "held/overlap/meets                           native strict             verified     correct                   0.07 s    37.1 MB",
+        "held/overlap/meets                           native assume             verified     correct                   0.07 s    37.2 MB",
+        "held/overlap/meets                           native advised            verified     correct                   0.08 s    37.4 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.10 s    37.4 MB",
+        "held/overlap/length                          native assume             violation    correct                   0.08 s    37.4 MB",
+        "held/overlap/length                          native advised            violation    correct                   0.09 s    37.5 MB",
+        "example/141                                  native strict             verified     correct                   1.53 s    60.6 MB",
+        "example/142                                  native strict             verified     correct                   5.35 s    78.2 MB"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "compare with job 20261106-201041",
+      "run": "python3 - <<'PY'\nimport json, sys\nnew = [r for r in json.load(open(\"lib/target/benchmark-native.json\"))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(\"lib/benchmark/results.json\"))[\"runs\"] if r[\"engine\"] == \"native\"}\nchanged, grown, merged, fresh = [], [], [], []\nfor r in new:\n    o = old.get((r[\"case\"], r[\"mode\"]))\n    if o is None:\n        fresh.append((r[\"case\"], r[\"mode\"], r[\"verdict\"]))\n        continue\n    if r[\"verdict\"] != o[\"verdict\"]:\n        changed.append((r[\"case\"], r[\"mode\"], o[\"verdict\"], r[\"verdict\"]))\n    s, t = (o.get(\"solver\") or {}), (r.get(\"solver\") or {})\n    if s.get(\"clauses\") and t.get(\"clauses\") and t[\"clauses\"] > 1.10 * s[\"clauses\"]:\n        grown.append((r[\"case\"], r[\"mode\"], s[\"clauses\"], t[\"clauses\"]))\n    if t.get(\"merges\", 0) != s.get(\"merges\", 0) or t.get(\"paths\") != s.get(\"paths\"):\n        merged.append((r[\"case\"], r[\"mode\"], s.get(\"paths\"), t.get(\"paths\"), s.get(\"merges\"), t.get(\"merges\"), s.get(\"clauses\"), t.get(\"clauses\")))\nprint(f\"own-checker runs: {len(new)}; new cases: {len(fresh)}; verdicts changed: {len(changed)}; formulas grown past 10%: {len(grown)}; paths or merges changed: {len(merged)}\")\nfor f in fresh: print(\"  new:\", *f)\nfor c in changed: print(\"  verdict changed:\", *c)\nfor g in grown: print(\"  clauses grown:\", *g)\nfor m in merged: print(\"  paths %s->%s merges %s->%s clauses %s->%s:\" % m[2:], m[0], m[1])\nsys.exit(1 if changed else 0)\nPY",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.055,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 23375872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-with-job-20261106-2010.log",
+        "lines": 217,
+        "bytes": 11167,
+        "sha256": "da8f8f434a99d124c378d99e3776e53ffb4d66b14211448b07340a459fcddde5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "  new: conformance/swapsThenNull/2 advised violation",
+        "  new: conformance/swapsThenNull/3 strict violation",
+        "  new: conformance/swapsThenNull/3 assume violation",
+        "  new: conformance/swapsThenNull/3 advised violation",
+        "  new: conformance/shiftRight/3 strict violation",
+        "  new: conformance/shiftRight/3 assume violation",
+        "  new: conformance/shiftRight/3 advised violation",
+        "  new: conformance/shiftUnsigned/3 strict violation",
+        "  new: conformance/shiftUnsigned/3 assume violation",
+        "  new: conformance/shiftUnsigned/3 advised violation",
+        "  new: conformance/leadingZeros/1 strict verified",
+        "  new: conformance/leadingZeros/1 assume verified",
+        "  new: conformance/leadingZeros/1 advised verified",
+        "  new: conformance/leadingZeros/2 strict violation",
+        "  new: conformance/leadingZeros/2 assume violation",
+        "  new: conformance/leadingZeros/2 advised violation",
+        "  new: conformance/leadingZeros/3 strict violation",
+        "  new: conformance/leadingZeros/3 assume violation",
+        "  new: conformance/leadingZeros/3 advised violation",
+        "  new: conformance/leadingZerosLong/1 strict verified",
+        "  new: conformance/leadingZerosLong/1 assume verified",
+        "  new: conformance/leadingZerosLong/1 advised verified",
+        "  new: conformance/leadingZerosLong/2 strict violation",
+        "  new: conformance/leadingZerosLong/2 assume violation",
+        "  new: conformance/leadingZerosLong/2 advised violation",
+        "  verdict changed: conformance/boom/1 strict unverifiable violation",
+        "  verdict changed: conformance/boom/1 assume verified violation",
+        "  verdict changed: conformance/boom/1 advised unverifiable violation",
+        "  verdict changed: conformance/inherited/1 strict unverifiable violation",
+        "  verdict changed: conformance/inherited/1 assume verified violation",
+        "  verdict changed: conformance/inherited/1 advised unverifiable violation",
+        "  verdict changed: conformance/quiet/1 strict unverifiable verified",
+        "  verdict changed: conformance/quiet/1 advised unverifiable verified",
+        "  clauses grown: conformance/boom/1 strict 1 230",
+        "  clauses grown: conformance/boom/1 assume 1 230",
+        "  clauses grown: conformance/inherited/1 strict 1 230",
+        "  clauses grown: conformance/inherited/1 assume 1 230",
+        "  paths None->1 merges None->0 clauses None->230: conformance/boom/1 advised",
+        "  paths None->1 merges None->0 clauses None->230: conformance/inherited/1 advised",
+        "  paths None->1 merges None->0 clauses None->1: conformance/quiet/1 advised"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/benchmark-native.json",
+      "change": "added",
+      "bytes": 1062683,
+      "sha256": "e31738c40580db389c826d989cba0d9e91dfecafb18a538f509e9377de9f9430",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/benchmark-native.md",
+      "change": "added",
+      "bytes": 29923,
+      "sha256": "4478d1367deccab7badf7cfc3e073de77291e222bf0b8ad291c5988551f89e8e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T04:43:48+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "lib/target/benchmark-native.json",
+      "lib/target/benchmark-native.md"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-041414-symbolic-references-in-the-own-checker-h"
+}

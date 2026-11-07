@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "3ef2aade-2b55-4d9e-9079-651a4ca9023c",
+  "status": "open",
+  "title": "Verification pipeline proof and model-checking queue",
+  "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-07T04:40:31.761Z",
+  "ended": "2026-11-07T04:44:20.521Z",
+  "duration_seconds": 229,
+  "stats": {
+    "turns": 4,
+    "api_calls": 9,
+    "tool_calls": 9,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 69093,
+    "usage": {
+      "input_tokens": 20,
+      "output_tokens": 2537,
+      "cache_read_input_tokens": 439185,
+      "cache_creation_input_tokens": 41343
+    }
+  },
+  "tools": {
+    "Bash": 9
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T04:40:31.761Z",
+      "ended": "2026-11-07T04:44:20.521Z",
+      "turns": 4,
+      "api_calls": 9,
+      "usage": {
+        "input_tokens": 20,
+        "output_tokens": 2537,
+        "cache_read_input_tokens": 439185,
+        "cache_creation_input_tokens": 41343
+      },
+      "peak_context_tokens": 69093
+    }
+  ],
+  "log": {
+    "sha256": "6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147",
+    "bytes": 545582,
+    "lines": 118,
+    "gzip_bytes": 123604,
+    "path": "llm-dlc/traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/logs/6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uvmurzwkyuknmokwwyslvmtmwyvxytut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: H1's benchmark comparison fails on a stale recording (VF-014)",
+      "body": "Job 20261107-041414 (symbolic references in the own checker) ran the 557-run benchmark on vm-1: step 1 passed, step 2 failed on 8 verdicts that changed from unverifiable to a concrete verdict on boom/1, inherited/1 and quiet/1, whose recorded runs stopped at a class-initializer gap. Most likely cause is a stale lib/benchmark/results.json rather than H1, but the job does not isolate it; recorded as VF-014 with what would close it. Estimate was far off (30m, 2 GiB estimated; 2m47s, 1.1 GiB used).",
+      "log_sha256": "6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147"
+    }
+  ],
+  "logs": {
+    "6f950647204653af75b6d4933d1e7112257e55832eb54d718bb4144884bb2147": {
+      "bytes": 545582,
+      "lines": 118,
+      "gzip_bytes": 123604,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

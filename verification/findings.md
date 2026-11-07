@@ -18,6 +18,29 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-014: H1's benchmark comparison fails on 8 verdicts that changed because `lib/benchmark/results.json` is stale, not because of symbolic references
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1` (run with `--memory 8G --workers 2`). Job
+  `20261107-041414-symbolic-references-in-the-own-checker-h` at `73c514ad00a7`: step 1 (the whole benchmark on the own
+  checker, 557 runs) passed; step 2 (compare with job `20261106-201041`) exited 1.
+- **Found**: 8 own-checker verdicts differ from `lib/benchmark/results.json`, all on three conformance cases whose
+  recorded verdict was `unverifiable` because of a class-initializer gap: `boom/1` (strict, advised: unverifiable ->
+  violation; assume: verified -> violation), `inherited/1` (same three), `quiet/1` (strict, advised: unverifiable ->
+  verified). The same cases account for the 4 "clauses grown" (1 -> 230) and the 3 "paths or merges changed" (paths
+  None -> 1, merges None -> 0): the recorded runs stopped at the gap and solved nothing. 201 runs are "new" (cases the
+  recording predates). The new verdicts agree with JBMC's recorded ones (`boom` violation, `quiet` verified). This reads
+  as the own checker having gained class initializers since the recording, not as an effect of H1, but the job does
+  not isolate the two: no run in the recording exercises a merge of different references, so H1's "same run as before"
+  claim is untested by it, apart from the absence of any other changed run. I did not verify the class-initializer
+  attribution against the git history of `lib/src/bmc/`.
+- **Needs**: the foundations-heap loop (or whoever owns `lib/benchmark/results.json`) regenerates the recording on the
+  current engine, so that the reference includes the 201 new runs and the class-initializer verdicts, then resubmits
+  unchanged (`pipeline.py resubmit 20261107-041414-symbolic-references-in-the-own-checker-h`). Alternatively compare
+  against a run at H1's parent commit, which isolates H1.
+- **Tracked in**: `llm-dlc/loops/foundations-heap.md` step H1 (not yet updated).
+- **Closes when**: the resubmitted job passes against a recording made at a commit without H1, or H1's parent.
+
 ### VF-013: the loops' run records are never published: they are gitignored, and unredacted
 
 - **Status**: open (deferred by the user on 2026-11-07, until after the next feature loop; the approach below is
