@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 52, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 20:25 UTC |
-| Prompts | 1,437 |
-| Model calls | 14,487 |
-| Tool calls | 15,470 (280 failed) |
-| Compactions | 212 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 20:26 UTC |
+| Prompts | 1,442 |
+| Model calls | 14,491 |
+| Tool calls | 15,472 (280 failed) |
+| Compactions | 213 |
 | Subagents | 9 |
-| Tokens written | 16,381,440 |
-| Tokens read | 2,391,130,647 (97.9% from cache) |
+| Tokens written | 16,384,320 |
+| Tokens read | 2,391,339,562 (97.9% from cache) |
 | Commits with a trace | 416 |
-| Log snapshots | 501 (1288.8 MB gzipped, 488 uploaded) |
+| Log snapshots | 502 (1291.3 MB gzipped, 488 uploaded) |
 
 ## Sessions
 
@@ -78,7 +78,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
 | 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 6 |
 | 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 35 | 476 | 501 | 9 | 5 | 282,777 | 15 |
-| 2026-11-07 16:26 UTC | [b65d132b-4eb4-46fd-8556-f4cba3311ad1](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | open | 3 h 58 min | `claude-opus-5-5` | 62 | 448 | 457 | 3 | 12 | 171,947 | 12 |
+| 2026-11-07 16:26 UTC | [b65d132b-4eb4-46fd-8556-f4cba3311ad1](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | ended | 3 h 59 min | `claude-opus-5-5` | 67 | 452 | 459 | 3 | 13 | 171,947 | 12 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -139,13 +139,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 339,102 | 976 | 1,254,533 | 85,418,727 | 98.6% | 256 |
-| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 269,538 | 896 | 1,218,252 | 37,514,789 | 96.9% | 144 |
+| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 272,418 | 906 | 1,240,817 | 37,701,129 | 96.8% | 143 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 13,482 | 87.1% | 52 |
+| `Bash` | 13,484 | 87.2% | 52 |
 | `Read` | 752 | 4.9% | 28 |
 | `Edit` | 600 | 3.9% | 27 |
 | `Write` | 379 | 2.4% | 25 |
@@ -641,7 +641,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 17 | 41.4 MB | [`9a4c7376723a`](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/9a4c7376723a063bbe8d554629ec7593fb6464570becfffed3745912318daaa2.jsonl.gz) |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 3 | 3 | 0.4 MB | [`d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz) |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 15 | 14 | 19.3 MB | `3f768f3bb246`, not uploaded |
-| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 12 | 0 | 15.4 MB | `219d39b56cb5`, not uploaded |
+| [`b65d132b`](b65d132b-4eb4-46fd-8556-f4cba3311ad1/summary.md) | 13 | 0 | 17.9 MB | `6318b2422f4f`, not uploaded |
 
 ## Session notes
 
