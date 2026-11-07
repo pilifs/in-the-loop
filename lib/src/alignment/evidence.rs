@@ -42,7 +42,7 @@ pub fn current(alignment: &Alignment, keys: &Keys, settings: &Settings) -> Vec<N
         }
         let method = proof.filter(|p| p.attempts.iter().any(|a| !matches!(a.tried, Tried::NotTried { .. }))).map(|p| match &p.settled {
             Settled::Proved { proposal, .. } => tried(*proposal).map(|a| a.evidence.clone()).expect("a proved proposal was tried"),
-            Settled::Asked { proved } => tried(proved[0]).map(|a| a.evidence.clone()).expect("a proved proposal was tried"),
+            Settled::Asked { proved, .. } => tried(proved[0]).map(|a| a.evidence.clone()).expect("a proved proposal was tried"),
             Settled::NoneProved => Evidence::Unknown { why: format!("no mapping of the pair proved: {}", p.summary) },
         });
         out.push(Now { subject: m.before.clone(), content: HintContent::Method { before: m.before.clone(), after: m.after.clone() }, keys: pair, proof: method });

@@ -32,7 +32,9 @@
 //! with zero, which is a person's decision: it is put as a question, every candidate listed.
 //!
 //! **Collapse.** Candidates that are the same expression (up to spacing) are one. Candidates that differ in form are
-//! collapsed only by proof, when `align --prove` checks them ([`super::proofs`]).
+//! collapsed only by proof, when `align --prove` checks them ([`super::proofs`]): proved ones with the same relation or
+//! the same inputs give the old version the same observations, and what tells their relations apart (a new result no
+//! input produces) is said with the one that stands for them.
 //!
 //! **Accounting.** Every observation the old version is held to is listed with how the mapping compares it; a
 //! mapping can't remove one, and one whose relation is a person's decision stays unresolved until approved.
@@ -118,6 +120,9 @@ pub struct ResultMapping {
     /// Why a result whose class changed shape could not be related field by field.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub gaps: Vec<String>,
+    /// The old and the new result's types, as descriptors: what `previous` and `result` are in a relation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub returns: Option<(String, String)>,
 }
 
 /// An observation the old version is held to, and how the mapping compares it.
@@ -682,7 +687,8 @@ fn map(before: &Build, after: &Build, report: &MethodReport, (bc, bm): (&ClassFi
     let unused = |by: &BTreeSet<String>| -> Vec<String> { if complete { new_leaves.iter().map(|l| l.path.clone()).filter(|p| !by.contains(p) && !taken.contains(p)).collect() } else { Vec::new() } };
     let free = unused(&any);
     let open: Vec<String> = unused(&leading).into_iter().filter(|p| !free.contains(p)).collect();
-    let result = result_mapping(&old, &new, report);
+    let mut result = result_mapping(&old, &new, report);
+    result.returns = Some((old.ret.descriptor(), new.ret.descriptor()));
     let accounting = contract
         .required
         .iter()
@@ -750,11 +756,11 @@ fn built(old: &Shape, leaves: &[Leaf], taken: &BTreeSet<String>) -> Vec<Choice> 
 
 /// The result relation, from the catalogue.
 fn result_mapping(old: &Side, new: &Side, report: &MethodReport) -> ResultMapping {
-    let one = |kind, expression: String, why: &str| ResultMapping { kind, candidates: vec![Choice { expression, score: 3, why: why.into() }], inferred: true, fields: None, gaps: Vec::new() };
+    let one = |kind, expression: String, why: &str| ResultMapping { kind, candidates: vec![Choice { expression, score: 3, why: why.into() }], inferred: true, fields: None, gaps: Vec::new(), returns: None };
     let (a, b) = (&old.ret, &new.ret);
     let (sa, sb) = (shape(old.build, a), shape(new.build, b));
     if a == b && same_shape(old.build, new.build, a) {
-        return ResultMapping { kind: ResultKind::Equal, candidates: Vec::new(), inferred: true, fields: None, gaps: Vec::new() };
+        return ResultMapping { kind: ResultKind::Equal, candidates: Vec::new(), inferred: true, fields: None, gaps: Vec::new(), returns: None };
     }
     if widens(a, b) {
         return one(ResultKind::Widened, "previous == result".into(), "the result widened: the old value compared with the new one");
@@ -787,7 +793,7 @@ fn result_mapping(old: &Side, new: &Side, report: &MethodReport) -> ResultMappin
     } else {
         Vec::new()
     };
-    ResultMapping { kind: ResultKind::Changed, candidates, inferred: false, fields: None, gaps: Vec::new() }
+    ResultMapping { kind: ResultKind::Changed, candidates, inferred: false, fields: None, gaps: Vec::new(), returns: None }
 }
 
 /// A result of a class both builds declare, whose shape changed: related by the class's field correspondence, each
@@ -812,7 +818,7 @@ fn result_by_fields(old: &Side, new: &Side, report: &MethodReport, t: &Type) -> 
         }
     }
     if !gaps.is_empty() {
-        return Some(ResultMapping { kind: ResultKind::Changed, candidates: Vec::new(), inferred: false, fields: Some(fc), gaps });
+        return Some(ResultMapping { kind: ResultKind::Changed, candidates: Vec::new(), inferred: false, fields: Some(fc), gaps, returns: None });
     }
     // Each combination: its place, how sure it is, its terms, and the paths into the new result it compares.
     type Combo = (u32, u32, Vec<String>, Vec<String>);
@@ -844,7 +850,7 @@ fn result_by_fields(old: &Side, new: &Side, report: &MethodReport, t: &Type) -> 
             }
         })
         .collect();
-    Some(ResultMapping { kind: ResultKind::Fields, candidates, inferred: true, fields: Some(fc), gaps: Vec::new() })
+    Some(ResultMapping { kind: ResultKind::Fields, candidates, inferred: true, fields: Some(fc), gaps: Vec::new(), returns: None })
 }
 
 pub(super) fn find<'b>(build: &'b Build, wanted: &str) -> Option<(&'b ClassFile, &'b Method)> {
@@ -897,7 +903,10 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
         let (parts, whole) = match proof {
             Some(MappingProof { settled: Settled::Proved { .. }, .. }) if m.result.inferred => (Vec::new(), false),
             Some(MappingProof { settled: Settled::Proved { .. }, .. }) => (vec!["whether the proved result relation is the intended one: what the result means changed, so approving it is a person's decision".to_string()], false),
-            Some(MappingProof { settled: Settled::Asked { proved }, .. }) => (vec![format!("which of the {} relations proved is intended: each holds, and they give the old version different observations", proved.len())], true),
+            Some(MappingProof { settled: Settled::Asked { proved, apart }, .. }) => {
+                let told = if apart.is_empty() { "no input that separates them was among the proposals tried".to_string() } else { format!("what tells them apart: {}", apart.join("; ")) };
+                (vec![format!("which of the {} relations proved is intended: each holds, with different inputs, and they give the old version different observations ({told})", proved.len())], true)
+            }
             Some(MappingProof { settled: Settled::NoneProved, attempts, .. }) if !attempts.is_empty() && attempts.iter().all(|a| matches!(a.tried, Tried::Refuted { .. })) => {
                 (vec!["none of the candidates holds, each refuted by a replayed counterexample: whether the change is a regression, or the intended mapping is one not tried".to_string()], true)
             }
@@ -955,10 +964,11 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
                 if let Some(a) = proof.attempts.iter().find(|a| a.proposal == i) {
                     evidence = a.evidence.clone();
                 }
-                if let Settled::Proved { proposal, equivalent, .. } = &proof.settled {
+                if let Settled::Proved { proposal, equivalent, apart, .. } = &proof.settled {
                     if *proposal == i && !equivalent.is_empty() {
-                        let others: Vec<String> = equivalent.iter().map(|&e| m.proposals[e].arguments.join(", ")).collect();
+                        let others: Vec<String> = equivalent.iter().map(|&e| shown_proposal(&m.proposals[e])).collect();
                         why.push(format!("proved, as were these, which give the old version the same observations on every input of the claim and so are one candidate with it: {}", others.join("; ")));
+                        why.extend(apart.iter().cloned());
                     }
                 }
                 why.push(format!("outcome: {}", proof.summary));
@@ -971,11 +981,28 @@ pub fn checked_hints(mappings: &[Mapping], proofs: &[MappingProof]) -> Hints {
                 evidence,
                 rank: (!alone || decide.is_some()).then_some(place as u32 + 1),
                 why,
-                ask: decide.as_ref().map(|d| Ask { decide: d.clone(), means: m.means(p, whole) }),
+                ask: decide.as_ref().map(|d| Ask { decide: d.clone(), means: m.means(p, whole).into_iter().chain(collapsed_into(proof, i)).collect() }),
             });
         }
     }
     Hints { version: HINTS_VERSION, entries }
+}
+
+/// A proposal as one line: its inputs, and its relation where it has one.
+fn shown_proposal(p: &Proposal) -> String {
+    match &p.relation {
+        Some(r) => format!("{} with {r}", p.arguments.join(", ")),
+        None => p.arguments.join(", "),
+    }
+}
+
+/// For the proposal a proof's collapse kept, what approving it covers: the relations collapsed into it, and what tells
+/// them apart.
+fn collapsed_into(proof: Option<&MappingProof>, i: usize) -> Vec<String> {
+    match proof.map(|p| &p.settled) {
+        Some(Settled::Proved { proposal, apart, .. }) if *proposal == i => apart.iter().map(|a| format!("one candidate with the relations proved alongside it: {a}")).collect(),
+        _ => Vec::new(),
+    }
 }
 
 /// The mappings as text, one pair per paragraph.

@@ -6,16 +6,28 @@
 //! no proof. A proposal with field equations (A4) has no flag form, and isn't tried here: its proof is the heap
 //! stream's correspondence check.
 //!
-//! **Collapse by proof.** Two proved proposals with the same result relation are one candidate: under the contract,
-//! each makes the old version's observations a function of the new version's on every input of the claim (the
-//! catalogue's relations all fix `previous` from `result`), so the two give the old version the same observations
-//! everywhere the claim covers, and nothing a consumer sees tells them apart. The first by rank stands for them.
+//! **Collapse by proof.** Two proved proposals are one candidate when they give the old version the same observations
+//! on every input of the claim, so that nothing a consumer sees tells them apart:
+//! - with the same result relation: each makes the old version's observations a function of the new version's (the
+//!   catalogue's relations all fix `previous` from `result`), the same function for both;
+//! - with the same input mapping: the old version gets the same inputs from each, so it gives the same observations;
+//!   the two relations both hold on every one of them, and differ only on new results no input of the claim produces.
+//!   Where the old result is a `boolean`, such a result is found by evaluating both relations (`harness::expr`), and
+//!   named: `previous == (result > 0)` and `previous == (result != 0)` differ at `-1`, which no input gives;
+//! - and so on transitively, since "the same observations on every input" is an equivalence.
+//!
+//! The first by rank stands for them.
 //!
 //! **The outcome.**
 //! - One candidate proved: its evidence is "proved for claim key K", and its intent is still proposed. For a
 //!   standalone method (no external anchor) the relation is proved, and whether it is the intended one is
-//!   unconfirmed; where the result's meaning changed, the relation is still a person's decision.
-//! - Several, with different relations: a question, each with its proof.
+//!   unconfirmed; where the result's meaning changed, the relation is still a person's decision. What tells its
+//!   collapsed relations apart is said with it.
+//! - Several, with different input mappings and different relations: a question, each with its proof. An input that
+//!   separates two of them is the counterexample of a refuted proposal that takes the inputs of one and the relation
+//!   of the other: there the first gives the old version an observation the second's relation doesn't admit, while
+//!   the second holds, so the two give the old version different observations. It is named where such a proposal was
+//!   tried.
 //! - None: every mapping tried, with its counterexample or why it has no verdict, so a person can see whether the
 //!   change is a bug or the mapping is missing.
 //!
@@ -29,7 +41,10 @@ use serde::{Deserialize, Serialize};
 
 use super::mappings::{Flags, Mapping, ResultKind};
 use crate::bmc::gaps::GapMode;
+use crate::classfile::Type;
 use crate::equivalence;
+use crate::harness::expr;
+use crate::interp::Value;
 use crate::spec::Evidence;
 use crate::{Engine, Error, Verdict};
 
@@ -86,10 +101,22 @@ pub struct Attempt {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", tag = "outcome")]
 pub enum Settled {
-    /// One candidate after collapsing, proved: `proposal` stands for itself and for the `equivalent` ones.
-    Proved { proposal: usize, equivalent: Vec<usize>, note: Option<String> },
-    /// Several candidates proved with different relations: a person's choice.
-    Asked { proved: Vec<usize> },
+    /// One candidate after collapsing, proved: `proposal` stands for itself and for the `equivalent` ones. `apart`
+    /// says what tells an equivalent one with another relation apart from it: a new result no input produces.
+    Proved {
+        proposal: usize,
+        equivalent: Vec<usize>,
+        note: Option<String>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        apart: Vec<String>,
+    },
+    /// Several candidates proved with different input mappings and different relations: a person's choice. `apart`
+    /// names an input that separates two of them, where one was found.
+    Asked {
+        proved: Vec<usize>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        apart: Vec<String>,
+    },
     /// No proposal proved.
     NoneProved,
 }
@@ -191,17 +218,92 @@ fn same(a: Option<&str>, b: Option<&str>) -> bool {
     squash(a) == squash(b)
 }
 
+/// Whether two proposals give the old version the same inputs: the same expressions and the same field equations.
+fn same_inputs(mapping: &Mapping, p: usize, q: usize) -> bool {
+    let (a, b) = (&mapping.proposals[p], &mapping.proposals[q]);
+    a.arguments == b.arguments && a.fields == b.fields
+}
+
+/// The type a JVM descriptor names, for the scalar types the expression language has.
+fn scalar(descriptor: &str) -> Option<Type> {
+    Type::parse(descriptor).ok().filter(|t| expr::ty_of(t).is_some())
+}
+
+/// The values tried for a scalar of type `t`: every value of a `boolean`, and for an integral type the values around
+/// zero and the extremes.
+fn samples(t: &Type) -> Vec<Value> {
+    match expr::ty_of(t) {
+        Some(expr::Ty::Boolean) => vec![Value::Int(0), Value::Int(1)],
+        Some(expr::Ty::Int) => [0, 1, -1, 2, -2, i32::MIN, i32::MAX].into_iter().map(Value::Int).collect(),
+        Some(expr::Ty::Long) => [0, 1, -1, 2, -2, i64::MIN, i64::MAX].into_iter().map(Value::Long).collect(),
+        None => Vec::new(),
+    }
+}
+
+fn shown(v: &Value, t: &Type) -> String {
+    match (v, t) {
+        (Value::Int(0), Type::Boolean) => "false".into(),
+        (Value::Int(_), Type::Boolean) => "true".into(),
+        (Value::Int(i), _) => i.to_string(),
+        (Value::Long(l), _) => l.to_string(),
+        (v, _) => format!("{v:?}"),
+    }
+}
+
+/// What tells two result relations apart that both hold on every input of the claim, with the old version given the
+/// same observations by each: a new result at which no old result satisfies both, so that no input of the claim
+/// produces it. Found by evaluating the two over every old `boolean` and the sampled new results; `None` for another
+/// old type (its values can't all be tried) or a relation over a record.
+pub fn apart(mapping: &Mapping, a: &str, b: &str) -> Option<String> {
+    let (old, new) = mapping.result.returns.as_ref()?;
+    let (old, new) = (scalar(old).filter(|t| *t == Type::Boolean)?, scalar(new)?);
+    let params = [expr::Param { name: "previous".into(), ty: old.clone(), slot: 0 }, expr::Param { name: "result".into(), ty: new.clone(), slot: old.slots() }];
+    let (ea, eb) = (expr::parse(a, &params).ok()?, expr::parse(b, &params).ok()?);
+    let holds = |e: &expr::Expr, previous: &Value, result: &Value| {
+        let mut locals = vec![Value::Int(0); usize::from(old.slots() + new.slots())];
+        locals[0] = *previous;
+        locals[usize::from(old.slots())] = *result;
+        matches!(expr::eval(e, &locals), Ok(Value::Int(1)))
+    };
+    let olds = samples(&old);
+    samples(&new).into_iter().find_map(|r| {
+        let (wa, wb): (Vec<&Value>, Vec<&Value>) = (olds.iter().filter(|p| holds(&ea, p, &r)).collect(), olds.iter().filter(|p| holds(&eb, p, &r)).collect());
+        let list = |w: &[&Value]| if w.is_empty() { "none".to_string() } else { w.iter().map(|v| shown(v, &old)).collect::<Vec<_>>().join(" or ") };
+        (!wa.iter().any(|v| wb.contains(v))).then(|| {
+            format!("`{a}` and `{b}` both hold on every input of the claim, and differ only on new results no input of it produces: at {}, the first admits an old result of {} and the second {}", shown(&r, &new), list(&wa), list(&wb))
+        })
+    })
+}
+
+/// An input that separates two proved proposals `p` and `q` of different groups: the counterexample of a refuted
+/// proposal with the inputs of one and the relation of the other.
+fn separating(mapping: &Mapping, attempts: &[Attempt], p: usize, q: usize) -> Option<String> {
+    let relation = |i: usize| mapping.proposals[i].relation.as_deref();
+    [(p, q), (q, p)].into_iter().find_map(|(x, y)| {
+        attempts.iter().find_map(|a| match &a.tried {
+            Tried::Refuted { input, before, after } if same_inputs(mapping, a.proposal, x) && same(relation(a.proposal), relation(y)) => Some(format!(
+                "#{} and #{} give the old version different observations on {input}: with #{}'s inputs it gives {before} where the new version gives {after}, which #{}'s relation doesn't admit, and #{} holds there (#{} tried both together and was refuted)",
+                p + 1, q + 1, x + 1, y + 1, y + 1, a.proposal + 1
+            )),
+            _ => None,
+        })
+    })
+}
+
 /// What a pair's proofs settle: collapse by proof, then the outcome rules. Pure, so it is tested on its own.
 pub fn settle(mapping: &Mapping, attempts: &[Attempt]) -> (Settled, String) {
     let proved: Vec<usize> = attempts.iter().filter(|a| a.tried == Tried::Proved).map(|a| a.proposal).collect();
+    let relation = |i: usize| mapping.proposals[i].relation.as_deref();
+    let alike = |p: usize, q: usize| same(relation(p), relation(q)) || same_inputs(mapping, p, q);
     let mut groups: Vec<Vec<usize>> = Vec::new();
     for &p in &proved {
-        let relation = mapping.proposals[p].relation.as_deref();
-        match groups.iter_mut().find(|g| same(mapping.proposals[g[0]].relation.as_deref(), relation)) {
-            Some(g) => g.push(p),
-            None => groups.push(vec![p]),
-        }
+        let (joined, rest): (Vec<Vec<usize>>, Vec<Vec<usize>>) = std::mem::take(&mut groups).into_iter().partition(|g| g.iter().any(|&q| alike(p, q)));
+        let mut group: Vec<usize> = joined.into_iter().flatten().chain([p]).collect();
+        group.sort();
+        groups = rest;
+        groups.push(group);
     }
+    groups.sort_by_key(|g| g[0]);
     let pair = format!("{} -> {}", mapping.before, mapping.after);
     match groups.as_slice() {
         [] => {
@@ -225,14 +327,36 @@ pub fn settle(mapping: &Mapping, attempts: &[Attempt]) -> (Settled, String) {
             } else {
                 None
             };
+            // Each other relation in the group once, with what tells it apart from the first's.
+            let mut others: Vec<&str> = Vec::new();
+            for &e in &rest {
+                if let Some(r) = relation(e).filter(|r| !same(Some(r), relation(first)) && !others.iter().any(|o| same(Some(o), Some(r)))) {
+                    others.push(r);
+                }
+            }
+            let apart: Vec<String> = others
+                .iter()
+                .map(|r| match relation(first).and_then(|f| apart(mapping, f, r)) {
+                    Some(why) => why,
+                    None => format!("`{}` and `{r}` both hold on every input of the claim, with the same old inputs, so they give the old version the same observations; no new result that tells them apart was found", relation(first).unwrap_or("equal")),
+                })
+                .collect();
             let collapsed = if rest.is_empty() { String::new() } else { format!(", with {} equivalent under the contract", rest.iter().map(|p| format!("#{}", p + 1)).collect::<Vec<_>>().join(", ")) };
             let summary = format!("{pair}: #{} proved{collapsed}, intent still proposed{}", first + 1, note.as_ref().map(|n| format!(" ({n})")).unwrap_or_default());
-            (Settled::Proved { proposal: first, equivalent: rest, note }, summary)
+            (Settled::Proved { proposal: first, equivalent: rest, note, apart }, summary)
         }
         many => {
             let firsts: Vec<usize> = many.iter().map(|g| g[0]).collect();
-            let shown: Vec<String> = firsts.iter().map(|&p| format!("#{} ({})", p + 1, mapping.proposals[p].relation.as_deref().unwrap_or("equal"))).collect();
-            (Settled::Asked { proved: firsts }, format!("{pair}: {} relations proved, a person's choice: {}", many.len(), shown.join(", ")))
+            let mut apart = Vec::new();
+            for (i, gi) in many.iter().enumerate() {
+                for gj in &many[i + 1..] {
+                    if let Some(s) = gi.iter().flat_map(|&p| gj.iter().map(move |&q| (p, q))).find_map(|(p, q)| separating(mapping, attempts, p, q)) {
+                        apart.push(s);
+                    }
+                }
+            }
+            let shown: Vec<String> = firsts.iter().map(|&p| format!("#{} ({})", p + 1, relation(p).unwrap_or("equal"))).collect();
+            (Settled::Asked { proved: firsts, apart }, format!("{pair}: {} relations proved, a person's choice: {}", many.len(), shown.join(", ")))
         }
     }
 }

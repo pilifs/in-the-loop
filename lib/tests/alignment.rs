@@ -711,7 +711,7 @@ fn of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds() {
         return;
     };
     let (m, p) = (mapping(&a, "C#span"), proof(&a, "C#span"));
-    let Settled::Proved { proposal, equivalent, note } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
+    let Settled::Proved { proposal, equivalent, note, .. } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
     assert_eq!(m.proposals[*proposal].arguments, ["this.p", "this.q"]);
     assert!(equivalent.is_empty());
     assert!(note.as_deref().is_some_and(|n| n.contains("unconfirmed")), "standalone: {note:?}");
@@ -750,8 +750,9 @@ fn mappings_a_proof_cannot_tell_apart_are_one_candidate() {
 }
 
 #[test]
-fn several_proved_relations_for_a_changed_result_are_a_question() {
-    // The new result is 0 or 1: `result > 0` and `result != 0` both hold, and only a person can say which is meant.
+fn proved_relations_with_the_same_inputs_are_one_candidate_told_apart_by_a_result_no_input_gives() {
+    // The new result is 0 or 1: `result > 0` and `result != 0` both hold. With the same inputs, the old version gives
+    // the same observations under either, so they are one candidate; what tells them apart is -1, which no input gives.
     let Some(a) = proved(
         "prove-asked",
         &[("A.java", "public class A { static boolean positive(int n) { return n > 0; } }")],
@@ -761,19 +762,60 @@ fn several_proved_relations_for_a_changed_result_are_a_question() {
         return;
     };
     let (m, p) = (mapping(&a, "A#positive"), proof(&a, "A#positive"));
-    let Settled::Asked { proved } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
-    let mut relations: Vec<&str> = proved.iter().map(|&i| m.proposals[i].relation.as_deref().unwrap()).collect();
+    let Settled::Proved { proposal, equivalent, note, apart } = &p.settled else { panic!("{}", proofs::render(&a.proofs)) };
+    let mut relations: Vec<&str> = [*proposal].iter().chain(equivalent).map(|&i| m.proposals[i].relation.as_deref().unwrap()).collect();
     relations.sort();
     assert_eq!(relations, ["previous == (result != 0)", "previous == (result > 0)"], "{}", proofs::render(&a.proofs));
-    // Put as a question: every candidate with what it means and its evidence, a counterexample under each refuted one.
+    assert!(note.as_deref().is_some_and(|n| n.contains("unconfirmed")), "standalone: {note:?}");
+    assert_eq!(apart.len(), 1, "{apart:?}");
+    assert!(apart[0].contains("differ only on new results no input of it produces: at -1, the first admits an old result of true and the second false"), "{}", apart[0]);
+    // Still a person's decision, since what the result means changed: the one candidate, with what approving it
+    // covers, and every refuted one with its counterexample.
     let hints = alignment::hints(&a);
     let asked = alignment::questions::questions(&hints, None);
     let q = asked.iter().find(|q| q.subject == "A#positive").expect("asked");
-    assert!(q.decide.contains("which of the 2 relations proved is intended"), "{}", q.decide);
-    assert_eq!(q.answers.len(), m.proposals.len(), "{}", alignment::questions::render(&asked, &[]));
-    assert!(q.answers.iter().all(|a| a.means.iter().any(|w| w.starts_with("result: previous == (result ")) && a.approve.contains("--subject 'A#positive' --rank")));
-    assert_eq!(q.answers.iter().filter(|a| matches!(a.evidence, Evidence::Proved { .. })).count(), 2);
+    assert!(q.decide.contains("whether the proved result relation is the intended one"), "{}", q.decide);
+    assert_eq!(q.answers.len(), m.proposals.len() - 1, "{}", alignment::questions::render(&asked, &[]));
+    let mut kept = q.answers.iter().filter(|a| matches!(a.evidence, Evidence::Proved { .. }));
+    let one = kept.next().expect("the proved one");
+    assert!(kept.next().is_none(), "one candidate");
+    assert!(one.means.iter().any(|w| w.starts_with("one candidate with the relations proved alongside it:") && w.contains("at -1")), "{:?}", one.means);
     assert!(q.answers.iter().filter(|a| !matches!(a.evidence, Evidence::Proved { .. })).all(|a| matches!(&a.evidence, Evidence::Refuted { witness, .. } if witness.contains("positive("))), "{}", alignment::questions::render(&asked, &[]));
+    // Evaluated: relations that agree on every value, or a result type that can't be tried in full, give nothing.
+    assert_eq!(proofs::apart(m, "previous == (result > 0)", "previous == (0 < result)"), None);
+    assert!(proofs::apart(m, "previous == (result > 0)", "previous == (result >= 0)").is_some_and(|w| w.contains("at 0")));
+}
+
+#[test]
+fn proved_relations_with_different_inputs_stay_a_question_with_an_input_that_separates_them() {
+    let Some(a) = aligned(
+        "settle-apart",
+        &[("C.java", "public class C { static boolean above(long x, long y) { return x > y; } }")],
+        &[("C.java", "public class C { }"), ("P.java", "public record P(long p, long q) { long above() { return p - q; } }")],
+        None,
+    ) else {
+        return;
+    };
+    let m = mapping(&a, "C#above");
+    let attempt = |i: usize, tried: Tried| Attempt { proposal: i, flags: m.proposals[i].flags.clone(), evidence: proofs::evidence(&tried, "k"), tried };
+    let (args, rel) = (|i: usize| &m.proposals[i].arguments, |i: usize| m.proposals[i].relation.as_deref());
+    // Two proposals proved with different inputs and different relations, made up, and the one with the first's inputs
+    // and the second's relation refuted.
+    let first = 0;
+    let other = (1..m.proposals.len()).find(|&j| args(j) != args(first) && rel(j) != rel(first)).expect("another mapping and relation");
+    let cross = (0..m.proposals.len()).find(|&k| args(k) == args(first) && rel(k) == rel(other)).expect("the first's inputs with the other's relation");
+    let refuted = Tried::Refuted { input: "above(this=P[p=1, q=1])".into(), before: "false".into(), after: "0".into() };
+    let (settled, summary) = proofs::settle(m, &[attempt(first, Tried::Proved), attempt(other, Tried::Proved), attempt(cross, refuted)]);
+    let Settled::Asked { proved, apart } = &settled else { panic!("{settled:?}: {summary}") };
+    assert_eq!(proved, &[first, other]);
+    assert_eq!(apart.len(), 1, "{apart:?}");
+    assert!(apart[0].contains(&format!("#{} and #{} give the old version different observations on above(this=P[p=1, q=1])", first + 1, other + 1)), "{}", apart[0]);
+    // Without that proposal tried, the question says so.
+    let (settled, _) = proofs::settle(m, &[attempt(first, Tried::Proved), attempt(other, Tried::Proved)]);
+    assert!(matches!(&settled, Settled::Asked { apart, .. } if apart.is_empty()), "{settled:?}");
+    // And had it been proved, the three would give the old version the same observations: one candidate.
+    let (settled, _) = proofs::settle(m, &[attempt(first, Tried::Proved), attempt(other, Tried::Proved), attempt(cross, Tried::Proved)]);
+    assert!(matches!(&settled, Settled::Proved { proposal: 0, equivalent, .. } if equivalent.len() == 2), "{settled:?}");
 }
 
 #[test]

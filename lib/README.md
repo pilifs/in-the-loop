@@ -84,10 +84,13 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 # approved. Proves nothing.
 jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json
 # --prove checks each complete mapping by the regression proof (equivalence with the flags it amounts to, under
-# --engine, --unwind and the scope --unchanged-unless): proved mappings the contract can't tell apart are one
-# candidate; one proved gets evidence "proved for claim key K", its intent still proposed (for a standalone method,
-# the relation holds and whether it is the intended one is unconfirmed); several are a question; none lists each
-# mapping tried with its counterexample. A vacuous proof counts as none. Runs proofs: queue it as a job.
+# --engine, --unwind and the scope --unchanged-unless): proved mappings the contract can't tell apart (the same
+# relation, or the same inputs) are one candidate, with what tells their relations apart (a new result no input
+# produces: -1 for result > 0 against result != 0); one proved gets evidence "proved for claim key K", its intent still
+# proposed (for a standalone method, the relation holds and whether it is the intended one is unconfirmed); several,
+# with different inputs and relations, are a question, with an input that separates two of them where a proposal
+# tried shows one; none lists each mapping tried with its counterexample. A vacuous proof counts as none. Runs proofs:
+# queue it as a job.
 jvmcontract align --before base/classes --after head/classes --prove --subject 'net.example.Expiry#remaining' --hints build/alignment-hints.json
 # align ends with its questions: each decision that is a person's (several candidates and none ahead, a lone one
 # matched on type alone, a result whose meaning changed, or what a proof left open), what to decide, each candidate
