@@ -7,7 +7,7 @@ use std::process::Command;
 
 use jvmcontract::alignment::mappings::{Anchor, Mapping, ResultKind};
 use jvmcontract::alignment::{self, Alignment, Basis, Build, Change, MethodReport};
-use jvmcontract::spec::{Derivation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, PreservationContract, Source};
+use jvmcontract::spec::{Correspondence, Derivation, Equation, Evidence, ExternalInput, Hint, HintContent, Hints, Intent, PreservationContract, Source};
 
 fn has_javac() -> bool {
     let found = Command::new("javac").arg("-version").output().is_ok();
@@ -377,14 +377,81 @@ fn the_result_relations_come_from_the_catalogue() {
     }
 }
 
+// Step A4's narrow case: field correspondence, from how each version's constructors route their parameters.
+
+fn kernel_contract() -> PreservationContract {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foundations/golden/kernel-contract.json");
+    serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap()
+}
+
+fn equation(old: &str, new: &str) -> Equation {
+    Equation { old: old.into(), new: new.into() }
+}
+
+fn correspondences<'h>(hints: &'h Hints, subject: &str) -> Vec<&'h Correspondence> {
+    hints
+        .entries
+        .iter()
+        .filter(|h| h.subject == subject)
+        .filter_map(|h| match &h.content {
+            HintContent::Correspondence { correspondence } => Some(correspondence),
+            _ => None,
+        })
+        .collect()
+}
+
 #[test]
-fn the_kernel_s_quote_is_left_to_field_correspondence() {
-    let (Some(before), Some(after)) = (kernel("mappings", "before"), kernel("mappings", "after")) else { return };
-    let a = alignment::align(&Build::load(&before).unwrap(), &Build::load(&after).unwrap(), None);
-    let total = mapping(&a, "shop.Pricing#total");
-    assert!(total.unsupported.iter().any(|u| u.contains("(A4)")), "{:?}", total.unsupported);
-    assert!(total.proposals.is_empty() && total.free.is_empty());
-    let discount = mapping(&a, "shop.Pricing#discount");
-    assert!(discount.is_default());
-    assert!(alignment::mapping_hints(&a.mappings).entries.is_empty(), "nothing proposed: the only change of representation is A4's");
+fn the_kernel_s_quote_is_related_field_by_field_from_its_constructors() {
+    let (Some(before), Some(after)) = (kernel("fields", "before"), kernel("fields", "after")) else { return };
+    let (b, a) = (Build::load(&before).unwrap(), Build::load(&after).unwrap());
+    let contract = kernel_contract();
+    let want = vec![equation("old.q.cents", "new.q.amount.cents"), equation("old.q.quantity", "new.q.quantity")];
+    let aligned = alignment::align(&b, &a, Some(&contract));
+    let total = mapping(&aligned, "shop.Pricing#total");
+    assert!(total.unsupported.is_empty() && total.free.is_empty(), "{}", alignment::mappings::render(&aligned.mappings));
+    assert_eq!((total.inputs[0].anchor, total.proposals.len()), (Anchor::Anchored, 1), "q is the input the contract fixes, and one relation is proposed");
+    assert_eq!(total.proposals[0].fields, want);
+    let golden = Correspondence { inputs: want.clone(), outputs: Vec::new() };
+    assert_eq!(correspondences(&alignment::hints(&aligned), "shop.Pricing#total"), vec![&golden]);
+    let proposed = jvmcontract::spec::align::propose(&contract, &before, &after).expect("the subject's mapping is complete");
+    assert_eq!(correspondences(&proposed, "shop.Pricing#total"), vec![&golden]);
+    assert!(proposed.entries.iter().all(|h| h.intent == Intent::Proposed && h.evidence == Evidence::Unchecked));
+    // Standalone, q is internal (its class changed shape, so nothing external fixes it), and the relation the same.
+    let standalone = alignment::align(&b, &a, None);
+    let total = mapping(&standalone, "shop.Pricing#total");
+    assert_eq!((total.inputs[0].anchor, total.proposals[0].fields.clone()), (Anchor::Internal, want));
+}
+
+#[test]
+fn a_renamed_field_is_related_by_its_constructor_and_a_new_one_left_free() {
+    let before = [("P.java", "final class P { long cents; int n; P(long cents, int n) { this.cents = cents; this.n = n; } static long f(P p) { return p.cents * p.n; } }")];
+    let after = [(
+        "P.java",
+        "final class P { long priceCents; int n; int extra; P(long priceCents, int n, int extra) { this.priceCents = priceCents; this.n = n; this.extra = extra; } static long f(P p) { return p.priceCents * p.n; } }",
+    )];
+    let Some(a) = aligned("fields-renamed", &before, &after, None) else { return };
+    let f = mapping(&a, "P#f");
+    let fc = f.inputs[0].fields.as_ref().unwrap_or_else(|| panic!("{}", alignment::mappings::render(&a.mappings)));
+    assert_eq!(fc.free, vec!["extra"], "a new field no old one reaches is left free");
+    assert_eq!(f.proposals.len(), 1);
+    assert_eq!(f.proposals[0].fields, vec![equation("old.p.cents", "new.p.priceCents"), equation("old.p.n", "new.p.n")]);
+}
+
+#[test]
+fn a_constructor_that_computes_or_shifts_what_it_stores_is_never_related() {
+    let before = [("Q.java", "final class Q { long cents; Q(long cents) { this.cents = cents; } static long f(Q q) { return q.cents; } }")];
+    let wrapped = [
+        ("M.java", "record M(long cents) {}"),
+        ("Q.java", "final class Q { M amount; Q(long cents) { this.amount = new M(cents); } static long f(Q q) { return q.amount.cents(); } }"),
+    ];
+    // The field-level offset: the stored value is shifted, so `old.q.cents == new.q.cents` would hide it, and
+    // `old.q.cents == new.q.cents - 1` is never proposed.
+    let shifted = [("Q.java", "final class Q { long cents; int pad; Q(long cents) { this.cents = cents + 1; } static long f(Q q) { return q.cents - 1; } }")];
+    for (name, after) in [("fields-wrapped", &wrapped[..]), ("fields-shifted", &shifted[..])] {
+        let Some(a) = aligned(name, &before, after, None) else { return };
+        let f = mapping(&a, "Q#f");
+        assert!(f.proposals.is_empty() && f.inputs[0].fields.is_none(), "{name}: {}", alignment::mappings::render(&a.mappings));
+        assert!(f.unsupported.iter().any(|u| u.contains("cents")), "{name}: the gap is named: {:?}", f.unsupported);
+        assert!(correspondences(&alignment::hints(&a), "Q#f").is_empty());
+    }
 }

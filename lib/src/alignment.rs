@@ -14,9 +14,11 @@
 //!
 //! For each pair matched, [`mappings`] relates the arguments, records and result under the comparison's
 //! preservation contract (step A3): anchored inputs fixed to themselves, internal ones and the result proposed from a
-//! small catalogue.
+//! small catalogue. An object whose class changed shape is related field by field ([`fields`], step A4), from how
+//! each version's constructors route their parameters into fields.
 //!
-//! What this does not do: relate fields of classes that changed shape (A4); prove anything (a regression proof
+//! What this does not do: relate two different classes, or fields a constructor sets other than straight from a
+//! parameter (the rest of A4); prove anything (a regression proof
 //! settles a proposal's evidence); match loops or other control flow (deferred); or match one old method to several
 //! new ones (an inlined or split method gets the closest one, or none).
 
@@ -29,6 +31,7 @@ use crate::classfile::{flags, ClassFile, Insn, Method};
 use crate::spec::{Evidence, Hint, HintContent, Hints, Intent, Source};
 use crate::Error;
 
+pub mod fields;
 pub mod mappings;
 pub use mappings::{mapping_hints, mappings, Mapping};
 

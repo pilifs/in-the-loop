@@ -198,12 +198,43 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 - Shared files changed: `lib/src/main.rs` (`align --contract`, and the mappings in its output and hints);
   `lib/README.md` (the `align` paragraph and the module sentence); `lib/tests/alignment.rs` (the A3 tests, and each
   kernel test compiling into its own directory: three tests sharing one raced).
-- Next: A4's narrow case, the joint example first (the main brief's rule): the field equations
-  `old.q.cents == new.q.amount.cents`, `old.q.quantity == new.q.quantity` from how each version's constructor routes
-  its parameters into fields, so that `align::propose` passes the integration checks. Then A3's second half: each
-  proposal checked by the existing regression proof (`align` calling `equivalence` as a caller, a quick job over
-  121–139), with collapse by proof, vacuity, and the outcome rules (one proved: evidence for its claim key, intent
-  still proposed; several: ask; none: the counterexamples).
+- **A4's narrow case done** (2026-11-07): field correspondence, in `lib/src/alignment/fields.rs`, and
+  `align::propose` implemented. For a class both builds declare whose shape changed, each old field is given as a
+  path into the new object, from the constructors:
+  - Each version's constructor is read for the fields it sets straight from a parameter (`this.f = p`, once, `p`
+    never reassigned). One that delegates with `this(...)` or calls a method of its own class routes nothing.
+  - The old constructor is paired with the one A2 matched to it, and its parameters are mapped by A3's rules (name,
+    type, position, record component, integral cast; never arithmetic). Composed: the old `cents` is set from the
+    parameter `cents`, which is the new `amount.cents`, and the new constructor sets `amount` from `amount`, so
+    `old.q.cents == new.q.amount.cents`.
+  - An anchored object input stays fixed to itself; only its internal fields are related. A field set any other way,
+    or whose counterpart is, is named unsupported, and nothing partial is proposed. Several candidates for a field
+    are a question, as for an input. In the hints file the field equations replace the input's own equation; they
+    have no flag form.
+  - `align::propose` loads both builds, aligns them under the contract, and returns the hints. A subject whose
+    mapping is incomplete gets `Unsupported`, naming the gaps.
+  - **Integration contract on this branch:** `alignment propose after` and `alignment propose offset` pass (2 passed,
+    22 unsupported, 0 failed). `after` gets the golden correspondence; `offset` gets the same equations and no shifted
+    input (its `Quote` is `after`'s; the defect is in `Pricing#total`, for the heap stream's proof to find).
+  - **Tests:** 3 replace the A3 test that left `Quote` to A4: the kernel (with the contract, standalone, and through
+    `propose`); a renamed field, with a new field left free; and constructors that wrap the value in a new object or
+    shift it (`this.cents = cents + 1`), never related. All 17 in `lib/tests/alignment.rs` pass, and the whole cargo
+    suite.
+  - **Score:** unchanged on 121–139, where no class changed shape behind a constructor. Re-recorded under the new
+    tool's hash.
+  - **The rest of A4, not yet done:**
+    - fields a constructor computes (`this.amount = new Money(cents)`);
+    - two different classes (`Quote#cents` moved to `Money#cents`, whose receivers differ);
+    - nested shapes;
+    - a result whose class changed shape (still `changed`, a person's decision);
+    - a method whose code is unchanged but whose classes changed: `Pricing#withQuantity` is unchanged to A2, so it
+      gets no mapping, while the heap part checks it under the same correspondence.
+- Shared files changed: `lib/README.md` (the `align` paragraph and the module sentence); `lib/tests/alignment.rs`
+  (the A4 tests).
+- Next: A3's second half. Each proposal is checked by the existing regression proof (`align` calling `equivalence`
+  as a caller, a quick job over 121–139), with collapse by proof, vacuity, and the outcome rules: one proved gives
+  evidence for its claim key, the intent still proposed; several ask; none give the counterexamples. Then the rest of
+  A4, and A5.
 - Status: working
 
 ## Loop settings

@@ -71,6 +71,8 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 # PreservationContract; otherwise a parameter both versions take by name and type) is mapped to itself and nothing
 # else; only internal ones (a parameter gathered into a record, a record that gained a component) and the result
 # (equal, widened, wrapped, compared on the old components, or a changed meaning put as a question) are proposed.
+# An object whose class changed shape is related field by field (old.q.cents == new.q.amount.cents), from how each
+# version's constructors store their parameters in fields; a field set any other way is named, never guessed.
 # --hints writes them to a hints file as proposed, their evidence unchecked, keeping every hint a person stated or
 # approved. Proves nothing.
 jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json
@@ -307,7 +309,8 @@ four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`,
 `Unsupported` until that stream implements it; `tests/foundations.rs` checks every part against the joint example in
 `tests/fixtures/foundations/`. Method correspondence and the argument, record and result
 mappings (`align`, `src/alignment.rs` and `src/alignment/mappings.rs`) are scored against the hand-written mappings of
-the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md).
+the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md); field correspondence
+(`src/alignment/fields.rs`), which none of them needs, is checked on the joint example, through `align.rs`.
 
 ## Limits
 
