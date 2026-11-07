@@ -32,7 +32,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Record verification results: Bitwuzla build fails its smoke test (VF-003)
 
-change `wtvowsostpzw` · [log `cef3c5e4d9bd`](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/cef3c5e4d9bd47c9439050b1c3058ec0b5575f1e92aeb1a2e1eb5c7730b410e2.jsonl.gz)
+[`e65cfb786847`](https://github.com/pilifs/in-the-loop/commit/e65cfb7868473e8f0bd9315962135e5617e2be13) · [log `cef3c5e4d9bd`](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/cef3c5e4d9bd47c9439050b1c3058ec0b5575f1e92aeb1a2e1eb5c7730b410e2.jsonl.gz)
 
 Ran the one queued job, the Bitwuzla 0.8.2 source build. It compiles and installs but the installed binary cannot load libcadical.so, which meson did not install; build.sh needs an rpath or a static CaDiCaL. Recorded as VF-003 for the submitter. Nothing resubmitted: the failure is deterministic.
 

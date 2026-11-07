@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for the numberOfLeadingZeros job: 037 and 127 under strict and the conformance corpus under JBMC and auto all pass
 
-change `vpvqksyoozlv` · [log `773c92a13f54`](https://terminalvalue.net/raw-traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/773c92a13f549fa614e83f36ec3a0533d02344078064081021a081c80a236d53.jsonl.gz)
+[`a19cafdd695d`](https://github.com/pilifs/in-the-loop/commit/a19cafdd695d3ee752daa8388e43cf22533aa790) · [log `773c92a13f54`](https://terminalvalue.net/raw-traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/773c92a13f549fa614e83f36ec3a0533d02344078064081021a081c80a236d53.jsonl.gz)
 
 Job 20261107-022319-the-own-checker-models-numberofleadingze passed all 3 steps in 12m48s (peak 1.1 GiB, estimated 20m, 3.0 GiB) at d8cd7864321b on vm-1. The corpus (81 cases, 152 claims) agrees with the JVM under JBMC and auto. No findings opened or changed.
 
 ### JBMC's preflight reads its goto listing by instruction index, not byte offset, so 071's two proofs are no longer refused on initializers JBMC does not run (verification pending)
 
-change `xmslpytzqtlx` · [log `2a420e3b203f`](https://terminalvalue.net/raw-traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/2a420e3b203f1f8f0d2c13b0f971660fd7b5b0ffd4b6acaf5becf3c0c49c6683.jsonl.gz)
+[`854a0d8f756e`](https://github.com/pilifs/in-the-loop/commit/854a0d8f756e3c77fe47a3463deaab2a86260f04) · [log `2a420e3b203f`](https://terminalvalue.net/raw-traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/2a420e3b203f1f8f0d2c13b0f971660fd7b5b0ffd4b6acaf5becf3c0c49c6683.jsonl.gz)
 
 Job 20261107-012013 (VF-005) left example 071's first two property proofs unverifiable under strict with no gap: the preflight refused them on two extra-initializer defects, at VoteRule.decide:39 and grant:63, that JBMC does not have (013's output named the same four). JBMC 6.11.0's --show-goto-functions numbers an instruction's bytecode-index by its place in the method, counting from 0, while jbmc_gaps.rs looked the wrapper calls up by the instruction's byte offset. At offset 12, invokestatic Decision.rejected, it read index 12, getstatic Ballot.FOR_ANOTHER. The same mistake missed real defects, leaving a false JBMC proof through an initializer standing, wherever an initializing instruction follows one longer than a byte. extra_initializers and the invokedynamic linking check now look instructions up by index.
 

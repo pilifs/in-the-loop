@@ -60,7 +60,7 @@
   "commits": [
     {
       "change_id": "vpvqksyoozlvltmzklkqzmzszqkyxkuo",
-      "commit_id": null,
+      "commit_id": "a19cafdd695d3ee752daa8388e43cf22533aa790",
       "immutable": false,
       "summary": "Record verification results for the numberOfLeadingZeros job: 037 and 127 under strict and the conformance corpus under JBMC and auto all pass",
       "body": "Job 20261107-022319-the-own-checker-models-numberofleadingze passed all 3 steps in 12m48s (peak 1.1 GiB, estimated 20m, 3.0 GiB) at d8cd7864321b on vm-1. The corpus (81 cases, 152 claims) agrees with the JVM under JBMC and auto. No findings opened or changed.",
@@ -68,7 +68,7 @@
     },
     {
       "change_id": "xmslpytzqtlxyxrqyrswrrxuknvkmust",
-      "commit_id": null,
+      "commit_id": "854a0d8f756e3c77fe47a3463deaab2a86260f04",
       "immutable": false,
       "summary": "JBMC's preflight reads its goto listing by instruction index, not byte offset, so 071's two proofs are no longer refused on initializers JBMC does not run (verification pending)",
       "body": "Job 20261107-012013 (VF-005) left example 071's first two property proofs unverifiable under strict with no gap: the preflight refused them on two extra-initializer defects, at VoteRule.decide:39 and grant:63, that JBMC does not have (013's output named the same four). JBMC 6.11.0's --show-goto-functions numbers an instruction's bytecode-index by its place in the method, counting from 0, while jbmc_gaps.rs looked the wrapper calls up by the instruction's byte offset. At offset 12, invokestatic Decision.rejected, it read index 12, getstatic Ballot.FOR_ANOTHER. The same mistake missed real defects, leaving a false JBMC proof through an initializer standing, wherever an initializing instruction follows one longer than a byte. extra_initializers and the invokedynamic linking check now look instructions up by index.\n\nReproducer: two new methods in lib/tests/fixtures/jbmc-defects/p/D.java, run through the preflight on JBMC 6.11.0's real listing, nothing solved (the_preflight_reads_jbmc_listing_by_instruction_index). In p.D.later, Sub.value sits at offset 6, index 4: the old lookup missed it, the fix names it. In p.D.apart, Quiet.value sits at offset 3, where index 3 is Loud.value: no defect now. The test failed with the old lookup and passes with the fix. On the job's own saved listings, the old lookup gives exactly its two defects and the new one none on all three of 071's proofs. Unit 179, conformance 9 (2 ignored) and integration 64 pass. The fixture README explains the cause.\n\nJob 20261107-024759 is 20261107-012013 resubmitted unchanged, as VF-005 asks. The notes of 071 and 013 record jobs -203501 and -012013. Job 20261107-022319 (exact numberOfLeadingZeros) came back passed, and 037's and 127's notes and the brief's Progress now say so. VF-009 (boomTwice, enumBroken under --confirm) is a different cause, initializers that throw, and is next.",
@@ -80,13 +80,13 @@
       "bytes": 332156,
       "lines": 88,
       "gzip_bytes": 79791,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/2a420e3b203f1f8f0d2c13b0f971660fd7b5b0ffd4b6acaf5becf3c0c49c6683.jsonl.gz"
     },
     "773c92a13f549fa614e83f36ec3a0533d02344078064081021a081c80a236d53": {
       "bytes": 316728,
       "lines": 78,
       "gzip_bytes": 77436,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/761c7ea1-e32d-4b9b-81ef-1e3ada632637/773c92a13f549fa614e83f36ec3a0533d02344078064081021a081c80a236d53.jsonl.gz"
     }
   },
   "redaction_policy": 4,

@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification result for the own checker's encoding-timing job: it fails on a false alarm in leadingZerosLong/2 before the timing check runs (VF-012)
 
-change `uttmttlmkytw` · [log `923b5e3821a1`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40.jsonl.gz)
+[`9edbd375c6a9`](https://github.com/pilifs/in-the-loop/commit/9edbd375c6a948ef253d2eebd90513a9d597e77b) · [log `923b5e3821a1`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40.jsonl.gz)
 
 Job 20261107-032249 ran the 533 own-checker benchmark runs in 2m23s; the step exited 1 because conformance/leadingZerosLong/2 gets a spurious violation (witness 48, the JVM says it holds) in all three modes. The phasesExcess and slowdown comparison was skipped, though 0 of 533 runs carry phasesExcess in the saved JSON. Recorded as VF-012 in verification/findings.md with what would close it; nothing was resubmitted since it would fail the same way until the checker is fixed.
 
 ### The benchmark reads a single-digit long witness as its value, not as a char, and the encoding-timing job is rerun (verification pending)
 
-change `rntlrwzlunmq` · [log `3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)
+[`dc03b87fb961`](https://github.com/pilifs/in-the-loop/commit/dc03b87fb9618479a22189fb8fe61889a41e4198) · [log `3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)
 
 Job 20261107-032249 (VF-012) failed its first step on three false alarms, conformance/leadingZerosLong/2 under strict, assume and advised, with the witness 48. The own checker's witness is right: run inline, prove on Conformance#leadingZerosLong with 'result &lt; 64' gives arg0=0, outcome 64, which the JVM bears out. The tool writes a long input as a decimal string ("0"), and lib/benchmark/run.py's token() took any one-character string for a char and passed its code unit, ord('0') = 48, where numberOfLeadingZeros(48) is 58. Every single-digit long, float or double witness, alone or in an array, was misread this way, and this case, new in the previous cycle, is the corpus's first such witness. witness_arguments now reads an input as a char only if its declared type is one. The tool writes a char as its code unit, a number, and Reference.java reads it so; no corpus witness is a string. Reproducer first: test_a_long_or_a_double_witness_of_one_digit_is_its_value_not_a_char gave 48;[48,-2,55];53 before the fix, and passes after it. test_run.py passes.
 
@@ -36,7 +36,7 @@ Housekeeping, at the user's request: the six loop run records only the two strea
 
 ### Record verification result for the own checker's encoding-timing job: it passes after the benchmark's witness fix, closing VF-012
 
-change `puwvxpolnvts` · [log `3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)
+[`1f5411c5180d`](https://github.com/pilifs/in-the-loop/commit/1f5411c5180d0a0c50c81a30a3670e74e07ba79f) · [log `3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)
 
 Job 20261107-033320 (rerun of the VF-012 job at dc03b87fb961, vm-1) passed both steps in 2m20s: no false alarm on leadingZerosLong/2, 0 of 533 own-checker runs flagged phasesExcess (reference job: 1 of 356), median seconds ratio 0.974 against job 20261106-201041 over 29 runs of 0.1 s or more. VF-012 is closed in verification/findles.md.
 

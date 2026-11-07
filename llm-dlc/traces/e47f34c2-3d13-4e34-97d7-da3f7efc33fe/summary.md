@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: Bitwuzla build fails its smoke test (VF-003)
 
-change `wtvowsostpzw` · [log `b4ec97f5e040`](https://terminalvalue.net/raw-traces/e47f34c2-3d13-4e34-97d7-da3f7efc33fe/b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95.jsonl.gz)
+[`e65cfb786847`](https://github.com/pilifs/in-the-loop/commit/e65cfb7868473e8f0bd9315962135e5617e2be13) · [log `b4ec97f5e040`](https://terminalvalue.net/raw-traces/e47f34c2-3d13-4e34-97d7-da3f7efc33fe/b4ec97f5e0404955fdaad1b71334447ac87cbccc20029308ee294ab0d7412a95.jsonl.gz)
 
 Ran the one queued job, the Bitwuzla 0.8.2 source build. It compiles and installs but the installed binary cannot load libcadical.so, which meson did not install; build.sh needs an rpath or a static CaDiCaL. Recorded as VF-003 for the submitter. Nothing resubmitted: the failure is deterministic.
+
+### Record session traces
+
+change `xlnupmwrqvow` · [log `efd8a4d98fe8`](https://terminalvalue.net/raw-traces/e47f34c2-3d13-4e34-97d7-da3f7efc33fe/efd8a4d98fe862726bd5ac28d4bab15ea6391dc271ff50d667ab0107a6624acc.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

@@ -62,7 +62,7 @@
   "commits": [
     {
       "change_id": "kumppqkzlvwnwkytqxwyxlvvrnnszkqr",
-      "commit_id": null,
+      "commit_id": "abbce63afcc86ae4698dade7aacf5c46f6af8c7f",
       "immutable": false,
       "summary": "Run application class initializers in the own checker, as JVMS 5.5 does (Phase 5, step 1)",
       "body": "The own checker (lib/src/bmc) now keeps an application class's static fields as path state and runs its <clinit> at the class's first new, getstatic, putstatic or invokestatic, after its superclass and the superinterfaces that declare a default method. A use from inside the class's own initialization goes on, an exception leaving an initializer becomes ExceptionInInitializerError (an Error stays as it is), and a later use of an erroneous class throws NoClassDefFoundError. An initializer outside the engine's fragment stays a named class-initializer gap (gaps::runs_initializer). Over the four apps that is still every one of the 49 initializers: enums, through $VALUES, an array of references, and their switch maps. The gap scan walks the initializers the engine runs and refuses static fields only of the JDK or of classes whose initializers don't run.\n\nThe interpreter that replays witnesses was fixed to match the JVM: erroneous classes and NoClassDefFoundError, Errors not wrapped, superinterface initialization, and getstatic/putstatic initializing the declaring class only. Verified on JDK 25.0.5. The conformance cases boom and inherited are now violations whose witnesses replay, and quiet is verified, in every native mode. 8 new cases (16 claims: static state, construction, superclass first, a cycle between initializers, the declaring class only, default-method interfaces, an Error thrown as is, NoClassDefFoundError) agree with the JVM in every mode. The conformance test still fails only its 12 pre-existing library-record claims, which come from the JDK mismatch. The unit (145), integration (64) and skill tests pass.\n\nthe_benchmark_takes_its_first_group_from_this_corpus now fails on this branch. lib/benchmark/conformance.json belongs to the JBMC stream, so the reconcile loop has to regenerate it with JVMCONTRACT_BLESS=1. The stream brief's Progress names every shared file changed.",
@@ -70,7 +70,7 @@
     },
     {
       "change_id": "knlrwnqukqwmzvtxwtstpnxwzlwkmxzt",
-      "commit_id": null,
+      "commit_id": "2d9de1959539d7fc63111c2c516d7b9e41331045",
       "immutable": false,
       "summary": "Model Enum.<init>, List.of and List.copyOf for JBMC, checked on the JVM (Phase 5, step 2; verification pending)",
       "body": "lib/models gains java.lang.Enum (Enum(String, int) sets name and ordinal exactly; name, ordinal, toString, equals), java.util.List's factories of and copyOf, and the JDK's immutable lists in java.util.ImmutableCollections (List12 for one or two elements, ListN over an array of its own otherwise, one EMPTY_LIST): NullPointerException on a null element and on a search for null, UnsupportedOperationException on every change, get out of range throwing as List12 or ListN does, and copyOf of one of them the list itself, all following OpenJDK 25's code, with its licence header on the java.util files. JBMC stubbed all three calls, which is why example 071's first two property proofs were no verdict under strict.\n\nThese models are for JBMC's class path only (Model::jbmc_only; ClassPath::model does not give them): the interpreter keeps its natives for these classes, and the own checker keeps refusing enums and the varargs array. 11 new conformance cases (22 claims, 47 calls) were checked on JDK 25.0.5. They showed the interpreter disagreeing with the JVM on 11 calls, now fixed: an enum's name() is the string its constructor was given; List.of() is one list; the interpreter knows which JDK class each List.of list is, for get's exception and NPE on searching for null; copyOf no longer returns a subList view as is. A new test, the_models_only_jbmc_runs_agree_with_the_jvm, relocates the models out of java.* and runs the cases' calls on them against the JDK's own classes. They agree, and a mutated model fails it. The own checker gives Unverifiable on the 22 claims in every native mode.\n\nJob 20261106-203501-examples-071-and-013-under-strict-with-t runs 071 and 013 under strict (071's obligations 1 and 2 should now be verified with no gap), records the contract library on JDK 25.0.5, and runs the conformance corpus under JBMC. Unit (145), integration (64) and skill tests pass. The conformance test fails only on its 12 pre-existing library-record claims and on lib/benchmark/conformance.json, which belongs to the JBMC stream and is left for the reconcile loop. Phase 1c's Bitwuzla build (job 20261106-194049, passed) is recorded under Progress.",
@@ -78,7 +78,7 @@
     },
     {
       "change_id": "wnktqxrtllpwzvmpqtmsqrkzmvwxtzyr",
-      "commit_id": null,
+      "commit_id": "8129cf05335ecb5167cb0485a5f19cd7514d1d5a",
       "immutable": false,
       "summary": "Record the own checker's solver calls as replayable incremental CNF transcripts (Phase 6a)",
       "body": "A check by the own checker can now write every clause it gives CaDiCaL and every call it makes, in order, as CaDiCaL's incremental CNF (p inccnf), each call followed by a comment with its answer, its time and its per-call limit, under a header naming the tool, the solver, the method and the engine's options. The new lib/src/bmc/transcript.rs writes and replays them. bmc::Options::transcript names a file; otherwise JVMCONTRACT_TRANSCRIPTS names a directory and each check writes PID-N.icnf there, which reaches prove, equivalence and the benchmark's runner without a flag. jvmcontract transcript FILE runs one again on the bundled CaDiCaL with the recorded limits and reports times and contradicting answers (exit 1). Phase 6c judges solvers on these sequences, since a check is hundreds of incremental calls with model-dependent lemmas between them.",
@@ -86,7 +86,7 @@
     },
     {
       "change_id": "syntvmqpxlzsmysprspuuxwnoqxzmpww",
-      "commit_id": null,
+      "commit_id": "33daa690cf1312dcfd0a80bd2c9f0be5dca233de",
       "immutable": false,
       "summary": "Put the own checker's SAT solver behind a narrow interface (Phase 6b)",
       "body": "The own checker's solver is now reached only through a Sat trait (lib/src/bmc/sat.rs: signature, add_clause, set_limit, solve under assumptions, value, variables), with CaDiCaL 1.9.5 as the bundled crate gives it as its one implementation. That separates the engine's three layers: scheduling the queries (Engine in bmc/mod.rs: probes, deferred paths, the refinement loop), encoding them (Blaster in bmc/bits.rs, which now holds a Box<dyn Sat> and calls nothing else of the solver), and solving them. bmc::Options::solver chooses the solver a check runs on (CaDiCaL by default), and transcript::replay_on replays a transcript on any solver behind the trait, so Phase 6c can put Bitwuzla's SAT mode behind it without touching the engine. The transcript's header now names the solver the check ran on. Results still name CaDiCaL through solver_signature(), since nothing outside tests sets another solver.\n\nNo behaviour changes. A new engine test runs a check on a test double that logs everything crossing the trait: it gives the plain run's outcome, its clauses and calls match the outcome's counts and the transcript's, and a replay on the logged solver gives the same clauses and calls again. End to end, held/lower-bound (equivalence --engine native, unwind 9, arrays up to 8) writes the same transcripts by count as before the change: 460 calls over 43,478 clauses and 13,025 variables, verified, plus a 5-call check, both replaying with no contradiction. Unit (153), integration (64) and skill tests pass. Conformance fails only its two known tests: 12 library-record claims (JDK 25.0.5 against a record made on 25.0.4.1) and the JBMC stream's benchmark file. The brief's Progress records this, the shared file changed (lib/README.md), and the next step: enums in the own checker.",
@@ -94,7 +94,7 @@
     },
     {
       "change_id": "svvrpymrpslxsryuqkzokzspkyvnmxvw",
-      "commit_id": null,
+      "commit_id": "c99a7476933e3e5dc87c1574158c068376751d2f",
       "immutable": false,
       "summary": "JBMC lets a runtime exception past its handler in two shapes: the preflight names them and refuses a JBMC proof through one (verification pending)",
       "body": "Step 3 of llm-dlc/loops/engine-priorities.md. JBMC's counterexamples to conformance/caught/1 and nestedHandler/1 (n=0) did not reproduce because JBMC 6.11.0 lets a runtime exception past the handler that catches it on the JVM, so the exception escapes the method. It is not the models, the harness, or the trace reading. There are two shapes, found by running JBMC (milliseconds) on the cases and on variants of them, written up in lib/tests/fixtures/jbmc-defects/README.md. (1) A JBMC defect: for 'try { return 10 / n; } catch (ArithmeticException e)', javac ends the handler's range before ireturn, and JBMC emits the quotient, with the check --throw-runtime-exceptions adds, at the ireturn, after its pop_catch. The same holds for irem, ldiv, lrem, array elements, fields and arraylength. (2) This repository's class path: JBMC's stub of a JDK exception class has no superclass, so 'catch (RuntimeException e)' misses an ArithmeticException or IllegalArgumentException. Both shapes also gave false proofs under strict with --engine jbmc: caught, with --throws 'java.lang.ArithmeticException when n == 0', was proved, while the JVM returns -1.\n\nJBMC's preflight (lib/src/jbmc_gaps.rs) now finds both shapes in the bytecode JBMC reaches, as return-past-handler and stubbed-handler defects. A JBMC proof that reaches one is no verdict under every gap mode. A counterexample is still replayed, and prove's message names the defect when it doesn't reproduce. Tests: a unit test over 8 shapes in tests/fixtures/jbmc-defects/p/D.java (4 defects, 4 neighbours JBMC runs as the JVM does), which fails with the detection disabled, and one for hold. End to end on the real JBMC, both false proofs are now refused (under assume too), caught/1 and nestedHandler/1 are unverifiable naming the defect, and exactCatch is still a violation. The corpus gains caught/3 and caughtAsRuntime/1 and /2 (lib/benchmark/conformance.json regenerated); they agree with the JVM on the own checker, and the inline test fails only on its 12 known JDK 25.0.5 disagreements. The lib unit tests (157), the other conformance tests and test_run.py pass. A report for cause 1 is drafted in the fixture's README for the user, not filed. The fix for cause 2, models of the exception hierarchy, belongs in lib/models and is recorded for the reconcile loop.\n\nJob 20261106-203452 runs what needs JBMC: the integration tests, and the ignored conformance tests under jbmc, auto and auto --confirm.\n\nShared files changed, added to: lib/src/property.rs (the replay message asks the preflight first), lib/tests/conformance.rs and Conformance.java (three claims, one method), lib/README.md (a paragraph).",
@@ -102,7 +102,7 @@
     },
     {
       "change_id": "xrrrwlrmqqputoknupzooswuqmtlrzyv",
-      "commit_id": null,
+      "commit_id": "5432927635493eb80f0e5b5706ca008fbadbfa8b",
       "immutable": false,
       "summary": "The 41 recorded JBMC examples run under strict on both engines, tabulated per obligation (verification pending)",
       "body": "Step 4a of llm-dlc/loops/engine-priorities.md, in the engines-jbmc stream. Job 20261106-204220 runs build.py on the 41 recorded B9/B11 examples JBMC proves (Quorum, Crosscut, Mica) in two scratch copies of examples/: as recorded (--engine jbmc, --gaps strict), and with only approach.engine set to native. It saves examples/tools/gap_table.py --json for each engine, every result.json, both build logs, and a comparison of the two tables. This replaces job 20261106-082917's projection, made under assume and rebuilt by hand, with a measured table. Recorded verdicts don't change: a verdict that differs from its expected one is reported in the table, not counted as a failure, and nothing in examples/ is written.\n\ngap_table.py's rows now name their engine and checker, the example's expectation, and, for an obligation with no verdict, its problem and whether it is a JBMC proof refused at a construct JBMC runs otherwise than the JVM. That is step 3's guard, which records the defect only in the problem text. The summary counts the obligations with no verdict at a gap (under strict, a refused proof is already unresolved), those refused at a JBMC defect, and the examples that differ from their expected verdict. --compare lists the obligations whose status differs between two tables, the input to step 4c's coverage inventory.",
@@ -110,7 +110,7 @@
     },
     {
       "change_id": "ulstzomtvuxtrvolmvnzysxtzqrsltos",
-      "commit_id": null,
+      "commit_id": "e6a28b58ad28fa382fe3bbfe09afc1eb54df5618",
       "immutable": false,
       "summary": "Run enums in the own checker: arrays of references, Enum's model, switch maps (Phase 5, step 3)",
       "body": "The own checker (lib/src/bmc) now has arrays of references: anewarray, aaload and aastore, a cell holding an object or null. An index that is an input splits the path per cell, since a reference is not a choice among bits, and a path that runs the instruction again at a join does so without waiting there, so that merging does not make its constant a choice again. An array's clone() is a copy, an aastore that would throw ArrayStoreException is refused, and arrays are named by descriptor, as ClassPath::is_subtype names them. The model of java.lang.Enum in lib/models, until now on JBMC's class path only, is run by the own checker too (models::CHECKER_RUNS, ClassPath::checker_model, checker_method, checker_runs); the interpreter keeps its natives and JBMC's class path is unchanged. Enum initializers, $VALUES and javac's $SwitchMap classes therefore run where the JVM runs them. The gap scan agrees: anewarray is no longer refused, an array clone is exact, and an abstract application method is no longer counted as a JDK gap (an earlier flaw that an enum with constant bodies showed under --gaps advised).\n\nChecked: five new conformance cases (enumValues, enumSwitch, enumBodies, enumBroken, enumValueOf) were run on JVM 25.0.5 first. The own checker decides the first four, and enumState, as the JVM does in every native mode; valueOf stays a gap. The models test covers the four that go through Enum's model. A new engine unit test covers the per-cell split merged and unmerged, and the ArrayStoreException refusal. initializer_shapes.py (static) counts 0 class-initializer gaps over the four apps, where 4b counted 49, and none over the recorded examples (013 and 071 reached four Quorum enums). Unit (154), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record claims on JDK 25.0.5, and lib/benchmark/conformance.json, the JBMC stream's file, which is now 10 more claims behind. Three integration fixtures that used a String[] to keep an initializer out now use a double[].\n\nThe main brief's Phase 5 text says the own checker refuses arrays of references; that is no longer so, though it still refuses List.of and copyOf, whose models stay JBMC-only.",
@@ -118,7 +118,7 @@
     },
     {
       "change_id": "osspkxkzomwykunrqkrrvxsskkzqptpw",
-      "commit_id": null,
+      "commit_id": "33bafbfd95979eb8ef3b8bba0a291e2cb185a601",
       "immutable": false,
       "summary": "Put Bitwuzla behind the own checker's solver interface, chosen by JVMCONTRACT_SOLVER (Phase 6c, step 1)",
       "body": "lib/src/bmc/bitwuzla.rs (new) gives Bitwuzla 0.8.2 the engine's own bit-blasted clauses through the Sat trait: each variable is a Boolean constant, each clause an 'or', each call check_sat_assuming, with the per-call limit as a termination callback. Nothing links it: the C API is loaded at run time from JVMCONTRACT_BITWUZLA or ~/tools/bitwuzla/current, and any version other than 0.8.2 is refused. JVMCONTRACT_SOLVER=bitwuzla runs every check of a process on it, and 'jvmcontract transcript --solver bitwuzla' replays a transcript on it. Results now name the solver the check ran on: solver_signature() is the configured solver's, and the outcome's short solver name comes from the solver's signature instead of a literal, so it is unchanged under CaDiCaL.",
@@ -126,7 +126,7 @@
     },
     {
       "change_id": "zstyztslkmplkxomnvqntznwpnspmous",
-      "commit_id": null,
+      "commit_id": "86a58bc35f2da163ec2f602bdd093bcc68199a7d",
       "immutable": false,
       "summary": "Record verification results: benchmark corpus passes; escaping-exceptions, 071/013 strict and 41-example jobs fail (VF-005 to VF-008)",
       "body": "Ran 4 queued jobs on vm-1. The benchmark corpus job (engine-priorities step 2b) passed in 1h31m and its outputs (lib/benchmark/RESULTS.md, results.json) were applied. Three jobs failed and are recorded as open findings: VF-005 (example 071 under strict is unverifiable on JDK 25.0.5 where verified was expected), VF-006 (the 41-example gap-table job stops on a result-schema error on 'sat'), VF-007 (auto --confirm disagrees with the JVM on 12 caught-exception claims; one integration test times out) and VF-008 (JBMC under strict says Verified on conformance case 'declaring', which the JVM refutes). No job was changed or resubmitted.",
@@ -138,13 +138,13 @@
       "bytes": 530515,
       "lines": 183,
       "gzip_bytes": 104974,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/8db89b15b99be29c208f6ae119031c47ed8ecfb7f78de60261206038eeb8b58f.jsonl.gz"
     },
     "ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7": {
       "bytes": 549793,
       "lines": 196,
       "gzip_bytes": 108385,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/0c61a765-3997-4763-acd2-113589ff7995/ed051ee17c4e0f6e8f7f174419ce7c3a755012ebfa3ec86fbe8259822d9e5ad7.jsonl.gz"
     }
   },
   "redaction_policy": 4,

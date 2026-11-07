@@ -182,7 +182,7 @@
   "commits": [
     {
       "change_id": "lukovtllxsolyurkoyotkpxruqkxumsv",
-      "commit_id": null,
+      "commit_id": "617a60e878ac8bb5a48dce01c514fdc205604456",
       "immutable": false,
       "summary": "Record session traces",
       "body": "The engines-jbmc stream's last turns, recorded by the reconcile loop of engine-priorities.md before the merge, so its conversation follows its last commit on its branch. No code changed.",
@@ -190,7 +190,7 @@
     },
     {
       "change_id": "ulsslrtxrxzvrsvrvmnonrqyrwolrswx",
-      "commit_id": null,
+      "commit_id": "df6669984400a00a4becf4eee8c8358bcfb822c0",
       "immutable": false,
       "summary": "Record session traces",
       "body": "The engines-native stream's last turns, recorded by the reconcile loop of engine-priorities.md before the merge, so its conversation follows its last commit on its branch. No code changed.",
@@ -198,7 +198,7 @@
     },
     {
       "change_id": "pkyqqotroryqyoksvmywyxpyrqxyqpkr",
-      "commit_id": null,
+      "commit_id": "ea881fff62ee1918ffa28ecde73ef51b428b19ac",
       "immutable": false,
       "summary": "Merge the engines-jbmc and engines-native streams",
       "body": "Reconcile steps 1-5 of llm-dlc/loops/engine-priorities.md. Both stream loops had stopped with status done. Their final session traces were recorded on their own branches first, their logs copied into this workspace, and the default line merged with jbmc@- and native@-. The generated trace files were taken from the default side and rewritten by this commit. lib/README.md's one conflict keeps both streams' text: the native stream's transcript and solver-interface paragraphs, then the JBMC stream's --confirm paragraph with its defect rule.\n\nTwo fixes the merge needed: the JBMC stream's test confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict pinned the source line of Conformance.caught (82), which the native stream's new cases moved to 291, so it now reads the line from the corpus; and lib/benchmark/conformance.json, the JBMC stream's file, was regenerated from the native stream's corpus with JVMCONTRACT_BLESS=1 (146 claims, 48 new, boom/inherited/quiet and enumState with their new own-checker verdicts).",
@@ -206,7 +206,7 @@
     },
     {
       "change_id": "qvtplyrruqmmyqplsnrtoonrtuutxppq",
-      "commit_id": null,
+      "commit_id": "3f29ed0c3f5cdfba6aac9acc890493755e94b0b9",
       "immutable": false,
       "summary": "Fold the engine streams' Progress into the engine-priorities brief",
       "body": "Reconcile steps 6 and 7 of llm-dlc/loops/engine-priorities.md. Its Progress now has one entry per phase with the streams' commits (change ids) and job ids: 1a-1c, 2a-2c, 3, 4a, 4b and 6a-6d are done; Phase 5 is done except its last criterion, since 071's two proofs still stop at JBMC stubs that the call-graph preflight reaches but no path takes. It lists in order what the streams left for this loop (the contract library recorded on JDK 25.0.5, a JBMC false success under strict on the declaring case, the path-aware stub check, 4c, the examples' notes, Bitwuzla in 1b's record, two Python test failures that predate the merge), and what needs the user.\n\nThe jbmc and native jj workspaces are forgotten. Their directories, ../in-the-loop-jbmc and ../in-the-loop-native, stay on disk for the user to delete, with the streams' run records. Nothing else changed: no code, no tests run.",
@@ -214,7 +214,7 @@
     },
     {
       "change_id": "xrrxwxnykxwstwulktxklklqnvvwmrno",
-      "commit_id": null,
+      "commit_id": "83d5ba1126933737e83396a5873cb604d69cf0b5",
       "immutable": false,
       "summary": "Take the contract library's JDK 25.0.5 records from job 20261106-203501",
       "body": "The job failed on other steps, so its outputs were not applied, but its step recording the contract library on JDK 25.0.5 passed: 10 contracts accepted, 3 proved and 7 tested. lib/models/contracts/checked.json was still the job's source file and the contracts are unchanged since its commit, so its output is applied as recorded, adding the 25.0.5 records to those of 25.0.4.1. The 12 conformance claims that failed on JDK 25.0.5 for want of a record now pass. The library's integration test took 25.0.4.1 to be the only JDK with records; it now reads them from checked.json. Verified: cargo test --release (unit 174, conformance 9 + 2 ignored, integration 64). the_tools_own_checker_agrees_with_jbmc_on_integer_proofs failed once in the full run on Pricing#total's refutation and passed alone, the wall-clock-dependent branch probe already listed in the brief.",
@@ -222,7 +222,7 @@
     },
     {
       "change_id": "pkuyvwwpoplsrmykxukowqvxzwqtsxup",
-      "commit_id": null,
+      "commit_id": "897fbc5cb884e00cafc9a8d5e8a3ba18ee95b152",
       "immutable": false,
       "summary": "JBMC runs class initializers the JVM does not: the preflight names them as extra-initializer and refuses a JBMC proof through one (verification pending)",
       "body": "Job 20261106-203501 found a false proof of JBMC under --gaps strict: conformance/declaring/2 (result == n + 107) was Verified, while the JVM returns n + 7. JBMC 6.11.0's goto listing (nothing solved) shows two shapes against JVMS 5.5: at a getstatic, putstatic or invokestatic it initializes the class the instruction names, not the class that declares the resolved member (Sub.value, declared by Holder, runs Sub.<clinit>); and initializing a class it initializes every superinterface, where the JVM initializes only those that declare a default method (conformance/defaults: 43 in JBMC, 3 on the JVM, which is why JBMC's counterexample to defaults/1 did not reproduce).\n\nlib/src/jbmc_gaps.rs compares, at each such instruction, the <clinit> calls JBMC's wrappers make with bmc::gaps::initializers of the declaring class, and names an initializer JBMC runs and the JVM does not as the defect extra-initializer, refused under every --gaps mode like the three before. The goto parser also keeps the bytecode index across JBMC's '// Labels:' comments, which had dropped it. The corpus gains defaults/3 (result == 43), the second shape's false proof (lib/benchmark/conformance.json regenerated). tests/fixtures/jbmc-defects gains the shapes in p/D.java, cause 4 in its README, and a third upstream report drafted for the user (I.java is its example, run on the JVM inline), not filed.",
@@ -230,7 +230,7 @@
     },
     {
       "change_id": "qsnwzrrzutyypsrlwlpwnwxykltorpyx",
-      "commit_id": null,
+      "commit_id": "59e82c62dab882c8c53aff22c007834d82de7481",
       "immutable": false,
       "summary": "A stub JBMC's call graph reaches on no path the proof takes is no gap: the preflight reads JBMC's symbolic execution (verification pending)",
       "body": "Job 20261106-203501 left example 071's first two property proofs no verdict under strict: the preflight in lib/src/jbmc_gaps.rs walks JBMC's call graph, which takes every branch, and reached the stubs Collection.isEmpty and Collection.toArray in the List.copyOf model's ImmutableCollections.listCopy, which calls them only for a collection other than the immutable lists List.of makes; no path gives it one. Now, when the call graph reaches a stub, the preflight also runs JBMC's symbolic execution of the proof (jbmc --program-only with the proof's unwind, unwinding assertions and options, over every input, solving nothing). Its formula is what the proof solves, and a stub none of its steps comes from is on no path within the bounds and is no gap; the note names it ('never enters'). Steps are mapped to functions by the goto listing's location numbers, which parse_goto now records, each checked against the listing's comment for that location; a run that fails, does not finish within the preflight's minute, or does not match, leaves the call graph's gaps. Unlinked call sites, monitors and defects are still the call graph's.\n\nVerified inline: new unit tests read locations and the symbolic execution's output (including mismatches and unfinished runs), and one runs JBMC 6.11.0 on tests/fixtures/jbmc-paths/P.java with the models: over List.of's list the two stubs are reached in the call graph and not entered, so no gap; over an opaque Collection they are entered and stay gaps. The whole Rust suite passes (unit 177, integration 64, conformance 9 with 2 ignored). lib/README.md and the module doc describe the check.\n\nJob 20261107-012013 reruns examples 071 and 013 under strict (071's obligations 1 and 2 expected verified with no gap, 3 a violation; 013 a violation with no JBMC gap) and the conformance corpus under JBMC and auto. Job 20261107-010728 is still running.",
@@ -238,7 +238,7 @@
     },
     {
       "change_id": "unvpruotttxvukwtyrtpzuumtvonsotq",
-      "commit_id": null,
+      "commit_id": "fe3409374c57ccd5d31b96419bca2fde38673dcd",
       "immutable": false,
       "summary": "A coverage inventory of the recorded JBMC examples: which engine decides each obligation under strict, what stops the other, and the own checker's next extensions ranked (Phase 4c)",
       "body": "examples/coverage.md is step 4c of llm-dlc/loops/engine-priorities.md. Its table comes from the two per-obligation tables of job 20261107-000039 (both engines, strict, at 98bab485), through a new gap_table.py --inventory, which says for each obligation which engine decides it and why the other doesn't, and exits 1 on a conflict (a unit test covers each case). Of 43 obligations both engines decide 35 and agree on all of them, JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), neither decides 3 (037#0, 071#0, 071#1), and the own checker alone decides none.\n\nThe own checker's gap scan (build.py --scan-gaps, static, JDK 25.0.5) was rerun on the six examples concerned and rewrote their Gap scan notes. Phase 5 has taken the class-initializer gaps off 013 and 071, which leaves List.of and List.copyOf: their models are on JBMC's class path only. 037's notes now record why neither engine decides it under strict. The ranking: an exact numberOfLeadingZeros in the own checker (037, 127); its unwinding bound counted per entry of a loop (052: Engine::jump counts back edges per path and method and never resets them, and the property's nested quantifiers, each a harness loop, take the inner back edge up to 36 times, still to be reproduced); the own checker running the List models (013, 071); and floating point (035). Pages re-rendered; the gap_table tests pass. The brief's Progress records 4c, and adds the first two extensions as item 9.",
@@ -246,7 +246,7 @@
     },
     {
       "change_id": "xmunlmmrqqtsmquzzzqwuvrqutvlusws",
-      "commit_id": null,
+      "commit_id": "1680352652b28303e6c2c7cc4deb956524567642",
       "immutable": false,
       "summary": "A result's SAT solver record names the solver the checks ran on: Bitwuzla, with its version, library digest and build, when JVMCONTRACT_SOLVER chooses it",
       "body": "Phase 1b recorded the own checker's SAT solver in every result (stated.checker.sat), but always as the bundled CaDiCaL: under JVMCONTRACT_SOLVER=bitwuzla a result's checker name and solver line said Bitwuzla 0.8.2 while its sat record said CaDiCaL 1.9.5, so the benchmark's environment.sat would have named the wrong solver. Reproduced through jvmcontract prove on Conformance#monitor before the fix.\n\nEach solver now records itself (Sat::record in lib/src/bmc/sat.rs), and statement::native_sat() is the configured solver's record. CaDiCaL's is unchanged. Bitwuzla's names the version its C API reports, the loaded library's file name and SHA-256 (eac09e6d..., the digest job 20261106-194049's build gave), the build lib/solvers/bitwuzla/build.json records when it is of that version (commit 61bdc637, linking CaDiCaL 2.1.2 static), whether it is given clauses or terms, and its options. A solver choice that does not work is recorded as no solver, with why. The benchmark and Bitwuzla READMEs describe the record. Recorded results are unchanged.",
@@ -254,7 +254,7 @@
     },
     {
       "change_id": "tnxrkmyknzxtlvwonqslwqsnqkwnowko",
-      "commit_id": null,
+      "commit_id": "ad11eae65d10abee5328b010acc313f37901550b",
       "immutable": false,
       "summary": "Record verification results for 2 JBMC jobs: the corpus agrees under JBMC and auto, auto --confirm still disagrees on two methods",
       "body": "Job 20261107-012013 (at 8b45798e6417): corpus under JBMC and auto passed, which closes VF-008; example 071 still has its first two obligations unverifiable with no gaps (VF-005 updated). Job 20261107-010728 (at 254f1d7a4893): step 2, auto --confirm, has 8 disagreements on boomTwice and enumBroken (new VF-009). Both ran on vm-1 with three workers and an 8 GiB budget.",
@@ -262,7 +262,7 @@
     },
     {
       "change_id": "vrkpmtqvyosmxrnxmmwllnoozvuvrwnx",
-      "commit_id": null,
+      "commit_id": "d8cd7864321bd4ff7e3889e32e51fdc7da8711b2",
       "immutable": false,
       "summary": "The own checker computes Integer and Long.numberOfLeadingZeros exactly, so examples 037 and 127 meet no gap under strict (verification pending)",
       "body": "Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension that 4c's coverage inventory ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker. Under strict that left example 127 (a backoff's guarded shift) to JBMC alone, and 037 (tableSizeFor) to neither engine, since JBMC's proof there is refused by the unmasked-shift guard. Engine::call_jdk_static (lib/src/bmc/mod.rs) now computes both as a priority encoder over the argument's bits, the width for zero, and models_jdk_static lists them, so the gap scan counts them as reproduced exactly.\n\nThe reproducer came first: two conformance cases, leadingZeros and leadingZerosLong (Conformance.java), whose calls and five claims were checked on a real JVM (JDK 25.0.5). Before the change all five gave no verdict under strict. Now each is proved or refuted as the JVM decides, and lib/benchmark/conformance.json is regenerated from the corpus (152 claims). build.py --scan-gaps finds no gap in 037 or 127, and their gap-scan notes say so.\n\nA contract for a call the checker reproduces is refused, so the contract library's two proved contracts for these calls are taken out: java.lang.Long.contracts is gone and Integer keeps numberOfTrailingZeros. checked.json was rewritten by jvmcontract gap-contracts --dir lib/models/contracts --record (8 accepted, 0 refused). It drops exactly the four numberOfLeadingZeros records; the one other record it measured again keeps job 20261106-203501's timing, so the diff is removals only. The unit and integration tests that took numberOfLeadingZeros as the example of a gap or of a proved contract now take numberOfTrailingZeros. lib/README.md and lib/models/contracts/README.md follow. Examples 147, 148 and 149, never recorded (VF-002), gave a contract for numberOfLeadingZeros; their notes say a run now refuses it with a note and rests on the Random contracts alone.\n\nVerified inline: Rust unit tests 178 passed; conformance 9 passed (2 ignored); integration 63 passed plus the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, which failed once on Pricing#total's known wall-clock flake (item 8) and passed alone; skill 1; lib/benchmark/test_run.py 26.\n\nJob 20261107-022319 runs examples 037 and 127 under strict on the own checker, with approach.engine set to native in a copy of examples/ so nothing recorded changes. Each must be established with no gap. It also runs the conformance corpus under JBMC and auto, the new cases included. The examples' engines stay JBMC: moving recorded examples is the user's decision.\n\nThe Progress also records what the runner collected meanwhile. Job 20261107-012013 failed step 3 (VF-005): 071's obligations 1 and 2 are still unverifiable, with no gap left. Job 20261107-010728 failed step 2 (VF-009): JBMC refutes boomTwice and enumBroken at n = 0 under auto --confirm, where the own checker proves them. Both are next.",
@@ -270,7 +270,7 @@
     },
     {
       "change_id": "vpvqksyoozlvltmzklkqzmzszqkyxkuo",
-      "commit_id": null,
+      "commit_id": "a19cafdd695d3ee752daa8388e43cf22533aa790",
       "immutable": false,
       "summary": "Record verification results for the numberOfLeadingZeros job: 037 and 127 under strict and the conformance corpus under JBMC and auto all pass",
       "body": "Job 20261107-022319-the-own-checker-models-numberofleadingze passed all 3 steps in 12m48s (peak 1.1 GiB, estimated 20m, 3.0 GiB) at d8cd7864321b on vm-1. The corpus (81 cases, 152 claims) agrees with the JVM under JBMC and auto. No findings opened or changed.",
@@ -278,7 +278,7 @@
     },
     {
       "change_id": "xmslpytzqtlxyxrqyrswrrxuknvkmust",
-      "commit_id": null,
+      "commit_id": "854a0d8f756e3c77fe47a3463deaab2a86260f04",
       "immutable": false,
       "summary": "JBMC's preflight reads its goto listing by instruction index, not byte offset, so 071's two proofs are no longer refused on initializers JBMC does not run (verification pending)",
       "body": "Job 20261107-012013 (VF-005) left example 071's first two property proofs unverifiable under strict with no gap: the preflight refused them on two extra-initializer defects, at VoteRule.decide:39 and grant:63, that JBMC does not have (013's output named the same four). JBMC 6.11.0's --show-goto-functions numbers an instruction's bytecode-index by its place in the method, counting from 0, while jbmc_gaps.rs looked the wrapper calls up by the instruction's byte offset. At offset 12, invokestatic Decision.rejected, it read index 12, getstatic Ballot.FOR_ANOTHER. The same mistake missed real defects, leaving a false JBMC proof through an initializer standing, wherever an initializing instruction follows one longer than a byte. extra_initializers and the invokedynamic linking check now look instructions up by index.\n\nReproducer: two new methods in lib/tests/fixtures/jbmc-defects/p/D.java, run through the preflight on JBMC 6.11.0's real listing, nothing solved (the_preflight_reads_jbmc_listing_by_instruction_index). In p.D.later, Sub.value sits at offset 6, index 4: the old lookup missed it, the fix names it. In p.D.apart, Quiet.value sits at offset 3, where index 3 is Loud.value: no defect now. The test failed with the old lookup and passes with the fix. On the job's own saved listings, the old lookup gives exactly its two defects and the new one none on all three of 071's proofs. Unit 179, conformance 9 (2 ignored) and integration 64 pass. The fixture README explains the cause.\n\nJob 20261107-024759 is 20261107-012013 resubmitted unchanged, as VF-005 asks. The notes of 071 and 013 record jobs -203501 and -012013. Job 20261107-022319 (exact numberOfLeadingZeros) came back passed, and 037's and 127's notes and the brief's Progress now say so. VF-009 (boomTwice, enumBroken under --confirm) is a different cause, initializers that throw, and is next.",
@@ -286,7 +286,7 @@
     },
     {
       "change_id": "uzsprqurpsuxwlmyqrvrmpylqloszzrl",
-      "commit_id": null,
+      "commit_id": "9eb4aaa918ae0c2e194a5ea48c2e2d0746656288",
       "immutable": false,
       "summary": "Allow list: Filip Stankovic approved 493d8c56, 70e2f6e5, 71a780ce, 76947b3d, acb2d832, b9e8252b, c7295890",
       "body": "Filip Stankovic approved 7 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n493d8c56  long-token  _ZZ…ns (45 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.\n70e2f6e5  long-token  _ZT…EE (48 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.\n71a780ce  long-token  _ZT…EE (53 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.\n76947b3d  long-token  _ZZ…ex (82 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.\nacb2d832  long-token  _ZZ…ex (107 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.\nb9e8252b  long-token  _ZT…gt (40 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.\nc7295890  long-token  _ZZ…ex (102 chars): A mangled C++ symbol name (Itanium ABI, _ZZ/_ZT prefix: MiniSat and CaDiCaL classes) printed by strings on the public JBMC 6.11.0 binary /usr/bin/jbmc, while looking for the CaDiCaL version linked into it; not a credential.",
@@ -294,7 +294,7 @@
     },
     {
       "change_id": "mzotulvppmqvvvyxoqkkssvyqmupwslw",
-      "commit_id": null,
+      "commit_id": "bfad6ff879f25af146ca81af8b420470bab05664",
       "immutable": false,
       "summary": "Record verification results for the stubs-on-no-path job: examples 071 and 013 under strict and the conformance corpus under JBMC and auto all pass",
       "body": "Job 20261107-024759 (at 854a0d8f756e, vm-1) passed all 5 steps in 12m50s, peak 1.1 GiB (estimated 25m, 3.0 GiB). Collect applied the regenerated 013 and 071 outputs and the examples table. Nothing was found that needs a person; open findings VF-009 is untouched, since this job does not run the auto --confirm test.",
@@ -306,79 +306,79 @@
       "bytes": 5360029,
       "lines": 1840,
       "gzip_bytes": 1049886,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/14574aba97974505ffec4b8493b626ff56bebb2e7dfd0836ef945465bc686a1b.jsonl.gz"
     },
     "15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288": {
       "bytes": 2236141,
       "lines": 714,
       "gzip_bytes": 453586,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288.jsonl.gz"
     },
     "2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48": {
       "bytes": 9800728,
       "lines": 3514,
       "gzip_bytes": 1880585,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48.jsonl.gz"
     },
     "350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4": {
       "bytes": 10992458,
       "lines": 3891,
       "gzip_bytes": 2123665,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4.jsonl.gz"
     },
     "3ae333e5480255d8baa9df20bcbb871aa17834b89a4c4f36f5f577ad7f4755e4": {
       "bytes": 12990418,
       "lines": 4615,
       "gzip_bytes": 2496617,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/3ae333e5480255d8baa9df20bcbb871aa17834b89a4c4f36f5f577ad7f4755e4.jsonl.gz"
     },
     "5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29": {
       "bytes": 11493941,
       "lines": 4127,
       "gzip_bytes": 2186068,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29.jsonl.gz"
     },
     "7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8": {
       "bytes": 6558822,
       "lines": 2236,
       "gzip_bytes": 1290182,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8.jsonl.gz"
     },
     "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17": {
       "bytes": 9322718,
       "lines": 3267,
       "gzip_bytes": 1820696,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17.jsonl.gz"
     },
     "9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29": {
       "bytes": 1393478,
       "lines": 439,
       "gzip_bytes": 274873,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29.jsonl.gz"
     },
     "ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986": {
       "bytes": 3852645,
       "lines": 1290,
       "gzip_bytes": 770198,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986.jsonl.gz"
     },
     "b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444": {
       "bytes": 1145678,
       "lines": 350,
       "gzip_bytes": 238309,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz"
     },
     "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280": {
       "bytes": 7822733,
       "lines": 2716,
       "gzip_bytes": 1550115,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280.jsonl.gz"
     },
     "e39d87c7dc6a04de837656d2e125897c643ab0cd45d8946c80756ef5b15e803d": {
       "bytes": 12173419,
       "lines": 4290,
       "gzip_bytes": 2358156,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/e39d87c7dc6a04de837656d2e125897c643ab0cd45d8946c80756ef5b15e803d.jsonl.gz"
     }
   },
   "redaction_policy": 4,

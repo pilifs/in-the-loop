@@ -20,19 +20,19 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record session traces
 
-change `lukovtllxsol` · [log `b2a602fc717c`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)
+[`617a60e878ac`](https://github.com/pilifs/in-the-loop/commit/617a60e878ac8bb5a48dce01c514fdc205604456) · [log `b2a602fc717c`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)
 
 The engines-jbmc stream's last turns, recorded by the reconcile loop of engine-priorities.md before the merge, so its conversation follows its last commit on its branch. No code changed.
 
 ### Record session traces
 
-change `ulsslrtxrxzv` · [log `b2a602fc717c`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)
+[`df6669984400`](https://github.com/pilifs/in-the-loop/commit/df6669984400a00a4becf4eee8c8358bcfb822c0) · [log `b2a602fc717c`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)
 
 The engines-native stream's last turns, recorded by the reconcile loop of engine-priorities.md before the merge, so its conversation follows its last commit on its branch. No code changed.
 
 ### Merge the engines-jbmc and engines-native streams
 
-change `pkyqqotroryq` · [log `b2a602fc717c`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)
+[`ea881fff62ee`](https://github.com/pilifs/in-the-loop/commit/ea881fff62ee1918ffa28ecde73ef51b428b19ac) · [log `b2a602fc717c`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz)
 
 Reconcile steps 1-5 of llm-dlc/loops/engine-priorities.md. Both stream loops had stopped with status done. Their final session traces were recorded on their own branches first, their logs copied into this workspace, and the default line merged with jbmc@- and native@-. The generated trace files were taken from the default side and rewritten by this commit. lib/README.md's one conflict keeps both streams' text: the native stream's transcript and solver-interface paragraphs, then the JBMC stream's --confirm paragraph with its defect rule.
 
@@ -40,7 +40,7 @@ Two fixes the merge needed: the JBMC stream's test confirm_takes_a_refutation_th
 
 ### Fold the engine streams' Progress into the engine-priorities brief
 
-change `qvtplyrruqmm` · [log `9cef5b818346`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29.jsonl.gz)
+[`3f29ed0c3f5c`](https://github.com/pilifs/in-the-loop/commit/3f29ed0c3f5cdfba6aac9acc890493755e94b0b9) · [log `9cef5b818346`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/9cef5b818346fdd1e9e219ecde0e729c9bc62cba1e793d234c25daf4f9c2ae29.jsonl.gz)
 
 Reconcile steps 6 and 7 of llm-dlc/loops/engine-priorities.md. Its Progress now has one entry per phase with the streams' commits (change ids) and job ids: 1a-1c, 2a-2c, 3, 4a, 4b and 6a-6d are done; Phase 5 is done except its last criterion, since 071's two proofs still stop at JBMC stubs that the call-graph preflight reaches but no path takes. It lists in order what the streams left for this loop (the contract library recorded on JDK 25.0.5, a JBMC false success under strict on the declaring case, the path-aware stub check, 4c, the examples' notes, Bitwuzla in 1b's record, two Python test failures that predate the merge), and what needs the user.
 
@@ -48,13 +48,13 @@ The jbmc and native jj workspaces are forgotten. Their directories, ../in-the-lo
 
 ### Take the contract library's JDK 25.0.5 records from job 20261106-203501
 
-change `xrrxwxnykxws` · [log `15e0a1997b60`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288.jsonl.gz)
+[`83d5ba112693`](https://github.com/pilifs/in-the-loop/commit/83d5ba1126933737e83396a5873cb604d69cf0b5) · [log `15e0a1997b60`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/15e0a1997b60a63a9bed44b91c32a848049afc5d114b6be23aebb7c9aadf2288.jsonl.gz)
 
 The job failed on other steps, so its outputs were not applied, but its step recording the contract library on JDK 25.0.5 passed: 10 contracts accepted, 3 proved and 7 tested. lib/models/contracts/checked.json was still the job's source file and the contracts are unchanged since its commit, so its output is applied as recorded, adding the 25.0.5 records to those of 25.0.4.1. The 12 conformance claims that failed on JDK 25.0.5 for want of a record now pass. The library's integration test took 25.0.4.1 to be the only JDK with records; it now reads them from checked.json. Verified: cargo test --release (unit 174, conformance 9 + 2 ignored, integration 64). the_tools_own_checker_agrees_with_jbmc_on_integer_proofs failed once in the full run on Pricing#total's refutation and passed alone, the wall-clock-dependent branch probe already listed in the brief.
 
 ### JBMC runs class initializers the JVM does not: the preflight names them as extra-initializer and refuses a JBMC proof through one (verification pending)
 
-change `pkuyvwwpopls` · [log `ac31a9e8a49b`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986.jsonl.gz)
+[`897fbc5cb884`](https://github.com/pilifs/in-the-loop/commit/897fbc5cb884e00cafc9a8d5e8a3ba18ee95b152) · [log `ac31a9e8a49b`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/ac31a9e8a49bd4e27eb16a58851c9e53af3b89ddfb0a3fa78de942873423a986.jsonl.gz)
 
 Job 20261106-203501 found a false proof of JBMC under --gaps strict: conformance/declaring/2 (result == n + 107) was Verified, while the JVM returns n + 7. JBMC 6.11.0's goto listing (nothing solved) shows two shapes against JVMS 5.5: at a getstatic, putstatic or invokestatic it initializes the class the instruction names, not the class that declares the resolved member (Sub.value, declared by Holder, runs Sub.&lt;clinit>); and initializing a class it initializes every superinterface, where the JVM initializes only those that declare a default method (conformance/defaults: 43 in JBMC, 3 on the JVM, which is why JBMC's counterexample to defaults/1 did not reproduce).
 
@@ -62,7 +62,7 @@ lib/src/jbmc_gaps.rs compares, at each such instruction, the &lt;clinit> calls J
 
 ### A stub JBMC's call graph reaches on no path the proof takes is no gap: the preflight reads JBMC's symbolic execution (verification pending)
 
-change `qsnwzrrzutyy` · [log `14574aba9797`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/14574aba97974505ffec4b8493b626ff56bebb2e7dfd0836ef945465bc686a1b.jsonl.gz)
+[`59e82c62dab8`](https://github.com/pilifs/in-the-loop/commit/59e82c62dab882c8c53aff22c007834d82de7481) · [log `14574aba9797`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/14574aba97974505ffec4b8493b626ff56bebb2e7dfd0836ef945465bc686a1b.jsonl.gz)
 
 Job 20261106-203501 left example 071's first two property proofs no verdict under strict: the preflight in lib/src/jbmc_gaps.rs walks JBMC's call graph, which takes every branch, and reached the stubs Collection.isEmpty and Collection.toArray in the List.copyOf model's ImmutableCollections.listCopy, which calls them only for a collection other than the immutable lists List.of makes; no path gives it one. Now, when the call graph reaches a stub, the preflight also runs JBMC's symbolic execution of the proof (jbmc --program-only with the proof's unwind, unwinding assertions and options, over every input, solving nothing). Its formula is what the proof solves, and a stub none of its steps comes from is on no path within the bounds and is no gap; the note names it ('never enters'). Steps are mapped to functions by the goto listing's location numbers, which parse_goto now records, each checked against the listing's comment for that location; a run that fails, does not finish within the preflight's minute, or does not match, leaves the call graph's gaps. Unlinked call sites, monitors and defects are still the call graph's.
 
@@ -72,7 +72,7 @@ Job 20261107-012013 reruns examples 071 and 013 under strict (071's obligations 
 
 ### A coverage inventory of the recorded JBMC examples: which engine decides each obligation under strict, what stops the other, and the own checker's next extensions ranked (Phase 4c)
 
-change `unvpruotttxv` · [log `7eae17b1eac5`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8.jsonl.gz)
+[`fe3409374c57`](https://github.com/pilifs/in-the-loop/commit/fe3409374c57ccd5d31b96419bca2fde38673dcd) · [log `7eae17b1eac5`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8.jsonl.gz)
 
 examples/coverage.md is step 4c of llm-dlc/loops/engine-priorities.md. Its table comes from the two per-obligation tables of job 20261107-000039 (both engines, strict, at 98bab485), through a new gap_table.py --inventory, which says for each obligation which engine decides it and why the other doesn't, and exits 1 on a conflict (a unit test covers each case). Of 43 obligations both engines decide 35 and agree on all of them, JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), neither decides 3 (037#0, 071#0, 071#1), and the own checker alone decides none.
 
@@ -80,7 +80,7 @@ The own checker's gap scan (build.py --scan-gaps, static, JDK 25.0.5) was rerun 
 
 ### A result's SAT solver record names the solver the checks ran on: Bitwuzla, with its version, library digest and build, when JVMCONTRACT_SOLVER chooses it
 
-change `xmunlmmrqqts` · [log `d38b17976926`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280.jsonl.gz)
+[`1680352652b2`](https://github.com/pilifs/in-the-loop/commit/1680352652b28303e6c2c7cc4deb956524567642) · [log `d38b17976926`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280.jsonl.gz)
 
 Phase 1b recorded the own checker's SAT solver in every result (stated.checker.sat), but always as the bundled CaDiCaL: under JVMCONTRACT_SOLVER=bitwuzla a result's checker name and solver line said Bitwuzla 0.8.2 while its sat record said CaDiCaL 1.9.5, so the benchmark's environment.sat would have named the wrong solver. Reproduced through jvmcontract prove on Conformance#monitor before the fix.
 
@@ -88,13 +88,13 @@ Each solver now records itself (Sat::record in lib/src/bmc/sat.rs), and statemen
 
 ### Record verification results for 2 JBMC jobs: the corpus agrees under JBMC and auto, auto --confirm still disagrees on two methods
 
-change `tnxrkmyknzxt` · [log `8f373a18e660`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17.jsonl.gz)
+[`ad11eae65d10`](https://github.com/pilifs/in-the-loop/commit/ad11eae65d10abee5328b010acc313f37901550b) · [log `8f373a18e660`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17.jsonl.gz)
 
 Job 20261107-012013 (at 8b45798e6417): corpus under JBMC and auto passed, which closes VF-008; example 071 still has its first two obligations unverifiable with no gaps (VF-005 updated). Job 20261107-010728 (at 254f1d7a4893): step 2, auto --confirm, has 8 disagreements on boomTwice and enumBroken (new VF-009). Both ran on vm-1 with three workers and an 8 GiB budget.
 
 ### The own checker computes Integer and Long.numberOfLeadingZeros exactly, so examples 037 and 127 meet no gap under strict (verification pending)
 
-change `vrkpmtqvyosm` · [log `2c47ef24956d`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48.jsonl.gz)
+[`d8cd7864321b`](https://github.com/pilifs/in-the-loop/commit/d8cd7864321bd4ff7e3889e32e51fdc7da8711b2) · [log `2c47ef24956d`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48.jsonl.gz)
 
 Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension that 4c's coverage inventory ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker. Under strict that left example 127 (a backoff's guarded shift) to JBMC alone, and 037 (tableSizeFor) to neither engine, since JBMC's proof there is refused by the unmasked-shift guard. Engine::call_jdk_static (lib/src/bmc/mod.rs) now computes both as a priority encoder over the argument's bits, the width for zero, and models_jdk_static lists them, so the gap scan counts them as reproduced exactly.
 
@@ -110,13 +110,13 @@ The Progress also records what the runner collected meanwhile. Job 20261107-0120
 
 ### Record verification results for the numberOfLeadingZeros job: 037 and 127 under strict and the conformance corpus under JBMC and auto all pass
 
-change `vpvqksyoozlv` · [log `350a099a9d93`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4.jsonl.gz)
+[`a19cafdd695d`](https://github.com/pilifs/in-the-loop/commit/a19cafdd695d3ee752daa8388e43cf22533aa790) · [log `350a099a9d93`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/350a099a9d93d93317aa3579fbc5b3373ac6578656976a28da46c47cbe5063d4.jsonl.gz)
 
 Job 20261107-022319-the-own-checker-models-numberofleadingze passed all 3 steps in 12m48s (peak 1.1 GiB, estimated 20m, 3.0 GiB) at d8cd7864321b on vm-1. The corpus (81 cases, 152 claims) agrees with the JVM under JBMC and auto. No findings opened or changed.
 
 ### JBMC's preflight reads its goto listing by instruction index, not byte offset, so 071's two proofs are no longer refused on initializers JBMC does not run (verification pending)
 
-change `xmslpytzqtlx` · [log `5bf5c08fd9ca`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29.jsonl.gz)
+[`854a0d8f756e`](https://github.com/pilifs/in-the-loop/commit/854a0d8f756e3c77fe47a3463deaab2a86260f04) · [log `5bf5c08fd9ca`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/5bf5c08fd9cac9bcbd86195b9f38a169f48a1a325e896717105c18396ce58f29.jsonl.gz)
 
 Job 20261107-012013 (VF-005) left example 071's first two property proofs unverifiable under strict with no gap: the preflight refused them on two extra-initializer defects, at VoteRule.decide:39 and grant:63, that JBMC does not have (013's output named the same four). JBMC 6.11.0's --show-goto-functions numbers an instruction's bytecode-index by its place in the method, counting from 0, while jbmc_gaps.rs looked the wrapper calls up by the instruction's byte offset. At offset 12, invokestatic Decision.rejected, it read index 12, getstatic Ballot.FOR_ANOTHER. The same mistake missed real defects, leaving a false JBMC proof through an initializer standing, wherever an initializing instruction follows one longer than a byte. extra_initializers and the invokedynamic linking check now look instructions up by index.
 
@@ -126,7 +126,7 @@ Job 20261107-024759 is 20261107-012013 resubmitted unchanged, as VF-005 asks. Th
 
 ### Allow list: Filip Stankovic approved 493d8c56, 70e2f6e5, 71a780ce, 76947b3d, acb2d832, b9e8252b, c7295890
 
-change `uzsprqurpsux` · [log `e39d87c7dc6a`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/e39d87c7dc6a04de837656d2e125897c643ab0cd45d8946c80756ef5b15e803d.jsonl.gz)
+[`9eb4aaa918ae`](https://github.com/pilifs/in-the-loop/commit/9eb4aaa918ae0c2e194a5ea48c2e2d0746656288) · [log `e39d87c7dc6a`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/e39d87c7dc6a04de837656d2e125897c643ab0cd45d8946c80756ef5b15e803d.jsonl.gz)
 
 Filip Stankovic approved 7 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -140,7 +140,7 @@ c7295890  long-token  _ZZ…ex (102 chars): A mangled C++ symbol name (Itanium A
 
 ### Record verification results for the stubs-on-no-path job: examples 071 and 013 under strict and the conformance corpus under JBMC and auto all pass
 
-change `mzotulvppmqv` · [log `3ae333e54802`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/3ae333e5480255d8baa9df20bcbb871aa17834b89a4c4f36f5f577ad7f4755e4.jsonl.gz)
+[`bfad6ff879f2`](https://github.com/pilifs/in-the-loop/commit/bfad6ff879f25af146ca81af8b420470bab05664) · [log `3ae333e54802`](https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/3ae333e5480255d8baa9df20bcbb871aa17834b89a4c4f36f5f577ad7f4755e4.jsonl.gz)
 
 Job 20261107-024759 (at 854a0d8f756e, vm-1) passed all 5 steps in 12m50s, peak 1.1 GiB (estimated 25m, 3.0 GiB). Collect applied the regenerated 013 and 071 outputs and the examples table. Nothing was found that needs a person; open findings VF-009 is untouched, since this job does not run the auto --confirm test.
 

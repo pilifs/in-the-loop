@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### JBMC searches the full range alone by default, on benchmark job 20261106-201041's evidence
 
-change `wvkxpmzxuunt` · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
+[`eef4ebb71b98`](https://github.com/pilifs/in-the-loop/commit/eef4ebb71b988288c875d3fcad753bb03908a67e) · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
 
 Step 2c of engine-priorities.md. Job 20261106-201041 ran the corpus under JBMC's three staging policies. Under strict, JBMC's proofs were the same 54 of 65 under each, in 654 s under staged, 575 s under full-range and 588 s under tight; the hard ones took half the time without the stages (bounded binary search 26 s against 56 s, example 141 31 s against 61 s). Counterexamples took 9 s against 27 s, no shrunk witness was larger, and no run under full-range was starved. Under auto the policies gave the same verdicts. The one case whose class changed, conformance/shiftRight/2, is JBMC's unmasked right shift (the previous commit), which staged's witness happened to miss; it is not a worse verdict of the policy, and is now the one case where --engine jbmc answers unverifiable where it gave a violation (the own checker and auto decide it).
 
@@ -28,7 +28,7 @@ So full-range is now the default of --jbmc-staging on prove and equivalence, of 
 
 ### Under --confirm, a JBMC refutation through a named defect, whose witness does not reproduce, is no verdict; job 20261106-203452 triaged (verification pending)
 
-change `xzvyuwxptsny` · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
+[`48aefd9ee347`](https://github.com/pilifs/in-the-loop/commit/48aefd9ee3473cfe3b862229469c6820fd832714) · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
 
 Job 20261106-203452 (step 3 of llm-dlc/loops/engine-priorities.md) failed two of its three steps. Its --confirm step had 12 disagreements, all on conformance/caught, caughtAsRuntime and nestedHandler under strict and assume: the own checker proves the claim, and JBMC's confirming run refutes it at n = 0 through return-past-handler or stubbed-handler, the defects step 3 found and guards against, on a witness the interpreter does not reproduce. The tool called that a disagreement. Now equivalence::confirm runs JBMC's preflight on a refutation too, and takes the caller's replay of the witness in the harness: when the preflight names a defect and the witness does not reproduce, the refutation is the defect's, as a JBMC proof through one is refused, so the confirmation is no-verdict and the own checker's proof stands, unconfirmed, the line naming the defects. A witness that reproduces is still a disagreement, as is one with no defect in reach.
 
@@ -40,7 +40,7 @@ Job 20261106-231317 reruns the three steps, with lib/target created first. The c
 
 ### The examples' result schema allows the statement's SAT solver record; 4a's job rerun (verification pending)
 
-change `tokyzslsyxoz` · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
+[`a0cc93abfbb2`](https://github.com/pilifs/in-the-loop/commit/a0cc93abfbb2de1ad4f0618439a9cadfeeb8b8d3) · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
 
 Job 20261106-204220, step 4a of llm-dlc/loops/engine-priorities.md (the 41 recorded JBMC examples under strict on both engines), stopped in both engine steps at its first example: build.py refused 013's result against examples/schema/result.schema.json because 'sat' was unexpected. That is step 1b's stated.checker.sat, the SAT solver each result's evidence now names, which the schema did not allow yet. The checker object in the statement now allows sat, in the shape lib/src/statement.rs Sat serializes (solver, version or null, source, configuration), and nothing more.
 
@@ -50,7 +50,7 @@ Job 20261106-231837 reruns -204220's three steps unchanged at this commit, so it
 
 ### Give Bitwuzla the own checker's word-level terms, and queue the word-level solver comparison (Phase 6c, part 2; verification pending)
 
-change `ulsqmxuqnylu` · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
+[`3e7ed144ebcc`](https://github.com/pilifs/in-the-loop/commit/3e7ed144ebcc3380b1e64fd9caf388692cdbbca4) · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
 
 The solver interface (lib/src/bmc/sat.rs) gains Terms: a solver may take the formula as terms. Over such a solver the encoding (bits.rs) builds no circuits. Each gate is defined to it as a Boolean term. Each addition, subtraction, multiplication, signed division and remainder, comparison, symbolic shift, bitwise operation of two non-constant values and ite of two values is one word-level operation. Constants and a few identities still fold, and nothing is left to lazy refinement. A path's model is still evaluated by the engine, with each word-level operation computed from its operands' values. JVMCONTRACT_SOLVER=bitwuzla-words[:options] (bitwuzla.rs) makes each operation one Bitwuzla bit-vector term, with extracts for its bits, and reads runs of a term's bits back as the term. Arrays stay bounded cells read and written through ites (no array theory), and such a check refuses a transcript, since there are no clauses to record. The outcome and --json stats gain word_operations, which is left out when zero, so CaDiCaL's output is unchanged. lib/solvers/compare.py --words runs the five workloads' full checks on cadical, bitwuzla-words and bitwuzla-words:preprocess=0, and writes word-level.json and .md.
 
@@ -58,7 +58,7 @@ Verified inline. The blaster's int and long arithmetic tests now also run on bit
 
 ### Recommend against moving the own checker to word-level solving, from the two solver comparisons (Phase 6d)
 
-change `tpytwvmvtzwp` · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
+[`06cdb4229852`](https://github.com/pilifs/in-the-loop/commit/06cdb422985201ffa2e5604922e3d98c2e3c6afb) · [log `f4c8c10ddb93`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/f4c8c10ddb93c983ccfaf37fc63b1df4b5e2fb6adf502b2c24de549c139ee7c0.jsonl.gz)
 
 Jobs 20261106-224616 (bit-blasted, at 09739e6) and 20261106-230455 (word-level, at bbb3062) both passed on vm-1: every check of the five workloads where the formula's size dominates (binary search, examples 141 and 142, reverse, prefix sums) is verified on every solver, with the same paths and merges, and no replay contradicts its recording. Given the engine's own clauses, Bitwuzla 0.8.2 is 2 to 43 times slower than the bundled CaDiCaL 1.9.5 with its defaults and 1.7 to 14 times with preprocess=0. Given word-level terms with preprocess=0, it is 1.93x faster on binary search, 1.66x on reverse, 1.31x on 142 and level on 141 and prefix sums; with its default preprocessing, 141 and 142 are slower than CaDiCaL.
 
@@ -68,7 +68,7 @@ Also fixed: both jobs' tables say 'at ?' for the commit, since the runner's expo
 
 ### Record verification results: Phase 6c checker comparisons and JBMC defects rerun pass (closing VF-007); 41-example job fails again (VF-006)
 
-change `xqmmzyrtzxqr` · [log `b2b0ca666931`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/b2b0ca6669314e153b39d8d0faf81a6cbec2f3a6c27a632ca035ee45ef8e8950.jsonl.gz)
+[`ae68a9bcdeb5`](https://github.com/pilifs/in-the-loop/commit/ae68a9bcdeb5654da4fb5effb96b072cfc5b75d2) · [log `b2b0ca666931`](https://terminalvalue.net/raw-traces/6f7cf082-efef-4561-8de2-b54b3d27994f/b2b0ca6669314e153b39d8d0faf81a6cbec2f3a6c27a632ca035ee45ef8e8950.jsonl.gz)
 
 Collected four jobs run at vm-1. 20261106-224616 and -230455 (own checker on CaDiCaL and Bitwuzla, bit-blasted and word-level, Phase 6c) passed; their comparison tables under lib/solvers/comparison/ were applied. 20261106-231317 (rerun of the JBMC escaping-exceptions job, same three commands) passed, closing VF-007. 20261106-231837 (41 JBMC examples under strict) failed again, now on a result-schema complaint about 'phasesExcess' and only 12 of 41 examples in the table; VF-006 updated. Verified by pipeline.py status showing nothing pending or uncollected.
 

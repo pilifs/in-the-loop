@@ -309,7 +309,7 @@ Session 3761db96 ran on the laptop, where the VM's hostname was only the name of
 
 ### Record verification results: Bitwuzla build fails its smoke test (VF-003)
 
-change `wtvowsostpzw` · [log `8218a28eef1e`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/8218a28eef1e5205297481dcab9922c93684640e4c2885d021188b8783702738.jsonl.gz)
+[`e65cfb786847`](https://github.com/pilifs/in-the-loop/commit/e65cfb7868473e8f0bd9315962135e5617e2be13) · [log `8218a28eef1e`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/8218a28eef1e5205297481dcab9922c93684640e4c2885d021188b8783702738.jsonl.gz)
 
 Ran the one queued job, the Bitwuzla 0.8.2 source build. It compiles and installs but the installed binary cannot load libcadical.so, which meson did not install; build.sh needs an rpath or a static CaDiCaL. Recorded as VF-003 for the submitter. Nothing resubmitted: the failure is deterministic.
 

@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Allow list: Filip Stankovic approved 493d8c56, 70e2f6e5, 71a780ce, 76947b3d, acb2d832, b9e8252b, c7295890
 
-change `uzsprqurpsux` · [log `4da78a3680f6`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/4da78a3680f65057f64ce4ab23ffd8db5c29a0041336ffc5d2d7974240f2b59b.jsonl.gz)
+[`9eb4aaa918ae`](https://github.com/pilifs/in-the-loop/commit/9eb4aaa918ae0c2e194a5ea48c2e2d0746656288) · [log `4da78a3680f6`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/4da78a3680f65057f64ce4ab23ffd8db5c29a0041336ffc5d2d7974240f2b59b.jsonl.gz)
 
 Filip Stankovic approved 7 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -34,13 +34,13 @@ c7295890  long-token  _ZZ…ex (102 chars): A mangled C++ symbol name (Itanium A
 
 ### Record verification results for the stubs-on-no-path job: examples 071 and 013 under strict and the conformance corpus under JBMC and auto all pass
 
-change `mzotulvppmqv` · [log `c44dd8c077da`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/c44dd8c077da7a062c8992e472ff6290407fa3e8e8677054fae19ef856961325.jsonl.gz)
+[`bfad6ff879f2`](https://github.com/pilifs/in-the-loop/commit/bfad6ff879f25af146ca81af8b420470bab05664) · [log `c44dd8c077da`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/c44dd8c077da7a062c8992e472ff6290407fa3e8e8677054fae19ef856961325.jsonl.gz)
 
 Job 20261107-024759 (at 854a0d8f756e, vm-1) passed all 5 steps in 12m50s, peak 1.1 GiB (estimated 25m, 3.0 GiB). Collect applied the regenerated 013 and 071 outputs and the examples table. Nothing was found that needs a person; open findings VF-009 is untouched, since this job does not run the auto --confirm test.
 
 ### Close the engine-priorities loop's open work: the Python test failures fixed, the own checker's encoding timed whole per word-level operation, the rest deferred as findings, and a draft brief for JBMC's upstream defects (verification pending)
 
-change `qzzvqrovxxup` · [log `dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz)
+[`58b89dd9ce1c`](https://github.com/pilifs/in-the-loop/commit/58b89dd9ce1c84b70770a8673908eb0eb6b444a3) · [log `dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz)
 
 test_build.py's 35 errors (KeyError: 'verdict' and the like) were tests that read committed results raw, as if all were format 1. 28 are now stored as format 2, so these tests read them through result_format.load, the documented way back to the flat view. Two tests rested on results recorded before the model-contract connection, and 076 and 072 were run again since (jobs 20261106-1811xx): test_a_result_recorded_before_the_connection_renders_as_before now reads 077, the same breaker, still recorded that way, and test_format_two_stores_each_fact_once expects 072's two kinds of obligation, configurations and the operator's contract, which checks more than before. test_performance.py's one failure, test_the_exporter_stops_at_the_first_failure, passed only on a machine with Langfuse configured (here llm-dlc/infra/langfuse/.env is absent, so langfuse_send raised before the mocked exporter). It now stubs the configuration and the project directory, as another test in the file does. Both suites pass: test_build 161, test_performance 102.
 

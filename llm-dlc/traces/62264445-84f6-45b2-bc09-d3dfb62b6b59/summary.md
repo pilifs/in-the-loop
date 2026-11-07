@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: CBMC source-reading job's grep matches nothing (VF-004)
 
-change `trvvqqvonzkp` · [log `c4eac925a011`](https://terminalvalue.net/raw-traces/62264445-84f6-45b2-bc09-d3dfb62b6b59/c4eac925a01132b79671ec1b44811be4b0d10afd507162c54c02f28004585d27.jsonl.gz)
+[`53e58ad704ae`](https://github.com/pilifs/in-the-loop/commit/53e58ad704ae01a79abcfe2b46dd54f9a953ec44) · [log `c4eac925a011`](https://terminalvalue.net/raw-traces/62264445-84f6-45b2-bc09-d3dfb62b6b59/c4eac925a01132b79671ec1b44811be4b0d10afd507162c54c02f28004585d27.jsonl.gz)
 
 Collected 20261106-192959-cbmc-6-11-0-s-source-times-runtime-post (vm-1, b4c0164b852f). Step 1 exited 1 because its grep for run_property_decider found no match under set -e; a defect of the job's step, recorded as VF-004 for the submitter. Not resubmitted, as the step needs correcting first.
 
 ### Resubmit the CBMC 6.11.0 source-reading job with a grep that matches (verification pending)
 
-change `pmpwplnrkosw` · [log `711251dce8e8`](https://terminalvalue.net/raw-traces/62264445-84f6-45b2-bc09-d3dfb62b6b59/711251dce8e81aaa2c76c6d6d70fb93cb17b5ec66bcb80a760a2feb9d35c16cf.jsonl.gz)
+[`3feadaf0f7a2`](https://github.com/pilifs/in-the-loop/commit/3feadaf0f7a288f4997119fdcd183dda88bfdc7b) · [log `711251dce8e8`](https://terminalvalue.net/raw-traces/62264445-84f6-45b2-bc09-d3dfb62b6b59/711251dce8e81aaa2c76c6d6d70fb93cb17b5ec66bcb80a760a2feb9d35c16cf.jsonl.gz)
 
 Job 20261106-192959-cbmc-6-11-0-s-source-times-runtime-post failed (VF-004) because its display grep '^decision_proceduret::resultt run_property_decider' matched nothing in CBMC 6.11.0's bmc_util.cpp, and under pipefail that ended the step before any check ran. The new job prints run_property_decider with 'grep -n -B2 -A45 "run_property_decider("', and also the 'Runtime decision procedure' line and the post_processing_done guard. The display greps print '(no match)' rather than failing, so the step always reaches the three unchanged grep -q checks ('Runtime Solver', 'Runtime Post-process', 'finish_eager_conversion'). The job validates and the step passes bash -n; it was not run here, since it fetches from the network.
 

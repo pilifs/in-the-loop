@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: 41-example JBMC gap-table job passes, closing VF-006
 
-change `lxlxyvstqozv` · [log `229ade667b57`](https://terminalvalue.net/raw-traces/6c5734d4-89ff-437e-bc66-c0e159c45d5c/229ade667b5729b81e2a2f3ca27c20bebfbc94a17d148431d40fbaf02be56e25.jsonl.gz)
+[`0e1cc85ba680`](https://github.com/pilifs/in-the-loop/commit/0e1cc85ba680afcd1d3a1b575eeca1d5e0c51a60) · [log `229ade667b57`](https://terminalvalue.net/raw-traces/6c5734d4-89ff-437e-bc66-c0e159c45d5c/229ade667b5729b81e2a2f3ca27c20bebfbc94a17d148431d40fbaf02be56e25.jsonl.gz)
 
 Job 20261107-000039 (engine-priorities step 4a rerun) passed on vm-1 in 4m22s: 41 examples and 43 obligations run under strict on JBMC and on the native checker, with the gap table; 5 obligations differ in status between engines (013#0, 035#0, 052#0, 071#2, 127#0). Collect applied 90 output files. VF-006 closed by this job; VF-005 and VF-008 stay open. changes.diff is 1.3 MiB, over jj's default snapshot limit, so it was snapshotted with --config snapshot.max-new-file-size.
+
+### Record session traces
+
+change `xlnupmwrqvow` · [log `b110c1620fe0`](https://terminalvalue.net/raw-traces/6c5734d4-89ff-437e-bc66-c0e159c45d5c/b110c1620fe08b99471d2739fe1ed820b247518cbdfa916a6693ac697f789434.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### A stub JBMC's call graph reaches on no path the proof takes is no gap: the preflight reads JBMC's symbolic execution (verification pending)
 
-change `qsnwzrrzutyy` · [log `8f4b3cd7ac59`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz)
+[`59e82c62dab8`](https://github.com/pilifs/in-the-loop/commit/59e82c62dab882c8c53aff22c007834d82de7481) · [log `8f4b3cd7ac59`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz)
 
 Job 20261106-203501 left example 071's first two property proofs no verdict under strict: the preflight in lib/src/jbmc_gaps.rs walks JBMC's call graph, which takes every branch, and reached the stubs Collection.isEmpty and Collection.toArray in the List.copyOf model's ImmutableCollections.listCopy, which calls them only for a collection other than the immutable lists List.of makes; no path gives it one. Now, when the call graph reaches a stub, the preflight also runs JBMC's symbolic execution of the proof (jbmc --program-only with the proof's unwind, unwinding assertions and options, over every input, solving nothing). Its formula is what the proof solves, and a stub none of its steps comes from is on no path within the bounds and is no gap; the note names it ('never enters'). Steps are mapped to functions by the goto listing's location numbers, which parse_goto now records, each checked against the listing's comment for that location; a run that fails, does not finish within the preflight's minute, or does not match, leaves the call graph's gaps. Unlinked call sites, monitors and defects are still the call graph's.
 
@@ -30,7 +30,7 @@ Job 20261107-012013 reruns examples 071 and 013 under strict (071's obligations 
 
 ### A coverage inventory of the recorded JBMC examples: which engine decides each obligation under strict, what stops the other, and the own checker's next extensions ranked (Phase 4c)
 
-change `unvpruotttxv` · [log `8f4b3cd7ac59`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz)
+[`fe3409374c57`](https://github.com/pilifs/in-the-loop/commit/fe3409374c57ccd5d31b96419bca2fde38673dcd) · [log `8f4b3cd7ac59`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz)
 
 examples/coverage.md is step 4c of llm-dlc/loops/engine-priorities.md. Its table comes from the two per-obligation tables of job 20261107-000039 (both engines, strict, at 98bab485), through a new gap_table.py --inventory, which says for each obligation which engine decides it and why the other doesn't, and exits 1 on a conflict (a unit test covers each case). Of 43 obligations both engines decide 35 and agree on all of them, JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), neither decides 3 (037#0, 071#0, 071#1), and the own checker alone decides none.
 
@@ -38,7 +38,7 @@ The own checker's gap scan (build.py --scan-gaps, static, JDK 25.0.5) was rerun 
 
 ### A result's SAT solver record names the solver the checks ran on: Bitwuzla, with its version, library digest and build, when JVMCONTRACT_SOLVER chooses it
 
-change `xmunlmmrqqts` · [log `973a9e5b2ca4`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/973a9e5b2ca44a3b0c0f94af59f85334baed273abf1e9e3313ea0e10f67e9bf8.jsonl.gz)
+[`1680352652b2`](https://github.com/pilifs/in-the-loop/commit/1680352652b28303e6c2c7cc4deb956524567642) · [log `973a9e5b2ca4`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/973a9e5b2ca44a3b0c0f94af59f85334baed273abf1e9e3313ea0e10f67e9bf8.jsonl.gz)
 
 Phase 1b recorded the own checker's SAT solver in every result (stated.checker.sat), but always as the bundled CaDiCaL: under JVMCONTRACT_SOLVER=bitwuzla a result's checker name and solver line said Bitwuzla 0.8.2 while its sat record said CaDiCaL 1.9.5, so the benchmark's environment.sat would have named the wrong solver. Reproduced through jvmcontract prove on Conformance#monitor before the fix.
 
@@ -46,13 +46,13 @@ Each solver now records itself (Sat::record in lib/src/bmc/sat.rs), and statemen
 
 ### Record verification results for 2 JBMC jobs: the corpus agrees under JBMC and auto, auto --confirm still disagrees on two methods
 
-change `tnxrkmyknzxt` · [log `a8bdf825786e`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/a8bdf825786eaf4b2fea43694879307f3b6a04b0aea504b1e2d22279fce3ed2b.jsonl.gz)
+[`ad11eae65d10`](https://github.com/pilifs/in-the-loop/commit/ad11eae65d10abee5328b010acc313f37901550b) · [log `a8bdf825786e`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/a8bdf825786eaf4b2fea43694879307f3b6a04b0aea504b1e2d22279fce3ed2b.jsonl.gz)
 
 Job 20261107-012013 (at 8b45798e6417): corpus under JBMC and auto passed, which closes VF-008; example 071 still has its first two obligations unverifiable with no gaps (VF-005 updated). Job 20261107-010728 (at 254f1d7a4893): step 2, auto --confirm, has 8 disagreements on boomTwice and enumBroken (new VF-009). Both ran on vm-1 with three workers and an 8 GiB budget.
 
 ### The own checker computes Integer and Long.numberOfLeadingZeros exactly, so examples 037 and 127 meet no gap under strict (verification pending)
 
-change `vrkpmtqvyosm` · [log `69ddafc79f4e`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/69ddafc79f4e77e9abcf3ff317aee40e9773376903f31ea34871d3c6aac7f71c.jsonl.gz)
+[`d8cd7864321b`](https://github.com/pilifs/in-the-loop/commit/d8cd7864321bd4ff7e3889e32e51fdc7da8711b2) · [log `69ddafc79f4e`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/69ddafc79f4e77e9abcf3ff317aee40e9773376903f31ea34871d3c6aac7f71c.jsonl.gz)
 
 Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension that 4c's coverage inventory ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker. Under strict that left example 127 (a backoff's guarded shift) to JBMC alone, and 037 (tableSizeFor) to neither engine, since JBMC's proof there is refused by the unmasked-shift guard. Engine::call_jdk_static (lib/src/bmc/mod.rs) now computes both as a priority encoder over the argument's bits, the width for zero, and models_jdk_static lists them, so the gap scan counts them as reproduced exactly.
 

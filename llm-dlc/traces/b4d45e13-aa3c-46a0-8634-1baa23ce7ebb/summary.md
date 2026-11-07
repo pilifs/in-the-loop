@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Resubmit the CBMC 6.11.0 source-reading job with a grep that matches (verification pending)
 
-change `pmpwplnrkosw` · [log `a90e2296dc81`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/a90e2296dc81450d560b1e1c74789c436858b23f430f218b1cec530c21367029.jsonl.gz)
+[`3feadaf0f7a2`](https://github.com/pilifs/in-the-loop/commit/3feadaf0f7a288f4997119fdcd183dda88bfdc7b) · [log `a90e2296dc81`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/a90e2296dc81450d560b1e1c74789c436858b23f430f218b1cec530c21367029.jsonl.gz)
 
 Job 20261106-192959-cbmc-6-11-0-s-source-times-runtime-post failed (VF-004) because its display grep '^decision_proceduret::resultt run_property_decider' matched nothing in CBMC 6.11.0's bmc_util.cpp, and under pipefail that ended the step before any check ran. The new job prints run_property_decider with 'grep -n -B2 -A45 "run_property_decider("', and also the 'Runtime decision procedure' line and the post_processing_done guard. The display greps print '(no match)' rather than failing, so the step always reaches the three unchanged grep -q checks ('Runtime Solver', 'Runtime Post-process', 'finish_eager_conversion'). The job validates and the step passes bash -n; it was not run here, since it fetches from the network.
 
@@ -28,25 +28,25 @@ Verification pending: job 20261106-194328-cbmc-6-11-0-s-source-times-runtime-pos
 
 ### Record verification results: Bitwuzla and CBMC source-reading jobs pass, closing VF-003 and VF-004
 
-change `mytznqsumwpo` · [log `23b0063dcbf4`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/23b0063dcbf4e7510e12804f46527de813099a6622ae156d466fdc4e3e510aee.jsonl.gz)
+[`8d7c0340baf6`](https://github.com/pilifs/in-the-loop/commit/8d7c0340baf6f2bb40608b3787821f14c09bafc4) · [log `23b0063dcbf4`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/23b0063dcbf4e7510e12804f46527de813099a6622ae156d466fdc4e3e510aee.jsonl.gz)
 
 Reran the two resubmitted jobs: Bitwuzla 0.8.2 with CaDiCaL linked static builds and passes its smoke queries (24.7 s, 1.9 GiB), and the CBMC 6.11.0 source-reading job's corrected grep matches and finds all three strings. Both findings are closed and moved under 'Decided and closed'. Collect applied lib/solvers/bitwuzla/build.json.
 
 ### run-verification skill: say how to wait for a background runner
 
-change `wutwtvzskvto` · [log `b0b43c9b9c31`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/b0b43c9b9c31e020a9704683affe55b73a467f46fd1a256c96391d0dd9844334.jsonl.gz)
+[`7b694bf561bd`](https://github.com/pilifs/in-the-loop/commit/7b694bf561bd13897a740141b530632bb4a1cf26) · [log `b0b43c9b9c31`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/b0b43c9b9c31e020a9704683affe55b73a467f46fd1a256c96391d0dd9844334.jsonl.gz)
 
 Step 2 told the managing agent to start 'pipeline.py run' in the background but not how to wait for it. A verification-loop session improvised 'while pgrep -f "pipeline.py run"; do sleep 10; done' and an 'until ! pgrep -f ...' loop; each matched its own command line, so the session hung for 8 minutes after the runner had finished, until it was killed by hand at 19:49. Step 2 now says to wait for the background task's completion notification or poll 'pipeline.py status' until it shows 'running: 0', and never to wait with pgrep -f on a pattern. A documentation change only; checked that 'status' prints a 'running:' line.
 
 ### Every result names its SAT solver, version and configuration, on both engines
 
-change `olttywttxplz` · [log `b0b43c9b9c31`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/b0b43c9b9c31e020a9704683affe55b73a467f46fd1a256c96391d0dd9844334.jsonl.gz)
+[`4d4a792df760`](https://github.com/pilifs/in-the-loop/commit/4d4a792df760dcdb639fc3b5e8aa682d28aadfee) · [log `b0b43c9b9c31`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/b0b43c9b9c31e020a9704683affe55b73a467f46fd1a256c96391d0dd9844334.jsonl.gz)
 
 Phase 1b of llm-dlc/loops/engine-priorities.md (the engines-jbmc stream). The JSON's stated.checker now carries sat: the solver, its version, its source and its configuration (Sat in lib/src/statement.rs). The own checker's is CaDiCaL 1.9.5 as the cadical crate 0.1.16 bundles it (the crate's version read from Cargo.lock), with default options, incremental, and the deadline through the terminate callback. JBMC's is the solver the adapter asks for, with the options every JBMC run passes (jbmc::standing_options, which now also builds the command line) and the version of the CaDiCaL linked into the executable, read from its signature without running JBMC: cadical-3.0.0 in JBMC 6.11.0. An executable with no CaDiCaL is recorded with JBMC's default solver, which the unknown-solver retry falls back to. lib/benchmark/run.py keeps each run's sat and lists each engine's solvers in results.json's environment.sat; RESULTS.md names them, and the recorded job -102624 renders as before.
 
 ### Propose this session's mangled C++ symbol names for the allow list; note the resubmitted CBMC source job
 
-change `xzrpqnvrlvpm` · [log `b0b43c9b9c31`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/b0b43c9b9c31e020a9704683affe55b73a467f46fd1a256c96391d0dd9844334.jsonl.gz)
+[`a1b0a7b8101d`](https://github.com/pilifs/in-the-loop/commit/a1b0a7b8101dbc801e22cf9bbaa92257af3491ed) · [log `b0b43c9b9c31`](https://terminalvalue.net/raw-traces/b4d45e13-aa3c-46a0-8634-1baa23ce7ebb/b0b43c9b9c31e020a9704683affe55b73a467f46fd1a256c96391d0dd9844334.jsonl.gz)
 
 Phase 1b read the CaDiCaL version from the strings in /usr/bin/jbmc, and the listing put seven mangled C++ symbol names (MiniSat and CaDiCaL classes) into this session's log, where the redaction flags them as long tokens. They are proposed for the allow list with sync.py allow propose and stay warnings until the user approves them. The engines-jbmc Progress also records that job 20261106-192959 failed on its own display grep (VF-004) and that the runner resubmitted it as 20261106-194328.
 
