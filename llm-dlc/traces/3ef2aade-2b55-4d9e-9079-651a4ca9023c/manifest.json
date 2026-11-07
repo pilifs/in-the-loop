@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "3ef2aade-2b55-4d9e-9079-651a4ca9023c",
-  "status": "ended",
+  "status": "open",
   "title": "Verification pipeline proof and model-checking queue",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -87,6 +87,14 @@
       "immutable": false,
       "summary": "The entry points' effect-trace proofs under the proof cache: Phase 5's exact-reuse row passes, and the stale-cache defect is checked at the boundary",
       "body": "effects::check_with runs an entry point's effect-trace proof with equivalence's proof cache, from jvmcontract effects --cache DIR and from compare --cache. The proof is a regression check of the two builds rewritten with recording stubs, so its claim key digests their closures from the generated entry method: the stubs, and with them the environment model they encode (the modeled calls in order, the payload paths snapshotted, the trace bound, the exception classes, the string literals). What the result adds to the proof (the specs' unresolved parts, the external inputs, the status mapping) is worked out again on every run, and a stored refutation's witness is replayed on a JVM again. Each result records its claim key and any exact reuse.\n\nVerified inline. tests/effects.rs has a new test, an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged: a rerun is an exact hit. One more attempt allowed, a payload path no longer snapshotted, a @ResponseStatus added to the route (the status then unresolved) and a dropped event in the handler each miss under another key. A rerun of the dropped event reuses its stored refutation, replayed on a JVM with the same attempts. The Spring stand-in HttpStatus gained CREATED for it. In tests/compare.rs the joint run's rerun reuses POST /quotes's proof under the first run's key. The defects that POST /quotes reaches prove it again. alias-to-copy changes only a method the route doesn't reach, so it reuses the proof, rightly. Every row of Phase 5's table now passes. The fixture is not yet examples 190-199, which is next.\n\nFull Rust suite: lib 203, alignment 34, compare 1, conformance 9 (2 ignored), effects 17, foundations 3, heap 46 (9 ignored), integration 64, observations 12, skill 1, summaries 40. In the full run, integration's the_tools_own_checker_agrees_with_jbmc_on_integer_proofs timed out under load (Engine::probe budgets by wall clock, a known note in the brief) and passed alone in 8 s. The brief's Progress records the cycle; the rest of the brief is unchanged and still right.",
+      "log_sha256": "2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f"
+    },
+    {
+      "change_id": "rwyrvxpxtnnvnmzuwxtplktzwyoyzlls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: Filip Stankovic approved 606ed0f7, 65c491aa",
+      "body": "Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n606ed0f7  long-token  pro…71 (48 chars): A test's work directory name, property-after-withQuantity-<20-digit hash of the test's arguments> (48 chars), listed by ls in lib/tests/heap.rs's temporary directory: no credential.\n65c491aa  public-ip  5.…3: A JVMS section number (5.4.3.3, field and method resolution) cited in a doc comment of lib/src/relocate.rs, not an IP address",
       "log_sha256": "2031424cb3303f43424c887730aeb230bc2356ab5140ea7c64d69469af06f28f"
     }
   ],

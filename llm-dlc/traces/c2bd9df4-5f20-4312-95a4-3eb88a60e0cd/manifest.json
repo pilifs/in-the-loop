@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Work on the brief in `llm-dlc/loops/engine-priorities.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remembe",
   "client": {
@@ -172,11 +172,11 @@
     }
   ],
   "log": {
-    "sha256": "1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e",
-    "bytes": 12991645,
-    "lines": 4617,
-    "gzip_bytes": 2496701,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e.jsonl.gz"
+    "sha256": "c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654",
+    "bytes": 12993795,
+    "lines": 4621,
+    "gzip_bytes": 2496860,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -339,6 +339,14 @@
       "summary": "run-streams.sh: a status bar of every loop's cycle, commits, spend and state, and tmux scrollback that works over ssh",
       "body": "Started inside tmux, run-streams.sh turns the mouse on for the session so the wheel scrolls back through the output (Ctrl-b [ also works). A pane keeps the history limit it was made with, and tmux's default is 2000 lines, so when the pane keeps fewer than RUN_STREAMS_HISTORY (200000) the script raises the session's limit and goes on in a new window, streams-NAME, passing on the RUN_STREAMS_, FEATURE_LOOP_ and VERIFICATION_LOOP_ settings; the window stays open with the output after the run until Enter (RUN_STREAMS_NEW_WINDOW=no stays in the pane). A status bar at the bottom of the pane (pane-border-status, refreshed every RUN_STREAMS_STATUS_EVERY seconds, 15) shows the run's age and total spend, the integration check's last result, and per loop its current cycle, its commits, its spend, its brief's status or how it finished, and how long since its last output line; the same line is logged every half hour, or every quarter hour outside tmux. Each loop's output now goes through llm-dlc/tools/streams_status.py tag, which prefixes it as sed did and records the 'turn done' dollar figures, the cycle and the last activity in llm-dlc/loop-summaries/run-streams-NAME/; spend and the run's start survive a restart. Commits are counted from the loops' run records.",
       "log_sha256": "1f2230c9f13703f5b089b9e914633a42d5f5fac02e112929340d0590a871494e"
+    },
+    {
+      "change_id": "rwyrvxpxtnnvnmzuwxtplktzwyoyzlls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: Filip Stankovic approved 606ed0f7, 65c491aa",
+      "body": "Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n606ed0f7  long-token  pro…71 (48 chars): A test's work directory name, property-after-withQuantity-<20-digit hash of the test's arguments> (48 chars), listed by ls in lib/tests/heap.rs's temporary directory: no credential.\n65c491aa  public-ip  5.…3: A JVMS section number (5.4.3.3, field and method resolution) cited in a doc comment of lib/src/relocate.rs, not an IP address",
+      "log_sha256": "c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654"
     }
   ],
   "logs": {
@@ -413,6 +421,12 @@
       "lines": 350,
       "gzip_bytes": 238309,
       "url": "https://terminalvalue.net/raw-traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/b2a602fc717c18f4e8262598987de02a6d5e0236a481fb458d923bfa9b90c444.jsonl.gz"
+    },
+    "c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654": {
+      "bytes": 12993795,
+      "lines": 4621,
+      "gzip_bytes": 2496860,
+      "url": null
     },
     "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280": {
       "bytes": 7822733,
