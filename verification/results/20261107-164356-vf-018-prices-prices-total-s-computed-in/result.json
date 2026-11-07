@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-164356-vf-018-prices-prices-total-s-computed-in",
+  "title": "VF-018: prices.Prices#total's computed input equations under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 55m41s, peak 1.5 GiB (estimated 1h10m, 4.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-164356-vf-018-prices-prices-total-s-computed-in.json",
+    "sha256": "22c8f3c4839a3c86d6b330d9863f05697f36c4c140012b532b9e5ecfd2f25ba0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-164356-vf-018-prices-prices-total-s-computed-in",
+      "title": "VF-018: prices.Prices#total's computed input equations under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+      "description": "Closes VF-018 (verification/findings.md) when this job and its three siblings pass. The ignored test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm in lib/tests/heap.rs failed in job 20261107-083358 because JBMC did not finish prices.Prices#total's computed input equations within the test's own 600 s limit (the default timeout_seconds of the options), where the own checker proves it. By the user's decision 6 of llm-dlc/loops/cleanup.md, the only change is a longer limit: the JBMC tests in heap.rs now take it from JVMCONTRACT_HEAP_TIME_LIMIT (600 s when unset; the own checker's runs keep 600), and this job sets it to 1800. The test and its expectations are unchanged. If it fails, VF-018 is deferred to the user with no second attempt. In 20261107-083358, two runs timed out (prices.Prices#total's computed input equations under --engine jbmc and under auto --confirm) and the rest took about 2 minutes, so the worst case here is about 2 x 30 min + 5 min, plus the release build.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/heap.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "expected": "exits 0: the ignored test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm passes unchanged with JVMCONTRACT_HEAP_TIME_LIMIT=1800. Under both engines, the three after-build checks Verified and the two defect-build checks Violation, each violation's witness run on a JVM.",
+      "submitted": {
+        "at": "2026-11-07T16:43:56+00:00"
+      },
+      "priority": 5,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "70m",
+        "timeout": "100m",
+        "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-083358 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+      },
+      "steps": [
+        {
+          "name": "the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm with a 1800 s limit",
+          "run": "cd lib && JVMCONTRACT_HEAP_TIME_LIMIT=1800 cargo test --release --test heap -- --ignored the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm --exact",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "cf2205fc56a3d552574e86852714dc2b970b78da",
+  "startedAt": "2026-11-07T16:45:22+00:00",
+  "finishedAt": "2026-11-07T17:41:04+00:00",
+  "wallSeconds": 3342.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 77294,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 4200.0,
+    "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-083358 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+  },
+  "usage": {
+    "peakMemoryBytes": 1637621760,
+    "wallSeconds": 3341.9,
+    "cpuSeconds": 3419.1,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.8
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm with a 1800 s limit",
+      "run": "cd lib && JVMCONTRACT_HEAP_TIME_LIMIT=1800 cargo test --release --test heap -- --ignored the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm --exact",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3341.935,
+      "cpuSeconds": 3419.091,
+      "cpuThrottledSeconds": 0.953,
+      "peakMemoryBytes": 1637621760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-computed-equations-have-th.log",
+        "lines": 62,
+        "bytes": 2197,
+        "sha256": "1d87fefdfc530733aaafca1c601972e6e953817bbed4cdfb4f00309bc2d7e805",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 61,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 55 filtered out; finished in 3185.20s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling zmij v1.0.23",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde v1.0.229",
+        "   Compiling heck v0.5.0",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-164356-vf-018-prices-prices-total-s-computed-in/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 36s",
+        "     Running tests/heap.rs (target/release/deps/heap-e54625ef3f129567)",
+        "",
+        "running 1 test",
+        "test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm has been running for over 60 seconds",
+        "test the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 55 filtered out; finished in 3185.20s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T17:49:48+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

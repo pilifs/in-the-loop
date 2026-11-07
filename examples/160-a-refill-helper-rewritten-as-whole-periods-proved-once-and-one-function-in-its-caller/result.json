@@ -1,0 +1,361 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "6fc5e1efc8eeeddb",
+    "format": 1,
+    "example": "160",
+    "statement": {
+      "approach": "B9",
+      "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": null,
+      "proofCache": "fresh: helpers' proofs made in the run"
+    },
+    "inputs": {
+      "patch": "7b770a6cf0d76c09d68f8476bbb0cc6193acea40b866f8f4cebee3a0ef9f96bb",
+      "before": {
+        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
+        "files": 58
+      },
+      "after": {
+        "sha256": "3ea2b211f511efece9fff4a19c6f8902646d760686be77d1376ed2cd38d34234",
+        "files": 58
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T174959Z-175b31f0",
+    "claim": "6fc5e1efc8eeeddb",
+    "startedAt": "2026-11-07T17:49:59+00:00",
+    "seconds": 5.0,
+    "engine": "native",
+    "options": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--cache",
+      "build/proof-cache"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
+        "files": 42
+      },
+      "after": {
+        "sha256": "e06f15ea3f8bfa84eeca1ed0c9c43199707e63b28dd1a2ff4e7fcd0302c2ee96",
+        "files": 42
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-165152-example-160-a-changed-refill-helper-prov",
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-165152-example-160-a-changed-refill-helper-prov"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": true
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.4,
+        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+      },
+      {
+        "name": "javac patched crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.4,
+        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+      },
+      {
+        "name": "the crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-crosscut-tests.stdout",
+        "stderr": "logs/04-the-crosscut-tests.stderr"
+      },
+      {
+        "name": "javac unpatched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.7,
+        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+      },
+      {
+        "name": "jvmcontract equivalence",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.4,
+        "stdout": "logs/06-jvmcontract-equivalence.stdout",
+        "stderr": "logs/06-jvmcontract-equivalence.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/07-version-of-java.stdout",
+        "stderr": "logs/07-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.2,
+        "stdout": "logs/08-version-of-javac.stdout",
+        "stderr": "logs/08-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-r96g1oyq/attempts/160/attempt-hj4ezok1"
+  },
+  "conclusion": {
+    "claim": "6fc5e1efc8eeeddb",
+    "attempt": "20261107T174959Z-175b31f0",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✓ Verified: equivalent on every input",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.crosscut.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+      "startLine": 18,
+      "code": "\n    /**\n     * The time up to which refills have been credited after the refill: {@code lastNanos} advanced by the whole\n     * periods that earned a token, which is {@code nowNanos} less the part of a period that has not earned one yet.\n     * That part is kept, so that a bucket polled more often than it refills still refills.\n     */\n    public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n        return nowNanos - (nowNanos - lastNanos) % periodNanos;\n    }\n}\n"
+    },
+    "after": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+      "startLine": 18,
+      "code": "\n    /**\n     * The time up to which refills have been credited after the refill: {@code lastNanos} advanced by the whole\n     * periods that earned a token. The part of a period that has not earned one yet is left after it, so that a\n     * bucket polled more often than it refills still refills.\n     */\n    public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n        long periods = (nowNanos - lastNanos) / periodNanos;\n        return lastNanos + periods * periodNanos;\n    }\n}\n"
+    },
+    "casesTotal": null,
+    "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+    "counterexamples": [],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:49b7bfc78af3af15a92ea4cd64559f3c67044c92ea470f7b50a1bd8def0113fc), and taken as one function in both",
+    "problem": null,
+    "statement": "statement.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": null,
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.025,
+      "properties": 1,
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "stage": null,
+      "sharedCallees": [
+        "TokenBucket.lastAfter"
+      ],
+      "deadlineSeconds": 599.647441328,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budgetSeconds": 599.647,
+          "seconds": 0.003,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.0,
+            "encoding": 0.002,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 6045,
+            "clauses": 19114
+          }
+        }
+      ],
+      "native": {
+        "paths": 3,
+        "merges": 0,
+        "solverCalls": 2,
+        "solvingSeconds": 0.000347794,
+        "gatesEvaluated": 1015,
+        "evaluatingSeconds": 1.5559e-05,
+        "divisions": 1,
+        "divisionsBuilt": 0,
+        "multiplications": 0,
+        "multiplicationsBuilt": 0,
+        "variables": 6045,
+        "clauses": 19114,
+        "seconds": 0.003034806,
+        "loadingSeconds": 0.000258253,
+        "decodingSeconds": 1.9926e-05,
+        "encodingSeconds": 0.002151807,
+        "witnessSeconds": 0.0
+      },
+      "gapMode": "strict"
+    },
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "tokens",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "lastNanos",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "nowNanos",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "periodNanos",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "capacity",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long"
+      },
+      "assumptions": [
+        {
+          "kind": "callee",
+          "text": "TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim sha256:49b7bfc78af3af15a92ea4cd64559f3c67044c92ea470f7b50a1bd8def0113fc) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain",
+          "basis": "proved",
+          "id": "sha256:49b7bfc78af3af15a92ea4cd64559f3c67044c92ea470f7b50a1bd8def0113fc"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result, equal in both versions",
+        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+        "classes": 17,
+        "jdk": "25.0.5"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "harness",
+        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+      }
+    },
+    "helpers": [
+      {
+        "callee": "TokenBucket.lastAfter",
+        "shared": true,
+        "note": "its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:49b7bfc78af3af15a92ea4cd64559f3c67044c92ea470f7b50a1bd8def0113fc); one function in both versions"
+      }
+    ],
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
+        "bytes": 2174
+      },
+      {
+        "path": "statement.java",
+        "sha256": "41d1581a97025ba5032c39e3509c89cc568f20900165c81d288cfc54533bfcc8",
+        "bytes": 2412
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "f009fecf27eef6d476ff0cb9510927481f9cb49c004a10295e4d5967d5e136e5",
+        "bytes": 1243
+      }
+    ]
+  }
+}

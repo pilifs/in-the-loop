@@ -1,0 +1,502 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "3d3ef9120b641e17",
+    "format": 1,
+    "example": "161",
+    "statement": {
+      "approach": "B9",
+      "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+      "behaviourChangeIntended": false,
+      "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)",
+      "proofCache": "fresh: helpers' proofs made in the run"
+    },
+    "inputs": {
+      "patch": "fba5cbf31d705e097368da535b103828242a93853f33fcf78c9935017289e383",
+      "before": {
+        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
+        "files": 58
+      },
+      "after": {
+        "sha256": "f890e6a709e99b02912205d8d74c4aaf87292ec8784e929d90f4f595aea03b78",
+        "files": 58
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T174959Z-27a8531f",
+    "claim": "3d3ef9120b641e17",
+    "startedAt": "2026-11-07T17:49:59+00:00",
+    "seconds": 5.0,
+    "engine": "native",
+    "options": [
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--cache",
+      "build/proof-cache"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c40bbe6197470f7bbd3b4ac5b2a26085b71816ec9f7eea18d17432be0f3bebaa",
+        "files": 42
+      },
+      "after": {
+        "sha256": "ee8484c8de72753dc7b7786885efb7a7706b109944b9133a2383790a0e3c1f5f",
+        "files": 42
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-165153-example-161-a-refill-helper-aligned-to-t",
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-165153-example-161-a-refill-helper-aligned-to-t"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.5,
+        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+      },
+      {
+        "name": "javac patched crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.4,
+        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+      },
+      {
+        "name": "the crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-crosscut-tests.stdout",
+        "stderr": "logs/04-the-crosscut-tests.stderr"
+      },
+      {
+        "name": "javac unpatched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.6,
+        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+      },
+      {
+        "name": "jvmcontract equivalence",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.4,
+        "stdout": "logs/06-jvmcontract-equivalence.stdout",
+        "stderr": "logs/06-jvmcontract-equivalence.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/07-version-of-java.stdout",
+        "stderr": "logs/07-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.2,
+        "stdout": "logs/08-version-of-javac.stdout",
+        "stderr": "logs/08-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-6_amew7w/attempts/161/attempt-1apie6ou"
+  },
+  "conclusion": {
+    "claim": "3d3ef9120b641e17",
+    "attempt": "20261107T174959Z-27a8531f",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✗ Violation: counterexample found",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.crosscut.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+      "startLine": 17,
+      "code": "    }\n\n    /**\n     * The time up to which refills have been credited after the refill: {@code lastNanos} advanced by the whole\n     * periods that earned a token, which is {@code nowNanos} less the part of a period that has not earned one yet.\n     * That part is kept, so that a bucket polled more often than it refills still refills.\n     */\n    public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n        return nowNanos - (nowNanos - lastNanos) % periodNanos;\n    }\n}\n"
+    },
+    "after": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+      "startLine": 17,
+      "code": "    }\n\n    /**\n     * The time up to which refills have been credited after the refill: the start of the period {@code nowNanos}\n     * falls in, on the clock's grid of whole periods, as the fixed window aligns its start. The part of a period\n     * that has not earned a token yet is left after it, so that a bucket polled more often than it refills still\n     * refills.\n     */\n    public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n        return nowNanos - nowNanos % periodNanos;\n    }\n}\n"
+    },
+    "casesTotal": null,
+    "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+    "counterexamples": [
+      {
+        "input": "nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1)",
+        "contract": "2",
+        "actual": "1",
+        "found": "nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20)",
+        "shrinkRuns": 49,
+        "witness": {
+          "inputs": [
+            {
+              "name": "tokens",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "lastNanos",
+              "type": "long",
+              "value": "1"
+            },
+            {
+              "name": "nowNanos",
+              "type": "long",
+              "value": "1"
+            },
+            {
+              "name": "periodNanos",
+              "type": "long",
+              "value": "2"
+            },
+            {
+              "name": "capacity",
+              "type": "long",
+              "value": "1"
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "tokens",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "lastNanos",
+              "type": "long",
+              "value": "16"
+            },
+            {
+              "name": "nowNanos",
+              "type": "long",
+              "value": "20"
+            },
+            {
+              "name": "periodNanos",
+              "type": "long",
+              "value": "20"
+            },
+            {
+              "name": "capacity",
+              "type": "long",
+              "value": "20"
+            }
+          ],
+          "call": {
+            "class": "net.terminalvalue.crosscut.ratelimit.RetryAfter",
+            "classFile": "net/terminalvalue/crosscut/ratelimit/RetryAfter.class",
+            "classFileSha256": "06a88a5f2b6dc897bf06738e852c0ddd452a58bce244dc9e2272a0bce216c217",
+            "classes": "after",
+            "method": "nanosUntilToken",
+            "descriptor": "(JJJJJ)J",
+            "static": true,
+            "arguments": [
+              {
+                "name": "tokens",
+                "type": "long",
+                "value": "0",
+                "from": "tokens"
+              },
+              {
+                "name": "lastNanos",
+                "type": "long",
+                "value": "1",
+                "from": "lastNanos"
+              },
+              {
+                "name": "nowNanos",
+                "type": "long",
+                "value": "1",
+                "from": "nowNanos"
+              },
+              {
+                "name": "periodNanos",
+                "type": "long",
+                "value": "2",
+                "from": "periodNanos"
+              },
+              {
+                "name": "capacity",
+                "type": "long",
+                "value": "1",
+                "from": "capacity"
+              }
+            ]
+          },
+          "previousCall": {
+            "class": "net.terminalvalue.crosscut.ratelimit.RetryAfter",
+            "classFile": "net/terminalvalue/crosscut/ratelimit/RetryAfter.class",
+            "classFileSha256": "06a88a5f2b6dc897bf06738e852c0ddd452a58bce244dc9e2272a0bce216c217",
+            "classes": "before",
+            "method": "nanosUntilToken",
+            "descriptor": "(JJJJJ)J",
+            "static": true,
+            "arguments": [
+              {
+                "name": "tokens",
+                "type": "long",
+                "value": "0",
+                "from": "tokens"
+              },
+              {
+                "name": "lastNanos",
+                "type": "long",
+                "value": "1",
+                "from": "lastNanos"
+              },
+              {
+                "name": "nowNanos",
+                "type": "long",
+                "value": "1",
+                "from": "nowNanos"
+              },
+              {
+                "name": "periodNanos",
+                "type": "long",
+                "value": "2",
+                "from": "periodNanos"
+              },
+              {
+                "name": "capacity",
+                "type": "long",
+                "value": "1",
+                "from": "capacity"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+    "problem": null,
+    "statement": "statement.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": null,
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.066,
+      "properties": 1,
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "stage": "[0:20]",
+      "deadlineSeconds": 599.75865185,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budgetSeconds": 599.759,
+          "seconds": 0.039,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.001,
+            "encoding": 0.018,
+            "solving": 0.02,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 36411,
+            "clauses": 124811
+          }
+        }
+      ],
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solverCalls": 14,
+        "solvingSeconds": 0.020115431,
+        "gatesEvaluated": 4323,
+        "evaluatingSeconds": 8.3348e-05,
+        "divisions": 2,
+        "divisionsBuilt": 1,
+        "multiplications": 0,
+        "multiplicationsBuilt": 0,
+        "variables": 36411,
+        "clauses": 124811,
+        "seconds": 0.038996833,
+        "loadingSeconds": 0.000404261,
+        "decodingSeconds": 2.4866e-05,
+        "encodingSeconds": 0.017686034,
+        "witnessSeconds": 6.1935e-05
+      },
+      "gapMode": "strict"
+    },
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "tokens",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "lastNanos",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "nowNanos",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "periodNanos",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "capacity",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long"
+      },
+      "assumptions": [
+        {
+          "kind": "intended-inputs",
+          "text": "!(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result, equal in both versions",
+        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+        "classes": 17,
+        "jdk": "25.0.5"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    },
+    "helpers": [
+      {
+        "callee": "TokenBucket.lastAfter",
+        "shared": false,
+        "note": "its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)"
+      }
+    ],
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "0ce0281597e1e170b30f7feef9c0d02eb39cbbdd035f1dde8afe4d313d463b15",
+        "bytes": 3104
+      },
+      {
+        "path": "statement.java",
+        "sha256": "c3d70f55c8bb16b82ce64b4baa744748dfbb10ec75b941995b79c1485745492d",
+        "bytes": 2659
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "5042c7c25ccf9a5251c1b42850393dc461da768a59715be261f04c65d31d15ef",
+        "bytes": 1546
+      }
+    ]
+  }
+}

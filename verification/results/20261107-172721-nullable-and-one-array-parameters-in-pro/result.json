@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-172721-nullable-and-one-array-parameters-in-pro",
+  "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM (closes VF-019 when it passes)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 23m10s, peak 1.5 GiB (estimated 30m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-172721-nullable-and-one-array-parameters-in-pro.json",
+    "sha256": "96baf52b42a0660191149680833a3b8f3f0a61d2e2d5f7f76cb5205d636018f0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-172721-nullable-and-one-array-parameters-in-pro",
+      "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM (closes VF-019 when it passes)",
+      "description": "Resubmitted unchanged by the cleanup-jbmc stream: it closes VF-019 (verification/findings.md) when it passes. The six nullable and may-alias claims are refused by name under --confirm (refused: widened-domain) and read as no verdict by the confirm test; the other 8 of its 20 disagreements were VF-009's, fixed in the same commit. The steps are the original job's.\n\nProperty checks gained a wider domain for array parameters (step H2 of llm-dlc/loops/foundations-heap.md): --nullable a lets a be null and --may-alias a,b lets a and b be one array. Only the own checker takes such a domain (each such parameter a symbolic reference among null and the arrays it may be); --engine jbmc and --confirm refuse it, and --engine auto does not fall back to JBMC. Witnesses say it (b=the same array as a, a=null) and keep it through the interpreter, the shrinker and the JVM run. The conformance corpus (lib/tests/conformance.rs) gained six claims over widened domains for twoArrays, length and lengthOrMinusOne, whose outside-the-domain calls ([0];@0 and null) they now take; the own checker's run of the corpus passed inline. This job runs the corpus's ignored tests, which run every claim through JBMC, --engine auto and auto --confirm and hold each to the JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/property.rs",
+          "lib/src/bmc/mod.rs",
+          "lib/tests/conformance.rs"
+        ]
+      },
+      "expected": "exits 0: both ignored tests pass. The six widened claims are Unverifiable under --engine jbmc and auto --confirm (refused: JBMC would prove a narrower claim), and under --engine auto have the own checker's verdicts (Verified, or Violation with a witness the JVM refutes); every other claim as before.",
+      "submitted": {
+        "at": "2026-11-07T17:27:21+00:00",
+        "session": "750c8a36-92b9-44e3-adad-ef96dc6aa676",
+        "by": "claude (foundations-heap)"
+      },
+      "priority": 0,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "30m",
+        "notes": "-043420 ran 22m46s at peak 1.2 GiB",
+        "memoryLimit": "3.5G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "conformance under JBMC, auto and auto --confirm",
+          "run": "cd lib && cargo test --release --test conformance -- --ignored",
+          "cwd": "."
+        }
+      ],
+      "outputs": [],
+      "supersedes": "20261107-043420-nullable-and-one-array-parameters-in-pro"
+    }
+  },
+  "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+  "startedAt": "2026-11-07T17:55:53+00:00",
+  "finishedAt": "2026-11-07T18:19:04+00:00",
+  "wallSeconds": 1391.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 287109,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1800.0,
+    "notes": "-043420 ran 22m46s at peak 1.2 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1625026560,
+    "wallSeconds": 1390.3,
+    "cpuSeconds": 2102.7,
+    "memoryOfEstimate": 0.5,
+    "durationOfEstimate": 0.77
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance under JBMC, auto and auto --confirm",
+      "run": "cd lib && cargo test --release --test conformance -- --ignored",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1390.305,
+      "cpuSeconds": 2102.734,
+      "cpuThrottledSeconds": 4.599,
+      "peakMemoryBytes": 1625026560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-under-jbmc-auto-an.log",
+        "lines": 63,
+        "bytes": 2268,
+        "sha256": "6029043fa55e376e3c2a076e2d2e998182ecbe7521a93484f9a54daa8efad5c9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 62,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1235.72s",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde v1.0.229",
+        "   Compiling heck v0.5.0",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-172721-nullable-and-one-array-parameters-in-pro/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 34s",
+        "     Running tests/conformance.rs (target/release/deps/conformance-3836de857774f2d6)",
+        "",
+        "running 2 tests",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm has been running for over 60 seconds",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto has been running for over 60 seconds",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1235.72s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T18:29:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

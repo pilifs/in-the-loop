@@ -1,0 +1,203 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t",
+  "title": "VF-010's reproducer at the fix: Pricing#total's regression proof on the own checker finds the violation in 8 of 8 runs (closes VF-010 with the integration-tests job)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 27.7s, peak 128.8 MiB (estimated 6m00s, 1.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t.json",
+    "sha256": "def3375fe110e9c83f55426aefcc8f7d5d14d45c34b819f6c037062453d02be8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t",
+      "title": "VF-010's reproducer at the fix: Pricing#total's regression proof on the own checker finds the violation in 8 of 8 runs (closes VF-010 with the integration-tests job)",
+      "description": "VF-010 (verification/findings.md): the own checker's branch probes were given wall-clock time (as long as the solver calls so far took, at least a second), so which side of a branch stayed undecided depended on the machine, and Pricing#total's regression proof found its violation on some runs and ran out of time on others. The fix (cleanup loop, native stream, item N1) budgets each probe in solver conflicts instead: as many as all the calls so far had, at least 10,000 (Engine::probe and PROBE_CONFLICTS in lib/src/bmc/mod.rs; CaDiCaL's conflicts counted as the clauses it learns and the call stopped through its terminate callback, lib/src/bmc/sat.rs). The run's deadline stays the user's --timeout. This job runs the reproducer lib/tests/reproducers/vf-010.sh unchanged from job 20261107-163057 (which ran it before the fix, expecting exit 1): 8 runs of 'jvmcontract equivalence --target fixtures.Pricing#total --engine native --timeout 40', exit 0 only when all 8 find the violation. With job 'VF-010's integration tests at the fix' it closes VF-010 when both pass.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "native:probes"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/sat.rs",
+          "lib/tests/reproducers/vf-010.sh"
+        ]
+      },
+      "expected": "exit 0: all 8 runs find the violation, each with the same numbers (6 paths, 12 solver calls, 1 of 2 divisions built in full, 358609 clauses as here)",
+      "submitted": {
+        "at": "2026-11-07T16:55:44+00:00",
+        "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+        "by": "cleanup-native"
+      },
+      "requires": [
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "6m",
+        "notes": "8 runs here at the fix took 4.2-4.6 s each in a debug build; at most 8 x 40 s if one ran out"
+      },
+      "steps": [
+        {
+          "name": "8 runs of Pricing#total on the own checker",
+          "run": "lib/tests/reproducers/vf-010.sh verification/.work-vf010 8 40",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "f606b0d80e3189b56db29b8f48b4c0f1ad018375",
+  "startedAt": "2026-11-07T17:52:43+00:00",
+  "finishedAt": "2026-11-07T17:55:09+00:00",
+  "wallSeconds": 146.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 287109,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 360.0,
+    "notes": "8 runs here at the fix took 4.2-4.6 s each in a debug build; at most 8 x 40 s if one ran out"
+  },
+  "usage": {
+    "peakMemoryBytes": 135004160,
+    "wallSeconds": 27.7,
+    "cpuSeconds": 27.6,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 118.471,
+      "cpuSeconds": 118.31,
+      "cpuThrottledSeconds": 0.172,
+      "peakMemoryBytes": 1938681856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 3,
+        "bytes": 264,
+        "sha256": "3ffbd2e1bdbe91a09254e58b60417450331ea5189a2cc723ee7bd821c6e93f30",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Blocking waiting for file lock on package cache",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "8 runs of Pricing#total on the own checker",
+      "run": "lib/tests/reproducers/vf-010.sh verification/.work-vf010 8 40",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 27.661,
+      "cpuSeconds": 27.553,
+      "cpuThrottledSeconds": 1.452,
+      "peakMemoryBytes": 135004160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-8-runs-of-pricing-total-on-the.log",
+        "lines": 9,
+        "bytes": 1912,
+        "sha256": "b167eff57a82379b0f9f3a67226a58b971047d87b9f531eaf3ec8f73f3d69df4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "run 1: exit 1, 3.4 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (3.19 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.28 s",
+        "run 2: exit 1, 3.6 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (3.44 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.54 s",
+        "run 3: exit 1, 3.3 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (3.06 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.16 s",
+        "run 4: exit 1, 3.3 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (3.08 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.17 s",
+        "run 5: exit 1, 3.1 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (2.94 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.02 s",
+        "run 6: exit 1, 3.1 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (2.98 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.07 s",
+        "run 7: exit 1, 3.1 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (2.97 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.06 s",
+        "run 8: exit 1, 3.1 s, Violation: 6 paths, 0 merged at joins, 12 solver calls (2.93 s), 126264 gates evaluated in path models (0.00 s), 1 of 2 divisions and 0 of 0 multiplications built in full, 105687 variables, 358609 clauses, 3.01 s",
+        "8 of 8 runs found the violation"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T18:29:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2a38553de088538959cf6989cca32aa94528c06d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2a38553de088538959cf6989cca32aa94528c06d/jvmcontract",
+    "built": true
+  }
+}

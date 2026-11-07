@@ -1,0 +1,223 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-171502-vf-011-example-052-under-strict-on-the-o",
+  "title": "VF-011: example 052 under strict on the own checker, with unwinding counted per entry of a loop (closes VF-011 when it passes)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m17s, peak 2.0 GiB (estimated 15m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261107-171502-vf-011-example-052-under-strict-on-the-o.json",
+    "sha256": "677f22527438de48f748bd4974a0445d0d6016529371aac251e18edc42831209",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-171502-vf-011-example-052-under-strict-on-the-o",
+      "title": "VF-011: example 052 under strict on the own checker, with unwinding counted per entry of a loop (closes VF-011 when it passes)",
+      "description": "Closes VF-011 (verification/findings.md) when it passes. Example 052 (Mica's MaxStack#of, B11) proves a property whose \\max over k of a \\sum over i < k compiles to two nested loops in the generated harness. Job 20261107-000039 ran it under --gaps strict on the tool's own checker, which gave no verdict: 'a loop was not fully unwound with --unwind 16 (PropertyHarness.check at pc 238)', because Engine::jump (lib/src/bmc/mod.rs) counted each back edge over the whole path, so the inner loop's iterations added up across the outer loop's, up to 36 over arrays of length 8. The fix counts back edges per entry of a loop: per frame, and a back edge starts again the count of every loop whose head is in its body, so an inner loop gets --unwind iterations per iteration of the outer one, as JBMC's --unwind does; the count stays a bound (unit tests an_inner_loop_is_unwound_per_entry_of_it, a_loop_entered_again_by_an_outer_back_edge_is_bounded_by_the_outer_count, a_loop_is_unwound_per_call_of_its_method). This job is the entry's own check: it copies examples/ to a scratch directory, sets 052's approach.engine to native in the copy, changing nothing else (claim, assumption, --unwind, array length and gap mode as recorded), runs build.py 052 there, and reads the result with examples/tools/gap_table.py. Nothing in the repository's examples is written.",
+      "kind": "library",
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "052"
+        ],
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "examples/tools/gap_table.py"
+        ]
+      },
+      "expected": "exit 0: build.py gives 052 its expected verdict (verified), and every obligation of 052 is established by the own checker (engine native) under --gaps strict with no gap; the step prints 'ok: N obligation(s) of 052 established by the own checker under strict, with no gap'. A failure prints the obligation's status and problem, such as 'not fully unwound' or a timeout.",
+      "submitted": {
+        "at": "2026-11-07T17:15:02+00:00",
+        "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+        "by": "claude (cleanup-native loop)"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "15m",
+        "memoryLimit": "3G",
+        "timeout": "1h",
+        "notes": "one B11 example on the own checker after a release build; job -000039 ran 41 such examples on the own checker in a few minutes, but 052's nested loops now run to their end, up to 36 inner iterations over arrays of length 8, so its search is longer than before"
+      },
+      "steps": [
+        {
+          "name": "052 under strict on the own checker",
+          "run": "set -eo pipefail\nW=lib/target/jobs/vf011-052; rm -rf \"$W\"; mkdir -p \"$W/repo\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\n# The recorded claim and bounds, asked of the tool's own checker: only approach.engine changes, in the copy.\npython3 - \"$W/repo/examples\" <<'PY'\nimport glob, json, sys\n(path,) = glob.glob(f\"{sys.argv[1]}/052-*/example.json\")\nexample = json.load(open(path))\nassert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", \"052 is not a JBMC example\"\nexample[\"approach\"][\"engine\"] = \"native\"\nopen(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(\"052 set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 052 > \"$W/build.txt\" 2>&1 || status=$?\ntail -n 6 \"$W/build.txt\"\ncp \"$W\"/repo/examples/052-*/result.json \"$W/result.json\"\npython3 examples/tools/gap_table.py --examples \"$W/repo/examples\" --json \"$W/gaps.json\" 052 | tee \"$W/table.txt\"\npython3 - \"$W/gaps.json\" <<'PY'\nimport json, sys\nrows = json.load(open(sys.argv[1]))\nfor r in rows:\n    print(f\"052#{r['obligation']}: {r['status']}, engine {r['engine']}, gaps {r['gaps']}, modes {r['gapModes']}, problem {r['problem']}\")\nassert rows, \"no obligation of 052 in the table\"\nassert all(r[\"engine\"] == \"native\" for r in rows), \"an obligation not run by the own checker\"\nassert all(r[\"gapModes\"] == [\"strict\"] for r in rows), \"an obligation not run under --gaps strict\"\nassert all(r[\"status\"] == \"established\" and not r[\"gaps\"] for r in rows), \"an obligation not established with no gap\"\nprint(f\"ok: {len(rows)} obligation(s) of 052 established by the own checker under strict, with no gap\")\nPY\ntest \"$status\" -eq 0 || { echo \"build.py exited $status (see build.txt)\"; exit 1; }",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/jobs/vf011-052/build.txt",
+        "lib/target/jobs/vf011-052/result.json",
+        "lib/target/jobs/vf011-052/gaps.json",
+        "lib/target/jobs/vf011-052/table.txt"
+      ]
+    }
+  },
+  "sourceCommit": "c6f34f8cb771d0da3f1d0ec7cf9d11ddbf17bf00",
+  "startedAt": "2026-11-07T17:54:53+00:00",
+  "finishedAt": "2026-11-07T17:58:11+00:00",
+  "wallSeconds": 198.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 287109,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 900.0,
+    "notes": "one B11 example on the own checker after a release build; job -000039 ran 41 such examples on the own checker in a few minutes, but 052's nested loops now run to their end, up to 36 inner iterations over arrays of length 8, so its search is longer than before"
+  },
+  "usage": {
+    "peakMemoryBytes": 2128830464,
+    "wallSeconds": 197.1,
+    "cpuSeconds": 196.5,
+    "memoryOfEstimate": 0.99,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "052 under strict on the own checker",
+      "run": "set -eo pipefail\nW=lib/target/jobs/vf011-052; rm -rf \"$W\"; mkdir -p \"$W/repo\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\n(cd lib && cargo build --release -q)\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\n# The recorded claim and bounds, asked of the tool's own checker: only approach.engine changes, in the copy.\npython3 - \"$W/repo/examples\" <<'PY'\nimport glob, json, sys\n(path,) = glob.glob(f\"{sys.argv[1]}/052-*/example.json\")\nexample = json.load(open(path))\nassert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", \"052 is not a JBMC example\"\nexample[\"approach\"][\"engine\"] = \"native\"\nopen(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(\"052 set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 052 > \"$W/build.txt\" 2>&1 || status=$?\ntail -n 6 \"$W/build.txt\"\ncp \"$W\"/repo/examples/052-*/result.json \"$W/result.json\"\npython3 examples/tools/gap_table.py --examples \"$W/repo/examples\" --json \"$W/gaps.json\" 052 | tee \"$W/table.txt\"\npython3 - \"$W/gaps.json\" <<'PY'\nimport json, sys\nrows = json.load(open(sys.argv[1]))\nfor r in rows:\n    print(f\"052#{r['obligation']}: {r['status']}, engine {r['engine']}, gaps {r['gaps']}, modes {r['gapModes']}, problem {r['problem']}\")\nassert rows, \"no obligation of 052 in the table\"\nassert all(r[\"engine\"] == \"native\" for r in rows), \"an obligation not run by the own checker\"\nassert all(r[\"gapModes\"] == [\"strict\"] for r in rows), \"an obligation not run under --gaps strict\"\nassert all(r[\"status\"] == \"established\" and not r[\"gaps\"] for r in rows), \"an obligation not established with no gap\"\nprint(f\"ok: {len(rows)} obligation(s) of 052 established by the own checker under strict, with no gap\")\nPY\ntest \"$status\" -eq 0 || { echo \"build.py exited $status (see build.txt)\"; exit 1; }",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 197.102,
+      "cpuSeconds": 196.547,
+      "cpuThrottledSeconds": 5.311,
+      "peakMemoryBytes": 2128830464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-052-under-strict-on-the-own-ch.log",
+        "lines": 11,
+        "bytes": 572,
+        "sha256": "7a995266d46404b4f4371e519cdb97e11e69afd546e7075b93deeea41fad9b1d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 7,
+          "text": "052-max-stack-that-checks-the-depth-only-after-a-push: verified (as expected)",
+          "groups": [
+            "052",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "052 set to --engine native, in the copy",
+        "  · jvmcontract prove: exited 0, 3.8 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "052-max-stack-that-checks-the-depth-only-after-a-push: verified (as expected)",
+        "1 examples, 1 obligations; 0 examples reach a gap; strict would refuse 0 obligation(s)",
+        "0 example(s) differ from their expected verdict",
+        "052#0: established, engine native, gaps [], modes ['strict'], problem None",
+        "ok: 1 obligation(s) of 052 established by the own checker under strict, with no gap"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/jobs/vf011-052/build.txt",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "3197315cb87a7ac0b392f9617792261c2695e4748a99764e54b8cab8d630d213",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/vf011-052/result.json",
+      "change": "added",
+      "bytes": 12860,
+      "sha256": "d82742129cf842f2dd2f48e80a0f7fcaeaac21b9961863d858fc92b19d9cbd02",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/vf011-052/gaps.json",
+      "change": "added",
+      "bytes": 292,
+      "sha256": "c63eac23dd76409a6affda39d16e0ac166762d84cf1ff7a97d9378c0448da02e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/jobs/vf011-052/table.txt",
+      "change": "added",
+      "bytes": 135,
+      "sha256": "da2e310776b0f5c6c8f89f5471b904cd8426a58b349df70237cf93d9692fa18c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T18:29:43+00:00",
+    "applied": [
+      "lib/target/jobs/vf011-052/build.txt",
+      "lib/target/jobs/vf011-052/result.json",
+      "lib/target/jobs/vf011-052/gaps.json",
+      "lib/target/jobs/vf011-052/table.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

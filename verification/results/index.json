@@ -2,6 +2,757 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261107-172721-jbmc-s-extra-initializers-named-and-refu",
+      "title": "JBMC's extra initializers named and refused: the conformance corpus under JBMC, auto and --confirm, and the draft report's example (closes VF-009 when step 2 passes)",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 34m03s, peak 1.6 GiB (estimated 40m00s, 3.0 GiB); 3 output file(s) changed; signals: cargo:tests×1; jbmc:refuted×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "lib/tests/conformance.rs",
+          "lib/tests/fixtures/jbmc-defects/README.md"
+        ]
+      },
+      "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+      "finishedAt": "2026-11-07T18:29:37+00:00",
+      "wallSeconds": 2044.0,
+      "peakMemoryBytes": 1664860160,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 2400.0,
+        "notes": "-010728 ran 32m42s at peak 1.2 GiB"
+      },
+      "host": "vm-1",
+      "result": "20261107-172721-jbmc-s-extra-initializers-named-and-refu/result.json"
+    },
+    {
+      "id": "20261107-172721-nullable-and-one-array-parameters-in-pro",
+      "title": "Nullable and one-array parameters in property checks (H2, first step): the conformance corpus's JBMC and auto --confirm runs agree with the JVM (closes VF-019 when it passes)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 23m10s, peak 1.5 GiB (estimated 30m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/property.rs",
+          "lib/src/bmc/mod.rs",
+          "lib/tests/conformance.rs"
+        ]
+      },
+      "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+      "finishedAt": "2026-11-07T18:19:04+00:00",
+      "wallSeconds": 1390.3,
+      "peakMemoryBytes": 1625026560,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 1800.0,
+        "notes": "-043420 ran 22m46s at peak 1.2 GiB"
+      },
+      "host": "vm-1",
+      "result": "20261107-172721-nullable-and-one-array-parameters-in-pro/result.json"
+    },
+    {
+      "id": "20261107-172721-conformance-corpus-under-jbmc-and-engine",
+      "title": "Conformance corpus under JBMC and --engine auto: no Verified the JVM refutes (closes VF-001 with its sibling when both pass)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 23m10s, peak 1.5 GiB (estimated 40m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [
+        "declared output lib/target/conformance-jbmc.log was not produced",
+        "step 1 (conformance corpus under JBMC and auto) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/tests/conformance/conformance/Conformance.java",
+          "llm-dlc/loops/sound-verdicts.md"
+        ]
+      },
+      "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+      "finishedAt": "2026-11-07T18:18:43+00:00",
+      "wallSeconds": 1391.0,
+      "peakMemoryBytes": 1650864128,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 2400.0,
+        "notes": "it runs every ignored conformance test: the corpus under JBMC and auto (644 s in -024759) and under auto --confirm (about 22 min in -043420); the corpus has grown to 81 cases since -021741's 18 min"
+      },
+      "host": "vm-1",
+      "result": "20261107-172721-conformance-corpus-under-jbmc-and-engine/result.json"
+    },
+    {
+      "id": "20261107-171502-vf-011-example-052-under-strict-on-the-o",
+      "title": "VF-011: example 052 under strict on the own checker, with unwinding counted per entry of a loop (closes VF-011 when it passes)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 3m17s, peak 2.0 GiB (estimated 15m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "052"
+        ],
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "examples/tools/gap_table.py"
+        ]
+      },
+      "sourceCommit": "c6f34f8cb771d0da3f1d0ec7cf9d11ddbf17bf00",
+      "finishedAt": "2026-11-07T17:58:11+00:00",
+      "wallSeconds": 197.1,
+      "peakMemoryBytes": 2128830464,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 900.0,
+        "notes": "one B11 example on the own checker after a release build; job -000039 ran 41 such examples on the own checker in a few minutes, but 052's nested loops now run to their end, up to 36 inner iterations over arrays of length 8, so its search is longer than before"
+      },
+      "host": "vm-1",
+      "result": "20261107-171502-vf-011-example-052-under-strict-on-the-o/result.json"
+    },
+    {
+      "id": "20261107-171442-vf-009-s-guard-measured-the-41-recorded",
+      "title": "VF-009's guard measured: the 41 recorded JBMC examples under strict on both engines, with the gap table, after throwing-initializer",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 5m52s, peak 1.6 GiB (estimated 20m00s, 2.0 GiB); 90 output file(s) changed; signals: example:as-expected×1; example:differ×1",
+      "attention": [
+        "89 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+      ],
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/gap_table.py",
+          "lib/src/jbmc_gaps.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md",
+          "examples/tools/build.py",
+          "examples/schema/result.schema.json",
+          "lib/src/phases.rs"
+        ]
+      },
+      "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+      "finishedAt": "2026-11-07T17:55:52+00:00",
+      "wallSeconds": 352.7,
+      "peakMemoryBytes": 1679118336,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 1200.0,
+        "notes": "job -231837 ran the JBMC step over the 41 in about 2 minutes and stopped the own checker's at its fifth example, 3m11s in all, peak 1.1 GiB; job -082917 ran the 41 under JBMC in 8m10s at peak 1.4 GiB on 1 CPU; the own checker is faster than JBMC on every case both decide (job -102624); JBMC is capped at 3 GiB"
+      },
+      "host": "vm-1",
+      "result": "20261107-171442-vf-009-s-guard-measured-the-41-recorded/result.json"
+    },
+    {
+      "id": "20261107-172721-conformance-corpus-under-engine-auto-con",
+      "title": "Conformance corpus under --engine auto --confirm: JBMC's word on every proof of the own checker, held to the JVM (closes VF-001 with its sibling when both pass)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 22.0s, peak 559.1 MiB (estimated 25m00s, 3.0 GiB)",
+      "attention": [
+        "declared output lib/target/conformance-confirm.log was not produced",
+        "step 1 (conformance corpus under auto --confirm) exited SIGTERM, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs",
+          "llm-dlc/loops/sound-verdicts.md"
+        ]
+      },
+      "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+      "finishedAt": "2026-11-07T17:55:32+00:00",
+      "wallSeconds": 22.0,
+      "peakMemoryBytes": 586272768,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 1500.0,
+        "notes": "-024336 ran 21m50s, -043420's same test about 22 min, peak 1.2 GiB"
+      },
+      "host": "vm-1",
+      "result": "20261107-172721-conformance-corpus-under-engine-auto-con/result.json"
+    },
+    {
+      "id": "20261107-165544-vf-010-s-integration-tests-at-the-fix-li",
+      "title": "VF-010's integration tests at the fix: lib/tests/integration.rs passes with conflict-budgeted probes (closes VF-010 with the reproducer job)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m47s, peak 2.0 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [
+        "step 1 (integration tests) was held back 2m55s by its 2-CPU quota in 2m47s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "native:probes"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/integration.rs",
+          "lib/src/bmc/mod.rs"
+        ]
+      },
+      "sourceCommit": "f606b0d80e3189b56db29b8f48b4c0f1ad018375",
+      "finishedAt": "2026-11-07T17:55:31+00:00",
+      "wallSeconds": 167.8,
+      "peakMemoryBytes": 2164154368,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 900.0,
+        "notes": "the suite took 31 s inline after the build; a clean debug build of lib's tests peaked at 3.1 GiB with 28 jobs (cleanup.md), here 4"
+      },
+      "host": "vm-1",
+      "result": "20261107-165544-vf-010-s-integration-tests-at-the-fix-li/result.json"
+    },
+    {
+      "id": "20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t",
+      "title": "VF-010's reproducer at the fix: Pricing#total's regression proof on the own checker finds the violation in 8 of 8 runs (closes VF-010 with the integration-tests job)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 27.7s, peak 128.8 MiB (estimated 6m00s, 1.0 GiB)",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "native:probes"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/sat.rs",
+          "lib/tests/reproducers/vf-010.sh"
+        ]
+      },
+      "sourceCommit": "f606b0d80e3189b56db29b8f48b4c0f1ad018375",
+      "finishedAt": "2026-11-07T17:55:09+00:00",
+      "wallSeconds": 27.7,
+      "peakMemoryBytes": 135004160,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 360.0,
+        "notes": "8 runs here at the fix took 4.2-4.6 s each in a debug build; at most 8 x 40 s if one ran out"
+      },
+      "host": "vm-1",
+      "result": "20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t/result.json"
+    },
+    {
+      "id": "20261107-165827-example-109-revisited-hex-todigit-s-regr",
+      "title": "VF-015: Example 109 revisited: Hex#toDigit's regression proof with the Character.digit model",
+      "status": "failed",
+      "summary": "failed: 2 passed, 1 failed, 2 skipped step(s) in 10.2s, peak 100.1 MiB (estimated 10m00s, 2.0 GiB); 1 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [
+        "declared output verification/.work-109/work-change was not produced",
+        "declared output verification/.work-109/work-ascii was not produced",
+        "step 1 (clone) was held back 3.2s by its 1-CPU quota in 2.0s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (compile) was held back 10.7s by its 1-CPU quota in 7.6s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (old toDigit decodes the Arabic-Indic zero) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "109"
+        ],
+        "paths": [
+          "lib/models/java/lang/Character.java"
+        ]
+      },
+      "sourceCommit": "86e4ce7d220f6474c09a5b7e0fd9437d89bb57d7",
+      "finishedAt": "2026-11-07T17:54:52+00:00",
+      "wallSeconds": 10.2,
+      "peakMemoryBytes": 104980480,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "109's property proofs took under a second each; a clone with --filter=blob:none and two worktrees is the slow part"
+      },
+      "host": "vm-1",
+      "result": "20261107-165827-example-109-revisited-hex-todigit-s-regr/result.json"
+    },
+    {
+      "id": "20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm",
+      "title": "VF-014, H1 isolated, run 2 of 2: the benchmark's own-checker runs at H1 (uyqkxsly, ddbb54ba)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m45s, peak 1.1 GiB (estimated 10m00s, 2.0 GiB); 2 output file(s) changed",
+      "attention": [
+        "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+      ],
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "ddbb54bac20616e15ddd6e965e412519377506ad",
+          "b927e5df1be94b21de89351736978f469e33553a"
+        ]
+      },
+      "sourceCommit": "ddbb54bac20616e15ddd6e965e412519377506ad",
+      "finishedAt": "2026-11-07T17:52:53+00:00",
+      "wallSeconds": 165.4,
+      "peakMemoryBytes": 1206784000,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "job 20261107-041414's step 1 took 2m47s and peaked at 1.1 GiB for 557 own-checker runs at H1"
+      },
+      "host": "vm-1",
+      "result": "20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm/result.json"
+    },
+    {
+      "id": "20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2",
+      "title": "VF-010's benchmark at the fix (run 1 of 2): the own checker's runs with conflict-budgeted probes, recorded for comparison with the fix's parent",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 2m19s, peak 1.5 GiB (estimated 15m00s, 2.0 GiB)",
+      "attention": [
+        "declared output lib/target/benchmark-native-vf010-fix.json was not produced",
+        "declared output lib/target/benchmark-native-vf010-fix.md was not produced",
+        "step 1 (benchmark, own checker only) exited SIGTERM, expected 0"
+      ],
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ]
+      },
+      "sourceCommit": "f606b0d80e3189b56db29b8f48b4c0f1ad018375",
+      "finishedAt": "2026-11-07T17:52:42+00:00",
+      "wallSeconds": 139.3,
+      "peakMemoryBytes": 1629720576,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 900.0,
+        "notes": "job 20261107-041414's step 1, the same command, took 168 s in all with a 1.1 GiB peak"
+      },
+      "host": "vm-1",
+      "result": "20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2/result.json"
+    },
+    {
+      "id": "20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r",
+      "title": "VF-010's benchmark at the fix's parent (run 2 of 2): the own checker's runs with wall-clock probes, recorded for comparison with the fix",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 0.2s, peak 574.0 MiB (estimated 15m00s, 2.0 GiB)",
+      "attention": [
+        "declared output lib/target/benchmark-native-vf010-parent.json was not produced",
+        "declared output lib/target/benchmark-native-vf010-parent.md was not produced",
+        "step 1 (benchmark, own checker only) exited SIGTERM, expected 0"
+      ],
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "c307e721bdc341552ea5dbfc68585bbe9b4701dc"
+        ]
+      },
+      "sourceCommit": "c307e721bdc341552ea5dbfc68585bbe9b4701dc",
+      "finishedAt": "2026-11-07T17:52:42+00:00",
+      "wallSeconds": 0.2,
+      "peakMemoryBytes": 601919488,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 900.0,
+        "notes": "job 20261107-041414's step 1, the same command, took 168 s in all with a 1.1 GiB peak"
+      },
+      "host": "vm-1",
+      "result": "20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r/result.json"
+    },
+    {
+      "id": "20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm",
+      "title": "VF-014, H1 isolated, run 1 of 2: the benchmark's own-checker runs at H1's parent (rvxkytqy, b927e5df)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m42s, peak 1.1 GiB (estimated 10m00s, 2.0 GiB); 2 output file(s) changed",
+      "attention": [
+        "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+      ],
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "ddbb54bac20616e15ddd6e965e412519377506ad",
+          "b927e5df1be94b21de89351736978f469e33553a"
+        ]
+      },
+      "sourceCommit": "b927e5df1be94b21de89351736978f469e33553a",
+      "finishedAt": "2026-11-07T17:52:41+00:00",
+      "wallSeconds": 162.0,
+      "peakMemoryBytes": 1191337984,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "job 20261107-041414's step 1 took 2m47s and peaked at 1.1 GiB for 557 own-checker runs at H1"
+      },
+      "host": "vm-1",
+      "result": "20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm/result.json"
+    },
+    {
+      "id": "20261107-165152-example-149-b11-contract-library-full-ji",
+      "title": "Example 149 (B11, contract library): full jitter proved on the contract library's contracts alone, applied on the records of their checks under --max-trust 0 (closes VF-002 when it passes)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 5.6s, peak 104.6 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 149 (B11)) was held back 3.8s by its 1-CPU quota in 5.6s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "149"
+        ],
+        "paths": [
+          "lib/src/contract_library.rs",
+          "lib/models/contracts"
+        ]
+      },
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "finishedAt": "2026-11-07T17:50:22+00:00",
+      "wallSeconds": 5.6,
+      "peakMemoryBytes": 109703168,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 120.0,
+        "notes": "as the job resubmitted; the earlier run stopped within a second"
+      },
+      "host": "vm-1",
+      "result": "20261107-165152-example-149-b11-contract-library-full-ji/result.json"
+    },
+    {
+      "id": "20261107-165152-example-148-b11-advised-contracts-full-j",
+      "title": "Example 148 (B11, advised contracts): full jitter proved below the cap on an agent's contracts, 1 proved against the JDK's bytecode, 2 tested on the JVM (closes VF-002 when it passes)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 3.2s, peak 104.4 MiB (estimated 2m00s, 1.0 GiB)",
+      "attention": [
+        "step 1 (example 148 (B11)) exited 1, expected 0",
+        "step 1 (example 148 (B11)) was held back 3.1s by its 1-CPU quota in 3.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "148"
+        ],
+        "paths": [
+          "lib/src/contract_proving.rs",
+          "lib/src/contract_testing.rs"
+        ]
+      },
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "finishedAt": "2026-11-07T17:50:15+00:00",
+      "wallSeconds": 3.2,
+      "peakMemoryBytes": 109510656,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 120.0,
+        "notes": "as the job resubmitted; the earlier run stopped within a second"
+      },
+      "host": "vm-1",
+      "result": "20261107-165152-example-148-b11-advised-contracts-full-j/result.json"
+    },
+    {
+      "id": "20261107-165152-example-147-b11-advised-contracts-a-cont",
+      "title": "Example 147 (B11, advised contracts): a contract for Random.nextInt that leaves out the exception is refuted on the JVM, and the proof stops with the gap open (closes VF-002 when it passes)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 3.4s, peak 92.8 MiB (estimated 2m00s, 1.0 GiB)",
+      "attention": [
+        "step 1 (example 147 (B11)) exited 1, expected 0",
+        "step 1 (example 147 (B11)) was held back 3.9s by its 1-CPU quota in 3.4s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "147"
+        ],
+        "paths": [
+          "lib/src/contract_proving.rs",
+          "lib/src/contract_testing.rs"
+        ]
+      },
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "finishedAt": "2026-11-07T17:50:11+00:00",
+      "wallSeconds": 3.4,
+      "peakMemoryBytes": 97316864,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 120.0,
+        "notes": "as the job resubmitted; the earlier run stopped within a second"
+      },
+      "host": "vm-1",
+      "result": "20261107-165152-example-147-b11-advised-contracts-a-cont/result.json"
+    },
+    {
+      "id": "20261107-165153-example-161-a-refill-helper-aligned-to-t",
+      "title": "Example 161: a refill helper aligned to the clock's grid, refuted on its own, and its caller's Retry-After found to change (closes VF-016 when it passes)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.2s, peak 105.7 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 161 (B9)) was held back 5.6s by its 1-CPU quota in 7.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "161",
+          "160"
+        ],
+        "paths": [
+          "lib/src/proof_cache.rs",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "finishedAt": "2026-11-07T17:50:07+00:00",
+      "wallSeconds": 7.2,
+      "peakMemoryBytes": 110841856,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 180.0,
+        "notes": "as the job resubmitted; the earlier run stopped within a second"
+      },
+      "host": "vm-1",
+      "result": "20261107-165153-example-161-a-refill-helper-aligned-to-t/result.json"
+    },
+    {
+      "id": "20261107-165152-example-160-a-changed-refill-helper-prov",
+      "title": "Example 160: a changed refill helper proved on its own first, then one function in its caller's regression proof (closes VF-016 when it passes)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 7.2s, peak 104.9 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 1 (example 160 (B9)) was held back 5.5s by its 1-CPU quota in 7.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "160"
+        ],
+        "paths": [
+          "lib/src/proof_cache.rs",
+          "lib/src/shared.rs",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "finishedAt": "2026-11-07T17:50:06+00:00",
+      "wallSeconds": 7.2,
+      "peakMemoryBytes": 110043136,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 180.0,
+        "notes": "as the job resubmitted; the earlier run stopped within a second"
+      },
+      "host": "vm-1",
+      "result": "20261107-165152-example-160-a-changed-refill-helper-prov/result.json"
+    },
+    {
+      "id": "20261107-164356-vf-018-lines-lines-reprice-s-equations-t",
+      "title": "VF-018: lines.Lines#reprice's equations that read a primitive parameter under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 1h04m, peak 1.5 GiB (estimated 1h10m, 4.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm with a 1800 s limit) exited 101, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/heap.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "cf2205fc56a3d552574e86852714dc2b970b78da",
+      "finishedAt": "2026-11-07T17:49:28+00:00",
+      "wallSeconds": 3845.8,
+      "peakMemoryBytes": 1655578624,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 4200.0,
+        "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-092158 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+      },
+      "host": "vm-1",
+      "result": "20261107-164356-vf-018-lines-lines-reprice-s-equations-t/result.json"
+    },
+    {
+      "id": "20261107-164356-vf-018-orders-orders-reprice-s-equations",
+      "title": "VF-018: orders.Orders#reprice's equations that read another object under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 1h04m, peak 1.5 GiB (estimated 1h10m, 4.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm with a 1800 s limit) exited 101, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/heap.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "cf2205fc56a3d552574e86852714dc2b970b78da",
+      "finishedAt": "2026-11-07T17:49:27+00:00",
+      "wallSeconds": 3844.6,
+      "peakMemoryBytes": 1658245120,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 4200.0,
+        "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-115201 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+      },
+      "host": "vm-1",
+      "result": "20261107-164356-vf-018-orders-orders-reprice-s-equations/result.json"
+    },
+    {
+      "id": "20261107-164356-vf-018-objects-kernel-price-s-output-rel",
+      "title": "VF-018: objects.Kernel#price's output relation under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 1h02m, peak 1.6 GiB (estimated 1h10m, 4.0 GiB); signals: cargo:tests×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm with a 1800 s limit) exited 101, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/heap.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "cf2205fc56a3d552574e86852714dc2b970b78da",
+      "finishedAt": "2026-11-07T17:48:06+00:00",
+      "wallSeconds": 3763.4,
+      "peakMemoryBytes": 1665486848,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 4200.0,
+        "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-080218 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+      },
+      "host": "vm-1",
+      "result": "20261107-164356-vf-018-objects-kernel-price-s-output-rel/result.json"
+    },
+    {
+      "id": "20261107-164356-vf-018-prices-prices-total-s-computed-in",
+      "title": "VF-018: prices.Prices#total's computed input equations under JBMC and auto --confirm with an 1800 s limit (closes VF-018 with its three sibling jobs)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 55m41s, peak 1.5 GiB (estimated 1h10m, 4.0 GiB); signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/heap.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs"
+        ]
+      },
+      "sourceCommit": "cf2205fc56a3d552574e86852714dc2b970b78da",
+      "finishedAt": "2026-11-07T17:41:04+00:00",
+      "wallSeconds": 3341.9,
+      "peakMemoryBytes": 1637621760,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 4200.0,
+        "notes": "a release build, then about 10 JBMC runs; at 600 s two of them timed out (20261107-083358 ran 21-23 min at 1.2 GiB peak), so up to two 30 min runs now, JBMC's memory growing with its time"
+      },
+      "host": "vm-1",
+      "result": "20261107-164356-vf-018-prices-prices-total-s-computed-in/result.json"
+    },
+    {
       "id": "20261107-164043-example-151-crosscut-retry-throttle-a-re",
       "title": "Example 151: Crosscut retry throttle, a regression proof over an object made by its constructor (own checker) (closes VF-017 when it passes)",
       "status": "passed",

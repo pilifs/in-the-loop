@@ -1,0 +1,407 @@
+--- /dev/null
++++ b/lib/target/jobs/vf011-052/build.txt
+@@ -0,0 +1,16 @@
++052-max-stack-that-checks-the-depth-only-after-a-push: running (B11)
++  · apply the patch
++  · apply the patch: exited 0, 0.0 s
++  · javac patched mica main
++  · javac patched mica main: exited 0, 1.4 s
++  · javac patched mica tests
++  · javac patched mica tests: exited 0, 1.6 s
++  · the mica tests
++  · the mica tests: exited 0, 0.1 s
++  · jvmcontract prove
++  · jvmcontract prove: exited 0, 3.8 s
++  · version of java
++  · version of java: exited 0, 0.0 s
++  · version of javac
++  · version of javac: exited 0, 0.2 s
++052-max-stack-that-checks-the-depth-only-after-a-push: verified (as expected)
+--- /dev/null
++++ b/lib/target/jobs/vf011-052/result.json
+@@ -0,0 +1,360 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "1bb1558c5462a60d",
++    "format": 1,
++    "example": "052",
++    "statement": {
++      "approach": "B11",
++      "target": "net.terminalvalue.mica.asm.MaxStack#of",
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/MaxStack.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null
++    },
++    "inputs": {
++      "patch": "895116f54f501622ddabf55f47bcb65a9304c5a59a079251efefafab2fb1e03a",
++      "before": {
++        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
++        "files": 50
++      },
++      "after": {
++        "sha256": "a8c9f5a3df639597faf3280252b27062e4ef5363b8fb8c52af1e2c7a20ef3cdf",
++        "files": 50
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261107T175802Z-9bc00518",
++    "claim": "1bb1558c5462a60d",
++    "startedAt": "2026-11-07T17:58:02+00:00",
++    "seconds": 6.9,
++    "engine": "native",
++    "options": [
++      "--engine",
++      "native",
++      "--gaps",
++      "strict"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "053b7442a255ae27c3dcbdfe25dfb9eb1689526657c169663568c61ff16da974"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "e7bfad508968867cb5abcfc2d66292b542a97cc15a6809635d1328488c6b0dc3",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261107-171502-vf-011-example-052-under-strict-on-the-o",
++      "sourceCommit": "c6f34f8cb771d0da3f1d0ec7cf9d11ddbf17bf00",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-171502-vf-011-example-052-under-strict-on-the-o"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.4,
++        "stdout": "logs/02-javac-patched-mica-main.stdout",
++        "stderr": "logs/02-javac-patched-mica-main.stderr"
++      },
++      {
++        "name": "javac patched mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.6,
++        "stdout": "logs/03-javac-patched-mica-tests.stdout",
++        "stderr": "logs/03-javac-patched-mica-tests.stderr"
++      },
++      {
++        "name": "the mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-mica-tests.stdout",
++        "stderr": "logs/04-the-mica-tests.stderr"
++      },
++      {
++        "name": "jvmcontract prove",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 3.8,
++        "stdout": "logs/05-jvmcontract-prove.stdout",
++        "stderr": "logs/05-jvmcontract-prove.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-version-of-java.stdout",
++        "stderr": "logs/06-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/07-version-of-javac.stdout",
++        "stderr": "logs/07-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-hqpipmxw/attempts/052/attempt-0l_6lop8"
++  },
++  "conclusion": {
++    "claim": "1bb1558c5462a60d",
++    "attempt": "20261107T175802Z-9bc00518",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "result == (\\max int k; 0 <= k && k <= delta.length; (\\sum int i; 0 <= i && i < k; delta[i]))",
++        "status": "established",
++        "evidence": {
++          "harness": null,
++          "assert": "result == (\\max int k; 0 <= k && k <= delta.length; (\\sum int i; 0 <= i && i < k; delta[i]))",
++          "assume": "(\\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2)",
++          "verdict": "verified",
++          "domain": "delta: int[] of length ≤ 8, not null",
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over delta: int[] of length ≤ 8, not null in 3.8 s; loops unwound 16 times with unwinding assertions",
++          "problem": null,
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 3.763,
++            "properties": 1,
++            "unwind": 16,
++            "maxArrayLength": 8,
++            "stage": null,
++            "deadlineSeconds": 600.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budgetSeconds": 600.0,
++                "seconds": 3.753,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.056,
++                  "encoding": 0.085,
++                  "solving": 3.613,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 15947,
++                  "clauses": 55093
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "probe",
++                "stage": null,
++                "budgetSeconds": 596.237,
++                "seconds": 0.001,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.0,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 946,
++                  "clauses": 2279
++                }
++              }
++            ],
++            "native": {
++              "paths": 569,
++              "merges": 55,
++              "solverCalls": 5331,
++              "solvingSeconds": 3.61264158,
++              "gatesEvaluated": 773755,
++              "evaluatingSeconds": 0.01139411,
++              "divisions": 0,
++              "divisionsBuilt": 0,
++              "multiplications": 0,
++              "multiplicationsBuilt": 0,
++              "variables": 15947,
++              "clauses": 55093,
++              "seconds": 3.7531056769999998,
++              "loadingSeconds": 2.4456e-05,
++              "decodingSeconds": 2.3644e-05,
++              "encodingSeconds": 0.084915632,
++              "witnessSeconds": 0.0
++            },
++            "gapMode": "strict"
++          },
++          "replay": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "delta",
++                  "type": "int[]",
++                  "kind": "array",
++                  "null": false,
++                  "maxLength": 8
++                }
++              ],
++              "sharedArrays": false,
++              "text": "delta: int[] of length ≤ 8, not null"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "(\\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2)",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == (\\max int k; 0 <= k && k <= delta.length; (\\sum int i; 0 <= i && i < k; delta[i]))",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 16,
++              "maxArrayLength": 8,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
++              "classes": 17,
++              "jdk": "25.0.5"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gapMode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "probe",
++              "text": "Some input in the domain reaches the calls: the tool's own checker found of(delta=[]).",
++              "witness": "of(delta=[])"
++            }
++          }
++        }
++      }
++    ],
++    "label": "✓ Verified: property holds on every input",
++    "obligationKeys": {
++      "property": "properties"
++    }
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.mica.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/MaxStack.java",
++      "startLine": 10,
++      "code": "\nprivate MaxStack() {}\n\n/** The {@code max_stack} of a straight-line sequence whose instructions change the depth by {@code delta}. */\npublic static int of(int[] delta) {\n    int depth = 0;\n    int max = 0;\n    for (int i = 0; i < delta.length; i++) {\n        depth += delta[i];\n        if (depth > max) {\n            max = depth;\n        }\n    }\n"
++    },
++    "after": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/MaxStack.java",
++      "startLine": 10,
++      "code": "\nprivate MaxStack() {}\n\n/**\n * The {@code max_stack} of a straight-line sequence whose instructions change the depth by {@code delta}. The\n * depth is compared with the maximum only after an instruction that pushes more than it pops; any other leaves\n * the stack no deeper than it was.\n */\npublic static int of(int[] delta) {\n    int depth = 0;\n    int max = 0;\n    for (int i = 0; i < delta.length; i++) {\n        depth += delta[i];\n        if (delta[i] > 0 && depth > max) {\n            max = depth;\n        }\n    }\n"
++    },
++    "casesTotal": null,
++    "domain": "delta: int[] of length ≤ 8, not null",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over delta: int[] of length ≤ 8, not null in 3.8 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": {
++      "assert": "result == (\\max int k; 0 <= k && k <= delta.length; (\\sum int i; 0 <= i && i < k; delta[i]))",
++      "assume": "(\\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2)"
++    },
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt"
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
++        "bytes": 2174
++      },
++      {
++        "path": "statement.java",
++        "sha256": "dd3a9b8dd27a2408ca0c04dd10d1458636ee167529bff099ee0b0b2d4606f4a5",
++        "bytes": 1629
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "b4ba0ca11eb1963344683bbe3eb3296bcd8026d29ac08cfd16080aca38c48cf1",
++        "bytes": 456
++      }
++    ]
++  }
++}
+--- /dev/null
++++ b/lib/target/jobs/vf011-052/gaps.json
+@@ -0,0 +1,17 @@
++[
++ {
++  "example": "052",
++  "obligation": 0,
++  "status": "established",
++  "gapModes": [
++   "strict"
++  ],
++  "gaps": [],
++  "strictWouldRefuse": false,
++  "engine": "native",
++  "checker": "jvmcontract's own checker (CaDiCaL)",
++  "expectation": "yes",
++  "problem": null,
++  "jbmcDefect": false
++ }
++]
+--- /dev/null
++++ b/lib/target/jobs/vf011-052/table.txt
+@@ -0,0 +1,2 @@
++1 examples, 1 obligations; 0 examples reach a gap; strict would refuse 0 obligation(s)
++0 example(s) differ from their expected verdict

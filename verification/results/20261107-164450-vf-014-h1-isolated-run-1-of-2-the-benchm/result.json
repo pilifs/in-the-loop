@@ -1,0 +1,228 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm",
+  "title": "VF-014, H1 isolated, run 1 of 2: the benchmark's own-checker runs at H1's parent (rvxkytqy, b927e5df)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m42s, peak 1.1 GiB (estimated 10m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm.json",
+    "sha256": "5e42b1ec8fb3335e0eb161a68bb246b533e284a0598f98b72e99e389e4f95151",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm",
+      "title": "VF-014, H1 isolated, run 1 of 2: the benchmark's own-checker runs at H1's parent (rvxkytqy, b927e5df)",
+      "description": "VF-014 in verification/findings.md: job 20261107-041414 checked step H1 of llm-dlc/loops/foundations-heap.md (symbolic references in the own checker, change uyqkxsly, commit ddbb54ba) by comparing the benchmark's own-checker runs with lib/benchmark/results.json, which was recorded long before H1. Eight verdicts on boom/1, inherited/1 and quiet/1 changed, most likely through class initializers the own checker gained since the recording, so the job could not tell those changes apart from H1's. This job and its twin isolate H1 instead, as the entry offers: this one runs 20261107-041414's step 1 unchanged at H1's parent (rvxkytqy, commit b927e5df), the twin at H1 itself. A third job, submitted once both are collected, applies 20261107-041414's step-2 comparison script to the two outputs (kept under verification/results/ID/outputs/lib/target/benchmark-native.json), and closes VF-014 when it passes. H1's parent has no swaps, swapsOrNull or swapsThenNull conformance cases (H1 added them to lib/benchmark/conformance.json), so this run has 3 fewer cases than the twin. This job only records the run: it doesn't close VF-014 by itself.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "ddbb54bac20616e15ddd6e965e412519377506ad",
+          "b927e5df1be94b21de89351736978f469e33553a"
+        ]
+      },
+      "expected": "exits 0: the benchmark completes on the own checker at H1's parent and writes lib/target/benchmark-native.json and its table. No verdict is checked here; the third job compares this run with the twin's at H1.",
+      "submitted": {
+        "at": "2026-11-07T16:44:50+00:00",
+        "session": "b65d132b-4eb4-46fd-8556-f4cba3311ad1",
+        "by": "claude (cleanup-examples)"
+      },
+      "revision": "b927e5df1be94b21de89351736978f469e33553a",
+      "requires": [
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "memoryLimit": "3G",
+        "timeout": "1h",
+        "notes": "job 20261107-041414's step 1 took 2m47s and peaked at 1.1 GiB for 557 own-checker runs at H1"
+      },
+      "steps": [
+        {
+          "name": "benchmark, own checker only",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/benchmark-native.json",
+        "lib/target/benchmark-native.md"
+      ]
+    }
+  },
+  "sourceCommit": "b927e5df1be94b21de89351736978f469e33553a",
+  "startedAt": "2026-11-07T17:49:58+00:00",
+  "finishedAt": "2026-11-07T17:52:41+00:00",
+  "wallSeconds": 163.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 287109,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "job 20261107-041414's step 1 took 2m47s and peaked at 1.1 GiB for 557 own-checker runs at H1"
+  },
+  "usage": {
+    "peakMemoryBytes": 1191337984,
+    "wallSeconds": 162.0,
+    "cpuSeconds": 202.2,
+    "memoryOfEstimate": 0.55,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 162.0,
+      "cpuSeconds": 202.226,
+      "cpuThrottledSeconds": 2.792,
+      "peakMemoryBytes": 1191337984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-benchmark-own-checker-only.log",
+        "lines": 533,
+        "bytes": 68224,
+        "sha256": "a56bd76cf30ade9b0d2716ce8cf412d0c9fdcd2691c0479ce732edb068e1117b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "real/checksum/fix-confined                   native assume             verified     correct                   0.47 s    40.9 MB",
+        "real/checksum/fix-confined                   native advised            verified     correct                   0.49 s    44.4 MB",
+        "held/saturating                              native strict             verified     correct                   0.05 s    31.0 MB",
+        "held/saturating                              native assume             verified     correct                   0.06 s    31.0 MB",
+        "held/saturating                              native advised            verified     correct                   0.06 s    31.8 MB",
+        "held/average/bits                            native strict             verified     correct                   0.06 s    30.8 MB",
+        "held/average/bits                            native assume             verified     correct                   0.06 s    31.0 MB",
+        "held/average/bits                            native advised            verified     correct                   0.07 s    31.7 MB",
+        "held/average/unsigned-shift                  native strict             violation    correct                   0.06 s    36.6 MB",
+        "held/average/unsigned-shift                  native assume             violation    correct                   0.06 s    36.8 MB",
+        "held/average/unsigned-shift                  native advised            violation    correct                   0.07 s    36.6 MB",
+        "held/floor-mod/wide-modulus                  native strict             violation    correct                   0.64 s    43.5 MB",
+        "held/floor-mod/wide-modulus                  native assume             violation    correct                   0.63 s    45.8 MB",
+        "held/floor-mod/wide-modulus                  native advised            violation    correct                   0.65 s    49.6 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.07 s    37.1 MB",
+        "held/floor-mod/jdk                           native assume             verified     correct                   0.07 s    37.0 MB",
+        "held/floor-mod/jdk                           native advised            verified     correct                   0.08 s    37.1 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.07 s    36.8 MB",
+        "held/ceil-div                                native assume             verified     correct                   0.07 s    36.8 MB",
+        "held/ceil-div                                native advised            verified     correct                   0.08 s    36.9 MB",
+        "held/lower-bound                             native strict             verified     correct                   0.28 s    40.2 MB",
+        "held/lower-bound                             native assume             verified     correct                   0.28 s    39.1 MB",
+        "held/lower-bound                             native advised            verified     correct                   0.30 s    44.6 MB",
+        "held/utf8-length                             native strict             verified     correct                   0.34 s    34.6 MB",
+        "held/utf8-length                             native assume             verified     correct                   0.34 s    34.4 MB",
+        "held/utf8-length                             native advised            verified     correct                   0.36 s    40.0 MB",
+        "held/reverse                                 native strict             verified     correct                   0.17 s    39.6 MB",
+        "held/reverse                                 native assume             verified     correct                   0.17 s    39.6 MB",
+        "held/reverse                                 native advised            verified     correct                   0.18 s    44.9 MB",
+        "held/prefix-sums                             native strict             verified     correct                   0.06 s    31.0 MB",
+        "held/prefix-sums                             native assume             verified     correct                   0.05 s    31.0 MB",
+        "held/prefix-sums                             native advised            verified     correct                   0.06 s    32.2 MB",
+        "held/overlap/meets                           native strict             verified     correct                   0.07 s    37.1 MB",
+        "held/overlap/meets                           native assume             verified     correct                   0.07 s    37.0 MB",
+        "held/overlap/meets                           native advised            verified     correct                   0.08 s    37.3 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.08 s    37.6 MB",
+        "held/overlap/length                          native assume             violation    correct                   0.08 s    37.3 MB",
+        "held/overlap/length                          native advised            violation    correct                   0.09 s    37.3 MB",
+        "example/141                                  native strict             verified     correct                   1.59 s    59.6 MB",
+        "example/142                                  native strict             verified     correct                   5.33 s    82.5 MB"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/benchmark-native.json",
+      "change": "added",
+      "bytes": 1019603,
+      "sha256": "e1ba6c40a00b1c6642741ee457ef4bb34df832bb70b042a4d36ff959ff2c2dec",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/benchmark-native.md",
+      "change": "added",
+      "bytes": 28888,
+      "sha256": "e57087f4c3376aeb197e5190522f48793f0fdb90073b2df0b67129f7de6c5de0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T18:29:43+00:00",
+    "applied": [],
+    "conflicts": [
+      "lib/target/benchmark-native.json",
+      "lib/target/benchmark-native.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

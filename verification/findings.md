@@ -18,6 +18,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-021: two of VF-010's benchmark jobs were killed by SIGTERM, with no output, and no verdict comparison across its fix was made
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2` (at `f606b0d80e31`, killed after 2m19s) and `20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r` (at `c307e721bdc3`, after 0.2 s).
+- **Found**: each step (`cargo build --release -q` then `python3 lib/benchmark/run.py --engines native --out ...`) ended with signal SIGTERM, not a timeout (`timedOut` false, not cancelled, no stop reason), peak 1.5 GiB and 574 MiB against 3 GiB limits, and no output file written. Three other jobs ran at the same time and finished normally (the VF-010 reproducer and integration tests at the fix, and example 109). I don't know what sent the signal: it may be the runner's isolation, another session on the machine, or the benchmark script. Not rerun here: a resubmit runs at the commit that commits it, which would lose the pinned revisions the pair exists for.
+- **Needs**: the submitter (cleanup loop's native stream) resubmits both jobs pinned the same way (so they run at the fix and its parent) when the machine is quiet, then queues the comparison job. If it recurs, whoever manages the runner looks at how a step comes to get SIGTERM.
+- **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N1).
+- **Closes when**: the two benchmark jobs pass and the comparison shows no recorded own-checker verdict changed with the fix.
+
 ### VF-020: a passed job's `changes.diff` (1.2 MiB) is not committed, because jj refuses to snapshot new files over 1 MiB
 
 - **Status**: open
@@ -34,31 +43,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   which is build output; a submitter's call for the jobs that follow.
 - **Closes when**: `jj st` shows no refused file after a collect, or the result is recorded as lacking its diff on
   purpose.
-
-### VF-019: under `auto --confirm`, the six nullable and may-alias claims of H2 get "no engine wrote a harness", which the conformance test counts as a disagreement
-
-- **Status**: open
-- **Raised**: 2026-11-07 on `vm-1`. Job `20261107-043420-nullable-and-one-array-parameters-in-pro` at `d404b15cbac6`
-  (heap stream, H2's first step).
-  - Step 1's `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` passed.
-  - `the_corpus_agrees_with_the_jvm_under_auto_confirm` (`tests/conformance.rs:859`) failed with 20 disagreements.
-- **Found**: 84 cases, 166 claims, 332 runs. The 20 disagreements are of two kinds:
-  - **8 are VF-009's**: `boomTwice` and `enumBroken` at `n=0`, under strict and assume, unchanged.
-  - **12 are new**: the six claims H2 widened, under `--gaps Strict` and `Assume`, each reported as "no engine wrote
-    a harness". The claims are `twoArrays` with `may alias a,b` (two claims), `length` with `nullable a` (two), and
-    `lengthOrMinusOne` with `nullable a` (two).
-
-  The job's description expected these six to be refused under JBMC and `--confirm` (JBMC can't take a nullable or
-  aliased input). So the refusal happens, but `--confirm` reports it as no harness at all, not as a named refusal,
-  and the test counts it as a disagreement with the JVM. Not yet read in the code: whether `--confirm` refuses with
-  a reason, or fails to make a harness and says nothing.
-- **Needs**: `--confirm` refuses these with a named reason (an unverifiable result naming the input JBMC can't
-  take). The test then reads a named refusal as no verdict, not a disagreement, as the heap stream's rule says:
-  "`--confirm` refuses rather than confirming a different claim". This must not weaken the test: an unnamed "no
-  harness" stays a failure. For the cleanup loop's jbmc stream, with VF-009, since the same test closes both.
-- **Tracked in**: [`llm-dlc/loops/cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md) (J1).
-- **Closes when**: job `20261107-043420-nullable-and-one-array-parameters-in-pro`, resubmitted unchanged at a fixing
-  commit, passes.
 
 ### VF-018: JBMC doesn't finish within 600 s on four of H5's regression proofs over objects under a correspondence
 
@@ -85,53 +69,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md) (J3).
 - **Closes when**: the four jobs, resubmitted unchanged at a fixing commit, pass; or the user decides the
   expectation, and the jobs pass under it.
-
-### VF-017: examples 150, 151 and 152 fail on the result schema, which has no `object` parameter kind
-
-- **Status**: closed by jobs `20261107-164043-example-150-crosscut-retry-throttle-a-re`, `-151-` and `-152-` (at
-  `e7270fd85890`, 2026-11-07, `vm-1`): each passed in about 6 s with `example:as-expected`, 5 outputs applied each.
-  The schema fix landed, and the three results are recorded.
-- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-064330-example-150-crosscut-retry-throttle-a-re`,
-  `20261107-064331-example-151-…` and `20261107-064331-example-152-…`, at `224431e7bb68` (heap stream).
-- **Found**: each fails within 5 s, after `jvmcontract equivalence` exits 0, as `build.py` validates the result:
-  `result.json: 'object' is not one of ['primitive', 'array', 'record']`. The path in the schema is
-  `$defs/statement/properties/domain/properties/parameters/items/properties/kind` in
-  `examples/schema/result.schema.json`. It is unchanged at `main` (`34e1d87b`), so the three examples can't be
-  recorded there either. H2's object parameters write `kind: object`, and the schema was never extended for them.
-- **Needs**: the schema allows `object`, with whatever else an object parameter's domain entry carries (its
-  constructor, nullability, aliasing: check the statement jvmcontract writes). Then a `test_build.py` case
-  validating such a result. For the cleanup loop's examples stream.
-- **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
-- **Closes when**: the three jobs, resubmitted after the fix, pass with each example's expected verdict: 150
-  verified; 151 a violation differing only in `result == throttle`; 152 verified within the constructor-made domain.
-
-### VF-016: examples 160 and 161 fail before any proof: their subject is a caller the patch doesn't change
-
-- **Status**: open
-- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-053635-example-160-a-changed-refill-helper-prov` and
-  `20261107-053635-example-161-a-refill-helper-aligned-to-t`, at `85ee8db14dfb` (summaries stream).
-- **Found**: each fails in 0.2 s with "the patch does not change the subject file
-  examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java"
-  (`examples/tools/build.py:3523`). The examples are about a changed helper, `TokenBucket`, proved on its own and
-  then used in its caller's proof. So the subject (`RetryAfter#nanosUntilToken`) is the caller, and the patch only
-  touches `TokenBucket.java`. The check is the same one VF-002 trips on, for another reason: there the patch creates
-  the subject, here it leaves it alone.
-- **Needs**: `build.py` takes a subject the patch doesn't change, when the change is in the subject's code closure.
-  Its excerpts then show the changed file. Or the examples name the helper's file and keep the caller as the
-  symbol. For the cleanup loop's examples stream, with VF-002.
-- **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
-- **Closes when**: both jobs, resubmitted after the fix, pass with their expected verdicts: 160 verified with
-  `lastAfter` shared, 161 a violation with no helper shared.
-- **Seen again** 2026-11-07 on `vm-1`, in jobs `20261107-163050-example-160-a-changed-refill-helper-prov` and
-  `20261107-163051-example-161-a-refill-helper-aligned-to-t` (at `d32ddc64d1a4`, resubmitted by the cleanup loop's
-  examples stream). The subject check is fixed: the patch applies, the crosscut tests run, and `jvmcontract
-  equivalence` runs (0.4 s; it exited 0 for 160 and 1 for 161, which for 161 is the expected violation). Both then
-  fail in `build.py` after the proof, validating the result: `result.json: Additional properties are not allowed
-  ('proofCache' was unexpected)`. `claim_scope` (`examples/tools/build.py:795`, from `85ee8db`) writes
-  `scope.proofCache` for a B9 proof with the proof cache, but `examples/schema/result.schema.json` (statement's
-  `scope`, around line 1161) doesn't list it, and is unchanged at the current `main`. **Needs**: the schema allows
-  `proofCache` in a claim's scope, with a `test_build.py` case validating such a result; the cleanup loop's examples
-  stream. Then resubmit both jobs unchanged.
+- **Rerun with an 1800 s JBMC limit** 2026-11-07 on `vm-1`, at `cf2205fc56a3` (the four jobs
+  `20261107-164356-vf-018-*`, 6 GiB limit each, peak 1.5 GiB): one passed, three failed alike.
+  - `prices.Prices#total` passed: its test finished in 3185 s, so JBMC gave a verdict inside 1800 s (it is
+    tractable, about 5 times slower than the 600 s default suggested).
+  - `objects.Kernel#price` (`heap.rs:1070`), `lines.Lines#reprice` (`heap.rs:1570`) and `orders.Orders#reprice`
+    (`heap.rs:1746`) failed after 3606 to 3688 s with "JBMC did not finish within 1800 s", `Unverifiable (expected
+    Verified, on a JVM false)`. Tripling the limit did not help them, so a longer limit is not the way out for these
+    three: the harness or its encoding needs triage, or the expectation is the user's decision, as above.
+  - Memory was never the limit (peak 1.6 GiB of 6).
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 
@@ -147,6 +93,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   `StandardCharsets`' constants as the JVM has them. For the cleanup loop's native stream.
 - **Tracked in**: [`llm-dlc/loops/cleanup-native.md`](../llm-dlc/loops/cleanup-native.md) (N3).
 - **Closes when**: the job, resubmitted at a fixing commit, passes.
+- **Rerun** 2026-11-07 on `vm-1`: job `20261107-165827-example-109-revisited-hex-todigit-s-regr` (at `86e4ce7d220f`) failed at step 3, differently. The witness replay is no longer the problem (JBMC now proves the old `toDigit` for `0x0660`). Now `jvmcontract` refuses the result under `--gaps strict`: "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it: `jdk-static-method:java.lang.String.format(String, Object[])`" (a stub JBMC returns null or any object for). Steps 4 and 5 were skipped. **Needs**: a decision on whether the job should pass `--gaps assume` or advised (the job's step, the submitter's), or a model of `String.format` (the exception path of `Hex.toDigit` calls it); the cleanup loop's native stream. The entry stays open.
 
 ### VF-014: H1's benchmark comparison fails on 8 verdicts that changed because `lib/benchmark/results.json` is stale, not because of symbolic references
 
@@ -170,6 +117,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   against a run at H1's parent commit, which isolates H1.
 - **Tracked in**: `llm-dlc/loops/foundations-heap.md` step H1 (not yet updated).
 - **Closes when**: the resubmitted job passes against a recording made at a commit without H1, or H1's parent.
+- **Isolated runs** 2026-11-07 on `vm-1`: jobs `20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm` (at H1's parent `b927e5df1be9`) and `-run-2-of-2-` (at H1 `ddbb54bac206`) both passed in 2m42s and 2m45s. Their outputs (`lib/target/benchmark-native.json`) stay in each job's `outputs/` and were not applied to the working copy (the files differ from the jobs' commits). The comparison job the descriptions name is the submitter's to queue; the entry stays open until it passes.
 
 ### VF-013: the loops' run records are never published: they are gitignored, and unredacted
 
@@ -219,9 +167,139 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: a job runs 052 under strict on the own checker (`approach.engine` set to native in a copy) and it is
   established with no gap.
 
+### VF-002: examples 147, 148 and 149 never reach a proof
+
+- **Status**: open
+- **Raised**: 2026-11-06 on `vm-1`. Jobs `20261106-053555-example-147-b11-advised-contracts-a-cont`,
+  `20261106-053555-example-148-b11-advised-contracts-full-j` (at `ef5d434c48db`) and
+  `20261106-061323-example-149-b11-contract-library-full-ji` (at `8ea88f97e447`).
+- **Found**: each fails within a second with "the patch does not change the subject file
+  examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java". The patches create that file
+  (`--- /dev/null`), and `build.py`'s `excerpts()` requires the subject to exist before the patch. Deterministic: it
+  fails the same on any machine, at the jobs' commits and still on 2026-11-06.
+- **Needs**: either `excerpts()` accepts a subject the patch creates (an empty before side), or the examples' patches
+  stop creating it. For whoever owns the advised-contracts examples (Phase 3 of the sound-verdicts brief).
+- **Tracked in**: [`llm-dlc/loops/sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md#progress) (the entry of
+  2026-11-06 on `vm-1`), and the notes of examples 147, 148 and 149.
+- **Closes when**: the three jobs, resubmitted after the fix, pass with each example's expected verdict.
+- **Seen again** 2026-11-07 on `vm-1`, in jobs `20261107-163046-example-147-b11-advised-contracts-a-cont`,
+  `20261107-163047-example-148-b11-advised-contracts-full-j` and `20261107-163049-example-149-b11-contract-library-full-ji`
+  (at `d32ddc64d1a4`, resubmitted unchanged by the cleanup loop's examples stream after the `excerpts()` fix). The
+  subject check is no longer what stops them. Now each fails in 0.2 s at "apply the patch": `git apply` reports
+  `crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java:19: patch does not apply`. The three patches add
+  their test classes to the suite list in `Tests.java`, whose context has since changed (the list gained entries
+  with examples 150 to 152 and the later crosscut examples). I checked with `git apply --check` that they don't
+  apply to the current tree either, so a rerun alone won't help. **Needs**: regenerate the three `change.patch` files
+  against the current crosscut app (the examples stream; the patches also change `properties.contract` and
+  `Jitter.java`, which should be unaffected), then resubmit. VF-002 stays open.
+- **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-165152-example-147-b11-advised-contracts-a-cont`, `-148-` and `-149-` at `35a9ea8fadaa`, after regenerating the patches. 149 **passed** (verified as expected, results applied). 147 and 148 fail in 3 s in `stage_contracts` (`build.py:432`): `FileNotFoundError: .../.build-py/examples-*/attempts/147/attempt-*/gaps.contracts`: `shutil.copyfile(folder / name, target)` reads `gaps.contracts` from the attempt's directory, where `build.py` hasn't copied it from the example's folder (149 uses the contract library, not a `gaps.contracts`). **Needs**: `stage_contracts` reads the example's own folder (the examples stream), then resubmit 147 and 148. The entry stays open until both pass.
+
+### VF-001: JBMC verdicts the JVM contradicts, passed through by `--engine auto`
+
+- **Status**: open
+- **Raised**: 2026-11-06 on `vm-1`. Jobs `20261106-021741-conformance-corpus-under-jbmc-and-engine` and
+  `20261106-024336-conformance-corpus-under-engine-auto-con`, both at `470be6c5ff8b`, JBMC 6.11.0.
+- **Found**: the conformance corpus (54 methods, 93 claims, the JVM as reference) disagrees with JBMC in both
+  directions:
+  - **JBMC proves seven claims the JVM refutes**, under `--gaps strict`: `capacity`, `builderCapacity`,
+    `mapCapacity`, `setCapacity` and `loadFactor` (JDK constructors that throw on a negative capacity or a load
+    factor of 0 or less; JBMC's library models, pinned to 2022, return normally), `nullMonitor`
+    (`synchronized ((Object) null)` throws `NullPointerException` on the JVM), `firstByte` (`Random.nextBytes`) and
+    `pairsEqual` (a record's `equals` through `invokedynamic`).
+  - **JBMC reports violations the JVM does not reproduce** on `caught(n=0)` and `nestedHandler(n=0)`, which catch the
+    `ArithmeticException` of an integer division by zero. The tool's own checker proves both and the JVM agrees.
+    Either JBMC's semantics or a flag jvmcontract does not pass (such as `--throw-runtime-exceptions`).
+  - **`--engine auto` takes JBMC's wrong `Verified`** for `loadFactor` and `pairsEqual`, where the own checker has no
+    verdict, under strict and under assume. This part is jvmcontract's, not JBMC's.
+- **Needs**: Phase 1 of the sound-verdicts brief is not done, though the brief read as if it were. Its criterion is
+  that no engine, nor `--engine auto`, gives `Verified` under strict for a claim the JVM refutes. Closing it means
+  treating JBMC's verdicts on JDK calls its models stand in for as gaps under strict, making `synchronized (null)`
+  and division by zero behave as on the JVM under JBMC (or refusing them), and not letting auto take a JBMC
+  `Verified` unchecked. For the sound-verdicts loop, or a loop of its own; the user is deciding how to take it on.
+- **Tracked in**: [`llm-dlc/loops/sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md#progress) (the entry of
+  2026-11-06 on `vm-1`), with every disagreement; the logs in each job's `results/ID/logs/`.
+- **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
+- **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-172721-conformance-corpus-under-jbmc-and-engine` and `20261107-172721-conformance-corpus-under-engine-auto-con` (at `a1e29ec6a2e7`) both **failed**, for the same reason, none to do with the tests: their step is `cd lib && ... cargo test ... | tee target/conformance-*.log` with no `mkdir -p target`, and in a clean checkout `lib/target` does not exist when `tee` starts. The first job's log says `tee: target/conformance-jbmc.log: No such file or directory` and the step exited 1 although the test output shows `test result: ok. 2 passed; 0 failed`, 1236 s (so both corpus tests pass at this commit); the second was killed with SIGTERM after 22 s, when `tee` was gone. A job that didn't pass doesn't close this entry. **Needs**: resubmit both with `mkdir -p target` before the pipe (as the jbmc-initializers job does), the cleanup loop's jbmc stream. Closes then, if they pass.
+
+## Decided and closed
+
+### VF-019: under `auto --confirm`, the six nullable and may-alias claims of H2 get "no engine wrote a harness", which the conformance test counts as a disagreement
+
+- **Status**: closed by job `20261107-172721-nullable-and-one-array-parameters-in-pro` (at `a1e29ec6a2e7`, 2026-11-07, `vm-1`): both ignored conformance tests passed.
+- **Raised**: 2026-11-07 on `vm-1`. Job `20261107-043420-nullable-and-one-array-parameters-in-pro` at `d404b15cbac6`
+  (heap stream, H2's first step).
+  - Step 1's `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` passed.
+  - `the_corpus_agrees_with_the_jvm_under_auto_confirm` (`tests/conformance.rs:859`) failed with 20 disagreements.
+- **Found**: 84 cases, 166 claims, 332 runs. The 20 disagreements are of two kinds:
+  - **8 are VF-009's**: `boomTwice` and `enumBroken` at `n=0`, under strict and assume, unchanged.
+  - **12 are new**: the six claims H2 widened, under `--gaps Strict` and `Assume`, each reported as "no engine wrote
+    a harness". The claims are `twoArrays` with `may alias a,b` (two claims), `length` with `nullable a` (two), and
+    `lengthOrMinusOne` with `nullable a` (two).
+
+  The job's description expected these six to be refused under JBMC and `--confirm` (JBMC can't take a nullable or
+  aliased input). So the refusal happens, but `--confirm` reports it as no harness at all, not as a named refusal,
+  and the test counts it as a disagreement with the JVM. Not yet read in the code: whether `--confirm` refuses with
+  a reason, or fails to make a harness and says nothing.
+- **Needs**: `--confirm` refuses these with a named reason (an unverifiable result naming the input JBMC can't
+  take). The test then reads a named refusal as no verdict, not a disagreement, as the heap stream's rule says:
+  "`--confirm` refuses rather than confirming a different claim". This must not weaken the test: an unnamed "no
+  harness" stays a failure. For the cleanup loop's jbmc stream, with VF-009, since the same test closes both.
+- **Tracked in**: [`llm-dlc/loops/cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md) (J1).
+- **Closes when**: job `20261107-043420-nullable-and-one-array-parameters-in-pro`, resubmitted unchanged at a fixing
+  commit, passes.
+- **Closed** 2026-11-07 on `vm-1`: job `20261107-172721-nullable-and-one-array-parameters-in-pro` (at `a1e29ec6a2e7`), the same job resubmitted after VF-009's fix, passed: both ignored conformance tests, `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` and `the_corpus_agrees_with_the_jvm_under_auto_confirm`, in 1236 s. The six claims read as refused by name, no verdict, as the job expected.
+
+### VF-017: examples 150, 151 and 152 fail on the result schema, which has no `object` parameter kind
+
+- **Status**: closed by jobs `20261107-164043-example-150-crosscut-retry-throttle-a-re`, `-151-` and `-152-` (at
+  `e7270fd85890`, 2026-11-07, `vm-1`): each passed in about 6 s with `example:as-expected`, 5 outputs applied each.
+  The schema fix landed, and the three results are recorded.
+- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-064330-example-150-crosscut-retry-throttle-a-re`,
+  `20261107-064331-example-151-…` and `20261107-064331-example-152-…`, at `224431e7bb68` (heap stream).
+- **Found**: each fails within 5 s, after `jvmcontract equivalence` exits 0, as `build.py` validates the result:
+  `result.json: 'object' is not one of ['primitive', 'array', 'record']`. The path in the schema is
+  `$defs/statement/properties/domain/properties/parameters/items/properties/kind` in
+  `examples/schema/result.schema.json`. It is unchanged at `main` (`34e1d87b`), so the three examples can't be
+  recorded there either. H2's object parameters write `kind: object`, and the schema was never extended for them.
+- **Needs**: the schema allows `object`, with whatever else an object parameter's domain entry carries (its
+  constructor, nullability, aliasing: check the statement jvmcontract writes). Then a `test_build.py` case
+  validating such a result. For the cleanup loop's examples stream.
+- **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
+- **Closes when**: the three jobs, resubmitted after the fix, pass with each example's expected verdict: 150
+  verified; 151 a violation differing only in `result == throttle`; 152 verified within the constructor-made domain.
+
+### VF-016: examples 160 and 161 fail before any proof: their subject is a caller the patch doesn't change
+
+- **Status**: closed by jobs `20261107-165152-example-160-a-changed-refill-helper-prov` and `20261107-165153-example-161-a-refill-helper-aligned-to-t` (at `35a9ea8fadaa`, 2026-11-07, `vm-1`): both passed as expected.
+- **Raised**: 2026-11-07 on `vm-1`. Jobs `20261107-053635-example-160-a-changed-refill-helper-prov` and
+  `20261107-053635-example-161-a-refill-helper-aligned-to-t`, at `85ee8db14dfb` (summaries stream).
+- **Found**: each fails in 0.2 s with "the patch does not change the subject file
+  examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java"
+  (`examples/tools/build.py:3523`). The examples are about a changed helper, `TokenBucket`, proved on its own and
+  then used in its caller's proof. So the subject (`RetryAfter#nanosUntilToken`) is the caller, and the patch only
+  touches `TokenBucket.java`. The check is the same one VF-002 trips on, for another reason: there the patch creates
+  the subject, here it leaves it alone.
+- **Needs**: `build.py` takes a subject the patch doesn't change, when the change is in the subject's code closure.
+  Its excerpts then show the changed file. Or the examples name the helper's file and keep the caller as the
+  symbol. For the cleanup loop's examples stream, with VF-002.
+- **Tracked in**: [`llm-dlc/loops/cleanup-examples.md`](../llm-dlc/loops/cleanup-examples.md) (E1).
+- **Closes when**: both jobs, resubmitted after the fix, pass with their expected verdicts: 160 verified with
+  `lastAfter` shared, 161 a violation with no helper shared.
+- **Seen again** 2026-11-07 on `vm-1`, in jobs `20261107-163050-example-160-a-changed-refill-helper-prov` and
+  `20261107-163051-example-161-a-refill-helper-aligned-to-t` (at `d32ddc64d1a4`, resubmitted by the cleanup loop's
+  examples stream). The subject check is fixed: the patch applies, the crosscut tests run, and `jvmcontract
+  equivalence` runs (0.4 s; it exited 0 for 160 and 1 for 161, which for 161 is the expected violation). Both then
+  fail in `build.py` after the proof, validating the result: `result.json: Additional properties are not allowed
+  ('proofCache' was unexpected)`. `claim_scope` (`examples/tools/build.py:795`, from `85ee8db`) writes
+  `scope.proofCache` for a B9 proof with the proof cache, but `examples/schema/result.schema.json` (statement's
+  `scope`, around line 1161) doesn't list it, and is unchanged at the current `main`. **Needs**: the schema allows
+  `proofCache` in a claim's scope, with a `test_build.py` case validating such a result; the cleanup loop's examples
+  stream. Then resubmit both jobs unchanged.
+- **Closed** 2026-11-07 on `vm-1`: jobs `20261107-165152-example-160-a-changed-refill-helper-prov` and `20261107-165153-example-161-a-refill-helper-aligned-to-t` (at `35a9ea8fadaa`) passed in 7 s each, 160 verified and 161 a violation, both `as expected`; the schema now accepts `proofCache`. Results applied.
+
 ### VF-010: the own checker's regression proof of `Pricing#total` sometimes runs out of time: its branch probes depend on wall-clock time
 
-- **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)
+- **Status**: closed by jobs `20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t` and `20261107-165544-vf-010-s-integration-tests-at-the-fix-li` (at `f606b0d80e31`, 2026-11-07, `vm-1`): 8 of 8 alike, 64 integration tests passed. The verdict comparison is still to do (VF-021).
 - **Raised**: 2026-11-06 on cvm, inline, while triaging job `20261106-203452`; seen again in full inline suite runs on
   2026-11-06 and 2026-11-07 (commits `xrrxwxny`, `vrkpmtqv`, `pkuyvwwp`).
 - **Found**: `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` (`lib/tests/integration.rs`) fails now and then
@@ -245,10 +323,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   show it gone after: the 2 of 8 runs that timed out were on `cvm` (a slower machine). Whoever fixes it should check
   the fix by the probe budget no longer reading the clock (a code check, or a count of solver calls that is the same
   across the runs), and run the reproducer on `cvm` for the before/after.
+- **Closed** 2026-11-07 on `vm-1`: at the fix (`f606b0d80e31`) job `20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t` passed (8 of 8 runs found the violation, 3.1 s each, the same numbers every time: 6 paths, 12 solver calls) and `20261107-165544-vf-010-s-integration-tests-at-the-fix-li` passed (64 passed, 0 failed). Caveat: `vm-1` did not reproduce the problem before the fix either (see above), so this shows the fix is stable and breaks nothing, not that it cures the timeouts seen on `cvm`. The benchmark pair that compares recorded verdicts across the fix did not run: both jobs were killed by SIGTERM (VF-021).
 
 ### VF-009: `auto --confirm` disagrees with the JVM on `boomTwice` and `enumBroken`: JBMC's refutation at `n=0` is spurious, the own checker is right
 
-- **Status**: open
+- **Status**: closed by job `20261107-172721-jbmc-s-extra-initializers-named-and-refu` (at `a1e29ec6a2e7`, 2026-11-07, `vm-1`): the `auto --confirm` and JBMC corpus tests passed.
 - **Raised**: 2026-11-07 on `vm-1`. Job `20261107-010728-jbmc-s-extra-initializers-named-and-refu` (at `254f1d7a4893`), step 2 (steps 1 and 3 passed: the corpus under JBMC and auto, and the draft report's example).
 - **Found**: `the_corpus_agrees_with_the_jvm_under_auto_confirm` (tests/conformance.rs:792) has 8 disagreements, all on
   `boomTwice [assert result == 2]` and `enumBroken [assert result == 12]`, under `--gaps Strict` and `Assume`: Auto
@@ -282,60 +361,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Seen again** 2026-11-07, unchanged (the same 8 disagreements), in job
   `20261107-043420-nullable-and-one-array-parameters-in-pro`, beside VF-019's 12. Taken by the cleanup loop's jbmc
   stream ([`cleanup-jbmc.md`](../llm-dlc/loops/cleanup-jbmc.md), J1).
-
-### VF-002: examples 147, 148 and 149 never reach a proof
-
-- **Status**: open
-- **Raised**: 2026-11-06 on `vm-1`. Jobs `20261106-053555-example-147-b11-advised-contracts-a-cont`,
-  `20261106-053555-example-148-b11-advised-contracts-full-j` (at `ef5d434c48db`) and
-  `20261106-061323-example-149-b11-contract-library-full-ji` (at `8ea88f97e447`).
-- **Found**: each fails within a second with "the patch does not change the subject file
-  examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java". The patches create that file
-  (`--- /dev/null`), and `build.py`'s `excerpts()` requires the subject to exist before the patch. Deterministic: it
-  fails the same on any machine, at the jobs' commits and still on 2026-11-06.
-- **Needs**: either `excerpts()` accepts a subject the patch creates (an empty before side), or the examples' patches
-  stop creating it. For whoever owns the advised-contracts examples (Phase 3 of the sound-verdicts brief).
-- **Tracked in**: [`llm-dlc/loops/sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md#progress) (the entry of
-  2026-11-06 on `vm-1`), and the notes of examples 147, 148 and 149.
-- **Closes when**: the three jobs, resubmitted after the fix, pass with each example's expected verdict.
-- **Seen again** 2026-11-07 on `vm-1`, in jobs `20261107-163046-example-147-b11-advised-contracts-a-cont`,
-  `20261107-163047-example-148-b11-advised-contracts-full-j` and `20261107-163049-example-149-b11-contract-library-full-ji`
-  (at `d32ddc64d1a4`, resubmitted unchanged by the cleanup loop's examples stream after the `excerpts()` fix). The
-  subject check is no longer what stops them. Now each fails in 0.2 s at "apply the patch": `git apply` reports
-  `crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java:19: patch does not apply`. The three patches add
-  their test classes to the suite list in `Tests.java`, whose context has since changed (the list gained entries
-  with examples 150 to 152 and the later crosscut examples). I checked with `git apply --check` that they don't
-  apply to the current tree either, so a rerun alone won't help. **Needs**: regenerate the three `change.patch` files
-  against the current crosscut app (the examples stream; the patches also change `properties.contract` and
-  `Jitter.java`, which should be unaffected), then resubmit. VF-002 stays open.
-
-### VF-001: JBMC verdicts the JVM contradicts, passed through by `--engine auto`
-
-- **Status**: open
-- **Raised**: 2026-11-06 on `vm-1`. Jobs `20261106-021741-conformance-corpus-under-jbmc-and-engine` and
-  `20261106-024336-conformance-corpus-under-engine-auto-con`, both at `470be6c5ff8b`, JBMC 6.11.0.
-- **Found**: the conformance corpus (54 methods, 93 claims, the JVM as reference) disagrees with JBMC in both
-  directions:
-  - **JBMC proves seven claims the JVM refutes**, under `--gaps strict`: `capacity`, `builderCapacity`,
-    `mapCapacity`, `setCapacity` and `loadFactor` (JDK constructors that throw on a negative capacity or a load
-    factor of 0 or less; JBMC's library models, pinned to 2022, return normally), `nullMonitor`
-    (`synchronized ((Object) null)` throws `NullPointerException` on the JVM), `firstByte` (`Random.nextBytes`) and
-    `pairsEqual` (a record's `equals` through `invokedynamic`).
-  - **JBMC reports violations the JVM does not reproduce** on `caught(n=0)` and `nestedHandler(n=0)`, which catch the
-    `ArithmeticException` of an integer division by zero. The tool's own checker proves both and the JVM agrees.
-    Either JBMC's semantics or a flag jvmcontract does not pass (such as `--throw-runtime-exceptions`).
-  - **`--engine auto` takes JBMC's wrong `Verified`** for `loadFactor` and `pairsEqual`, where the own checker has no
-    verdict, under strict and under assume. This part is jvmcontract's, not JBMC's.
-- **Needs**: Phase 1 of the sound-verdicts brief is not done, though the brief read as if it were. Its criterion is
-  that no engine, nor `--engine auto`, gives `Verified` under strict for a claim the JVM refutes. Closing it means
-  treating JBMC's verdicts on JDK calls its models stand in for as gaps under strict, making `synchronized (null)`
-  and division by zero behave as on the JVM under JBMC (or refusing them), and not letting auto take a JBMC
-  `Verified` unchecked. For the sound-verdicts loop, or a loop of its own; the user is deciding how to take it on.
-- **Tracked in**: [`llm-dlc/loops/sound-verdicts.md`](../llm-dlc/loops/sound-verdicts.md#progress) (the entry of
-  2026-11-06 on `vm-1`), with every disagreement; the logs in each job's `results/ID/logs/`.
-- **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
-
-## Decided and closed
+- **Closed** 2026-11-07 on `vm-1`: job `20261107-172721-jbmc-s-extra-initializers-named-and-refu` (at `a1e29ec6a2e7`) passed all 3 steps: `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto` and `the_corpus_agrees_with_the_jvm_under_auto_confirm` both ok, and the draft report's example gives JBMC's two failures. The resubmitted VF-019 job passed `auto_confirm` as well. A guard job, `20261107-171442-vf-009-s-guard-measured-the-41-recorded` (3 steps passed), shows the fix costs no recorded JBMC example: step 1 is as in `-000039` (only 037 differs, a JBMC defect), and no throwing-initializer line appears.
 
 ### VF-012: the own checker raises a false alarm on `conformance/leadingZerosLong/2`, so the benchmark step exits 1 and the encoding-timing check never ran
 

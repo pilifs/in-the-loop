@@ -1,0 +1,205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-172721-conformance-corpus-under-engine-auto-con",
+  "title": "Conformance corpus under --engine auto --confirm: JBMC's word on every proof of the own checker, held to the JVM (closes VF-001 with its sibling when both pass)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 22.0s, peak 559.1 MiB (estimated 25m00s, 3.0 GiB)",
+  "attention": [
+    "declared output lib/target/conformance-confirm.log was not produced",
+    "step 1 (conformance corpus under auto --confirm) exited SIGTERM, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-172721-conformance-corpus-under-engine-auto-con.json",
+    "sha256": "67c03017949abd3f8219f03e205b183d52661bfbb8cb96b52130f9d4c08e4f14",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-172721-conformance-corpus-under-engine-auto-con",
+      "title": "Conformance corpus under --engine auto --confirm: JBMC's word on every proof of the own checker, held to the JVM (closes VF-001 with its sibling when both pass)",
+      "description": "Resubmitted unchanged by the cleanup-jbmc stream after VF-009's fix: VF-001 (verification/findings.md) closes when this job and 20261107-172721-conformance-corpus-under-jbmc-and-engine pass. The steps are the original job's.\n\nStep 1e of llm-dlc/loops/sound-verdicts.md adds --confirm to --engine auto: JBMC proves again, in one run over every input, each statement the tool's own checker proved, and a JBMC refutation is reported as neither verdict (unverifiable, 'the engines disagree'). This job runs the ignored test the_corpus_agrees_with_the_jvm_under_auto_confirm over the 93 claims of the conformance corpus (lib/tests/conformance.rs), under --gaps strict and --gaps assume. Every witness and claim is also run on a real JVM. The test fails on a JBMC confirmation of a claim the JVM refutes, and on a disagreement over a claim the JVM does not refute. Under assume, the class-initializer claims boom and inherited should come out as disagreements (JBMC runs the initializer the own checker assumed had run), and the claims that assumed a JDK call should be not-asked.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs",
+          "llm-dlc/loops/sound-verdicts.md"
+        ]
+      },
+      "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_auto_confirm passes. The log's table shows a confirmation status per claim; under assume, boom and inherited are Disagreed and the JDK-call claims NotAsked. A failure lists each disagreement with the JVM, a finding about JBMC or the adapter to triage under the brief's Progress, not something to retry.",
+      "submitted": {
+        "at": "2026-11-07T17:27:21+00:00"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "25m",
+        "timeout": "90m",
+        "notes": "-024336 ran 21m50s, -043420's same test about 22 min, peak 1.2 GiB",
+        "memoryLimit": "3.5G"
+      },
+      "steps": [
+        {
+          "name": "conformance corpus under auto --confirm",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/conformance-confirm.log"
+      ],
+      "supersedes": "20261106-024336-conformance-corpus-under-engine-auto-con"
+    }
+  },
+  "sourceCommit": "a1e29ec6a2e73aa50b79fccfea747934d553c489",
+  "startedAt": "2026-11-07T17:55:10+00:00",
+  "finishedAt": "2026-11-07T17:55:32+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 287109,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1500.0,
+    "notes": "-024336 ran 21m50s, -043420's same test about 22 min, peak 1.2 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 586272768,
+    "wallSeconds": 22.0,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": null,
+      "signal": "SIGTERM",
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 22.046,
+      "cpuSeconds": 0.004,
+      "cpuThrottledSeconds": null,
+      "peakMemoryBytes": 586272768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-corpus-under-auto.log",
+        "lines": 52,
+        "bytes": 1607,
+        "sha256": "8d564e7a0cfcb0ffc7d6f6a910b691062fe970983e75eb342e2e694065f163db",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling syn v3.0.9",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling psm v0.1.32",
+        "   Compiling zmij v1.0.23",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling heck v0.5.0",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T18:29:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-172721-conformance-corpus-under-engine-auto-con"
+}

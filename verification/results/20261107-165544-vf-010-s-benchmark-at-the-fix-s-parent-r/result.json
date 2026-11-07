@@ -1,0 +1,168 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r",
+  "title": "VF-010's benchmark at the fix's parent (run 2 of 2): the own checker's runs with wall-clock probes, recorded for comparison with the fix",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 574.0 MiB (estimated 15m00s, 2.0 GiB)",
+  "attention": [
+    "declared output lib/target/benchmark-native-vf010-parent.json was not produced",
+    "declared output lib/target/benchmark-native-vf010-parent.md was not produced",
+    "step 1 (benchmark, own checker only) exited SIGTERM, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r.json",
+    "sha256": "0d1742af825c171a3369be93a729a14ec1404dfef8e79db1692114612ee202f2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r",
+      "title": "VF-010's benchmark at the fix's parent (run 2 of 2): the own checker's runs with wall-clock probes, recorded for comparison with the fix",
+      "description": "VF-010 (verification/findings.md): the fix budgets the own checker's branch probes in solver conflicts instead of wall-clock time. This job records the benchmark's own-checker runs at the fix's parent (c307e721, change ruvmympl, which added only the reproducer), for a later quick job to compare with run 1 of 2 at the fix, so that only the fix's effect is measured (the examples stream's pattern for VF-014). This job only records: it passes when the benchmark runs.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/benchmark"
+        ],
+        "commits": [
+          "c307e721bdc341552ea5dbfc68585bbe9b4701dc"
+        ]
+      },
+      "expected": "exit 0, with lib/target/benchmark-native-vf010-parent.json written",
+      "submitted": {
+        "at": "2026-11-07T16:55:44+00:00",
+        "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+        "by": "cleanup-native"
+      },
+      "revision": "c307e721bdc341552ea5dbfc68585bbe9b4701dc",
+      "requires": [
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "15m",
+        "notes": "job 20261107-041414's step 1, the same command, took 168 s in all with a 1.1 GiB peak"
+      },
+      "steps": [
+        {
+          "name": "benchmark, own checker only",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native-vf010-parent.json --table lib/target/benchmark-native-vf010-parent.md",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/benchmark-native-vf010-parent.json",
+        "lib/target/benchmark-native-vf010-parent.md"
+      ]
+    }
+  },
+  "sourceCommit": "c307e721bdc341552ea5dbfc68585bbe9b4701dc",
+  "startedAt": "2026-11-07T17:52:42+00:00",
+  "finishedAt": "2026-11-07T17:52:42+00:00",
+  "wallSeconds": 0.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 287109,
+    "workers": 4,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 30064771072,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 900.0,
+    "notes": "job 20261107-041414's step 1, the same command, took 168 s in all with a 1.1 GiB peak"
+  },
+  "usage": {
+    "peakMemoryBytes": 601919488,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.28,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native-vf010-parent.json --table lib/target/benchmark-native-vf010-parent.md",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": null,
+      "signal": "SIGTERM",
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.004,
+      "cpuThrottledSeconds": null,
+      "peakMemoryBytes": 601919488,
+      "peakMemoryMeasure": "largest process's peak RSS",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-benchmark-own-checker-only.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-07T18:29:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r"
+}

@@ -1,0 +1,429 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "76bcbf93bfa0e095",
+    "format": 1,
+    "example": "149",
+    "statement": {
+      "approach": "B11",
+      "target": "net.terminalvalue.crosscut.retry.Jitter#fullJitterMillis",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java",
+      "behaviourChangeIntended": true
+    },
+    "scope": {
+      "maxArrayLength": null
+    },
+    "inputs": {
+      "patch": "f8993acdfc9c1e1cbae3b294e909f5a72bc8d3f1ab215b0066a26492d2ebd991",
+      "before": {
+        "sha256": "16abd857020b3fbe46762a7e9f261490d0917c6a1defab8803f876a93b79265d",
+        "files": 58
+      },
+      "after": {
+        "sha256": "320543efdec60c0b72296fe023974b7fd39260a22eb31c83634a8b5d4d56c706",
+        "files": 60
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261107T175016Z-684086e0",
+    "claim": "76bcbf93bfa0e095",
+    "startedAt": "2026-11-07T17:50:16+00:00",
+    "seconds": 3.3,
+    "engine": "native",
+    "options": [
+      "--engine",
+      "native",
+      "--gaps",
+      "advised",
+      "--max-trust",
+      "0"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "a160795f1fb80c35b51640b8f76e56f4ea58c1092bb356f31a9786c4a667c12a"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "5dffc1c5f7d44f02564024c0b2b7eb6a3903361c8467f64379a1c4baaecca1a6",
+        "files": 43
+      }
+    },
+    "pipeline": {
+      "jobId": "20261107-165152-example-149-b11-contract-library-full-ji",
+      "sourceCommit": "35a9ea8fadaa86a45f9f838296e91fb6643181a3",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-165152-example-149-b11-contract-library-full-ji"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": true
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.5,
+        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+      },
+      {
+        "name": "javac patched crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.6,
+        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+      },
+      {
+        "name": "the crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-crosscut-tests.stdout",
+        "stderr": "logs/04-the-crosscut-tests.stderr"
+      },
+      {
+        "name": "jvmcontract prove",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/05-jvmcontract-prove.stdout",
+        "stderr": "logs/05-jvmcontract-prove.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/06-version-of-java.stdout",
+        "stderr": "logs/06-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.2,
+        "stdout": "logs/07-version-of-javac.stdout",
+        "stderr": "logs/07-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-ekxllphj/attempts/149/attempt-e83x27r5"
+  },
+  "conclusion": {
+    "claim": "76bcbf93bfa0e095",
+    "attempt": "20261107T175016Z-684086e0",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result >= 0 && result < capMillis",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result >= 0 && result < capMillis",
+          "assume": null,
+          "throws": [
+            "java.lang.IllegalArgumentException when baseMillis <= 0 || capMillis < baseMillis || attempt < 0"
+          ],
+          "verdict": "verified",
+          "domain": "baseMillis: int × capMillis: int × attempt: int × requestId: long",
+          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over baseMillis: int × capMillis: int × attempt: int × requestId: long in 0.1 s; loops unwound 16 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.051,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 599.981,
+                "seconds": 0.017,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.0,
+                  "encoding": 0.002,
+                  "solving": 0.014,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 3058,
+                  "clauses": 9992
+                }
+              }
+            ],
+            "native": {
+              "paths": 6,
+              "merges": 0,
+              "solverCalls": 7,
+              "solvingSeconds": 0.014078731,
+              "gatesEvaluated": 1052,
+              "evaluatingSeconds": 2.6762e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 3058,
+              "clauses": 9992,
+              "seconds": 0.017086615,
+              "loadingSeconds": 0.000577364,
+              "decodingSeconds": 2.8544e-05,
+              "encodingSeconds": 0.002002387,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "advised",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.5",
+                "kind": "jdk-constructor",
+                "call": "java.util.Random.<init>(long)",
+                "sites": [
+                  "net.terminalvalue.crosscut.retry.Jitter.fullJitterMillis:27"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "contract",
+                "contract": {
+                  "summary": "throws nothing; modifies nothing",
+                  "writtenBy": "an agent (Claude Opus 5.5), from the documentation of Random(long): it sets the seed, and throws nothing",
+                  "evidence": "tested",
+                  "testing": {
+                    "inputs": 168,
+                    "returned": 168,
+                    "thrown": [],
+                    "outside": 0,
+                    "exhausted": 0,
+                    "seed": 1,
+                    "jdk": "25.0.5"
+                  },
+                  "unproved": "only a static method's contract is proved against the JDK's bytecode: the call has an object whose state the tool's own checker does not keep",
+                  "recorded": "checked once, on JDK 25.0.5 by jvmcontract 0.1.0, and recorded in the contract library, not checked again by this run",
+                  "file": "lib/models/contracts/java.util.Random.contracts",
+                  "line": 5
+                }
+              },
+              {
+                "id": "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.5",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.Random.nextInt(int)",
+                "sites": [
+                  "net.terminalvalue.crosscut.retry.Jitter.fullJitterMillis:27"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "contract",
+                "contract": {
+                  "summary": "throws java.lang.IllegalArgumentException when bound <= 0; then 0 <= result && result < bound; modifies this",
+                  "writtenBy": "an agent (Claude Opus 5.5), from the documentation of Random.nextInt(int): a value at least zero and below the bound",
+                  "evidence": "tested",
+                  "testing": {
+                    "inputs": 166,
+                    "returned": 82,
+                    "thrown": [
+                      84
+                    ],
+                    "outside": 0,
+                    "exhausted": 0,
+                    "seed": 1,
+                    "jdk": "25.0.5",
+                    "receiver": "new java.util.Random()"
+                  },
+                  "unproved": "only a static method's contract is proved against the JDK's bytecode: the call has an object whose state the tool's own checker does not keep",
+                  "recorded": "checked once, on JDK 25.0.5 by jvmcontract 0.1.0, and recorded in the contract library, not checked again by this run",
+                  "file": "lib/models/contracts/java.util.Random.contracts",
+                  "line": 10
+                }
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "baseMillis",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "capMillis",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "attempt",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "requestId",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "baseMillis: int × capMillis: int × attempt: int × requestId: long"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "contract",
+                "text": "java.util.Random.<init>(long): throws nothing; modifies nothing (written by an agent (Claude Opus 5.5), from the documentation of Random(long): it sets the seed, and throws nothing)",
+                "basis": "tested",
+                "id": "jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.5"
+              },
+              {
+                "kind": "contract",
+                "text": "java.util.Random.nextInt(int): throws java.lang.IllegalArgumentException when bound <= 0; then 0 <= result && result < bound; modifies this (written by an agent (Claude Opus 5.5), from the documentation of Random.nextInt(int): a value at least zero and below the bound)",
+                "basis": "tested",
+                "id": "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.5"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result >= 0 && result < capMillis",
+              "exceptions": "none may be thrown but as a throws clause says: java.lang.IllegalArgumentException when baseMillis <= 0 || capMillis < baseMillis || attempt < 0"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+              "classes": 17,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback"
+                ]
+              }
+            },
+            "gapMode": "advised",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "harness",
+              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified: property holds on every input, relying on 2 contracts for gaps (2 tested)",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.crosscut.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java",
+      "startLine": 1,
+      "code": ""
+    },
+    "after": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java",
+      "startLine": 1,
+      "code": "package net.terminalvalue.crosscut.retry;\n\nimport java.util.Random;\n\n/**\n * Full jitter: a retry waits a time drawn uniformly from nothing up to the exponential backoff's delay, so that the\n * clients one failure released together do not come back together (Brooker, \"Exponential Backoff And Jitter\",\n * 2015; Resilience4j's {@code IntervalFunction.ofExponentialRandomBackoff}). The draw is seeded by the request and\n * the attempt, so that a test, or a replay of a request log, sees the waits the service saw.\n */\npublic final class Jitter {\n\n    private Jitter() {}\n\n    /**\n     * The wait before the given attempt of a request, in milliseconds: at least zero and less than the ceiling, the\n     * base doubled {@code attempt} times and stopping at the cap. The doubling is a shift, and it stops one short of\n     * the base's sign bit, the base's leading zeros less one, so that the ceiling stays positive however many\n     * attempts there were; the cap is reached long before that for any policy in use.\n     */\n    public static int fullJitterMillis(int baseMillis, int capMillis, int attempt, long requestId) {\n        if (baseMillis <= 0 || capMillis < baseMillis || attempt < 0) {\n            throw new IllegalArgumentException(\"the base must be positive, the cap at least the base, the attempt not negative\");\n        }\n        int shift = Math.min(attempt, Integer.numberOfLeadingZeros(baseMillis) - 1);\n        int ceiling = Math.min(capMillis, baseMillis << shift);\n        return new Random(requestId * 31 + attempt).nextInt(ceiling);\n    }\n}\n"
+    },
+    "casesTotal": null,
+    "domain": "baseMillis: int × capMillis: int × attempt: int × requestId: long",
+    "counterexamples": [],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over baseMillis: int × capMillis: int × attempt: int × requestId: long in 0.1 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "statement": "statement.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": {
+      "assert": "result >= 0 && result < capMillis",
+      "assume": null,
+      "throws": [
+        "java.lang.IllegalArgumentException when baseMillis <= 0 || capMillis < baseMillis || attempt < 0"
+      ]
+    },
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt"
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "62252530510057c3a3cc5158a062fc9a18ec65eadf59d5977338f4c0cdea6678",
+        "bytes": 2174
+      },
+      {
+        "path": "statement.java",
+        "sha256": "e1aec690f9f368b5ac9cbc4b8ec9897dce6faf5628d0846157ac3393a74bb002",
+        "bytes": 1765
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "1a2e9a9efd3196084b3f5326c5f9a8cc44c0e3d7d014086034207749306186aa",
+        "bytes": 1570
+      }
+    ]
+  }
+}
