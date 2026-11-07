@@ -637,9 +637,42 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     not under implied equations, the `correspondence` option's doc), `statement.rs` (the constructible assumption
     and the observations' words for a same-shape parameter), `lib/README.md` (step 5, `differs`,
     `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (two tests, the `price` test, the `bump` assertion).
-- Next: H5's rest, seventh step: an input equation whose expression reads another object parameter's fields
-  (`old.l.total == new.l.price * new.o.count`, refused today as "reads the fields of the new version's o, which is
-  not the parameter in l's place"), made before the call and compared after it as a primitive parameter's read is.
+- **H5's rest, seventh step (2026-11-07): input equations that read another object parameter's fields.** A computed
+  equation's expression may read a primitive field path of another object parameter of the new version made by its
+  constructor, where the path is a leaf of that object's construction, read as the argument it was made from: a
+  `Line(long total)` that now holds its unit price, `Line(long price)`, beside an `Order(int count)` both versions
+  take, is related by `old.l.total == new.l.price * new.o.count`. The read is a parameter read
+  ([`harness::Read`](../../lib/src/harness/mod.rs) with `param`) of the path `o.count`, which `Layout::new` resolves
+  to the order's leaf, its flat parameter of that name, so everything a primitive parameter's read does it does: the
+  harness makes the previous line from it before the calls (`new before.orders.Line((long) (l_price * o_count))`),
+  checks the objects as made, and compares the expression over the new line's paths and the order's argument as the
+  call got it after them; the replay, the views and the `--json` call read it too. The order is compared field by
+  field as without a correspondence (`o: count`). `roots` takes an expression over several objects' fields as about
+  the parameter of the previous root's name, or else the one in its place. Refused by name: a path the other object
+  doesn't have, one that is no leaf of its construction, a root that is no object parameter made by its constructor,
+  and an object that may be null or another parameter's (`--nullable`, `--may-alias`), whose argument is then not its
+  field. A call that changes the other object leaves the equation reading its argument as the call got it.
+  - Evidence inline: `lib/tests/heap.rs`, an order kernel (`orders.Order`, `orders.Line`, `orders.Orders`) and two
+    tests: `discounted` and `reprice` verified, the harness's source, the domain and the observations' words
+    checked; a discount from the eleventh item refuted in the result (`o=new Order(10)`) and a unit price set to the
+    line's amount refuted in `field:l, field:l.total`, both on the JVM; an unknown path and a nullable order named.
+    Through `spec::heap::check`: refused where the contract anchors `l`; under a stated derivation, verified on the
+    rewrites and the discount defect refuted. A unit test (the reads, `roots` over several objects, the Java text, the
+    layout's flat index, three refusals); two refusals of the earlier tests now name the parameter that is no object
+    in place of "the fields of several parameters". Unit tests (200), `heap.rs` (44), `foundations.rs`,
+    `conformance.rs` and `integration.rs` (64, one test at a time, 106 s) pass.
+  - *For review* unless it comes back in this cycle: quick job `20261107-115201`, the new ignored test in `heap.rs`,
+    the four checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `after` verified for `discounted`
+    and `reprice`, `defect` refuted for both with witnesses run on a JVM.
+  - Not yet: a read of another object's field that is not a leaf of its construction, or of that object as the call
+    leaves it; an equation that reads only other objects' fields by a path (`old.l.count == new.o.count`, still refused
+    as relating `l` to `o`).
+  - Shared files changed: `equivalence.rs` (the new version's objects passed to `relate`, the refusal of a nullable
+    or shared one, two comments and the `correspondence` option's doc), `lib/README.md` (step 5, `spec::heap::check`'s
+    paragraph), `lib/tests/heap.rs` (the order kernel).
+- Next: H5's rest, eighth step: an output relation for the result that reads the previous version's parameters
+  (`old.n`, `old.q.cents`), refused today as "reads old.q: an output relation over the previous version's parameters
+  is not supported yet": a primitive one as the parameter in its place, an object's field path as the call left it.
 - Status: working
 
 ## Loop settings

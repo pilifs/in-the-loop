@@ -238,10 +238,11 @@ fn path_of<'a>(text: &'a str, side: &str) -> Option<(&'a str, &'a str)> {
 
 /// The roots the correspondence's input equations are about, `q` for `old.q.cents == new.q.amount.cents`, and
 /// whether the equation relates the two as a whole, with each equation not supported named as a gap. The previous
-/// version's side is a field path; the new one's a field path, or an expression over field paths of one parameter
-/// and the new version's primitive parameters (H5's rest), `new.p.dollars * 100 + new.p.cents` or `new.l.price *
-/// new.n`. The new root is none for an expression that reads no field, `new.n * 100`, which is about the parameter
-/// in the previous one's place.
+/// version's side is a field path; the new one's a field path, or an expression over field paths of object
+/// parameters and the new version's primitive parameters (H5's rest), `new.p.dollars * 100 + new.p.cents`,
+/// `new.l.price * new.n` or `new.l.price * new.o.count`. The new root is none for an expression that reads no field,
+/// `new.n * 100`, which is about the parameter in the previous one's place, and so is one over several objects'
+/// fields none of which has the previous root's name.
 pub(crate) fn roots(correspondence: &Correspondence) -> Result<Vec<(String, Option<String>, bool)>, String> {
     let mut out = Vec::new();
     for e in &correspondence.inputs {
@@ -266,18 +267,23 @@ fn new_path(e: &super::Equation) -> Option<(&str, &str)> {
 
 /// The one parameter whose fields an expression on the new side reads, `p` for `new.p.dollars * 100 + new.p.cents`
 /// and for `new.p.price * new.n`, where `n` is a parameter it reads as a whole (a primitive, [`relate`] checks);
-/// none where it reads parameters only as a whole.
+/// none where it reads parameters only as a whole. Of several whose fields it reads, `new.l.price * new.o.count`, the
+/// one of the previous version's root's name, else none: the parameter in the previous one's place, [`relate`]
+/// reading the others as the arguments they were made from.
 fn expression_root(e: &super::Equation) -> Result<Option<String>, String> {
     let pieces = new_pieces(&e.new).map_err(|why| format!("the correspondence's input equation {} == {} {why}", e.old, e.new))?;
     let mut roots: Vec<&str> = pieces.iter().filter_map(|p| p.as_ref().err().filter(|(_, path)| !path.is_empty()).map(|(root, _)| root.as_str())).collect();
     roots.sort();
     roots.dedup();
     let reads = pieces.iter().any(Result::is_err);
+    let old_root = path_of(&e.old, "old").map(|(root, _)| root);
     match roots.as_slice() {
         [root] => Ok(Some(root.to_string())),
         [] if reads => Ok(None),
         [] => Err(format!("the correspondence's input equation {} == {} reads nothing of the new version's input: an equation gives the previous version's field from the new one's", e.old, e.new)),
-        _ => Err(format!("the correspondence's input equation {} == {} reads the fields of several of the new version's parameters ({}): only an expression over one object parameter's fields and the primitive parameters is supported yet", e.old, e.new, roots.join(", "))),
+        // Several objects' fields (H5's rest): about the parameter of the previous one's name if it reads it, or
+        // else the one in its place, the others read as the arguments they were made from.
+        several => Ok(old_root.filter(|r| several.contains(r)).map(str::to_string)),
     }
 }
 
@@ -424,9 +430,11 @@ pub(crate) fn output_relation(correspondence: &Correspondence) -> Result<Option<
 /// field path of the previous version's object and one of the new one's, or an expression over the new one's
 /// (`old.p.cents == new.p.dollars * 100 + new.p.cents`, H5's rest), every leaf of the previous version's
 /// construction given by one naming leaves of the new one's, and every primitive field of the previous version's
-/// object in one, so that none of the observations it was held to leaves the count. None when no equation is about
-/// it; `Err` names what is not supported.
-pub(crate) fn relate(correspondence: &Correspondence, old_name: &str, new_name: &str, new: &RecordType, old: &RecordType, params: &[(String, Type)]) -> Option<Result<Corresponds, String>> {
+/// object in one, so that none of the observations it was held to leaves the count. An expression may read the new
+/// version's primitive parameters (`params`) and the field paths of its other object parameters (`objects`) that
+/// are leaves of their construction, `new.l.price * new.o.count`, each the argument it was made from as the call got
+/// it. None when no equation is about it; `Err` names what is not supported.
+pub(crate) fn relate(correspondence: &Correspondence, old_name: &str, new_name: &str, new: &RecordType, old: &RecordType, params: &[(String, Type)], objects: &[(String, RecordType)]) -> Option<Result<Corresponds, String>> {
     let (Some(fields), Some(old_fields)) = (&new.fields, &old.fields) else { return None };
     let mut equations = Vec::new();
     let paths_of = |f: &crate::harness::Fields| f.paths().iter().map(|(p, _)| p.clone()).collect::<Vec<_>>().join(", ");
@@ -480,10 +488,31 @@ pub(crate) fn relate(correspondence: &Correspondence, old_name: &str, new_name: 
                     };
                     computed.pieces.push(Piece::Read(at));
                 }
-                Err((root, path)) => {
-                    if root != new_name {
-                        return Some(Err(format!("the correspondence's input equation {text} reads the fields of the new version's {root}, which is not the parameter in {old_name}'s place; only an expression over the same parameter's fields and the primitive parameters is supported yet")));
+                // A field path of another object parameter of the new version (H5's rest): a leaf of its
+                // construction, read as a primitive parameter is, the argument it was made from as the call got it,
+                // its flat parameter `o.count` once the layout lays the parameters out.
+                Err((root, path)) if root != new_name => {
+                    let Some((_, other)) = objects.iter().find(|(n, r)| *n == root && r.is_made()) else {
+                        return Some(Err(format!("the correspondence's input equation {text} reads the fields of the new version's {root}, which is not an object parameter of the new version made by its constructor ({}); only an expression over object parameters' fields and the primitive parameters is supported yet", objects.iter().filter(|(_, r)| r.is_made()).map(|(n, _)| n.as_str()).collect::<Vec<_>>().join(", "))));
+                    };
+                    let Some(other_fields) = &other.fields else { unreachable!("made") };
+                    let Some((_, ty)) = field_steps(other_fields, &path).filter(|(_, ty)| ty.is_primitive()) else {
+                        return Some(Err(format!("the correspondence's input equation {text} reads {root}.{path}, which is not a primitive field path of the new version's {} ({})", other.simple_name(), paths_of(other_fields))));
+                    };
+                    if !other.components.iter().any(|(c, u)| *c == path && *u == ty) {
+                        return Some(Err(format!("the correspondence's input equation {text} reads {root}.{path}, which is not a leaf of the new version's construction of {root} ({}): another parameter's field is read as the argument it was made from", other.components.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>().join(", "))));
                     }
+                    let flat = format!("{root}.{path}");
+                    let at = match computed.reads.iter().position(|r| r.param && r.path == flat) {
+                        Some(at) => at,
+                        None => {
+                            computed.reads.push(Read { path: flat, ty, leaf: usize::MAX, param: true });
+                            computed.reads.len() - 1
+                        }
+                    };
+                    computed.pieces.push(Piece::Read(at));
+                }
+                Err((_, path)) => {
                     let Some((_, ty)) = field_steps(fields, &path).filter(|(_, ty)| ty.is_primitive()) else {
                         return Some(Err(format!("the correspondence's input equation {text} reads {path}, which is not a primitive field path of the new version's {} ({})", new.simple_name(), paths_of(fields))));
                     };
@@ -714,17 +743,17 @@ mod tests {
     fn the_previous_object_is_made_from_the_leaves_its_equations_name() {
         let (new, old) = quotes();
         let c = correspondence(&[("old.q.cents", "new.q.amount.cents"), ("old.q.quantity", "new.q.quantity")]);
-        let related = relate(&c, "q", "q", &new, &old, &[]).expect("about q").expect("supported");
+        let related = relate(&c, "q", "q", &new, &old, &[], &[]).expect("about q").expect("supported");
         // The previous constructor takes (quantity, cents): the new leaves are (amount.cents, quantity).
         assert_eq!(related.leaves, vec![Source::Leaf(1), Source::Leaf(0)]);
         assert_eq!(related.equations[0], FieldEquation { old: "cents".into(), new: "amount.cents".into(), ty: Type::Long, computed: None });
-        assert!(relate(&c, "p", "p", &new, &old, &[]).is_none(), "no equation is about p");
+        assert!(relate(&c, "p", "p", &new, &old, &[], &[]).is_none(), "no equation is about p");
     }
 
     #[test]
     fn what_the_narrow_case_does_not_cover_is_named() {
         let (new, old) = quotes();
-        let gap = |pairs: &[(&str, &str)]| relate(&correspondence(pairs), "q", "q", &new, &old, &[]).expect("about q").expect_err("a gap");
+        let gap = |pairs: &[(&str, &str)]| relate(&correspondence(pairs), "q", "q", &new, &old, &[], &[]).expect("about q").expect_err("a gap");
         assert!(gap(&[("old.q.cents", "new.q.amount.cents")]).contains("q.quantity is in no equation"));
         assert!(gap(&[("old.q.cents", "new.q.quantity"), ("old.q.quantity", "new.q.quantity")]).contains("of type long to one of type int"));
         assert!(gap(&[("old.q.cents", "new.q.price"), ("old.q.quantity", "new.q.quantity")]).contains("not a primitive field path of the new version's Quote"));
@@ -742,14 +771,14 @@ mod tests {
         let (new, old) = prices();
         let c = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
         assert_eq!(roots(&c).unwrap(), vec![("p".to_string(), Some("p".to_string()), false)]);
-        let related = relate(&c, "p", "p", &new, &old, &[]).expect("about p").expect("supported");
+        let related = relate(&c, "p", "p", &new, &old, &[], &[]).expect("about p").expect("supported");
         let Source::Computed(e) = &related.leaves[0] else { panic!("computed: {related:?}") };
         assert_eq!(e.reads.iter().map(|r| (r.path.as_str(), r.leaf)).collect::<Vec<_>>(), vec![("dollars", 0), ("cents", 1)]);
         assert_eq!(e.eval(&[crate::interp::Value::Long(3), crate::interp::Value::Int(25)]).unwrap(), crate::interp::Value::Long(325));
         assert_eq!(related.equations[0].text("p", "p"), "old.p.cents == new.p.dollars * 100 + new.p.cents");
         assert_eq!(related.equations[0].new, "dollars * 100 + cents");
         // A path read twice is one read.
-        let twice = relate(&correspondence(&[("old.p.cents", "new.p.cents + new.p.cents + new.p.dollars")]), "p", "p", &new, &old, &[]).unwrap().unwrap();
+        let twice = relate(&correspondence(&[("old.p.cents", "new.p.cents + new.p.cents + new.p.dollars")]), "p", "p", &new, &old, &[], &[]).unwrap().unwrap();
         let Source::Computed(e) = &twice.leaves[0] else { panic!() };
         assert_eq!(e.reads.len(), 2);
     }
@@ -760,7 +789,7 @@ mod tests {
         let params = [("p".to_string(), Type::Object("p/Price".into())), ("n".to_string(), Type::Int), ("q".to_string(), Type::Object("p/Price".into())), ("f".to_string(), Type::Float)];
         let c = correspondence(&[("old.p.cents", "(new.p.dollars * 100 + new.p.cents) * new.n + new.n")]);
         assert_eq!(roots(&c).unwrap(), vec![("p".to_string(), Some("p".to_string()), false)]);
-        let related = relate(&c, "p", "p", &new, &old, &params).expect("about p").expect("supported");
+        let related = relate(&c, "p", "p", &new, &old, &params, &[]).expect("about p").expect("supported");
         let Source::Computed(e) = &related.leaves[0] else { panic!("computed: {related:?}") };
         // The parameter is read once, its flat index left to the layout.
         assert_eq!(e.reads.iter().map(|r| (r.path.as_str(), r.param)).collect::<Vec<_>>(), vec![("dollars", false), ("cents", false), ("n", true)]);
@@ -777,23 +806,49 @@ mod tests {
             let c = correspondence(&[("old.p.cents", new_side)]);
             match roots(&c) {
                 Err(e) => e,
-                Ok(_) => relate(&c, "p", "p", &new, &old, &params).expect("about p").expect_err("a gap"),
+                Ok(_) => relate(&c, "p", "p", &new, &old, &params, &[]).expect("about p").expect_err("a gap"),
             }
         };
         assert!(gap("new.p.cents * new.m").contains("reads new.m, which is not a parameter of the new version (p, n, q, f)"));
         assert!(gap("new.p.cents * new.q").contains("reads new.q as a whole"));
         assert!(gap("new.p.cents + new.p").contains("reads new.p as a whole"));
         assert!(gap("new.p.cents * new.f").contains("reads new.f as a whole"));
-        assert!(gap("new.p.cents + new.q.cents").contains("reads the fields of several of the new version's parameters (p, q)"));
+        assert!(gap("new.p.cents + new.q.cents").contains("reads the fields of the new version's q, which is not an object parameter of the new version made by its constructor ()"));
         // An expression over parameters alone is about the parameter in the previous one's place, and so is the
         // parameter alone.
         for new_side in ["new.n * 100", "new.n"] {
             let c = correspondence(&[("old.p.cents", new_side)]);
             assert_eq!(roots(&c).unwrap(), vec![("p".to_string(), None, false)], "{new_side}");
-            let related = relate(&c, "p", "p", &new, &old, &params).expect("about p").expect("supported");
+            let related = relate(&c, "p", "p", &new, &old, &params, &[]).expect("about p").expect("supported");
             let Source::Computed(e) = &related.leaves[0] else { panic!("computed: {related:?}") };
             assert_eq!(e.reads.iter().map(|r| (r.path.as_str(), r.param)).collect::<Vec<_>>(), vec![("n", true)]);
         }
+    }
+
+    #[test]
+    fn an_expression_may_read_another_object_parameters_leaves_as_the_arguments_it_was_made_from() {
+        let (new, old) = prices();
+        let order = RecordType::made("p/Order", vec![("count".into(), Type::Int)], Vec::new(), Fields { class: "p/Order".into(), fields: vec![("count".into(), FieldKind::Value(Type::Int)), ("seen".into(), FieldKind::Value(Type::Int))] });
+        let params = [("p".to_string(), Type::Object("p/Price".into())), ("o".to_string(), Type::Object("p/Order".into()))];
+        let objects = [("p".to_string(), new.clone()), ("o".to_string(), order.clone())];
+        let c = correspondence(&[("old.p.cents", "(new.p.dollars * 100 + new.p.cents) * new.o.count")]);
+        // About the parameter of the previous root's name; of several none of which has it, the one in its place.
+        assert_eq!(roots(&c).unwrap(), vec![("p".to_string(), Some("p".to_string()), false)]);
+        assert_eq!(roots(&correspondence(&[("old.r.cents", "new.p.cents * new.o.count")])).unwrap(), vec![("r".to_string(), None, false)]);
+        let related = relate(&c, "p", "p", &new, &old, &params, &objects).expect("about p").expect("supported");
+        let Source::Computed(e) = &related.leaves[0] else { panic!("computed: {related:?}") };
+        assert_eq!(e.reads.iter().map(|r| (r.path.as_str(), r.param)).collect::<Vec<_>>(), vec![("dollars", false), ("cents", false), ("o.count", true)]);
+        assert!(related.equations[0].reads_parameters());
+        assert_eq!(related.equations[0].text("p", "p"), "old.p.cents == (new.p.dollars * 100 + new.p.cents) * new.o.count");
+        assert_eq!(related.equations[0].new_side("p_after"), "(p_after.dollars * 100 + p_after.cents) * o_count");
+        // Laid out, the read is the order's leaf, after the price's.
+        let layout = crate::harness::Layout::new(None, &["p".into(), "o".into()], &[Type::Object("p/Price".into()), Type::Object("p/Order".into())], &[Some((new.clone(), Some(RecordType { corresponds: Some(related.clone()), ..old.clone() }))), Some((order.clone(), Some(order.clone())))], (None, None));
+        let crate::harness::Slot::Record { before: Some(previous), first, .. } = &layout.args[0] else { panic!() };
+        assert_eq!(previous.leaves(*first), vec![crate::harness::Leaf::Computed(Computed { reads: e.reads.iter().cloned().map(|r| Read { leaf: if r.param { 2 } else { r.leaf }, ..r }).collect(), ..e.clone() }, vec![0, 1, 2])]);
+        let gap = |new_side: &str| relate(&correspondence(&[("old.p.cents", new_side)]), "p", "p", &new, &old, &params, &objects).expect("about p").expect_err("a gap");
+        assert!(gap("new.p.cents * new.o.size").contains("reads o.size, which is not a primitive field path of the new version's Order (count, seen)"));
+        assert!(gap("new.p.cents * new.o.seen").contains("reads o.seen, which is not a leaf of the new version's construction of o (count)"));
+        assert!(gap("new.p.cents * new.r.count").contains("reads the fields of the new version's r, which is not an object parameter of the new version made by its constructor (p, o)"));
     }
 
     #[test]
@@ -803,11 +858,11 @@ mod tests {
             let c = correspondence(&[(old_side, new_side)]);
             match roots(&c) {
                 Err(e) => e,
-                Ok(_) => relate(&c, "p", "p", &new, &old, &[]).expect("about p").expect_err("a gap"),
+                Ok(_) => relate(&c, "p", "p", &new, &old, &[], &[]).expect("about p").expect_err("a gap"),
             }
         };
         assert!(gap("old.p.cents", "new.p.dollars * 100 + old.p.cents").contains("reads the previous version's input"));
-        assert!(gap("old.p.cents", "new.p.dollars + new.q.cents").contains("reads the fields of several of the new version's parameters (p, q)"));
+        assert!(gap("old.p.cents", "new.p.dollars + new.q.cents").contains("reads the fields of the new version's q, which is not an object parameter"));
         assert!(gap("old.p.cents", "100").contains("reads nothing of the new version's input"));
         assert!(gap("old.p.cents", "new.p * 2").contains("reads new.p as a whole"));
         assert!(gap("old.p.cents + 1", "new.p.cents").contains("does not have a field path of the previous version's input"));
@@ -840,7 +895,7 @@ mod tests {
         let mut c = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
         let holds = "new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && new.p.dollars * 100 + new.p.cents - old.p.cents < 100";
         c.outputs.push(super::super::Relation { observation: "field:p.cents".into(), holds: holds.into() });
-        let related = relate(&c, "p", "p", &new, &old, &[]).expect("about p").expect("supported");
+        let related = relate(&c, "p", "p", &new, &old, &[], &[]).expect("about p").expect("supported");
         let [r] = related.relations.as_slice() else { panic!("one relation: {related:?}") };
         assert_eq!((r.path.as_str(), r.observation("p")), ("cents", "field:p.cents".to_string()));
         assert_eq!(r.reads.iter().map(|x| (x.previous, x.path.as_str())).collect::<Vec<_>>(), vec![(false, "dollars"), (false, "cents"), (true, "cents")]);
@@ -855,7 +910,7 @@ mod tests {
         let gap = |observation: &str, holds: &str| {
             let mut c = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
             c.outputs.push(super::super::Relation { observation: observation.into(), holds: holds.into() });
-            relate(&c, "p", "p", &new, &old, &[]).expect("about p").expect_err("a gap")
+            relate(&c, "p", "p", &new, &old, &[], &[]).expect("about p").expect_err("a gap")
         };
         assert!(gap("field:p.euros", "true").contains("names euros, which is not a field path of the previous version's Price"));
         assert!(gap("field:p.cents", "new.p.dollars").contains("is not a boolean"));
@@ -866,11 +921,11 @@ mod tests {
         for o in ["field:p", "field:p.cents"] {
             both.outputs.push(super::super::Relation { observation: o.into(), holds: "true".into() });
         }
-        assert!(relate(&both, "p", "p", &new, &old, &[]).unwrap().unwrap_err().contains("overlaps the one for field:p"));
+        assert!(relate(&both, "p", "p", &new, &old, &[], &[]).unwrap().unwrap_err().contains("overlaps the one for field:p"));
         // About another parameter: not p's.
         let mut other = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
         other.outputs.push(super::super::Relation { observation: "field:pp.cents".into(), holds: "true".into() });
-        assert!(relate(&other, "p", "p", &new, &old, &[]).unwrap().unwrap().relations.is_empty());
+        assert!(relate(&other, "p", "p", &new, &old, &[], &[]).unwrap().unwrap().relations.is_empty());
         assert_eq!(field_relation_roots(&other).iter().map(|(root, _)| root.as_str()).collect::<Vec<_>>(), ["pp"]);
     }
 

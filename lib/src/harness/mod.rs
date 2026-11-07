@@ -295,7 +295,8 @@ pub enum Piece {
 
 /// What a [`Computed`] expression reads: a field path of the new object, `dollars`, of the type `ty`, which is the
 /// new construction's leaf of index `leaf`; or, where `param` (H5's rest), the new version's primitive parameter
-/// named `path`, `n`, which is the flat parameter of index `leaf` once [`Layout::new`] lays the parameters out.
+/// named `path`, `n`, or a leaf of another object parameter's construction, `o.count`, the argument it was made
+/// from, which is the flat parameter of index `leaf` once [`Layout::new`] lays the parameters out.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Read {
     pub path: String,
@@ -397,10 +398,11 @@ impl FieldEquation {
     }
 
     /// The new side over the object `root`: `root.amount.cents`, or `root.dollars * 100 + root.cents`; a parameter
-    /// an expression reads is by its name, `root.price * n`.
+    /// an expression reads is by its name in the harness's Java, `root.price * n`, and another object's leaf as
+    /// its flat parameter, `root.price * o_count`.
     pub fn new_side(&self, root: &str) -> String {
         match &self.computed {
-            Some(c) => c.text(&|p| format!("{root}.{p}")),
+            Some(c) => c.text_with(&|p| format!("{root}.{p}"), &|n| n.replace('.', "_")),
             None => format!("{root}.{}", self.new),
         }
     }

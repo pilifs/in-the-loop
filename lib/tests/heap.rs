@@ -1509,6 +1509,182 @@ fn the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
+// Input equations whose expression reads another object parameter's fields (H5's rest): a line that held its total
+// now holds its unit price, the count kept by an order passed beside it in both versions.
+
+const ORDER: &str = r#"package orders;
+public final class Order {
+    int count;
+    public Order(int count) {
+        if (count < 0) throw new IllegalArgumentException();
+        this.count = count;
+    }
+}
+"#;
+
+const ORDER_LINE_BEFORE: &str = r#"package orders;
+public final class Line {
+    long total;
+    public Line(long total) {
+        if (total < 0) throw new IllegalArgumentException();
+        this.total = total;
+    }
+}
+"#;
+
+const ORDER_LINE_AFTER: &str = r#"package orders;
+public final class Line {
+    long price;
+    public Line(long price) {
+        if (price < 0) throw new IllegalArgumentException();
+        this.price = price;
+    }
+}
+"#;
+
+const ORDERS_BEFORE: &str = r#"package orders;
+public final class Orders {
+    public static long discounted(Line l, Order o) { return o.count >= 10 ? l.total - l.total / 10 : l.total; }
+    public static void reprice(Line l, Order o, long price) { if (price >= 0) l.total = price * o.count; }
+}
+"#;
+
+const ORDERS_AFTER: &str = r#"package orders;
+public final class Orders {
+    public static long discounted(Line l, Order o) { long t = l.price * o.count; return o.count >= 10 ? t - t / 10 : t; }
+    public static void reprice(Line l, Order o, long price) { if (price >= 0) l.price = price; }
+}
+"#;
+
+const ORDERS_DEFECT: &str = r#"package orders;
+public final class Orders {
+    // The discount from the eleventh item rather than the tenth.
+    public static long discounted(Line l, Order o) { long t = l.price * o.count; return o.count > 10 ? t - t / 10 : t; }
+    // The unit price set to the line's amount: seen only in the line as the call leaves it.
+    public static void reprice(Line l, Order o, long price) { if (price >= 0) l.price = price * o.count; }
+}
+"#;
+
+/// The order kernel's builds, compiled once: `before` (`Line(long total)`), and `after` and `defect` (`Line(long
+/// price)`), each with the same `Order(int count)`.
+fn order_builds() -> Option<&'static PathBuf> {
+    static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
+    DIR.get_or_init(|| {
+        compiled()?;
+        let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-orders");
+        let _ = std::fs::remove_dir_all(&root);
+        for (build, line, orders) in [("before", ORDER_LINE_BEFORE, ORDERS_BEFORE), ("after", ORDER_LINE_AFTER, ORDERS_AFTER), ("defect", ORDER_LINE_AFTER, ORDERS_DEFECT)] {
+            let src = root.join(format!("{build}-src/orders"));
+            std::fs::create_dir_all(&src).unwrap();
+            std::fs::write(src.join("Order.java"), ORDER).unwrap();
+            std::fs::write(src.join("Line.java"), line).unwrap();
+            std::fs::write(src.join("Orders.java"), orders).unwrap();
+            let files = ["Order.java", "Line.java", "Orders.java"].map(|f| src.join(f));
+            let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-d"]).arg(root.join(build)).args(&files).status().expect("javac runs");
+            assert!(status.success(), "the order kernel compiles");
+        }
+        Some(root)
+    })
+    .as_ref()
+}
+
+const ORDER_PRICE: &str = "new.l.price * new.o.count";
+
+fn order_price() -> jvmcontract::spec::Correspondence {
+    correspondence(&[("old.l.total", ORDER_PRICE)], None)
+}
+
+#[test]
+fn an_equations_expression_over_another_object_parameters_fields_makes_and_compares_the_previous_object() {
+    let Some(root) = order_builds() else { return };
+    let o = related(root, "after", "orders.Orders#discounted", order_price(), "discounted");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let domain = o.domain.as_deref().unwrap_or_default();
+    assert!(domain.contains("as the correspondence's input equations say (old.l.total == new.l.price * new.o.count)"), "{domain}");
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    // The previous line is made from the order's argument, its flat parameter, and so checked as made.
+    assert!(source.contains("l_before = new before.orders.Line((long) (l_price * o_count));"), "made from the order's count: {source}");
+    assert!(source.contains("if (!(l_before.total == (l_after.price * o_count))) { return; }"), "{source}");
+    // The line as the call leaves it is compared through the same equation, the order's count as the call got it;
+    // the order itself is compared field by field as without the correspondence.
+    let o = related(root, "after", "orders.Orders#reprice", order_price(), "reprice");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.objects, ["l: under the correspondence, old.l.total == new.l.price * new.o.count", "o: count"]);
+    // A discount from the eleventh item is refuted in the result, on a JVM too.
+    let o = related(root, "defect", "orders.Orders#discounted", order_price(), "discounted");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert!(cx.input.contains("o=new Order(10)"), "{}", cx.input);
+    assert_eq!(cx.differs, ["result"], "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // A unit price set to the line's amount is seen in the line as left.
+    let o = related(root, "defect", "orders.Orders#reprice", order_price(), "reprice");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["field:l", "field:l.total"], "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // Refused by name: a path the order doesn't have, and an order that may be null, whose count is then no field.
+    let o = related(root, "after", "orders.Orders#discounted", correspondence(&[("old.l.total", "new.l.price * new.o.size")], None), "unknown");
+    assert!(o.problem.as_deref().unwrap().contains("reads o.size, which is not a primitive field path of the new version's Order (count)"), "{}", o.output);
+    let mut options = jvmcontract::equivalence::Options::new(&root.join("before"), &root.join("after"), "orders.Orders#discounted");
+    options.engine = jvmcontract::Engine::Native;
+    options.correspondence = Some(order_price());
+    options.nullable = vec!["o".into()];
+    options.work = Some(root.join("work-related-nullable"));
+    let o = jvmcontract::equivalence::run(&options).unwrap();
+    assert!(o.problem.as_deref().unwrap().contains("reads new.o.count, and o may be null or another parameter's object"), "{}", o.output);
+}
+
+#[test]
+fn a_claim_over_an_equation_that_reads_another_object_is_checked_where_a_person_stated_it() {
+    use jvmcontract::spec::{Derivation, ExternalInput, ObservationState, Verdict as V};
+    let Some(root) = order_builds() else { return };
+    let claim_of = |subject: &str, derivation: Derivation| {
+        let mut claim = kernel_claim(subject, &[]);
+        claim.contract.inputs = vec![ExternalInput { name: "l".into(), ty: "orders.Line".into(), derivation }, ExternalInput { name: "o".into(), ty: "orders.Order".into(), derivation: Derivation::Identity }];
+        let domain = claim.domain.as_mut().unwrap();
+        domain.classes = vec!["orders.Line".into(), "orders.Order".into()];
+        domain.bounds.before.input_objects = 2;
+        domain.bounds.after.input_objects = 2;
+        claim.correspondence = Some(order_price());
+        claim
+    };
+    let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build));
+    let gap = check("after", &claim_of("orders.Orders#discounted", Derivation::Identity)).expect_err("an anchored input");
+    assert!(gap.what.contains("the preservation contract anchors l (its derivation is identity)"), "{gap:?}");
+    let stated = Derivation::Stated { expression: format!("old.l.total == {ORDER_PRICE}") };
+    for (build, method, verdict, state) in [("after", "discounted", V::Verified, ObservationState::Preserved), ("defect", "discounted", V::Refuted, ObservationState::Refuted), ("after", "reprice", V::Verified, ObservationState::Preserved)] {
+        let o = check(build, &claim_of(&format!("orders.Orders#{method}"), stated.clone())).expect("stated by a person");
+        assert_eq!(o.verdict, verdict, "{build} {method}: {o:?}");
+        assert_eq!(state_of(&o, "result"), state, "{build} {method}: {o:?}");
+    }
+}
+
+/// The equations that read another object under JBMC and under `auto --confirm`: the same verdicts as on the own
+/// checker, each refutation's witness run on a JVM, since JBMC checks the same harness. A pipeline job (`cargo test
+/// --release --test heap -- --ignored the_other_object_reads`).
+#[test]
+#[ignore = "runs JBMC on the equations that read another object: a pipeline job"]
+fn the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = order_builds() else { return };
+    let cases = [("after", "discounted", Verdict::Verified), ("after", "reprice", Verdict::Verified), ("defect", "discounted", Verdict::Violation), ("defect", "reprice", Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, method, expected) in cases {
+            let o = related_on(engine, confirm, root, build, &format!("orders.Orders#{method}"), order_price(), method);
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build} {method}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
 // Output relations for identity relations (H5's rest): a correspondence's relation over whether `result == q` holds
 // in each version, compared in place of "holds before iff it holds now", for a change that hands back a copy on
 // purpose.

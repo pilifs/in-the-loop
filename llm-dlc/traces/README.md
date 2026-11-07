@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 11:21 UTC |
-| Prompts | 1,153 |
-| Model calls | 11,723 |
-| Tool calls | 12,625 (249 failed) |
-| Compactions | 160 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 11:52 UTC |
+| Prompts | 1,159 |
+| Model calls | 11,781 |
+| Tool calls | 12,683 (249 failed) |
+| Compactions | 161 |
 | Subagents | 5 |
-| Tokens written | 14,117,998 |
-| Tokens read | 1,952,169,296 (98.0% from cache) |
-| Commits with a trace | 346 |
-| Log snapshots | 423 (1128.6 MB gzipped, 404 uploaded) |
+| Tokens written | 14,157,687 |
+| Tokens read | 1,961,902,516 (98.0% from cache) |
+| Commits with a trace | 347 |
+| Log snapshots | 424 (1135.7 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 7 h 19 min | `claude-opus-5-5` | 82 | 1,112 | 1,160 | 7 | 15 | 329,169 | 18 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | open | 7 h 51 min | `claude-opus-5-5` | 88 | 1,170 | 1,218 | 7 | 16 | 329,169 | 19 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,17 +127,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 911,409 | 2,250 | 3,672,127 | 206,026,801 | 98.2% | 230 |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 951,098 | 2,372 | 3,880,461 | 215,551,565 | 98.2% | 231 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 11,052 | 87.5% | 46 |
+| `Bash` | 11,092 | 87.5% | 46 |
 | `Edit` | 511 | 4.0% | 22 |
-| `Read` | 493 | 3.9% | 23 |
+| `Read` | 510 | 4.0% | 23 |
 | `Write` | 346 | 2.7% | 20 |
-| `ToolSearch` | 80 | 0.6% | 18 |
+| `ToolSearch` | 81 | 0.6% | 18 |
 | `Monitor` | 50 | 0.4% | 13 |
 | `WebFetch` | 26 | 0.2% | 6 |
 | `AskUserQuestion` | 24 | 0.2% | 7 |
@@ -501,6 +501,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 344 | change `syuyoumv` | Input equations whose expression reads the new version's primitive parameters, made before the call and compared after it (H5's rest, fourth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054.jsonl.gz)) |
 | 345 | change `npqyzsmm` | Output relations for identity relations, compared in place of holds before iff it holds now and accounted as the other output relations are (H5's rest, fifth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/05da9cd05a972639e75b09912ab17b92a7016b50fee3991e7faf5df7a38e782a.jsonl.gz)) |
 | 346 | change `ukqxumtt` | Output relations for a field of a parameter of the same shape in both versions, compared in place of equality for its path, and refutations that name each path an object differs in (H5's rest, sixth step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/e6a4e7db9105cf89d593b8f892b454b3df0d72f7db656623f1f9bfbb40f5b216.jsonl.gz)) |
+| 347 | change `roxunqxw` | Input equations whose expression reads another object parameter's fields, as the arguments it was made from, made before the call and compared after it (H5's rest, seventh step; verification pending) | [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) ([log](https://terminalvalue.net/raw-traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/8cda31194603744009bd21bc8084e13407a92982dbf47b329750d7a58d1be3f8.jsonl.gz)) |
 
 ## Logs
 
@@ -553,7 +554,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 18 | 0 | 60.1 MB | `e6a4e7db9105`, not uploaded |
+| [`750c8a36`](750c8a36-92b9-44e3-adad-ef96dc6aa676/summary.md) | 19 | 0 | 67.2 MB | `8cda31194603`, not uploaded |
 
 ## Session notes
 

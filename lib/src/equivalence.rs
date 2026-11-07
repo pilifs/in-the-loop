@@ -122,8 +122,8 @@ pub struct Options {
     pub results_agree_when: Option<String>,
     /// How the previous version's objects are made from the new version's and compared with them where their
     /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations giving
-    /// field paths of the previous version's parameter from the new one's, or an expression over them
-    /// ([`crate::spec::heap::relate`]), output relations for such a parameter's fields as the calls leave them in
+    /// field paths of the previous version's parameter from the new one's, or an expression over them, the new
+    /// version's primitive parameters and its other objects' arguments ([`crate::spec::heap::relate`]), output relations for such a parameter's fields as the calls leave them in
     /// place of the equations about them, or for the fields of one of the same shape in both versions in place of
     /// equality for their paths ([`crate::spec::heap::relate_same_shape`]), and an output relation for the result in place of
     /// [`Options::results_agree_when`] ([`crate::spec::heap::output_relation`]).
@@ -946,7 +946,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
     };
     // A correspondence's input equations (step H5): each giving a field path of the previous version's parameter, from
-    // a path or an expression over the same parameter's (H5's rest).
+    // a path or an expression over the same parameter's, the primitive parameters and other objects' arguments (H5's
+    // rest).
     let correspondence = options.correspondence.as_ref().filter(|c| !c.inputs.is_empty() || !c.outputs.is_empty());
     if let Some(c) = correspondence {
         if components_passed || options.results_agree_when.is_some() {
@@ -978,14 +979,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut both_records = Vec::new();
     // The new version's parameters, which an input equation's expression may read (H5's rest).
     let new_params: Vec<(String, Type)> = names.iter().cloned().zip(descriptor.params.iter().cloned()).collect();
+    // And its object parameters made by their constructor, whose leaves an expression may read (H5's rest).
+    let new_objects: Vec<(String, harness::RecordType)> = names.iter().zip(&records).filter_map(|(n, r)| r.as_ref().filter(|r| r.is_made()).map(|r| (n.clone(), r.clone()))).collect();
     for (i, ((name, t), record)) in names.iter().zip(&descriptor.params).zip(&records).enumerate() {
         both_records.push(match record {
             Some(r) if components_passed => Some((r.clone(), None)),
             Some(r) => match object_of(&before_cp, t)?.ok().flatten() {
                 // Under a correspondence's input equations about it, the previous version's object is made from
                 // the new one's leaves as they say, of whatever shape.
-                Some(mut b) if correspondence.is_some() && r.is_made() && b.is_made() && crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b, &new_params).is_some() => {
-                    match crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b, &new_params).expect("checked") {
+                Some(mut b) if correspondence.is_some() && r.is_made() && b.is_made() && crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b, &new_params, &new_objects).is_some() => {
+                    match crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b, &new_params, &new_objects).expect("checked") {
                         Ok(related) => {
                             b.corresponds = Some(related);
                             Some((r.clone(), Some(b)))
@@ -1112,6 +1115,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         if let Err(problem) = layout.choose(&options.nullable, &harness::alias_groups(&options.may_alias, &order)) {
             return refuse(&mut out, line, problem);
+        }
+        // An input equation reads another object's leaves as the arguments it was made from (H5's rest), which
+        // are not its fields where it is null or another parameter's object.
+        for (i, slot) in layout.args.iter().enumerate() {
+            let harness::Slot::Record { name, before: Some(previous), .. } = slot else { continue };
+            let Some(c) = previous.corresponds.as_ref() else { continue };
+            let read = c.equations.iter().find_map(|e| e.computed.as_ref()?.reads.iter().filter(|r| r.param).find_map(|r| r.path.split_once('.').map(|(root, _)| (e, root.to_string(), r.path.clone()))));
+            if let Some((e, root, path)) = read.filter(|(_, root, _)| layout.choice(root).is_some()) {
+                return refuse(&mut out, line, format!("the correspondence's input equation {} reads new.{path}, and {root} may be null or another parameter's object: an equation that reads another object's fields is supported only where that object is made by its constructor, of its own", e.text(&before_names[i], name)));
+            }
         }
     }
     // The correspondence's output relations for identity relations (H5's rest), each compared in place of "holds

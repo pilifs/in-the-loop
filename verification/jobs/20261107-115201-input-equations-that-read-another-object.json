@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-115201-input-equations-that-read-another-object",
+  "title": "Input equations that read another object parameter's fields (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A regression check's correspondence may now give the previous version's field from an expression that reads another object parameter's field, a leaf of that object's construction read as the argument it was made from: old.l.total == new.l.price * new.o.count, for a Line(long total) that became Line(long price) beside an Order(int count) both versions take. The harness makes the previous line from the order's leaf before the calls and compares the expression after them. On the own checker the new tests in lib/tests/heap.rs pass inline; this job runs the ignored one, which checks the order kernel's four cases (after and defect builds of Orders.discounted and Orders.reprice) under --engine jbmc and under auto --confirm, since JBMC checks the same harness bytecode.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/spec/heap.rs",
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines: after discounted and after reprice Verified; defect discounted and defect reprice Violation, each witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T11:52:01+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 8 small JBMC runs over a long times an int"
+  },
+  "steps": [
+    {
+      "name": "other-object reads under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored the_other_object_reads",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
