@@ -253,7 +253,90 @@ A change to `lib/models/` says under Progress which recorded JBMC results it may
   They are the planning session's base commit `oqqwvmqy`, whose log `3f768f3bb246` is stored only in the default
   workspace, and other workspaces' commits (`ruvmymplmmoo`, native; `syqpoxomnynk`, the verification loop) whose
   manifests are there. The foundations streams saw the same, and it resolved at the merge.
-- Status: waiting on jobs ID 20261107-172721-jbmc-s-extra-initializers-named-and-refu 20261107-172721-nullable-and-one-array-parameters-in-pro 20261107-172721-conformance-corpus-under-jbmc-and-engine 20261107-172721-conformance-corpus-under-engine-auto-con 20261107-164356-vf-018-objects-kernel-price-s-output-rel 20261107-164356-vf-018-prices-prices-total-s-computed-in 20261107-164356-vf-018-lines-lines-reprice-s-equations-t 20261107-164356-vf-018-orders-orders-reprice-s-equations 20261107-171442-vf-009-s-guard-measured-the-41-recorded
+- **The nine jobs read** (2026-11-07), at `a1e29ec6` unless named.
+  - **VF-009: its check passed.** Job `20261107-172721-jbmc-s-extra-initializers-named-and-refu` passed (34m03s).
+    In step 2, under `auto --confirm`, `boomTwice == 2` and `enumBroken == 12` are `NoVerdict Verified` under strict
+    and assume, and the test passes. Step 1 gives both `Jbmc/Strict Unverifiable` and `Auto/Strict Verified`.
+    Step 3 gives the draft report's `I.java` `VERIFICATION FAILED` twice, as before. VF-009 can be closed.
+  - **VF-019: its check passed.** Job `20261107-172721-nullable-and-one-array-parameters-in-pro` passed (23m10s).
+    Both ignored conformance tests pass, and the log names the six claims "refused by name before a harness, so no
+    verdict". VF-019 can be closed.
+  - **The guard measured.** Job `20261107-171442-vf-009-s-guard-measured-the-41-recorded` passed (5m52s).
+    `throwing-initializer` refuses none of the 41 recorded JBMC examples' 43 obligations under strict. The only
+    refusal at a JBMC defect is `037#0`, `unmasked-shift` in Mica's `SymbolTable.tableSizeFor`, the existing guard
+    (cause 3). Steps 2 and 3 show 5 obligations whose status differs between the engines: `013#0`, `035#0`,
+    `052#0`, `071#2` and `037#0`. None of them involves the new kind. The job's 89 changed outputs were not applied:
+    it is a measurement, not a record.
+  - **VF-018: deferred to the user.** At 1800 s, one of the four passed and three failed. By decision 6 there is no
+    second attempt, and the harness and the expectations are unchanged.
+    - `20261107-164356-vf-018-prices-prices-total-s-computed-in` passed (55m41s), so `Prices#total`'s JBMC runs
+      now finish within 1800 s, where they didn't within 600 s.
+    - Three failed, each on its first JBMC run under `--engine jbmc`, "JBMC did not finish within 1800 s", with the
+      claim `Unverifiable` where `Verified` was expected:
+      - `20261107-164356-vf-018-objects-kernel-price-s-output-rel` (`Kernel#price`, the test ran 3606 s);
+      - `-164356-vf-018-lines-lines-reprice-s-equations-t` (`Lines#reprice`, 3688 s);
+      - `-164356-vf-018-orders-orders-reprice-s-equations` (`Orders#reprice`, 3687 s).
+
+      That is two JBMC runs of 1800 s each. The second is `auto --confirm`'s JBMC run, whose time-out leaves the own
+      checker's `Verified` standing, so it is not among the failures.
+    - **The harness JBMC was given** is read from the own checker's work directories of the same claims, which a
+      local run of heap's non-ignored tests kept (`lib/target/tmp/heap-*/work-related-after-*-Native-false`). JBMC
+      checks the same `EquivalenceHarness`.
+      - **Size.** 14 to 17 lines, with two or three primitive inputs:
+        - `Kernel#price`: `long l_price_cents, int l_quantity`;
+        - `Lines#reprice`: `long l_price, int n, long price`;
+        - `Orders#reprice`: `long l_price, int o_count, long price`.
+
+        Each version's call is inside the harness's 15 exception handlers.
+      - **Unwinding.** There is no loop in the harness or in the compared methods, so `--unwind 16` doesn't bear
+        on it.
+      - **How the equations reach it.** For `Lines` and `Orders`, the correspondence's input equation is an
+        `if (!(l_before.total == (l_after.price * n))) return;` after both objects are made. The same equation is
+        conjoined into the final `assert` for the line as the call leaves it.
+      - **What is left to prove** in all three is that two separately computed 64-bit products of symbolic operands
+        are equal:
+        - `Kernel#price` compares `cents * quantity` with `quantity * cents`, which is commutativity;
+        - the two `reprice`s compare `price * n` in the before version with `price * n` recomputed in the
+          assertion, under the assumption `total == l_price * n`.
+
+        The own checker proves each in under 0.1 s. Its logs say "0 of 1" or "1 of 2 multiplications built in full",
+        with 3,287 to 17,110 variables. `Prices#total`, which multiplies by the constant 100 before the symbolic
+        `* n`, finished.
+    - **What a further attempt would try**, for the user to choose:
+      - a longer limit again (each test about 2× the limit, at 2 CPUs, 1.6 GiB);
+      - JBMC with another solver, or `--refine-arithmetic`, which would change the options every run passes;
+      - leaving JBMC's confirmation of these four claims to the own checker, since `auto --confirm`'s verdict
+        already stands.
+  - **VF-001: the check can't pass as written. Deferred to the user.**
+    - In `20261107-172721-conformance-corpus-under-jbmc-and-engine` (23m10s), both ignored conformance tests pass:
+      `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok`, `the_corpus_agrees_with_the_jvm_under_auto_confirm
+      ... ok`, and `test result: ok. 2 passed; 0 failed`. So what VF-001 asks, no `Verified` the JVM refutes, held at
+      `a1e29ec6` under both engines and `--confirm`.
+    - The step still exited 1. Its command is `set -o pipefail; cd lib && … cargo test … 2>&1 | tee
+      target/conformance-jbmc.log`, and its log's first line is `tee: target/conformance-jbmc.log: No such file or
+      directory`. `tee` opens its file before cargo has made `lib/target/` in the job's fresh work directory, so it
+      exits 1, and `pipefail` makes that the step's status.
+    - The original `20261106-021741-…` and `-024336-…` logs open with the same `tee` error. So these two jobs, run
+      unchanged, can't pass on this runner, whatever the code does.
+    - The sibling, `20261107-172721-conformance-corpus-under-engine-auto-con`, was stopped by SIGTERM after 22 s,
+      while compiling. That is the runner's scope-name collision (VF-021, recorded by the native stream in `lqrtnusr`
+      and fixed in `wwlnosom`): the two job ids share their first 40 characters. Its command has the same `tee`.
+    - The brief says not to rewrite a check, so neither job is resubmitted. The user can decide:
+      - to take `-172721-…-jbmc-and-engine`'s test result as VF-001's check;
+      - or to have both resubmitted with only `mkdir -p target &&` added before `cargo`.
+
+      Either way, the confirm test's result is the same one the job above passed. These two failures come from the
+      check, not from the item, so the timebox doesn't count them.
+- **Seen, not taken** (for the main brief's for-review list):
+  - The native stream's VF-015 job now fails because JBMC's proof of the old `Hex#toDigit` reaches JBMC's stub of
+    `String.format`, refused under strict (`lqrtnusr`'s message). A model in `lib/models/`, this stream's file, would
+    fix it. It is not one of this stream's items.
+  - The integration check of 21:22 (`cleanup-integration.md`) reports the three streams in conflict only in
+    generated files: `llm-dlc/README.md`, `llm-dlc/index.json`, `llm-dlc/traces/README.md` and
+    `llm-dlc/traces/metrics.json`. None is this stream's, and `sync.py` regenerates them.
+  - `jbmc-upstream.md`'s "Where it starts from" and Deferred sections still call VF-009 untriaged. That is outside
+    the candidate reports, so it is left for that loop.
+- Status: blocked: VF-018 (3 of 4 timed out at 1800 s) and VF-001 (its jobs' tee fails though both tests pass) need the user's decision, under Progress
 
 ## Loop settings
 
