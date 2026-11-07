@@ -37,6 +37,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   jj's `snapshot.max-new-file-size` is 1 MiB, so every `jj` command prints "Refused to snapshot some files" and the
   file is left out of the commit. The rest of the result (`result.json`, the logs) is committed. I did not raise the
   limit or edit the result.
+- **Again** in the next run: `verification/results/20261107-171442-vf-009-s-guard-measured-the-41-recorded/changes.diff`
+  (1.3 MiB) was also left out. Two results so far lack their diff; both jobs passed.
 - **Needs**: a decision by the user: raise the limit for this repository (`jj config set --repo
   snapshot.max-new-file-size 2097152`), or have `collect` leave out a `changes.diff` over the limit (or compress it),
   or have jobs keep their scratch output out of the declared outputs. The job's `outputs` listed `lib/target/vf009`,
