@@ -193,7 +193,7 @@ fn closest<'a>(cp: &ClassPath, handlers: &'a [Handler], class: &str) -> Option<&
     best.map(|(_, h)| h)
 }
 
-fn response_status(a: &Annotation) -> Option<u16> {
+pub(crate) fn response_status(a: &Annotation) -> Option<u16> {
     match a.element("code").or_else(|| a.element("value")) {
         Some(ElementValue::Enum(_, name)) => status_code(name),
         _ => None,

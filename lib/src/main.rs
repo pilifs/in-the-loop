@@ -117,6 +117,22 @@ enum Command {
         #[arg(long, default_value = "module")]
         module: String,
     },
+    /// Print the observation spec of each entry point of a module (routes, message listeners, schedules,
+    /// application-event listeners): its external inputs and how each is bound, what a consumer observes (the
+    /// result, the exception, a route's status for each outcome, each effect with the payload paths it snapshots
+    /// and its place relative to transactions), which identity relations count, the environment model of its
+    /// effects, and what the analysis can't see. Static: it says what a change must preserve and proves nothing.
+    Observations {
+        /// Directories of classes or jars of the module.
+        #[arg(required = true)]
+        paths: Vec<PathBuf>,
+        /// Further class path entries (repeatable, or PATH-separated).
+        #[arg(long = "classpath")]
+        classpath: Vec<String>,
+        /// Print JSON (the shared IR's `EntryPointSpec`s) instead of text.
+        #[arg(long)]
+        json: bool,
+    },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
         /// The contract file (`OrderLifecycle.decide.contract`).
@@ -712,6 +728,24 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 println!("{}", serde_json::to_string_pretty(&boundaries).expect("serializable"));
             } else {
                 print!("{}", boundaries.render(&module));
+            }
+            Ok(0)
+        }
+        Command::Observations { paths, classpath, json } => {
+            let mut cp = ClassPath::new();
+            for p in &paths {
+                cp.add(p)?;
+            }
+            let module_classes: std::collections::BTreeSet<String> = cp.application_class_names()?.into_iter().collect();
+            for list in &classpath {
+                cp.add_path_list(list)?;
+            }
+            let cp = cp.with_default_jdk();
+            let specs = jvmcontract::observations::analyse(&cp, Some(&module_classes))?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&specs).expect("serializable"));
+            } else {
+                print!("{}", jvmcontract::observations::render(&specs));
             }
             Ok(0)
         }

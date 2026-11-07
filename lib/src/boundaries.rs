@@ -185,7 +185,7 @@ pub struct Boundaries {
     pub stored: BTreeMap<String, Bean>,
 }
 
-fn is_framework(annotation: &Annotation) -> bool {
+pub(crate) fn is_framework(annotation: &Annotation) -> bool {
     FRAMEWORK_PACKAGES.iter().any(|p| annotation.type_name.starts_with(p))
 }
 
@@ -193,7 +193,7 @@ pub(crate) fn is_validation(annotation: &Annotation) -> bool {
     VALIDATION_PACKAGES.iter().any(|p| annotation.type_name.starts_with(p))
 }
 
-fn mapping_verb(annotation: &Annotation) -> Option<&'static str> {
+pub(crate) fn mapping_verb(annotation: &Annotation) -> Option<&'static str> {
     MAPPINGS.iter().find(|(t, _)| *t == annotation.type_name).map(|(_, verb)| *verb)
 }
 
@@ -235,7 +235,7 @@ pub(crate) fn join_paths(prefix: &str, path: &str) -> String {
 }
 
 /// `POST /orders/{id}/cancellation (consumes application/json)`, one route per verb and path.
-fn routes(class_mappings: &[&Annotation], method: &Annotation) -> Vec<String> {
+pub(crate) fn routes(class_mappings: &[&Annotation], method: &Annotation) -> Vec<String> {
     let verb = mapping_verb(method).unwrap_or("");
     let mut verbs: Vec<String> = if verb.is_empty() { method.enum_names("method") } else { vec![verb.to_string()] };
     if verbs.is_empty() {
@@ -403,7 +403,7 @@ fn caller_label(class: &ClassFile, name: &str, descriptor: &str) -> String {
     format!("{name}({})", params(descriptor))
 }
 
-fn type_names(method: &Method, pool: &crate::classfile::ConstantPool, d: &MethodDescriptor) -> (Vec<String>, String) {
+pub(crate) fn type_names(method: &Method, pool: &crate::classfile::ConstantPool, d: &MethodDescriptor) -> (Vec<String>, String) {
     if let Some(sig) = method.generic_signature(pool) {
         if let Some((params, ret)) = signature::method_types(&sig) {
             if params.len() == d.params.len() {

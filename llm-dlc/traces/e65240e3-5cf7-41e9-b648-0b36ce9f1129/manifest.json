@@ -1,0 +1,98 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "e65240e3-5cf7-41e9-b648-0b36ce9f1129",
+  "status": "open",
+  "title": "Next multi-stream loop draft",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T04:01:19.473Z",
+  "ended": "2026-11-07T04:11:26.284Z",
+  "duration_seconds": 607,
+  "stats": {
+    "turns": 5,
+    "api_calls": 45,
+    "tool_calls": 45,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 234270,
+    "usage": {
+      "input_tokens": 88,
+      "output_tokens": 46592,
+      "cache_read_input_tokens": 6830345,
+      "cache_creation_input_tokens": 250809
+    }
+  },
+  "tools": {
+    "Bash": 39,
+    "Read": 4,
+    "Write": 2
+  },
+  "files_touched": [
+    "lib/src/observations.rs",
+    "lib/tests/observations.rs"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T04:01:19.473Z",
+      "ended": "2026-11-07T04:01:19.475Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-07T04:01:16.273Z",
+      "ended": "2026-11-07T04:11:26.284Z",
+      "turns": 5,
+      "api_calls": 45,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 46592,
+        "cache_read_input_tokens": 6830345,
+        "cache_creation_input_tokens": 250809
+      },
+      "peak_context_tokens": 234270
+    }
+  ],
+  "log": {
+    "sha256": "a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107",
+    "bytes": 1911504,
+    "lines": 511,
+    "gzip_bytes": 402429,
+    "path": "llm-dlc/traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/logs/a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lslmmpwrvxuzzskwoswropmzorumvpwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Observation specs per entry point (foundations O1, step 1): lib/src/observations.rs, jvmcontract observations, and observe::entry_points",
+      "body": "The observations stream's first step. A new module reads the boundary analysis's facts into the shared IR as one EntryPointSpec per route, message listener, schedule and application-event listener: a stable id (POST /quotes, kafka TOPIC, schedule ARGS, event TYPE), the external inputs with how each is bound (identity derivations: both versions get the same request), the result, exception and a route's status per outcome, one effect observation per modeled call with the payload paths it snapshots at the call, each effect site with its transaction placement, the identity policy, the environment model (every modeled call, outcome 'returns', trace bound 4, exact order, its restriction stated as an assumption) and what the analysis can't see, named (dynamic call sites such as string concatenation, calls it can't follow, computed targets, framework-supplied parameters). reach.rs records each effect's call site for it; the boundary contract's text is unchanged. New command 'jvmcontract observations PATHS [--json]'.",
+      "log_sha256": "a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107"
+    }
+  ],
+  "logs": {
+    "a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107": {
+      "bytes": 1911504,
+      "lines": 511,
+      "gzip_bytes": 402429,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

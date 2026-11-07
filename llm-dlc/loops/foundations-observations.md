@@ -114,7 +114,28 @@ under Progress.
 
 ## Progress
 
-- Nothing yet.
+- **O1, step 1 (2026-11-07): the observation spec module and its command, on the joint example.**
+  `lib/src/observations.rs` builds one `EntryPointSpec` per route, message listener, schedule and application-event
+  listener from the boundary analysis's facts: stable ids (`POST /quotes`, `kafka TOPIC`, `schedule ARGS`,
+  `event TYPE`, with the handler appended only when two share one), inputs with their bindings (identity
+  derivations), the result, exception and a route's status per outcome (from `failures.rs`), one effect observation
+  per modeled call with its payload snapshot paths, each effect site with its kind, target and transaction
+  placement, the identity policy (none at a serialized boundary), the environment model (every modeled call, reads
+  included, outcome `returns`, trace bound 4, exact order; the restriction to normal returns stated as an
+  assumption), and the unresolved parts (dynamic call sites such as string concatenation, calls the walk can't
+  follow, computed targets, framework-supplied parameters, destinations from configuration).
+  `reach.rs` now records each effect's call site (`Reach::sites`, `dynamic`, `unresolved`); the boundary contract's
+  text is unchanged (the integration tests' drift checks pass). `observe::entry_points` returns the specs, so the
+  integration contract's `observations specs before` passes. New command `jvmcontract observations PATHS
+  [--classpath] [--json]`. Tested by `lib/tests/observations.rs` (4 tests: the spec of `POST /quotes` field by field;
+  `POST /quotes/text`'s concatenation named as unresolved; the refactor leaves every spec unchanged, the effect
+  defects leave the observations unchanged, the renamed route is another id; the command's text and JSON).
+  Shared files touched, by adding: `lib/src/main.rs` (the command), `lib/src/lib.rs` (the module), `lib/tests/observations.rs`
+  (new), `lib/README.md` (a section, and the command under Commands). `EntryPointSpec` in `observe.rs` gained fields
+  (`kind`, `declared`, `bindings`, `response`, `statuses`, `effects`, `identity`, `assumptions`, `source_line`,
+  `method`), all with serde defaults; its existing fields keep their meaning.
+- Next: O1 on Box Office: every entry point of `ticketing-service`, `payment-service` and `messaging` gets a spec,
+  checked by hand against its source once and then by a test.
 - Status: working
 
 ## Loop settings
