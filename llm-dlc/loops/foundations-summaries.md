@@ -456,6 +456,13 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Own file: `shared.rs` (`stub_directory`, `Answer`, `answers`, `replay_stub`, `spurious`, and the module notes).
   - The main brief's "Where it starts from" still says refinement is all or nothing. That was true at the fork, and
     the brief is not this stream's to edit.
+- `sync.py check` after S5 reports 27 errors, none from this branch's work. They are the 22 listed after S4b, and 5
+  more sessions with no manifest, behind other streams' latest commits:
+  - heap's H5 commit `ntqqzttlykmy`;
+  - observations' O3 commits `kxkxxrovypzs` and `upkxnrotoxsk`;
+  - alignment's A4 commit `pxuuumryquny` and its Progress commit `llvlkvuqtooy`.
+
+  None is an ancestor of `@`, and they clear at the merge.
 - Next: S6, the economics job. It is one pipeline job over the recorded B9 and B11 examples, with `build.py`'s cache
   option. The runs:
   - a cold run;
