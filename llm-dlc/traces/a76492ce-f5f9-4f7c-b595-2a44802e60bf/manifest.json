@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "a76492ce-f5f9-4f7c-b595-2a44802e60bf",
+  "status": "open",
+  "title": "VM disk space and jj workspaces",
+  "first_prompt": "How much disk space does this vm have? I may hold off on deleting jj workspaces if lots of buffer",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-07T21:51:17.625Z",
+  "ended": "2026-11-07T21:51:28.978Z",
+  "duration_seconds": 11,
+  "stats": {
+    "turns": 1,
+    "api_calls": 2,
+    "tool_calls": 1,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 43566,
+    "usage": {
+      "input_tokens": 4,
+      "output_tokens": 530,
+      "cache_read_input_tokens": 72353,
+      "cache_creation_input_tokens": 14069
+    }
+  },
+  "tools": {
+    "Bash": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T21:51:17.625Z",
+      "ended": "2026-11-07T21:51:28.978Z",
+      "turns": 1,
+      "api_calls": 2,
+      "usage": {
+        "input_tokens": 4,
+        "output_tokens": 530,
+        "cache_read_input_tokens": 72353,
+        "cache_creation_input_tokens": 14069
+      },
+      "peak_context_tokens": 43566
+    }
+  ],
+  "log": {
+    "sha256": "cbe23abf7d30c2b1f7d34463cb18374aa3950f8a5c6998f8db9af97091dfca9b",
+    "bytes": 363753,
+    "lines": 49,
+    "gzip_bytes": 96320,
+    "path": "llm-dlc/traces/a76492ce-f5f9-4f7c-b595-2a44802e60bf/logs/cbe23abf7d30c2b1f7d34463cb18374aa3950f8a5c6998f8db9af97091dfca9b.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "tvwqssxpkwvkwuuolzxtykrqysorwotm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "prune_workspaces.py: delete jj workspaces only once nothing in them can be lost",
+      "body": "llm-dlc/tools/prune_workspaces.py considers every workspace but the default: those jj lists and the directories of forgotten ones (siblings REPO-* whose .jj/repo points here). It reports by default and deletes only with --delete. A workspace is clear when: no process has its cwd or a file open inside it, and no unfinished loop owns it (a stream workspace NAME-STREAM while llm-dlc/loops/NAME.md's status is neither done nor blocked); every commit of ::WS@ outside ::INTO (the default workspace's @-, or --into) is empty and undescribed; and every file, tracked, untracked or gitignored, is recoverable. That means its exact content is a blob reachable from INTO, or a file anywhere in the default workspace (hashed only on a size match, so its 12 GB verification/.state costs a walk), or it lies in a gitignored build-output directory (target/, build/, ...). It reads file contents, so edits jj never snapshotted count. A .git pointer file jj 0.47 writes is metadata; a .git directory blocks. --archive DIR copies would-be-lost files out and verifies each copy. Deletion re-checks use, forgets a listed workspace, removes the directory and runs git worktree prune. Claude Code transcripts under ~/.claude/projects are left alone.\n\nVerified by test_prune_workspaces.py, 12 cases on throwaway colocated jj repos: merged and deleted; an unmerged commit, an unsnapshotted edit, a unique gitignored .env (and --archive keeping it), a tracked dir named build, a forgotten dir with a unique file, a process inside, a .git directory, and an unfinished loop's workspace all block; a run record copied into the default under another name and ignored target/ are clear. A report-only run here (13 s) finds 3 of 13 clear (the engine-priorities leftovers examples, jbmc, native). The four cleanup-* are kept while cleanup.md waits on jobs. Blocked: the foundations streams' gitignored run records in loop-summaries/ (alignment, heap, observations, summaries), three trace logs only in the foundations directory, and the integration directory's merge files. Nothing was deleted.",
+      "log_sha256": "cbe23abf7d30c2b1f7d34463cb18374aa3950f8a5c6998f8db9af97091dfca9b"
+    }
+  ],
+  "logs": {
+    "cbe23abf7d30c2b1f7d34463cb18374aa3950f8a5c6998f8db9af97091dfca9b": {
+      "bytes": 363753,
+      "lines": 49,
+      "gzip_bytes": 96320,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
