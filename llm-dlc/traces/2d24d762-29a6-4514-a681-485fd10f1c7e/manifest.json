@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:23:23.097Z",
-  "duration_seconds": 3220,
+  "ended": "2026-11-07T22:23:59.654Z",
+  "duration_seconds": 3256,
   "stats": {
     "turns": 25,
-    "api_calls": 175,
-    "tool_calls": 176,
+    "api_calls": 180,
+    "tool_calls": 181,
     "tool_errors": 4,
     "compactions": 4,
-    "peak_context_tokens": 153031,
+    "peak_context_tokens": 160894,
     "usage": {
-      "input_tokens": 356,
-      "output_tokens": 90196,
-      "cache_read_input_tokens": 14494985,
-      "cache_creation_input_tokens": 445792
+      "input_tokens": 366,
+      "output_tokens": 92683,
+      "cache_read_input_tokens": 15272547,
+      "cache_creation_input_tokens": 453655
     }
   },
   "tools": {
-    "Bash": 151,
+    "Bash": 156,
     "Read": 12,
     "Edit": 5,
     "TaskStop": 3,
@@ -100,24 +100,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:23:23.097Z",
+      "ended": "2026-11-07T22:23:59.654Z",
       "turns": 7,
-      "api_calls": 71,
+      "api_calls": 76,
       "usage": {
-        "input_tokens": 142,
-        "output_tokens": 42787,
-        "cache_read_input_tokens": 7183011,
-        "cache_creation_input_tokens": 139952
+        "input_tokens": 152,
+        "output_tokens": 45274,
+        "cache_read_input_tokens": 7960573,
+        "cache_creation_input_tokens": 147815
       },
-      "peak_context_tokens": 153031
+      "peak_context_tokens": 160894
     }
   ],
   "log": {
-    "sha256": "340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e",
-    "bytes": 5311223,
-    "lines": 1714,
-    "gzip_bytes": 1081578,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e.jsonl.gz"
+    "sha256": "7dc0324030eef0b89f4e79e810a73762ed46e5f1a5aa3bcdb1e5851cf18df071",
+    "bytes": 5465894,
+    "lines": 1759,
+    "gzip_bytes": 1106806,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/7dc0324030eef0b89f4e79e810a73762ed46e5f1a5aa3bcdb1e5851cf18df071.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -240,6 +240,14 @@
       "summary": "collect keeps a changes.diff over jj's 1 MiB limit gzipped, or as a summary of the files it changes, for VF-020",
       "body": "jj leaves a new file over snapshot.max-new-file-size (1 MiB) out of every commit, so a large changes.diff never reached the repository. As the user decided, the limit stays and collect fits the diff under it. verification/pipeline.py's keep_diff copies changes.diff as it is when it fits, else writes changes.diff.gz, else changes.stat (each file the diff changes, with lines added and removed, and the diff's size). result.json's changesDiff names the file kept, and collected.changesDiff records the original size and how it was kept; result.schema.json and the README's table describe both. Reproducer: test_pipeline.py's test_a_diff_over_the_commit_limit_is_kept_gzipped_or_as_a_summary, with a 60-file compressible job and a 20-file random one. It failed on the old pipeline.py, which copied each diff as it was, and passes now. The whole suite (28 tests) passes and pipeline.py validate finds 0 problems.\n\nverification/findings.md, VF-020: the fix is recorded, and a mistake in the entry is corrected. Both diffs it named are in fact committed (1,234,232 bytes in pkuvkyln, 1,359,746 bytes in rzmrlklw, both pushed); how they got past the limit is not known. The entry stays open until the next collect of a diff over 1 MiB leaves jj st with no refused file.",
       "log_sha256": "340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e"
+    },
+    {
+      "change_id": "wqupmpkwkuqolqxxsuuryrmxnlwzlltw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-001's two conformance jobs resubmitted with mkdir -p target before the tee (verification pending)",
+      "body": "Jobs 20261107-222356-conformance-corpus-under-jbmc-and-engine and 20261107-222356-conformance-corpus-under-engine-auto-con supersede the 172721 pair. That pair failed for a reason that had nothing to do with the tests: the step piped cargo test into tee target/conformance-*.log, and in the runner's clean checkout lib/target did not exist yet, so tee failed and the step exited 1 although the first job's tests passed (2 passed, 0 failed, 1236 s). The second was killed by the runner's scope-name collision, which VF-021 fixed since. As the user decided, the only change is mkdir -p target before the test command; the tests, expectations and estimates are unchanged. VF-001 in verification/findings.md closes when both pass.",
+      "log_sha256": "7dc0324030eef0b89f4e79e810a73762ed46e5f1a5aa3bcdb1e5851cf18df071"
     }
   ],
   "logs": {
@@ -284,6 +292,12 @@
       "lines": 573,
       "gzip_bytes": 403784,
       "url": "https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/794794bc9be6c12130909a71a863a875155e8010724cd39b458e372903c4afb8.jsonl.gz"
+    },
+    "7dc0324030eef0b89f4e79e810a73762ed46e5f1a5aa3bcdb1e5851cf18df071": {
+      "bytes": 5465894,
+      "lines": 1759,
+      "gzip_bytes": 1106806,
+      "url": null
     },
     "82fa6b53c402b109c968508a96f8a9c42bb3440e4becaf5b1695a5a02ca587c2": {
       "bytes": 3438587,

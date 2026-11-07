@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-222356-conformance-corpus-under-jbmc-and-engine",
+  "title": "Conformance corpus under JBMC and --engine auto: no Verified the JVM refutes (closes VF-001 with its sibling when both pass)",
+  "description": "Resubmitted for VF-001 (verification/findings.md) with one change, decided by the user on 2026-11-07: the step now runs `mkdir -p target` before `tee target/conformance-jbmc.log`. In a clean checkout lib/target does not exist when tee starts, so 20261107-172721-conformance-corpus-under-jbmc-and-engine exited 1 although its tests passed (the jbmc twin's log showed 'test result: ok. 2 passed; 0 failed' after 1236 s); the auto --confirm twin was killed by the runner's scope-name collision, since fixed (VF-021). Nothing else differs from 20261107-172721-conformance-corpus-under-jbmc-and-engine: same test, same expectation. VF-001 closes when this job and its twin pass.\n\nStep 1d of llm-dlc/loops/sound-verdicts.md. lib/tests/conformance.rs holds 54 small Java methods (lib/tests/conformance/conformance/Conformance.java) with 93 claims, 48 of which a real JVM refutes. The cases cover the gaps and their reproducers (a negative capacity to ArrayList, HashMap, HashSet and StringBuilder; synchronized (null); Random.nextBytes), field hiding, literal identity, class initializers that throw, exceptions (finally overriding a return, nested handlers, bounds, casts, throw null, rethrow), aliasing, null arrays, record constructors, virtual and default-method dispatch, and arithmetic edge cases (MIN_VALUE / -1, negative remainders, shift counts out of range, narrowing, overflow). A Java runner executes every call and every claim's generated harness on the JVM. The test run inline covers the tool's own checker under --gaps strict and assume. This job runs the ignored test, which puts every claim through --engine jbmc and --engine auto under --gaps strict. It fails if either engine says Verified for a claim the JVM refutes, or reports a violation whose witness does not refute the harness on the JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs",
+      "lib/tests/conformance/conformance/Conformance.java",
+      "llm-dlc/loops/sound-verdicts.md"
+    ]
+  },
+  "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_jbmc_and_auto passes. The log lists each claim's verdict per engine. A failure lists each disagreement with the JVM, which is a finding about JBMC or the adapter to triage under the brief's Progress, not something to retry.",
+  "submitted": {
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "claude-opus-5-5",
+    "at": "2026-11-07T22:23:56+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "40m",
+    "timeout": "2h",
+    "notes": "it runs every ignored conformance test: the corpus under JBMC and auto (644 s in -024759) and under auto --confirm (about 22 min in -043420); the corpus has grown to 81 cases since -021741's 18 min",
+    "memoryLimit": "3.5G"
+  },
+  "steps": [
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/conformance-jbmc.log"
+  ],
+  "supersedes": "20261107-172721-conformance-corpus-under-jbmc-and-engine"
+}

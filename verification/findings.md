@@ -158,6 +158,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Rerun** 2026-11-07 on `vm-1`: jobs `20261107-172721-conformance-corpus-under-jbmc-and-engine` and `20261107-172721-conformance-corpus-under-engine-auto-con` (at `a1e29ec6a2e7`) both **failed**, for the same reason, none to do with the tests: their step is `cd lib && ... cargo test ... | tee target/conformance-*.log` with no `mkdir -p target`, and in a clean checkout `lib/target` does not exist when `tee` starts. The first job's log says `tee: target/conformance-jbmc.log: No such file or directory` and the step exited 1 although the test output shows `test result: ok. 2 passed; 0 failed`, 1236 s (so both corpus tests pass at this commit); the second was killed with SIGTERM after 22 s: not `tee`, but the runner's scope-name collision with its twin (the ids share 40 characters; see VF-021, fixed). A job that didn't pass doesn't close this entry. **Needs**: resubmit both with `mkdir -p target` before the pipe (as the jbmc-initializers job does), the cleanup loop's jbmc stream; the scope collision no longer applies. Closes then, if they pass.
 - **Decided** by the user on 2026-11-07: resubmit both with `mkdir -p target &&` before the pipe, nothing else
   changed. The first job's "2 passed, 0 failed" is not taken as the check.
+- **Resubmitted** 2026-11-07 as `20261107-222356-conformance-corpus-under-jbmc-and-engine` and
+  `20261107-222356-conformance-corpus-under-engine-auto-con`, with `mkdir -p target &&` before the step's test
+  command and nothing else changed. VF-001 closes when both pass.
 
 ## Decided and closed
 
