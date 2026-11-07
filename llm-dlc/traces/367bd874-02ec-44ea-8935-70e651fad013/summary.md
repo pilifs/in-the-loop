@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 1 job: Alignment A3's second-half proofs passed
 
-change `syqpoxomnynk` · [log `b95af8c5849a`](https://terminalvalue.net/raw-traces/367bd874-02ec-44ea-8935-70e651fad013/b95af8c5849a248b121fa14f7fb41df0ec189c6d10a9fd9038255e7fe372d896.jsonl.gz)
+[`185e2b1ec059`](https://github.com/pilifs/in-the-loop/commit/185e2b1ec059c85f519ed5647812390cb7c33b3a) · [log `b95af8c5849a`](https://terminalvalue.net/raw-traces/367bd874-02ec-44ea-8935-70e651fad013/b95af8c5849a248b121fa14f7fb41df0ec189c6d10a9fd9038255e7fe372d896.jsonl.gz)
 
 Job 20261107-155804-alignment-a3-second-half-every-proposal (regression proof over proposals for examples 121-139) passed in 50.7s, peak 479 MiB (estimated 5m, 2 GiB). Collect applied its 2 outputs (examples/tools/alignment/README.md and scores/A3-proofs.json) and the examples index was regenerated. No new findings; the older failed results the report still lists were triaged earlier.
+
+### Record session traces
+
+change `pzysxltwvptp` · [log `74cdaf871d27`](https://terminalvalue.net/raw-traces/367bd874-02ec-44ea-8935-70e651fad013/74cdaf871d27648a3ab992bb32db4cad7b63717df13ad70befed0726cc5d474e.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

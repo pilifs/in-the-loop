@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Draft the application-core loop: four streams that widen native change verification to ordinary service code
 
-change `sxqsornyxxrz` · [log `6f89d360f610`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/6f89d360f610a5be1ca9cd2651251958d74acc882617a0924ed1aa583a2aee1e.jsonl.gz)
+[`f36c7128ed25`](https://github.com/pilifs/in-the-loop/commit/f36c7128ed25c7b726cb95533471a17e57591211) · [log `6f89d360f610`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/6f89d360f610a5be1ca9cd2651251958d74acc882617a0924ed1aa583a2aee1e.jsonl.gz)
 
 Adds llm-dlc/loops/application-core.md, its four stream briefs (objects, values, environment, reuse) and application-core-acceptance.md, adapted from an outside plan the user shared (a review of the repository at cbf183a on GitHub). Each of the review's claims about the code was recounted at wwlnosom (20f1a17d), with file:line evidence, in the main brief's 'Where it starts from'. All held, and one sharpened: ObjectDomain's made_by, classes, allocations and label are read by nothing outside the cache key's projection, so Phase 0's first step is a gate that refuses them. The briefs follow brief-template.md: the cleanup run's pipeline mode, the timebox, application-core-STREAM workspaces, reserved example ranges 230-279, 4 GB scopes, fresh session ids, and the planning session 3da21514 as the fork. Shared files get a single writer (Phase 0, before the fork), because the foundations and cleanup integration checks both stopped on merge conflicts. The six decisions are proposed, not yet settled by the user.
 
@@ -28,31 +28,31 @@ Also registers the names application-core and application-core-STREAM in feature
 
 ### Record verification results for 3 jobs: VF-021 closed, VF-014's fresh benchmark recorded
 
-change `lmxwvplznvwl` · [log `306e0507c192`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a.jsonl.gz)
+[`6e584f2e268a`](https://github.com/pilifs/in-the-loop/commit/6e584f2e268a96b675edbc3b1f141248c29ff590) · [log `306e0507c192`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a.jsonl.gz)
 
 On vm-1: the fresh lib/benchmark results (job 20261107-183709, 1h37m, peak 6.0 GiB of an estimated 4.5) passed and replaced results.json and RESULTS.md; the VF-010 comparison (job 20261107-184603) passed with 557 own-checker runs, verdicts changed 0, closing VF-021; the VF-014 comparison from earlier is recorded. Verified by the jobs' logs and collect's apply with no conflicts.
 
 ### Loops print their session when they end
 
-change `osxwpvmkvmqn` · [log `306e0507c192`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a.jsonl.gz)
+[`436ee1b7d0da`](https://github.com/pilifs/in-the-loop/commit/436ee1b7d0daafae13f15aabb3d08d6b3dc8b4c6) · [log `306e0507c192`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a.jsonl.gz)
 
 feature-loop.sh logs 'session: ID' from its EXIT trap, so the session to resume or read is the last line however the loop ended: done, out of cycles, no commit, an error or Ctrl-C. run-streams.sh logs, after its final status, the planning session, the merge loop's session (the main brief's, or FEATURE_LOOP_SESSION) and each stream's. The integration check is a script and has no session. Both scripts were replaced by rename, since run-streams.sh cleanup is still running from this workspace on the old copy, which therefore won't print them; checked with bash -n.
 
 ### run-streams.sh reads only job-id-shaped words from a 'waiting on jobs' status
 
-change `xrtpyzpswuno` · [log `6b227d95040c`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44.jsonl.gz)
+[`027d51887053`](https://github.com/pilifs/in-the-loop/commit/027d51887053a4e94cd21977972bf0f4b35c7745) · [log `6b227d95040c`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44.jsonl.gz)
 
 The cleanup-jbmc stream ended its Progress with 'Status: waiting on jobs ID 20261107-...', copying the template's literal ID. run-streams.sh took every word after 'waiting on jobs' as a job id, so it waited for verification/results/ID*/result.json, which never comes. All nine real jobs were collected by about 18:00, and the stream sat waiting from 17:31 toward the 12-hour RUN_STREAMS_JOB_WAIT. A new job_ids keeps only words shaped like an id (YYYYMMDD-HHMMSS...), and both places that parse the status use it. Tested on that status line, and on an empty one; bash -n. Replaced by rename: the run under way keeps the old copy, so it stays stuck until it is restarted.
 
 ### Draft the stub-reachability brief: decide by the solver whether a proof enters a JBMC stub (settles VF-015)
 
-change `rmvlorrsytol` · [log `81d0faa6a1f7`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a.jsonl.gz)
+[`d1283e9fce31`](https://github.com/pilifs/in-the-loop/commit/d1283e9fce314560b4398544b62cb970d6b287e8) · [log `81d0faa6a1f7`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a.jsonl.gz)
 
 VF-015's step 3 (prove Hex#toDigit under ch == 1632) fails only because the gap preflight counts String.format's stub as entered. Its symbolic run (--program-only, no solver) can't prune a branch an --assume decides, and that call is on toDigit's exception path, infeasible there. The user chose a solver check of stub reachability over a String.format model: under --no-refine-strings JBMC can't read a format string, so a model would be unsound or a source of spurious refutations. The brief runs after the cleanup merge, since jbmc_gaps.rs is the cleanup jbmc stream's file. Its steps: an experiment job comparing --cover location with an alternative on VF-015's harness; choose the method; implement it as a third preflight step with recorded-output unit tests; resubmit VF-015 unchanged as N3's second attempt, with guard jobs. Status blocked on the merge; nothing run yet.
 
 ### N1 done: VF-010's benchmark comparison passed, and N3 (VF-015) blocked on the user's decision
 
-change `wpxntptywosq` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`37971230ffa1`](https://github.com/pilifs/in-the-loop/commit/37971230ffa179e09824e084ee8cc830b5ac62ee) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 Job 20261107-184603-vf-010-s-benchmark-compared-the-own-chec passed on vm-1. It compared the own checker's 557 benchmark runs at the VF-010 fix (f606b0d8) and at its parent (c307e721), and found 0 verdicts changed, 0 cases new or gone, 0 formulas grown past 10%, and 0 paths or merges changed. The verification agent closed VF-021 with it, and VF-010 was already closed, so the stream's N1 is finished. N2 (VF-011) passed its check earlier and is done here; findings.md still lists it as open until the verification agent records it.
 
@@ -60,13 +60,13 @@ N3 (VF-015, example 109) can't pass without the user. Its last run failed at ste
 
 ### Record session traces
 
-change `trqroxpzmxxw` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`0bcd4ccc1883`](https://github.com/pilifs/in-the-loop/commit/0bcd4ccc188348b7353f992e12eb2be010ea9847) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 The cleanup-native stream's last turns, recorded by the cleanup reconcile before the merge. No code changes.
 
 ### VF-009 and VF-019 closed by their checks; VF-018 and VF-001 deferred to the user: three of heap's JBMC tests time out at 1800 s, and VF-001's jobs fail on their own tee
 
-change `wuxrynkokpuz` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`02f83a5e7792`](https://github.com/pilifs/in-the-loop/commit/02f83a5e779281369d118d35766b884c84f7ae51) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 The cleanup-jbmc stream read its nine collected jobs. VF-009's check (20261107-172721-jbmc-s-extra-initializers-named-and-refu, step 2) passed: under auto --confirm, boomTwice and enumBroken are NoVerdict with the own checker's Verified standing, under strict and assume. VF-019's (20261107-172721-nullable-and-one-array-parameters-in-pro) passed, with the six claims refused by name. Both entries can be closed. The measurement 20261107-171442 shows that throwing-initializer refuses none of the 41 recorded JBMC examples' 43 obligations: the only refusal at a JBMC defect is 037#0, the existing unmasked-shift guard.
 
@@ -78,13 +78,13 @@ Only the brief's Progress changed. Out of date elsewhere: jbmc-upstream.md's 'Wh
 
 ### Record session traces
 
-change `xqvqmyrqmsyl` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`648e85d8db34`](https://github.com/pilifs/in-the-loop/commit/648e85d8db341b8989db7fdb99aa479259f7a1b2) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 The cleanup-jbmc stream's last turns, recorded by the cleanup reconcile before the merge. No code changes.
 
 ### VF-014 closed by the isolated comparison, and the fresh lib/benchmark/results.json applied on the default line: the examples stream is done
 
-change `swopzxzurvsv` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`fd4f8e43722f`](https://github.com/pilifs/in-the-loop/commit/fd4f8e43722fab179e62eecd343c16edb9c93a3b) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 Both of E2's jobs passed and were collected in the default workspace (lmxwvplz). 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm compared H1's own-checker runs with H1's parent's: 557 runs, 24 new (the swaps cases H1 added), 0 verdicts changed, 0 formulas grown, 0 paths or merges changed. So H1 changed no verdict, and the 8 changed verdicts of 20261107-041414 came from the stale recording. The verification loop closed VF-014 in findings.md.
 
@@ -94,13 +94,13 @@ Verified by reading both jobs' reports (pipeline.py report) and the run counts o
 
 ### Record session traces
 
-change `xnmyynvxmupm` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`6bea747ee2fa`](https://github.com/pilifs/in-the-loop/commit/6bea747ee2facb5e7a4ea995826e4b503178940e) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 The cleanup-examples stream's last turns, recorded by the cleanup reconcile before the merge. No code changes.
 
 ### Merge the three cleanup streams: native, jbmc and examples
 
-change `lpvnwkuzvsly` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`1d77fbf2fb5a`](https://github.com/pilifs/in-the-loop/commit/1d77fbf2fb5af748289e7d1aa40ac531265e8ba2) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 The reconcile of llm-dlc/loops/cleanup.md (Phase 4, step 1). All three streams had stopped: native blocked on VF-015, jbmc blocked on VF-018 and VF-001 (both for the user), examples done. Each stream's last turns were recorded on its branch, their logs and run records copied into the default workspace, and the three branches merged with the default line. The workspaces cleanup-native, cleanup-jbmc, cleanup-examples and cleanup-integration are forgotten; their directories stay on disk for the user to delete.
 
@@ -114,19 +114,19 @@ Out of date in the rest of the brief: 'Where it starts from' describes the state
 
 ### Cleanup Phase 4, step 2: the 18 run records published under their sessions' traces, with check at 0 errors
 
-change `lrwynvulprxy` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+[`7ca9fd447a61`](https://github.com/pilifs/in-the-loop/commit/7ca9fd447a611d892aaf016712e4e0a7ac7d80be) · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
 
 The merge's sync.py commit published every record in llm-dlc/loop-summaries/, the cleanup streams' own included, redacted, under llm-dlc/traces/&lt;session>/runs/ and linked from each session's summary.md. None holds a local path, and sync.py check reports 0 errors and 0 warnings. That meets VF-013's closing condition, which the verification agent records in findings.md. The cleanup brief's Progress records step 2 and names step 3, the examples' rerun at the merge, as next.
 
 ### Cleanup Phase 4, step 3: the merge's examples 150-152, 160-161, 170-172 and 190-196 and lib/tests/integration.rs queued at the merge (verification pending)
 
-change `rwwrtqonuoks` · [log `b81598af7e4c`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/b81598af7e4c4bf00b76c8bdcc788bf6dc00ef601a54872ad5eb9ef73bf967ea.jsonl.gz)
+[`dca2a14194ee`](https://github.com/pilifs/in-the-loop/commit/dca2a14194ee5e01b1619d57f63543905c008b8b) · [log `b81598af7e4c`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/b81598af7e4c4bf00b76c8bdcc788bf6dc00ef601a54872ad5eb9ef73bf967ea.jsonl.gz)
 
 Four jobs check the combined code of the three cleanup streams and the default line, as the cleanup brief's Phase 4 step 3 asks. There is one job per app: Crosscut's 150-152 and 160-161, Deliveries' 170-172 and Shop's 190-196. Each runs every example's build.py step even if one fails, and each example is to give the verdict its example.json records. The fourth job runs lib/tests/integration.rs as it is, because VF-010's integration job passed before the merge. The jobs run at this commit, whose code is the merge's (lpvnwkuz). The only files changed since are generated trace files and the brief's Progress. No job was pending for these examples, so none is superseded.
 
 ### prune_workspaces.py: delete jj workspaces only once nothing in them can be lost
 
-change `tvwqssxpkwvk` · [log `b81598af7e4c`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/b81598af7e4c4bf00b76c8bdcc788bf6dc00ef601a54872ad5eb9ef73bf967ea.jsonl.gz)
+[`75e7f89a60d9`](https://github.com/pilifs/in-the-loop/commit/75e7f89a60d966a434c2aa0d4d828cb5b01f0842) · [log `b81598af7e4c`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/b81598af7e4c4bf00b76c8bdcc788bf6dc00ef601a54872ad5eb9ef73bf967ea.jsonl.gz)
 
 llm-dlc/tools/prune_workspaces.py considers every workspace but the default: those jj lists and the directories of forgotten ones (siblings REPO-* whose .jj/repo points here). It reports by default and deletes only with --delete. A workspace is clear when: no process has its cwd or a file open inside it, and no unfinished loop owns it (a stream workspace NAME-STREAM while llm-dlc/loops/NAME.md's status is neither done nor blocked); every commit of ::WS@ outside ::INTO (the default workspace's @-, or --into) is empty and undescribed; and every file, tracked, untracked or gitignored, is recoverable. That means its exact content is a blob reachable from INTO, or a file anywhere in the default workspace (hashed only on a size match, so its 12 GB verification/.state costs a walk), or it lies in a gitignored build-output directory (target/, build/, ...). It reads file contents, so edits jj never snapshotted count. A .git pointer file jj 0.47 writes is metadata; a .git directory blocks. --archive DIR copies would-be-lost files out and verifies each copy. Deletion re-checks use, forgets a listed workspace, removes the directory and runs git worktree prune. Claude Code transcripts under ~/.claude/projects are left alone.
 
@@ -134,13 +134,13 @@ Verified by test_prune_workspaces.py, 12 cases on throwaway colocated jj repos: 
 
 ### Record verification results for the cleanup merge's 4 jobs, all passed
 
-change `xlsmwprlkmpz` · [log `1fb300437e32`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/1fb300437e32f3109982d950f53ff6527594b87698e71209af981a9251662197.jsonl.gz)
+[`003e15ccaa46`](https://github.com/pilifs/in-the-loop/commit/003e15ccaa465b1defe86ce9881e48488cbd569f) · [log `1fb300437e32`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/1fb300437e32f3109982d950f53ff6527594b87698e71209af981a9251662197.jsonl.gz)
 
 Ran the four jobs queued at b6cc7ceb0c96 on vm-1: examples 150-152 and 160-161, 170-172 and 190-196 each gave their recorded verdict (as expected), and lib/tests/integration.rs passed unchanged. Collect applied 40 example output files (README, result.json, verifier-output) and regenerated the examples table. Only attention: 1-CPU quotas held the example steps back a few seconds; estimates were far over (minutes against under a minute). No findings added.
 
 ### prune_workspaces.py only reports, and prints the delete command for a person to run
 
-change `tposrkskrpmn` · [log `43e422b6896e`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/43e422b6896ef5a064148e5a0e2598da559402272bf65fef75d1ee3ac7771ab1.jsonl.gz)
+[`10be49c860c9`](https://github.com/pilifs/in-the-loop/commit/10be49c860c94cfc564624a7fb510117f597e703) · [log `43e422b6896e`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/43e422b6896ef5a064148e5a0e2598da559402272bf65fef75d1ee3ac7771ab1.jsonl.gz)
 
 Without --delete the script only reports whether each workspace is safe to delete, and ends with the exact command that deletes the safe ones. Where a workspace is blocked only by files found nowhere else, it also prints the --archive DIR form. --delete now takes the workspaces by name and refuses unless a person is at a terminal, the check sync.py's allow approve uses: stdin and stdout are terminals, and CLAUDECODE is unset. It checks the named workspaces again, lists the safe ones and asks the person to type "delete" before forgetting and removing any. --archive writes, so it goes with --delete only.
 
@@ -148,7 +148,7 @@ Verified by test_prune_workspaces.py, now 14 cases. The deleting ones run main()
 
 ### Cleanup Phase 4, step 4: the merge's four jobs passed, and the for-review list names every entry's state: the cleanup loop is done
 
-change `nmwtoxlzumyk` · [log `7ae46b0c5ffe`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)
+[`49d2979e3dee`](https://github.com/pilifs/in-the-loop/commit/49d2979e3dee1b255ebd84f050a8e95067b36228) · [log `7ae46b0c5ffe`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)
 
 The four jobs queued at the merge's code (b6cc7ceb, collected in xlsmwprl) all passed on vm-1: examples 150-152, 160-161, 170-172 and 190-196 each gave their recorded verdict, and lib/tests/integration.rs passed unchanged. With the merge's inline tests and step 2's published run records (check at 0 errors), Phase 4's criterion is met, and Progress ends with status done.
 

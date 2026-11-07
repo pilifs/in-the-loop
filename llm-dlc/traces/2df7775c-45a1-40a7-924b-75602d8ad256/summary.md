@@ -143,7 +143,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### run-streams.sh: workspaces named by each stream brief, the integration workspace by the brief, and taken directories refused before anything starts
 
-change `oqqwvmqyzzow` · [log `3f768f3bb246`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/3f768f3bb24604fbc1b1b8ea1b3bd327ddfea99bf153527d2a4c5b604aa204d7.jsonl.gz)
+[`eeb1fa293859`](https://github.com/pilifs/in-the-loop/commit/eeb1fa2938598024e7722e4b809414ecf513cae8) · [log `3f768f3bb246`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/3f768f3bb24604fbc1b1b8ea1b3bd327ddfea99bf153527d2a4c5b604aa204d7.jsonl.gz)
 
 The first launch of the cleanup loop stopped after adding its three stream workspaces. The integration workspace is added at ../REPO-integration, and the foundations run had left that directory behind when its workspace was forgotten, so jj workspace add failed. The planning session had already been compacted by then.
 
@@ -153,7 +153,7 @@ Tested in a throwaway jj repository, with stub claude and feature-loop.sh. A tak
 
 ### Record verification results for 1 job: Alignment A3's second-half proofs passed
 
-change `syqpoxomnynk` · [log `747e1075ca6b`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/747e1075ca6b862c81a071601cecfc54f396812475a007f2a751767bcef4435c.jsonl.gz)
+[`185e2b1ec059`](https://github.com/pilifs/in-the-loop/commit/185e2b1ec059c85f519ed5647812390cb7c33b3a) · [log `747e1075ca6b`](https://terminalvalue.net/raw-traces/2df7775c-45a1-40a7-924b-75602d8ad256/747e1075ca6b862c81a071601cecfc54f396812475a007f2a751767bcef4435c.jsonl.gz)
 
 Job 20261107-155804-alignment-a3-second-half-every-proposal (regression proof over proposals for examples 121-139) passed in 50.7s, peak 479 MiB (estimated 5m, 2 GiB). Collect applied its 2 outputs (examples/tools/alignment/README.md and scores/A3-proofs.json) and the examples index was regenerated. No new findings; the older failed results the report still lists were triaged earlier.
 

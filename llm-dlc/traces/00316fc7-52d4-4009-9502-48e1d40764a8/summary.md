@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### prune_workspaces.py: delete jj workspaces only once nothing in them can be lost
 
-change `tvwqssxpkwvk` · [log `b866e68ac112`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/b866e68ac11269bd4b2f12f3b77fbbf79bff5d00de0b0166a691098a9945f8f5.jsonl.gz)
+[`75e7f89a60d9`](https://github.com/pilifs/in-the-loop/commit/75e7f89a60d966a434c2aa0d4d828cb5b01f0842) · [log `b866e68ac112`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/b866e68ac11269bd4b2f12f3b77fbbf79bff5d00de0b0166a691098a9945f8f5.jsonl.gz)
 
 llm-dlc/tools/prune_workspaces.py considers every workspace but the default: those jj lists and the directories of forgotten ones (siblings REPO-* whose .jj/repo points here). It reports by default and deletes only with --delete. A workspace is clear when: no process has its cwd or a file open inside it, and no unfinished loop owns it (a stream workspace NAME-STREAM while llm-dlc/loops/NAME.md's status is neither done nor blocked); every commit of ::WS@ outside ::INTO (the default workspace's @-, or --into) is empty and undescribed; and every file, tracked, untracked or gitignored, is recoverable. That means its exact content is a blob reachable from INTO, or a file anywhere in the default workspace (hashed only on a size match, so its 12 GB verification/.state costs a walk), or it lies in a gitignored build-output directory (target/, build/, ...). It reads file contents, so edits jj never snapshotted count. A .git pointer file jj 0.47 writes is metadata; a .git directory blocks. --archive DIR copies would-be-lost files out and verifies each copy. Deletion re-checks use, forgets a listed workspace, removes the directory and runs git worktree prune. Claude Code transcripts under ~/.claude/projects are left alone.
 
@@ -28,13 +28,13 @@ Verified by test_prune_workspaces.py, 12 cases on throwaway colocated jj repos: 
 
 ### Record verification results for the cleanup merge's 4 jobs, all passed
 
-change `xlsmwprlkmpz` · [log `436361eaf1ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/436361eaf1ae50a060c526c0e6a609652cc42923fad69d890b1f8ba21b9ecb03.jsonl.gz)
+[`003e15ccaa46`](https://github.com/pilifs/in-the-loop/commit/003e15ccaa465b1defe86ce9881e48488cbd569f) · [log `436361eaf1ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/436361eaf1ae50a060c526c0e6a609652cc42923fad69d890b1f8ba21b9ecb03.jsonl.gz)
 
 Ran the four jobs queued at b6cc7ceb0c96 on vm-1: examples 150-152 and 160-161, 170-172 and 190-196 each gave their recorded verdict (as expected), and lib/tests/integration.rs passed unchanged. Collect applied 40 example output files (README, result.json, verifier-output) and regenerated the examples table. Only attention: 1-CPU quotas held the example steps back a few seconds; estimates were far over (minutes against under a minute). No findings added.
 
 ### prune_workspaces.py only reports, and prints the delete command for a person to run
 
-change `tposrkskrpmn` · [log `ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)
+[`10be49c860c9`](https://github.com/pilifs/in-the-loop/commit/10be49c860c94cfc564624a7fb510117f597e703) · [log `ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)
 
 Without --delete the script only reports whether each workspace is safe to delete, and ends with the exact command that deletes the safe ones. Where a workspace is blocked only by files found nowhere else, it also prints the --archive DIR form. --delete now takes the workspaces by name and refuses unless a person is at a terminal, the check sync.py's allow approve uses: stdin and stdout are terminals, and CLAUDECODE is unset. It checks the named workspaces again, lists the safe ones and asks the person to type "delete" before forgetting and removing any. --archive writes, so it goes with --delete only.
 
@@ -42,7 +42,7 @@ Verified by test_prune_workspaces.py, now 14 cases. The deleting ones run main()
 
 ### Cleanup Phase 4, step 4: the merge's four jobs passed, and the for-review list names every entry's state: the cleanup loop is done
 
-change `nmwtoxlzumyk` · [log `ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)
+[`49d2979e3dee`](https://github.com/pilifs/in-the-loop/commit/49d2979e3dee1b255ebd84f050a8e95067b36228) · [log `ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)
 
 The four jobs queued at the merge's code (b6cc7ceb, collected in xlsmwprl) all passed on vm-1: examples 150-152, 160-161, 170-172 and 190-196 each gave their recorded verdict, and lib/tests/integration.rs passed unchanged. With the merge's inline tests and step 2's published run records (check at 0 errors), Phase 4's criterion is met, and Progress ends with status done.
 

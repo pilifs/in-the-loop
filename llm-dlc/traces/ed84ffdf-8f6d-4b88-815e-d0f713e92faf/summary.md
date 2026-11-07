@@ -20,31 +20,31 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 10 jobs: examples 150 to 152 pass, 147 to 149, 160 and 161 still fail, VF-009 triaged
 
-change `pkuvkylnpzkv` · [log `d73826af3801`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/d73826af38014302e8205cbc4ae3f34e016ef9884aa75d49ce9fca4df0d6241e.jsonl.gz)
+[`765fce08f712`](https://github.com/pilifs/in-the-loop/commit/765fce08f71235cdeb063b5ad0edb72ff636467d) · [log `d73826af3801`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/d73826af38014302e8205cbc4ae3f34e016ef9884aa75d49ce9fca4df0d6241e.jsonl.gz)
 
 Run on vm-1 with 3 workers and 20 GiB. Passed: examples 150, 151, 152 (close VF-017), and the VF-009 triage (evidence that stock JBMC does not wrap a class initializer's throw: it fails wrapped, erroneous, once, enumWrapped, boomTwice and enumBroken, as the JVM does not). Failed: examples 147, 148 and 149 at 'apply the patch' (the crosscut Tests.java context changed; VF-002 updated), examples 160 and 161 at the result schema, which lacks scope.proofCache (VF-016 updated), and VF-010's reproducer, which exits 1 because all 8 runs found the violation in 3 to 5 s on vm-1, so the problem did not reproduce here (VF-010 updated). VF-020 is new: a 1.2 MiB changes.diff of the triage job is not committed because jj refuses to snapshot it. Verified by: collect's output, the jobs' logs, and git apply --check of the three patches against the current tree.
 
 ### Record verification results for 22 jobs: VF-009, VF-010, VF-016, VF-017 and VF-019 closed
 
-change `rzmrlklwnmtr` · [log `85e376fdd0bb`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/85e376fdd0bbf777866569f5c9f69a683ef4728f7a7622b2aaa7bec6c0469928.jsonl.gz)
+[`73da1af0f37f`](https://github.com/pilifs/in-the-loop/commit/73da1af0f37f01ceea90d60aedb2fd4dbc74c771) · [log `85e376fdd0bb`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/85e376fdd0bbf777866569f5c9f69a683ef4728f7a7622b2aaa7bec6c0469928.jsonl.gz)
 
 Run on vm-1 with 4 workers and 28 GiB. Closed: VF-019 and VF-009 (the conformance corpus and the extra-initializers jobs pass, the guard job shows no recorded JBMC example lost), VF-016 (examples 160 and 161 as expected), VF-017 (150 to 152, earlier), VF-010 (the reproducer 8 of 8 alike and 64 integration tests at the fix). Passed with results applied: example 149 and 160 and 161. Still open and updated: VF-018 (prices.Prices#total passes under JBMC at 1800 s, the other three still time out), VF-015 (example 109 now stops at the --gaps strict refusal of String.format), VF-002 (147 and 148 fail in stage_contracts, the gaps.contracts is read from the attempt directory; 149 passes), VF-001 (the two conformance jobs lack mkdir -p target before tee, so they fail although the tests pass), VF-014 (the two isolated benchmark runs pass, comparison pending). New: VF-021 (VF-010's two benchmark jobs got SIGTERM). VF-020 remains: the 1.2 MiB changes.diff is not committed. Verified by: collect output and the jobs' logs.
 
 ### VF-020: a second oversized changes.diff left out of the results
 
-change `ytqpqomonqky` · [log `ad8d33c81d1e`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/ad8d33c81d1ee28410a67d4b20be898588149b939745c959fcebab08359b03a7.jsonl.gz)
+[`adb4b0025f7c`](https://github.com/pilifs/in-the-loop/commit/adb4b0025f7c047db89b560b82a12423f72bd4df) · [log `ad8d33c81d1e`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/ad8d33c81d1ee28410a67d4b20be898588149b939745c959fcebab08359b03a7.jsonl.gz)
 
 The guard job 20261107-171442-vf-009-s-guard-measured-the-41-recorded also has a 1.3 MiB changes.diff that jj refuses to snapshot; recorded in verification/findings.md.
 
 ### Record verification results for 3 jobs: VF-014 closed, VF-010's benchmark pair recorded, and the runner's scope names made unique
 
-change `wwlnosomvoyr` · [log `ea5df1679e44`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/ea5df1679e449b5a43fc7241271e31e928fd87bd696246c7a376cb32b90f99b8.jsonl.gz)
+[`20f1a17d1733`](https://github.com/pilifs/in-the-loop/commit/20f1a17d1733c7035851e1d1ebb83c069e36aef7) · [log `ea5df1679e44`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/ea5df1679e449b5a43fc7241271e31e928fd87bd696246c7a376cb32b90f99b8.jsonl.gz)
 
 Run on vm-1. Job 20261107-183328 (VF-014's comparison) passed with 'verdicts changed: 0' and closes VF-014. The resubmitted VF-010 benchmark pair passed (3m11s each), outputs applied; the verdict comparison is still to be queued by the native stream, so VF-021 stays open. The pipeline fix: the runner named a step's systemd scope vjob-&lt;id[:40]>-&lt;step>, so two jobs whose ids share 40 characters stopped each other's steps with SIGTERM; verification/pipeline.py now uses scope_id(), the first 30 characters and a hash of the whole id. That was also the cause of one VF-001 job's SIGTERM, noted there. Verified by loading pipeline.py and checking that the two colliding ids of that pair give different names, and by the pair's passing without a collision.
 
 ### Draft the application-core loop: four streams that widen native change verification to ordinary service code
 
-change `sxqsornyxxrz` · [log `0471b8f581e1`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/0471b8f581e132a58a4d1939dd4c90aa540b89cee9c41fd5a79105875cdb28c2.jsonl.gz)
+[`f36c7128ed25`](https://github.com/pilifs/in-the-loop/commit/f36c7128ed25c7b726cb95533471a17e57591211) · [log `0471b8f581e1`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/0471b8f581e132a58a4d1939dd4c90aa540b89cee9c41fd5a79105875cdb28c2.jsonl.gz)
 
 Adds llm-dlc/loops/application-core.md, its four stream briefs (objects, values, environment, reuse) and application-core-acceptance.md, adapted from an outside plan the user shared (a review of the repository at cbf183a on GitHub). Each of the review's claims about the code was recounted at wwlnosom (20f1a17d), with file:line evidence, in the main brief's 'Where it starts from'. All held, and one sharpened: ObjectDomain's made_by, classes, allocations and label are read by nothing outside the cache key's projection, so Phase 0's first step is a gate that refuses them. The briefs follow brief-template.md: the cleanup run's pipeline mode, the timebox, application-core-STREAM workspaces, reserved example ranges 230-279, 4 GB scopes, fresh session ids, and the planning session 3da21514 as the fork. Shared files get a single writer (Phase 0, before the fork), because the foundations and cleanup integration checks both stopped on merge conflicts. The six decisions are proposed, not yet settled by the user.
 
@@ -52,13 +52,13 @@ Also registers the names application-core and application-core-STREAM in feature
 
 ### Record verification results for 3 jobs: VF-021 closed, VF-014's fresh benchmark recorded
 
-change `lmxwvplznvwl` · [log `0471b8f581e1`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/0471b8f581e132a58a4d1939dd4c90aa540b89cee9c41fd5a79105875cdb28c2.jsonl.gz)
+[`6e584f2e268a`](https://github.com/pilifs/in-the-loop/commit/6e584f2e268a96b675edbc3b1f141248c29ff590) · [log `0471b8f581e1`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/0471b8f581e132a58a4d1939dd4c90aa540b89cee9c41fd5a79105875cdb28c2.jsonl.gz)
 
 On vm-1: the fresh lib/benchmark results (job 20261107-183709, 1h37m, peak 6.0 GiB of an estimated 4.5) passed and replaced results.json and RESULTS.md; the VF-010 comparison (job 20261107-184603) passed with 557 own-checker runs, verdicts changed 0, closing VF-021; the VF-014 comparison from earlier is recorded. Verified by the jobs' logs and collect's apply with no conflicts.
 
 ### VF-010: the own checker's branch probes are budgeted in solver conflicts, not seconds, so the path order is the same on every machine (verification pending)
 
-change `nrvtlrmsozok` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`9afb0e57979c`](https://github.com/pilifs/in-the-loop/commit/9afb0e57979c3b55801931a17ae8f13cf487e60a) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 Engine::probe (lib/src/bmc/mod.rs) gave the other side of a branch as long as all the solver calls so far took, at least a second, of wall-clock time. Pricing#total's regression proof has a feasible side whose probe takes about 1.04 s here, so some runs decided it and found the violation in seconds, and others left it undecided and ran out of time (VF-010). A probe is now given as many conflicts as all the calls so far had, at least PROBE_CONFLICTS (10,000). The Sat trait gains a work limit (set_work_limit, work; lib/src/bmc/sat.rs), and so does the Blaster. For CaDiCaL, the conflicts are counted as the clauses it learns, and a call is stopped through the terminate callback, which CaDiCaL polls on a count of its own steps, so a stop is the same on every run. Bitwuzla has no such limit and keeps the wall-clock budget. The run's deadline stays the user's --timeout. The doc comment's design is kept: an undecided side is decided after the decided paths, with all the time left. Transcripts record a probe's conflict limit, and replay gives it again. The module doc and lib/README.md's sentence on the probe budget say so.
 
@@ -68,7 +68,7 @@ Jobs: 20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t and 20261107-1655
 
 ### VF-015: example 109's replay job resubmitted unchanged at the native stream's commit (verification pending)
 
-change `vmxqyptppnml` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`b0db5b6a48a6`](https://github.com/pilifs/in-the-loop/commit/b0db5b6a48a6fe20a4cc1ae0a946973d4313f677) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The cleanup loop's native stream resubmits job 20261103-010716-example-109-revisited-hex-todigit-s-regr as its brief's first step for VF-015. That job's step 3 failed because JBMC refuted the old Hex#toDigit on ch == 1632 and the interpreter could not replay the witness: it refuses to read java.nio.charset.StandardCharsets.UTF_8. JDK models have shipped with jvmcontract since, so the failure may be gone. The new job's steps, expectations and budget are the old one's. Only its title and description now name VF-015, which it closes when it passes. Validated with pipeline.py validate (0 problems).
 
@@ -78,7 +78,7 @@ The stream brief's Progress records the step, and corrects step 2's note on sync
 
 ### VF-011: the own checker counts a loop's unwinding per entry of the loop, so an inner loop gets --unwind iterations per outer iteration (verification pending)
 
-change `qlkvoryrpzwy` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`66a34ffd1005`](https://github.com/pilifs/in-the-loop/commit/66a34ffd1005484f10776262113a7a33b62ddeda) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 Engine::jump (lib/src/bmc/mod.rs) counted each back edge over the whole path, so a nested quantifier's inner loop ran out of --unwind across the outer loop's iterations, and example 052's property was left to JBMC under strict ('a loop was not fully unwound with --unwind 16'). Counts are now kept per frame, by loop head, and a back edge from 'from' to 'target' starts again the count of every head after 'target' up to 'from' (the loops in its body), as JBMC's --unwind counts. It stays a bound: on a path that never ends, the lowest head it keeps returning to is restarted only by back edges to lower heads, taken finitely often, so its count passes the bound and the path ends unwound with no verdict; calls stay at most 64 deep. Merges keep the lower count per frame.
 
@@ -88,7 +88,7 @@ Job 20261107-171502-vf-011-example-052-under-strict-on-the-o runs 052 under stri
 
 ### VF-010's benchmark pair resubmitted with pinned revisions, after the runner stopped each with the other's scope (verification pending)
 
-change `lqrtnusrxtrw` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`b6cbe29483dd`](https://github.com/pilifs/in-the-loop/commit/b6cbe29483ddfa8d97262e8c3916c449dc2830e6) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The cleanup loop's native stream read its seven collected jobs. VF-010's closing jobs passed: the reproducer found the violation in 8 of 8 runs alike at the fix, and the 64 integration tests passed. VF-011's job established example 052 on the own checker under strict with no gap. VF-015's resubmitted job (example 109) failed at step 3 for a new reason outside replay: JBMC now proves the old Hex#toDigit for ch == 1632, but under the default --gaps strict jvmcontract refuses the proof because it reaches JBMC's stub of String.format on toDigit's exception path. The fix needs a String.format model (lib/models/, the jbmc stream's) or the user's decision to change the check's gap mode, so the stream brief's Progress records it for review.
 
@@ -98,7 +98,7 @@ Jobs: 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 (--revision f606b
 
 ### VF-010's benchmark compared: the own checker's verdicts at the fix and at its parent (verification pending)
 
-change `kmmoyznyyuvz` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`a1482fd392a4`](https://github.com/pilifs/in-the-loop/commit/a1482fd392a4ca5630185ddb7df771f8296386b9) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The resubmitted benchmark pair for VF-010 passed: 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 at the fix (f606b0d8) and 20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r at its parent (c307e721). The new job 20261107-184603-vf-010-s-benchmark-compared-the-own-chec finds each run's collected output in the runner's repository by the sha256 the run recorded, and compares every own-checker run by (case, mode). It exits 1 if a verdict changed or a case is in one run only, and 2 if an output is missing. It closes VF-021 when it passes.
 
@@ -106,7 +106,7 @@ Verified before submitting: on the same two files, 557 own-checker runs, none ne
 
 ### VF-019: --confirm's refusal of a domain JBMC is not given is named, and the confirm conformance test reads it as no verdict
 
-change `uytnkqstzukt` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`5a8d645af5b2`](https://github.com/pilifs/in-the-loop/commit/5a8d645af5b289dfea381cac9c6ded3f5beef34b) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 VF-019 (verification/findings.md): under auto --confirm, H2's six nullable and may-alias claims gave 'no engine wrote a harness' in the_corpus_agrees_with_the_jvm_under_auto_confirm (job 20261107-043420), and then 'the corpus says it is refuted, the JVM does not' for the refuted ones. --confirm and --engine jbmc already refused such a domain, with a reason in words, but before writing the harness, so the test had nothing to run on the JVM and could not tell the refusal from a run that went wrong.
 
@@ -114,7 +114,7 @@ property::Outcome gains refused, the name of the rule that refused the property 
 
 ### VF-018: heap's JBMC tests take their time limit from JVMCONTRACT_HEAP_TIME_LIMIT, and the four that timed out are queued at 1800 s (verification pending)
 
-change `muznwonpkprx` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`cf93c4c0404b`](https://github.com/pilifs/in-the-loop/commit/cf93c4c0404b522ec8005d1f653f58de12f7059c) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 VF-018: four of H5's ignored heap tests (Kernel#price's output relation, Prices#total's computed equations, Lines#reprice's and Orders#reprice's equations) failed because JBMC did not finish within the tests' own 600 s, the options' default timeout_seconds, while the own checker proves each claim. By the user's decision, the first and only attempt is more time with the expectations unchanged. lib/tests/heap.rs's related_on and property_on now set timeout_seconds from JVMCONTRACT_HEAP_TIME_LIMIT for runs on an engine other than the own checker (600 s when unset; a value that is not a positive number of seconds stops the test, so a job asking for more never silently runs with less). The own checker keeps the default, so the tests that are not ignored are unchanged. heap.rs is a shared file; this only adds to it. Reproducer: the_jbmc_tests_take_their_time_limit_from_the_environment, which doesn't compile without the change. heap's 47 non-ignored tests pass.
 
@@ -122,13 +122,13 @@ Jobs, one per test, each with the variable at 1800 (2 CPUs, 4 GiB, about 70 minu
 
 ### VF-001 rechecked: each of its parts fixed by a named commit, its two jobs to be resubmitted with VF-009's fix
 
-change `lqozoovutmvm` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`25bb2ebd1f76`](https://github.com/pilifs/in-the-loop/commit/25bb2ebd1f767d7e57d3c70225e4eccec6a26177) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 J2 of llm-dlc/loops/cleanup-jbmc.md. Each part of VF-001 was checked against the current code and the passing runs of the conformance tests (job 20261107-024759 step 5, the corpus under JBMC and auto; job 20261107-043420, under auto --confirm). The seven Verifieds under strict that the JVM refutes (four capacity constructors, loadFactor, nullMonitor, firstByte, pairsEqual) and auto's pass-through of JBMC's Verified for loadFactor and pairsEqual were fixed by nlvopkvx (0874cd9f): JBMC's missing bodies, invokedynamic call sites and dropped monitors are named gaps, and a JBMC proof through one has no verdict under strict and names it under assume. The spurious refutations of caught and nestedHandler at n=0 were fixed by svvrpymr (c99a7476) and xzvyuwxp (48aefd9e), which name where JBMC lets an exception past its handler and give no verdict through it, under --confirm too. Nothing is left to fix, so no code changed. VF-001's two jobs are resubmitted unchanged once VF-009 is fixed, since the confirm test the first job also runs still carries VF-009's disagreements. Only the brief's Progress changed.
 
 ### VF-009: JBMC gives a throwing class initializer's exception to its caller unwrapped; the preflight names it as throwing-initializer, and the closing jobs of VF-009, VF-019 and VF-001 are resubmitted (verification pending)
 
-change `uxxvutuprprr` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`0e3526e1abbc`](https://github.com/pilifs/in-the-loop/commit/0e3526e1abbc5c9dab1f85d5e4d568bace02594d) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 Triage job 20261107-163056 settled VF-009's cause: JBMC 6.11.0's semantics, not a flag jvmcontract passes nor the adapter's reading. On the fixture lib/tests/fixtures/jbmc-defects/F.java, stock JBMC with no options, with --throw-runtime-exceptions and with the adapter's options lets an initializer's IllegalStateException or ArithmeticException reach the caller as itself, where the JVM wraps it in ExceptionInInitializerError (JVMS 5.5 step 11). An Error, which the JVM doesn't wrap, is proved as on the JVM. JBMC's goto listing shows why: the &lt;clinit_wrapper> sets clinit_already_run before calling &lt;clinit> and returns with whatever is in flight, so a later use also finds the class initialized, where the JVM throws NoClassDefFoundError. That is why the corpus's boomTwice and enumBroken were refuted at n=0.
 
@@ -138,13 +138,13 @@ The candidate report is cause 5 in llm-dlc/loops/jbmc-upstream.md, under a new C
 
 ### test_build.py checks each recorded violation's replay wording against its own result, not against boxoffice alone
 
-change `vtkypktkyoso` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`9a0307018d66`](https://github.com/pilifs/in-the-loop/commit/9a0307018d66db447509b99717dbdba614abea47) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The cleanup integration check (report of 2026-11-07 16:26, at eeb1fa29) failed on ReplayWordingTest: it held that only the Java verifier's (boxoffice) pages say a witness was replayed on the JVM. jvmcontract effects replays its witness on a JVM under recording stubs (lib/src/effects.rs:577), and its results record replay.by jvm, so the pages of examples 171, 172 and 191-194 failed the test while saying what their results record. The test now checks every recorded B9 violation's page against that result's own replay record (build.replayed_where), and that at least one page is on the JVM. No page, result or build.py code changed. Verified with python3 examples/tools/test_build.py: 185 tests pass, where one failed before.
 
 ### result.schema.json allows an object parameter's statement, and the page says what of the object is compared, for examples 150-152 (verification pending)
 
-change `wmuwlwkxxtlr` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`850844f826be`](https://github.com/pilifs/in-the-loop/commit/850844f826beafc9fb70326930fc4ec12127fed5) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 VF-017, item E1 of the cleanup loop's examples stream. Examples 150, 151 and 152 failed as build.py validated their results: the schema's statement domain allowed parameter kinds primitive, array and record only. Checked against lib/src/statement.rs, an object parameter made by its constructor also brings the domain's inputObjects and mayAlias and the observations' objects and identities, all of which additionalProperties refused; the job showed only the first error. The schema now has the object kind and the four fields, with descriptions that say what the code writes in place of the old 'never today'. The page's statement paragraph now says each object is made by its constructor, which of its fields are compared after the call, and which identity relations are compared within each version, so that 151's page names result == throttle, the observation that refutes it.
 
@@ -154,7 +154,7 @@ Jobs, resubmitted unchanged with the closing entry named: 20261107-164043-exampl
 
 ### VF-014: the benchmark's own-checker runs at H1's parent and at H1, to isolate H1's effect on the verdicts (verification pending)
 
-change `ulvlrqwuotql` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`53e4ac3139b2`](https://github.com/pilifs/in-the-loop/commit/53e4ac3139b2fe6e39bf6619b438af3b6c2de9a8) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 Job 20261107-041414 compared step H1 (symbolic references in the own checker, change uyqkxsly) with lib/benchmark/results.json. That recording is older than H1, so 8 verdicts that changed through class initializers gained since could not be told apart from H1's effect (VF-014). As the entry offers, two jobs now run that job's step 1 unchanged, one at H1's parent (rvxkytqy, b927e5df) and one at H1 (ddbb54ba, the same tree as 73c514ad, where 20261107-041414 ran). Each keeps lib/target/benchmark-native.json and its table as outputs. A third job will apply 20261107-041414's step-2 comparison script to the two outputs once both are collected, and close VF-014 when it passes. Both job files pass pipeline.py validate, and both revisions resolve in git with lib/benchmark/run.py present.
 
@@ -164,7 +164,7 @@ The stream brief's Progress records the jobs, where collect will keep their outp
 
 ### Examples 147-149's patches rebased onto the crosscut suite list, and result.schema.json allows a claim's proofCache scope, for VF-002 and VF-016 (verification pending)
 
-change `uxvwumlzonom` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`447645a0c3ee`](https://github.com/pilifs/in-the-loop/commit/447645a0c3ee54a40774869ed45c3073aabe6286) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The jobs resubmitted after the excerpts() fix got past the subject check and each stopped on a second defect. VF-002 (147-149, jobs 20261107-163046/163047/163049): git apply refused the patches, whose Tests.java hunk predates RetryThrottlingTest in the crosscut suite list. The hunk is rebased onto the current list and the rest of each patch is unchanged; each patched app compiles and its 56 tests pass. A new test_build.py test, PatchesApplyTest, checks that every example's patch applies to the current tree; it failed on exactly 147-149 before the fix. VF-016 (160-161, jobs 20261107-163050/163051): build.py writes scope.proofCache in the claim of a B9 proof with the proof cache, and the schema didn't allow it. It now does, with a test that failed before the fix. The jobs' recorded jvmcontract output, replayed through run_tool_equivalence with the subprocess mocked, gives 160 verified with lastAfter shared and 161 a violation with it not shared, and the fields validate. All 189 test_build.py tests pass. The examples' notes record the second run, and examples/index.json is re-rendered.
 
@@ -172,7 +172,7 @@ Jobs, resubmitted unchanged as the timebox's second attempt: 20261107-165152-exa
 
 ### sync.py publishes the loops' run records, redacted, beside each session's trace and listed in its summary, for VF-013
 
-change `mmrwolwpxoyk` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`457bb29bb13c`](https://github.com/pilifs/in-the-loop/commit/457bb29bb13c22283d627f679ea915458cb40a39) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 feature-loop.sh's records in llm-dlc/loop-summaries/ are gitignored because they hold local paths, so nothing recorded which commits belonged to which run, or how a run ended. sync now publishes each record, from the default workspace, as llm-dlc/traces/&lt;session>/runs/&lt;record>.md. The session comes from the record's header, and each line is redacted with the transcripts' rules. The session's summary.md gains a Loop runs list (start, end, cycles with a commit, how the run ended), kept between markers so that a summary whose transcript is elsewhere is updated in place. check scans the copies: what the redactor would still change is an error, what it leaves to judge a warning, and a record not published is a note. The copies are covered by the publication gate and by scan. A record still being written is republished as it grows, because a killed run never writes its end line. A stream workspace (one whose .jj/repo is a file, told without running jj) publishes none, so this workspace's own record stays unpublished until the merge copies it into the default workspace.
 
@@ -180,7 +180,7 @@ Verified by test_runs.py, the reproducer, which uses made-up paths, a made-up se
 
 ### spec::heap::check refuses a claim whose contract names an input its subject doesn't take, and discount is checked under a claim of its own (E4)
 
-change `oqxxrtowoupx` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`885248495fb4`](https://github.com/pilifs/in-the-loop/commit/885248495fb4946d02b7d05f077733d77e0d55fd) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The foundations loop left a note: the integration contract checked Pricing#discount(long gross, int quantity) under the kernel claim, whose only input is q: shop.Quote, and check never compared the contract's inputs with the method. It came back verified under an input the method doesn't have. check now refuses, as Unsupported, a claim with an external input that is not among the subject's parameters by name and type (the receiver is this), naming the method's parameters. A parameter no input names is still allowed, as for compare's standalone pairs.
 
@@ -188,7 +188,7 @@ The golden files gain discount-claim.json (gross and quantity, identity, no obje
 
 ### A reused proof names the run it came from by the builds that run was given, not the effect-trace proof's rewritten copies in a temporary directory (E4)
 
-change `vsxvymrpxtsu` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`841656fcf8e9`](https://github.com/pilifs/in-the-loop/commit/841656fcf8e9fc27e006406ae3f0c6583e2ce744) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The effect-trace proof of an entry point runs on rewritten copies of the two builds, in a temporary directory, so the proof cache recorded its provenance as 'on /tmp/jvmcontract-effects-.../before and .../after', which names nothing a reader can find. equivalence::Options gains copied_from (an additive field in a shared file), effects sets it to the builds it was given, and the proof cache's provenance (proof_cache.rs, the one format) names 'copies of BEFORE and AFTER'. Helper proofs clone the caller's options, so they name the same builds. jvmcontract effects' text now says where an exact hit came from, as compare's kernel lines already did. lib/README.md gains one sentence.
 
@@ -196,7 +196,7 @@ Reproducers, failing before the fix on the temporary paths and passing after: te
 
 ### spec::heap::check holds a claim's allocation bound against what each version's code makes in one call, and the golden kernel domain lets the new version make alias-to-copy's 2 objects (E4)
 
-change `svoznurqyptv` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`12ddfa049dd6`](https://github.com/pilifs/in-the-loop/commit/12ddfa049dd6aa490b3687359a6bb8286e7bc08a) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 The golden kernel claim's allocations: 0 was checked by nothing: the own checker follows every allocation within the unwinding bound, and the run states no allocations. spec::heap::check now counts, from the bytecode, an upper bound on what one call of the subject makes in each version: each new, array instruction and invokedynamic of the application code the call runs, on every branch, through every call (the most of the dispatch targets and of the subject's overloads), and none in a loop or a recursion that makes anything. What a JDK method makes, the JVM's own exceptions and class initializers are not counted. Code that may make more than a version's bound leaves the result unresolved, naming the count, as the input-object bound does.
 
@@ -204,7 +204,7 @@ alias-to-copy's withQuantity makes a Quote and its constructor's IllegalArgument
 
 ### VF-014's comparison queued on the two isolated runs, and VF-002's 147 and 148 deferred by the timebox after a third defect in build.py's contract staging (verification pending)
 
-change `xmsmzwoyoklp` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`b4f3aebb5c50`](https://github.com/pilifs/in-the-loop/commit/b4f3aebb5c5052694398345e5533932929b4b461) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 E2: the runs at H1's parent (20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm) and at H1 (-run-2-of-2-) passed. Their lib/target/benchmark-native.json files stay, gitignored, under each result's outputs/ in the runner's repository. Job 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm finds them four directories above $VERIFY_WORKDIR, checks each against the sha256 its run recorded, and applies job 20261107-041414's step-2 comparison script unchanged, with run 1's file in place of lib/benchmark/results.json and run 2's in place of lib/target/benchmark-native.json. It closes VF-014 when it passes. Tried inline on the same files, a 0.2 s script: 557 runs at H1, 24 new (the swaps cases H1 added), 0 verdicts changed, 0 formulas grown, 0 paths or merges changed. pipeline.py validate passes.
 
@@ -212,7 +212,7 @@ E1: VF-016 passed (160 verified with lastAfter shared, 161 a violation with none
 
 ### VF-014's fresh lib/benchmark/results.json queued at the current engine, all three engines, after the isolated comparison (verification pending)
 
-change `yztkltwvnkmy` · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
+[`1deb11dc1a9f`](https://github.com/pilifs/in-the-loop/commit/1deb11dc1a9f21e5524338109130ee105ffd9292) · [log `6dd3e3f6767a`](https://terminalvalue.net/raw-traces/ed84ffdf-8f6d-4b88-815e-d0f713e92faf/6dd3e3f6767a8fe3306d8a1ce774e6af78585a9a4e15514ca049d839b4a29588.jsonl.gz)
 
 Job 20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso records lib/benchmark/results.json and RESULTS.md again at this commit. VF-014 found the committed recording stale: job 20261106-201041 wrote it at 26227917, before the own checker gained class initializers and before H1's conformance cases. The step is 20261106-201041's, unchanged: native, jbmc and auto, under three gap modes and three JBMC staging policies, so the reference keeps every engine's runs. Both files are the job's outputs and replace the committed ones through collect. The default workspace's copies match this commit's sha256, so collect can apply them.
 
