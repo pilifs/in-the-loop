@@ -40,6 +40,16 @@ Without --delete the script only reports whether each workspace is safe to delet
 
 Verified by test_prune_workspaces.py, now 14 cases. The deleting ones run main() with the terminal check and the prompt patched. New: the report prints the command and deletes nothing; --delete is refused in an agent's shell; --delete needs names; a wrong answer deletes nothing; --archive without --delete is a usage error. On this repo the report prints python3 llm-dlc/tools/prune_workspaces.py --delete examples jbmc native, and the same --delete run from this session was refused, with ../in-the-loop-native still in place.
 
+### Cleanup Phase 4, step 4: the merge's four jobs passed, and the for-review list names every entry's state: the cleanup loop is done
+
+change `nmwtoxlzumyk` · [log `ffc6e16ca4ae`](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz)
+
+The four jobs queued at the merge's code (b6cc7ceb, collected in xlsmwprl) all passed on vm-1: examples 150-152, 160-161, 170-172 and 190-196 each gave their recorded verdict, and lib/tests/integration.rs passed unchanged. With the merge's inline tests and step 2's published run records (check at 0 errors), Phase 4's criterion is met, and Progress ends with status done.
+
+The for-review list in llm-dlc/loops/cleanup.md's Progress gives each entry's state. Closed by their checks: VF-010, VF-021, VF-009, VF-019, VF-016, VF-017 and VF-014. Passed but still open in findings.md, for the verification agent to close: VF-011 (its 052 job passed) and VF-013 (test_runs.py, plus every record published). Open: VF-002's 147 and 148, deferred by the timebox; VF-018 and VF-001, deferred to the user; VF-015, to be settled by stub-reachability.md; VF-020, which needs the user's decision on jj's snapshot limit. The three foundations leftovers are fixed with tests. No job is pending. The new findings for a person are listed there too, among them: 148 and 149's '1 proved, 2 tested' expectation, the golden kernel domain's allocation bound going from 0 to 2, the stale wording in coverage.md and jbmc-upstream.md, and the forgotten cleanup workspaces' directories still on disk.
+
+Out of date in the rest of the brief: 'Where it starts from' describes the state before the streams ran.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/00316fc7-52d4-4009-9502-48e1d40764a8/ffc6e16ca4ae3a77f5824d315a82fd2b94a6c89aaa816b51c0d7c7a0fc627a53.jsonl.gz) has every step in between: reasoning, tool calls and their results.

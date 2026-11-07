@@ -341,7 +341,67 @@ Settled by the user on 2026-11-07:
   They run at the commit that queues them, whose code is the merge's (`lpvnwkuz`): the commits since change only
   generated trace files and this Progress. No job was pending for these examples, so none is superseded.
   - Next: read the four results, then step 4's for-review list.
-- Status: waiting on jobs 20261107-215001-cleanup-merge-crosscut-s-examples-150-15 20261107-215001-cleanup-merge-deliveries-examples-170-17 20261107-215001-cleanup-merge-shop-s-examples-190-196-re 20261107-215001-cleanup-merge-lib-tests-integration-rs-a
+- **Phase 4, step 3's results: all four passed** (2026-11-07, at `b6cc7ceb`, on `vm-1`, collected in `xlsmwprl`).
+  Every example gave its recorded verdict (`example:as-expected`): 150, 152, 160, 170, 190 and 195 verified; 151,
+  161, 171, 172 and 191–194 violation; 196 unverifiable. `lib/tests/integration.rs` passed unchanged in 2m37s. With
+  the merge's inline run (every unit and test binary but `integration.rs`, and every Python suite) and step 2,
+  Phase 4's criterion is met.
+- **Phase 4, step 4: the for-review list** (2026-11-07). No job is pending (`pipeline.py status`: 0 pending, 0
+  running, 0 uncollected).
+  - **Closed by their checks** (recorded so in `findings.md`):
+    - VF-010: `20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t` and `-165544-vf-010-s-integration-tests-at-the-fix-li`.
+    - VF-021: `20261107-184603-vf-010-s-benchmark-compared-the-own-chec`.
+    - VF-009: `20261107-172721-jbmc-s-extra-initializers-named-and-refu`.
+    - VF-019: `20261107-172721-nullable-and-one-array-parameters-in-pro`.
+    - VF-016: `20261107-165152-example-160-…` and `20261107-165153-example-161-…`.
+    - VF-017: `20261107-164043-example-150/151/152-…`.
+    - VF-014: `20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm`.
+  - **Passed, but still open in `findings.md`, for the verification agent to close:**
+    - VF-011: `20261107-171502-vf-011-example-052-under-strict-on-the-o` passed (052 established by the own checker
+      under strict, with no gap), which is its "Closes when".
+    - VF-013: `test_runs.py` covers it, and step 2 found every record published, redacted and linked, with `check` at
+      0 errors, which is its "Closes when".
+  - **Open:**
+    - VF-002: 149 passed (`20261107-165152-example-149-…`). 147 and 148 are deferred by the timebox
+      (`20261107-163046/163047-…`, then `20261107-165152-example-147/148-…`), as step 1 records. The closing jobs
+      are `20261107-165152-example-147-…` and `-148-…`, resubmitted after `stage_contracts` and `contracts_digest`
+      read the example's folder. They haven't run because no third attempt is allowed in this loop.
+    - VF-018: deferred to the user (decision 6). The three jobs `20261107-164356-vf-018-objects-…`, `-lines-…` and
+      `-orders-…` close it, resubmitted unchanged at a fix or under an expectation the user decides. They haven't run
+      because a longer limit didn't help, and the choice of route is the user's.
+    - VF-001: deferred to the user. `20261107-172721-conformance-corpus-under-jbmc-and-engine` and
+      `-under-engine-auto-con` close it. They haven't run because their step's `tee` fails in a fresh checkout, and
+      changing a check is the user's call. Either the user takes the first job's "2 passed, 0 failed" as the check, or
+      both are resubmitted with `mkdir -p target &&` added. `findings.md` asks for the latter.
+    - VF-015: `20261107-165827-example-109-revisited-hex-todigit-s-regr`, resubmitted, closes it. It hasn't run here
+      because strict refuses the proof at JBMC's `String.format` stub, and the user chose
+      [`stub-reachability.md`](stub-reachability.md) to settle that after this merge.
+    - VF-020 (raised during this run, no stream's item): needs the user's decision on jj's 1 MiB
+      `snapshot.max-new-file-size`, or on `collect` and the jobs' declared outputs. Two passed results lack their
+      `changes.diff`.
+  - **Foundations leftovers:** all three fixed with tests in the examples stream (`svoznurq`, `oqxxrtow`,
+    `vsxvymrp`), checked inline, and run again by the merge's inline tests. They have no entry and no job.
+  - **The merge's examples:** passed, as above.
+  - **New findings, for review** (none of them in this brief's items):
+    - The jobs of 148 and 149 expect "1 proved, 2 tested", but since `Integer.numberOfLeadingZeros` is no gap, the
+      tool can give only the two tested contracts. `build.py` checks only the verdict, and the examples' titles and
+      summaries still name three contracts.
+    - The golden kernel domain's allocation bound for the new version went from 0 to 2 (`svoznurq`), so that
+      alias-to-copy's two objects pass. A person should confirm that is the domain's intent and not a weakening.
+    - One clock dependency is left in the own checker: after the first violation, the search for a smaller witness
+      shortens its deadline to the time taken so far (`lib/src/bmc/mod.rs`, `check`). It can change the reported
+      witness, not the verdict.
+    - VF-011's fix lets the own checker explore nested loops further, so some "not fully unwound" results may become
+      verdicts or timeouts. The fresh `lib/benchmark/results.json` (2829 runs) postdates it.
+    - `examples/coverage.md` (extension 2) still describes the unwinding count as per path.
+    - `jbmc-upstream.md`'s "Deferred" and "Decisions" sections still call VF-009 deferred and a candidate to join,
+      although its cause 5 records the triage.
+    - `cleanup-integration.sh` doesn't run `test_runs.py` or `test_performance.py`. `test_performance.py` failed one
+      test once under load at the merge and passed when rerun alone.
+    - The directories of the forgotten workspaces `cleanup-native`, `cleanup-jbmc`, `cleanup-examples` and
+      `cleanup-integration` are still on disk. `llm-dlc/tools/prune_workspaces.py` reports which are safe to delete
+      and prints the command, for the user to run.
+- Status: done
 
 ## Loop settings
 
