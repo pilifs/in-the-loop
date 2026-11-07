@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-07T21:13:44.685Z",
-  "duration_seconds": 8273,
+  "ended": "2026-11-07T21:19:26.004Z",
+  "duration_seconds": 8614,
   "stats": {
-    "turns": 8,
-    "api_calls": 56,
-    "tool_calls": 60,
+    "turns": 10,
+    "api_calls": 72,
+    "tool_calls": 75,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 185107,
+    "peak_context_tokens": 218478,
     "usage": {
-      "input_tokens": 122,
-      "output_tokens": 58370,
-      "cache_read_input_tokens": 7085819,
-      "cache_creation_input_tokens": 277077
+      "input_tokens": 158,
+      "output_tokens": 76318,
+      "cache_read_input_tokens": 10302619,
+      "cache_creation_input_tokens": 310448
     }
   },
   "tools": {
-    "Bash": 48,
-    "Write": 8,
+    "Bash": 62,
+    "Write": 9,
     "Agent": 1,
     "Edit": 1,
     "Read": 1,
@@ -43,6 +43,7 @@
     "llm-dlc/loops/application-core-reuse.md",
     "llm-dlc/loops/application-core-values.md",
     "llm-dlc/loops/application-core.md",
+    "llm-dlc/loops/stub-reachability.md",
     "llm-dlc/tools/application-core-integration.sh",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/application-core-loop-draft.md"
   ],
@@ -50,24 +51,24 @@
     {
       "index": 0,
       "started": "2026-11-07T18:55:51.567Z",
-      "ended": "2026-11-07T21:13:44.685Z",
-      "turns": 8,
-      "api_calls": 56,
+      "ended": "2026-11-07T21:19:26.004Z",
+      "turns": 10,
+      "api_calls": 72,
       "usage": {
-        "input_tokens": 122,
-        "output_tokens": 58370,
-        "cache_read_input_tokens": 7085819,
-        "cache_creation_input_tokens": 277077
+        "input_tokens": 158,
+        "output_tokens": 76318,
+        "cache_read_input_tokens": 10302619,
+        "cache_creation_input_tokens": 310448
       },
-      "peak_context_tokens": 185107
+      "peak_context_tokens": 218478
     }
   ],
   "log": {
-    "sha256": "6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44",
-    "bytes": 1865336,
-    "lines": 495,
-    "gzip_bytes": 371562,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44.jsonl.gz"
+    "sha256": "81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a",
+    "bytes": 2127746,
+    "lines": 610,
+    "gzip_bytes": 411777,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a.jsonl.gz"
   },
   "subagents": [
     {
@@ -130,6 +131,14 @@
       "summary": "run-streams.sh reads only job-id-shaped words from a 'waiting on jobs' status",
       "body": "The cleanup-jbmc stream ended its Progress with 'Status: waiting on jobs ID 20261107-...', copying the template's literal ID. run-streams.sh took every word after 'waiting on jobs' as a job id, so it waited for verification/results/ID*/result.json, which never comes. All nine real jobs were collected by about 18:00, and the stream sat waiting from 17:31 toward the 12-hour RUN_STREAMS_JOB_WAIT. A new job_ids keeps only words shaped like an id (YYYYMMDD-HHMMSS...), and both places that parse the status use it. Tested on that status line, and on an empty one; bash -n. Replaced by rename: the run under way keeps the old copy, so it stays stuck until it is restarted.",
       "log_sha256": "6b227d95040c0f276d8df3e6e9e54da397cf3adf40b62acb0b02bd6c781d0b44"
+    },
+    {
+      "change_id": "rmvlorrsytolxowvyvpykzztnmpoqkvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Draft the stub-reachability brief: decide by the solver whether a proof enters a JBMC stub (settles VF-015)",
+      "body": "VF-015's step 3 (prove Hex#toDigit under ch == 1632) fails only because the gap preflight counts String.format's stub as entered. Its symbolic run (--program-only, no solver) can't prune a branch an --assume decides, and that call is on toDigit's exception path, infeasible there. The user chose a solver check of stub reachability over a String.format model: under --no-refine-strings JBMC can't read a format string, so a model would be unsound or a source of spurious refutations. The brief runs after the cleanup merge, since jbmc_gaps.rs is the cleanup jbmc stream's file. Its steps: an experiment job comparing --cover location with an alternative on VF-015's harness; choose the method; implement it as a third preflight step with recorded-output unit tests; resubmit VF-015 unchanged as N3's second attempt, with guard jobs. Status blocked on the merge; nothing run yet.",
+      "log_sha256": "81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a"
     }
   ],
   "logs": {
@@ -149,6 +158,12 @@
       "bytes": 1524843,
       "lines": 324,
       "gzip_bytes": 321563,
+      "url": null
+    },
+    "81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a": {
+      "bytes": 2127746,
+      "lines": 610,
+      "gzip_bytes": 411777,
       "url": null
     },
     "9b71da9485928903f84f215c4c9a439eaae953b5614b2186eacc0cd8de3b3954": {
