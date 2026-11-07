@@ -246,6 +246,18 @@ for s in "${STREAMS[@]}"; do
   fi
 done
 
+# A stream's run records are its own workspace's (feature-loop.sh writes them where it runs), and
+# only this workspace publishes them (sync.py): they are copied here at the start, after each of the
+# stream's runs, and before the merge, whose commit publishes them. LABEL names the loop in the log.
+collect_records() {
+  local dir=$1 label=$2 line
+  [[ "$dir" == "$ROOT" ]] && return 0
+  python3 "$ROOT/llm-dlc/tools/run_records.py" collect "$dir" "$ROOT" | while IFS= read -r line; do log "[$label] $line"; done
+}
+
+# Records a stream's earlier runs left in its workspace (an interrupted run of this script).
+for s in "${STREAMS[@]}"; do collect_records "${DIR[$s]}" "$s"; done
+
 # The last "- Status:" line under a brief's "## Progress", without the label.
 status_of() {
   awk '/^## / { inside = ($0 ~ /^## +Progress[[:space:]]*$/); next }
@@ -315,6 +327,7 @@ supervise() {
     phase "$label" running
     "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
     code=${PIPESTATUS[0]}
+    collect_records "$dir" "$label"
     (( code == 130 )) && exit 130
     status=$(status_of "$brief")
     log "[$label] the loop ended with status $code; its brief says: ${status:-no status}"
@@ -519,6 +532,7 @@ if [[ -n "$INTEGRATE" ]]; then
   log "[integration] stopped: every stream is finished"
 fi
 
+for s in "${STREAMS[@]}"; do collect_records "${DIR[$s]}" "$s"; done
 code=0
 status=$(status_of "$ROOT/$BRIEF")
 if finished "$status"; then

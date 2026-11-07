@@ -12,34 +12,35 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:45:43.806Z",
-  "duration_seconds": 4560,
+  "ended": "2026-11-07T22:56:46.243Z",
+  "duration_seconds": 5223,
   "stats": {
-    "turns": 25,
-    "api_calls": 227,
-    "tool_calls": 230,
-    "tool_errors": 6,
+    "turns": 26,
+    "api_calls": 257,
+    "tool_calls": 261,
+    "tool_errors": 9,
     "compactions": 4,
-    "peak_context_tokens": 258123,
+    "peak_context_tokens": 302722,
     "usage": {
-      "input_tokens": 460,
-      "output_tokens": 135717,
-      "cache_read_input_tokens": 24956364,
-      "cache_creation_input_tokens": 550884
+      "input_tokens": 522,
+      "output_tokens": 157235,
+      "cache_read_input_tokens": 33433046,
+      "cache_creation_input_tokens": 595483
     }
   },
   "tools": {
-    "Bash": 203,
+    "Bash": 233,
     "Read": 12,
     "Edit": 5,
     "AskUserQuestion": 3,
     "TaskStop": 3,
     "ToolSearch": 2,
-    "Monitor": 1,
-    "Write": 1
+    "Write": 2,
+    "Monitor": 1
   },
   "files_touched": [
     "llm-dlc/loops/cleanup.md",
+    "llm-dlc/tools/run_records.py",
     "verification/triage/vf018.sh"
   ],
   "context_windows": [
@@ -102,24 +103,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:45:43.806Z",
-      "turns": 7,
-      "api_calls": 123,
+      "ended": "2026-11-07T22:56:46.243Z",
+      "turns": 8,
+      "api_calls": 153,
       "usage": {
-        "input_tokens": 246,
-        "output_tokens": 88308,
-        "cache_read_input_tokens": 17644390,
-        "cache_creation_input_tokens": 245044
+        "input_tokens": 308,
+        "output_tokens": 109826,
+        "cache_read_input_tokens": 26121072,
+        "cache_creation_input_tokens": 289643
       },
-      "peak_context_tokens": 258123
+      "peak_context_tokens": 302722
     }
   ],
   "log": {
-    "sha256": "d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419",
-    "bytes": 6606457,
-    "lines": 2184,
-    "gzip_bytes": 1263248,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419.jsonl.gz"
+    "sha256": "3a56aa25d5b35a200da5eb466a884f953aaa39f8b8c5e3ed310ddb7a8497498f",
+    "bytes": 7104764,
+    "lines": 2435,
+    "gzip_bytes": 1327570,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/3a56aa25d5b35a200da5eb466a884f953aaa39f8b8c5e3ed310ddb7a8497498f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -282,6 +283,14 @@
       "summary": "Example 148's resubmitted job no longer names three contracts in its title",
       "body": "The job 20261107-223430-example-148-b11-advised-contracts-full-j kept its predecessor's title, '1 proved against the JDK's bytecode, 2 tested on the JVM', which the run may no longer give now that Integer.numberOfLeadingZeros is no gap (VF-002). It now says the run reports the contracts and their evidence, as its description and expectation already did. Nothing else changed; pipeline.py validate finds 0 problems.",
       "log_sha256": "d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419"
+    },
+    {
+      "change_id": "nzyrtklmynkqxozpnpvzzwtrwumqtsnx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The foundations streams' four run records published, and run-streams.sh copies a stream's records into the default workspace itself",
+      "body": "feature-loop.sh writes a run's record in llm-dlc/loop-summaries/ of the workspace it runs in, and sync.py publishes only the default workspace's (VF-013). A stream's records were to be copied in when the streams were merged, but nothing did it: the cleanup loop copied its streams' records by hand, and the foundations streams' four (2026-11-07-040118-foundations-alignment, -heap, -observations and -summaries, sessions 11f93b59, 750c8a36, e65240e3 and be22079e) were left only in the forgotten workspaces ../in-the-loop-alignment, -heap, -observations and -summaries, never published. They are copied in, unchanged, and this commit publishes them under their sessions' traces. Before that, each redacted copy was scanned with sync.py's Redactor: no leak, nothing to review, no home path. The originals stay where they were.\n\nSo that a later stream's records aren't left behind, llm-dlc/tools/run_records.py collect STREAM DEFAULT copies a workspace's run records into the default workspace: only feature-loop records (not integration reports), a copy replaced only by the record it is a start of (records only grow; one that diverged is left and reported), each written atomically. run-streams.sh calls it at its start (records from an interrupted run), after each of a stream's runs (an interrupted one too), and before the merge, whose commit publishes them. test_runs.py's 5 new tests cover it (they errored before run_records.py existed), and the shell function was run against made-up workspaces: one copy, then nothing on a second call or from the default workspace itself. Run over every workspace directory on disk, it found nothing else missing. test_runs (13), test_streams_status, test_review and test_performance pass. sync.py's comment, llm-dlc/README.md and specification.md say how the records come in.",
+      "log_sha256": "3a56aa25d5b35a200da5eb466a884f953aaa39f8b8c5e3ed310ddb7a8497498f"
     }
   ],
   "logs": {
@@ -307,6 +316,12 @@
       "bytes": 5311223,
       "lines": 1714,
       "gzip_bytes": 1081578,
+      "url": null
+    },
+    "3a56aa25d5b35a200da5eb466a884f953aaa39f8b8c5e3ed310ddb7a8497498f": {
+      "bytes": 7104764,
+      "lines": 2435,
+      "gzip_bytes": 1327570,
       "url": null
     },
     "499f10255fdc2d22ea5a1abea5b5e494e46aea241abcdd72707db8a620684c69": {

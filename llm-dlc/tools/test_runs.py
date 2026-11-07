@@ -209,5 +209,63 @@ class Runs(unittest.TestCase):
         self.assertEqual(sync.run_notes(), [])
 
 
+
+class Collect(unittest.TestCase):
+    """run_records.collect: a stream's records copied into the default workspace, which alone publishes
+    them, as run-streams.sh does after each of a stream's runs and before the merge."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.stream, self.default = root / "repo-stream", root / "repo"
+        self.src, self.dest = (d / "llm-dlc" / "loop-summaries" for d in (self.stream, self.default))
+        self.src.mkdir(parents=True)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def collect(self):
+        import run_records
+        with mock.patch("sys.stdout", io.StringIO()) as out:
+            copied = run_records.collect(self.stream, self.default)
+        return copied, out.getvalue()
+
+    def test_a_streams_records_are_copied_in_and_nothing_else(self):
+        (self.src / NAME).write_text(record(ended=False))
+        (self.src / "made-up-integration.md").write_text("# Integration check of a made-up brief\n")
+        copied, _ = self.collect()
+        self.assertEqual(copied, [NAME])
+        self.assertEqual((self.dest / NAME).read_text(), record(ended=False))
+        self.assertFalse((self.dest / "made-up-integration.md").exists())
+        self.assertEqual(self.collect()[0], [], "a copy that is current is left as it is")
+
+    def test_a_record_that_grew_replaces_its_copy(self):
+        (self.src / NAME).write_text(record(ended=False, cycles=1))
+        self.collect()
+        (self.src / NAME).write_text(record(ended=True, cycles=1))
+        self.assertEqual(self.collect()[0], [NAME])
+        self.assertEqual((self.dest / NAME).read_text(), record(ended=True, cycles=1))
+        self.assertEqual(sorted(p.name for p in self.dest.iterdir()), [NAME], "no temporary file is left")
+
+    def test_a_copy_that_is_not_a_start_of_the_record_is_left_and_reported(self):
+        (self.src / NAME).write_text(record(cycles=2))
+        self.dest.mkdir(parents=True)
+        (self.dest / NAME).write_text(record(cycles=1) + "edited here\n")
+        copied, out = self.collect()
+        self.assertEqual(copied, [])
+        self.assertEqual((self.dest / NAME).read_text(), record(cycles=1) + "edited here\n")
+        self.assertIn(f"{NAME}: not copied", out)
+
+    def test_the_default_workspace_collects_nothing_from_itself(self):
+        (self.src / NAME).write_text(record())
+        import run_records
+        self.assertEqual(run_records.collect(self.stream, self.stream), [])
+
+    def test_the_copies_are_what_sync_publishes(self):
+        (self.src / NAME).write_text(record())
+        self.collect()
+        with mock.patch.object(sync, "LOOP_SUMMARIES", self.dest):
+            self.assertEqual(sync.run_records(), [(self.dest / NAME, SID)])
+
 if __name__ == "__main__":
     unittest.main()

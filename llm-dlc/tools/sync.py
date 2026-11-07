@@ -974,7 +974,8 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
 # the session it names (runs/<record>.md), and linked from that session's summary. A record still
 # being written is published as it stands and again as it grows: a run that was killed never writes
 # an end line, and would otherwise never be published. Only the default workspace publishes: a
-# stream's records are its own workspace's, copied into the default one when the streams are merged.
+# stream's records are its own workspace's, which run-streams.sh copies into the default one (run_records.py)
+# after each of the stream's runs and before the merge.
 
 RUN_HEADER = re.compile(r"^Started (?P<started>[^,\n]+), .*?\bsession (?P<sid>[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\b",
                         re.M)

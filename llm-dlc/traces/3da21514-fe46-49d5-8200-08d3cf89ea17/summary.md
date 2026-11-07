@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3da21514-fe46-49d5-8200-08d3cf89ea17` (ended) |
+| Session | `3da21514-fe46-49d5-8200-08d3cf89ea17` (open) |
 | When | 2026-11-07 18:55 UTC to 2026-11-07 21:56 UTC (180 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.319 |
@@ -155,6 +155,14 @@ The four jobs queued at the merge's code (b6cc7ceb, collected in xlsmwprl) all p
 The for-review list in llm-dlc/loops/cleanup.md's Progress gives each entry's state. Closed by their checks: VF-010, VF-021, VF-009, VF-019, VF-016, VF-017 and VF-014. Passed but still open in findings.md, for the verification agent to close: VF-011 (its 052 job passed) and VF-013 (test_runs.py, plus every record published). Open: VF-002's 147 and 148, deferred by the timebox; VF-018 and VF-001, deferred to the user; VF-015, to be settled by stub-reachability.md; VF-020, which needs the user's decision on jj's snapshot limit. The three foundations leftovers are fixed with tests. No job is pending. The new findings for a person are listed there too, among them: 148 and 149's '1 proved, 2 tested' expectation, the golden kernel domain's allocation bound going from 0 to 2, the stale wording in coverage.md and jbmc-upstream.md, and the forgotten cleanup workspaces' directories still on disk.
 
 Out of date in the rest of the brief: 'Where it starts from' describes the state before the streams ran.
+
+### The foundations streams' four run records published, and run-streams.sh copies a stream's records into the default workspace itself
+
+change `nzyrtklmynkq` · [log `7ae46b0c5ffe`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/7ae46b0c5ffed919df65f605fa4a6a76542855d999d6b5598bbf265a25d8d609.jsonl.gz)
+
+feature-loop.sh writes a run's record in llm-dlc/loop-summaries/ of the workspace it runs in, and sync.py publishes only the default workspace's (VF-013). A stream's records were to be copied in when the streams were merged, but nothing did it: the cleanup loop copied its streams' records by hand, and the foundations streams' four (2026-11-07-040118-foundations-alignment, -heap, -observations and -summaries, sessions 11f93b59, 750c8a36, e65240e3 and be22079e) were left only in the forgotten workspaces ../in-the-loop-alignment, -heap, -observations and -summaries, never published. They are copied in, unchanged, and this commit publishes them under their sessions' traces. Before that, each redacted copy was scanned with sync.py's Redactor: no leak, nothing to review, no home path. The originals stay where they were.
+
+So that a later stream's records aren't left behind, llm-dlc/tools/run_records.py collect STREAM DEFAULT copies a workspace's run records into the default workspace: only feature-loop records (not integration reports), a copy replaced only by the record it is a start of (records only grow; one that diverged is left and reported), each written atomically. run-streams.sh calls it at its start (records from an interrupted run), after each of a stream's runs (an interrupted one too), and before the merge, whose commit publishes them. test_runs.py's 5 new tests cover it (they errored before run_records.py existed), and the shell function was run against made-up workspaces: one copy, then nothing on a second call or from the default workspace itself. Run over every workspace directory on disk, it found nothing else missing. test_runs (13), test_streams_status, test_review and test_performance pass. sync.py's comment, llm-dlc/README.md and specification.md say how the records come in.
 
 ## Conversation
 
