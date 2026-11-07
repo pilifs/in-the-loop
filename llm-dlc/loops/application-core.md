@@ -279,7 +279,8 @@ names all four revisions. Its outcomes are distinct:
 - a merge conflict, reported by `run-streams.sh` with the files in conflict;
 - `COMPILE FAILED`;
 - `CONTRACT FAILED`, from `lib/tests/application_core.rs`;
-- `TESTS FAILED`: the unit tests, the earlier contracts, or `build.py`'s suite.
+- `TESTS FAILED`: the unit tests, the earlier contracts, `build.py`'s suite, or `sync.py`'s review, run-record and
+  performance suites.
 
 Each stream reads the report at the start of every cycle. A failure in its own files is its next piece of work. A
 conflict in an owned interface is a coordination task, recorded under Progress, never ignored until the end: a check

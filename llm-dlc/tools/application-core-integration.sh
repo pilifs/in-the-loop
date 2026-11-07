@@ -11,7 +11,8 @@
 #                    unsupported result its stream hasn't replaced yet
 #                    (lib/tests/application_core.rs, written in Phase 0);
 #   TESTS FAILED     a unit test, an earlier contract (foundations, compare,
-#                    effects) or a Python suite the streams touch fails.
+#                    effects) or a Python suite fails: build.py's, and sync.py's
+#                    review, run records and performance suites.
 # Compiling and unit-level tests only: proofs and the combined fixture checks stay
 # queued as jobs. It runs in a 3.5 GB scope, so cargo builds two jobs at a time.
 set -uo pipefail
@@ -33,4 +34,7 @@ cargo test --manifest-path "$MANIFEST" "${CONTRACT[@]}" -- --nocapture || { echo
 run() { echo "== $*"; "$@" || { echo "TESTS FAILED: $*"; status=1; }; }
 run cargo test --manifest-path "$MANIFEST" "${OTHERS[@]}"
 run python3 examples/tools/test_build.py
+run python3 llm-dlc/tools/test_review.py
+run python3 llm-dlc/tools/test_runs.py
+run python3 llm-dlc/tools/test_performance.py
 exit $status

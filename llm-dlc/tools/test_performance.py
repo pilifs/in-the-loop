@@ -1836,6 +1836,20 @@ class Uploads(unittest.TestCase):
         self.assertLessEqual(len(self.put_log), len(before) + 1)  # at most the one running when it stopped
 
 
+    def test_after_an_interrupt_in_a_worker_no_other_put_starts(self):
+        """The worker that took the interrupt is free at once and would start the next queued log before
+        cmd_upload cancels it; the interrupt has to stop that put by itself, whatever the timing."""
+        logs = self.fixture()
+        first, second = sorted(logs["clean"])[:2]
+        self.interrupt_at = sync.log_url("s1", first)
+        uploader = sync.Uploader(MadeUpRedactor())
+        with self.assertRaises(KeyboardInterrupt):
+            uploader("s1", first)
+        with self.assertRaises(sync.UploadStopped):
+            uploader("s1", second)
+        self.assertEqual(self.put_log, [])
+        self.assertIsNone(sync.UploadRecord().state("s1", second))
+
 class AtomicWrites(unittest.TestCase):
     def test_a_write_replaces_whole_and_leaves_nothing_behind(self):
         with tempfile.TemporaryDirectory() as d:

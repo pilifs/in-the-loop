@@ -1600,6 +1600,10 @@ def wrangler_put(key: str, path: Path) -> subprocess.CompletedProcess:
                           env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
 
 
+class UploadStopped(Exception):
+    """A log not uploaded because the upload was interrupted before its put started."""
+
+
 class Uploader:
     """Puts logs in R2, several at once (upload_jobs). Each log is first looked for on the CDN; one
     not served there is verified against its name and scanned, then put, then read back through the
@@ -1615,10 +1619,26 @@ class Uploader:
         self.checks = checks or CheckCache(redact, path=None)
         self.record = record or UploadRecord()
         self.cpu, self.puts = threading.Lock(), threading.Semaphore(puts)
+        # Set on an interrupt, here or in cmd_upload: a worker freed by it would otherwise start the next
+        # queued log before the pool is shut down. A put already running finishes; none starts after.
+        self.stopped = threading.Event()
 
     def __call__(self, sid: str, sha: str) -> str:
         """Put one log in R2 (unless the CDN already serves it) and prove the CDN returns its bytes.
         Nothing the current redactor would change may go public."""
+        try:
+            return self.upload(sid, sha)
+        except BaseException as e:
+            if not isinstance(e, Exception):  # KeyboardInterrupt or SystemExit in this worker
+                self.stopped.set()
+            raise
+
+    def stop_point(self, sid: str, sha: str) -> None:
+        if self.stopped.is_set():
+            raise UploadStopped(f"log {sha[:12]} of {sid} not uploaded: the upload was interrupted")
+
+    def upload(self, sid: str, sha: str) -> str:
+        self.stop_point(sid, sha)
         url = log_url(sid, sha)
         if remote_matches(url, sha):
             self.record.mark(sid, sha, "verified")
@@ -1638,6 +1658,7 @@ class Uploader:
             for warning in self.redact.cached_review(found):
                 print(f"warn  {sid[:8]}/{sha[:12]}: {warning}")
         with self.puts:
+            self.stop_point(sid, sha)
             self.record.mark(sid, sha, "attempted")
             put_log(f"raw-traces/{sid}/{sha}.jsonl.gz", path)
         if not remote_matches(url, sha):
@@ -1691,12 +1712,15 @@ def cmd_upload(include_at: bool = False, full: bool = False) -> int:
                 sid, sha = running.pop(done)
                 try:
                     url = done.result()
+                except UploadStopped:  # the interrupt that stopped it is raised by its own future
+                    continue
                 except (OSError, RuntimeError) as e:
                     print(f"ERROR {e}", file=sys.stderr)
                     failed += 1
                     continue
                 served(sid, sha, url)
         finally:  # left early by an exception (Ctrl-C): start nothing new, keep what the CDN serves
+            uploader.stopped.set()
             pool.shutdown(wait=True, cancel_futures=True)
             for done, (sid, sha) in running.items():
                 if not done.cancelled() and done.exception() is None:

@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:09:12.191Z",
-  "duration_seconds": 2369,
+  "ended": "2026-11-07T22:19:17.476Z",
+  "duration_seconds": 2974,
   "stats": {
     "turns": 25,
-    "api_calls": 134,
-    "tool_calls": 134,
+    "api_calls": 156,
+    "tool_calls": 157,
     "tool_errors": 4,
     "compactions": 4,
-    "peak_context_tokens": 129988,
+    "peak_context_tokens": 130920,
     "usage": {
-      "input_tokens": 274,
-      "output_tokens": 64601,
-      "cache_read_input_tokens": 9335119,
-      "cache_creation_input_tokens": 389801
+      "input_tokens": 318,
+      "output_tokens": 77806,
+      "cache_read_input_tokens": 11785554,
+      "cache_creation_input_tokens": 423681
     }
   },
   "tools": {
-    "Bash": 109,
+    "Bash": 132,
     "Read": 12,
     "Edit": 5,
     "TaskStop": 3,
@@ -100,24 +100,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:09:12.191Z",
+      "ended": "2026-11-07T22:19:17.476Z",
       "turns": 7,
-      "api_calls": 30,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 60,
-        "output_tokens": 17192,
-        "cache_read_input_tokens": 2023145,
-        "cache_creation_input_tokens": 83961
+        "input_tokens": 104,
+        "output_tokens": 30397,
+        "cache_read_input_tokens": 4473580,
+        "cache_creation_input_tokens": 117841
       },
-      "peak_context_tokens": 97040
+      "peak_context_tokens": 130920
     }
   ],
   "log": {
-    "sha256": "6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea",
-    "bytes": 4600810,
-    "lines": 1370,
-    "gzip_bytes": 992374,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea.jsonl.gz"
+    "sha256": "26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb",
+    "bytes": 4970166,
+    "lines": 1552,
+    "gzip_bytes": 1039275,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -224,9 +224,23 @@
       "summary": "coverage.md and jbmc-upstream.md brought up to date: extension 2 (the unwinding count per entry of a loop) is done, and VF-009 is closed",
       "body": "examples/coverage.md still described the own checker's unwinding as counted per path and 052 as refused for it. The count is now per entry of a loop (VF-011), and job 20261107-171502 established 052#0 under strict on the own checker with no gap, so extension 2 is marked done with that job. llm-dlc/loops/jbmc-upstream.md still called VF-009 deferred and a candidate to join; VF-009 is closed, and what its triage found is the brief's candidate report cause 5, which decision 1 now names. Documentation only: no code or result changed.",
       "log_sha256": "6de913ab6033d127735553a5285b44e9e0c34f5afa68f14703c3e8cac4f699ea"
+    },
+    {
+      "change_id": "qluxqruunnnoqszwwooywqwzzkwppwqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An interrupted push starts no other upload, and the integration scripts run sync.py's run-record and performance suites",
+      "body": "test_performance.py's test_an_interrupted_push_keeps_the_urls_it_verified failed 2 times in 3 under CPU load (40 busy loops on vm-1's 28 CPUs), with 5 puts where at most 4 may happen: once a worker took the interrupt, it was free at once and started the next queued log before cmd_upload's finally cancelled the pool. A real Ctrl-C, with a wrangler that dies of it, has the same window. sync.py's Uploader now has a stop flag: a KeyboardInterrupt or SystemExit in a worker sets it, cmd_upload sets it first thing when it is left early, and each log checks it before starting and again before its put, raising UploadStopped (not counted as a failure; the interrupt itself still propagates). A put already running finishes and is kept, as before. Reproducer: test_after_an_interrupt_in_a_worker_no_other_put_starts, which failed on the old code (the second log was put after the interrupt) and passes now. Under the same load the whole suite passed 3 times in 3 (103 tests), and every llm-dlc/tools test suite passes.\n\ncleanup-integration.sh now runs test_runs.py and test_performance.py beside test_review.py, as the cleanup loop's for-review list asked. application-core-integration.sh, for the next streams loop (not launched), ran only build.py's Python suite; it now runs sync.py's review, run-record and performance suites too, and application-core.md's list of what TESTS FAILED covers says so.",
+      "log_sha256": "26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb"
     }
   ],
   "logs": {
+    "26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb": {
+      "bytes": 4970166,
+      "lines": 1552,
+      "gzip_bytes": 1039275,
+      "url": null
+    },
     "27db6b4cd8852ce90179aae8ab0095b8d2144ebea4104c7351d8480f24d6ee43": {
       "bytes": 4444864,
       "lines": 1338,
