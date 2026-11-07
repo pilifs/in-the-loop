@@ -307,6 +307,16 @@ otherwise name the parts that did: a new subclass that overrides a method a call
 closure with no body changed, and an unrelated class or a subclass that overrides nothing leaves it alone. The JDK,
 the tool's models and the tool itself are not in a closure; the canonical claim names them apart.
 
+A prepared claim's **key** ([`spec::cache`](src/spec/cache.rs)) is the SHA-256 of the canonical claim written
+canonically (object keys sorted), under a line naming the projection's version. Each version's code is the
+digest of the closures of its roots ([`closure::version_digest`](src/closure.rs)): the method compared, and every
+constructor or factory its inputs are made with. The tool is digests too ([`proof_cache`](src/proof_cache.rs)): the
+running executable's bytes, the JDK's whole `release` file, and the models, so a rebuilt binary with the same version
+number is another claim. The projection knows every field of the claim by its path: a field it doesn't know (one
+another part adds) makes the claim uncacheable rather than leaving it out of the key, and so does a part never
+computed. The proof cache is a local directory of result records, one per key; only verified and refuted results are
+stored, a refutation with its witness, and an entry that can't be read or is for another key is a miss.
+
 ## Limits
 
 - The interpreter models a subset of the JDK. Code outside it is *unverifiable*, never wrong; the message names the method. JBMC's view of the JDK is narrower still: it gets six JDK classes (`Byte`, `Short`, `Integer`, `Long`, `Math`, `StrictMath`) and the tool's [models](models/README.md) of a few more (the boxing caches, `Character.digit`, `java.nio.charset`, `Enum`, `List.of` and `List.copyOf`), and treats every other JDK class as a stub with nondeterministic fields and results, so a class whose static initializer reads a JDK static the tool does not model, or a call into a JDK method it does not, can end in a `NullPointerException` or an arbitrary result the JVM never produces. The replay in the interpreter is the check that catches most of these (a witness the interpreter cannot reproduce is reported as unverifiable, not as a violation); the fix is a model. Enum `hashCode` is deterministic here (the constant's name hash) where a JVM's is identity-based, and `ClassCastException` messages omit the class-loader suffix a JVM adds.

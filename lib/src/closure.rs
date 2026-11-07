@@ -186,6 +186,17 @@ pub fn closures(cp: &ClassPath, roots: &[MemberRef], configuration: &Configurati
     roots.iter().map(|r| walk.run(r, configuration)).collect()
 }
 
+/// The digest a canonical claim gives one version's code ([`crate::spec::VersionDigests`]): `sha256:` and the digest
+/// of each root's closure, by root, in root order. The roots are the method compared and every constructor or factory
+/// its inputs are made with, so that a change to how an input is made changes the claim.
+pub fn version_digest(cp: &ClassPath, roots: &[MemberRef], configuration: &Configuration) -> String {
+    let mut text = String::from("version\n");
+    for c in closures(cp, roots, configuration) {
+        text.push_str(&format!("{}\t{}\n", c.root, c.digest()));
+    }
+    format!("sha256:{}", sha256_hex(text.as_bytes()))
+}
+
 /// `pkg/C.m(D)`, the id a closure gives a method.
 pub fn method_id(m: &MemberRef) -> String {
     format!("{}.{}{}", m.owner, m.name, m.descriptor)

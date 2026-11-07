@@ -139,8 +139,47 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     passing on its rerun), `integration.rs` (64) and `foundations.rs` (3) pass.
   - Shared files changed: `lib/src/lib.rs` (`pub mod closure`), `lib/tests/summaries.rs` (new), `lib/README.md` (a
     paragraph on code closures, and the dynamic-constant note in the regression proof's step 3).
-- Next: S2, the proof cache on the canonical claim (`spec/cache.rs`'s `key`, `lookup`, `store`), its invalidation
-  tests, and the cache's one call each way in `equivalence.rs`.
+- **S2 split in two** (2026-11-07): S2a, the key, the cache and the invalidation tests; S2b, the hook in
+  `equivalence.rs` with `--cache DIR`. A hit there has to give back a whole `equivalence::Outcome`, and the
+  witness and statement types it holds don't deserialize, so the hook is a step of its own.
+- **S2a done** (2026-11-07): `spec/cache.rs`'s `key`, `lookup` and `store`.
+  - The key is `sha256:` and the SHA-256 of the canonical claim written canonically (object keys sorted), under a
+    projection version line. The projection knows every claim field by its path (`cache::KNOWN`). A field it
+    doesn't know makes the claim uncacheable rather than being left out of the key, and so does a computed part left
+    empty (a closure digest or a tool identity).
+  - The cache is `DIR/claims/HH/HEX.json`, holding one `ResultRecord`, written to a temporary file and renamed. It
+    stores verified results, and refuted ones only with a witness. Storing an unresolved result is an error. An
+    entry that is corrupt, is for another key, or holds something never stored is a miss.
+  - New: `closure::version_digest`, a version's code as the closures of its roots, the target and every constructor
+    or factory its inputs are made with. Also new is `lib/src/proof_cache.rs`, the tool identity: the running
+    executable's bytes, the JDK's whole `release` file, and the models' digest.
+  - Tests: 11 more in `lib/tests/summaries.rs` (22 in all).
+    - Every leaf and array of a claim with every part filled is changed in turn (60 or more changes, each a
+      different key).
+    - Each item the brief lists is named, from each version's closure through the binary rebuilt with no version
+      bump.
+    - The key doesn't depend on field order, and a field the projection doesn't know is refused.
+    - A part that was never computed is refused, and the binary identity is the digest of its bytes.
+    - In the code: a new dispatch target, the constructor the inputs are made with, a route annotation and a
+      configuration value each change the version digest, and an unrelated change doesn't.
+    - The cache: a round trip, nothing stored for an unresolved result or a bare refutation, and the misses.
+  - Checked that the tests can fail: with `closures` dropped from what the key digests, both claim-wide tests fail.
+  - The integration contract's "summaries keys" and "summaries cache" now pass. Unit tests (183), `integration.rs`
+    (64) and `foundations.rs` (3) pass too.
+  - The golden claims' computed parts are placeholders ("computed by cache::key"). `key` takes them as given
+    strings. It can't compute closures without the builds; the caller fills them (S2b).
+  - Shared files changed: `lib/src/lib.rs` (`pub mod proof_cache`), `lib/tests/summaries.rs`, and `lib/README.md`
+    (a paragraph on the key and the cache).
+  - `sync.py check` reports 3 errors, none from this branch: sessions with no manifest, behind the heap, observations
+    and alignment streams' commits (`uyqkxslyysrm`, `lslmmpwrvxuz`, `yomwzkpyqppx`). Each manifest lives on its
+    stream's branch; the errors clear at the merge.
+- Next: S2b, the cache's one call each way in `equivalence.rs`, with `--cache DIR` in `main.rs`.
+  - The lookup goes after the shared plan, on the prepared claim: closures of the target and the record
+    constructors in both versions, assumptions with the shared callees, and the checker configuration in
+    `tools.checker`.
+  - A verified hit returns the stored result marked `Reuse::Exact` with its provenance. A refuted hit replays the
+    stored witness on both versions first, and is a miss if it no longer reproduces.
+  - Cacheable only under `--engine native` until JBMC's own identity is in the key.
 - Status: working
 
 ## Loop settings

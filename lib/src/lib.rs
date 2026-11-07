@@ -54,6 +54,7 @@ pub mod jimage;
 pub mod jvm_witness;
 pub mod models;
 pub mod phases;
+pub mod proof_cache;
 pub mod property;
 pub mod purity;
 pub mod relocate;
