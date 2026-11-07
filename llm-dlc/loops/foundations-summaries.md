@@ -406,6 +406,10 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   `lib/README.md`, which all four streams add to, and in the generated `llm-dlc/` files: `README.md`, `index.json`,
   `traces/README.md` and `traces/metrics.json`. A conflict in a shared file is the reconcile loop's to resolve, so
   nothing in this stream's part failed.
+- `sync.py check` after S4b reports 20 errors, none from this branch's work. They are the 18 listed after S4a, and
+  2 more sessions with no manifest, behind the latest commits of two other streams. Observations' O2 commit is
+  `yvpqmlqtoqzv`, and alignment's A4 commit is `orrmouymnxzz`. Neither is an ancestor of `@`, and both clear at the
+  merge.
 - Next: S5, refinement per callee. The memo stub of an unchanged callee is used on JBMC's class path only, since
   the own checker never stubs (S4a), so S5 is about `--engine jbmc` and `auto`. When a counterexample under the stubs
   doesn't replay, it replays each stubbed call against the real callee, and unstubs only the callees whose stub
