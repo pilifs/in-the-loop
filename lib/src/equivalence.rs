@@ -756,8 +756,14 @@ fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Res
 /// of an object or an identity relation. A witness of primitives, arrays and records of primitive components alone
 /// is replayed in the interpreter, as before.
 fn observes_objects(layout: &harness::Layout, differs: &[String]) -> bool {
-    let made = layout.receiver.iter().chain(&layout.args).any(|s| matches!(s, harness::Slot::Record { record, before, .. } if record.fields.is_some() || before.as_ref().is_some_and(|b| b.fields.is_some() || b.corresponds.is_some())));
-    made || layout.result_fields.0.is_some() || layout.result_fields.1.is_some() || differs.iter().any(|d| d.starts_with("field:") || d.starts_with("identity:"))
+    made_by_constructor(layout) || layout.result_fields.0.is_some() || layout.result_fields.1.is_some() || differs.iter().any(|d| d.starts_with("field:") || d.starts_with("identity:"))
+}
+
+/// Whether an input is an object of an application class made by its constructor (step H2), in either version: its
+/// states are those the constructor makes, which a claim over it names. A record of primitive components is not
+/// among them, its constructor making every state its components can hold that it accepts.
+fn made_by_constructor(layout: &harness::Layout) -> bool {
+    layout.receiver.iter().chain(&layout.args).any(|s| matches!(s, harness::Slot::Record { record, before, .. } if record.fields.is_some() || before.as_ref().is_some_and(|b| b.fields.is_some() || b.corresponds.is_some())))
 }
 
 fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
@@ -1081,10 +1087,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         relation: options.results_agree_when.clone(),
     });
     let previous_display = previous.as_ref().map(|b| b.display(&class_internal));
+    // An object made by its constructor stands for the states its constructor makes and no others (a throttle that
+    // starts full is never one that calls have drained), so where the claim says "every input" it says that too.
+    let every = if made_by_constructor(&layout) { "every input of constructor-made objects" } else { "every input" };
     let relation = match (&previous_display, &options.results_agree_when) {
-        (Some(p), Some(r)) => format!("agrees with the previous {p} on every input, the results related by {r}"),
-        (Some(p), None) => format!("behaves as the previous {p} on every input"),
-        (None, _) => "behaves as before on every input".to_string(),
+        (Some(p), Some(r)) => format!("agrees with the previous {p} on {every}, the results related by {r}"),
+        (Some(p), None) => format!("behaves as the previous {p} on {every}"),
+        (None, _) => format!("behaves as before on {every}"),
     };
     let domain = layout.domain(options.max_array_length);
     // The statement as data: what holds of every verdict on this harness, and what the run it comes from adds.

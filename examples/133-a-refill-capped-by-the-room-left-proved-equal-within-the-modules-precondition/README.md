@@ -9,6 +9,8 @@
 
 > A token bucket's refill, `Math.min(capacity, tokens + earned)`, is rewritten as `tokens + Math.min(earned, capacity - tokens)`, the tokens earned but no more than the bucket has room for, so that the sum can never overflow. Within the module's precondition the two are the same arithmetic, and the tool's own checker proves it in half a second, with no JBMC; outside it they differ where a sum overflows a `long`, which the checker also shows when run without the scope.
 
+> ⚠ **Stale result:** the sources the patch applies to changed (`examples/apps/crosscut`) since this run. The verdict on this page is that run's, not a verdict on the current files. `python3 examples/tools/build.py 133` runs it again.
+
 Tags: [resilience](../README.md#tag-resilience), [clocks-and-time](../README.md#tag-clocks-and-time), [integer-overflow](../README.md#tag-integer-overflow), [confined-change](../README.md#tag-confined-change), [own-checker](../README.md#tag-own-checker)
 
 ## The change
@@ -115,7 +117,7 @@ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties p
 
 **What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20).
 
-This page renders attempt `20261106T181332Z-30b97f0a` at claim `0e64b4f98f709e23`, in pipeline job `20261106-181101-example-133-b9-own-checker-renders-its-o`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181332Z-30b97f0a` at claim `0e64b4f98f709e23`, in pipeline job `20261106-181101-example-133-b9-own-checker-renders-its-o`, which is stale: the sources the patch applies to changed (`examples/apps/crosscut`). The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

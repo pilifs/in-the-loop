@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "152",
+  "title": "A throttle that drops its floor at zero is proved only on full throttles, where it cannot differ",
+  "summary": "The same rewrite of `recorded` as 150, but the floor at zero tokens is gone: `Math.min(next, ceiling)` without the `Math.max(0, …)`. A failure on a drained throttle now takes it below zero, and every token below zero is ten more successes (at a ratio of 0.1) before the channel may retry again: after three failures on a two-token throttle it takes 21 successes instead of 11. The regression proof verifies the change, because its throttles are made by their constructor, which makes them full, and one failure never drains a full throttle; the verdict says `on every input of constructor-made objects` and the domain names the constructor, so the result is a claim about full throttles only, not a proof that the rewrite is right.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "dropped-case",
+    "object-inputs",
+    "own-checker",
+    "confined-change"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+    "symbol": "net.terminalvalue.crosscut.retry.RetryThrottling#recorded"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace the two branches of `recorded` with one computation of the next token count clamped to the ceiling, `Math.min(next, ceiling)`, and the threshold doubled, as in 150. The floor at zero was dropped as redundant: a throttle starts full, and the tests only ever start from a new one.",
+    "patch": "change.patch"
+  },
+  "risk": "During an outage every call fails, and the throttle goes below zero instead of stopping there: when the backend recovers, the channel refuses retries for longer than the limits say, each missing token costing `1000 / tokenRatioMilli` more successes. Nothing breaks at once, and every test that starts from a new throttle passes.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The proof is the one of 150, and it holds: on a throttle the constructor makes, which holds `maxTokens * 1000` thousandths with `maxTokens >= 1`, a failure leaves at least zero, so the floor never acts and the two versions agree on the result and on the fields. The difference is only on a throttle that earlier calls have drained, a state no constructor makes. The verdict is not wrong, but it is about the constructor-made domain only, and says so: its headline is `behaves as before on every input of constructor-made objects`, its domain `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts`, and its assumptions that the statement is about the objects both versions can build. On a JVM the difference shows after a few calls: a two-token throttle after three failures holds 1000, 0, 0 thousandths before and 1000, 0, -1000 after, and needs 11 successes before it allows a retry against 21.",
+  "resolution": "Keep the floor (150). A proof that covers drained throttles needs a domain that makes them, a constructor that takes the tokens or a bounded sequence of calls after construction, which the tool does not have yet (llm-dlc/loops/foundations.md, Deferred: object states beyond construction).",
+  "notes": [
+    "This is the planted defect 'a bug only in a state outside the constructor-made domain, which must show as outside the claim, not as proved' of llm-dlc/loops/foundations.md. The question it answers: can the way inputs are made hide the bug? It can, and so the result names the domain in its headline (`every input of constructor-made objects`, not `every input`), in its domain line, and in its constructible assumption; a reader who takes the verdict as 'the rewrite is right' has dropped those words.",
+    "Shown on a JVM by hand, not by the run: `new Throttle(new ThrottleLimits(2, 100))`, three failures, then successes until `recorded` returns true. The unpatched build leaves 1000, 0, 0 thousandths and allows a retry after 11 successes; the patched one 1000, 0, -1000 and 21.",
+    "Pairs with 150 (the same rewrite with the floor, proved by the same proof) and 151 (an alias turned into a copy, refuted by an identity relation)."
+  ],
+  "provenance": "Constructed for step H2 of llm-dlc/loops/foundations-heap.md as the required bug outside the constructor-made domain, on the Crosscut retry throttle added for the object-input examples.",
+  "references": [
+    {
+      "title": "gRPC proposal A6: client retries, retry throttling (maxTokens, tokenRatio, retries throttled at half the tokens)",
+      "url": "https://github.com/grpc/proposal/blob/master/A6-client-retries.md"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

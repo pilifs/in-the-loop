@@ -12,32 +12,37 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T06:32:41.398Z",
-  "duration_seconds": 9082,
+  "ended": "2026-11-07T06:49:08.427Z",
+  "duration_seconds": 10069,
   "stats": {
-    "turns": 34,
-    "api_calls": 450,
-    "tool_calls": 462,
-    "tool_errors": 5,
-    "compactions": 6,
+    "turns": 39,
+    "api_calls": 523,
+    "tool_calls": 542,
+    "tool_errors": 6,
+    "compactions": 7,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 912,
-      "output_tokens": 380670,
-      "cache_read_input_tokens": 82588833,
-      "cache_creation_input_tokens": 1450433
+      "input_tokens": 1058,
+      "output_tokens": 430860,
+      "cache_read_input_tokens": 94236475,
+      "cache_creation_input_tokens": 1658289
     }
   },
   "tools": {
-    "Bash": 413,
-    "Read": 26,
-    "Edit": 11,
+    "Bash": 479,
+    "Read": 32,
+    "Edit": 16,
+    "Write": 5,
     "Monitor": 4,
     "ToolSearch": 4,
-    "TaskStop": 2,
-    "Write": 2
+    "TaskStop": 2
   },
   "files_touched": [
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Throttle.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/ThrottleLimits.java",
+    "lib/README.md",
+    "lib/src/equivalence.rs",
     "lib/src/harness/mod.rs",
     "lib/src/spec/heap.rs",
     "lib/tests/heap.rs",
@@ -131,24 +136,38 @@
     {
       "index": 6,
       "started": "2026-11-07T06:04:14.033Z",
-      "ended": "2026-11-07T06:32:41.398Z",
-      "turns": 4,
-      "api_calls": 58,
+      "ended": "2026-11-07T06:33:05.885Z",
+      "turns": 5,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 118,
-        "output_tokens": 36145,
-        "cache_read_input_tokens": 8137160,
-        "cache_creation_input_tokens": 169209
+        "input_tokens": 124,
+        "output_tokens": 37626,
+        "cache_read_input_tokens": 8685419,
+        "cache_creation_input_tokens": 172014
       },
-      "peak_context_tokens": 182288
+      "peak_context_tokens": 185093
+    },
+    {
+      "index": 7,
+      "started": "2026-11-07T06:33:46.239Z",
+      "ended": "2026-11-07T06:49:08.427Z",
+      "turns": 4,
+      "api_calls": 70,
+      "usage": {
+        "input_tokens": 140,
+        "output_tokens": 48709,
+        "cache_read_input_tokens": 11099383,
+        "cache_creation_input_tokens": 205051
+      },
+      "peak_context_tokens": 218130
     }
   ],
   "log": {
-    "sha256": "ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d",
-    "bytes": 13440046,
-    "lines": 4830,
-    "gzip_bytes": 2531767,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d.jsonl.gz"
+    "sha256": "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd",
+    "bytes": 15653803,
+    "lines": 5629,
+    "gzip_bytes": 2971461,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -215,6 +234,14 @@
       "summary": "Propose a false public-ip finding for the allow list: a JVMS section number in a doc comment",
       "body": "Finding 65c491aa in this session's log is the JVMS section number 5.4.3.3 cited in relocate::opened's doc comment, not an IP address. Proposed with sync.py allow propose; it stays a warning until a person approves it.",
       "log_sha256": "ca85746d0b9d372e8763b8d3cf019502fe33c106f126d8a43dc29297174de84d"
+    },
+    {
+      "change_id": "ovxylkttlsovyusrwvotonwlwlozlpxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 150-152: a retry throttle as a mutable object input, a correct rewrite proved, the alias-to-copy defect refuted, a bug outside the constructor-made domain verified only within it (verification pending)",
+      "body": "The heap stream's examples (llm-dlc/loops/foundations-heap.md, H2-H4). Crosscut gains a kernel with a mutable object input: gRPC-style retry throttling, retry.ThrottleLimits (a record), retry.Throttle (a class every call on a channel shares, made full by its one constructor) and retry.RetryThrottling (recorded, reconfigured), with tests. Example 150 rewrites recorded with Math.max and Math.min and is verified; 151 turns the throttle reconfigured hands back into a copy with the same tokens and the same limits object, refuted by the identity relation result == throttle alone, its witness a construction recipe replayed in the interpreter and run on a JVM; 152 drops the floor at zero tokens, wrong only on a throttle calls have drained, which the constructor never makes, so it is verified within the constructor-made claim. So that such a verdict cannot read as a proof over every state, a verified regression proof over an object made by its constructor now says 'behaves as before on every input of constructor-made objects' (equivalence::made_by_constructor). New tags: aliasing (defect) and object-inputs (technique).\n\nVerified inline: the three checks run by the CLI on the classes the patches make, giving the expected verdicts; 152's defect shown on a JVM by hand (a two-token throttle after three failures holds 1000, 0, -1000 thousandths against 1000, 0, 0, and needs 21 successes before a retry against 11); Crosscut's 52 tests and jvmcontract verify on its contracts pass; heap.rs (18, asserting the new headline), unit tests (188; jbmc's stand-in-script test failed once under load and passed alone), foundations.rs, conformance.rs and integration.rs (64) pass.",
+      "log_sha256": "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd"
     }
   ],
   "logs": {
@@ -264,6 +291,12 @@
       "bytes": 4782055,
       "lines": 1798,
       "gzip_bytes": 873639,
+      "url": null
+    },
+    "fe7c85653dfed9fbff6149a2ef2dd4a1fec22c850385ccc085558e453a39fbcd": {
+      "bytes": 15653803,
+      "lines": 5629,
+      "gzip_bytes": 2971461,
       "url": null
     }
   },

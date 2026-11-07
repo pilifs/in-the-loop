@@ -19,6 +19,7 @@ public final class Tests {
             net.terminalvalue.crosscut.resilience.CircuitBreakerTest.class,
             net.terminalvalue.crosscut.retry.RetryPolicyTest.class,
             net.terminalvalue.crosscut.retry.BackoffTest.class,
+            net.terminalvalue.crosscut.retry.RetryThrottlingTest.class,
             net.terminalvalue.crosscut.ratelimit.TokenBucketTest.class,
             net.terminalvalue.crosscut.ratelimit.RetryAfterTest.class,
             net.terminalvalue.crosscut.ratelimit.WindowTest.class,

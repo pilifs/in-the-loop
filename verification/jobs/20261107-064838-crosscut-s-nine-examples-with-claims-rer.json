@@ -1,0 +1,89 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-064838-crosscut-s-nine-examples-with-claims-rer",
+  "title": "Crosscut's nine examples with claims, rerun after the retry-throttle kernel was added to the app",
+  "description": "Adding the retry-throttle kernel (retry.Throttle, ThrottleLimits, RetryThrottling, for the heap examples 150-152) and regenerating api.contract changed Crosscut's sources, which every Crosscut example's claim fingerprints, so the nine examples whose results record a claim (025 B8, 076 D1, 120, 127-130 B9 by JBMC, 132-133 B9 by the own checker) render as stale. Nothing they prove reaches the new classes: the job reruns them through build.py at this commit to make their results current again.",
+  "kind": "example",
+  "capabilities": [
+    "B8",
+    "B9",
+    "D1"
+  ],
+  "links": {},
+  "expected": "every example gives the verdict it recorded before (025 violation, 076 verified, 120 verified, 127 verified, 128 violation, 129 verified, 130 violation, 132 violation, 133 verified), each with the expected result, and none is stale afterwards (build.py --render-only lists none of them as stale)",
+  "submitted": {
+    "at": "2026-11-07T06:48:38+00:00",
+    "by": "foundations-heap"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "30m"
+  },
+  "steps": [
+    {
+      "name": "example 025",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": "."
+    },
+    {
+      "name": "example 076",
+      "run": "python3 examples/tools/build.py 076",
+      "cwd": "."
+    },
+    {
+      "name": "example 120",
+      "run": "python3 examples/tools/build.py 120",
+      "cwd": "."
+    },
+    {
+      "name": "example 127",
+      "run": "python3 examples/tools/build.py 127",
+      "cwd": "."
+    },
+    {
+      "name": "example 128",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": "."
+    },
+    {
+      "name": "example 129",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": "."
+    },
+    {
+      "name": "example 130",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": "."
+    },
+    {
+      "name": "example 132",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": "."
+    },
+    {
+      "name": "example 133",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/025-transaction-that-commits-after-an-error",
+    "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live",
+    "examples/120-retry-after-rewritten-around-unchanged-refill-helpers",
+    "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components",
+    "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check",
+    "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components",
+    "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap",
+    "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond",
+    "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+  ]
+}

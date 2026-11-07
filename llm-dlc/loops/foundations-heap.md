@@ -305,9 +305,40 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - Shared files changed: `equivalence.rs` (`observes_objects`, the JVM run after shrinking, `Counterexample::jvm`),
     `lib/README.md` (step 6 of the regression proof, `spec::heap::check`'s paragraph), `lib/tests/heap.rs`. No job:
     every check is inline and small.
-- Next: examples in 150–159 (a correct change proved, the alias-to-copy defect, a bug outside the constructor-made
-  domain), then H2's rest (nullability and aliasing among object parameters, property checks over objects), then
-  H5's rest.
+- **Examples 150–152 (2026-11-07): a mutable object input in a subject system.** Crosscut gained a kernel for them,
+  gRPC-style retry throttling (`retry.ThrottleLimits`, a record; `retry.Throttle`, a mutable class every call on a
+  channel shares, made full by its one constructor; `retry.RetryThrottling`, `recorded` and `reconfigured`), with
+  its tests. 150 rewrites `recorded` with `Math.max`/`Math.min`, verified; 151 is the alias-to-copy defect
+  (`reconfigured` hands back a copy with the same tokens and limits object where it handed back the throttle),
+  refuted by `result == throttle` alone, the witness run on a JVM; 152 is 150's rewrite without the floor at zero,
+  wrong only on a throttle calls have drained, which the constructor never makes, so it is verified within the
+  constructor-made claim. So that such a verdict can't read as a proof over every state, the verified headline over
+  an object made by its constructor now says `behaves as before on every input of constructor-made objects`
+  (`equivalence::made_by_constructor`). Tags `aliasing` (defect) and `object-inputs` (technique) added.
+  - Evidence inline: the three checks run by the CLI on the classes the patches make (150 and 152 verified with the
+    new headline, 151 refuted with `reconfigured(throttle=new Throttle(new ThrottleLimits(1, 1)), …)` and confirmed
+    on the JVM); 152's defect shown on a JVM by hand (a two-token throttle after three failures: 1000, 0, 0 against
+    1000, 0, −1000 thousandths, then 11 against 21 successes before a retry); Crosscut's tests (52) pass;
+    `jvmcontract verify` on Crosscut's contracts passes. `heap.rs` asserts the new headline. Unit tests (188, one
+    of them, `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed`, a stand-in script's run, failed
+    once under load and passed alone), `heap.rs` (18), `foundations.rs`, `conformance.rs` and `integration.rs`
+    (64) pass.
+  - *For review*, quick jobs submitted at priority 10 but not back within the cycle (no runner was active), the
+    build.py runs that record the results and pages: `20261107-064330-example-150…` (verified, the headline `on
+    every input of constructor-made objects`), `20261107-064331-example-151…` (violation, the replays differing
+    only in `result == throttle`, run on a JVM), `20261107-064331-example-152…` (verified, as 150). Their pages
+    are not rendered until then.
+  - *For review*, a long job: `20261107-064838`, rerunning the nine Crosscut examples whose recorded claims
+    fingerprint the app's sources (025, 076, 120, 127–130, 132, 133), which the new kernel made stale and whose
+    pages now say so; expected each to give its recorded verdict (025, 128, 130, 132 violation; the rest
+    verified) and none stale after.
+  - Shared files changed: `equivalence.rs` (the headline's words, `made_by_constructor`), `lib/README.md` (step 5:
+    the headline), `lib/tests/heap.rs`, `examples/tags.json` (two tags), `examples/README.md` and `index.json`
+    (rendered; the nine stale pages too, with their warning). Also changed, owned by no stream: Crosscut's sources, tests, README (a row) and `api.contract`,
+    which `jvmcontract update` regenerated and which was stale before (`ratelimit.Window` and `retry.Backoff`
+    were missing from it).
+- Next: H2's rest (nullability and aliasing among object parameters, property checks over objects), then H5's
+  rest.
 - Status: working
 
 ## Loop settings

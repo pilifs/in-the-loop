@@ -2,7 +2,7 @@
 # It lists every public and protected type and member of this module, from the compiled classes.
 # A change here is a change in what the module's users can call: review it like an API change.
 kind: api
-module: crosscut, 34 public types, 125 members
+module: crosscut, 39 public types, 151 members
 
 net.terminalvalue.crosscut.Decision: public sealed interface permits net.terminalvalue.crosscut.Decision$Transition, net.terminalvalue.crosscut.Decision$Unchanged, net.terminalvalue.crosscut.Decision$Rejected
   public static net.terminalvalue.crosscut.Decision rejected(java.lang.String)
@@ -94,6 +94,15 @@ net.terminalvalue.crosscut.ratelimit.TokenBucket: public final class
   public static long lastAfter(long, long, long, long, long)
   public static long tokensAfter(long, long, long, long, long)
 
+net.terminalvalue.crosscut.ratelimit.Window: public final record
+  public Window(long, long)
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+  public long count()
+  public long startNanos()
+  public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
+
 net.terminalvalue.crosscut.resilience.BreakerEffect: public final enum
   public static final PERMIT: net.terminalvalue.crosscut.resilience.BreakerEffect
   public static final RESET_METRICS: net.terminalvalue.crosscut.resilience.BreakerEffect
@@ -129,8 +138,35 @@ net.terminalvalue.crosscut.resilience.BreakerState: public final enum
 net.terminalvalue.crosscut.resilience.CircuitBreaker: public final class
   public static net.terminalvalue.crosscut.Decision decide(net.terminalvalue.crosscut.resilience.BreakerState, net.terminalvalue.crosscut.resilience.BreakerEvent)
 
+net.terminalvalue.crosscut.retry.Backoff: public final record
+  public Backoff(long, long)
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+  public long baseMillis()
+  public long capMillis()
+  public long delayMillis(int)
+  public static final MAX_CAP_MILLIS: long
+
 net.terminalvalue.crosscut.retry.RetryPolicy: public final class
   public static boolean shouldRetry(int, boolean, int, int)
+
+net.terminalvalue.crosscut.retry.RetryThrottling: public final class
+  public static boolean recorded(net.terminalvalue.crosscut.retry.Throttle, boolean)
+  public static net.terminalvalue.crosscut.retry.Throttle reconfigured(net.terminalvalue.crosscut.retry.Throttle, net.terminalvalue.crosscut.retry.ThrottleLimits)
+
+net.terminalvalue.crosscut.retry.Throttle: public final class
+  public Throttle(net.terminalvalue.crosscut.retry.ThrottleLimits)
+  public int milliTokens()
+  public net.terminalvalue.crosscut.retry.ThrottleLimits limits()
+
+net.terminalvalue.crosscut.retry.ThrottleLimits: public final record
+  public ThrottleLimits(int, int)
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+  public int maxTokens()
+  public int tokenRatioMilli()
 
 net.terminalvalue.crosscut.security.JwtTimestamps: public final class
   public static boolean valid(long, long, long, long)

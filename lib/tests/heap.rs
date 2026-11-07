@@ -348,6 +348,8 @@ fn a_change_seen_only_in_an_object_input_as_the_call_leaves_it_is_refuted() {
 fn a_difference_only_where_the_constructor_refuses_is_outside_the_claim() {
     let Some(o) = regression("after", "checked") else { return };
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    // The headline names the domain too: never "on every input" alone over an object its constructor makes.
+    assert!(o.output.starts_with("✓ objects.Kernel#checked behaves as before on every input of constructor-made objects ("), "{}", o.output);
     assert!(o.domain.as_deref().unwrap().contains("made by its constructor"));
     let stated = o.stated.as_ref().unwrap();
     assert!(stated.assumptions.iter().any(|a| a.text.contains("the objects both versions can build")), "{:?}", stated.assumptions);
