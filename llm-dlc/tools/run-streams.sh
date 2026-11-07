@@ -60,8 +60,9 @@
 # workspace. Neither the streams' branches nor the default workspace change.
 #
 # A brief whose Loop settings say "- verification: separate" runs without the
-# pipeline: step 3 is skipped, and nothing waits for a job. Its loops submit and
-# commit jobs and go on; their results are for a person to review after the run,
+# pipeline: step 3 is skipped, and this script waits for no job. Its loops submit
+# and commit jobs and go on (a session may await a quick one, at a higher
+# priority, inside its cycle); the rest are for a person to review after the run,
 # and a verification loop, if any, is run apart, by hand. A loop whose status
 # says it waits on jobs anyway is counted as finished, with the jobs listed for
 # that review.

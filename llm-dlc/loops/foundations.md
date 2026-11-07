@@ -163,17 +163,27 @@ In addition:
   changes and environment assumptions too, so effort can't hide by moving category.
 - **Results name what they checked.** Every result records the commit of the code it checked and the configuration it
   ran with, so a stream's result can be told from another's after the merge.
-- **Jobs are submitted, never awaited.** This brief runs with verification separate (`- verification: separate` in
-  its Loop settings): `run-streams.sh` starts no verification loop, and no loop of this brief waits for a job or reads
-  its result. Heavy work (proofs over examples, benchmarks, `build.py` on B9/B11/D1 examples, anything over a minute
-  or 1 GB) is still never run inline: submit it with `verification/pipeline.py submit`, with the verdict or figure it
-  is expected to give stated in its description, commit it with the change (`(verification pending)` on the summary
-  line, the job id in a paragraph), list it under Progress as *for review*, and go on. A person may run a
-  verification loop apart and reviews the results after the run. A step is done when its code, its inline tests
-  (compiling, unit tests, the integration contract's tests, conformance cases on a real `java`) and its job
-  submission are committed; a criterion that only a job can show is met *pending review*, and the Progress line says
-  which job shows it. Nothing is decided from a job's result in this loop: where a choice would depend on one, take
-  the conservative option, and record the job that would confirm it.
+- **Quick jobs are awaited briefly; long jobs never.** This brief runs with verification separate
+  (`- verification: separate` in its Loop settings): `run-streams.sh` starts no verification loop, a person may run
+  one apart, and no loop stops to wait for a job. Heavy work (proofs over examples, benchmarks, `build.py` on
+  B9/B11/D1 examples, anything over a minute or 1 GB) is still never run inline: submit it with
+  `verification/pipeline.py submit`, stating in its description the verdict or figure it should give, commit it with
+  the change (`(verification pending)` on the summary line, the job id in a paragraph), and list it under Progress
+  with its id.
+  - **A quick job**, one estimated at a few minutes or less, is submitted with `--priority 10`, so a runner takes it
+    before the long ones. The session may await it within its cycle: go on with other work, then poll
+    `python3 "$(jj workspace root --name default)/verification/pipeline.py" status` about once a minute, for at most
+    15 minutes after submitting. If its result is back by then (`report`), use it like an inline result and record it
+    under Progress. If not, treat the job as a long one from then on.
+  - **A long job** is submitted at the default priority and never awaited, polled or read in this run: it is listed
+    under Progress as *for review*, and a person reviews its result after the run.
+
+  A step is done when its code, its inline tests (compiling, unit tests, the integration contract's tests,
+  conformance cases on a real `java`) and its jobs are committed, with the results of any quick job that came back. A
+  criterion only an unreturned job can show is met *pending review*, and the Progress line says which job shows it.
+  Nothing is decided from a long job's result: where a choice would depend on one, take the conservative option and
+  record the job that would confirm it. Waiting never ends a cycle or sets a status: no loop of this brief says
+  `waiting on jobs`.
 
 ## When it starts
 
@@ -240,10 +250,11 @@ loop. It starts no verification loop (`- verification: separate`). Four loops at
 check's 3.5 GB, leave about 25 GB of this machine's 46 GB for a verification loop the user may run apart.
 
 **Stopped and finished are different.** A stream's scope going inactive means only that its process stopped. It is
-finished only when its status says `done` or `blocked`. No status here says `waiting on jobs`: nothing waits for a
-job, and `run-streams.sh` counts such a status as finished, with its jobs left for review. `done` requires that its
+finished only when its status says `done` or `blocked`. No status here says `waiting on jobs`: no loop stops to wait
+for a job (a quick one is awaited only inside a cycle), and `run-streams.sh` counts such a status as finished, with
+its jobs left for review. `done` requires that its
 part of the integration contract passes on its branch and that every job it submitted is listed under its Progress
-for review; it doesn't require any job's result. The reconcile loop starts on finished streams, never on inactive ones
+for review; it doesn't require any long job's result. The reconcile loop starts on finished streams, never on inactive ones
 alone.
 
 ### The integration check
@@ -400,7 +411,8 @@ next brief. Only a passing example counts as this loop's milestone.
 | 4 | Inferred mappings for examples 121–139 scored against the hand-written ones (found, asked, wrong, missed), none accepted without a proof, the offset-mapping defect never accepted, and the joint example's mapping proposed |
 | 5 | The joint example passes every row above |
 
-Criteria that only a job can show are met pending review. Every job submitted along the way is listed under Progress,
+Criteria that only a long or unreturned job can show are met pending review; a quick job's result that came back counts
+like an inline one. Every job submitted along the way is listed under Progress,
 with its id, what it checks and the result it is expected to give, so that the person who reviews the results after
 the run can tell a pass from a failure without the session.
 
@@ -482,7 +494,7 @@ annotations or configuration, which S1 adds.
 
 The reconcile comes first; don't stop before the merge is committed unless a stream is unfinished or the merge needs
 the user. Keep the last line of Progress a status: `working`, `done`, or `blocked: ...` with what needs the user;
-never `waiting on jobs`, since nothing waits for one. After the merge, Phase 5 is the core: `done` only when the joint example passes every row; if a
+never `waiting on jobs`: a quick job is awaited only within a cycle, and a long one not at all. After the merge, Phase 5 is the core: `done` only when the joint example passes every row; if a
 row can't pass without the user or a later brief, stop with `blocked: Phase 5 partial: ...` naming the rows. Then go
 on while a cycle can still realize a substantial part of what is left; stop when the rest is small or speculative
 next to what is done, or needs the user and is recorded as deferred. Don't go on to polish.

@@ -86,12 +86,15 @@ under Progress.
 
 - **Commit only here**, with `sync.py commit` as CLAUDE.md says. Never push, merge, rebase onto another branch, or
   move a bookmark. The branch is this workspace's `@-` line; the reconcile loop merges it.
-- **Jobs are submitted, never awaited** (the main brief's [rule](foundations.md#how-to-work-through-it)). Heavy work
-  is still never run inline: submit it with `verification/pipeline.py submit`, stating the verdict or figure it should
-  give, commit it with the change, and list it under Progress as *for review* with its id. Then go on. Don't wait for
-  a job, poll the queue, or read results from any workspace's `verification/`: no verification loop is started for
-  this run, and a person reviews the results after it. A step is done when its code, its inline tests and its job
-  submission are committed; a criterion only a job can show is met pending review.
+- **Quick jobs are awaited briefly; long jobs never** (the main brief's [rule](foundations.md#how-to-work-through-it)).
+  Heavy work is still never run inline: submit it with `verification/pipeline.py submit`, stating the verdict or
+  figure it should give, commit it with the change, and list it under Progress with its id. A quick job (a few
+  minutes or less) goes in with `--priority 10`, and you may await it within the cycle: work on, then poll
+  `python3 "$(jj workspace root --name default)/verification/pipeline.py" status` about once a minute, for at most
+  15 minutes after submitting; if it is back, use its `report` like an inline result and record it. Otherwise, and
+  for every long job, go on: it is *for review* after the run, and you don't wait for, poll or read it again. A step
+  is done when its code, its inline tests and its jobs are committed; a criterion only an unreturned job can show is
+  met pending review.
 - **Status.** The last line of `## Progress` is a status, kept current in every commit and read by `run-streams.sh`:
   `- Status: working` while there is work you can do, `- Status: done` when your phases are finished, or
   `- Status: blocked: ...` with what needs the user. Never `waiting on jobs`. `done` requires that your part of the
@@ -119,6 +122,6 @@ under Progress.
 ## Loop until
 
 Go on while one of your phases has a step that needs nothing but your own work. Your core is above: don't stop before
-it unless a step needs the user. When a step's evidence is a job, submit it and go on to the next step; a job is never a reason to stop or wait. Stop
+it unless a step needs the user. When a step's evidence is a long job, submit it and go on; a job is never a reason to stop, and a quick one is awaited only as above. Stop
 with `done` when your phases are finished, or `blocked: ...` when what is left needs the user and is recorded under
 Progress. Don't go on to polish, and don't start another stream's work.
