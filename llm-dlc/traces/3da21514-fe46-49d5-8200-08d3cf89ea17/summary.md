@@ -50,6 +50,20 @@ change `rmvlorrsytol` · [log `81d0faa6a1f7`](https://terminalvalue.net/raw-trac
 
 VF-015's step 3 (prove Hex#toDigit under ch == 1632) fails only because the gap preflight counts String.format's stub as entered. Its symbolic run (--program-only, no solver) can't prune a branch an --assume decides, and that call is on toDigit's exception path, infeasible there. The user chose a solver check of stub reachability over a String.format model: under --no-refine-strings JBMC can't read a format string, so a model would be unsound or a source of spurious refutations. The brief runs after the cleanup merge, since jbmc_gaps.rs is the cleanup jbmc stream's file. Its steps: an experiment job comparing --cover location with an alternative on VF-015's harness; choose the method; implement it as a third preflight step with recorded-output unit tests; resubmit VF-015 unchanged as N3's second attempt, with guard jobs. Status blocked on the merge; nothing run yet.
 
+### N1 done: VF-010's benchmark comparison passed, and N3 (VF-015) blocked on the user's decision
+
+change `wpxntptywosq` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+
+Job 20261107-184603-vf-010-s-benchmark-compared-the-own-chec passed on vm-1. It compared the own checker's 557 benchmark runs at the VF-010 fix (f606b0d8) and at its parent (c307e721), and found 0 verdicts changed, 0 cases new or gone, 0 formulas grown past 10%, and 0 paths or merges changed. The verification agent closed VF-021 with it, and VF-010 was already closed, so the stream's N1 is finished. N2 (VF-011) passed its check earlier and is done here; findings.md still lists it as open until the verification agent records it.
+
+N3 (VF-015, example 109) can't pass without the user. Its last run failed at step 3 because strict mode refuses JBMC's proof, which reaches JBMC's stub of String.format, not at the witness replay. Following the main brief, a check that can't pass for a reason outside the item is deferred to the user rather than rewritten. Either the user allows --gaps assume or advised for step 3, or the jbmc stream adds a String.format model. Only the stream brief's Progress changed, and its status is now blocked. Nothing to compile or test.
+
+### Record session traces
+
+change `trqroxpzmxxw` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+
+The cleanup-native stream's last turns, recorded by the cleanup reconcile before the merge. No code changes.
+
 ### VF-009 and VF-019 closed by their checks; VF-018 and VF-001 deferred to the user: three of heap's JBMC tests time out at 1800 s, and VF-001's jobs fail on their own tee
 
 change `wuxrynkokpuz` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
@@ -84,20 +98,6 @@ change `xnmyynvxmupm` · [log `31872fedaa7f`](https://terminalvalue.net/raw-trac
 
 The cleanup-examples stream's last turns, recorded by the cleanup reconcile before the merge. No code changes.
 
-### N1 done: VF-010's benchmark comparison passed, and N3 (VF-015) blocked on the user's decision
-
-change `wpxntptywosq` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
-
-Job 20261107-184603-vf-010-s-benchmark-compared-the-own-chec passed on vm-1. It compared the own checker's 557 benchmark runs at the VF-010 fix (f606b0d8) and at its parent (c307e721), and found 0 verdicts changed, 0 cases new or gone, 0 formulas grown past 10%, and 0 paths or merges changed. The verification agent closed VF-021 with it, and VF-010 was already closed, so the stream's N1 is finished. N2 (VF-011) passed its check earlier and is done here; findings.md still lists it as open until the verification agent records it.
-
-N3 (VF-015, example 109) can't pass without the user. Its last run failed at step 3 because strict mode refuses JBMC's proof, which reaches JBMC's stub of String.format, not at the witness replay. Following the main brief, a check that can't pass for a reason outside the item is deferred to the user rather than rewritten. Either the user allows --gaps assume or advised for step 3, or the jbmc stream adds a String.format model. Only the stream brief's Progress changed, and its status is now blocked. Nothing to compile or test.
-
-### Record session traces
-
-change `trqroxpzmxxw` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
-
-The cleanup-native stream's last turns, recorded by the cleanup reconcile before the merge. No code changes.
-
 ### Merge the three cleanup streams: native, jbmc and examples
 
 change `lpvnwkuzvsly` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
@@ -111,6 +111,12 @@ Verified inline at the merge: the lib unit tests (210) and every test binary exc
 The brief's Progress folds the streams' work: the timebox's one deferral (VF-002's 147 and 148), the three items deferred to the user (VF-018, VF-001, VF-015), and each entry's closing job. Next: step 2, the run records this commit publishes for the first time, then step 3's rerun of the merge's examples.
 
 Out of date in the rest of the brief: 'Where it starts from' describes the state before the streams. VF-015 is no longer the native stream's open item: the user chose llm-dlc/loops/stub-reachability.md (rmvlorrs) to close it after this merge.
+
+### Cleanup Phase 4, step 2: the 18 run records published under their sessions' traces, with check at 0 errors
+
+change `lrwynvulprxy` · [log `31872fedaa7f`](https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/31872fedaa7f55026800dac7293aafe915b6b4f99086691eb78ea05f9c7dab69.jsonl.gz)
+
+The merge's sync.py commit published every record in llm-dlc/loop-summaries/, the cleanup streams' own included, redacted, under llm-dlc/traces/&lt;session>/runs/ and linked from each session's summary.md. None holds a local path, and sync.py check reports 0 errors and 0 warnings. That meets VF-013's closing condition, which the verification agent records in findings.md. The cleanup brief's Progress records step 2 and names step 3, the examples' rerun at the merge, as next.
 
 ## Conversation
 

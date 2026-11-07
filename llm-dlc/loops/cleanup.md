@@ -320,8 +320,15 @@ Settled by the user on 2026-11-07:
     application-core sentences and the examples stream's run-record paragraph are both kept. Other files that two
     lines changed (`lib/src/equivalence.rs`, `lib/tests/heap.rs`, `lib/README.md`, `examples/index.json`) merged
     cleanly with independent edits. `build.py --index-only` marks 149's page current, now that its job has passed.
-  - Next: step 2, the run records, which this merge's `sync.py commit` publishes for the first time. Then step 3's
-    job, with `lib/tests/integration.rs` at the merge, since VF-010's integration job ran before it.
+- **Phase 4, step 2: the run records published** (2026-11-07). The merge's `sync.py commit` (`lpvnwkuz`) published
+  all 18 records in `llm-dlc/loop-summaries/`, the streams' own included. Each is under its session's trace
+  (`llm-dlc/traces/<session>/runs/`, 8 sessions), linked from that session's `summary.md`, and none holds a `/home/`
+  path. `sync.py check` gives 0 errors and 0 warnings. Its one note on the records is that this loop's own record
+  (`2026-11-07-212943-cleanup.md`) has grown since and is republished by the next sync. That meets VF-013's "Closes
+  when", which is for the verification agent to record in `findings.md`. The two integration reports there
+  (`cleanup-integration.md`, `foundations-integration.md`) are not run records and are left unpublished.
+  - Next: step 3's job at the merge commit (examples 150–152, 160–161, 170–172 and 190–196, plus
+    `lib/tests/integration.rs`, since VF-010's integration job ran before the merge).
 - Status: working
 
 ## Loop settings
