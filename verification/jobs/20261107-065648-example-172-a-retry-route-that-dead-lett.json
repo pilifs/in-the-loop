@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-065648-example-172-a-retry-route-that-dead-lett",
+  "title": "Example 172: a retry route that dead-letters a delivery out of attempts twice, refuted by the effect trace",
+  "description": "build.py runs example 172 end to end (foundations O3, the rest, step 2): the refactor of example 170 with an early dead letter for a delivery out of attempts that does not return, so the route dead-letters it again at the end. The answer is unchanged and the tests pass; jvmcontract effects must refute the send trace in exact order with a witness replayed on a JVM. Inline on 2026-11-07: refuted at status=0, idempotent=false, attempts=5 (one dead letter against the same dead letter twice).",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:effects"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/effects.rs",
+      "examples/apps/deliveries"
+    ],
+    "examples": [
+      "172"
+    ]
+  },
+  "expected": "verdict violation, matchesExpected true; one counterexample with one dead-letter send before and two identical ones after; replay by jvm",
+  "submitted": {
+    "at": "2026-11-07T06:56:48+00:00",
+    "session": "e65240e3-5cf7-41e9-b648-0b36ce9f1129",
+    "by": "claude (foundations-observations)"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+  },
+  "steps": [
+    {
+      "name": "example 172 (B9)",
+      "run": "python3 examples/tools/build.py 172",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice"
+  ]
+}

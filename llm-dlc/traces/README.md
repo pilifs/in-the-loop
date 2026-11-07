@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 06:14 UTC |
-| Prompts | 1,102 |
-| Model calls | 11,000 |
-| Tool calls | 11,863 (245 failed) |
-| Compactions | 151 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 06:57 UTC |
+| Prompts | 1,107 |
+| Model calls | 11,114 |
+| Tool calls | 11,980 (248 failed) |
+| Compactions | 152 |
 | Subagents | 5 |
-| Tokens written | 13,572,517 |
-| Tokens read | 1,812,411,645 (97.9% from cache) |
-| Commits with a trace | 334 |
-| Log snapshots | 411 (1077.1 MB gzipped, 404 uploaded) |
+| Tokens written | 13,662,694 |
+| Tokens read | 1,835,330,750 (97.9% from cache) |
+| Commits with a trace | 335 |
+| Log snapshots | 412 (1080.1 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | open | 2 h 12 min | `claude-opus-5-5` | 31 | 389 | 398 | 3 | 6 | 325,217 | 6 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | open | 2 h 56 min | `claude-opus-5-5` | 36 | 503 | 515 | 6 | 7 | 325,217 | 7 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,21 +127,21 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 365,928 | 780 | 1,383,379 | 68,559,368 | 98.0% | 191 |
+| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 456,105 | 1,012 | 1,675,152 | 91,186,468 | 98.2% | 204 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,406 | 87.7% | 46 |
+| `Bash` | 10,514 | 87.8% | 46 |
 | `Edit` | 475 | 4.0% | 22 |
-| `Read` | 432 | 3.6% | 23 |
-| `Write` | 345 | 2.9% | 20 |
-| `ToolSearch` | 73 | 0.6% | 18 |
+| `Read` | 437 | 3.6% | 23 |
+| `Write` | 346 | 2.9% | 20 |
+| `ToolSearch` | 75 | 0.6% | 18 |
 | `Monitor` | 43 | 0.4% | 13 |
 | `WebFetch` | 26 | 0.2% | 6 |
 | `AskUserQuestion` | 24 | 0.2% | 7 |
-| `TaskStop` | 17 | 0.1% | 6 |
+| `TaskStop` | 18 | 0.2% | 7 |
 | `Skill` | 6 | 0.1% | 3 |
 | `Agent` | 5 | 0.0% | 3 |
 | `ScheduleWakeup` | 4 | 0.0% | 1 |
@@ -489,6 +489,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 332 | change `yvpqmlqt` | Box Office examples 110-119 compared into accounted obligations (foundations O2, step 2): outcomes before the handler, body wire shapes, and what no spec observes | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/770eecbafff5e07c9891fd4db76e4f23ec3cd67cc9c1a232faa8186739cacabd.jsonl.gz)) |
 | 333 | change `kxkxxrov` | The joint example's effect obligation discharged by an effect trace (foundations O3, narrow case): recording stubs, one environment model, a proof of the refactor, and the dropped and duplicated events refuted with witnesses replayed on a JVM | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/83e2f9e1a407c755079ca729dfb4fc0f30e04d8f9d80b23fd54e9e454d83d400.jsonl.gz)) |
 | 334 | change `upkxnrot` | The effect check from the command line (foundations O3, the rest, step 1): jvmcontract effects checks every entry point of two builds under the claim its own spec makes | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/d8486d45655bcf67dc9afe833488a4b9255314d6516c31c8c8b2cb5f4d00dbbc.jsonl.gz)) |
+| 335 | change `uqzznykp` | A Crosscut kernel behind a thin route, refactored and proved, a dropped and a duplicated send refuted (foundations O3, the rest, step 2; examples 170-172) (verification pending) | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/eea1a0e064993e146791f69a6de002586d28a1fd04e4556a52a78c0f3ba56790.jsonl.gz)) |
 
 ## Logs
 
@@ -541,7 +542,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 6 | 0 | 8.6 MB | `d8486d45655b`, not uploaded |
+| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 7 | 0 | 11.6 MB | `eea1a0e06499`, not uploaded |
 
 ## Session notes
 

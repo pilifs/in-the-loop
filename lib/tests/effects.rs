@@ -337,3 +337,80 @@ fn the_command_reports_what_the_narrow_case_refuses_and_checks_the_rest() {
     assert!(text.contains("POST /quotes: unsupported: ") && text.contains("uses the result of KafkaTemplate.send"), "{text}");
     assert!(text.ends_with("0 verified, 0 refuted, 1 unresolved, 1 unsupported\n"), "{text}");
 }
+
+/// A controller that sends two classes of payload through one `send`: `Bulk` (with the quantity) from ten items,
+/// `Single` (without) below; `body` is the handler's body after the total is computed.
+fn two_classes(body: &str) -> String {
+    format!(
+        r#"package shop;
+
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class QuotesController {{
+    public record Bulk(long total, int quantity) {{}}
+
+    public record Single(long total) {{}}
+
+    private final KafkaTemplate<String, Object> kafka;
+
+    public QuotesController(KafkaTemplate<String, Object> kafka) {{
+        this.kafka = kafka;
+    }}
+
+    @PostMapping("/quotes")
+    public long quote(@RequestParam long cents, @RequestParam int quantity) {{
+        long total = Pricing.total(new Quote(new Money(cents), quantity));
+{body}        return total;
+    }}
+}}
+"#
+    )
+}
+
+const TWO_CLASSES: &str = "        if (quantity >= 10) kafka.send(\"quotes\", new Bulk(total, quantity));\n        else kafka.send(\"quotes\", new Single(total));\n";
+
+#[test]
+fn payloads_of_two_classes_through_one_call_are_snapshotted_each_through_its_own_class() {
+    let Some(old) = build_with("two-classes", Some(&two_classes(TWO_CLASSES))) else { return };
+    let reordered = "        if (quantity < 10) {\n            kafka.send(\"quotes\", new Single(total));\n            return total;\n        }\n        kafka.send(\"quotes\", new Bulk(total, quantity));\n";
+    let new = build_with("two-classes-reordered", Some(&two_classes(reordered))).unwrap();
+    let c = effects::check(&claim(), &quotes(&old, "POST /quotes"), &quotes(&new, "POST /quotes"), &old, &new).unwrap_or_else(|u| panic!("{u}"));
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
+    assert_eq!(state(&c, SEND), ObservationState::Preserved);
+
+    // The same values in a payload of the other class: the class is observed, so the traces differ.
+    let swapped = "        if (quantity >= 100) kafka.send(\"quotes\", new Single(total));\n        else if (quantity >= 10) kafka.send(\"quotes\", new Bulk(total, quantity));\n        else kafka.send(\"quotes\", new Single(total));\n";
+    let new = build_with("two-classes-swapped", Some(&two_classes(swapped))).unwrap();
+    let c = effects::check(&claim(), &quotes(&old, "POST /quotes"), &quotes(&new, "POST /quotes"), &old, &new).unwrap_or_else(|u| panic!("{u}"));
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+    let witness = c.outcome.witness.as_deref().unwrap();
+    assert!(witness.contains("data.class=shop.QuotesController$Bulk") && witness.contains("data.class=shop.QuotesController$Single"), "{witness}");
+    assert!(witness.contains("data.quantity=absent"), "a path the payload's class lacks is absent: {witness}");
+    assert!(witness.contains("Replayed on a JVM") && witness.contains("under the modeled dependencies"), "{witness}");
+}
+
+#[test]
+fn the_command_writes_a_sarif_finding_per_refuted_entry_point_anchored_at_its_handler() {
+    let Some(duplicated) = build("duplicated-effect") else { return };
+    let before = build("before").unwrap();
+    let report = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("effects-report");
+    let _ = std::fs::remove_dir_all(&report);
+    let sources = root().join("before");
+    let (code, text, err) = effects_command(&before, &duplicated, &["--report", report.to_str().unwrap(), "--sources", sources.to_str().unwrap(), "--base", root().to_str().unwrap()]);
+    assert_eq!(code, 1, "{text}{err}");
+    let sarif: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(report.join("effects.sarif")).unwrap()).unwrap();
+    let results = sarif["runs"][0]["results"].as_array().unwrap();
+    assert_eq!(results.len(), 1, "only the refuted entry point, not the unresolved one: {sarif}");
+    assert_eq!(results[0]["ruleId"], "effects-changed");
+    assert!(results[0]["message"]["text"].as_str().unwrap().starts_with("POST /quotes no longer preserves"), "{sarif}");
+    assert_eq!(results[0]["locations"][0]["physicalLocation"]["artifactLocation"]["uri"], "before/shop/QuotesController.java");
+
+    let (code, _, _) = effects_command(&before, &build("after").unwrap(), &["--entry", "POST /quotes", "--report", report.to_str().unwrap()]);
+    assert_eq!(code, 0);
+    let sarif: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(report.join("effects.sarif")).unwrap()).unwrap();
+    assert_eq!(sarif["runs"][0]["results"].as_array().unwrap().len(), 0, "a verified run writes an empty report");
+}

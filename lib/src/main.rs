@@ -167,6 +167,15 @@ enum Command {
         /// Print JSON (one check per entry point, with its outcome, assumptions and traces) instead of text.
         #[arg(long)]
         json: bool,
+        /// Write `effects.sarif` into this directory: an `effects-changed` finding per refuted entry point.
+        #[arg(long)]
+        report: Option<PathBuf>,
+        /// The old build's source roots, which a finding is anchored in (repeatable).
+        #[arg(long = "sources")]
+        sources: Vec<PathBuf>,
+        /// Make a finding's path relative to this directory.
+        #[arg(long)]
+        base: Option<PathBuf>,
     },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
@@ -805,9 +814,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(0)
         }
-        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, json } => {
+        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, json, report, sources, base } => {
             let bounds = jvmcontract::spec::ClaimBounds { unwind, max_array_length };
             let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds).map_err(|u| Error::new(u.to_string()))?;
+            if let Some(report) = &report {
+                jvmcontract::sarif::write(&report.join("effects.sarif"), &jvmcontract::effects::findings(&checks, &sources, base.as_deref()))?;
+            }
             if json {
                 println!("{}", serde_json::to_string_pretty(&checks).expect("serializable"));
             } else {

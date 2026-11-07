@@ -12,31 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.473Z",
-  "ended": "2026-11-07T06:14:14.194Z",
-  "duration_seconds": 7975,
+  "ended": "2026-11-07T06:57:24.628Z",
+  "duration_seconds": 10565,
   "stats": {
-    "turns": 31,
-    "api_calls": 389,
-    "tool_calls": 398,
-    "tool_errors": 3,
-    "compactions": 6,
+    "turns": 36,
+    "api_calls": 503,
+    "tool_calls": 515,
+    "tool_errors": 6,
+    "compactions": 7,
     "peak_context_tokens": 325217,
     "usage": {
-      "input_tokens": 780,
-      "output_tokens": 365928,
-      "cache_read_input_tokens": 68559368,
-      "cache_creation_input_tokens": 1383379
+      "input_tokens": 1012,
+      "output_tokens": 456105,
+      "cache_read_input_tokens": 91186468,
+      "cache_creation_input_tokens": 1675152
     }
   },
   "tools": {
-    "Bash": 338,
-    "Read": 40,
+    "Bash": 446,
+    "Read": 45,
     "Edit": 14,
-    "Write": 4,
+    "Write": 5,
+    "ToolSearch": 3,
     "Monitor": 1,
-    "ToolSearch": 1
+    "TaskStop": 1
   },
   "files_touched": [
+    "examples/apps/deliveries/README.md",
     "lib/src/effects.rs",
     "lib/src/main.rs",
     "lib/src/observations.rs",
@@ -133,24 +135,38 @@
     {
       "index": 6,
       "started": "2026-11-07T06:01:48.053Z",
-      "ended": "2026-11-07T06:14:14.194Z",
-      "turns": 4,
-      "api_calls": 39,
+      "ended": "2026-11-07T06:14:39.990Z",
+      "turns": 5,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 23876,
-        "cache_read_input_tokens": 4697232,
-        "cache_creation_input_tokens": 156992
+        "input_tokens": 84,
+        "output_tokens": 25319,
+        "cache_read_input_tokens": 5211066,
+        "cache_creation_input_tokens": 160771
       },
-      "peak_context_tokens": 170071
+      "peak_context_tokens": 173850
+    },
+    {
+      "index": 7,
+      "started": "2026-11-07T06:15:15.862Z",
+      "ended": "2026-11-07T06:57:24.628Z",
+      "turns": 4,
+      "api_calls": 111,
+      "usage": {
+        "input_tokens": 226,
+        "output_tokens": 88734,
+        "cache_read_input_tokens": 22113266,
+        "cache_creation_input_tokens": 287994
+      },
+      "peak_context_tokens": 301073
     }
   ],
   "log": {
-    "sha256": "d8486d45655bcf67dc9afe833488a4b9255314d6516c31c8c8b2cb5f4d00dbbc",
-    "bytes": 12535519,
-    "lines": 4195,
-    "gzip_bytes": 2477858,
-    "path": "llm-dlc/traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/logs/d8486d45655bcf67dc9afe833488a4b9255314d6516c31c8c8b2cb5f4d00dbbc.jsonl.gz"
+    "sha256": "eea1a0e064993e146791f69a6de002586d28a1fd04e4556a52a78c0f3ba56790",
+    "bytes": 15446572,
+    "lines": 5364,
+    "gzip_bytes": 2977225,
+    "path": "llm-dlc/traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/logs/eea1a0e064993e146791f69a6de002586d28a1fd04e4556a52a78c0f3ba56790.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -201,6 +217,14 @@
       "summary": "The effect check from the command line (foundations O3, the rest, step 1): jvmcontract effects checks every entry point of two builds under the claim its own spec makes",
       "body": "New command jvmcontract effects BEFORE AFTER [--entry ID]... [--trace-bound N] [--unwind N] [--max-array-length N] [--json]. Each entry point of the old build's classes is matched to its counterpart in the new build as observations --against matches them, and checked by the effect trace of foundations O3 under the claim its own observation spec makes (effects::claim_for: its inputs, every observation as required, its environment model, no change approved). It prints, per entry point, the verdict, what each required observation became, the replayed witness with both builds' attempts or why the result is unresolved, the proof line, the domain and the assumptions, then the count. An entry point with no counterpart is unresolved; one the narrow case refuses is reported as unsupported while the rest are still checked. Exit 0 only when every entry point checked is verified.\n\nOn the joint example (lib/tests/fixtures/foundations): before against after verifies POST /quotes and leaves POST /quotes/text unresolved (string concatenation); against dropped-effect and duplicated-effect it refutes POST /quotes with witnesses replayed on JDK 25 under the recording stubs. Verified by five new tests in lib/tests/effects.rs (the claim a spec makes equals the golden claim's contract, observations and environment; the command over all entry points, one, and an unknown one; a refutation in text and, under --trace-bound 1, unresolved in JSON; a refused handler reported as unsupported) and a full cargo test. Shared files touched by adding: lib/src/main.rs, lib/tests/effects.rs, lib/README.md. Next, per the brief's Progress: examples from 170-179, a Crosscut kernel behind a thin annotated route, proved and with dropped and duplicated effects refuted.",
       "log_sha256": "d8486d45655bcf67dc9afe833488a4b9255314d6516c31c8c8b2cb5f4d00dbbc"
+    },
+    {
+      "change_id": "uqzznykpolmpqlxkokwqskpnrxuqwyqv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A Crosscut kernel behind a thin route, refactored and proved, a dropped and a duplicated send refuted (foundations O3, the rest, step 2; examples 170-172) (verification pending)",
+      "body": "New app examples/apps/deliveries: POST /deliveries/failures asks Crosscut's RetryPolicy whether a failed webhook delivery is retried, and sends a RetryScheduled or a DeadLettered record through a KafkaTemplate. It compiles with Crosscut's kernels against Spring stand-ins kept off the checked build, with plain tests. Box Office and Crosscut are untouched, so no recorded result goes stale. The three examples share one refactor: RetryPolicy.shouldRetry rewritten over two helpers, and the route reorganised around the policy's answer. Example 170 is that refactor, which jvmcontract effects verifies (answer, status and the ordered trace of sends preserved for every int status, boolean idempotency and int attempt count). Example 171 adds a shortcut that answers 200 for a client error without the dead letter; it is refuted at status=400, idempotent=false, attempts=0. Example 172 adds an early dead letter without a return; it is refuted at attempts=5, with one dead letter against two. Every check ran inline in under half a second, the witnesses were replayed on JDK 25.0.5, and the app's tests pass in all three.\n\nTo support the route, the recording stubs now handle a modeled call whose sites pass payloads of several classes, which the narrow case refused. Each payload path is read through the payload's own class, a path that class lacks is snapshotted as absent, and the class itself is snapshotted as data.class, so payloads of two classes never compare equal. jvmcontract effects gained --report DIR (effects.sarif, rule effects-changed) with --sources and --base. A boolean witness input now prints as true or false. build.py gained TOOL_APPS['deliveries'] (with stubs and uses), a run_tool_effects B9 runner, effect-specific page text, and bound-only proof options for it. All of this is additive. There is a new technique tag, effect-trace.",
+      "log_sha256": "eea1a0e064993e146791f69a6de002586d28a1fd04e4556a52a78c0f3ba56790"
     }
   ],
   "logs": {
@@ -232,6 +256,12 @@
       "bytes": 12535519,
       "lines": 4195,
       "gzip_bytes": 2477858,
+      "url": null
+    },
+    "eea1a0e064993e146791f69a6de002586d28a1fd04e4556a52a78c0f3ba56790": {
+      "bytes": 15446572,
+      "lines": 5364,
+      "gzip_bytes": 2977225,
       "url": null
     },
     "fc77552d2be43ed25a2dc85f04f7a4c2cbc07394fe45fa6a93c331c47e9e4264": {

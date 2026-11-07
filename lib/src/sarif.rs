@@ -31,6 +31,7 @@ pub const RULES: &[(&str, &str)] = &[
     ("boundaries-changed", "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."),
     ("property-violated", "An input exists on which the method violates its stated property."),
     ("invariant-violated", "The model checker found a behaviour of the model that violates an invariant."),
+    ("effects-changed", "An input exists on which an entry point's ordered trace of modeled boundary-call attempts, its response or its outcome differs between two builds."),
 ];
 
 #[derive(Serialize)]

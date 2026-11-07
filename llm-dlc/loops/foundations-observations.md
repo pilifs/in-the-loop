@@ -256,18 +256,40 @@ under Progress.
   `--trace-bound 1`, unresolved in JSON; a refused handler reported as unsupported. Full `cargo test` passes. Shared
   files touched, by adding: `lib/src/main.rs` (the command), `lib/tests/effects.rs`, `lib/README.md` (the command
   under Commands, a sentence in the effect-trace paragraph).
-- Next: the rest of O3, step 2, from examples 170–179: an entry point refactored correctly and proved (`jvmcontract
-  effects` verified), with a dropped and a duplicated effect in siblings (refuted, witnesses replayed). Box Office's
-  13 entry points all take strings or objects, or read a store and use the result, which the narrow case refuses,
-  and a new route there would change its boundary contracts, its golden specs and the digests that `build.py`'s
-  recorded results of 006, 012, 110 and 111 hang on; so the subject is a Crosscut kernel behind a thin annotated
-  route with integral parameters. Crosscut compiles with plain `javac` and has no Spring on its class path (its
-  design rule leaves the framework glue out), so the route needs a home: a small app beside it in
-  `examples/apps/` holding the route and the Spring annotation stubs it compiles against (as
-  `lib/tests/fixtures/spring/` does), with an entry in `build.py`'s `TOOL_APPS` and a runner calling `jvmcontract
-  effects`, both added beside the others. Two narrowings to lift for Box Office remain: the scan for a used result
-  covers the whole build rather than the handler's reach, and a modeled call's result can't be used yet.
-- Status: working
+- **O3, the rest, step 2 (2026-11-07): a Crosscut kernel behind a thin route, refactored correctly and proved, with
+  a dropped and a duplicated effect in siblings (examples 170–172).** New app `examples/apps/deliveries`: one route,
+  `POST /deliveries/failures` (`int status, boolean idempotent, int attempts`), which asks Crosscut's
+  `RetryPolicy.shouldRetry` and sends a `RetryScheduled` to `delivery-retries` (202) or a `DeadLettered` to
+  `delivery-dead-letters` (200) through a `KafkaTemplate`; Spring stand-ins under `src/stubs/java` (on the class path,
+  never in the build checked) and plain tests against a recording template. Box Office and Crosscut are untouched,
+  so no recorded result's digest moves. Examples (each patch rewrites `shouldRetry` over two helpers and the route
+  around its answer): 170 the correct refactor, verified; 171 a shortcut that answers 200 for a client error
+  without the dead letter, refuted at status=400, idempotent=false, attempts=0 (old: one dead letter; new: no
+  modeled call); 172 an early dead letter without a `return`, refuted at status=0, idempotent=false, attempts=5 (one
+  dead letter against the same one twice). Each was checked inline with `jvmcontract effects` (under half a second
+  each), the witnesses replayed on JDK 25.0.5; the tests pass in all three. A narrowing lifted on the way, in
+  `effects.rs`: a modeled call whose sites pass payloads of several classes was refused ("a stub reads one"); now
+  each path is read through the payload's own class (instanceof chains), a path its class lacks is snapshotted as
+  absent, and the class itself as `data.class`, so payloads of two classes never compare equal (a single-class call
+  is unchanged). Also: `effects --report DIR` writes `effects.sarif` (new rule `effects-changed`, in `sarif.rs`),
+  anchored with `--sources`/`--base`; a witness's boolean input shows as `true`/`false`. build.py (additive):
+  `TOOL_APPS["deliveries"]` with `stubs` and `uses` (Crosscut's sources compiled in; `tool_copies`, `tool_stubs`),
+  `RUNNERS["deliveries"] = {"B9": run_tool_effects}`, `proof_options` giving the effect check only its bounds, and
+  `findings_effects` for the page. Tested by two new tests in `lib/tests/effects.rs` (16 now: two payload classes
+  through one send, reordered and verified, swapped with equal values and refuted on the class; the SARIF report)
+  and `EffectsRunnerTest` in `examples/tools/test_build.py` (5 tests; 166 there pass, and `verification/test_pipeline.py`).
+  Full `cargo test` passes; `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` timed out once under load
+  (load average about 5) and passed on its own in 12 s, in code this step doesn't touch. New tag `effect-trace`
+  (technique). Shared files touched, by adding: `lib/src/main.rs` (`--report`, `--sources`, `--base`),
+  `lib/src/sarif.rs` (a rule), `lib/tests/effects.rs`, `lib/README.md`, `examples/tags.json`, `examples/README.md`
+  (the Deliveries row; "five subject systems"), `examples/index.json` (rendered), `examples/tools/build.py` and its
+  test. Quick jobs, submitted at priority 10, each `build.py` on one example: `20261107-065648-example-170-a-retry-route-and-its-crossc`
+  (expected verified), `20261107-065648-example-171-a-retry-route-that-skips-the` and
+  `20261107-065648-example-172-a-retry-route-that-dead-lett` (each expected violation, one counterexample replayed
+  by jvm); their pages and results come back with them, and until then the router lists the three as not run. O3 is
+  done, pending those jobs. Narrowings left for later (not this loop's): a modeled call's result can't be used, the
+  scan for a used result covers the whole build rather than the handler's reach, and inputs are integral.
+- Status: done
 
 ## Loop settings
 

@@ -7,7 +7,10 @@
 //! - **Recording stubs.** Every call site of a modeled call (the spec's environment model, reads included) is
 //!   rewritten into an `invokestatic` of a generated stub ([`crate::shared::redirect_calls`], which moves no
 //!   offset). A stub of an observed effect appends one attempt to a log: which call, and a snapshot of its payload
-//!   paths read at the call (`topic`, `data.total`), never a reference read later. A stub gives back nothing, or
+//!   paths read at the call (`topic`, `data.total`), never a reference read later. Where the call sites pass
+//!   payloads of several classes (a retry and a dead letter through one `send`), each path is read through the class
+//!   the payload is, a path that class lacks is snapshotted as absent, and the class itself is snapshotted as one
+//!   more path (`data.class`), so payloads of two classes never compare equal. A stub gives back nothing, or
 //!   its type's default, which the caller must drop: a call whose result the handler uses needs a modeled return
 //!   value, which this narrow case doesn't model, and is refused.
 //! - **One environment for both.** The two builds get the same stubs, in the same order, from one model: the union
@@ -105,6 +108,8 @@ struct Model {
     bound: usize,
     exceptions: Vec<String>,
     literals: Vec<String>,
+    /// The payload classes the call sites of either build pass, which a `.class` path's snapshot names by index.
+    classes: Vec<String>,
 }
 
 impl Model {
@@ -208,6 +213,10 @@ pub fn claim_for(spec: &EntryPointSpec, trace_bound: Option<u32>, bounds: ClaimB
 #[derive(Debug, Clone, Serialize)]
 pub struct EntryCheck {
     pub entry: String,
+    /// The old build's handler (`Class#method`) and the line it starts at, which a report anchors to.
+    pub handler: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_line: Option<u16>,
     /// The counterpart's id, when it differs (a path variable renamed).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub new_entry: Option<String>,
@@ -216,6 +225,25 @@ pub struct EntryCheck {
     /// Why the narrow case can't check it, when it can't (string or object inputs, a used result, modeled failures).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unsupported: Option<String>,
+}
+
+/// The SARIF findings of `checks`: one `effects-changed` per refuted entry point, its witness the message, anchored
+/// at the old build's handler when its source is under one of `sources` (the path made relative to `base`).
+pub fn findings(checks: &[EntryCheck], sources: &[PathBuf], base: Option<&Path>) -> Vec<crate::sarif::Finding> {
+    checks
+        .iter()
+        .filter_map(|c| {
+            let checked = c.checked.as_ref()?;
+            if checked.outcome.verdict != Verdict::Refuted {
+                return None;
+            }
+            let class = c.handler.split_once('#').map(|(class, _)| class.replace('.', "/")).unwrap_or_default();
+            let file = crate::sarif::source_file(&class, sources);
+            let uri = file.map(|f| base.map(|b| crate::sarif::relative_uri(b, &f)).unwrap_or_else(|| f.display().to_string()));
+            let message = format!("{} no longer preserves its trace of modeled boundary calls: {}", c.entry, checked.outcome.witness.as_deref().unwrap_or("a counterexample"));
+            Some(crate::sarif::Finding::new("effects-changed", message, uri, c.source_line.map(u32::from).unwrap_or(1)))
+        })
+        .collect()
 }
 
 /// Every entry point of the classes under `before` (or those of `only`, by id), each checked against its
@@ -247,12 +275,12 @@ pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: O
                 before: None,
                 after: None,
             };
-            out.push(EntryCheck { entry: spec.id.clone(), new_entry, checked: Some(checked), unsupported: None });
+            out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: Some(checked), unsupported: None });
             continue;
         };
         match check(&claim, spec, counterpart, before, after) {
-            Ok(checked) => out.push(EntryCheck { entry: spec.id.clone(), new_entry, checked: Some(checked), unsupported: None }),
-            Err(u) => out.push(EntryCheck { entry: spec.id.clone(), new_entry, checked: None, unsupported: Some(u.what.clone()) }),
+            Ok(checked) => out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: Some(checked), unsupported: None }),
+            Err(u) => out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: None, unsupported: Some(u.what.clone()) }),
         }
     }
     Ok(out)
@@ -373,7 +401,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             }
         }
     }
-    let observed: Vec<Option<Vec<String>>> = calls
+    let mut observed: Vec<Option<Vec<String>>> = calls
         .iter()
         .map(|call| {
             [&claim.observations, &old.observations, &new.observations].into_iter().find_map(|obs| {
@@ -384,6 +412,22 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             })
         })
         .collect();
+    // Where the call sites of either build pass an argument of more than one class, the class is observed too: a
+    // `.class` path after the spec's, the same in both builds.
+    let mut classes = BTreeSet::new();
+    for (call, paths) in calls.iter().zip(observed.iter_mut()) {
+        let Some(paths) = paths else { continue };
+        let sites: Vec<_> = [old, new].into_iter().flat_map(|s| s.effects.iter().filter(|e| &e.call == call)).collect();
+        let Some(first) = sites.first() else { continue };
+        for (k, argument) in first.arguments.iter().enumerate() {
+            let passed: BTreeSet<&String> = sites.iter().filter_map(|e| e.arguments.get(k).and_then(|a| a.class.as_ref())).collect();
+            classes.extend(passed.iter().map(|c| c.to_string()));
+            let class_path = format!("{}.class", argument.name);
+            if passed.len() > 1 && paths.iter().any(|p| p.starts_with(&format!("{}.", argument.name))) && !paths.contains(&class_path) {
+                paths.push(class_path);
+            }
+        }
+    }
     let (before_cp, before_local) = class_path(before)?;
     let (after_cp, after_local) = class_path(after)?;
     let mut exceptions: Vec<(usize, String)> = Vec::new();
@@ -411,7 +455,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             }
         }
     }
-    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect() };
+    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect() };
 
     let _ = std::fs::remove_dir_all(work);
     let old_version = prepare(old, &before_cp, &before_local, before, &work.join("before"), &model, 1)?;
@@ -464,7 +508,22 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         crate::Verdict::Violation => {
             let Some(cex) = &result.counterexample else { return Ok(unresolved("a violation without a counterexample".into())) };
             let arguments: Vec<Argument> = cex.inputs.iter().zip(&new_version.params).map(|(t, ty)| argument(t.value.as_ref(), ty)).collect::<Option<_>>().ok_or_else(|| unsupported("a witness value the JVM run can't pass"))?;
-            let shown = old.inputs.iter().zip(&arguments).map(|(i, a)| format!("{}={}", i.name, match a { Argument::Scalar(Value::Long(v)) => v.to_string(), Argument::Scalar(Value::Int(v)) => v.to_string(), _ => "?".into() })).collect::<Vec<_>>().join(", ");
+            let shown = old
+                .inputs
+                .iter()
+                .zip(&arguments)
+                .zip(&new_version.params)
+                .map(|((i, a), t)| {
+                    let value = match (a, t) {
+                        (Argument::Scalar(Value::Int(v)), Type::Boolean) => (*v != 0).to_string(),
+                        (Argument::Scalar(Value::Long(v)), _) => v.to_string(),
+                        (Argument::Scalar(Value::Int(v)), _) => v.to_string(),
+                        _ => "?".into(),
+                    };
+                    format!("{}={value}", i.name)
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
             let check_dir = work.join("check");
             let entries = vec![check_dir.join("harness"), work.join("after"), check_dir.join("before-classes")];
             let mut slots = Vec::new();
@@ -589,7 +648,12 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
             .enumerate()
             .map(|(j, (p, v))| {
                 let value = if nulls & (1 << j) != 0 {
-                    "null".to_string()
+                    // A path the payload's class lacks is absent; a payload that is null is null throughout.
+                    let class_path = p.split_once('.').map(|(a, _)| format!("{a}.class"));
+                    let class_null = class_path.as_ref().and_then(|c| paths.iter().position(|q| q == c)).map(|k| nulls & (1 << k) != 0);
+                    if !p.ends_with(".class") && class_null == Some(false) { "absent".to_string() } else { "null".to_string() }
+                } else if p.ends_with(".class") {
+                    model.classes.get((*v as usize).wrapping_sub(1)).map(|c| c.replace('/', ".")).unwrap_or_else(|| v.to_string())
                 } else if !strings.contains(&(call, j)) {
                     v.to_string()
                 } else {
@@ -667,9 +731,13 @@ struct Prepared {
 struct Read {
     /// The call's parameter it starts from.
     param: usize,
-    /// Each step into an object: the class it must be, and how its property is read.
-    hops: Vec<(String, Access)>,
+    /// For each class the call sites pass that has the path, each step into an object: the class it must be, and
+    /// how its property is read. Empty for a primitive parameter or a `.class` path.
+    chains: Vec<Vec<(String, Access)>>,
     leaf: Leaf,
+    /// Whether the call sites pass several classes, so that an argument of none of the chains' classes has no such
+    /// path (snapshotted as absent) rather than being one the stub can't read.
+    several: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -683,6 +751,8 @@ enum Leaf {
     Int,
     Long,
     Str,
+    /// The argument's class, as its index in [`Model::classes`] plus one.
+    Class,
 }
 
 fn package_of(internal: &str) -> &str {
@@ -766,7 +836,7 @@ fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
         let d = MethodDescriptor::parse(&d).map_err(|e| unsupported(e.to_string()))?;
         let mut rs = Vec::new();
         for (j, path) in paths.iter().enumerate() {
-            let read = read_path(cp, &package, &sites, &d, path)?;
+            let read = read_path(cp, &package, &sites, &d, path, &model.classes)?;
             if read.leaf == Leaf::Str {
                 strings.insert((i, j));
             }
@@ -838,29 +908,54 @@ fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
     Ok(Prepared { target: format!("{}#{METHOD}", entry.replace('/', ".")), entry, descriptor: entry_descriptor, params: descriptor.params.clone(), strings })
 }
 
-/// How a stub of `call` (descriptor `d`) reads `path` at the call sites `sites`.
-fn read_path(cp: &ClassPath, package: &str, sites: &[&crate::spec::observe::EffectSite], d: &MethodDescriptor, path: &str) -> Result<Read, Unsupported> {
+/// How a stub of `call` (descriptor `d`) reads `path` at the call sites `sites`; `known` are the payload classes a
+/// `.class` path names.
+fn read_path(cp: &ClassPath, package: &str, sites: &[&crate::spec::observe::EffectSite], d: &MethodDescriptor, path: &str, known: &[String]) -> Result<Read, Unsupported> {
     let segments: Vec<&str> = path.split('.').collect();
     let names = &sites[0].arguments;
     let param = names.iter().position(|a| a.name == segments[0]).ok_or_else(|| unsupported(format!("the payload path {path} starts at no parameter of the call")))?;
     let declared = d.params.get(param).cloned().ok_or_else(|| unsupported(format!("the payload path {path}: no parameter {param}")))?;
     let classes: BTreeSet<Option<String>> = sites.iter().map(|s| s.arguments.get(param).and_then(|a| a.class.clone())).collect();
-    let mut hops = Vec::new();
+    if classes.contains(&None) && segments.len() > 1 {
+        return Err(unsupported(format!("the payload path {path}: the walk can't tell the class of the argument passed")));
+    }
+    let several = classes.len() > 1;
+    // `class` is no Java identifier, so no record component or getter is named so.
+    if segments.len() == 2 && segments[1] == "class" {
+        if known.is_empty() {
+            return Err(unsupported(format!("the payload path {path}: no class to tell apart")));
+        }
+        return Ok(Read { param, chains: Vec::new(), leaf: Leaf::Class, several });
+    }
+    let mut chains = Vec::new();
     let mut ty = declared.clone();
     if segments.len() > 1 {
-        let mut current = match classes.iter().collect::<Vec<_>>().as_slice() {
-            [Some(c)] => c.clone(),
-            [None] => return Err(unsupported(format!("the payload path {path}: the walk can't tell the class of the argument passed"))),
-            _ => return Err(unsupported(format!("the payload path {path}: the call sites pass {} classes of argument, and a stub reads one", classes.len()))),
-        };
-        for (k, field) in segments[1..].iter().enumerate() {
-            let (access, t) = property(cp, package, &current, field).ok_or_else(|| unsupported(format!("the payload path {path}: {} has no property {field} a stub in {} can read (a record component, a public getter or a public field)", current.replace('/', "."), package.replace('/', "."))))?;
-            hops.push((current.clone(), access));
-            ty = t.clone();
-            if k + 2 < segments.len() {
-                current = t.class_name().map(str::to_string).ok_or_else(|| unsupported(format!("the payload path {path} steps into a {}", t.java_name())))?;
+        let mut leaf_type: Option<Type> = None;
+        for start in classes.iter().flatten() {
+            let mut current = start.clone();
+            let mut hops = Vec::new();
+            let mut reached = None;
+            for (k, field) in segments[1..].iter().enumerate() {
+                let Some((access, t)) = property(cp, package, &current, field) else {
+                    if several && k == 0 {
+                        break; // this class has no such path: absent, when the payload is one of it
+                    }
+                    return Err(unsupported(format!("the payload path {path}: {} has no property {field} a stub in {} can read (a record component, a public getter or a public field)", current.replace('/', "."), package.replace('/', "."))));
+                };
+                hops.push((current.clone(), access));
+                if k + 2 < segments.len() {
+                    current = t.class_name().map(str::to_string).ok_or_else(|| unsupported(format!("the payload path {path} steps into a {}", t.java_name())))?;
+                }
+                reached = Some(t);
             }
+            let Some(t) = reached.filter(|_| hops.len() == segments.len() - 1) else { continue };
+            if leaf_type.as_ref().is_some_and(|l| *l != t) {
+                return Err(unsupported(format!("the payload path {path} is a {} in one class passed and a {} in another", leaf_type.unwrap().java_name(), t.java_name())));
+            }
+            leaf_type = Some(t);
+            chains.push(hops);
         }
+        ty = leaf_type.ok_or_else(|| unsupported(format!("the payload path {path}: no class the call sites pass has it")))?;
     }
     let leaf = match &ty {
         Type::Long => Leaf::Long,
@@ -868,7 +963,7 @@ fn read_path(cp: &ClassPath, package: &str, sites: &[&crate::spec::observe::Effe
         Type::Object(c) if c == "java/lang/String" => Leaf::Str,
         other => return Err(unsupported(format!("the payload path {path} is a {}: a stub snapshots integral values and literal strings", other.java_name()))),
     };
-    Ok(Read { param, hops, leaf })
+    Ok(Read { param, chains, leaf, several })
 }
 
 /// How a stub in `package` reads `field` of `class`: a record's accessor, a public getter, or a public field.
@@ -923,7 +1018,7 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
                 slot += if matches!(t, Type::Long | Type::Double) { 2 } else { 1 };
             }
             code.max_locals = slot;
-            let (n, log, at, mask, value, tmp) = (slot, slot + 1, slot + 2, slot + 3, slot + 4, slot + 6);
+            let (n, log, at, mask, value, tmp, arg) = (slot, slot + 1, slot + 2, slot + 3, slot + 4, slot + 6, slot + 7);
             code.max_stack = 8;
             let done = code.label();
             if let Some(Some(rs)) = reads.get(i) {
@@ -956,55 +1051,65 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
                     let (null, unresolved, store) = (code.label(), code.label(), code.label());
                     let t = &descriptor.params[r.param];
                     code.load(kind_of(t), slots[r.param]);
-                    for (class, access) in &r.hops {
-                        code.store(Kind::Ref, tmp);
-                        code.load(Kind::Ref, tmp);
+                    if r.leaf == Leaf::Class {
+                        code.store(Kind::Ref, arg);
+                        code.load(Kind::Ref, arg);
                         code.if_null(null);
-                        code.load(Kind::Ref, tmp);
-                        let c = w.pool.class(class);
-                        code.op_u16(0xc1, c); // instanceof
-                        code.if_zero(Cond::Eq, unresolved);
-                        code.load(Kind::Ref, tmp);
-                        code.op_u16(0xc0, c); // checkcast
-                        match access {
-                            Access::Method { name: m, descriptor: md } => {
-                                let r = w.pool.method_ref(class, m, md);
-                                code.op_u16(0xb6, r);
-                            }
-                            Access::Field { name: f, descriptor: fd } => {
-                                let r = w.pool.field_ref(class, f, fd);
-                                code.op_u16(0xb4, r);
-                            }
-                        }
-                    }
-                    match r.leaf {
-                        Leaf::Int => {
-                            code.op(0x85); // i2l
+                        for (k, class) in model.classes.iter().enumerate() {
+                            let next = code.label();
+                            code.load(Kind::Ref, arg);
+                            let c = w.pool.class(class);
+                            code.op_u16(0xc1, c); // instanceof
+                            code.if_zero(Cond::Eq, next);
+                            let v = w.pool.long(k as i64 + 1);
+                            code.ldc2(v);
                             code.store(Kind::Long, value);
                             code.goto(store);
+                            code.bind(next);
                         }
-                        Leaf::Long => {
-                            code.store(Kind::Long, value);
-                            code.goto(store);
-                        }
-                        Leaf::Str => {
-                            code.store(Kind::Ref, tmp);
-                            code.load(Kind::Ref, tmp);
-                            code.if_null(null);
-                            for (k, lit) in model.literals.iter().enumerate() {
-                                let next = code.label();
-                                code.load(Kind::Ref, tmp);
-                                let s = w.pool.string(lit);
-                                code.ldc(s);
-                                code.if_acmpne(next);
-                                let v = w.pool.long(k as i64 + 1);
-                                code.ldc2(v);
-                                code.store(Kind::Long, value);
-                                code.goto(store);
-                                code.bind(next);
+                        code.goto(unresolved);
+                    } else if r.chains.is_empty() {
+                        snapshot_leaf(&mut code, &mut w, model, r.leaf, (value, tmp), (store, null, unresolved));
+                    } else {
+                        // The argument is one of the chains' classes, or (with several classes passed) a payload
+                        // without this path, or one the stub can't read.
+                        code.store(Kind::Ref, arg);
+                        code.load(Kind::Ref, arg);
+                        code.if_null(null);
+                        for chain in &r.chains {
+                            let next = code.label();
+                            for (h, (class, access)) in chain.iter().enumerate() {
+                                let c = w.pool.class(class);
+                                if h == 0 {
+                                    code.load(Kind::Ref, arg);
+                                    code.op_u16(0xc1, c); // instanceof
+                                    code.if_zero(Cond::Eq, next);
+                                    code.load(Kind::Ref, arg);
+                                } else {
+                                    code.store(Kind::Ref, tmp);
+                                    code.load(Kind::Ref, tmp);
+                                    code.if_null(null);
+                                    code.load(Kind::Ref, tmp);
+                                    code.op_u16(0xc1, c);
+                                    code.if_zero(Cond::Eq, unresolved);
+                                    code.load(Kind::Ref, tmp);
+                                }
+                                code.op_u16(0xc0, c); // checkcast
+                                match access {
+                                    Access::Method { name: m, descriptor: md } => {
+                                        let r = w.pool.method_ref(class, m, md);
+                                        code.op_u16(0xb6, r);
+                                    }
+                                    Access::Field { name: f, descriptor: fd } => {
+                                        let r = w.pool.field_ref(class, f, fd);
+                                        code.op_u16(0xb4, r);
+                                    }
+                                }
                             }
-                            code.goto(unresolved);
+                            snapshot_leaf(&mut code, &mut w, model, r.leaf, (value, tmp), (store, null, unresolved));
+                            code.bind(next);
                         }
+                        code.goto(if r.several { null } else { unresolved });
                     }
                     code.bind(null);
                     code.load(Kind::Int, mask);
@@ -1068,6 +1173,41 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
         w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: format!("u{k}"), descriptor: stub_descriptor, code: Some(code) });
     }
     w.to_bytes()
+}
+
+/// Takes the leaf value on the stack into `value` (a long) and jumps to `store`: an integral value widened, a string
+/// as the index of its literal plus one (null to `null`, another string to `unresolved`).
+fn snapshot_leaf(code: &mut CodeBuilder, w: &mut ClassWriter, model: &Model, leaf: Leaf, (value, tmp): (u16, u16), (store, null, unresolved): (crate::classfile::writer::Label, crate::classfile::writer::Label, crate::classfile::writer::Label)) {
+    match leaf {
+        Leaf::Int => {
+            code.op(0x85); // i2l
+            code.store(Kind::Long, value);
+            code.goto(store);
+        }
+        Leaf::Long => {
+            code.store(Kind::Long, value);
+            code.goto(store);
+        }
+        Leaf::Str => {
+            code.store(Kind::Ref, tmp);
+            code.load(Kind::Ref, tmp);
+            code.if_null(null);
+            for (k, lit) in model.literals.iter().enumerate() {
+                let next = code.label();
+                code.load(Kind::Ref, tmp);
+                let s = w.pool.string(lit);
+                code.ldc(s);
+                code.if_acmpne(next);
+                let v = w.pool.long(k as i64 + 1);
+                code.ldc2(v);
+                code.store(Kind::Long, value);
+                code.goto(store);
+                code.bind(next);
+            }
+            code.goto(unresolved);
+        }
+        Leaf::Class => unreachable!("a class is snapshotted by its own instanceof chain"),
+    }
 }
 
 /// Returns the default of `ret`: nothing, zero, or null.

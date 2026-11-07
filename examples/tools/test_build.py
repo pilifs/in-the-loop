@@ -2640,5 +2640,115 @@ class SchemaTest(unittest.TestCase):
             jsonschema.validate({**result, "replay": {"by": "the JVM", "reproduced": True}}, schema)
 
 
+def effects_check(verdict, **fields):
+    """One entry point's check as `jvmcontract effects --json` prints it."""
+    check = {"entry": "POST /deliveries/failures", "handler": "net.terminalvalue.deliveries.DeliveryFailures#failed", "source_line": 28}
+    if verdict == "unsupported":
+        return {**check, "unsupported": "an input of type java.lang.String: the effect trace takes integral inputs", **fields}
+    outcome = {"verdict": verdict, "domain": "status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)",
+               "accounting": [{"observation": "result", "state": "preserved" if verdict == "verified" else "unresolved"}], "witness": None}
+    checked = {"outcome": outcome, "reason": None, "assumptions": ["every modeled call returns normally"], "before": None, "after": None,
+               "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over status: int × idempotent: boolean × attempts: int in 0.1 s"}
+    if verdict == "refuted":
+        outcome["witness"] = ("POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts "
+                              "KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400); the new one returns 200 and attempts no modeled call")
+        checked["proof"] = "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000]"
+        checked["before"] = {"outcome": "returns 200", "kind": 0, "result": 200, "unresolved": [],
+                             "attempts": [[0, [0, 1, 400], "KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400)"]]}
+        checked["after"] = {"outcome": "returns 200", "kind": 0, "result": 200, "unresolved": [], "attempts": []}
+    if verdict == "unresolved":
+        checked["reason"] = "more attempts than the trace bound, 4"
+    checked.update(fields)
+    return {**check, "checked": checked}
+
+
+class EffectsRunnerTest(unittest.TestCase):
+    """The B9 runner of the route app, whose subject is an entry point: `jvmcontract effects`, once for its text and
+    report, once for its JSON."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.folder = self.dir / "example"
+        self.folder.mkdir()
+        self.root = self.dir / "root"
+        self.build = self.root / build.TOOL_APPS["deliveries"]["root"]
+        (self.build / "build/reports").mkdir(parents=True)
+        (self.folder / "statement.java").write_text("class EquivalenceHarness {}")  # an earlier run's, not this one's
+        self.patches = [mock.patch.object(build, "jvmcontract", return_value="jvmcontract"),
+                        mock.patch.object(build, "tool_before_classes", return_value=self.dir / "before")]
+        for p in self.patches:
+            p.start()
+
+    def tearDown(self):
+        for p in self.patches:
+            p.stop()
+        shutil.rmtree(self.dir)
+
+    def example(self, verdict):
+        return {"id": "999", "origin": "constructed", "approach": {"id": "B9", "engine": "native"},
+                "change": {"behaviourChangeIntended": False},
+                "subject": {"file": "examples/apps/deliveries/src/main/java/net/terminalvalue/deliveries/DeliveryFailures.java",
+                            "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed"},
+                "expected": {"verdict": verdict}}
+
+    def run_effects(self, code, checks, ex, text="POST /deliveries/failures: ...\n", report=True):
+        commands = []
+        def fake(command, **kwargs):
+            commands.append(command)
+            if "--json" in command:
+                return proc(code, checks if isinstance(checks, str) else json.dumps(checks))
+            if report:
+                (self.build / "build/reports/effects.sarif").write_text(json.dumps({"version": "2.1.0", "runs": []}))
+            return proc(code, text)
+        result = empty_result()
+        with mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_effects(self.folder, ex, self.root, "deliveries", result)
+        build.finish(result, ex)
+        stores_whole(self, result, self.folder)
+        return result, commands
+
+    def test_the_plan_runs_the_effect_check_with_no_engine_flags(self):
+        p = build.plan(self.example("verified"))
+        self.assertEqual((p["runner"], p["engine"], p["options"]), ("run_tool_effects", "native", []))
+        self.assertEqual(p["build"]["copies"], ["examples/apps/deliveries", "examples/apps/crosscut"])
+        self.assertNotIn("jbmc", p["tools"]["required"] + p["tools"]["optional"])
+
+    def test_a_refuted_entry_point_is_a_violation_with_both_builds_attempts(self):
+        result, commands = self.run_effects(1, [effects_check("refuted")], self.example("violation"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("completed", "violation"))
+        self.assertTrue(result["matchesExpected"])
+        self.assertEqual(result["counterexamples"], [{
+            "input": "POST /deliveries/failures: status=400, idempotent=false, attempts=0",
+            "contract": "returns 200; KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400)",
+            "actual": "returns 200; no modeled call"}])
+        self.assertEqual(result["replay"], {"by": "jvm", "reproduced": True})
+        self.assertTrue((self.folder / "result.sarif").exists())
+        self.assertFalse((self.folder / "statement.java").exists())
+        self.assertEqual(commands[0][:2], ["jvmcontract", "effects"])
+        self.assertIn("--report", commands[0])
+        self.assertNotIn("--engine", commands[0] + commands[1])
+
+    def test_a_verified_entry_point_says_what_was_preserved(self):
+        result, _ = self.run_effects(0, [effects_check("verified")], self.example("verified"))
+        self.assertEqual(result["verdict"], "verified")
+        self.assertIn("trace of boundary calls", result["verdictLabel"])
+        self.assertTrue(result["proof"].startswith("jvmcontract's own checker"))
+        self.assertTrue(result["domain"].startswith("status: int"))
+
+    def test_an_unresolved_or_unsupported_entry_point_is_no_proof(self):
+        for check in (effects_check("unresolved"), effects_check("unsupported")):
+            result, _ = self.run_effects(1, [effects_check("verified"), check], self.example("verified"))
+            self.assertEqual(result["verdict"], "unverifiable")
+            self.assertIn("POST /deliveries/failures", result["problem"])
+
+    def test_a_refutation_without_a_report_or_readable_json_is_no_verdict(self):
+        result, _ = self.run_effects(1, [effects_check("refuted")], self.example("violation"), report=False)
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        result, _ = self.run_effects(1, "garbage", self.example("violation"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        result, _ = self.run_effects(2, "", self.example("violation"), text="jvmcontract: no entry point\n")
+        self.assertEqual(result["execution"]["status"], "tool-error")
+
+
 if __name__ == "__main__":
     unittest.main()

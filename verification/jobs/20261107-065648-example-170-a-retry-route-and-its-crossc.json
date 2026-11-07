@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-065648-example-170-a-retry-route-and-its-crossc",
+  "title": "Example 170: a retry route and its Crosscut retry policy refactored, the effect trace proved preserved",
+  "description": "build.py runs example 170 end to end (foundations O3, the rest, step 2): it applies the patch, which rewrites Crosscut's RetryPolicy.shouldRetry over two helpers and reorganises the deliveries route POST /deliveries/failures with each Kafka send in a method of its own, runs the app's tests, and runs jvmcontract effects between the unpatched and the patched builds: the ordered trace of modeled boundary calls (KafkaTemplate.send, payloads snapshotted at the call, with their class), the answer and the outcome, under recording stubs and one environment model. Inline on 2026-11-07 the command verified it in 0.4 s.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:effects"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/effects.rs",
+      "examples/apps/deliveries"
+    ],
+    "examples": [
+      "170"
+    ]
+  },
+  "expected": "verdict verified, matchesExpected true; the page says the trace, the response and the outcome are preserved on every input",
+  "submitted": {
+    "at": "2026-11-07T06:56:48+00:00",
+    "session": "e65240e3-5cf7-41e9-b648-0b36ce9f1129",
+    "by": "claude (foundations-observations)"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "build.py compiles two copies of the deliveries app with Crosscut's kernels (a few seconds each) and runs jvmcontract effects twice, under a second each; the release build of jvmcontract, if the runner has none, is most of the time"
+  },
+  "steps": [
+    {
+      "name": "example 170 (B9)",
+      "run": "python3 examples/tools/build.py 170",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent"
+  ]
+}

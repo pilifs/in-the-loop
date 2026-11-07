@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "170",
+  "title": "A retry route and its policy refactored, proved to send what they sent, in order, on every input",
+  "summary": "A webhook dispatcher's failure route and the Crosscut retry policy behind it are both rewritten: the policy as one expression over two helpers, the route around the policy's answer with each Kafka send in a method of its own. The tool proves, for every status, idempotency and attempt count, that the route answers the same status and attempts the same sends, to the same topics with the same payloads in the same order, as before.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "messaging",
+    "resilience",
+    "spring-boot",
+    "dropped-case",
+    "duplicate-delivery",
+    "effect-trace",
+    "own-checker"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Deliveries",
+    "file": "examples/apps/deliveries/src/main/java/net/terminalvalue/deliveries/DeliveryFailures.java",
+    "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Crosscut's `RetryPolicy.shouldRetry` is rewritten as one expression over two named helpers, `notProcessed` (429, 503) and `mayHaveRun` (408, and a server error other than 501, written `status / 100 == 5`), and the route `POST /deliveries/failures` is reorganised around the policy's answer, each send moved into a private method of its own (`scheduleRetry`, `deadLetter`). Nothing is meant to change: not the answer, not what is sent.",
+    "patch": "change.patch"
+  },
+  "risk": "The route's consumers see two things: the status it answers the dispatcher, and the records it sends, a retry on `delivery-retries` or a dead letter on `delivery-dead-letters`. A rewrite that keeps the answer and changes a send passes every test that looks at the answer, and the change shows only downstream: a delivery dropped with no dead letter, or retried and dead-lettered at once. Here the policy and the route are both reorganised, which is exactly where such a slip hides.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "`jvmcontract effects` takes the route's observation spec from each build (its inputs, its response and status, and each send with the payload paths a consumer reads) and checks that the new build preserves what the old one observes. Both builds have their `KafkaTemplate.send` calls replaced by the same recording stub, which logs the topic and the payload's components as they are at the call, and the class of the payload, since the route sends two kinds; a generated method makes the controller with a null template, calls the route and returns its log: the outcome, the answer and the attempts in order. The tool's own checker proves the two logs equal for every `int` status, `boolean` idempotency and `int` attempt count, through the kernel and both helpers.",
+  "resolution": "Nothing to do: the refactor is safe to ship. The proof assumes what it says: the template is a recording stub that returns normally, a recorded send is an attempt (not a delivery), and at most four sends are recorded.",
+  "notes": [
+    "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`): every entry point of the unpatched build against its counterpart in the patched one, under the claim its own observation spec makes. Run inline on 2026-11-07 (JDK 25.0.5): `POST /deliveries/failures` verified, with the result, exception, status and `KafkaTemplate.send` observations preserved, proved by the tool's own checker in 0.1 s (0.4 s for the whole command) over `status: int × idempotent: boolean × attempts: int`.",
+    "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\").",
+    "The kernel's rewrite is proved through the route, not on its own: `status / 100 == 5` is the same test as `status >= 500 && status <= 599` on every `int`, negative ones included, since Java's division truncates toward zero (-599 / 100 is -5), and the proof covers every status, not only the HTTP range.",
+    "What the proof assumes, as the verifier output lists it: `KafkaTemplate.send` is a recording stub in both builds that returns normally (an attempt is a call made, not a delivery), `DeliveryFailures` is made by its constructor with a null template, and at most four attempts are recorded, exactly in order.",
+    "The siblings 171 and 172 are this refactor with one defect each: a dropped dead letter, and a duplicated one."
+  ],
+  "provenance": "Constructed for O3 of `llm-dlc/loops/foundations-observations.md` (the rest of O3: a Crosscut kernel behind a thin annotated route, refactored correctly and proved, with a dropped and a duplicated effect in siblings). Examples 170, 171 and 172 share the refactor; 171 and 172 each add one defect to it.",
+  "references": [
+    {
+      "title": "Spring for Apache Kafka: sending messages with KafkaTemplate",
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

@@ -6177,6 +6177,142 @@
         "Since item 9 of `llm-dlc/loops/engine-priorities.md` (7 November 2026) the tool's own checker computes `Integer.numberOfLeadingZeros` exactly, so it is no gap, and the contract library's contract for it was taken out with its records (`lib/models/contracts/README.md`): a run now rests on the library's two tested contracts for `java.util.Random` alone, where the summary names three. Not rerun: the example has no recorded result yet (the open note above)."
       ],
       "source": null
+    },
+    {
+      "id": "170",
+      "path": "examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent",
+      "title": "A retry route and its policy refactored, proved to send what they sent, in order, on every input",
+      "summary": "A webhook dispatcher's failure route and the Crosscut retry policy behind it are both rewritten: the policy as one expression over two helpers, the route around the policy's answer with each Kafka send in a method of its own. The tool proves, for every status, idempotency and attempt count, that the route answers the same status and attempts the same sends, to the same topics with the same payloads in the same order, as before.",
+      "origin": "constructed",
+      "system": "Deliveries",
+      "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "resilience",
+          "spring-boot"
+        ],
+        "defect": [
+          "dropped-case",
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "effect-trace",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`): every entry point of the unpatched build against its counterpart in the patched one, under the claim its own observation spec makes. Run inline on 2026-11-07 (JDK 25.0.5): `POST /deliveries/failures` verified, with the result, exception, status and `KafkaTemplate.send` observations preserved, proved by the tool's own checker in 0.1 s (0.4 s for the whole command) over `status: int × idempotent: boolean × attempts: int`.",
+        "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\").",
+        "The kernel's rewrite is proved through the route, not on its own: `status / 100 == 5` is the same test as `status >= 500 && status <= 599` on every `int`, negative ones included, since Java's division truncates toward zero (-599 / 100 is -5), and the proof covers every status, not only the HTTP range.",
+        "What the proof assumes, as the verifier output lists it: `KafkaTemplate.send` is a recording stub in both builds that returns normally (an attempt is a call made, not a delivery), `DeliveryFailures` is made by its constructor with a null template, and at most four attempts are recorded, exactly in order.",
+        "The siblings 171 and 172 are this refactor with one defect each: a dropped dead letter, and a duplicated one."
+      ],
+      "source": null
+    },
+    {
+      "id": "171",
+      "path": "examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace",
+      "title": "A retry route that skips the dead letter for a client error loses the delivery without a trace",
+      "summary": "The same refactor of the failure route and its retry policy, with one shortcut added: a 4xx other than 408 and 429 answers 200 at once, since no retry fixes it. The answer is the same as before and every test passes, but the delivery is no longer dead-lettered. The effect check finds a request on which the old route sends a dead letter and the new one sends nothing, and replays it on a JVM.",
+      "origin": "constructed",
+      "system": "Deliveries",
+      "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "resilience",
+          "spring-boot"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "effect-trace",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`). Run inline on 2026-11-07 (JDK 25.0.5): refuted. The checker found `status=416, idempotent=true, attempts=0` in its second search stage ([-100000:100000]: no status in [0, 20] is a client error) and shrank it in 27 interpreter runs to `status=400, idempotent=false, attempts=0`, on which both builds answer 200, the old one attempting `KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, ...)` and the new one no modeled call; replayed on the JVM under the recording stubs.",
+        "The observations other than the send are unresolved, not preserved, in the result: a refutation of the log shows that the logs differ, not which of the other observations still agree. The answer does agree here (200 in both), which is the point of the example: a proof of the answer alone would pass.",
+        "`attempts=0` is outside what a dispatcher reports (one attempt at least), and the proof's domain is every `int` the parameter binds; the defect shows on every client error other than 408 and 429, whatever the attempt count.",
+        "The tests pass: they look at the answer and at the last record sent, and none reports a client error.",
+        "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\")."
+      ],
+      "source": null
+    },
+    {
+      "id": "172",
+      "path": "examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice",
+      "title": "A retry route that dead-letters a delivery out of attempts sends the dead letter twice",
+      "summary": "The same refactor of the failure route and its retry policy, with the case of a delivery out of attempts handled first: it is dead-lettered whatever the receiver answered, and the route then goes on to ask the policy, which refuses, and dead-letters it again. The answer is the same and every test passes; the effect check finds the duplicate send, in exact order, and replays it on a JVM.",
+      "origin": "constructed",
+      "system": "Deliveries",
+      "symbol": "net.terminalvalue.deliveries.DeliveryFailures#failed",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "resilience",
+          "spring-boot"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "effect-trace",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by `jvmcontract effects`, which build.py runs as the B9 check of the route app (`run_tool_effects`). Run inline on 2026-11-07 (JDK 25.0.5): refuted. The checker found `status=20, idempotent=true, attempts=20` in its first search stage ([0:20]) and shrank it in 19 interpreter runs to `status=0, idempotent=false, attempts=5`, on which both builds answer 200, the old one attempting one `send` to `delivery-dead-letters` and the new one the same send twice; replayed on the JVM under the recording stubs.",
+        "The trace is compared in exact order and in number, so two equal attempts are not one: the check would not pass a duplicate even if the payloads were all that a consumer looked at.",
+        "The tests pass: `deadLettersADeliveryOutOfAttempts` looks at the last record sent, which is the right dead letter. A test that counted the records sent would catch it.",
+        "The route sends two classes of payload through one `KafkaTemplate.send`, a `RetryScheduled` and a `DeadLettered`, so the recording stub reads each payload path through the class the payload is (`data.attempt` is absent from a dead letter, `data.attempts` from a retry) and snapshots the class itself as `data.class`, so that a retry and a dead letter with equal values are different attempts. Before this example the narrow case refused such a call (\"the call sites pass 2 classes of argument, and a stub reads one\")."
+      ],
+      "source": null
     }
   ]
 }
