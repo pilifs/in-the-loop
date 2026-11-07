@@ -1131,15 +1131,16 @@ mod tests {
 
         // A primitive result is stated by `assert:` over `result`, which no other condition reads; a static call
         // has no receiver.
-        let nlz = "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  modifies: nothing\n  written-by: a test\n";
+        let ntz = "jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfTrailingZeros(int i) -> int\n  modifies: nothing\n  written-by: a test\n";
         let mut writer = ClassWriter::new(CLASS);
-        let (_, closing, summary, shape) = accept(&block(&format!("{nlz}  assert: 0 <= result && result <= 32\n")), &cp, Some("25"), 1, &mut writer).unwrap();
+        let (_, closing, summary, shape) = accept(&block(&format!("{ntz}  assert: 0 <= result && result <= 32\n")), &cp, Some("25"), 1, &mut writer).unwrap();
         assert!(matches!(&closing, Closing::Stub { method, descriptor, receiver: false } if method == "c1" && descriptor == "(I)I"), "{closing:?}");
         assert_eq!(summary, "throws nothing; then 0 <= result && result <= 32; modifies nothing");
         assert_eq!((shape.result_slot, shape.first_free), (Some(1), 2));
-        assert!(refusal(&format!("{nlz}  throws: IllegalArgumentException when result < 0\n")).contains("names `result`, which only `assert:` reads"));
+        assert!(refusal(&format!("{ntz}  throws: IllegalArgumentException when result < 0\n")).contains("names `result`, which only `assert:` reads"));
         assert!(refusal("jdk-static-method:java.lang.Math.addExact(II)I@jdk-25\n  call: java.lang.Math.addExact(int a, int b) -> int\n  modifies: nothing\n  written-by: a test\n").contains("reproduces the call exactly"));
-        assert!(refusal("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I\n  call: java.lang.Integer.numberOfLeadingZeros(int i)\n  modifies: nothing\n  written-by: a test\n").contains("names the JDK it is about"));
+        assert!(refusal("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  modifies: nothing\n  written-by: a test\n").contains("reproduces the call exactly"));
+        assert!(refusal("jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I\n  call: java.lang.Integer.numberOfTrailingZeros(int i)\n  modifies: nothing\n  written-by: a test\n").contains("names the JDK it is about"));
         let next = "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25\n  call: java.util.Random.nextInt(int bound) -> int\n  throws: IllegalArgumentException when bound <= 0\n  assert: 0 <= result && result < bound\n  modifies: this\n  written-by: a test\n";
         let mut writer = ClassWriter::new(CLASS);
         let (_, closing, _, shape) = accept(&block(next), &cp, Some("25"), 0, &mut writer).unwrap();
@@ -1171,9 +1172,9 @@ mod proving_tests {
     #[test]
     fn a_contract_is_proved_against_the_jdk_bytecode_with_the_exception_class_exact() {
         let divide = |throws: &str| format!("jdk-static-method:java.lang.Integer.divideUnsigned(II)I@jdk-25\n  call: java.lang.Integer.divideUnsigned(int a, int b) -> int\n  throws: {throws} when b == 0\n  assert: b != 1 || result == a\n  modifies: nothing\n  written-by: a test\n");
-        let nlz = |assert: &str| format!("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  assert: {assert}\n  modifies: nothing\n  written-by: a test\n");
+        let ntz = |assert: &str| format!("jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfTrailingZeros(int i) -> int\n  assert: {assert}\n  modifies: nothing\n  written-by: a test\n");
         let random = "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25\n  call: java.util.Random.nextInt(int bound) -> int\n  modifies: this\n  written-by: a test\n";
-        let out = proofs(&[&divide("ArithmeticException"), &divide("RuntimeException"), &nlz("i <= 0 || result == 31 - (31 - result)"), &nlz("result != 7"), random]);
+        let out = proofs(&[&divide("ArithmeticException"), &divide("RuntimeException"), &ntz("i <= 0 || result == 31 - (31 - result)"), &ntz("result != 7"), random]);
         if out.is_empty() {
             return; // no JDK
         }
@@ -1181,10 +1182,10 @@ mod proving_tests {
         // The JDK throws an ArithmeticException, a RuntimeException but not of that class.
         assert!(matches!(&out[1], Proving::Refuted { words, .. } if words.ends_with("b=0")), "{:?}", out[1]);
         assert!(matches!(&out[2], Proving::Proved(_)), "{:?}", out[2]);
-        // 7 leading zeros: any i in [2^24, 2^25).
+        // 7 trailing zeros: any i whose lowest byte is 0x80.
         let Proving::Refuted { input, .. } = &out[3] else { panic!("{:?}", out[3]) };
         let crate::contract_testing::Value::Int(i) = input[0] else { panic!() };
-        assert!((1 << 24..1 << 25).contains(&i), "{i}");
+        assert_eq!(i & 0xff, 0x80, "{i}");
         assert!(matches!(&out[4], Proving::Unproved(why) if why.contains("only a static method's contract")), "{:?}", out[4]);
     }
 }

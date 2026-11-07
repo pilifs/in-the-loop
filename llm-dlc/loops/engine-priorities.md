@@ -435,7 +435,10 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     `class-initializer` gaps are 0.
   - `Enum.<init>`, `List.of`, `List.copyOf` are models on JBMC's class path, checked on the JVM by 11 cases and by
     running them relocated against the JDK's classes.
-  - **071's two proofs under strict: fixed, job `20261107-012013` pending.** Job `20261106-203501` (failed): the
+  - **071's two proofs under strict: not yet.** Job `20261107-012013` (collected by the runner, step 3 failed,
+    `verification/findings.md` VF-005): the preflight now names `Collection.isEmpty` and `toArray` as stubs never
+    entered and no gaps, but obligations 1 and 2 are still unverifiable with an empty gap list; its other steps
+    passed (071's build, 013 under strict, the corpus under JBMC and `auto`, which closes VF-008). Job `20261106-203501` (failed): the
     models are used, but JBMC's preflight walks the call graph, not paths, and reaches `Collection.isEmpty` and
     `toArray` stubs in `ImmutableCollections.listCopy` that no path takes. Now, when the call graph reaches a stub,
     the preflight also runs JBMC's symbolic execution of the proof (`--program-only`, the proof's bounds, every
@@ -457,7 +460,9 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     shape's false proof. The goto parser now keeps a location across JBMC's `// Labels:` comments. Checked inline on
     the real listings of the fixture and of `Conformance` (no false positive on `superFirst`, `cycle`, `boomTwice`,
     direct reads, `new`). The cause and a third upstream report are drafted in `lib/tests/fixtures/jbmc-defects/`
-    (`I.java` is the report's example). Job `20261107-010728` runs the corpus under JBMC, `auto` and `--confirm`, and the example.
+    (`I.java` is the report's example). Job `20261107-010728` (collected, failed, VF-009): the corpus under JBMC and
+    `auto` and the report's example passed; under `auto --confirm`, 8 disagreements on `boomTwice` and `enumBroken`
+    (`n = 0`), where JBMC refutes what the own checker proves and the JVM does not reproduce JBMC's witness.
   - That job also recorded the contract library on JDK 25.0.5 (its step passed). Its `checked.json` is applied by
     hand, since a failed job's outputs aren't: the file was still the job's source (`368d584b…`), the contracts
     unchanged since its commit `7457928f`, and it adds the 10 records of 25.0.5 to those of 25.0.4.1. The 12
@@ -465,6 +470,17 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
     The library's integration test named 25.0.4.1 as the one JDK with records; it now reads them from `checked.json`.
     In the full suite `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` failed once on `Pricing#total`'s
     refutation and passed alone: the wall-clock branch probes of item 8.
+- **4c's first extension, an exact `numberOfLeadingZeros`: done, job `20261107-022319` pending** (item 9 below).
+  `Integer` and `Long.numberOfLeadingZeros` were `jdk-static-method` gaps, which left 037 and 127 to JBMC under strict
+  (037 to neither). The own checker now computes them as a priority encoder (`Engine::call_jdk_static`). The
+  reproducer, two conformance cases checked on JDK 25.0.5 (`leadingZeros`, `leadingZerosLong`), gave no verdict on
+  all five claims before; now each is proved or refuted as the JVM decides, and `build.py --scan-gaps` finds no gap in
+  037 or 127. The contract library's two proved contracts for them are taken out with their four records, since a
+  contract for a call the checker reproduces is refused; `checked.json` was rewritten by `gap-contracts --record`,
+  keeping job `-203501`'s timing of the one proof it measured again. Tests that took `numberOfLeadingZeros` as the
+  example of a gap now take `numberOfTrailingZeros`. The job runs 037 and 127 on the own checker under strict, in a
+  copy of `examples/`, and the corpus under JBMC and `auto`. Unit 178, conformance 9 (2 ignored), integration 64
+  (`Pricing#total`'s flake once, passing alone).
 - **6a–6d: done** (`wnktqxrt`, `syntvmqp`, `osspkxkz`, `wqskvlym`, `ulsqmxuq`, `tpytwvmv`). Transcripts
   (`JVMCONTRACT_TRANSCRIPTS`, `jvmcontract transcript`), the `Sat` trait, Bitwuzla behind it on clauses and on
   word-level terms. Jobs `20261106-224616` and `-230455` passed: on clauses Bitwuzla is 2–43× slower; on terms with
@@ -482,9 +498,11 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
 - **Next, in order:**
   1. ~~take `checked.json` from job `-203501`~~ (done);
   2. ~~the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user~~ (done,
-     job `20261107-010728` pending: triage it when it is back);
+     job `20261107-010728` back, failed: VF-009, JBMC's spurious refutations of `boomTwice` and `enumBroken` at
+     `n = 0` under `--confirm`, to triage);
   3. ~~a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013~~
-     (done, job `20261107-012013` pending: triage it when it is back);
+     (done, job `20261107-012013` back, failed: VF-005, 071's obligations 1 and 2 unverifiable with no gap, to
+     find why);
   4. ~~4c, the coverage inventory from 4a's tables and 4b~~ (done);
   5. the examples' notes: 071 and 013 from `-203501` and the rerun `-012013` (037's from `-000039`: done);
   6. ~~Bitwuzla's version in 1b's record~~ (done: each solver records itself, `Sat::record`);
@@ -492,8 +510,9 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   8. smaller ones the streams noted: the own checker's branch probes depend on wall-clock time (`Pricing#total` timing
      out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native
      stream's step 3 cases under JBMC, `auto` and `--confirm`;
-  9. the inventory's first two extensions, each small and with a reproducer first: an exact `numberOfLeadingZeros`
-     (`Integer`, `Long`) in the own checker, and its unwinding bound counted per entry of a loop.
+  9. the inventory's first two extensions, each small and with a reproducer first: ~~an exact `numberOfLeadingZeros`
+     (`Integer`, `Long`) in the own checker~~ (done, job `20261107-022319` pending), and its unwinding bound counted
+     per entry of a loop.
 - **For the user:** the 7 allow-list proposals (mangled C++ symbols in session `7b8a1d3b`'s logs); the two drafted
   upstream reports and the third, on initializers (`extra-initializer`), all in
   `lib/tests/fixtures/jbmc-defects/README.md`; a push. CaDiCaL 2.x on its own, to separate it from

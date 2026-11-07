@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T00:11:40.870Z",
-  "ended": "2026-11-07T02:01:22.439Z",
-  "duration_seconds": 6582,
+  "ended": "2026-11-07T02:25:40.840Z",
+  "duration_seconds": 8040,
   "stats": {
     "turns": 35,
-    "api_calls": 363,
-    "tool_calls": 371,
+    "api_calls": 393,
+    "tool_calls": 401,
     "tool_errors": 7,
     "compactions": 6,
-    "peak_context_tokens": 178584,
+    "peak_context_tokens": 199035,
     "usage": {
-      "input_tokens": 742,
-      "output_tokens": 212740,
-      "cache_read_input_tokens": 38534592,
-      "cache_creation_input_tokens": 906416
+      "input_tokens": 802,
+      "output_tokens": 232277,
+      "cache_read_input_tokens": 43899316,
+      "cache_creation_input_tokens": 943237
     }
   },
   "tools": {
-    "Bash": 331,
+    "Bash": 361,
     "Read": 18,
     "Edit": 10,
     "Monitor": 4,
@@ -131,24 +131,24 @@
     {
       "index": 6,
       "started": "2026-11-07T01:47:41.193Z",
-      "ended": "2026-11-07T02:01:22.439Z",
+      "ended": "2026-11-07T02:25:40.840Z",
       "turns": 4,
-      "api_calls": 60,
+      "api_calls": 90,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 29290,
-        "cache_read_input_tokens": 6810213,
-        "cache_creation_input_tokens": 149135
+        "input_tokens": 180,
+        "output_tokens": 48827,
+        "cache_read_input_tokens": 12174937,
+        "cache_creation_input_tokens": 185956
       },
-      "peak_context_tokens": 162214
+      "peak_context_tokens": 199035
     }
   ],
   "log": {
-    "sha256": "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17",
-    "bytes": 9322718,
-    "lines": 3267,
-    "gzip_bytes": 1820696,
-    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17.jsonl.gz"
+    "sha256": "2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48",
+    "bytes": 9800728,
+    "lines": 3514,
+    "gzip_bytes": 1880585,
+    "path": "llm-dlc/traces/c2bd9df4-5f20-4312-95a4-3eb88a60e0cd/logs/2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -225,20 +225,20 @@
       "log_sha256": "d38b179769261307e6ba0334dba5d619393cb8a0dce46d6ca1db212904ffd280"
     },
     {
-      "change_id": "yvoknyxulprkkwyvmztywzsyqpmrkorr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17"
-    },
-    {
       "change_id": "tnxrkmyknzxtlvwonqslwqsnqkwnowko",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 2 JBMC jobs: the corpus agrees under JBMC and auto, auto --confirm still disagrees on two methods",
       "body": "Job 20261107-012013 (at 8b45798e6417): corpus under JBMC and auto passed, which closes VF-008; example 071 still has its first two obligations unverifiable with no gaps (VF-005 updated). Job 20261107-010728 (at 254f1d7a4893): step 2, auto --confirm, has 8 disagreements on boomTwice and enumBroken (new VF-009). Both ran on vm-1 with three workers and an 8 GiB budget.",
       "log_sha256": "8f373a18e66095164b39ff4d2b384999a7a6ece92c5c70375e2ee8c12075fc17"
+    },
+    {
+      "change_id": "vrkpmtqvyosmxrnxmmwllnoozvuvrwnx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The own checker computes Integer and Long.numberOfLeadingZeros exactly, so examples 037 and 127 meet no gap under strict (verification pending)",
+      "body": "Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension that 4c's coverage inventory ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker. Under strict that left example 127 (a backoff's guarded shift) to JBMC alone, and 037 (tableSizeFor) to neither engine, since JBMC's proof there is refused by the unmasked-shift guard. Engine::call_jdk_static (lib/src/bmc/mod.rs) now computes both as a priority encoder over the argument's bits, the width for zero, and models_jdk_static lists them, so the gap scan counts them as reproduced exactly.\n\nThe reproducer came first: two conformance cases, leadingZeros and leadingZerosLong (Conformance.java), whose calls and five claims were checked on a real JVM (JDK 25.0.5). Before the change all five gave no verdict under strict. Now each is proved or refuted as the JVM decides, and lib/benchmark/conformance.json is regenerated from the corpus (152 claims). build.py --scan-gaps finds no gap in 037 or 127, and their gap-scan notes say so.\n\nA contract for a call the checker reproduces is refused, so the contract library's two proved contracts for these calls are taken out: java.lang.Long.contracts is gone and Integer keeps numberOfTrailingZeros. checked.json was rewritten by jvmcontract gap-contracts --dir lib/models/contracts --record (8 accepted, 0 refused). It drops exactly the four numberOfLeadingZeros records; the one other record it measured again keeps job 20261106-203501's timing, so the diff is removals only. The unit and integration tests that took numberOfLeadingZeros as the example of a gap or of a proved contract now take numberOfTrailingZeros. lib/README.md and lib/models/contracts/README.md follow. Examples 147, 148 and 149, never recorded (VF-002), gave a contract for numberOfLeadingZeros; their notes say a run now refuses it with a note and rests on the Random contracts alone.\n\nVerified inline: Rust unit tests 178 passed; conformance 9 passed (2 ignored); integration 63 passed plus the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, which failed once on Pricing#total's known wall-clock flake (item 8) and passed alone; skill 1; lib/benchmark/test_run.py 26.\n\nJob 20261107-022319 runs examples 037 and 127 under strict on the own checker, with approach.engine set to native in a copy of examples/ so nothing recorded changes. Each must be established with no gap. It also runs the conformance corpus under JBMC and auto, the new cases included. The examples' engines stay JBMC: moving recorded examples is the user's decision.\n\nThe Progress also records what the runner collected meanwhile. Job 20261107-012013 failed step 3 (VF-005): 071's obligations 1 and 2 are still unverifiable, with no gap left. Job 20261107-010728 failed step 2 (VF-009): JBMC refutes boomTwice and enumBroken at n = 0 under auto --confirm, where the own checker proves them. Both are next.",
+      "log_sha256": "2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48"
     }
   ],
   "logs": {
@@ -252,6 +252,12 @@
       "bytes": 2236141,
       "lines": 714,
       "gzip_bytes": 453586,
+      "url": null
+    },
+    "2c47ef24956d398fdc5c53af782c43e3ee9052bded6bdb607e03e5050fb58a48": {
+      "bytes": 9800728,
+      "lines": 3514,
+      "gzip_bytes": 1880585,
       "url": null
     },
     "7eae17b1eac5d903cbc86dfa9108139785d17d44f1013759fec0514f01bcfec8": {

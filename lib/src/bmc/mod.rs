@@ -2627,8 +2627,8 @@ impl<'a> Engine<'a> {
         Ok(None)
     }
 
-    /// The JDK's static methods the engine models: the exact and floor arithmetic of `Math`, and the comparisons
-    /// of the integer wrappers. [`models_jdk_static`] lists the same arms, for the gap scan.
+    /// The JDK's static methods the engine models: the exact and floor arithmetic of `Math`, the comparisons
+    /// of the integer wrappers, and their `numberOfLeadingZeros`. [`models_jdk_static`] lists the same arms, for the gap scan.
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
@@ -2751,6 +2751,17 @@ impl<'a> Engine<'a> {
                 Val::I(self.b.ite_bits(lt, &minus_one, &tail))
             }
             ("java/lang/Integer", "toUnsignedLong") => Val::J(self.b.zext(&a[0], 64)),
+            ("java/lang/Integer" | "java/lang/Long", "numberOfLeadingZeros") => {
+                // A priority encoder: the zeros above the highest one bit, the width for zero. Each bit, from the
+                // lowest up, overrides the count the bits below it gave.
+                let width = a[0].len();
+                let mut count = self.b.constant(width as i64, 32);
+                for (i, &bit) in a[0].iter().enumerate() {
+                    let here = self.b.constant((width - 1 - i) as i64, 32);
+                    count = self.b.ite_bits(bit, &here, &count);
+                }
+                Val::I(count)
+            }
             ("java/lang/Boolean", "logicalAnd") => Val::I(self.b.and_bits(&a[0], &a[1])),
             ("java/lang/Boolean", "logicalOr") => Val::I(self.b.or_bits(&a[0], &a[1])),
             ("java/lang/Boolean", "logicalXor") => Val::I(self.b.xor_bits(&a[0], &a[1])),
@@ -2770,6 +2781,7 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
         ("java/lang/Math" | "java/lang/StrictMath", "addExact" | "subtractExact" | "multiplyExact" | "negateExact" | "incrementExact" | "decrementExact" | "toIntExact" | "absExact" | "abs" | "max" | "min" | "floorDiv" | "floorMod")
             | ("java/lang/Integer" | "java/lang/Long", "max" | "min" | "sum" | "compare" | "signum")
             | ("java/lang/Integer", "toUnsignedLong")
+            | ("java/lang/Integer" | "java/lang/Long", "numberOfLeadingZeros")
             | ("java/lang/Boolean", "logicalAnd" | "logicalOr" | "logicalXor")
     )
 }

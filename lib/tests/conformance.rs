@@ -250,6 +250,14 @@ fn corpus() -> Vec<Case> {
         Case::new("byteSum", &[("-1;0", "returns -1"), ("127;127", "returns 254")])
             .holds(None, "result >= -256 && result <= 254", &[], V)
             .refuted(None, "result >= 0", &[], X),
+        // `numberOfLeadingZeros`, exact in the own checker (item 9 of llm-dlc/loops/engine-priorities.md).
+        Case::new("leadingZeros", &[("0", "returns 32"), ("1", "returns 31"), ("-1", "returns 0"), (MIN, "returns 0"), ("65535", "returns 16"), ("65536", "returns 15")])
+            .holds(None, "(x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)", &[], V)
+            .refuted(None, "result < 32", &[], X)
+            .refuted(Some("x > 0"), "(-1 >>> (result - 1)) == x - 1", &[], X),
+        Case::new("leadingZerosLong", &[("0", "returns 64"), ("1", "returns 63"), ("-1", "returns 0"), ("-9223372036854775808", "returns 0"), ("4294967295", "returns 32"), ("4294967296", "returns 31")])
+            .holds(None, "(x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)", &[], V)
+            .refuted(None, "result < 64", &[], X),
     ]
 }
 

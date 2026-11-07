@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-022319-the-own-checker-models-numberofleadingze",
+  "title": "The own checker models numberOfLeadingZeros exactly: examples 037 and 127 on it under strict, and the conformance corpus under JBMC and auto",
+  "description": "Item 9 of llm-dlc/loops/engine-priorities.md's Progress, the first extension 4c's coverage inventory (examples/coverage.md) ranks. Integer.numberOfLeadingZeros and Long.numberOfLeadingZeros were jdk-static-method gaps of the tool's own checker, which under strict left examples 037 (tableSizeFor) and 127 (a backoff's guarded shift) to JBMC alone, and 037 to neither (JBMC's proof is refused by its unmasked-shift guard). The own checker now computes both exactly, as a priority encoder over the argument's bits (Engine::call_jdk_static in lib/src/bmc/mod.rs), so they are no gaps; the contract library's two proved contracts for them are taken out with their records, since a contract for a call the checker reproduces is refused. Checked inline: two conformance cases (leadingZeros, leadingZerosLong) on a real JVM (JDK 25.0.5), whose five claims gave no verdict under strict before and are now proved or refuted as the JVM decides; the Rust suite (unit 178, conformance 9 with 2 ignored, integration 64 with the known Pricing#total wall-clock flake passing alone); build.py --scan-gaps finds no gap in 037 or 127. Steps: build; 037 and 127 under strict with approach.engine set to native in a copy of examples/ (nothing recorded changes), each obligation verified by the own checker with no gap; the conformance corpus under JBMC and auto, strict (the ignored test), which must agree with the JVM on the new cases too.",
+  "kind": "model",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "037",
+      "127"
+    ],
+    "paths": [
+      "lib/src/bmc/mod.rs"
+    ],
+    "jobs": [
+      "20261107-000039"
+    ]
+  },
+  "expected": "037 and 127: established by the own checker under strict with no gap; the conformance test under JBMC and auto passes",
+  "submitted": {
+    "at": "2026-11-07T02:23:19+00:00",
+    "session": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+    "by": "claude (engines loop)"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "memoryLimit": "3.5G",
+    "timeout": "90m",
+    "notes": "the JBMC conformance test took about 11 min in job 20261106-203501 and peaked at 1.0 GiB with JBMC capped at 2 GiB; the own checker ran the 41 recorded JBMC examples in minutes in job 20261107-000039; 127 unwinds its loop 32 times"
+  },
+  "steps": [
+    {
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": "."
+    },
+    {
+      "name": "037 and 127 under strict on the own checker",
+      "run": "set -eo pipefail\nW=lib/target/jobs/nlz; rm -rf \"$W\"; mkdir -p \"$W/repo\" \"$W/results\"\n# build.py writes results into the examples folder it runs from: a copy, so nothing recorded changes.\ncp -r examples \"$W/repo/\"\nexport JVMCONTRACT=\"$PWD/lib/target/release/jvmcontract\"\npython3 - \"$W/repo/examples\" 037 127 <<'PY'\nimport glob, json, sys\nroot, ids = sys.argv[1], sys.argv[2:]\nfor i in ids:\n    (path,) = glob.glob(f\"{root}/{i}-*/example.json\")\n    example = json.load(open(path))\n    assert example[\"approach\"].get(\"engine\", \"jbmc\") == \"jbmc\", f\"{i} is not a JBMC example\"\n    example[\"approach\"][\"engine\"] = \"native\"\n    open(path, \"w\").write(json.dumps(example, indent=2, ensure_ascii=False) + \"\\n\")\nprint(f\"{len(ids)} examples set to --engine native, in the copy\")\nPY\nstatus=0; python3 \"$W/repo/examples/tools/build.py\" 037 127 > \"$W/build.txt\" 2>&1 || status=$?\ntail -n 6 \"$W/build.txt\"\nfor i in 037 127; do cp \"$W\"/repo/examples/$i-*/result.json \"$W/results/$i.json\"; cp \"$W\"/repo/examples/$i-*/verifier-output.txt \"$W/results/$i-output.txt\" || true; done\npython3 - \"$W/results\" <<'PY'\nimport json, sys\nfor i in (\"037\", \"127\"):\n    r = json.load(open(f\"{sys.argv[1]}/{i}.json\"))\n    # An equivalence result: its conclusion, and the search that decided it.\n    search = r[\"evidence\"].get(\"search\") or {}\n    got = (r[\"conclusion\"][\"status\"], search.get(\"engine\"), search.get(\"gapMode\"), [g[\"id\"] for g in search.get(\"gaps\") or []])\n    print(i, got)\n    assert got == (\"established\", \"native\", \"strict\", []), f\"{i}: {got}\"\nprint(\"ok: 037 and 127 proved by the own checker under strict, with no gap\")\nPY\ntest \"$status\" -le 1 || { echo \"build.py exited $status\"; exit 1; }",
+      "cwd": "."
+    },
+    {
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-nlz.log",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "lib/target/jobs/nlz/results",
+    "lib/target/jobs/nlz/build.txt",
+    "lib/target/conformance-jbmc-nlz.log"
+  ]
+}

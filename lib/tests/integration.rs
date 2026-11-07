@@ -2111,7 +2111,7 @@ public class Gaps {
         return new Point(n, n).x() + Math.addExact(n, 1);
     }
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
-    public static int bits(int n) { return 32 - Integer.numberOfLeadingZeros(n); }
+    public static int bits(int n) { return 32 - Integer.numberOfTrailingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
     public static boolean concatIsNull(int n) { return ("n=" + n) == null; }
     public static boolean sameRecord(int n) { return new Point(n, n).equals(new Point(n, n)); }
@@ -2173,7 +2173,7 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     // A call whose value the proof reads (step 3c): a static JDK method the engine does not model, and a JDK
     // method returning a primitive.
     let (ids, _) = scan("bits");
-    assert_eq!(ids, ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+    assert_eq!(ids, ["jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I"]);
     let (ids, _) = scan("roll");
     assert_eq!(ids, ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-primitive-method:java.util.Random.nextInt(I)I"]);
     let (ids, s) = scan("exact");
@@ -2349,7 +2349,7 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
     for gaps in [GapMode::Strict, GapMode::Assume] {
         let o = prove("bits", "result >= 0 && result <= 32", Engine::Native, gaps);
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-        assert_eq!(ids(&o, GapTreatment::Refused), ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+        assert_eq!(ids(&o, GapTreatment::Refused), ["jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I"]);
         assert!(o.problem.as_deref().unwrap().contains("only a contract closes it"), "{}", o.output);
     }
     // A regression proof meets them the same way: a JDK constructor added to a method that returns 1.
@@ -2809,7 +2809,7 @@ public class Contracted {
     public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append(n) == b; }
     public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
     public static int initialised(int n) { return Table.first() + n; }
-    public static int bits(int n) { return 32 - Integer.numberOfLeadingZeros(n); }
+    public static int bits(int n) { return 32 - Integer.numberOfTrailingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
     public static int lockedCapacity(int n) { synchronized (Contracted.class) { new java.util.ArrayList<Object>(n); } return 1; }
     public static int scaled(int n, float f) { new java.util.ArrayList<Object>(n); return f == f ? 1 : 1; }
@@ -2880,7 +2880,7 @@ fn the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted
             assert!(o.output.contains(&format!("; checked once, on JDK {jdk} by jvmcontract ")), "{}", o.output);
         }
 
-        // Two of the library's contracts, for Random, and one proved for Integer.numberOfLeadingZeros.
+        // Two of the library's contracts, for Random, and one proved for Integer.numberOfTrailingZeros.
         let o = prove("roll", "roll", "1 <= result && result <= sides", &["IllegalArgumentException when sides <= 0"], &[], None, engine);
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert_eq!(closed(&o).len(), 2, "{}", o.output);
@@ -3125,11 +3125,11 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         // JDK method, and an instance method on a receiver the test builds.
         let random7 = block("jdk-constructor:java.util.Random.<init>(J)V", "  call: java.util.Random.<init>(long seed)\n  modifies: nothing\n");
         let next = |assert: &str| block("jdk-primitive-method:java.util.Random.nextInt(I)I", &format!("  call: java.util.Random.nextInt(int bound) -> int\n  throws: IllegalArgumentException when bound <= 0\n  assert: {assert}\n  modifies: this\n"));
-        let nlz = |assert: &str| block("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I", &format!("  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  assert: {assert}\n  modifies: nothing\n"));
-        let exact = nlz("0 <= result && result <= 32 && (i == 0) == (result == 32) && (i < 0) == (result == 0)");
+        let ntz = |assert: &str| block("jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I", &format!("  call: java.lang.Integer.numberOfTrailingZeros(int i) -> int\n  assert: {assert}\n  modifies: nothing\n"));
+        let exact = ntz("0 <= result && result <= 32 && (i == 0) == (result == 32) && ((i & 1) == 1) == (result == 0)");
         let o = prove("bits", "bits", "result >= 0 && result <= 32", &[], &[&exact], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
-        assert_eq!(contracts(&o), ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+        assert_eq!(contracts(&o), ["jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I"]);
         // The method is static, of primitives, and in the checker's fragment: its contract is proved against the
         // JDK's own bytecode of java.lang.Integer, and tested on the JVM besides.
         assert!(o.output.contains("relying on 1 contract for gaps of the tool's own checker, 1 proved (--gaps advised)"), "{}", o.output);
@@ -3146,9 +3146,9 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert!(contract["testing"]["inputs"].as_u64().unwrap() > 100 && contract.get("unproved").is_none(), "{json}");
         // A contract wrong only where neither the boundary values nor the random ones look: the proof finds the
         // input, and the JVM, run on it too, refutes the contract there.
-        let o = prove("bits-wrong-far", "bits", "result >= 0 && result <= 32", &[], &[&nlz("0 <= result && result <= 32 && (i != 777777 || result == 0)")], engine).unwrap();
+        let o = prove("bits-wrong-far", "bits", "result >= 0 && result <= 32", &[], &[&ntz("0 <= result && result <= 32 && (i != 777776 || result == 0)")], engine).unwrap();
         let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
-        assert!(refused.starts_with("a JVM refutes it: on i=777777 the JVM's call returns 12, where the contract says it returns with "), "{}", o.output);
+        assert!(refused.starts_with("a JVM refutes it: on i=777776 the JVM's call returns 4, where the contract says it returns with "), "{}", o.output);
         assert!(refused.contains("(1 of "), "the proof's witness alone refutes it: {}", o.output);
         // A violation through it, which the interpreter, running the JDK's own bytecode, reproduces.
         let o = prove("bits-violated", "bits", "result < 32", &[], &[&exact], engine).unwrap();
@@ -3156,7 +3156,7 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert_eq!(o.counterexample.as_ref().unwrap().outcome, "32", "{}", o.output);
         assert!(o.replay.as_ref().unwrap().reproduced, "{}", o.output);
         // The JVM refutes a bound the call does not keep, with the value it returned.
-        let o = prove("bits-wrong", "bits", "result >= 0 && result <= 32", &[], &[&nlz("0 <= result && result < 32")], engine).unwrap();
+        let o = prove("bits-wrong", "bits", "result >= 0 && result <= 32", &[], &[&ntz("0 <= result && result < 32")], engine).unwrap();
         let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
         assert!(refused.starts_with("a JVM refutes it: on i=0 the JVM's call returns 32, where the contract says it returns with `assert: 0 <= result && result < 32` holding (1 of "), "{}", o.output);
 

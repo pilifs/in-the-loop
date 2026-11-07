@@ -424,6 +424,11 @@ public class Conformance {
 
     public static int byteSum(byte a, byte b) { return a + b; }
 
+    // The highest one bit, as tableSizeFor and a backoff's shift find it (examples 037 and 127).
+    public static int leadingZeros(int x) { return Integer.numberOfLeadingZeros(x); }
+
+    public static int leadingZerosLong(long x) { return Long.numberOfLeadingZeros(x); }
+
     // A division's ArithmeticException caught as its superclass: JBMC 6.11.0, whose stub of RuntimeException has no
     // superclass, lets it escape (tests/fixtures/jbmc-defects/README.md).
     public static int caughtAsRuntime(int n) {

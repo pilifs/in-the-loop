@@ -2,12 +2,6 @@
 # checked once and recorded in checked.json, which runs under --gaps advised apply without checking them again.
 kind: gap-contracts
 
-jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1
-  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int
-  assert: (i == 0 && result == 32) || (i != 0 && 0 <= result && result < 32 && (i >>> (31 - result)) == 1)
-  modifies: nothing
-  written-by: an agent (Claude Opus 5.5), from the documentation of Integer.numberOfLeadingZeros(int): 32 for zero, else the zeros above the highest one bit
-
 jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25.0.4.1
   call: java.lang.Integer.numberOfTrailingZeros(int i) -> int
   assert: (i == 0 && result == 32) || (i != 0 && 0 <= result && result < 32 && ((i >>> result) & 1) == 1 && (i & ((1 << result) - 1)) == 0)

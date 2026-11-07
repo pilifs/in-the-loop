@@ -33,7 +33,6 @@ pub const ORIGIN: &str = "lib/models/contracts/";
 /// directory.
 const FILES: &[(&str, &str)] = &[
     ("java.lang.Integer.contracts", include_str!("../models/contracts/java.lang.Integer.contracts")),
-    ("java.lang.Long.contracts", include_str!("../models/contracts/java.lang.Long.contracts")),
     ("java.lang.StringBuilder.contracts", include_str!("../models/contracts/java.lang.StringBuilder.contracts")),
     ("java.util.ArrayList.contracts", include_str!("../models/contracts/java.util.ArrayList.contracts")),
     ("java.util.HashMap.contracts", include_str!("../models/contracts/java.util.HashMap.contracts")),

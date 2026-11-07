@@ -10,7 +10,7 @@
 //! | `string-conversion` | makes a new string without converting its arguments | calls `toString` on an object argument, which may throw (bytecode of javac 9 to 18: from 19 on, javac calls `String.valueOf` first, which the engine refuses) | yes |
 //! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing (an initializer it does not run, [`runs_initializer`]: one outside its fragment; it runs any other, an enum's included) | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
 //! | `jdk-primitive-method` | nothing: refused as under strict | runs it, and returns a value the engine could only make up (`Random.nextInt(bound)`), or throws | yes |
-//! | `jdk-static-method` | nothing: refused as under strict | runs a static JDK method the engine does not model (`Integer.numberOfLeadingZeros`, `Arrays.fill`), which may return any value, change an argument array, or throw | yes |
+//! | `jdk-static-method` | nothing: refused as under strict | runs a static JDK method the engine does not model (`Integer.numberOfTrailingZeros`, `Arrays.fill`), which may return any value, change an argument array, or throw | yes |
 //! | `missing-body` | (JBMC's stub, [`crate::jbmc_gaps`]) returns any value of its type, or `null` or a new object, and does nothing else | runs a method JBMC has no bytecode for (its class is not on JBMC's class path, or it is abstract or native), which may throw or change its arguments | no: JBMC only |
 //! | `monitor` | (JBMC, [`crate::jbmc_gaps`]) drops `monitorenter` and `monitorexit`: a null monitor throws nothing (this engine implements them: NPE on null) | throws `NullPointerException` at a null monitor | no: JBMC only |
 //! | `invokedynamic` | (JBMC, [`crate::jbmc_gaps`]) takes the call site's value to be zero, `false` or `null`, and runs nothing | links the call site by its bootstrap method and runs what it links: a string concatenation, a record's `equals`, `hashCode` or `toString`, a lambda for a JDK interface | no: JBMC only |
@@ -970,7 +970,9 @@ mod tests {
     /// has the bytecode of is one `--engine auto` asks it about.
     #[test]
     fn a_call_whose_value_the_proof_reads_is_a_gap_with_no_assume_form() {
-        assert_eq!(jdk_static_call("java/lang/Integer", "numberOfLeadingZeros", "(I)I"), JdkCall::Gap(GapKind::JdkStaticMethod));
+        assert_eq!(jdk_static_call("java/lang/Integer", "numberOfTrailingZeros", "(I)I"), JdkCall::Gap(GapKind::JdkStaticMethod));
+        assert_eq!(jdk_static_call("java/lang/Integer", "numberOfLeadingZeros", "(I)I"), JdkCall::Exact);
+        assert_eq!(jdk_static_call("java/lang/Long", "numberOfLeadingZeros", "(J)I"), JdkCall::Exact);
         assert_eq!(jdk_static_call("java/util/Arrays", "fill", "([II)V"), JdkCall::Gap(GapKind::JdkStaticMethod));
         assert_eq!(jdk_static_call("java/lang/Math", "addExact", "(II)I"), JdkCall::Exact);
         assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Refused);
@@ -983,13 +985,13 @@ mod tests {
             assert_eq!(GapKind::from_name(kind.name()), Some(kind));
             assert_eq!(kind.assumable(), !matches!(kind, GapKind::JdkPrimitiveMethod | GapKind::JdkStaticMethod), "{}", kind.name());
         }
-        let nlz = Gap { kind: GapKind::JdkStaticMethod, owner: "java/lang/Integer".into(), name: "numberOfLeadingZeros".into(), descriptor: "(I)I".into() };
-        assert_eq!(nlz.id(Some("25")), "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25");
-        assert!(nlz.jbmc_implements(), "JBMC is given java.lang.Integer's bytecode");
+        let ntz = Gap { kind: GapKind::JdkStaticMethod, owner: "java/lang/Integer".into(), name: "numberOfTrailingZeros".into(), descriptor: "(I)I".into() };
+        assert_eq!(ntz.id(Some("25")), "jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25");
+        assert!(ntz.jbmc_implements(), "JBMC is given java.lang.Integer's bytecode");
         let next = Gap { kind: GapKind::JdkPrimitiveMethod, owner: "java/util/Random".into(), name: "nextInt".into(), descriptor: "(I)I".into() };
         assert!(!next.jbmc_implements(), "JBMC stubs java.util.Random");
         // Under assume, a gap with no approximation is refused, and the others assumed.
-        let met: BTreeMap<Gap, BTreeSet<Site>> = [(nlz, BTreeSet::new()), (Gap { kind: GapKind::JdkConstructor, owner: "java/util/Random".into(), name: "<init>".into(), descriptor: "(J)V".into() }, BTreeSet::new())].into_iter().collect();
+        let met: BTreeMap<Gap, BTreeSet<Site>> = [(ntz, BTreeSet::new()), (Gap { kind: GapKind::JdkConstructor, owner: "java/util/Random".into(), name: "<init>".into(), descriptor: "(J)V".into() }, BTreeSet::new())].into_iter().collect();
         let treatments: Vec<_> = records(&met, None, Some(GapTreatment::Assumed)).into_iter().map(|r| (r.kind, r.treatment)).collect();
         assert_eq!(treatments, [(GapKind::JdkConstructor, Some(GapTreatment::Assumed)), (GapKind::JdkStaticMethod, Some(GapTreatment::Refused))]);
     }
