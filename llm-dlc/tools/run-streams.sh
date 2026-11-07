@@ -536,6 +536,10 @@ show_status log
 (( code == 130 )) && exit 130
 status=$(status_of "$ROOT/$BRIEF")
 log "finished: the brief $BRIEF says ${status:-no status}"
+# Every loop's session, so the one to resume or read is on screen. The
+# integration check is a script, with no session of its own.
+log "sessions: planning $PARENT, merge ${FEATURE_LOOP_SESSION:-$(setting "$ROOT/$BRIEF" session)}"
+for s in "${STREAMS[@]}"; do log "sessions: $s ${SESSION[$s]}"; done
 log "what needs you: its Progress, verification/findings.md and the run records in llm-dlc/loop-summaries/"
 [[ "$status" == done* ]] && exit 0
 exit 1

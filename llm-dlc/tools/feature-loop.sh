@@ -362,6 +362,8 @@ fi
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
   rm -f "$STATE" "$LOCK"
+  # Last, however the loop ended, so the session to resume or read is on screen.
+  log "session: $SESSION_ID"
 }
 trap cleanup EXIT
 trap 'note; note "Interrupted $(date "+%F %T") during cycle $cycle."; exit 130' INT TERM
