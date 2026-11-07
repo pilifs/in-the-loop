@@ -412,6 +412,13 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   agree on all; only JBMC decides 5 (`013#0`, `035#0`, `052#0`, `071#2`, `127#0`); neither decides 3 (`037#0`,
   `071#0`, `#1`). `037#0`'s recorded proof is refused by the unmasked-shift guard though correct (checked on all 2^32
   ints). The tables are in that job's outputs, `lib/target/jobs/4a-coverage/`.
+- **4c, the coverage inventory: done.** `examples/coverage.md`, from 4a's two tables by `gap_table.py --inventory`
+  (new, tested): both engines decide 35 of 43 obligations with no conflict, JBMC alone 5, neither 3, the own checker
+  alone none. A gap scan of the eight at this commit (the examples' notes) shows Phase 5 took the class-initializer
+  gaps off 013 and 071, leaving `List.of` and `List.copyOf`, whose models the own checker doesn't run. Ranked: exact
+  `numberOfLeadingZeros` in the own checker (037, 127), its unwinding bound per entry of a loop (052: `Engine::jump`
+  counts back edges over the whole path, and the property's nested quantifiers take the inner one up to 36 times),
+  running the `List` models (013, 071), floating point (035). The first three would leave only 035 to JBMC.
 - **4b, initializers counted: done** (`wnxlynrs`). Apps: 49 initializers, 36 enums and 13 `$SwitchMap`s, none
   `throws`, `constants` or `other`. Recorded examples: only 013 and 071, through four Quorum enums. Benchmark: `Boom`,
   `Base` throw, `Quiet` is constants. Scope chosen: full JVMS §5.5.
@@ -471,13 +478,15 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
      job `20261107-010728` pending: triage it when it is back);
   3. ~~a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013~~
      (done, job `20261107-012013` pending: triage it when it is back);
-  4. 4c, the coverage inventory from 4a's tables and 4b;
-  5. the examples' notes: 071 and 013 from `-203501` (and the rerun), 037 from `-000039`;
+  4. ~~4c, the coverage inventory from 4a's tables and 4b~~ (done);
+  5. the examples' notes: 071 and 013 from `-203501` and the rerun `-012013` (037's from `-000039`: done);
   6. Bitwuzla's version in 1b's record (`statement::native_sat()` from the configured solver);
   7. `test_build.py`'s and `test_performance.py`'s failures;
   8. smaller ones the streams noted: the own checker's branch probes depend on wall-clock time (`Pricing#total` timing
      out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native
-     stream's step 3 cases under JBMC, `auto` and `--confirm`.
+     stream's step 3 cases under JBMC, `auto` and `--confirm`;
+  9. the inventory's first two extensions, each small and with a reproducer first: an exact `numberOfLeadingZeros`
+     (`Integer`, `Long`) in the own checker, and its unwinding bound counted per entry of a loop.
 - **For the user:** the 7 allow-list proposals (mangled C++ symbols in session `7b8a1d3b`'s logs); the two drafted
   upstream reports and the third, on initializers (`extra-initializer`), all in
   `lib/tests/fixtures/jbmc-defects/README.md`; a push. CaDiCaL 2.x on its own, to separate it from

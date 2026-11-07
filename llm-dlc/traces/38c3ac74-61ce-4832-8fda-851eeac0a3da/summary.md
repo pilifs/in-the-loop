@@ -28,6 +28,14 @@ Verified inline: new unit tests read locations and the symbolic execution's outp
 
 Job 20261107-012013 reruns examples 071 and 013 under strict (071's obligations 1 and 2 expected verified with no gap, 3 a violation; 013 a violation with no JBMC gap) and the conformance corpus under JBMC and auto. Job 20261107-010728 is still running.
 
+### A coverage inventory of the recorded JBMC examples: which engine decides each obligation under strict, what stops the other, and the own checker's next extensions ranked (Phase 4c)
+
+change `unvpruotttxv` · [log `8f4b3cd7ac59`](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz)
+
+examples/coverage.md is step 4c of llm-dlc/loops/engine-priorities.md. Its table comes from the two per-obligation tables of job 20261107-000039 (both engines, strict, at 98bab485), through a new gap_table.py --inventory, which says for each obligation which engine decides it and why the other doesn't, and exits 1 on a conflict (a unit test covers each case). Of 43 obligations both engines decide 35 and agree on all of them, JBMC alone decides 5 (013#0, 035#0, 052#0, 071#2, 127#0), neither decides 3 (037#0, 071#0, 071#1), and the own checker alone decides none.
+
+The own checker's gap scan (build.py --scan-gaps, static, JDK 25.0.5) was rerun on the six examples concerned and rewrote their Gap scan notes. Phase 5 has taken the class-initializer gaps off 013 and 071, which leaves List.of and List.copyOf: their models are on JBMC's class path only. 037's notes now record why neither engine decides it under strict. The ranking: an exact numberOfLeadingZeros in the own checker (037, 127); its unwinding bound counted per entry of a loop (052: Engine::jump counts back edges per path and method and never resets them, and the property's nested quantifiers, each a harness loop, take the inner back edge up to 36 times, still to be reproduced); the own checker running the List models (013, 071); and floating point (035). Pages re-rendered; the gap_table tests pass. The brief's Progress records 4c, and adds the first two extensions as item 9.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/38c3ac74-61ce-4832-8fda-851eeac0a3da/8f4b3cd7ac5900804a72f4cf7fd2d6815866baf7d3e443e05cef19315b406240.jsonl.gz) has every step in between: reasoning, tool calls and their results.

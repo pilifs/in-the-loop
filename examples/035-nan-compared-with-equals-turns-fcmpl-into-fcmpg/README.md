@@ -111,7 +111,7 @@ Revert, or write the check as `Float.isNaN(a) || Float.isNaN(b)` (which is `a !=
 ## Notes
 
 - `== Float.NaN` is never true, so the NaN check never fires and `fcmpl` quietly becomes `fcmpg`.
-- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change; the checker refuses part of it in any mode (floating point (floating-point arithmetic, and 7 more)). JBMC's own approximations are step 4c's.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 7 November 2026, JDK 25.0.5, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches in either version, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change; the checker refuses part of it in any mode (floating point (floating-point arithmetic, and 7 more)). JBMC's own approximations are step 4c's.
 
 ## Evidence
 

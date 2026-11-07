@@ -110,7 +110,7 @@ Merge, with the assumption. The definition stays as the property and the range o
 
 - The array refutations of these Mica kernels are shrunk to a witness of one element.
 - `max_stack` is still the deepest point when the depth is checked only after a push: a safe change.
-- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 5 November 2026, JDK 25.0.4.1, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
+- Gap scan (step 1a of `llm-dlc/loops/sound-verdicts.md`, 7 November 2026, JDK 25.0.5, from the bytecode, nothing proved): the tool's own checker meets no gap in the 1 method the proof reaches, so strict mode does not move this verdict. The recorded proof is JBMC's, which strict mode of the tool's own checker does not change. JBMC's own approximations are step 4c's.
 
 ## Evidence
 

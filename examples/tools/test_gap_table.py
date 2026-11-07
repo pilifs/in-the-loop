@@ -67,6 +67,30 @@ class GapTableTest(unittest.TestCase):
         b.write_text(json.dumps(native))
         self.assertEqual(gap_table.main(["--compare", str(a), str(b)]), 0)
 
+    def test_the_inventory_says_which_engine_decides_each_obligation_and_what_stops_the_other(self):
+        def row(example, status, gaps=(), problem=None, index=0):
+            return {"example": example, "obligation": index, "status": status, "gaps": list(gaps), "problem": problem}
+        jbmc = [row("013", "refuted"), row("035", "refuted"), row("037", "unresolved", problem="JBMC proved it, but"),
+                row("071", "unresolved", ["jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"]),
+                row("128", "established")]
+        native = [row("013", "refuted"), row("035", "unresolved", problem="outside the fragment: a float parameter"),
+                  row("037", "established"), row("071", "unresolved", problem="a loop was not fully unwound"),
+                  row("128", "refuted")]
+        self.assertEqual([(k[0], by, why) for k, _, _, by, why in gap_table.inventory(jbmc, native)], [
+            ("013", "both", ""),
+            ("035", "JBMC only", "own checker: outside the fragment: a float parameter"),
+            ("037", "own checker only", "JBMC: JBMC proved it, but"),
+            ("071", "neither", "JBMC: gap jdk-static-method:java.util.List.of; own checker: a loop was not fully unwound"),
+            ("128", "conflict", ""),
+        ])
+        self.assertEqual(gap_table.inventory(jbmc[:1], [])[0][3:], ("JBMC only", "own checker: not run"))
+        a, b = self.dir / "a.json", self.dir / "b.json"
+        a.write_text(json.dumps(jbmc))
+        b.write_text(json.dumps(native))
+        self.assertEqual(gap_table.main(["--inventory", str(a), str(b)]), 1, "a conflict fails")
+        b.write_text(json.dumps(native[:4]))
+        self.assertEqual(gap_table.main(["--inventory", str(a), str(b)]), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

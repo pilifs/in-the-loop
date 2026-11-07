@@ -166,7 +166,7 @@ Add `@JsonSubTypes.Type(value = PaymentEvent.PaymentVoided.class, name = "Paymen
 
 ## Evidence
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+This page renders attempt `20261106T171441Z-56cf027c` at claim `80dba4979218c44c`, in pipeline job `20261105-131902-example-111-b12-box-office-recorded-as-a`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

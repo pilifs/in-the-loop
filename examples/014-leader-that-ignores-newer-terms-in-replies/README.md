@@ -130,7 +130,7 @@ Revert. The all-servers rule is deliberately unconditional in the paper, and the
 
 The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.util.List.copyOf`, `java.util.List.of`.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+This page renders attempt `20261106T171435Z-eb3092bf` at claim `31617d98b8ce13ce`, in pipeline job `20261105-131902-example-014-b8-quorum-recorded-as-a-clai`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

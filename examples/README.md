@@ -438,6 +438,10 @@ javac app as a whole (every method a target, and Box Office's `ticketing-domain`
 initializers it reaches by the shape `jvmcontract gaps` gives each: `enum`, `throws`, `other-statics`, `constants` or
 `other` ([`engine-priorities.md`](../llm-dlc/loops/engine-priorities.md), Phase 4b).
 
+[`coverage.md`](coverage.md) says, for each obligation of the recorded JBMC examples, which engine decides it under
+strict and what stops the other, from a job's two tables (`gap_table.py --inventory`). It also ranks the own
+checker's next extensions.
+
 `--plan` prints the run's plan, which `plan()` in `build.py` resolves from `example.json` alone, without building or
 running anything. The plan names the app and its build (Gradle or javac), the runner, the claim, and the engine with the
 flags the proof is given. It lists the tools the run calls: `required` ones, and `optional` ones it calls only in some
