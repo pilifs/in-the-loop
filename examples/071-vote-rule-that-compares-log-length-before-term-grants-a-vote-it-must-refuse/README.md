@@ -5,7 +5,7 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✗ Violation: counterexample found to 1 of 3 properties, 2 unresolved** | functional | critical | refactor, behaviour change not intended | [`VoteRule#grant`](../../examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java) | [B11: Property proofs](../../lib/README.md) |
+| **✗ Violation: counterexample found to 1 of 3 properties** | functional | critical | refactor, behaviour change not intended | [`VoteRule#grant`](../../examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java) | [B11: Property proofs](../../lib/README.md) |
 
 > The election model checks the vote rule's decision kernel, generated from its contract, and repeats the arithmetic around it: how the candidate's term and log compare with the voter's own is computed in `grant`, outside the model's reach. A developer reorders that comparison so that the longer log wins and the term of the last entry breaks ties between logs of one length, reading "up to date" as "further along". The kernel's contract does not change and the election model verifies it under every configuration, logs included, since the model does its own comparing. The property that states the election restriction over `grant` itself, that a candidate whose last entry is of an older term is refused however long its log, fails: JBMC shows a voter whose last entry is of a later term granting a candidate whose log is longer but ends in an earlier one, the log a deposed leader left behind. Example 013 catches the same rewrite as a regression against the previous version of the method; this one needs no previous version, only the rule.
 
@@ -73,20 +73,15 @@ The module declares 3 properties of `VoteRule#grant`, and the tool proves each o
 
 | | The property | Verdict |
 |---|---|---|
-| 1 | That `!result` holds where `candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate` | ⚠ unresolved |
-| 2 | That `!result` holds where `candidateTerm < currentTerm` | ⚠ unresolved |
+| 1 | That `!result` holds where `candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate` | ✓ holds |
+| 2 | That `!result` holds where `candidateTerm < currentTerm` | ✓ holds |
 | 3 | That `!result` holds where `candidateLastLogTerm < lastLogTerm \|\| (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)` | ✗ refuted |
 
 The prover found an input for each refuted property, and the tool replayed it on the method in jvmcontract's bytecode interpreter to show what it does:
 
 | Property | Input | The method's outcome |
 |---|---|---|
-| 3 | `grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)` | `true` |
-
-The verifier gave no verdict on these properties, which stay open whatever the others show:
-
-- Property 1: `JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it`
-- Property 2: `JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it`
+| 3 | `grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)` | `true` |
 
 ## Would the existing tests have caught it?
 
@@ -116,39 +111,32 @@ Restore the order: the term of the last entry first, and length only between equ
 
 How each verdict was reached:
 
-- Property 1: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it.
-- Property 2: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it.
-- Property 3: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
+- Property 1: JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.3 s; loops unwound 16 times with unwinding assertions.
+- Property 2: JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.3 s; loops unwound 16 times with unwinding assertions.
+- Property 3: found by JBMC 6.11.0 in 0.3 s as grant(currentTerm=-6, votedFor=-2, lastLogTerm=9223372036854775807, lastLogIndex=-9223372036854775808, candidate=1, candidateTerm=-1, candidateLastLogTerm=-9223372036854775805, candidateLastLogIndex=9223372036854775805), shrunk to the input above in 326 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
 
 What each verdict is about:
 
-- Property 1: For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against !result, and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
-- Property 2: For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming candidateTerm < currentTerm (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against !result, and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
-- Property 3: For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex) (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against !result, and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+- Property 1: For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against !result, and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found grant(currentTerm=20, votedFor=16, lastLogTerm=20, lastLogIndex=20, candidate=20, candidateTerm=20, candidateLastLogTerm=20, candidateLastLogIndex=20).
+- Property 2: For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming candidateTerm < currentTerm (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against !result, and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found grant(currentTerm=20, votedFor=20, lastLogTerm=20, lastLogIndex=20, candidate=20, candidateTerm=16, candidateLastLogTerm=20, candidateLastLogIndex=20).
+- Property 3: For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex) (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against !result, and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
 
-This page renders attempt `20261106T181230Z-cf380c33` at claim `56047d29f030a33b`, in pipeline job `20261106-181100-example-071-b11-three-properties-recorde`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261107T025151Z-7d1eac25` at claim `56047d29f030a33b`, in pipeline job `20261107-024759-jbmc-s-stubs-on-no-path-are-no-gaps-exam`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-note: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, examples/apps/quorum/build/property/property-1/jbmc-goto.txt):
-  jbmc gap: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5: java.lang.Enum.<init>(java.lang.String, int) is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.raft.Ballot.<init>:4
-  jbmc gap: jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5: java.util.List.copyOf(java.util.Collection) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.Decision$Transition.<init>:18
-  jbmc gap: jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5: java.util.List.of(java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.Decision.transition:30
-✗ net.terminalvalue.quorum.raft.VoteRule#grant cannot be verified: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it
-note: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, examples/apps/quorum/build/property/property-2/jbmc-goto.txt):
-  jbmc gap: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5: java.lang.Enum.<init>(java.lang.String, int) is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.raft.Ballot.<init>:4
-  jbmc gap: jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5: java.util.List.copyOf(java.util.Collection) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.Decision$Transition.<init>:18
-  jbmc gap: jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5: java.util.List.of(java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.Decision.transition:30
-✗ net.terminalvalue.quorum.raft.VoteRule#grant cannot be verified: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it
-note: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, examples/apps/quorum/build/property/property-3/jbmc-goto.txt):
-  jbmc gap: jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5: java.lang.Enum.<init>(java.lang.String, int) is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.raft.Ballot.<init>:4
-  jbmc gap: jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5: java.util.List.copyOf(java.util.Collection) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.Decision$Transition.<init>:18
-  jbmc gap: jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5: java.util.List.of(java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at net.terminalvalue.quorum.Decision.transition:30
+note: JBMC's call graph reaches 2 stubs that its symbolic execution of the proof (0.1 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Collection.isEmpty(), java.util.Collection.toArray()
+✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.3 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: grant(currentTerm=20, votedFor=16, lastLogTerm=20, lastLogIndex=20, candidate=20, candidateTerm=20, candidateLastLogTerm=20, candidateLastLogIndex=20) reaches the calls
+note: JBMC's call graph reaches 2 stubs that its symbolic execution of the proof (0.1 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Collection.isEmpty(), java.util.Collection.toArray()
+✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm < currentTerm (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.3 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: grant(currentTerm=20, votedFor=20, lastLogTerm=20, lastLogIndex=20, candidate=20, candidateTerm=16, candidateLastLogTerm=20, candidateLastLogIndex=20) reaches the calls
+note: JBMC's call graph reaches 2 stubs that its symbolic execution of the proof (0.1 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Collection.isEmpty(), java.util.Collection.toArray()
 ✗ Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):
-  grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)
+  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)
     outcome: true
-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+  (found by JBMC 6.11.0 in 0.3 s as grant(currentTerm=-6, votedFor=-2, lastLogTerm=9223372036854775807, lastLogIndex=-9223372036854775808, candidate=1, candidateTerm=-1, candidateLastLogTerm=-9223372036854775805, candidateLastLogIndex=9223372036854775805), shrunk to the input above in 326 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
@@ -266,48 +254,10 @@ public final class PropertyHarness {
       },
       "results": [
         {
-          "ruleId": "unverifiable",
-          "level": "error",
-          "message": {
-            "text": "net.terminalvalue.quorum.raft.VoteRule#grant cannot be verified: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java"
-                },
-                "region": {
-                  "startLine": 62
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "unverifiable",
-          "level": "error",
-          "message": {
-            "text": "net.terminalvalue.quorum.raft.VoteRule#grant cannot be verified: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java"
-                },
-                "region": {
-                  "startLine": 62
-                }
-              }
-            }
-          ]
-        },
-        {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):\n  grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)\n    outcome: true"
+            "text": "Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):\n  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)\n    outcome: true"
           },
           "locations": [
             {

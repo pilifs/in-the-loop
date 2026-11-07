@@ -71,7 +71,7 @@ The two versions disagree. The prover found this input, and the verifier replaye
 
 | Input | Before | After |
 |---|---|---|
-| `grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)` | `true` | `false` |
+| `grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)` | `false` | `true` |
 
 One disagreeing input is enough to fail the build. The domain is `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -100,18 +100,21 @@ Keep term first. If the comparison must read differently, write it as a tuple co
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as grant(currentTerm=20, votedFor=20, lastLogTerm=0, lastLogIndex=12, candidate=20, candidateTerm=20, candidateLastLogTerm=17, candidateLastLogIndex=4), shrunk to the input above in 39 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.5 s as grant(currentTerm=1, votedFor=-2, lastLogTerm=9223372036854775805, lastLogIndex=-9223372036854775808, candidate=-2, candidateTerm=1, candidateLastLogTerm=-3, candidateLastLogIndex=8796093022205), shrunk to the input above in 133 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
+
+This page renders attempt `20261107T025156Z-d0086dff` at claim `7feb62f6faa42477`, in pipeline job `20261107-024759-jbmc-s-stubs-on-no-path-are-no-gaps-exam`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
+note: JBMC's call graph reaches 2 stubs that its symbolic execution of the proof (0.1 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.util.Collection.isEmpty(), java.util.Collection.toArray()
 ✗ Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:
-  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)
-    before: true
-    after:  false
-  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as grant(currentTerm=20, votedFor=20, lastLogTerm=0, lastLogIndex=12, candidate=20, candidateTerm=20, candidateLastLogTerm=17, candidateLastLogIndex=4), shrunk to the input above in 39 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)
+    before: false
+    after:  true
+  (found by JBMC 6.11.0 in 0.5 s as grant(currentTerm=1, votedFor=-2, lastLogTerm=9223372036854775805, lastLogIndex=-9223372036854775808, candidate=-2, candidateTerm=1, candidateLastLogTerm=-3, candidateLastLogIndex=8796093022205), shrunk to the input above in 133 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -200,7 +203,7 @@ public final class EquivalenceHarness {
           "ruleId": "behaviour-changed",
           "level": "error",
           "message": {
-            "text": "Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:\n  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)\n    before: true\n    after:  false"
+            "text": "Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:\n  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)\n    before: false\n    after:  true"
           },
           "locations": [
             {

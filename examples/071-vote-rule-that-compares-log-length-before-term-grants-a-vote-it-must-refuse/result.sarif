@@ -55,48 +55,10 @@
       },
       "results": [
         {
-          "ruleId": "unverifiable",
-          "level": "error",
-          "message": {
-            "text": "net.terminalvalue.quorum.raft.VoteRule#grant cannot be verified: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java"
-                },
-                "region": {
-                  "startLine": 62
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "unverifiable",
-          "level": "error",
-          "message": {
-            "text": "net.terminalvalue.quorum.raft.VoteRule#grant cannot be verified: JBMC proved it, but reaches 3 constructs it approximates without implementing, and refused them (--gaps strict): jdk-constructor:java.lang.Enum.<init>(Ljava/lang/String;I)V@jdk-25.0.5, jdk-static-method:java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;@jdk-25.0.5, jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;@jdk-25.0.5; --gaps assume accepts the proof under them, and --engine native or auto lets the tool's own checker try it"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java"
-                },
-                "region": {
-                  "startLine": 62
-                }
-              }
-            }
-          ]
-        },
-        {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):\n  grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)\n    outcome: true"
+            "text": "Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):\n  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=-1, candidateLastLogIndex=1)\n    outcome: true"
           },
           "locations": [
             {
