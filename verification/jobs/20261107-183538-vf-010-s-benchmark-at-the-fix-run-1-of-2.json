@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2",
+  "title": "VF-010's benchmark at the fix (run 1 of 2): the own checker's runs with conflict-budgeted probes, recorded for comparison with the fix's parent",
+  "description": "VF-010 (verification/findings.md): the fix budgets the own checker's branch probes in solver conflicts instead of wall-clock time (Engine::probe, lib/src/bmc/mod.rs). To check that no recorded own-checker verdict changes with it, the benchmark's own-checker runs are recorded at the fix (this job, --revision f606b0d8, the fix) and at the fix's parent (run 2 of 2, --revision c307e721), and a later quick job compares the two outputs, as the examples stream does for VF-014. Not compared with lib/benchmark/results.json, which VF-014 shows is stale. This job only records: it passes when the benchmark runs. Resubmitted for VF-021: the first pair (20261107-165544-...-run-1-of-2 and ...-s-parent-r) was stopped by SIGTERM because both ids share their first 40 characters, which the runner uses for a step's systemd scope (vjob-<id[:40]>-<step>), so each job's step stopped the other's as a leftover of the same name. These two ids differ within the first 40 characters. VF-021 closes when both pass and the comparison shows no verdict changed.",
+  "kind": "library",
+  "capabilities": [
+    "benchmark",
+    "own-checker",
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/benchmark"
+    ]
+  },
+  "expected": "exit 0, with lib/target/benchmark-native-vf010-fix.json written",
+  "submitted": {
+    "at": "2026-11-07T18:35:38+00:00",
+    "session": "2324d402-3f17-421a-8a85-5b6846d2c728",
+    "by": "cleanup-native"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "15m",
+    "notes": "the first run of this job reached 2m19s and 1.5 GiB before it was stopped; job 20261107-041414's step 1, the same command, took 168 s with a 1.1 GiB peak"
+  },
+  "steps": [
+    {
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native-vf010-fix.json --table lib/target/benchmark-native-vf010-fix.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/benchmark-native-vf010-fix.json",
+    "lib/target/benchmark-native-vf010-fix.md"
+  ],
+  "supersedes": "20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2",
+  "revision": "f606b0d80e3189b56db29b8f48b4c0f1ad018375"
+}

@@ -178,7 +178,48 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
     - `examples/coverage.md` (extension 2) still describes the count as per path. It is the examples stream's file.
   - Everything left waits on jobs: N1's comparison job needs both benchmark outputs, N2 needs 052's job, and N3 needs
     109's.
-- Status: waiting on jobs 20261107-163057-vf-010-s-reproducer-before-the-fix-prici 20261107-165544-vf-010-s-reproducer-at-the-fix-pricing-t 20261107-165544-vf-010-s-integration-tests-at-the-fix-li 20261107-165544-vf-010-s-benchmark-at-the-fix-run-1-of-2 20261107-165544-vf-010-s-benchmark-at-the-fix-s-parent-r 20261107-165827-example-109-revisited-hex-todigit-s-regr 20261107-171502-vf-011-example-052-under-strict-on-the-o
+- **The seven jobs' results, read, and N1's benchmark pair resubmitted.** All ran on `vm-1` and were collected in
+  `rzmrlklw` (default line).
+  - **N1 (VF-010): its closing checks passed.** `-165544-…-reproducer-at-the-fix…` found the violation in 8 of 8
+    runs with the same numbers, and `-165544-…-integration-tests-at-the-fix…` had 64 passed, 0 failed. The
+    verification agent closed VF-010 with them. Its caveat: the reproducer before the fix (`-163057-…`) did not
+    reproduce on `vm-1` either (8 of 8 alike, so that job is recorded as failed). `vm-1` shows the fix stable, not the
+    cure of `cvm`'s timeouts.
+  - **N1's benchmark pair was stopped by the runner, not by the benchmark** (VF-021, raised by the verification
+    agent). The runner names a step's systemd scope `vjob-<id[:40]>-<step>` (`verification/pipeline.py`, `Step` and
+    its callers). Both ids begin `20261107-165544-vf-010-s-benchmark-at-th`, so the two steps had one unit name:
+    - the parent job's step, starting at 17:52:42, stopped "a leftover of the same name", which was the fix job's
+      running step (SIGTERM after 2m19s);
+    - the fix job's cleanup then stopped the parent's new step (SIGTERM after 0.2 s).
+
+    Both are resubmitted with their revisions pinned: `20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2`
+    (`--revision f606b0d8`, the fix) and `20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r`
+    (`--revision c307e721`, its parent). Their ids differ within 40 characters. Steps and outputs are unchanged, and
+    the descriptions name VF-021. This is N1's second attempt at the comparison: one more failure ends it by the
+    timebox.
+  - Next for N1: once both are collected, the quick comparison job over
+    `lib/target/benchmark-native-vf010-{fix,parent}.json`, which closes VF-021 with them.
+  - **N2 (VF-011): its closing check passed.** `-171502-…` gave "052#0: established, engine native, gaps [], modes
+    ['strict']". VF-011 closes when the verification agent records it. N2 is done here.
+  - **N3 (VF-015): the resubmission failed at step 3, for a reason outside replay.** JBMC now proves the old `toDigit`
+    for `ch == 1632`, the Character.digit model at work, so there is no witness to replay. The step passes no `--gaps`,
+    so strict applies, and jvmcontract refuses the proof. It reaches JBMC's stub of
+    `String.format(String, Object[])` (`jdk-static-method:…@jdk-25.0.5`), which returns null or any object. That is on
+    `toDigit`'s exception path. Steps 4 and 5 were skipped. Counted as N3's first failure.
+    - No commit of this stream can make the job pass:
+      - a model of `String.format` is in `lib/models/`, the jbmc stream's;
+      - giving the step `--gaps assume` or advised changes the check, which is the user's call.
+    - So N3 waits on one of those, recorded here for the main brief's for-review list.
+    - As read, `get_static_jdk` (`lib/src/interp/natives.rs:373`) still refuses `StandardCharsets`' fields. Hex's
+      `DEFAULT_CHARSET` reads `StandardCharsets.UTF_8`, so step 4's replay may meet it once step 3 passes. The brief
+      asks for that fix only if the replay fails the same way, so it is not done here.
+  - **For review:**
+    - The unit-name collision is the runner's (`verification/pipeline.py`, not this stream's). It also stopped the jbmc
+      stream's `20261107-172721-conformance-corpus-under-engine-auto-con` (SIGTERM at 17:55:32, when
+      `…-conformance-corpus-under-jbmc-and-engine` started), whose first 40 characters are the same. Any two jobs
+      submitted in the same second with titles alike in their first 24 characters can collide.
+    - Making the unit name unique, by the full id or a hash of it, is a one-line fix for whoever keeps the pipeline.
+- Status: waiting on jobs 20261107-183538-vf-010-s-benchmark-at-the-fix-run-1-of-2 20261107-183544-vf-010-s-benchmark-at-the-fix-s-parent-r
 
 ## Loop settings
 

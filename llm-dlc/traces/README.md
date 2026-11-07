@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 52, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 17:15 UTC |
-| Prompts | 1,395 |
-| Model calls | 14,181 |
-| Tool calls | 15,153 (279 failed) |
-| Compactions | 204 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 18:36 UTC |
+| Prompts | 1,401 |
+| Model calls | 14,209 |
+| Tool calls | 15,183 (280 failed) |
+| Compactions | 205 |
 | Subagents | 9 |
-| Tokens written | 16,214,097 |
-| Tokens read | 2,364,823,422 (98.0% from cache) |
-| Commits with a trace | 408 |
-| Log snapshots | 493 (1275.3 MB gzipped, 488 uploaded) |
+| Tokens written | 16,238,286 |
+| Tokens read | 2,367,095,486 (98.0% from cache) |
+| Commits with a trace | 409 |
+| Log snapshots | 494 (1276.2 MB gzipped, 488 uploaded) |
 
 ## Sessions
 
@@ -78,7 +78,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | ended | 3 h 57 min | `claude-opus-5-5` | 69 | 598 | 618 | 9 | 13 | 247,357 | 16 |
 | 2026-11-07 04:40 UTC | [Verification pipeline proof and model-checking queue](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 4 | 12 | 11 | 0 | 0 | 71,485 | 6 |
 | 2026-11-07 12:21 UTC | [2df7775c-45a1-40a7-924b-75602d8ad256](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 35 | 476 | 501 | 9 | 5 | 282,777 | 15 |
-| 2026-11-07 16:26 UTC | [2324d402-3f17-421a-8a85-5b6846d2c728](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) | open | 49 min | `claude-opus-5-5` | 20 | 142 | 140 | 2 | 4 | 154,452 | 4 |
+| 2026-11-07 16:26 UTC | [2324d402-3f17-421a-8a85-5b6846d2c728](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) | open | 2 h 10 min | `claude-opus-5-5` | 26 | 170 | 170 | 3 | 5 | 154,452 | 5 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -139,15 +139,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 546,334 | 1,208 | 2,255,146 | 87,569,918 | 97.5% | 164 |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 4,639 | 26 | 43,735 | 648,917 | 93.7% | 149 |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 339,102 | 976 | 1,254,533 | 85,418,727 | 98.6% | 256 |
-| [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) | 102,195 | 282 | 388,995 | 12,037,435 | 96.9% | 122 |
+| [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) | 126,384 | 340 | 519,367 | 14,179,069 | 96.5% | 116 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 13,203 | 87.1% | 52 |
-| `Read` | 736 | 4.9% | 27 |
-| `Edit` | 579 | 3.8% | 27 |
+| `Bash` | 13,231 | 87.1% | 52 |
+| `Read` | 737 | 4.9% | 28 |
+| `Edit` | 580 | 3.8% | 27 |
 | `Write` | 378 | 2.5% | 24 |
 | `ToolSearch` | 93 | 0.6% | 22 |
 | `Monitor` | 60 | 0.4% | 17 |
@@ -575,6 +575,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 406 | change `nrvtlrms` | VF-010: the own checker's branch probes are budgeted in solver conflicts, not seconds, so the path order is the same on every machine (verification pending) | [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) ([log](https://terminalvalue.net/raw-traces/2324d402-3f17-421a-8a85-5b6846d2c728/1ec9246346ce2ff2c4aafb30526d46628264c8bb34bd637180dfa7726360deb4.jsonl.gz)) |
 | 407 | change `vmxqyptp` | VF-015: example 109's replay job resubmitted unchanged at the native stream's commit (verification pending) | [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) ([log](https://terminalvalue.net/raw-traces/2324d402-3f17-421a-8a85-5b6846d2c728/1bd3c19813f0169232153c01a0d05e5ca6754c71edc15d4f57e44825d0284021.jsonl.gz)) |
 | 408 | change `qlkvoryr` | VF-011: the own checker counts a loop's unwinding per entry of the loop, so an inner loop gets --unwind iterations per outer iteration (verification pending) | [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) ([log](https://terminalvalue.net/raw-traces/2324d402-3f17-421a-8a85-5b6846d2c728/6ec8a60d346233862ce649b186737ca905fc3d8c2a3ba0d9c336d2ddce762cd0.jsonl.gz)) |
+| 409 | change `lqrtnusr` | VF-010's benchmark pair resubmitted with pinned revisions, after the runner stopped each with the other's scope (verification pending) | [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) ([log](https://terminalvalue.net/raw-traces/2324d402-3f17-421a-8a85-5b6846d2c728/cdd53ce3606e283a6271b0a2dd3c2facd64d138dc3cc4265d5b58d9067f0ad69.jsonl.gz)) |
 
 ## Logs
 
@@ -633,7 +634,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 17 | 17 | 41.4 MB | [`9a4c7376723a`](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/9a4c7376723a063bbe8d554629ec7593fb6464570becfffed3745912318daaa2.jsonl.gz) |
 | [`3ef2aade`](3ef2aade-2b55-4d9e-9079-651a4ca9023c/summary.md) | 3 | 3 | 0.4 MB | [`d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz) |
 | [`2df7775c`](2df7775c-45a1-40a7-924b-75602d8ad256/summary.md) | 15 | 14 | 19.3 MB | `3f768f3bb246`, not uploaded |
-| [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) | 4 | 0 | 1.9 MB | `6ec8a60d3462`, not uploaded |
+| [`2324d402`](2324d402-3f17-421a-8a85-5b6846d2c728/summary.md) | 5 | 0 | 2.9 MB | `cdd53ce3606e`, not uploaded |
 
 ## Session notes
 
