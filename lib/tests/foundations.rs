@@ -160,6 +160,42 @@ fn a_claim_whose_inputs_are_not_its_subjects_parameters_is_refused() {
     assert_eq!(o.verdict, Verdict::Verified, "{o:?}");
 }
 
+/// A claim's allocation bound is checked against what each version's code makes in one call, as its input-object
+/// bound is against the objects the run's inputs are made of: `alias-to-copy`'s `withQuantity` makes a `Quote` (and
+/// that constructor's exception), so under a bound of 0 for the new version the check is about calls outside the
+/// claim and stays unresolved, while under the golden bound it is refuted and `after`'s, which makes nothing, holds
+/// under a bound of 0.
+#[test]
+fn the_allocation_bound_is_checked_against_what_the_code_makes() {
+    if builds().is_none() {
+        return;
+    }
+    let golden_claim: CanonicalClaim = golden("kernel-claim");
+    let domain: ObjectDomain = golden("domain");
+    assert_eq!(golden_claim.domain.as_ref(), Some(&domain), "domain.json is the kernel claim's domain");
+    let with_quantity = |bound: Option<u32>| {
+        let mut claim = golden_claim.clone();
+        claim.contract.subject = "shop.Pricing#withQuantity".into();
+        let identity: Observation = serde_json::from_value(serde_json::json!({"kind": "identity", "left": "result", "right": "q"})).unwrap();
+        claim.contract.required.push(identity.id());
+        claim.observations.push(identity);
+        if let Some(b) = bound {
+            claim.domain.as_mut().unwrap().bounds.after.allocations = b;
+        }
+        claim
+    };
+    let zero = heap::check(&with_quantity(Some(0)), build("before"), build("alias-to-copy")).expect("supported");
+    assert_eq!(zero.verdict, Verdict::Unresolved, "{zero:?}");
+    let problem = zero.problem.clone().unwrap_or_default();
+    for part in ["new version", "2 objects", "allocation bound of 0"] {
+        assert!(problem.contains(part), "the problem doesn't say {part}: {problem}");
+    }
+    let golden_bound = heap::check(&with_quantity(None), build("before"), build("alias-to-copy")).expect("supported");
+    assert_eq!(golden_bound.verdict, Verdict::Refuted, "{golden_bound:?}");
+    let after = heap::check(&with_quantity(Some(0)), build("before"), build("after")).expect("supported");
+    assert_eq!(after.verdict, Verdict::Verified, "after's withQuantity makes nothing: {after:?}");
+}
+
 /// The observations part: the entry points' specs, and two builds compared into obligations.
 fn observations_part(report: &mut Report) {
     let golden_obs: Vec<Observation> = golden("observations");

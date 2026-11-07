@@ -41,4 +41,6 @@ the same responses and send the same events; each defect differs from `after` ex
 **The golden files** (`golden/`) are the joint example's IR in the shared types of `lib/src/spec/`: the entry point's
 preservation contract and claim, the kernel's contract, domain, correspondence and claim, `discount`'s own claim (over `gross` and `quantity`, which the kernel claim's `q` is not), the environment model, an
 outcome, a hints file, and `expected.json`, the verdict every case must reach. A stream may add to them; changing what
-one says is a note for the reconcile loop.
+one says is a note for the reconcile loop. The kernel domain (`domain.json`, the kernel claim's) lets the new version make
+2 objects in one call and the previous one none: `alias-to-copy`'s copy and the exception its constructor may throw,
+which the heap check counts against the bound. `after` and the other defects make nothing in the kernel.

@@ -276,9 +276,42 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   - Inline: `effects.rs` (17), `compare.rs` (1), `foundations.rs` (4), `heap.rs` (46, 9 ignored), `summaries.rs`
     (40) and the unit tests (203) pass. The build has no warnings.
   - Shared file: `lib/README.md`, one sentence added to the effect trace's cache paragraph.
-- Next: E4's last leftover, the golden domain's `allocations: 0`. E1's five jobs (`20261107-16515x`) and E2's two runs
-  are still pending. E2's third job follows once its two runs are collected.
-- Status: working
+- `qlkvoryr` (the native stream's session `2324d402`) has no manifest here either: another check error that isn't this
+  branch's.
+- **E4, the last leftover: fixed, so E4 is closed.** A claim's allocation bound is now checked by `spec::heap::check`.
+  The leftover says "against the domain the run states", but the run states no allocations: the own checker follows
+  every allocation within the unwinding bound and reports none. So the bound is checked the way the input-object bound
+  is checked against the objects the run's inputs are made of: against what each version's code makes in one call.
+  - **How it counts** (`allocations`, from the bytecode): each `new`, array instruction and `invokedynamic` of the
+    application code the call runs. Every branch counts, and so does every call, taking the most of the dispatch
+    targets and of the subject's overloads.
+  - What is made in a loop or a recursion has no bound. A recursion that makes nothing is 0.
+  - Not counted: what a JDK method makes (application code it calls back included), the JVM's own exceptions and
+    class initializers.
+  - **When it's exceeded:** code that may make more than a version's bound leaves the result unresolved and names
+    the count, as an input-object bound does. Verified results are held to it as well as refuted ones: an
+    execution outside the bound is outside the claim either way.
+  - **The alias-to-copy tension, decided:** its copy makes a `Quote`, and that constructor may throw an
+    `IllegalArgumentException`. That is 2 objects, against the golden bound of 0. The golden bound was the
+    wrong side: a regression claim has to let in the code it's checked on. So the golden kernel domain now lets
+    the new version make 2 (`kernel-claim.json` and `domain.json`, which stay equal). `after` and the other
+    defects make none, and `expected.json` is unchanged. **For the reconcile loop:** this changes what a golden
+    file says (the fixture README asks for a note). No example is affected: `compare` derives its claims with no
+    object domain.
+  - **Reproducer:** `foundations.rs`' `the_allocation_bound_is_checked_against_what_the_code_makes`. Under a bound
+    of 0 for the new version, alias-to-copy's `withQuantity` was refuted before the fix. It is unresolved after
+    the fix ("may make 2 objects … allocation bound of 0"). It is refuted under the golden bound, and `after`'s
+    is verified under 0.
+  - A unit test in `spec/heap.rs` compiles a small class and covers: nothing made, constructors with their
+    exceptions, both branches, arrays, loops with and without objects, recursion with and without objects (one
+    and two methods), and dispatch.
+  - Inline: `foundations.rs` (5, with the integration contract), `heap.rs` (46, 9 ignored), `compare.rs` (1),
+    `effects.rs` (17), `summaries.rs` (40) and the unit tests (204) pass. The build has no warnings.
+  - **Shared file:** `lib/README.md`. Its clause "the allocation bound is not checked" was no longer true, so it
+    is replaced, not just added to, with how the bound is checked.
+- Next: no item has inline work left. E1's five jobs (`20261107-16515x`) and E2's two runs (`20261107-164450-…`)
+  are pending. E2's third job follows once its two runs are collected.
+- Status: waiting on jobs 20261107-165152-example-147-b11-advised-contracts-a-cont 20261107-165152-example-148-b11-advised-contracts-full-j 20261107-165152-example-149-b11-contract-library-full-ji 20261107-165152-example-160-a-changed-refill-helper-prov 20261107-165153-example-161-a-refill-helper-aligned-to-t 20261107-164450-vf-014-h1-isolated-run-1-of-2-the-benchm 20261107-164450-vf-014-h1-isolated-run-2-of-2-the-benchm
 
 ## Loop settings
 
