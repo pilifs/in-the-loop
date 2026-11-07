@@ -34,6 +34,17 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Needs**: whoever owns the `Long.numberOfLeadingZeros` modelling in the own checker (the engine-priorities loop)
   fixes the encoding behind case `leadingZerosLong/2` or marks the case as expected-unsupported; then the job is
   resubmitted unchanged (`pipeline.py resubmit 20261107-032249-the-own-checker-s-encoding-timed-whole-p`).
+- **Update 2026-11-07 (cause found, fixed in the benchmark runner)**: the own checker's witness is right, and the JVM
+  replay misread it. Run inline, `jvmcontract prove ... 'conformance.Conformance#leadingZerosLong' --assert
+  'result < 64' --engine native --gaps strict` reports `leadingZerosLong(arg0=0)`, outcome 64, which the JVM bears out.
+  The tool writes a `long` input as a decimal string (`"0"`), and `lib/benchmark/run.py`'s `token()` took any
+  one-character string for a `char` and passed its code unit: `ord('0')`, 48, where `numberOfLeadingZeros(48)` is 58.
+  Every single-digit `long`, `float` or `double` witness, alone or in an array, was misread that way. This case is the
+  first in the corpus whose witness is one. `witness_arguments` now reads an input as a `char` only if its declared
+  type is one. `test_a_long_or_a_double_witness_of_one_digit_is_its_value_not_a_char` failed before the fix
+  (`48;[48,-2,55];53`) and passes after it. Step 2's check run by hand on the job's saved
+  `lib/target/benchmark-native.json`: 0 of 533 runs flagged, median ratio 0.963 (quartiles 0.871 to 1.006) over the 29
+  runs of 0.1 s or more, 31.5 s against 32.0 s over the 356 paired runs. Resubmitted unchanged.
 - **Tracked in**: the job's `logs/1-benchmark-own-checker-only.log`.
 - **Closes when**: the resubmitted job passes (no false alarm, no `phasesExcess`, median ratio at most 1.10).
 

@@ -12,20 +12,20 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-07T03:26:31.410Z",
-  "ended": "2026-11-07T03:30:13.113Z",
-  "duration_seconds": 222,
+  "ended": "2026-11-07T03:30:24.994Z",
+  "duration_seconds": 234,
   "stats": {
     "turns": 1,
-    "api_calls": 15,
+    "api_calls": 16,
     "tool_calls": 16,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 49406,
+    "peak_context_tokens": 51295,
     "usage": {
-      "input_tokens": 30,
-      "output_tokens": 4505,
-      "cache_read_input_tokens": 554009,
-      "cache_creation_input_tokens": 36287
+      "input_tokens": 32,
+      "output_tokens": 5190,
+      "cache_read_input_tokens": 603413,
+      "cache_creation_input_tokens": 38176
     }
   },
   "tools": {
@@ -37,24 +37,24 @@
     {
       "index": 0,
       "started": "2026-11-07T03:26:31.410Z",
-      "ended": "2026-11-07T03:30:13.113Z",
+      "ended": "2026-11-07T03:30:24.994Z",
       "turns": 1,
-      "api_calls": 15,
+      "api_calls": 16,
       "usage": {
-        "input_tokens": 30,
-        "output_tokens": 4505,
-        "cache_read_input_tokens": 554009,
-        "cache_creation_input_tokens": 36287
+        "input_tokens": 32,
+        "output_tokens": 5190,
+        "cache_read_input_tokens": 603413,
+        "cache_creation_input_tokens": 38176
       },
-      "peak_context_tokens": 49406
+      "peak_context_tokens": 51295
     }
   ],
   "log": {
-    "sha256": "923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40",
-    "bytes": 438427,
-    "lines": 116,
-    "gzip_bytes": 91801,
-    "path": "llm-dlc/traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/logs/923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40.jsonl.gz"
+    "sha256": "3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1",
+    "bytes": 448853,
+    "lines": 123,
+    "gzip_bytes": 93803,
+    "path": "llm-dlc/traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/logs/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -65,9 +65,23 @@
       "summary": "Record verification result for the own checker's encoding-timing job: it fails on a false alarm in leadingZerosLong/2 before the timing check runs (VF-012)",
       "body": "Job 20261107-032249 ran the 533 own-checker benchmark runs in 2m23s; the step exited 1 because conformance/leadingZerosLong/2 gets a spurious violation (witness 48, the JVM says it holds) in all three modes. The phasesExcess and slowdown comparison was skipped, though 0 of 533 runs carry phasesExcess in the saved JSON. Recorded as VF-012 in verification/findings.md with what would close it; nothing was resubmitted since it would fail the same way until the checker is fixed.",
       "log_sha256": "923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40"
+    },
+    {
+      "change_id": "rntlrwzlunmqnsowrymnkqzxwyqnunlo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The benchmark reads a single-digit long witness as its value, not as a char, and the encoding-timing job is rerun (verification pending)",
+      "body": "Job 20261107-032249 (VF-012) failed its first step on three false alarms, conformance/leadingZerosLong/2 under strict, assume and advised, with the witness 48. The own checker's witness is right: run inline, prove on Conformance#leadingZerosLong with 'result < 64' gives arg0=0, outcome 64, which the JVM bears out. The tool writes a long input as a decimal string (\"0\"), and lib/benchmark/run.py's token() took any one-character string for a char and passed its code unit, ord('0') = 48, where numberOfLeadingZeros(48) is 58. Every single-digit long, float or double witness, alone or in an array, was misread this way, and this case, new in the previous cycle, is the corpus's first such witness. witness_arguments now reads an input as a char only if its declared type is one. The tool writes a char as its code unit, a number, and Reference.java reads it so; no corpus witness is a string. Reproducer first: test_a_long_or_a_double_witness_of_one_digit_is_its_value_not_a_char gave 48;[48,-2,55];53 before the fix, and passes after it. test_run.py passes.\n\nThe job's own check, run by hand on its saved lib/target/benchmark-native.json, bears out the encoding fix. 0 of 533 own-checker runs are flagged phasesExcess (job 20261106-201041 flagged 1 of 356). The median ratio of seconds to -201041's is 0.963 (quartiles 0.871 to 1.006) over the 29 runs of 0.1 s or more, and the 356 paired runs took 31.5 s against 32.0 s. Job 20261107-033320-the-own-checker-s-encoding-timed-whole-p resubmits it unchanged at this commit, so that both steps pass in a job. VF-012 records the cause, and stays open until then.\n\nHousekeeping, at the user's request: the six loop run records only the two stream workspaces held were copied into llm-dlc/loop-summaries/ (checked identical), and ../in-the-loop-jbmc and ../in-the-loop-native were deleted. Before that, every file in each directory was compared by git blob hash with its stream's final commit (lukovtll, ulsslrtx). All 3,108 and 3,117 tracked files were identical, and none was missing. Of the untracked files, the 28 session logs were already here byte for byte. The rest was lib/target and __pycache__, which builds regenerate. engine-priorities.md's Progress flags for later that the run records, which are gitignored and unredacted, should be published through the redaction pipeline rather than by removing them from .gitignore. Its status is waiting on job -033320.",
+      "log_sha256": "3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1"
     }
   ],
   "logs": {
+    "3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1": {
+      "bytes": 448853,
+      "lines": 123,
+      "gzip_bytes": 93803,
+      "url": null
+    },
     "923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40": {
       "bytes": 438427,
       "lines": 116,

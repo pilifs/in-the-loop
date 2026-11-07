@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-033320-the-own-checker-s-encoding-timed-whole-p",
+  "title": "The own checker's encoding timed whole per word-level operation: the benchmark's own-checker runs, flagged phasesExcess and time against job 20261106-201041",
+  "description": "The own checker (lib/src/bmc/bits.rs) estimated its encoding phase by timing one in 64 operations at random and counting it 64 times over. Single gates (nanoseconds) and whole word-level circuits (a 32-bit multiplier is thousands of gates) were sampled from the same stream, and the seed is fixed, so a short run that sampled one large circuit counted it 64 times on every run: its encoding plus solving passed the run's own time, and Phases::excess flagged it phasesExcess (1 of 356 own-checker runs in job 20261106-201041, real/checksum/broken-property under advised; example 018's proof in jobs -231837 and -000039). Now every word-level operation is timed whole, and only single gates are sampled. A new unit test (the_encoding_estimate_does_not_count_a_large_circuit_many_times_over) put one multiplication among 256 cheap gates at each position: before the change, at position 74 the encoding was estimated at 0.063 s of 0.001 s; after it, every position is within the phases' tolerance. This job reruns the benchmark's own-checker runs (all modes, no JBMC) at this commit, then checks that no run is flagged and that timing each word-level operation (two clock reads, about 0.6 us on WSL2) made the runs no slower than job -201041 measured on the same machine, by the median ratio of seconds over runs of 0.1 s or more. The committed lib/benchmark results are not rewritten: the run writes under lib/target.",
+  "kind": "library",
+  "capabilities": [
+    "benchmark",
+    "own-checker",
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/bits.rs",
+      "lib/src/phases.rs",
+      "lib/benchmark"
+    ]
+  },
+  "expected": "exits 0: the benchmark runs, no own-checker run carries phasesExcess, and the median ratio of the own checker's seconds to job 20261106-201041's, over runs of 0.1 s or more, is at most 1.10. The second step prints the counts and the ratio's median and quartiles. A flagged run or a median above 1.10 is a finding to read, not a reason to change the tolerance.",
+  "submitted": {
+    "at": "2026-11-07T03:33:20+00:00",
+    "session": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+    "by": "claude (engine-priorities wrap-up)"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "30m",
+    "memoryLimit": "3G",
+    "timeout": "2h",
+    "notes": "the first run's step 1 took 143 s on vm-1 (533 own-checker runs); unchanged steps"
+  },
+  "steps": [
+    {
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+      "cwd": "."
+    },
+    {
+      "name": "compare with job 20261106-201041",
+      "run": "python3 - <<'PY'\nimport json, statistics, sys\nnew = [r for r in json.load(open(\"lib/target/benchmark-native.json\"))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(\"lib/benchmark/results.json\"))[\"runs\"] if r[\"engine\"] == \"native\"}\nflagged = [(r[\"case\"], r[\"mode\"], r[\"phasesExcess\"]) for r in new if r.get(\"phasesExcess\")]\nratios = [r[\"seconds\"] / old[(r[\"case\"], r[\"mode\"])][\"seconds\"] for r in new\n          if (r[\"case\"], r[\"mode\"]) in old and old[(r[\"case\"], r[\"mode\"])][\"seconds\"] >= 0.1]\nmedian = statistics.median(ratios)\nprint(f\"own-checker runs: {len(new)}; flagged phasesExcess: {len(flagged)} (job 20261106-201041: 1 of 356)\")\nfor f in flagged:\n    print(\"  flagged:\", *f)\nprint(f\"seconds against job 20261106-201041, runs of 0.1 s or more: {len(ratios)}, median ratio {median:.3f}, \"\n      f\"quartiles {statistics.quantiles(ratios, n=4)[0]:.3f} to {statistics.quantiles(ratios, n=4)[2]:.3f}\")\nsys.exit(0 if not flagged and median <= 1.10 else 1)\nPY",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/benchmark-native.json",
+    "lib/target/benchmark-native.md"
+  ],
+  "supersedes": "20261107-032249-the-own-checker-s-encoding-timed-whole-p"
+}

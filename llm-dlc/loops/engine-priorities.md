@@ -530,7 +530,9 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
      was `test_the_exporter_stops_at_the_first_failure`, which passed only on a machine with Langfuse configured; it
      now stubs the configuration and the project directory;
   8. the smaller ones the streams noted: ~~the sampled encoding flagging short runs `phasesExcess`~~ (fixed; job
-     `20261107-032249` pending). Single gates and whole word-level circuits were sampled one in 64 from one stream
+     `20261107-032249` failed on another cause, VF-012: the benchmark read a single-digit `long` witness as a `char`,
+     fixed in `run.py`. Read by hand from that job's output, 0 of 533 runs are flagged and the median ratio of seconds
+     is 0.963. Rerun `20261107-033320` pending). Single gates and whole word-level circuits were sampled one in 64 from one stream
      with a fixed seed, so a short run that sampled a multiplier counted it 64 times on every run. Each word-level
      operation is now timed whole and only single gates are sampled. Reproducer:
      `the_encoding_estimate_does_not_count_a_large_circuit_many_times_over` estimated 0.063 s of 0.001 s before the
@@ -547,7 +549,13 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   findings the user selects then. Cause 4's report has its evidence: job `-010728` gives `VERIFICATION FAILED` on
   both of `I.java`'s methods. Also for the user: a push. CaDiCaL 2.x on its own, to separate it from Bitwuzla's
   word-level gain, is below the brief's bar and not queued.
-- Status: waiting on jobs 20261107-032249
+- **Flagged for later (the user, 2026-11-07):** the loops' run records in `llm-dlc/loop-summaries/` (gitignored,
+  so local only) hold each run's instruction, commits and closing summary. The six records from the two stream
+  workspaces were copied there before `../in-the-loop-jbmc` and `../in-the-loop-native` were deleted. Each is 7 to 18
+  KB, but six of the seven hold unredacted local paths. So they should be published through the redaction pipeline,
+  as the traces are (into git beside each session's summary, or to R2 with the logs), rather than by removing them
+  from `.gitignore`. That is a change to `sync.py`, not made here.
+- Status: waiting on jobs 20261107-033320
 
 ## Loop settings
 

@@ -308,14 +308,16 @@ def formula_of(data):
     return out
 
 
-def token(value):
+def token(value, chars=True):
+    """A value as the JVM runners read an argument. A one-character string is a char, given as its code unit, only
+    where `chars` allows: the tool writes a long, float or double as a decimal string, so "0" of a long is 0."""
     if isinstance(value, bool):
         return "true" if value else "false"
     if value is None:
         return "null"
     if isinstance(value, list):
-        return "[" + ",".join(token(v) for v in value) + "]"
-    if isinstance(value, str) and len(value) == 1:
+        return "[" + ",".join(token(v, chars) for v in value) + "]"
+    if chars and isinstance(value, str) and len(value) == 1:
         return str(ord(value))
     return str(value)
 
@@ -368,7 +370,8 @@ def witness_arguments(data):
     inputs = witness.get("inputs")
     if inputs is None:
         return None
-    return ";".join(token(i.get("value")) for i in inputs)
+    # An input without a type is read as before; one with a type is a char only if it is declared one.
+    return ";".join(token(i.get("value"), chars=i.get("type", "char").startswith("char")) for i in inputs)
 
 
 def on_the_jvm(source, classpath_arguments, lines, build, name):

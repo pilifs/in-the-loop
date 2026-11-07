@@ -88,6 +88,14 @@ class WitnessTest(unittest.TestCase):
         self.assertEqual(run.witness_arguments(data), "[1,-2];true;97;null;-7")
         self.assertIsNone(run.witness_arguments({"counterexample": None}))
 
+    def test_a_long_or_a_double_witness_of_one_digit_is_its_value_not_a_char(self):
+        # The tool writes a long, float or double as a decimal string, and a char as its code unit: "0" of a long is
+        # 0, not '0' (48), as job 20261107-032249 read conformance/leadingZerosLong/2's witness.
+        data = {"counterexample": {"inputs": [{"type": "long", "value": "0"}, {"type": "long[]", "value": ["0", "-2", "7"]},
+                                              {"type": "double", "value": "5"}, {"type": "char", "value": 97},
+                                              {"type": "char", "value": "a"}]}}
+        self.assertEqual(run.witness_arguments(data), "0;[0,-2,7];5;97;97")
+
 
 class MeasureTest(unittest.TestCase):
     def test_peak_memory_counts_the_processes_a_run_waits_for(self):
