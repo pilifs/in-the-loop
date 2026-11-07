@@ -1,0 +1,227 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-155804-alignment-a3-second-half-every-proposal",
+  "title": "Alignment A3, second half: every proposal for examples 121-139 checked by the regression proof, and scored",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 50.7s, peak 479.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (proofs over 121-139) was held back 36.3s by its 1-CPU quota in 50.7s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-155804-alignment-a3-second-half-every-proposal.json",
+    "sha256": "a5a34ec855786545f46704cdaa522dd052ed1b5ec95122b6a3e37f465911b498",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-155804-alignment-a3-second-half-every-proposal",
+      "title": "Alignment A3, second half: every proposal for examples 121-139 checked by the regression proof, and scored",
+      "description": "jvmcontract align --prove (new, lib/src/alignment/proofs.rs) runs the regression check (equivalence, as a caller) on every complete mapping align proposes for a pair, with the flags it amounts to, collapses proved mappings that give the old version the same observations, and settles the pair: one proved (evidence for its claim key, intent still proposed), several (a question), or none (each tried with its counterexample). examples/tools/alignment.py score --step proofs runs it on each of the 19 regression examples 121-139 for the table's pair, under the example's own scope (--unchanged-unless) and proof options (engine, gaps, unwind, as build.py gives them), and scores the outcome against the example's verdict: a verified example's hand-written mapping should be the one proved; a violation should leave no mapping proved. Any other proved mapping is 'wrong and accepted', the worst outcome (a mapping hiding a regression). It writes the score to examples/tools/alignment/scores/A3-proofs.json and the page.",
+      "kind": "other",
+      "capabilities": [
+        "B9",
+        "jvmcontract:align",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/alignment/proofs.rs",
+          "examples/tools/alignment.py"
+        ]
+      },
+      "expected": "exits 0; the printed A3-proofs tally: 'proof, verified' 10 found (121, 123, 125, 127, 129, 131, 133, 135, 137, 138; 123's relation proved but still a person's decision), 'proof, violation' 9 found (122, 124, 126, 128, 130, 132, 134, 136, 139: none proved, counterexamples shown), nothing wrong, and wrongAndAccepted empty in scores/A3-proofs.json. Any example listed under wrongAndAccepted is a finding for the alignment stream.",
+      "submitted": {
+        "at": "2026-11-07T15:58:04+00:00",
+        "session": "11f93b59-b830-4090-8775-33313957ef5c",
+        "by": "claude-opus-5-5"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "19 javac compiles (about 40 s inline) and one proof per proposal, about 35 proofs; the recorded proofs of these examples take 0.1 s to 15 s each"
+      },
+      "steps": [
+        {
+          "name": "proofs over 121-139",
+          "run": "python3 examples/tools/alignment.py score --step proofs --record",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/tools/alignment/scores/A3-proofs.json",
+        "examples/tools/alignment/README.md"
+      ],
+      "supersedes": "20261107-053806-alignment-a3-second-half-every-proposal"
+    }
+  },
+  "sourceCommit": "13f8ae44ec0e01361af2a20ee1d9b577860b56f8",
+  "startedAt": "2026-11-07T16:26:58+00:00",
+  "finishedAt": "2026-11-07T16:27:49+00:00",
+  "wallSeconds": 51.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4015008,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "19 javac compiles (about 40 s inline) and one proof per proposal, about 35 proofs; the recorded proofs of these examples take 0.1 s to 15 s each"
+  },
+  "usage": {
+    "peakMemoryBytes": 502669312,
+    "wallSeconds": 50.7,
+    "cpuSeconds": 49.5,
+    "memoryOfEstimate": 0.23,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "proofs over 121-139",
+      "run": "python3 examples/tools/alignment.py score --step proofs --record",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 50.723,
+      "cpuSeconds": 49.493,
+      "cpuThrottledSeconds": 36.26,
+      "peakMemoryBytes": 502669312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-proofs-over-121-139.log",
+        "lines": 41,
+        "bytes": 9512,
+        "sha256": "54fe9bb2732d7b7ace1a2103d1518436b6c16ada6a05ca8d4159e7e539b13c07",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "121  found   proof, verified         {\"previousArguments\": \"tsA, nodeA, tsB, nodeB\"}: #1 of 1 proved: {\"before_arguments\": \"tsA, nodeA, tsB, nodeB\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "122  found   proof, violation        {\"previousSymbol\": \"net.terminalvalue.crosscut.cache.Expiry#isExpired\", \"resultsAgreeWhen\": \"previous == (result <= 0)\"}: none of 6 proved",
+        "123  found   proof, verified         {\"previousSymbol\": \"net.terminalvalue.crosscut.cache.Expiry#isExpired\", \"resultsAgreeWhen\": \"previous == (result <= 0)\"}: #1 of 6 proved: {\"before_target\": \"net.terminalvalue.crosscut.cache.Expiry#isExpired\", \"results_agree_when\": \"previous == (result <= 0)\"}; st",
+        "124  found   proof, violation        {}: none of 1 proved",
+        "125  found   proof, verified         {}: #1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "126  found   proof, violation        {}: none of 1 proved",
+        "127  found   proof, verified         {}: #1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "128  found   proof, violation        {\"previousSymbol\": \"net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit\", \"previousArguments\": \"this.start, this.size, failedIndex\"}: none of 1 proved",
+        "129  found   proof, verified         {\"previousSymbol\": \"net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit\", \"previousArguments\": \"this.start, this.size, failedIndex\"}: #1 of 1 proved: {\"before_target\": \"net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit\", \"before_arguments\": \"thi",
+        "130  found   proof, violation        {\"previousArguments\": \"new Backoff(this.baseMillis, this.capMillis), attempt\"}: none of 1 proved",
+        "131  found   proof, verified         {\"previousArguments\": \"new Backoff(this.baseMillis, this.capMillis), attempt\"}: #1 of 1 proved: {\"before_arguments\": \"new Backoff(this.baseMillis, this.capMillis), attempt\"}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "132  found   proof, violation        {}: none of 1 proved",
+        "133  found   proof, verified         {}: #1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "134  found   proof, violation        {\"previousArguments\": \"new Window(this.startNanos, this.count), nowNanos, windowNanos\", \"resultsAgreeWhen\": \"previous.startNanos == result.startNanos && previous.count == result.count\"}: none of 1 proved",
+        "135  found   proof, verified         {\"previousArguments\": \"new Window(this.startNanos, this.count), nowNanos, windowNanos\", \"resultsAgreeWhen\": \"previous.startNanos == result.startNanos && previous.count == result.count\"}: #1 of 1 proved: {\"before_arguments\": \"new Window(this.startNanos, this.count",
+        "136  found   proof, violation        {}: none of 1 proved",
+        "137  found   proof, verified         {}: #1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "138  found   proof, verified         {}: #1 of 1 proved: {}; standalone: this relation is proved; whether it is the intended one is unconfirmed",
+        "139  found   proof, violation        {}: none of 1 proved",
+        "proof, verified: 10 found, 0 asked, 0 wrong, 0 missed",
+        "proof, violation: 9 found, 0 asked, 0 wrong, 0 missed",
+        "  121: net.terminalvalue.quorum.replication.LastWriterWins#winner -> net.terminalvalue.quorum.replication.LastWriterWins#winner: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  122: net.terminalvalue.crosscut.cache.Expiry#isExpired -> net.terminalvalue.crosscut.cache.Expiry#remainingMillis: no mapping proved, 6 tried: #1 refuted by remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0) (before false, after 0); #2 refuted by remainingMillis(writtenAtNanos=3472487282229",
+        "  123: net.terminalvalue.crosscut.cache.Expiry#isExpired -> net.terminalvalue.crosscut.cache.Expiry#remainingNanos: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  124: net.terminalvalue.crosscut.kafka.Partitioner#partitionFor -> net.terminalvalue.crosscut.kafka.Partitioner#partitionFor: no mapping proved, 1 tried: #1 refuted by partitionFor(hash=-1, numPartitions=3) (before 1, after 2)",
+        "  125: net.terminalvalue.crosscut.security.JwtTimestamps#valid -> net.terminalvalue.crosscut.security.JwtTimestamps#valid: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  126: net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: no mapping proved, 1 tried: #1 refuted by delayMillis(this=Backoff[baseMillis=8192, capMillis=8192], attempt=50) (before 8192, after -9223372036854775808)",
+        "  127: net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  128: net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit -> net.terminalvalue.crosscut.kafka.Batch#offsetToCommit: no mapping proved, 1 tried: #1 refuted by offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1) (befo",
+        "  129: net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit -> net.terminalvalue.crosscut.kafka.Batch#offsetToCommit: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  130: net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: no mapping proved, 1 tried: #1 refuted by delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2",
+        "  131: net.terminalvalue.crosscut.retry.Backoff#delayMillis -> net.terminalvalue.crosscut.retry.Backoff#delayMillis: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  132: net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter -> net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter: no mapping proved, 1 tried: #1 refuted by tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1) (before 0, after 1)",
+        "  133: net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter -> net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  134: net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: no mapping proved, 1 tried: #1 refuted by counted(this=Window[startNanos=0, count=0, previousCount=0], nowNanos=2, windowNanos=1), previously counted(this=Window[startNanos=0, count=0],",
+        "  135: net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  136: net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: no mapping proved, 1 tried: #1 refuted by counted(this=Window[startNanos=0, count=0], nowNanos=1, windowNanos=3) (before Window[startNanos=0, count=1], after Window[startNanos=1, count=",
+        "  137: net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  138: net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: #1 proved, intent still proposed (standalone: this relation is proved; whether it is the intended one is unconfirmed)",
+        "  139: net.terminalvalue.crosscut.ratelimit.Window#counted -> net.terminalvalue.crosscut.ratelimit.Window#counted: no mapping proved, 1 tried: #1 refuted by counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1) (before Window[startNanos=2147483648, count=1], after throws Il"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/tools/alignment/scores/A3-proofs.json",
+      "change": "modified",
+      "bytes": 12449,
+      "sha256": "b4a957c9f5425e2a3e8d5252ce5680c4d3d149506f1a7e2c65499afc993c2f8c",
+      "sourceSha256": "5419fb49a5abf2c4e3ad3697ce8c86dc5a188bab39c24310a88a788590cc34e6"
+    },
+    {
+      "path": "examples/tools/alignment/README.md",
+      "change": "modified",
+      "bytes": 28399,
+      "sha256": "9af4955290cfcdcbdce627f698b18f845cba588012f4a3bb7364b347b1416a2b",
+      "sourceSha256": "c38be4f7430a5b888c0c7ea01f5538fabcde78210c681051541b87cb3a73a064"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T16:28:00+00:00",
+    "applied": [
+      "examples/tools/alignment/scores/A3-proofs.json",
+      "examples/tools/alignment/README.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "33ed1f9046abb0a4c091cce531f2c6d61ffba3e9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/33ed1f9046abb0a4c091cce531f2c6d61ffba3e9/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

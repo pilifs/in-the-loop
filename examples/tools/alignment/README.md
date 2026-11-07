@@ -138,6 +138,18 @@ Every part that isn't found:
 | 122 | result changed | `previous == (result <= 0)` | asked | changed, a question: previous == (result <= 0) \| previous == (result < 0) \| previous == (result == 0) \| previous == (result != 0) \| previous == (result > 0) \| previous == (result >= 0) |
 | 123 | result changed | `previous == (result <= 0)` | asked | changed, a question: previous == (result <= 0) \| previous == (result < 0) \| previous == (result == 0) \| previous == (result != 0) \| previous == (result > 0) \| previous == (result >= 0) |
 
+**A3-proofs** (2026-11-07, `jvmcontract` sha256:a160795f1fb8…; [A3-proofs.json](scores/A3-proofs.json)). Wrong and accepted: none.
+
+| Part | found | asked | wrong | missed |
+|---|---|---|---|---|
+| proof, verified | 10 | 0 | 0 | 0 |
+| proof, violation | 9 | 0 | 0 | 0 |
+
+Every part that isn't found:
+
+| Example | Part | Table | Score | Proposed |
+|---|---|---|---|---|
+
 <!-- scores:end -->
 
 ## The table
