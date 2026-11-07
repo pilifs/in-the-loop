@@ -238,7 +238,25 @@ A model change in `lib/models/` is the jbmc stream's. If you need one, say so un
     `index.json`, `traces/README.md`, `traces/metrics.json`), not in this stream's files.
   - Left: N1 waits on this job. N2 is done. N3 waits on a `String.format` model (the jbmc stream's) or the user's
     decision on step 3's gap mode, as recorded above.
-- Status: waiting on jobs 20261107-184603-vf-010-s-benchmark-compared-the-own-chec
+- **N1 done: the comparison passed.** Job `20261107-184603-vf-010-s-benchmark-compared-the-own-chec` (at
+  df6b1c2e, `vm-1`, 0.2 s) found both outputs by their recorded sha256 and gave 557 own-checker runs, 0 new, 0 gone,
+  0 verdicts changed, 0 formulas grown past 10%, 0 paths or merges changed. The verification agent closed VF-021 with
+  it. VF-010 was already closed by the reproducer and integration-test jobs, so N1 is finished.
+  - **N2** is done here. `findings.md` still lists VF-011 as open: recording `-171502-…`'s pass is the verification
+    agent's.
+  - **N3 (VF-015) is blocked on the user.** Its last run (`20261107-165827-…`) failed at step 3, not at replay. JBMC
+    proves the old `toDigit`, but under strict jvmcontract refuses the proof, because it reaches JBMC's stub of
+    `String.format(String, Object[])` on `toDigit`'s exception path. The main brief's rule for a check that can't pass
+    for a reason outside the item is to defer it to the user, not to rewrite it. So this stream doesn't resubmit it,
+    and the timebox's second attempt isn't spent. One of these unblocks it:
+    - the user decides that step 3 runs with `--gaps assume` or advised (a change to the check, so the user's call);
+      or
+    - a model of `String.format` in `lib/models/`. That is the jbmc stream's file, and its brief doesn't plan one.
+
+    Either way, the next attempt is a resubmission at that commit, and it is N3's second and last. If step 4's replay
+    then fails on `StandardCharsets.UTF_8` (`lib/src/interp/natives.rs:373`), that is the interpreter fix the brief
+    names.
+- Status: blocked: N3 (VF-015) needs the user's decision on step 3's gap mode (strict refuses JBMC's String.format stub), or a String.format model from the jbmc stream; N1 and N2 are done
 
 ## Loop settings
 
