@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5",
+  "title": "VF-018 triage: what JBMC is given for H5's objects.Kernel#price under a correspondence, and whether a smaller bound lets it finish",
+  "description": "VF-018 (verification/findings.md): three of H5's regression proofs over objects under a correspondence (objects.Kernel#price, lines.Lines#reprice, orders.Orders#reprice in lib/tests/heap.rs) get no verdict from JBMC within 600 s, nor within 1800 s; the own checker proves each. The user decided on 2026-11-07 to triage the harness and keep the tests' expectation. This job measures one of the three, objects.Kernel#price, the first case of the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm. verification/triage/vf018.sh (1) runs that ignored test with JBMC behind a wrapper that records each command line, and a 120 s limit per run (the test is expected to fail; it leaves the harness and the commands), (2) measures the first proof command's harness (classes, bytecode instructions) and goto program, and (3) reruns that command directly with --verbosity 8, each under 900 s: as given, at --unwind 8, 4 and 2 where smaller than given, and with --slice-formula. It changes no test, option or expectation. The summary (program size, VCCs, variables and clauses, symex and solver times, which runs finish) says where JBMC's time goes, which decides the change to the harness encoding that comes next. Its plumbing was checked inline with stand-in jbmc and cargo commands.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "verification/triage/vf018.sh",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0 and writes lib/target/vf018/summary.txt with a line per JBMC run; no verdict is required of any run. The test in step 1 fails, as VF-018 records, and does not fail the job",
+  "submitted": {
+    "at": "2026-11-07T22:45:23+00:00",
+    "session": "2d24d762-29a6-4514-a681-485fd10f1c7e",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "75m",
+    "memoryLimit": "6G",
+    "timeout": "2h30m",
+    "notes": "step 1 is the output relations test with a 120 s limit per JBMC run (10 cases, some with stage runs: up to about 25 min); step 3 is up to five JBMC runs of at most 900 s each. VF-018's reruns peaked at 1.6 GiB"
+  },
+  "steps": [
+    {
+      "name": "VF-018 triage",
+      "run": "bash verification/triage/vf018.sh",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/vf018/summary.txt",
+    "lib/target/vf018/proof-command.txt"
+  ]
+}

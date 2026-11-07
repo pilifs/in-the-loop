@@ -86,6 +86,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   JBMC on one of the three generated harnesses with its statistics, then on smaller encodings (fewer objects, a
   tighter unwind, the equations as assumptions). If one finishes, the harness generator adopts it and the three jobs
   are resubmitted unchanged.
+- **Triage queued** 2026-11-07: job `20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5` runs
+  `verification/triage/vf018.sh` on `objects.Kernel#price`. It records the commands the test gives JBMC, measures the
+  harness and goto program, and reruns the first proof with JBMC's statistics, as given and at `--unwind` 8, 4 and 2
+  and with `--slice-formula`, 900 s each. The encoding to try next (fewer objects, the equations as assumptions)
+  follows from where its time goes.
 
 ### VF-015: example 109's old `toDigit` refuted, but its witness can't be replayed: the interpreter can't read `StandardCharsets.UTF_8`
 
