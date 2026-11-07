@@ -517,8 +517,54 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     field relations, the `correspondence` option's doc), `statement.rs` (the objects' words under a field relation),
     `lib/README.md` (step 5, `differs`, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (the `rounded` build,
     the relation test's words for `field:l.quantity` changed to the new refusal).
-- Next: H5's rest, fourth step: an input equation's expression over several of the new version's parameters,
-  primitives among them (`old.q.total == new.q.price * new.n`), made before the call and compared after it.
+- **H5's rest, fourth step (2026-11-07): input equations that read the new version's primitive parameters.** A
+  computed equation's expression may read the new version's primitive parameters (integral or `boolean`) beside the
+  object's leaves, or only them: a `Line(long total)` that now holds its unit price, `Line(long price)`, with a count
+  both versions take, is related by `old.l.total == new.l.price * new.n`, and `old.l.count == new.n` is an
+  expression too. A read of a parameter is a [`harness::Read`](../../lib/src/harness/mod.rs) with `param`, resolved
+  to its flat parameter by `Layout::new`; the harness makes the previous object from it before the calls (`new
+  before.lines.Line((long) (l_price * n))`) and compares the expression over the new object's paths and the
+  parameter as the call got it after them; the replay, the views and the `--json` call read it too. A result of the
+  same pair of classes is not compared under such an equation, which is about the parameter in this call. In
+  `spec::heap::check` it is a computed equation, refused about an input the contract anchors unless a person stated
+  it ([`spec::heap::anchored`](../../lib/src/spec/heap.rs); `is_computed` now counts `old.l.count == new.n`). Refused
+  by name: a parameter the new version doesn't have, an object parameter read as a whole, the fields of several
+  object parameters, a parameter of a floating type; `roots` gives no new root for an expression over parameters
+  alone, which is about the parameter in the previous one's place.
+  - Evidence inline: `lib/tests/heap.rs`, a line kernel (`lines.Line`, `lines.Lines`) and two tests: `discounted`
+    and `reprice` verified, the harness's source and the observations' words checked; a discount from the eleventh
+    item refuted in the result and a unit price set to the line's amount refuted in `field:l, field:l.total`, both
+    on the JVM; an unknown parameter and the object read as a whole named. Through `spec::heap::check`: refused
+    where the contract anchors `l`; under a stated derivation, verified on the rewrite, the discount defect refuted,
+    and the reprice defect outside a claim that doesn't require `field:l.total` and refuted by one that does. A unit
+    test (the reads, the layout's flat index, the text, six refusals, expressions over parameters alone). A first
+    `raise` example (`l.total += by * n` against `l.price += by`) ran out of the solver's time on the own checker
+    in both tests of one run, since it needs `(p + b) * n == p * n + b * n` over 64 bits: an example too hard for the engine, not a
+    defect of this step, replaced by `reprice`. Unit tests (197), `heap.rs` (38), `foundations.rs` and
+    `conformance.rs` pass; `integration.rs` passes run one test at a time (64, 106 s), and alone each test passes.
+  - Found, not caused by this step: run with its tests in parallel, `integration.rs` fails in
+    `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs`, the own checker giving no verdict on the
+    `Pricing#total` rounding refactor after 600 s (`0 of 2 divisions built in full, 8 solver calls`) where alone it
+    refutes it in 2 s (`1 of 2 divisions built in full, 13 solver calls`), on an identical harness. The parent
+    commit `vzwuvxyo` fails the same way (once passed in 22 s, then failed with the same summary). The cause is in
+    `bmc/mod.rs`: `Engine::probe` gives a branch's other side as long as the solver calls so far took, at least a
+    second, by the wall clock, so under CPU contention a probe leaves a side undecided, and deciding it at the end
+    with the division still lazy does not finish. A verdict that depends on the machine's load is honest
+    (unverifiable, never wrong) but not reproducible; a fix would budget probes by the solver's own work
+    (conflicts or propagations) instead of time, with this case under parallel load as its test.
+  - The jbmc unit test `a_run_is_limited_and_goes_first_when_memory_runs_out` failed once, run beside other suites,
+    and passed when rerun.
+  - *For review*: quick job `20261107-092158` (no runner was active), the new ignored test in `heap.rs`, the four
+    checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `after` verified for `discounted` and
+    `reprice`, `defect` refuted for both with witnesses run on a JVM.
+  - Not yet: an expression over another object parameter's fields; a parameter of a floating type; the previous
+    version's parameters other than the related object given by expressions (its primitives stay identical).
+  - Shared files changed: `equivalence.rs` (the new parameters passed to `relate`, `roots`' empty new root, results
+    not related by an equation that reads a parameter), `lib/README.md` (step 5, `spec::heap::check`'s paragraph),
+    `lib/tests/heap.rs` (the line kernel).
+- Next: H5's rest, fifth step: an output relation for an identity relation under a correspondence
+  (`identity:result==q`, a boolean over `old.result == old.q` and `new.result == new.q`), compared in place of "holds
+  before iff it holds now" and accounted as the field relations are.
 - Status: working
 
 ## Loop settings

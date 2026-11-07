@@ -12,30 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.557Z",
-  "ended": "2026-11-07T08:54:46.743Z",
-  "duration_seconds": 17607,
+  "ended": "2026-11-07T10:28:26.509Z",
+  "duration_seconds": 23227,
   "stats": {
-    "turns": 65,
-    "api_calls": 882,
-    "tool_calls": 923,
-    "tool_errors": 6,
-    "compactions": 12,
+    "turns": 70,
+    "api_calls": 998,
+    "tool_calls": 1042,
+    "tool_errors": 7,
+    "compactions": 13,
     "peak_context_tokens": 329169,
     "usage": {
-      "input_tokens": 1780,
-      "output_tokens": 753453,
-      "cache_read_input_tokens": 163589196,
-      "cache_creation_input_tokens": 2967940
+      "input_tokens": 2016,
+      "output_tokens": 829842,
+      "cache_read_input_tokens": 187127907,
+      "cache_creation_input_tokens": 3244675
     }
   },
   "tools": {
-    "Bash": 777,
-    "Read": 83,
+    "Bash": 885,
+    "Read": 87,
     "Edit": 46,
-    "Monitor": 5,
-    "ToolSearch": 5,
+    "Monitor": 8,
+    "ToolSearch": 7,
     "Write": 5,
-    "TaskStop": 2
+    "TaskStop": 4
   },
   "files_touched": [
     "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryThrottling.java",
@@ -221,24 +221,38 @@
     {
       "index": 12,
       "started": "2026-11-07T08:35:43.674Z",
-      "ended": "2026-11-07T08:54:46.743Z",
-      "turns": 4,
-      "api_calls": 51,
+      "ended": "2026-11-07T08:55:21.506Z",
+      "turns": 5,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 102,
-        "output_tokens": 54109,
-        "cache_read_input_tokens": 8707046,
-        "cache_creation_input_tokens": 232668
+        "input_tokens": 108,
+        "output_tokens": 56107,
+        "cache_read_input_tokens": 9454972,
+        "cache_creation_input_tokens": 240666
       },
-      "peak_context_tokens": 245747
+      "peak_context_tokens": 253745
+    },
+    {
+      "index": 13,
+      "started": "2026-11-07T08:55:53.452Z",
+      "ended": "2026-11-07T10:28:26.509Z",
+      "turns": 4,
+      "api_calls": 113,
+      "usage": {
+        "input_tokens": 230,
+        "output_tokens": 74391,
+        "cache_read_input_tokens": 22790785,
+        "cache_creation_input_tokens": 268737
+      },
+      "peak_context_tokens": 281816
     }
   ],
   "log": {
-    "sha256": "4aec40d690655a301ce32fdd6fa9dbae6e1dfc7e4ad91e4cbd63a8e2f896a37d",
-    "bytes": 27628834,
-    "lines": 9487,
-    "gzip_bytes": 5347013,
-    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/4aec40d690655a301ce32fdd6fa9dbae6e1dfc7e4ad91e4cbd63a8e2f896a37d.jsonl.gz"
+    "sha256": "10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054",
+    "bytes": 30427217,
+    "lines": 10611,
+    "gzip_bytes": 5822269,
+    "path": "llm-dlc/traces/750c8a36-92b9-44e3-adad-ef96dc6aa676/logs/10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -361,9 +375,23 @@
       "summary": "Output relations for an object parameter's field as the calls leave it, compared in place of the input equations about its path, and accounted as the result's are (H5's rest, third step; verification pending)",
       "body": "A correspondence's output relation for field:p.cents (a previous version's path; field:p for the whole object) is now a boolean over primitive field paths of that parameter's two objects, old.p.… and new.p.…, compared in the harness after the calls in place of the input equations about the path or under it. Those equations still make the previous object and are still assumed of the two objects as made. A raise that now rounds up to whole dollars is related by new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && … < 100. The replays evaluate it on both objects' paths as left, and a witness it fails on differs in field:p.cents. A counterexample's differs now also names each previous version's path its correspondence views read differently (field:p and field:p.cents), so a claim that requires a path can be refuted in it. In spec::heap::check a field relation bears on required observations at, under and above its path: unresolved until a person approves the change of its path or one above it, then changed with approval if proved and refuted if broken. Relations for a parameter no input equation relates, an unknown path, overlapping paths, another parameter, or not a boolean are refused by name.\n\nVerified inline: lib/tests/heap.rs adds a rounded build of the price kernel and two tests (rounding up refuted under the equation alone and verified under the relation, the harness's source and the observations' words checked; the exact raise verified; the dropped carry refuted in field:p.cents on the JVM; the claim's accounting unresolved, approved, refuted, and an unrelated approval approving nothing), and two unit tests. Unit tests (196), heap.rs (36), foundations.rs, conformance.rs and integration.rs (64) pass.\n\nJob 20261107-085410-output-relations-for-an-object-parameter (quick, priority 10, for review): the new ignored test in heap.rs, the four checks under --engine jbmc and auto --confirm; expected exit 0 with the own checker's verdicts and every witness run on a JVM.",
       "log_sha256": "4aec40d690655a301ce32fdd6fa9dbae6e1dfc7e4ad91e4cbd63a8e2f896a37d"
+    },
+    {
+      "change_id": "syuyoumvqtqprsyyxzpxutmnxlpnvmko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Input equations whose expression reads the new version's primitive parameters, made before the call and compared after it (H5's rest, fourth step; verification pending)",
+      "body": "A correspondence's input equation may now compute the previous version's field from the new object's leaves and the new version's primitive parameters, or from the parameters alone: a Line(long total) that now holds its unit price, Line(long price), with a count both versions take, is related by old.l.total == new.l.price * new.n. A read of a parameter is a harness::Read with param set, resolved to its flat parameter by Layout::new. The harness makes the previous object from it before the calls (new before.lines.Line((long) (l_price * n))) and compares the expression over the new object's paths and the parameter as the call got it after them. The interpreter's replay, the correspondence views and the --json call read it too. A result of the same pair of classes is not compared under such an equation. In spec::heap::check it counts as a computed equation, so it is refused about an input the contract anchors unless a person stated it; old.l.count == new.n now counts as computed as well. Refused by name: a parameter the new version doesn't have, an object parameter read as a whole, the fields of several object parameters, and a parameter of a floating type.\n\nVerified inline: a line kernel in lib/tests/heap.rs with two tests. discounted and reprice are verified, with the harness's source and the observations' words checked. A discount from the eleventh item is refuted in the result, and a unit price set to the line's amount is refuted in field:l.total, both on a JVM. Through spec::heap::check the equation is refused where the contract anchors l, and under a stated derivation it verifies the rewrite and refutes the defects. One new unit test covers the reads, the layout's flat index, the text and the refusals. The unit tests (197), heap.rs (38), foundations.rs and conformance.rs pass. integration.rs passes with one test at a time; run in parallel, the_tools_own_checker_agrees_with_jbmc_on_integer_proofs fails on the parent commit as well. The cause is timing-dependent behaviour in the engine (Engine::probe budgets a probe by the wall clock), recorded under the heap brief's Progress with the evidence and a proposed fix.\n\nJob 20261107-092158 (quick, priority 10, for review since no runner was active) runs the new ignored test, the four checks under --engine jbmc and auto --confirm. It is expected to exit 0: after verified for discounted and reprice, and defect refuted for both with witnesses run on a JVM.",
+      "log_sha256": "10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054"
     }
   ],
   "logs": {
+    "10cc866a23bcd0dc7a95a47e5d142348d222ed0f4c0348dd84ec740ebbe3f054": {
+      "bytes": 30427217,
+      "lines": 10611,
+      "gzip_bytes": 5822269,
+      "url": null
+    },
     "258e92c5caf65b803ca36ab16528b1883a34ce9cf1df30f4e42e97e3f61f597f": {
       "bytes": 7113333,
       "lines": 2576,

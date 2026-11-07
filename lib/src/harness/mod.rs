@@ -231,23 +231,36 @@ pub enum Piece {
     Read(usize),
 }
 
-/// A field path a [`Computed`] expression reads: `dollars`, of the type `ty`, which is the new construction's leaf of
-/// index `leaf`.
+/// What a [`Computed`] expression reads: a field path of the new object, `dollars`, of the type `ty`, which is the
+/// new construction's leaf of index `leaf`; or, where `param` (H5's rest), the new version's primitive parameter
+/// named `path`, `n`, which is the flat parameter of index `leaf` once [`Layout::new`] lays the parameters out.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Read {
     pub path: String,
     pub ty: Type,
     pub leaf: usize,
+    pub param: bool,
 }
 
 impl Computed {
-    /// The expression written with each read as `name(path)`: `q.dollars * 100 + q.cents` for `|p|
-    /// format!("q.{p}")`.
+    /// The expression written with each read of a field path as `name(path)`: `q.dollars * 100 + q.cents` for `|p|
+    /// format!("q.{p}")`; a parameter it reads is written by its name, `n`.
     pub fn text(&self, name: &dyn Fn(&str) -> String) -> String {
+        self.text_with(name, &|n| n.to_string())
+    }
+
+    /// [`Computed::text`] with each parameter it reads written as `param(name)`, `new.n`.
+    pub fn text_with(&self, name: &dyn Fn(&str) -> String, param: &dyn Fn(&str) -> String) -> String {
         self.pieces.iter().map(|p| match p {
             Piece::Text(t) => t.clone(),
+            Piece::Read(i) if self.reads[*i].param => param(&self.reads[*i].path),
             Piece::Read(i) => name(&self.reads[*i].path),
         }).collect()
+    }
+
+    /// Whether it reads one of the new version's parameters, besides the object's paths.
+    pub fn reads_parameters(&self) -> bool {
+        self.reads.iter().any(|r| r.param)
     }
 
     /// The expression compiled over locals: read `i` in the local `slots[i]`, of its type. Its type promotes to the
@@ -311,17 +324,29 @@ pub struct FieldEquation {
 }
 
 impl FieldEquation {
-    /// `old.q.cents == new.q.amount.cents`, for the objects named `old_root` and `new_root`.
+    /// `old.q.cents == new.q.amount.cents`, for the objects named `old_root` and `new_root`; a parameter an
+    /// expression reads is `new.n`.
     pub fn text(&self, old_root: &str, new_root: &str) -> String {
-        format!("old.{old_root}.{} == {}", self.old, self.new_side(&format!("new.{new_root}")))
+        let new_side = match &self.computed {
+            Some(c) => c.text_with(&|p| format!("new.{new_root}.{p}"), &|n| format!("new.{n}")),
+            None => self.new_side(&format!("new.{new_root}")),
+        };
+        format!("old.{old_root}.{} == {new_side}", self.old)
     }
 
-    /// The new side over the object `root`: `root.amount.cents`, or `root.dollars * 100 + root.cents`.
+    /// The new side over the object `root`: `root.amount.cents`, or `root.dollars * 100 + root.cents`; a parameter
+    /// an expression reads is by its name, `root.price * n`.
     pub fn new_side(&self, root: &str) -> String {
         match &self.computed {
             Some(c) => c.text(&|p| format!("{root}.{p}")),
             None => format!("{root}.{}", self.new),
         }
+    }
+
+    /// Whether it reads one of the new version's parameters (H5's rest), and so is about the parameter it relates
+    /// in this call, not about every object of its classes.
+    pub fn reads_parameters(&self) -> bool {
+        self.computed.as_ref().is_some_and(Computed::reads_parameters)
     }
 }
 
@@ -454,7 +479,7 @@ impl RecordType {
         match &self.corresponds {
             Some(c) => c.leaves.iter().map(|s| match s {
                 Source::Leaf(i) => Leaf::Flat(first + i),
-                Source::Computed(e) => Leaf::Computed(e.clone(), e.reads.iter().map(|r| first + r.leaf).collect()),
+                Source::Computed(e) => Leaf::Computed(e.clone(), e.reads.iter().map(|r| if r.param { r.leaf } else { first + r.leaf }).collect()),
             }).collect(),
             None => (first..first + self.components.len()).map(Leaf::Flat).collect(),
         }
@@ -896,6 +921,23 @@ impl Layout {
                 None => {
                     flat.push((name.clone(), t.clone()));
                     args.push(Slot::Plain(first));
+                }
+            }
+        }
+        // A parameter an input equation's expression reads (H5's rest) is the flat parameter of its name.
+        for slot in &mut args {
+            let Slot::Record { before: Some(previous), .. } = slot else { continue };
+            let Some(c) = &mut previous.corresponds else { continue };
+            for source in &mut c.leaves {
+                let Source::Computed(e) = source else { continue };
+                for r in e.reads.iter_mut().filter(|r| r.param) {
+                    r.leaf = flat.iter().position(|(n, _)| *n == r.path).unwrap_or(usize::MAX);
+                }
+            }
+            for equation in &mut c.equations {
+                let Some(e) = &mut equation.computed else { continue };
+                for r in e.reads.iter_mut().filter(|r| r.param) {
+                    r.leaf = flat.iter().position(|(n, _)| *n == r.path).unwrap_or(usize::MAX);
                 }
             }
         }
@@ -1620,7 +1662,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             let (Some(c), Some(fields), Some(old_fields)) = (&previous.corresponds, &record.fields, &previous.fields) else { continue };
             let (new_local, old_local) = object_slots(i);
             let scratch = code.max_locals;
-            let used = compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, &[], scratch, outside);
+            let used = compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, &[], params, scratch, outside);
             code.max_locals = code.max_locals.max(used);
             related = true;
         }
@@ -1874,7 +1916,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                 // them, as of a parameter's objects of the same classes.
                 let (Some(fields), Some(old_fields), Some(equations)) = (&layout.result_fields.0, &layout.result_fields.1, &layout.result_equations) else { unreachable!("checked") };
                 let scratch = code.max_locals.max(index + 1);
-                let used = compare_corresponding(&mut code, &mut writer.pool, a, b, old_fields, fields, equations, &[], scratch, fail);
+                let used = compare_corresponding(&mut code, &mut writer.pool, a, b, old_fields, fields, equations, &[], params, scratch, fail);
                 code.max_locals = code.max_locals.max(used);
             }
             Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() => {
@@ -1923,7 +1965,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         }
         let used = match &previous.corresponds {
             // Under output relations for its fields (H5's rest), each in place of the equations about its path.
-            Some(c) => compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.compared_equations(), &c.relations, scratch, fail),
+            Some(c) => compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.compared_equations(), &c.relations, params, scratch, fail),
             None => compare_fields(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, scratch, index, fail),
         };
         code.bind(compared);
@@ -2100,7 +2142,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
 /// where a path through a null reads as absent and two absent agree, and each of `relations` holding of the two,
 /// where a path through null makes it fail. Uses the locals from `scratch` on and returns the first it leaves free.
 #[allow(clippy::too_many_arguments)]
-fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, equations: &[FieldEquation], relations: &[FieldRelation], scratch: u16, fail: Label) -> u16 {
+fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, equations: &[FieldEquation], relations: &[FieldRelation], params: &[Param], scratch: u16, fail: Label) -> u16 {
     let (link, old_value, new_value, old_present, new_present, read_present, reads) = (scratch, scratch + 1, scratch + 3, scratch + 5, scratch + 6, scratch + 7, scratch + 8);
     let mut used = scratch + 8;
     let compare = code.label();
@@ -2132,13 +2174,20 @@ fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::wr
             Some(c) => {
                 let slots: Vec<u16> = (0..c.reads.len() as u16).map(|j| reads + 2 * j).collect();
                 used = used.max(reads + 2 * c.reads.len() as u16);
-                let (Ok(compiled), Some(steps)) = (c.parse(&slots), c.reads.iter().map(|r| field_steps(fields, &r.path).map(|(s, _)| s)).collect::<Option<Vec<_>>>()) else {
+                // A parameter it reads is never absent: no steps, and its flat parameter's local.
+                let steps = c.reads.iter().map(|r| if r.param { params.get(r.leaf).map(|_| Vec::new()) } else { field_steps(fields, &r.path).map(|(s, _)| s) }).collect::<Option<Vec<_>>>();
+                let (Ok(compiled), Some(steps)) = (c.parse(&slots), steps) else {
                     code.goto(fail);
                     continue;
                 };
                 let absent = code.label();
                 let read = code.label();
                 for ((r, steps), slot) in c.reads.iter().zip(&steps).zip(&slots) {
+                    if r.param {
+                        code.load(kind_of(&r.ty), params[r.leaf].slot);
+                        code.store(kind_of(&r.ty), *slot);
+                        continue;
+                    }
                     emit_read_path(code, pool, new, steps, None, &r.ty, *slot, read_present, link);
                     code.load(Kind::Int, read_present);
                     code.if_zero(Cond::Eq, absent);
@@ -2407,8 +2456,9 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     let old_leaves: Vec<String> = previous.leaves(*first).into_iter().map(|l| match l {
                         Leaf::Flat(i) => params[i].name.clone(),
                         Leaf::Computed(e, at) => {
-                            let names: Vec<(String, String)> = e.reads.iter().zip(&at).map(|(r, i)| (r.path.clone(), params[*i].name.clone())).collect();
-                            let text = e.text(&|p| names.iter().find(|(q, _)| q == p).map(|(_, n)| n.clone()).unwrap_or_default());
+                            let names: Vec<(bool, String, String)> = e.reads.iter().zip(&at).map(|(r, i)| (r.param, r.path.clone(), params[*i].name.clone())).collect();
+                            let named = |param: bool, p: &str| names.iter().find(|(x, q, _)| *x == param && q == p).map(|(_, _, n)| n.clone()).unwrap_or_default();
+                            let text = e.text_with(&|p| named(false, p), &|p| named(true, p));
                             match e.ty { Type::Long => format!("(long) ({})", text.trim()), _ => format!("({})", text.trim()) }
                         }
                     }).collect();

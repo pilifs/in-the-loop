@@ -1302,3 +1302,172 @@ fn the_computed_equations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
+
+// Input equations whose expression reads the new version's primitive parameters as well as the object's fields
+// (H5's rest): a line that held its total now holds its unit price, the count passed beside it in both versions.
+
+const LINE_BEFORE: &str = r#"package lines;
+public final class Line {
+    long total;
+    public Line(long total) {
+        if (total < 0) throw new IllegalArgumentException();
+        this.total = total;
+    }
+}
+"#;
+
+const LINE_AFTER: &str = r#"package lines;
+public final class Line {
+    long price;
+    public Line(long price) {
+        if (price < 0) throw new IllegalArgumentException();
+        this.price = price;
+    }
+}
+"#;
+
+const LINES_BEFORE: &str = r#"package lines;
+public final class Lines {
+    public static long discounted(Line l, int n) { return n >= 10 ? l.total - l.total / 10 : l.total; }
+    public static void reprice(Line l, int n, long price) { if (price >= 0) l.total = price * n; }
+}
+"#;
+
+const LINES_AFTER: &str = r#"package lines;
+public final class Lines {
+    public static long discounted(Line l, int n) { long t = l.price * n; return n >= 10 ? t - t / 10 : t; }
+    public static void reprice(Line l, int n, long price) { if (price >= 0) l.price = price; }
+}
+"#;
+
+const LINES_DEFECT: &str = r#"package lines;
+public final class Lines {
+    // The discount from the eleventh item rather than the tenth.
+    public static long discounted(Line l, int n) { long t = l.price * n; return n > 10 ? t - t / 10 : t; }
+    // The unit price set to the line's amount: seen only in the line as the call leaves it.
+    public static void reprice(Line l, int n, long price) { if (price >= 0) l.price = price * n; }
+}
+"#;
+
+/// The line kernel's builds, compiled once: `before` (`Line(long total)`), and `after` and `defect` (`Line(long
+/// price)`).
+fn line_builds() -> Option<&'static PathBuf> {
+    static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
+    DIR.get_or_init(|| {
+        compiled()?;
+        let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-lines");
+        let _ = std::fs::remove_dir_all(&root);
+        for (build, line, lines) in [("before", LINE_BEFORE, LINES_BEFORE), ("after", LINE_AFTER, LINES_AFTER), ("defect", LINE_AFTER, LINES_DEFECT)] {
+            let src = root.join(format!("{build}-src/lines"));
+            std::fs::create_dir_all(&src).unwrap();
+            std::fs::write(src.join("Line.java"), line).unwrap();
+            std::fs::write(src.join("Lines.java"), lines).unwrap();
+            let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-d"]).arg(root.join(build)).arg(src.join("Line.java")).arg(src.join("Lines.java")).status().expect("javac runs");
+            assert!(status.success(), "the line kernel compiles");
+        }
+        Some(root)
+    })
+    .as_ref()
+}
+
+const UNIT_PRICE: &str = "new.l.price * new.n";
+
+fn unit_price() -> jvmcontract::spec::Correspondence {
+    correspondence(&[("old.l.total", UNIT_PRICE)], None)
+}
+
+#[test]
+fn an_equations_expression_over_the_objects_fields_and_a_primitive_parameter_makes_and_compares_the_previous_object() {
+    let Some(root) = line_builds() else { return };
+    let o = related(root, "after", "lines.Lines#discounted", unit_price(), "discounted");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let domain = o.domain.as_deref().unwrap_or_default();
+    assert!(domain.contains("as the correspondence's input equations say (old.l.total == new.l.price * new.n)"), "{domain}");
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("l_before = new before.lines.Line((long) (l_price * n));"), "made from the parameter too: {source}");
+    assert!(source.contains("if (!(l_before.total == (l_after.price * n))) { return; }"), "{source}");
+    // The line as the call leaves it is compared through the same equation, the count as the call got it.
+    let o = related(root, "after", "lines.Lines#reprice", unit_price(), "reprice");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.objects, ["l: under the correspondence, old.l.total == new.l.price * new.n"]);
+    // A discount from the eleventh item is refuted in the result, the previous line made from the witness's price
+    // and count, on a JVM too.
+    let o = related(root, "defect", "lines.Lines#discounted", unit_price(), "discounted");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert!(cx.input.contains("n=10"), "{}", cx.input);
+    assert_eq!(cx.differs, ["result"], "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // A unit price set to the line's amount is seen in the line as left.
+    let o = related(root, "defect", "lines.Lines#reprice", unit_price(), "reprice");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["field:l", "field:l.total"], "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // Refused by name: a parameter the new version doesn't have, and the object read as a whole.
+    let o = related(root, "after", "lines.Lines#discounted", correspondence(&[("old.l.total", "new.l.price * new.m")], None), "unknown");
+    assert!(o.problem.as_deref().unwrap().contains("reads new.m, which is not a parameter of the new version (l, n)"), "{}", o.output);
+    let o = related(root, "after", "lines.Lines#discounted", correspondence(&[("old.l.total", "new.l.price * new.n + new.l")], None), "whole");
+    assert!(o.problem.as_deref().unwrap().contains("reads new.l as a whole"), "{}", o.output);
+}
+
+#[test]
+fn a_claim_over_an_equation_that_reads_a_parameter_is_refused_where_the_contract_anchors_the_object_and_checked_where_a_person_stated_it() {
+    use jvmcontract::spec::{Derivation, ExternalInput, ObservationState, Verdict as V};
+    let Some(root) = line_builds() else { return };
+    let claim_of = |subject: &str, derivation: Derivation| {
+        let mut claim = kernel_claim(subject, &[]);
+        claim.contract.inputs = vec![ExternalInput { name: "l".into(), ty: "lines.Line".into(), derivation }, ExternalInput { name: "n".into(), ty: "int".into(), derivation: Derivation::Identity }];
+        let domain = claim.domain.as_mut().unwrap();
+        domain.classes = vec!["lines.Line".into()];
+        domain.bounds.after.input_objects = 1;
+        claim.correspondence = Some(unit_price());
+        claim
+    };
+    let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build));
+    let gap = check("after", &claim_of("lines.Lines#discounted", Derivation::Identity)).expect_err("an anchored input");
+    assert!(gap.what.contains("the preservation contract anchors l (its derivation is identity)"), "{gap:?}");
+    let stated = Derivation::Stated { expression: format!("old.l.total == {UNIT_PRICE}") };
+    for (build, method, verdict, state) in [("after", "discounted", V::Verified, ObservationState::Preserved), ("defect", "discounted", V::Refuted, ObservationState::Refuted), ("after", "reprice", V::Verified, ObservationState::Preserved)] {
+        let o = check(build, &claim_of(&format!("lines.Lines#{method}"), stated.clone())).expect("stated by a person");
+        assert_eq!(o.verdict, verdict, "{build} {method}: {o:?}");
+        assert_eq!(state_of(&o, "result"), state, "{build} {method}: {o:?}");
+    }
+    // The line as left differs, which a claim that requires its field refutes, and one that doesn't leaves outside.
+    let mut claim = claim_of("lines.Lines#reprice", stated);
+    let o = check("defect", &claim).expect("stated by a person");
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert!(o.problem.as_deref().unwrap().contains("differ only in field:l, field:l.total, which the claim does not require"), "{o:?}");
+    let field = jvmcontract::spec::Observation::FieldPath { path: "l.total".into() };
+    claim.contract.required.push(field.id());
+    claim.observations.push(field);
+    let o = check("defect", &claim).expect("stated by a person");
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "field:l.total"), ObservationState::Refuted, "{o:?}");
+}
+
+/// The equations that read a parameter under JBMC and under `auto --confirm`: the same verdicts as on the own
+/// checker, each refutation's witness run on a JVM, since JBMC checks the same harness (the previous leaf computed
+/// from the parameter in its bytecode). A pipeline job (`cargo test --release --test heap -- --ignored
+/// parameter_reads`).
+#[test]
+#[ignore = "runs JBMC on the equations that read a parameter: a pipeline job"]
+fn the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = line_builds() else { return };
+    let cases = [("after", "discounted", Verdict::Verified), ("after", "reprice", Verdict::Verified), ("defect", "discounted", Verdict::Violation), ("defect", "reprice", Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, method, expected) in cases {
+            let o = related_on(engine, confirm, root, build, &format!("lines.Lines#{method}"), unit_price(), method);
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build} {method}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}

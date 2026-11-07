@@ -957,11 +957,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         };
         for (old_root, new_root, whole) in roots {
             // Equations about no parameter of either version relate no input of this method, and say nothing here.
-            if !before_names.contains(&old_root) && !names.contains(&new_root) {
+            if !before_names.contains(&old_root) && !new_root.as_ref().is_some_and(|r| names.contains(r)) {
                 let _ = writeln!(out, "note: the correspondence's equation about {old_root} relates no parameter of either version, and says nothing about this method");
                 continue;
             }
             let position = before_names.iter().position(|n| *n == old_root);
+            // An expression that reads no field (`new.n * 100`) is about the parameter in the previous one's place.
+            let new_root = new_root.unwrap_or_else(|| position.and_then(|i| names.get(i)).cloned().unwrap_or_default());
             let same = position.is_some_and(|i| names.get(i) == Some(&new_root));
             let object = position.is_some_and(|i| records.get(i).is_some_and(|r| r.as_ref().is_some_and(harness::RecordType::is_made)));
             match (same, object, whole) {
@@ -973,14 +975,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
     }
     let mut both_records = Vec::new();
+    // The new version's parameters, which an input equation's expression may read (H5's rest).
+    let new_params: Vec<(String, Type)> = names.iter().cloned().zip(descriptor.params.iter().cloned()).collect();
     for (i, ((name, t), record)) in names.iter().zip(&descriptor.params).zip(&records).enumerate() {
         both_records.push(match record {
             Some(r) if components_passed => Some((r.clone(), None)),
             Some(r) => match object_of(&before_cp, t)?.ok().flatten() {
                 // Under a correspondence's input equations about it, the previous version's object is made from
                 // the new one's leaves as they say, of whatever shape.
-                Some(mut b) if correspondence.is_some() && r.is_made() && b.is_made() && crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b).is_some() => {
-                    match crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b).expect("checked") {
+                Some(mut b) if correspondence.is_some() && r.is_made() && b.is_made() && crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b, &new_params).is_some() => {
+                    match crate::spec::heap::relate(correspondence.expect("checked"), &before_names[i], name, r, &b, &new_params).expect("checked") {
                         Ok(related) => {
                             b.corresponds = Some(related);
                             Some((r.clone(), Some(b)))
@@ -1059,7 +1063,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         // Results of the classes of a parameter the correspondence relates are compared under its equations.
         let related = |new: &harness::Fields, old: &harness::Fields| {
             both_records.iter().flatten().find_map(|(r, b)| match (&r.fields, b) {
-                (Some(f), Some(b)) if f.class == new.class && b.fields.as_ref().is_some_and(|g| g.class == old.class) => b.corresponds.as_ref().map(|c| c.equations.clone()),
+                // Equations that read a parameter (H5's rest) are about the parameter in this call, not about every
+                // object of its classes.
+                (Some(f), Some(b)) if f.class == new.class && b.fields.as_ref().is_some_and(|g| g.class == old.class) => b.corresponds.as_ref().filter(|c| !c.equations.iter().any(harness::FieldEquation::reads_parameters)).map(|c| c.equations.clone()),
                 _ => None,
             })
         };

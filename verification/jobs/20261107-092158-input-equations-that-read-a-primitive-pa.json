@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261107-092158-input-equations-that-read-a-primitive-pa",
+  "title": "Input equations that read a primitive parameter (H5's rest): the same verdicts under JBMC and auto --confirm",
+  "description": "A regression check's correspondence (step H5 of llm-dlc/loops/foundations-heap.md) may now give an input equation whose expression reads the new version's primitive parameters as well as the object's fields: over the line kernel in lib/tests/heap.rs (Line(long total) before, Line(long price) now, a count n taken by both versions), old.l.total == new.l.price * new.n. The harness makes the previous object from the new leaves and the parameter before the calls, and compares the expression over the new object's paths and n with the previous field after them. Inline on the own checker: discounted and reprice verified; a discount from the eleventh item refuted in the result and a unit price set to the line's amount refuted in field:l.total, both witnesses run on a JVM. This job runs the ignored test that repeats the four under --engine jbmc and under --engine auto --confirm, where JBMC checks the same harness (the previous leaf computed from the parameter in its bytecode).",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/spec/heap.rs",
+      "lib/src/witness.rs",
+      "lib/src/equivalence.rs",
+      "lib/tests/heap.rs"
+    ]
+  },
+  "expected": "exits 0: the ignored test passes. Under both engines: after discounted and after reprice Verified, defect discounted and defect reprice Violation, each violation's witness run on a JVM (counterexample.jvm set).",
+  "submitted": {
+    "at": "2026-11-07T09:21:58+00:00"
+  },
+  "priority": 10,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "a release build of the crate, then 8 small JBMC runs over 64-bit arithmetic"
+  },
+  "steps": [
+    {
+      "name": "parameter reads under JBMC and auto --confirm",
+      "run": "cd lib && cargo test --release --test heap -- --ignored parameter_reads",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

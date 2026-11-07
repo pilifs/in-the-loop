@@ -259,8 +259,9 @@ fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argu
                 crate::harness::Leaf::Computed(e, at) => {
                     let values: Option<Vec<Value>> = at.iter().map(|k| match arguments.get(*k) { Some(Argument::Scalar(v)) => Some(*v), _ => None }).collect();
                     let value = values.and_then(|v| e.eval(&v).ok()).map(|v| exact(v, t));
-                    let names: Vec<(String, String)> = e.reads.iter().zip(&at).map(|(r, k)| (r.path.clone(), source(*k))).collect();
-                    let from = e.text(&|p| names.iter().find(|(q, _)| q == p).map(|(_, n)| n.clone()).unwrap_or_default());
+                    let names: Vec<(bool, String, String)> = e.reads.iter().zip(&at).map(|(r, k)| (r.param, r.path.clone(), source(*k))).collect();
+                    let named = |param: bool, p: &str| names.iter().find(|(x, q, _)| *x == param && q == p).map(|(_, _, n)| n.clone()).unwrap_or_default();
+                    let from = e.text_with(&|p| named(false, p), &|p| named(true, p));
                     Typed { name: c.clone(), ty: t.java_name(), value, components: None, from: Some(from.trim().to_string()) }
                 }
             },
@@ -537,7 +538,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     for (slot, v) in layout.args.iter().zip(&arg_values) {
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
             if let (Some(c), Some(old)) = (&previous.corresponds, &previous.fields) {
-                views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.compared_equations(), prefix.is_some())));
+                views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.compared_equations(), prefix.is_some(), &flat)));
                 let fields = if prefix.is_some() { Some(old) } else { record.fields.as_ref() };
                 // A parameter its choice made null is null in both versions, and has nothing to relate.
                 if let (false, Some(fields), Value::Ref(_)) = (c.relations.is_empty(), fields, v) {
@@ -547,7 +548,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         }
     }
     if let (Some(equations), Some(old), Ok(Some(v))) = (&layout.result_equations, &layout.result_fields.1, &outcome) {
-        views.push(("result".to_string(), corresponding_view(&m, *v, &old.class, equations, prefix.is_some())));
+        views.push(("result".to_string(), corresponding_view(&m, *v, &old.class, equations, prefix.is_some(), &flat)));
     }
     let category = match &outcome {
         Err(Fault::Throw(r)) => Some(harness::EXCEPTIONS.iter().position(|e| m.is_instance(*r, e)).unwrap_or(harness::EXCEPTIONS.len())),
@@ -650,8 +651,9 @@ pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], argume
 
 /// The object `v` read through a correspondence's `equations` (step H5): each equation's path in this version (the
 /// previous one's when `previous`), labelled by the previous version's path, `Quote{cents=5, quantity=3}` under the
-/// previous version's simple class name `class`; a path through null reads `absent`.
-fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::harness::FieldEquation], previous: bool) -> String {
+/// previous version's simple class name `class`; a path through null reads `absent`. A parameter an expression reads
+/// (H5's rest) is its flat value in `flat`.
+fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::harness::FieldEquation], previous: bool, flat: &[Value]) -> String {
     if !matches!(v, Value::Ref(_)) {
         return "null".into();
     }
@@ -673,7 +675,7 @@ fn corresponding_view(m: &Machine, v: Value, class: &str, equations: &[crate::ha
         .map(|e| {
             // The new side an expression over the new object's paths gives (H5's rest), absent where one is.
             let value = match (&e.computed, previous) {
-                (Some(c), false) => c.reads.iter().map(|r| read(&r.path)).collect::<Option<Vec<_>>>().map(|values| c.eval(&values).unwrap_or(Value::Null)),
+                (Some(c), false) => c.reads.iter().map(|r| if r.param { flat.get(r.leaf).copied() } else { read(&r.path) }).collect::<Option<Vec<_>>>().map(|values| c.eval(&values).unwrap_or(Value::Null)),
                 (_, true) => read(&e.old),
                 (None, false) => read(&e.new),
             };
