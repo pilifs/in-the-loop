@@ -5,12 +5,15 @@
 # once that loop is done.
 #
 # Usage: [RUN_STREAMS_POLL=300] [RUN_STREAMS_JOB_WAIT=43200] [RUN_STREAMS_INTEGRATION_EVERY=3600] \
-#          llm-dlc/tools/run-streams.sh engines|foundations|cleanup
+#          llm-dlc/tools/run-streams.sh engines|foundations|cleanup|application-core
 #   engines      llm-dlc/loops/engine-priorities.md: the streams jbmc and native, then the merge
 #   foundations  llm-dlc/loops/foundations.md: the streams heap, summaries, observations and
 #                alignment, with an integration check while they run, then the merge
 #   cleanup      llm-dlc/loops/cleanup.md: the streams native, jbmc and examples, with an
 #                integration check and the verification loop, then the merge
+#   application-core  llm-dlc/loops/application-core.md: the streams objects, values,
+#                environment and reuse, with an integration check and the
+#                verification loop, then the merge
 #
 # From the default workspace, in order:
 #  1. Before any stream has a session, it compacts the conversation that planned
@@ -96,7 +99,7 @@
 set -uo pipefail
 
 usage() {
-  echo "usage: run-streams.sh engines|foundations|cleanup" >&2
+  echo "usage: run-streams.sh engines|foundations|cleanup|application-core" >&2
   exit 2
 }
 
@@ -106,6 +109,7 @@ case "$NAME" in
   engines) BRIEF=llm-dlc/loops/engine-priorities.md STREAMS=(jbmc native) ;;
   foundations) BRIEF=llm-dlc/loops/foundations.md STREAMS=(heap summaries observations alignment) ;;
   cleanup) BRIEF=llm-dlc/loops/cleanup.md STREAMS=(native jbmc examples) ;;
+  application-core) BRIEF=llm-dlc/loops/application-core.md STREAMS=(objects values environment reuse) ;;
   *) usage ;;
 esac
 POLL=${RUN_STREAMS_POLL:-300}

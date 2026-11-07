@@ -21,6 +21,8 @@
 #   foundations-STREAM  one stream of it run in parallel: llm-dlc/loops/foundations-STREAM.md
 #   cleanup   work through llm-dlc/loops/cleanup.md (the open verification findings)
 #   cleanup-STREAM  one stream of it run in parallel: llm-dlc/loops/cleanup-STREAM.md
+#   application-core  work through llm-dlc/loops/application-core.md (objects, values, dependency outcomes, reuse)
+#   application-core-STREAM  one stream of it run in parallel: llm-dlc/loops/application-core-STREAM.md
 #   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
 #   CYCLES    how many cycles to run at most; without it there is no limit
 #   UNTIL     instructions the session weighs after each commit to decide whether
@@ -78,7 +80,7 @@ WORKSPACE=
 FORK_FROM=
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -104,6 +106,9 @@ case "$PROMPT" in
   foundations-*) PROMPT=llm-dlc/loops/foundations-${PROMPT#foundations-}.md ;;
   cleanup) PROMPT=llm-dlc/loops/cleanup.md ;;
   cleanup-*) PROMPT=llm-dlc/loops/cleanup-${PROMPT#cleanup-}.md ;;
+  application-core) PROMPT=llm-dlc/loops/application-core.md ;;
+  application-core-acceptance) usage ;; # the acceptance contract, not a brief
+  application-core-*) PROMPT=llm-dlc/loops/application-core-${PROMPT#application-core-}.md ;;
 esac
 case "$PROMPT" in
   *.md)

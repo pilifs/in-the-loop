@@ -1,0 +1,176 @@
+# Stream brief: application core, compositional reuse and preparation
+
+One of four streams of [`application-core.md`](application-core.md) that run in parallel, each in its own jj
+workspace on its own branch. The others are [`application-core-objects.md`](application-core-objects.md),
+[`application-core-values.md`](application-core-values.md) and
+[`application-core-environment.md`](application-core-environment.md). Once all four are finished, the main brief's
+loop merges them ([Reconciling](application-core.md#reconciling)).
+
+Started with the others by `llm-dlc/tools/run-streams.sh application-core` from the default workspace, or alone with
+`llm-dlc/tools/feature-loop.sh application-core-reuse` from this stream's workspace
+(`jj workspace root --name application-core-reuse`). The loop refuses any other.
+
+**The main brief is the instruction.** Read [`application-core.md`](application-core.md) and the acceptance contract
+[`application-core-acceptance.md`](application-core-acceptance.md) in full every cycle, with their inputs. Their
+direction, starting point, working rules, safety rules, deferrals and decisions all apply here. This file says which
+items are yours, and keeps your Progress. Within the briefs, edit only this file's `## Progress` section. Edit
+implementation files according to the main brief's [ownership](application-core.md#streams).
+
+**Every cycle, read the integration check first**:
+`$(jj workspace root --name default)/llm-dlc/loop-summaries/application-core-integration.md`, if it exists. A failure
+in your files on the latest combined commits is your next piece of work, and a conflict in a file you own is a
+coordination task: record it under Progress, don't work around it.
+
+## Goal
+
+- Extend exact evidence reuse to property proofs.
+- Establish the first boundary for reusing a helper that reads the heap.
+- Cut repeated preparation where a small measurement finds it.
+
+Faster identical reruns are not cheaper meaningful refactors: don't confuse the two.
+
+## Starting evidence
+
+Recounted in the main brief's [Where it starts from](application-core.md#where-it-starts-from). In short:
+- `proof_cache.rs` covers native regression checking and the proofs of changed pure helpers;
+- `property.rs` has no cache hook;
+- `shared.rs` restricts helpers to pure primitive behaviour, and rejects fields, arrays and general state;
+- the cache lookup happens after preparation;
+- the verification runner already caches the verifier build by the `lib/` tree: don't build that again.
+
+## Your items
+
+In order, with acceptance rows R1, R2, J3 and J4 of the
+[contract](application-core-acceptance.md#mandatory-rows).
+
+### R1. Caching native property results (required)
+
+- Use the existing canonical claim and local proof store, adding a property projection of the claim, not a second
+  cache. The projection includes:
+  - assumptions, the assertion or law, the throws specification and the old-state semantics;
+  - the construction or receiver plan, the domain and every bound;
+  - the model and code closure, the checker's configuration, and the semantic dependency proofs.
+- The objects stream applies the agreed hook in `property.rs`.
+- Validate the claim before the lookup. An unknown semantic field makes the claim uncacheable or unsupported, never
+  silently ignored.
+- An exact verified hit keeps its stated assurance level. A cached refutation is replayed on the current artifacts
+  before it is used. A timeout or unknown is never cached as a proof.
+- These must not collide:
+  - property and regression claims;
+  - constructor-only and setup-sequence claims.
+
+  Include the actual execution and model roots, not only the class of the declared method.
+
+### R2. Reusing read-only heap helpers (required, narrow)
+
+- **One conservative category**: deterministic helpers, total and read-only, over supported receiver fields and
+  primitive arguments, with primitive results.
+  - Excluded at first: allocation, writes, exceptions the program creates, external calls, unknown dispatch,
+    recursion and escaping references.
+  - Bounded reads of primitive arrays come only after the field-only case works.
+- **A summary names**:
+  - the fields it reads and their values in the pre-state;
+  - the alias and null relationships it needs;
+  - its domain and bounds;
+  - the relation between outcomes.
+
+  Prove the restriction to that footprint, never a heuristic list of likely reads. Changes outside the declared
+  footprint may be ignored only once the footprint is established.
+- **Applicability at the caller** is discharged on the actual pre-call state.
+  - An old proof over constructor-made states doesn't cover every later receiver state by default.
+  - The summary has to apply to both versions' arguments and state, under the required relation.
+  - Any representation adapter is established explicitly, never by redirecting a method of the old layout to code of
+    the new.
+- **The first case**: receivers of the same shape and equal outcomes. Key an abstraction on every relevant state value
+  and alias fact, not on the reference alone. Two calls on one object, before and after a mutation, are different
+  inputs unless their whole read footprints agree.
+- **Reuse in a real caller**: a changed helper is proved on its own, and its evidence is reused there.
+  - Where applicability isn't established, keep the real body, inlined, or return unresolved. Never assume it.
+  - Dependency proofs stay acyclic.
+  - Refine a spurious abstract witness before reporting it.
+
+Required adversarial cases:
+- the helper starts reading an extra field;
+- the caller mutates a read field between calls;
+- a precondition holds at one call but not the next;
+- an alias invalidates a footprint assumption;
+- a summary for the constructor domain is offered at a state a history reached.
+
+### R3. One improvement to preparation reuse (a required investigation, implemented only if the evidence calls for it)
+
+- **Measure first**: a small `compare` run with several claims, and an unchanged rerun.
+  - Time these apart: compilation, preparing the code and its closure, hashing, generating the harness, solving and
+    replay.
+  - Look at the existing caches first, the cached verifier builds and the binary and JDK identities included.
+  - The measurement is a queued job, like any benchmark.
+- **If a repeated stage is material**, cache exactly one immutable product of preparation, keyed by all its inputs:
+  a decoded build snapshot, a resolved closure graph or a generated harness, say.
+  - Prefer sharing per-build preparation within one `compare` run to a persistent build cache.
+  - A change of source, classpath or configuration invalidates it.
+  - Never replace the canonical proof key with a timestamp or a source file's name.
+- **If no repeated stage is worth it**, deliver the measurement and record why no new preparation cache is justified.
+  Don't invent a speed target or start a rewrite of the build system to fill the phase.
+
+### Optional R4. A first local write summary
+
+Only after R1 and R2 pass.
+- **The case**: one receiver with a fixed footprint of primitive-field writes, no allocation, no change of identity
+  and no external effects.
+- **Establish**: the read set, the write set, the frame condition, the state transition on normal and exceptional
+  exit, and applicability.
+- Apply it only once the alias conditions are discharged, and replay any refutation against the original body.
+
+One correct and defective pair is enough. This is outside the mandatory joint milestone: general summaries of a
+mutable heap, abstraction refinement and summary repair stay later work. A bounded slice that fails is a named
+finding, not a reason to generalize the engine.
+
+## Ownership and cooperation
+
+- **Yours**: `shared.rs`, `proof_cache.rs`, `spec/cache.rs`, `closure.rs`, `impact.rs`, the preparation-reuse module,
+  and limited hooks in `examples/tools/build.py`.
+- **Not yours**: don't edit the objects stream's property or equivalence logic directly. Use Phase 0's hooks and the
+  construction and model-root interface.
+- Register every new semantic field from objects, values and environment in the key projection and its invalidation
+  tests. The coordinator owns the shared schemas.
+- Don't add JBMC identity or caching for symmetry: native reuse is the required path here.
+- Example numbers 270–279.
+
+## Acceptance
+
+- Native property successes and refutations are reused, with correct invalidation and witness replay.
+- A changed heap-reading helper's evidence is reused by a caller, not only by its own identical rerun.
+- Summary cases that are inapplicable or break a precondition refuse reuse, or are inlined, and reach the right
+  result.
+- These affect claims as they should: construction history, model outcomes, String and list bounds, and changes to
+  the read footprint.
+- The small measurement tells apart exact hits, helper evidence and preparation reuse. Costs are reported with and
+  without compilation, and a gain in proving alone is never presented as a gain for the whole build.
+
+## Working rules
+
+The main brief's [How to work through it](application-core.md#how-to-work-through-it): the pipeline and the
+two-failure timebox. One local cache: no distributed proof service and no general build-cache project. Every earlier
+measurement stays as recorded.
+
+## Progress
+
+- Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
+  Phase 0 included.
+- Status: working
+
+## Loop settings
+
+- session: aa238023-596d-49bd-8039-52502ec096fc
+- model: claude-opus-5-5
+- effort: high
+- memory: 4G
+- workspace: application-core-reuse
+- fork: 3da21514-fe46-49d5-8200-08d3cf89ea17
+
+## Loop until
+
+Go on while an item has a step that needs nothing but your own work. When everything left waits on jobs, stop with
+`waiting on jobs ID ...`. Stop with `done` when R1, R2, R3's justified outcome and your share of the combined
+acceptance pass, or each is deferred by the timebox with the finding. R4 may be left out without changing that. Stop
+with `blocked: ...` when what is left needs the user or another stream, and is recorded under Progress. Anything new
+you find goes under Progress, for the main brief's for-review list.
