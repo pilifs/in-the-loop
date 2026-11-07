@@ -6,8 +6,9 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::{Mutex, OnceLock};
 
-use jvmcontract::spec::observe::{self, BindingSource, EntryKind, EntryPointSpec, Placement, SiteKind};
-use jvmcontract::spec::{Derivation, Observation, OrderPolicy};
+use jvmcontract::observations::{compare, unaccounted};
+use jvmcontract::spec::observe::{self, Binding, BindingSource, Change, EntryKind, EntryPointSpec, Obligation, Placement, SiteKind, StatusOutcome};
+use jvmcontract::spec::{Derivation, ExternalInput, Observation, OrderPolicy};
 
 const SEND: &str = "org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
 
@@ -168,6 +169,191 @@ fn the_command_prints_the_specs_as_text_and_json() {
     assert_eq!(parsed, specs("before"));
 }
 
+fn of<'a>(obligations: &'a [Obligation], entry: &str, observation: &str) -> &'a Obligation {
+    let found: Vec<&Obligation> = obligations.iter().filter(|o| o.entry == entry && o.observation == observation).collect();
+    assert_eq!(found.len(), 1, "one obligation for {entry} {observation}: {obligations:#?}");
+    found[0]
+}
+
+fn changes(obligations: &[Obligation], entry: &str) -> Vec<(String, Change)> {
+    obligations.iter().filter(|o| o.entry == entry).map(|o| (o.observation.clone(), o.change)).collect()
+}
+
+#[test]
+fn two_builds_of_the_joint_example_compare_into_accounted_obligations() {
+    if !has_javac() {
+        return;
+    }
+    let before = specs("before");
+    let effect = format!("effect:{SEND}");
+    // The refactor, and the effect defects: the same shapes, so every observation is to be proved preserved. A
+    // dropped or a duplicated event doesn't show here; the effect trace (O3) is what refutes it.
+    for build in ["after", "dropped-effect", "duplicated-effect", "offset"] {
+        let obligations = observe::compare(&before, &specs(build)).unwrap();
+        assert!(unaccounted(&before, &obligations).is_empty(), "{build}");
+        let want: Vec<(String, Change)> = ["result", "exception", "status", effect.as_str()].iter().map(|o| (o.to_string(), Change::Preserved)).collect();
+        assert_eq!(changes(&obligations, "POST /quotes"), want, "{build}");
+        assert!(of(&obligations, "POST /quotes", &effect).needs.contains("effect-trace proof"), "{build}");
+        // The concatenation stays an obligation of its own, unresolved, beside the three to prove.
+        let text = of(&obligations, "POST /quotes/text", "unresolved");
+        assert_eq!(text.change, Change::Unresolved);
+        assert!(text.differences.iter().any(|d| d.starts_with("before: ") && d.contains("string concatenation")), "{:?}", text.differences);
+        assert!(obligations.iter().all(|o| o.new_entry.is_none() && o.change != Change::New), "{build}");
+    }
+    // A renamed route: the old entry point's observations are removed, the new one's new, and nothing is to prove.
+    let obligations = observe::compare(&before, &specs("route-change")).unwrap();
+    assert!(unaccounted(&before, &obligations).is_empty());
+    assert!(changes(&obligations, "POST /quotes").iter().all(|(_, c)| *c == Change::Removed));
+    assert_eq!(changes(&obligations, "POST /quotes").len(), 4);
+    assert!(of(&obligations, "POST /quotes", "result").differences.iter().any(|d| d.contains("now serves POST /quote")));
+    assert!(changes(&obligations, "POST /quote").iter().all(|(_, c)| *c == Change::New));
+    assert!(of(&obligations, "POST /quote", "status").needs.contains("nothing to preserve"));
+}
+
+/// `POST /quotes` of the joint example's old build, to change by hand.
+fn quotes() -> Option<EntryPointSpec> {
+    has_javac().then(|| find(&specs("before"), "POST /quotes").clone())
+}
+
+#[test]
+fn a_renamed_handler_or_path_variable_is_the_same_entry_point() {
+    let Some(old) = quotes() else { return };
+    let mut new = old.clone();
+    new.handler = "shop.QuotesController#price".into();
+    new.method = "QuotesController.price(long, int)".into();
+    let obligations = compare(std::slice::from_ref(&old), &[new]);
+    assert!(obligations.iter().all(|o| o.change == Change::Preserved && o.new_entry.is_none()), "{obligations:#?}");
+    // A path variable renamed in the template: the client's path is the same, so is the entry point.
+    let mut old = old;
+    old.id = "GET /holds/{id}".into();
+    let mut new = old.clone();
+    new.id = "GET /holds/{holdId}".into();
+    let obligations = compare(std::slice::from_ref(&old), &[new]);
+    assert!(unaccounted(std::slice::from_ref(&old), &obligations).is_empty());
+    assert!(obligations.iter().all(|o| o.change == Change::Preserved && o.new_entry.as_deref() == Some("GET /holds/{holdId}")), "{obligations:#?}");
+}
+
+#[test]
+fn a_changed_shape_is_changed_not_preserved() {
+    let Some(old) = quotes() else { return };
+    let effect = format!("effect:{SEND}");
+    let check = |new: EntryPointSpec, observation: &str, change: Change, says: &str| {
+        let obligations = compare(std::slice::from_ref(&old), &[new]);
+        assert!(unaccounted(std::slice::from_ref(&old), &obligations).is_empty(), "{obligations:#?}");
+        let o = of(&obligations, "POST /quotes", observation);
+        assert_eq!(o.change, change, "{o:#?}");
+        assert!(o.differences.iter().any(|d| d.contains(says)), "'{says}' in {:?}", o.differences);
+        o.clone()
+    };
+    // A status mapping: the guard's exception now answers 400.
+    let mut new = old.clone();
+    new.statuses[1] = StatusOutcome { outcome: "IllegalArgumentException".into(), status: Some(400), by: "@ExceptionHandler Errors.invalid".into() };
+    let o = check(new, "status", Change::Changed, "IllegalArgumentException: 500 (nothing maps it), now 400");
+    assert!(o.needs.contains("approval"));
+    // An outcome replaced by another with the same status is preserved, the difference left to the proof.
+    let mut new = old.clone();
+    new.statuses[1].outcome = "IllegalStateException".into();
+    check(new, "status", Change::Preserved, "a new outcome IllegalStateException");
+    // A status no outcome answered before.
+    let mut new = old.clone();
+    new.statuses.push(StatusOutcome { outcome: "ConflictException".into(), status: Some(409), by: "@ExceptionHandler Errors.conflict".into() });
+    check(new, "status", Change::Changed, "the new build may answer 409, the old one never does");
+    // A status the analysis can't tell leaves it unresolved, even where a known one is gone: it may be the unknown one.
+    let mut new = old.clone();
+    new.statuses[0].status = None;
+    check(new, "status", Change::Unresolved, "the old build may answer 200");
+    let mut new = old.clone();
+    new.statuses[0].status = None;
+    new.statuses[1].status = Some(400);
+    check(new, "status", Change::Changed, "IllegalArgumentException: 500 (nothing maps it), now 400");
+    let mut both = old.clone();
+    both.statuses[0].status = None;
+    let obligations = compare(std::slice::from_ref(&both), std::slice::from_ref(&both));
+    assert_eq!(of(&obligations, "POST /quotes", "status").change, Change::Unresolved);
+    // The effect moved into a transaction.
+    let mut new = old.clone();
+    new.effects[0].placement = Placement::Inside;
+    check(new, &effect, Change::Changed, "sends to quotes: outside a transaction, now inside its transaction");
+    // Its payload's shape.
+    let mut new = old.clone();
+    let Observation::Effect { payload, .. } = &mut new.observations[3] else { panic!() };
+    payload.retain(|p| p != "data.quantity");
+    check(new, &effect, Change::Changed, "its payload no longer snapshots data.quantity");
+    // To another topic.
+    let mut new = old.clone();
+    new.effects[0].target = "prices".into();
+    check(new, &effect, Change::Changed, "the old build sends to quotes by it");
+    // A second call site is the trace proof's to judge.
+    let mut new = old.clone();
+    new.effects.push(new.effects[0].clone());
+    check(new, &effect, Change::Preserved, "1 call sites in the old build, 2 in the new");
+    // The effect gone: removed, and a new one only the new build has.
+    let mut new = old.clone();
+    new.observations.truncate(3);
+    new.effects.clear();
+    check(new.clone(), &effect, Change::Removed, "doesn't observe it");
+    let mut new = old.clone();
+    new.observations.push(Observation::Effect { call: "org/example/Audit#record(Ljava/lang/Object;)V".into(), payload: vec!["event".into()] });
+    let obligations = compare(std::slice::from_ref(&old), &[new]);
+    assert_eq!(of(&obligations, "POST /quotes", "effect:org/example/Audit#record(Ljava/lang/Object;)V").change, Change::New);
+    // The response's type, and a new input: the preservation contract's inputs aren't the tool's to map.
+    let mut new = old.clone();
+    new.response = Some("shop.Money".into());
+    check(new, "result", Change::Changed, "the response was long, now shop.Money");
+    let mut new = old.clone();
+    new.inputs.push(ExternalInput { name: "Idempotency-Key".into(), ty: "String".into(), derivation: Derivation::Identity });
+    new.bindings.push(Binding { input: "Idempotency-Key".into(), source: BindingSource::Header, wire_type: "java.lang.String".into() });
+    let o = check(new, "inputs", Change::Changed, "a new input Idempotency-Key: String (header)");
+    assert!(o.needs.contains("approved by a person"));
+}
+
+#[test]
+fn entry_points_a_key_does_not_tell_apart_are_unresolved() {
+    let Some(old) = quotes() else { return };
+    // Two schedules with the same timing, before and after, and neither handler kept: which is which is a question.
+    let schedule = |handler: &str| {
+        let mut s = old.clone();
+        s.kind = EntryKind::Schedule;
+        s.handler = handler.into();
+        s.id = format!("schedule fixedDelay = 1000 ({handler})");
+        s
+    };
+    let before = [schedule("a.Jobs#sweep"), schedule("a.Jobs#flush")];
+    let after = [schedule("a.Jobs#sweepHolds"), schedule("a.Jobs#flushOutbox")];
+    let obligations = compare(&before, &after);
+    assert!(unaccounted(&before, &obligations).is_empty());
+    for s in &before {
+        assert!(changes(&obligations, &s.id).iter().all(|(_, c)| *c == Change::Unresolved), "{obligations:#?}");
+    }
+    assert!(after.iter().all(|s| changes(&obligations, &s.id).iter().all(|(_, c)| *c == Change::New)));
+    // With one handler kept, it pairs, and so does the other.
+    let after = [schedule("a.Jobs#sweep"), schedule("a.Jobs#flushOutbox")];
+    let obligations = compare(&before, &after);
+    assert!(obligations.iter().all(|o| o.change == Change::Preserved), "{obligations:#?}");
+}
+
+#[test]
+fn the_command_compares_against_an_earlier_builds_specs() {
+    if !has_javac() {
+        return;
+    }
+    let bin = env!("CARGO_BIN_EXE_jvmcontract");
+    let old = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("observations").join("before.json");
+    std::fs::write(&old, serde_json::to_string(&specs("before")).unwrap()).unwrap();
+    let run = |args: &[&str]| {
+        let out = Command::new(bin).arg("observations").arg(build("route-change")).arg("--against").arg(&old).args(args).output().unwrap();
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8(out.stdout).unwrap()
+    };
+    let text = run(&[]);
+    assert!(text.starts_with(&format!("POST /quotes\n  removed: result, exception, status, effect:{SEND}\n    - no entry point of the new build is POST /quotes\n")), "{text}");
+    assert!(text.contains("POST /quotes/text\n  preserved, to prove: result\n"), "{text}");
+    assert!(text.contains("  unresolved: what the analysis can't see\n"), "{text}");
+    assert!(text.ends_with("7 observations of 2 entry points: 3 to prove preserved, 0 changed and 4 removed (each preserved only with a person's approval), 0 unresolved; 4 new\n"), "{text}");
+    let parsed: Vec<Obligation> = serde_json::from_str(&run(&["--json"])).unwrap();
+    assert_eq!(parsed, observe::compare(&specs("before"), &specs("route-change")).unwrap());
+}
+
 /// Box Office's Spring modules, built by its own Gradle build (offline, no daemon) in a copy under the target folder,
 /// as `examples/tools/build.py`'s B12 runner builds them: the copy's root, and the union of the modules' runtime class
 /// paths (the extra jars change no spec). `None`, after `missing`, when the build can't run here.
@@ -274,6 +460,13 @@ fn every_box_office_entry_point_has_a_spec_that_matches_its_golden_text() {
             assert!(spec.effects.iter().all(|e| e.payload.iter().all(|p| !p.contains("entityClass"))), "{}: {:?}", spec.id, spec.effects);
             assert!(spec.unresolved.iter().all(|u| !u.contains("nothing followed implements it")), "{}: {:?}", spec.id, spec.unresolved);
             assert!(spec.environment.trace_bound as usize >= spec.effects.iter().filter(|e| e.kind != SiteKind::Read).count(), "{}", spec.id);
+        }
+        // Compared with itself, nothing is changed, removed or new: what isn't to prove is unresolved, and named.
+        let obligations = compare(&specs, &specs);
+        assert!(unaccounted(&specs, &obligations).is_empty(), "{module}");
+        for o in &obligations {
+            assert!(matches!(o.change, Change::Preserved | Change::Unresolved), "{module}: {o:#?}");
+            assert!(o.change == Change::Preserved || !o.differences.is_empty(), "{module}: {o:#?}");
         }
     }
 }

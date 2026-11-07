@@ -138,23 +138,42 @@ pub struct EffectSite {
     pub in_method: String,
 }
 
-/// One obligation between two builds' entry points.
+/// One obligation between two builds' entry points, from [`compare`]. Every observation of every old entry point
+/// is the subject of exactly one; `observation` is otherwise `inputs` (the preservation contract's external inputs
+/// differ) or `unresolved` (what the analysis can't see of the pair), which are obligations but not observations.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Obligation {
     /// The entry point's id, in the old build (or the new one, for a new entry point).
     pub entry: String,
     pub observation: String,
     pub change: Change,
+    /// The matched entry point's id in the new build, when it differs from `entry` (a path variable renamed, or
+    /// the handler appended to tell two apart).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub new_entry: Option<String>,
+    /// What differs between the two specs for this observation, one line each. For a preserved one, what its proof
+    /// must show makes no difference (a new exception type, a second call site).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub differences: Vec<String>,
+    /// What discharging it would need: the proof, or the person's decision.
+    #[serde(default)]
+    pub needs: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Change {
-    /// To be proved preserved.
+    /// To be proved preserved: the two specs agree on its shape, which makes the obligation well formed and
+    /// discharges nothing.
     Preserved,
+    /// Its shape differs (a status mapping, a payload's paths, an effect's transaction placement): preserved only
+    /// with a person's approval of the change, or a proof that the difference never shows.
     Changed,
+    /// Only the new build has it: nothing to preserve.
     New,
+    /// Only the old build has it: gone, with a person's approval, or unresolved.
     Removed,
+    /// The analysis can't tell which way it went.
     Unresolved,
 }
 
@@ -177,8 +196,7 @@ pub fn entry_points(build: &Path) -> Result<Vec<EntryPointSpec>, Unsupported> {
 
 /// The obligations between two builds' entry points; every old observation is accounted for.
 pub fn compare(before: &[EntryPointSpec], after: &[EntryPointSpec]) -> Result<Vec<Obligation>, Unsupported> {
-    let _ = (before, after);
-    Err(Unsupported::new(Part::Observations, "comparing two builds' specs (O2)"))
+    Ok(crate::observations::compare(before, after))
 }
 
 /// The effect-log hook: how the harness records and compares the effects of `spec`'s entry point.

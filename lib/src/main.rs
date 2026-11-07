@@ -136,6 +136,11 @@ enum Command {
         /// Print JSON (the shared IR's `EntryPointSpec`s) instead of text.
         #[arg(long)]
         json: bool,
+        /// Compare against an earlier build's specs, as this command printed them with `--json`, and print the
+        /// obligations instead: each old observation preserved (to prove), changed, removed or unresolved, and
+        /// what each would need. Exits 0; it proves nothing.
+        #[arg(long, value_name = "SPECS.json")]
+        against: Option<PathBuf>,
     },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
@@ -735,7 +740,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(0)
         }
-        Command::Observations { paths, classpath, base, json } => {
+        Command::Observations { paths, classpath, base, json, against } => {
             let mut cp = ClassPath::new();
             for p in &paths {
                 cp.add(p)?;
@@ -754,6 +759,17 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             let cp = cp.with_default_jdk();
             let specs = jvmcontract::observations::analyse(&cp, Some(&module_classes), Some(&followed))?;
+            if let Some(against) = against {
+                let text = std::fs::read_to_string(&against).map_err(|e| jvmcontract::Error::new(format!("{}: {e}", against.display())))?;
+                let before: Vec<jvmcontract::spec::observe::EntryPointSpec> = serde_json::from_str(&text).map_err(|e| jvmcontract::Error::new(format!("{}: not the JSON of `observations --json`: {e}", against.display())))?;
+                let obligations = jvmcontract::observations::compare(&before, &specs);
+                if json {
+                    println!("{}", serde_json::to_string_pretty(&obligations).expect("serializable"));
+                } else {
+                    print!("{}", jvmcontract::observations::render_obligations(&before, &obligations));
+                }
+                return Ok(0);
+            }
             if json {
                 println!("{}", serde_json::to_string_pretty(&specs).expect("serializable"));
             } else {

@@ -152,11 +152,38 @@ under Progress.
   hold route's three bindings; the payments listener's payload and inbox write; the sweep's configured schedule;
   the relay's computed topic named as unresolved). Shared files touched, by adding: `lib/src/main.rs` (`--base`),
   `lib/tests/observations.rs`, `lib/tests/fixtures/boxoffice-observations/` (new), `lib/README.md`. O1 is done.
-- Not this stream's to fix: `sync.py check` reports "session … has no manifest" for the alignment stream's A1 and the
-  summaries stream's S1 commits, whose manifests are on their own branches; the reconcile merge brings them together.
-- Next: O2, `observe::compare`: entry points matched across two builds, each old observation accounted for
-  (preserved, changed, new, removed, unresolved) with what its proof would need; first on the joint example's
-  defects (the integration contract's `observations compare` checks), then on Box Office examples 110–119.
+- Not this stream's to fix: `sync.py check` reports "session … has no manifest" for the other streams' commits
+  (alignment, summaries and heap alike), whose manifests are on their own branches; the reconcile merge brings them
+  together. None is in this branch's own commits.
+- **O2, step 1 (2026-11-07): two builds' specs compared into accounted obligations, on the joint example.**
+  `observations::compare` (behind `observe::compare`) matches entry points by what consumers address: verb and route
+  with path variable names erased, topic or queue, schedule; a renamed handler is the same entry point, a renamed
+  route is removed plus new (the handler now serving the new route is named), and several under one key whose
+  handlers all changed are unresolved. Each observation of each old entry point gets exactly one obligation:
+  preserved (to prove: the shapes agree, which discharges nothing), changed (a shared outcome mapped to another known
+  status, a status only one build can answer when all are known, a payload path gone or added, an effect site moved
+  into or out of a transaction or to another target, another response type), removed, or unresolved (a status
+  unknown, or no way to tell the pair). Two further obligations: `inputs` (changed when the external inputs or their
+  bindings differ, since the input domain is the contract's) and `unresolved` (what the analysis can't see of either
+  build). Each says what discharging it would need; differences that change no shape (an outcome replaced by one with
+  the same status, a second call site) are listed for the proof. `observations::unaccounted` checks the accounting.
+  New option `jvmcontract observations ... --against OLD.json` prints the obligations (text with the count, or
+  `--json`). The integration contract's six `observations compare` checks now pass (7 passed, 17 unsupported, 0
+  failed, with `observations specs before`). Tested by five new tests in `lib/tests/observations.rs` (the joint
+  example's builds and defects; a renamed handler and a renamed path variable; each kind of changed shape on a spec
+  changed by hand; entry points a key doesn't tell apart; the command), and Box Office's specs compared with
+  themselves give nothing changed, removed or new. Full `cargo test` passes (rustfmt and clippy aren't installed
+  here, so neither was run). The dropped and duplicated effects give no static difference, as expected: their
+  effect obligation is preserved-to-prove, for O3's trace to refute. Shared files touched, by adding:
+  `lib/src/main.rs` (`--against`), `lib/tests/observations.rs`, `lib/README.md` (a paragraph and the command).
+  `Obligation` in `observe.rs` gained `new_entry`, `differences` and `needs`, with serde defaults, and `Change`
+  derives `PartialOrd`/`Ord`; their existing meaning is unchanged.
+- Next: O2, step 2: Box Office examples 110–119, each example's before and after compared, against its recorded
+  boundary diff. Expected gaps to close in the spec where the diff shows them: request validation as an outcome
+  (110's dropped `@Valid`, 113's missing cascade: a 400 that disappears), a path variable that no longer matches the
+  route (118: a 500 on every request), an effect replaced by another (117: the outbox write replaced by a send inside
+  the transaction). Some (111's JSON subtypes, 112's configuration, 114's caching, 115's stored field) are outside
+  the entry-point spec and should be named as not observed there.
 - Status: working
 
 ## Loop settings

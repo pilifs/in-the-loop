@@ -30,7 +30,7 @@ use crate::classfile::{flags, Annotation, ClassFile, Method, MethodDescriptor, T
 use crate::classpath::ClassPath;
 use crate::failures::{self, status_code, Handlers, Outcome as Failure};
 use crate::reach::{self, display, method_label, Placed, Placement, SiteKind};
-use crate::spec::observe::{Binding, BindingSource, EffectSite, EntryKind, EntryPointSpec, StatusOutcome};
+use crate::spec::observe::{Binding, BindingSource, Change, EffectSite, EntryKind, EntryPointSpec, Obligation, StatusOutcome};
 use crate::spec::{Derivation, EnvironmentModel, ExternalInput, ModeledCall, Observation, OrderPolicy};
 use crate::Error;
 
@@ -505,6 +505,336 @@ impl Placement {
             Placement::Outside => "outside a transaction",
             Placement::Inside => "inside its transaction",
             Placement::Callee => "inside a @Transactional callee's transaction",
+        }
+    }
+}
+
+// Two builds compared.
+
+const NEEDS_RESULT: &str = "a proof that both versions answer each request with the same value, under one environment model for both";
+const NEEDS_EXCEPTION: &str = "a proof that for each request both versions return normally or both throw, and throw the same category";
+const NEEDS_STATUS: &str = "a proof that both versions take the same outcome for each request, so that they answer with the same status";
+const NEEDS_EFFECT: &str = "an effect-trace proof: under one environment model for both versions, the same ordered attempts of this call, with the same payload values snapshotted at each, within the trace bound; the same payload paths make it well formed and discharge nothing";
+const NEEDS_OTHER: &str = "a proof that both versions agree on it for each input";
+const NEEDS_CHANGED: &str = "a person's approval of the change, recorded in the preservation contract, or a proof that the difference never shows (then it is preserved)";
+const NEEDS_REMOVED: &str = "a person's approval that it is gone, recorded in the preservation contract; there is nothing to prove preserved";
+const NEEDS_NEW: &str = "nothing to preserve: an intended-behaviour contract, or a person's approval";
+const NEEDS_INPUTS: &str = "a stated derivation of each version's inputs from one logical request, approved by a person: the preservation contract's input domain isn't inferred";
+const NEEDS_UNRESOLVED: &str = "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter";
+const NEEDS_AMBIGUOUS: &str = "a person to say which entry point of the new build this one is";
+
+/// The obligations between two builds' entry points ([`crate::spec::observe::compare`]). Entry points correspond
+/// by what their consumers address, not by handler: the same verb and route (path variable names aside), the same
+/// topic or queue, the same schedule. A renamed handler is the same entry point; a renamed route is a removed one
+/// and a new one. For each pair, each observation of the old entry point gets one obligation: preserved (to be
+/// proved), changed, removed, or unresolved; each observation only the new one has is new. A difference in the
+/// inputs and what the analysis can't see are obligations of their own. Every old observation is accounted for
+/// ([`unaccounted`] is empty). Static: nothing here is proved.
+pub fn compare(before: &[EntryPointSpec], after: &[EntryPointSpec]) -> Vec<Obligation> {
+    let mut groups: BTreeMap<String, (Vec<&EntryPointSpec>, Vec<&EntryPointSpec>)> = BTreeMap::new();
+    for s in before {
+        groups.entry(match_key(s)).or_default().0.push(s);
+    }
+    for s in after {
+        groups.entry(match_key(s)).or_default().1.push(s);
+    }
+    let mut pairs: Vec<(&EntryPointSpec, &EntryPointSpec)> = Vec::new();
+    let mut ambiguous: Vec<(&EntryPointSpec, String)> = Vec::new();
+    let mut gone: Vec<&EntryPointSpec> = Vec::new();
+    let mut added: Vec<&EntryPointSpec> = Vec::new();
+    for (key, (mut olds, mut news)) in groups {
+        // Several under one key (two schedules with the same timing): the same handler pairs first.
+        olds.retain(|o| match news.iter().position(|n| n.handler == o.handler) {
+            Some(i) => {
+                pairs.push((o, news.remove(i)));
+                false
+            }
+            None => true,
+        });
+        match (olds.len(), news.len()) {
+            (1, 1) => pairs.push((olds[0], news[0])),
+            (_, 0) => gone.extend(olds),
+            (0, _) => added.extend(news),
+            _ => {
+                let names: Vec<&str> = news.iter().map(|n| n.id.as_str()).collect();
+                ambiguous.extend(olds.into_iter().map(|o| (o, format!("{key}: the new build has {} candidates, {}", names.len(), names.join(", ")))));
+                added.extend(news);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    for o in before {
+        if let Some((_, n)) = pairs.iter().find(|(p, _)| std::ptr::eq(*p, o)) {
+            pair_obligations(o, n, &mut out);
+        } else if let Some((_, why)) = ambiguous.iter().find(|(p, _)| std::ptr::eq(*p, o)) {
+            for obs in &o.observations {
+                out.push(obligation(&o.id, obs.id(), Change::Unresolved, vec![why.clone()], NEEDS_AMBIGUOUS));
+            }
+        } else if gone.iter().any(|p| std::ptr::eq(*p, o)) {
+            let mut why = vec![format!("no entry point of the new build is {}", o.id)];
+            why.extend(added.iter().filter(|n| n.handler == o.handler).map(|n| format!("its handler {} now serves {}: to its consumers that is another entry point, the same only if a person approves the change", o.handler, n.id)));
+            for obs in &o.observations {
+                out.push(obligation(&o.id, obs.id(), Change::Removed, why.clone(), NEEDS_REMOVED));
+            }
+        }
+    }
+    for n in after.iter().filter(|n| added.iter().any(|a| std::ptr::eq(*a, *n))) {
+        for obs in &n.observations {
+            out.push(obligation(&n.id, obs.id(), Change::New, vec![format!("the old build has no entry point {}", n.id)], NEEDS_NEW));
+        }
+    }
+    out
+}
+
+/// The old build's observations that no obligation accounts for, as `entry: observation`: empty for what
+/// [`compare`] gives, which is the point of it.
+pub fn unaccounted(before: &[EntryPointSpec], obligations: &[Obligation]) -> Vec<String> {
+    let mut out = Vec::new();
+    for s in before {
+        for obs in &s.observations {
+            let id = obs.id();
+            let n = obligations.iter().filter(|o| o.entry == s.id && o.observation == id && o.change != Change::New).count();
+            if n != 1 {
+                out.push(format!("{}: {id} ({n} obligations)", s.id));
+            }
+        }
+    }
+    out
+}
+
+/// What consumers address an entry point by: its kind and id, without a handler appended to tell two apart, and
+/// with a route's path variables unnamed (`GET /holds/{}`), since a client's path doesn't name them.
+fn match_key(s: &EntryPointSpec) -> String {
+    let id = s.id.strip_suffix(&format!(" ({})", s.handler)).unwrap_or(&s.id);
+    let id = if s.kind == EntryKind::Route {
+        let mut out = String::new();
+        let mut depth = 0;
+        for c in id.chars() {
+            match c {
+                '{' => {
+                    if depth == 0 {
+                        out.push('{');
+                    }
+                    depth += 1;
+                }
+                '}' if depth > 0 => {
+                    depth -= 1;
+                    if depth == 0 {
+                        out.push('}');
+                    }
+                }
+                _ if depth > 0 => {}
+                _ => out.push(c),
+            }
+        }
+        out
+    } else {
+        id.to_string()
+    };
+    format!("{:?} {id}", s.kind)
+}
+
+fn obligation(entry: &str, observation: String, change: Change, differences: Vec<String>, needs: &str) -> Obligation {
+    Obligation { entry: entry.to_string(), observation, change, new_entry: None, differences, needs: needs.to_string() }
+}
+
+fn pair_obligations(o: &EntryPointSpec, n: &EntryPointSpec, out: &mut Vec<Obligation>) {
+    let start = out.len();
+    let inputs = input_differences(o, n);
+    if !inputs.is_empty() {
+        out.push(obligation(&o.id, "inputs".into(), Change::Changed, inputs, NEEDS_INPUTS));
+    }
+    for obs in &o.observations {
+        let id = obs.id();
+        let kept = n.observations.iter().any(|x| x.id() == id);
+        out.push(match obs {
+            _ if !kept => obligation(&o.id, id, Change::Removed, vec![format!("the new build's {} doesn't observe it", n.id)], NEEDS_REMOVED),
+            Observation::Result => match (&o.response, &n.response) {
+                (Some(a), Some(b)) if a != b => obligation(&o.id, id, Change::Changed, vec![format!("the response was {a}, now {b}")], NEEDS_CHANGED),
+                _ => obligation(&o.id, id, Change::Preserved, Vec::new(), NEEDS_RESULT),
+            },
+            Observation::Exception => obligation(&o.id, id, Change::Preserved, thrown_differences(o, n), NEEDS_EXCEPTION),
+            Observation::Status => status_obligation(o, n),
+            Observation::Effect { call, payload } => effect_obligation(o, n, call, payload),
+            _ => obligation(&o.id, id, Change::Preserved, Vec::new(), NEEDS_OTHER),
+        });
+    }
+    for obs in n.observations.iter().filter(|x| !o.observations.iter().any(|y| y.id() == x.id())) {
+        let mut why = vec![format!("only the new build's {} observes it", n.id)];
+        if let Observation::Effect { call, .. } = obs {
+            why.extend(n.effects.iter().filter(|e| &e.call == call).map(|e| format!("it {}", site_words(e))));
+        }
+        out.push(obligation(&o.id, obs.id(), Change::New, why, NEEDS_NEW));
+    }
+    if !o.unresolved.is_empty() || !n.unresolved.is_empty() {
+        let mut why: Vec<String> = o.unresolved.iter().map(|u| format!("before: {u}")).collect();
+        why.extend(n.unresolved.iter().map(|u| format!("after: {u}")));
+        out.push(obligation(&o.id, "unresolved".into(), Change::Unresolved, why, NEEDS_UNRESOLVED));
+    }
+    if n.id != o.id {
+        for ob in &mut out[start..] {
+            ob.new_entry = Some(n.id.clone());
+        }
+    }
+}
+
+fn input_differences(o: &EntryPointSpec, n: &EntryPointSpec) -> Vec<String> {
+    let describe = |s: &EntryPointSpec| -> Vec<String> { s.inputs.iter().zip(&s.bindings).map(|(i, b)| format!("{}: {} ({})", i.name, i.ty, b.source.words())).collect() };
+    let (a, b) = (describe(o), describe(n));
+    let mut out: Vec<String> = a.iter().filter(|x| !b.contains(x)).map(|x| format!("the input {x} is gone")).collect();
+    out.extend(b.iter().filter(|x| !a.contains(x)).map(|x| format!("a new input {x}")));
+    out
+}
+
+fn thrown_differences(o: &EntryPointSpec, n: &EntryPointSpec) -> Vec<String> {
+    let thrown = |s: &EntryPointSpec| -> BTreeSet<String> { s.statuses.iter().filter(|st| st.outcome != "returns").map(|st| st.outcome.clone()).collect() };
+    let (a, b) = (thrown(o), thrown(n));
+    let mut out: Vec<String> = a.difference(&b).map(|e| format!("the new build no longer throws {e}")).collect();
+    out.extend(b.difference(&a).map(|e| format!("the new build may throw {e}, the old one doesn't")));
+    out
+}
+
+fn status_words(st: &StatusOutcome) -> String {
+    format!("{} ({})", st.status.map_or_else(|| "unknown".to_string(), |c| c.to_string()), st.by)
+}
+
+/// A route's status for each outcome. Changed when an outcome both have maps to another known status, or, with
+/// every status known, one build can answer with a status the other never does; otherwise unresolved when a status
+/// is unknown, and preserved when none is, with any outcome only one build has as a difference its proof must cover.
+fn status_obligation(o: &EntryPointSpec, n: &EntryPointSpec) -> Obligation {
+    let mut changed = Vec::new();
+    let mut notes = Vec::new();
+    for a in &o.statuses {
+        match n.statuses.iter().find(|b| b.outcome == a.outcome) {
+            Some(b) if a.status.is_some() && b.status.is_some() && b.status != a.status => changed.push(format!("{}: {}, now {}", a.outcome, status_words(a), status_words(b))),
+            Some(b) if b.status != a.status => notes.push(format!("{}: {}, now {}", a.outcome, status_words(a), status_words(b))),
+            Some(_) => {}
+            None => notes.push(format!("the outcome {} ({}) is gone", a.outcome, status_words(a))),
+        }
+    }
+    for b in n.statuses.iter().filter(|b| !o.statuses.iter().any(|a| a.outcome == b.outcome)) {
+        notes.push(format!("a new outcome {} ({})", b.outcome, status_words(b)));
+    }
+    let codes = |s: &EntryPointSpec| -> BTreeSet<Option<u16>> { s.statuses.iter().map(|st| st.status).collect() };
+    let (a, b) = (codes(o), codes(n));
+    let unknown = a.contains(&None) || b.contains(&None);
+    // With a status unknown on either side, a code only one side lists may be the unknown one.
+    let differs = if unknown { &mut notes } else { &mut changed };
+    for c in a.difference(&b).flatten() {
+        differs.push(format!("the old build may answer {c}, the new one never does"));
+    }
+    for c in b.difference(&a).flatten() {
+        differs.push(format!("the new build may answer {c}, the old one never does"));
+    }
+    let id = Observation::Status.id();
+    if !changed.is_empty() {
+        changed.extend(notes);
+        obligation(&o.id, id, Change::Changed, changed, NEEDS_CHANGED)
+    } else if unknown {
+        notes.push("a status the analysis can't tell: the proof needs it modeled".into());
+        obligation(&o.id, id, Change::Unresolved, notes, NEEDS_STATUS)
+    } else {
+        obligation(&o.id, id, Change::Preserved, notes, NEEDS_STATUS)
+    }
+}
+
+fn site_words(e: &EffectSite) -> String {
+    format!("{} {}, {}, in {}", if e.kind == SiteKind::Send && e.target.starts_with("to ") { "sends" } else { e.kind.verb() }, e.target, e.placement.words(), e.in_method)
+}
+
+/// One effect. Changed when its payload's paths differ, or its call sites differ in kind, target or transaction
+/// placement; a different number of call sites is a difference the trace proof covers (it compares attempts, not
+/// sites).
+fn effect_obligation(o: &EntryPointSpec, n: &EntryPointSpec, call: &str, payload: &[String]) -> Obligation {
+    let id = format!("effect:{call}");
+    let Some(Observation::Effect { payload: now, .. }) = n.observations.iter().find(|x| x.id() == id) else { unreachable!("kept") };
+    let mut changed: Vec<String> = payload.iter().filter(|p| !now.contains(p)).map(|p| format!("its payload no longer snapshots {p}")).collect();
+    changed.extend(now.iter().filter(|p| !payload.contains(p)).map(|p| format!("its payload now also snapshots {p}")));
+    let shape = |s: &EntryPointSpec| -> BTreeSet<(SiteKind, String, Placement)> { s.effects.iter().filter(|e| e.call == call).map(|e| (e.kind, e.target.clone(), e.placement)).collect() };
+    let (a, b) = (shape(o), shape(n));
+    let placements = |set: &BTreeSet<(SiteKind, String, Placement)>, k: SiteKind, t: &str| -> Vec<Placement> { set.iter().filter(|(k2, t2, _)| *k2 == k && t2 == t).map(|x| x.2).collect() };
+    for (k, t, p) in a.difference(&b) {
+        let elsewhere = placements(&b, *k, t);
+        if elsewhere.is_empty() {
+            changed.push(format!("the old build {} {t} by it ({}), the new one doesn't", k.verb(), p.words()));
+        } else {
+            changed.push(format!("{} {t}: {}, now {}", k.verb(), p.words(), elsewhere.iter().map(|p| p.words()).collect::<Vec<_>>().join(" and ")));
+        }
+    }
+    for (k, t, p) in b.difference(&a) {
+        if placements(&a, *k, t).is_empty() {
+            changed.push(format!("the new build {} {t} by it ({}), the old one doesn't", k.verb(), p.words()));
+        }
+    }
+    let count = |s: &EntryPointSpec| s.effects.iter().filter(|e| e.call == call).count();
+    let notes: Vec<String> = if count(o) != count(n) { vec![format!("{} call sites in the old build, {} in the new", count(o), count(n))] } else { Vec::new() };
+    if changed.is_empty() {
+        obligation(&o.id, id, Change::Preserved, notes, NEEDS_EFFECT)
+    } else {
+        changed.extend(notes);
+        obligation(&o.id, id, Change::Changed, changed, NEEDS_CHANGED)
+    }
+}
+
+/// The obligations as text, grouped by entry point, with the accounting at the end, for
+/// `jvmcontract observations --against`.
+pub fn render_obligations(before: &[EntryPointSpec], obligations: &[Obligation]) -> String {
+    let mut out = String::new();
+    let mut last: Option<(&str, Option<&str>)> = None;
+    let mut i = 0;
+    while i < obligations.len() {
+        let ob = &obligations[i];
+        let here = (ob.entry.as_str(), ob.new_entry.as_deref());
+        if last != Some(here) {
+            match &ob.new_entry {
+                Some(n) => out.push_str(&format!("{} (now {n})\n", ob.entry)),
+                None => out.push_str(&format!("{}\n", ob.entry)),
+            }
+            last = Some(here);
+        }
+        // A run that differs only in the observation (an entry point removed or new) is one line.
+        let same = |o: &Obligation| (o.entry.as_str(), o.new_entry.as_deref()) == here && o.change == ob.change && o.differences == ob.differences && o.needs == ob.needs;
+        let run: Vec<&Obligation> = obligations[i..].iter().take_while(|o| same(o)).collect();
+        let named: Vec<&str> = run
+            .iter()
+            .map(|o| match o.observation.as_str() {
+                "unresolved" => "what the analysis can't see",
+                other => other,
+            })
+            .collect();
+        out.push_str(&format!("  {} {}\n", ob.change.words(), named.join(", ")));
+        for d in &ob.differences {
+            out.push_str(&format!("    - {d}\n"));
+        }
+        out.push_str(&format!("    needs {}\n", ob.needs));
+        i += run.len();
+    }
+    let old: usize = before.iter().map(|s| s.observations.len()).sum();
+    let count = |c: Change| obligations.iter().filter(|o| o.change == c && before.iter().any(|s| s.id == o.entry && s.observations.iter().any(|x| x.id() == o.observation))).count();
+    let new = obligations.iter().filter(|o| o.change == Change::New).count();
+    out.push_str(&format!(
+        "{old} observations of {} entry points: {} to prove preserved, {} changed and {} removed (each preserved only with a person's approval), {} unresolved; {new} new\n",
+        before.len(),
+        count(Change::Preserved),
+        count(Change::Changed),
+        count(Change::Removed),
+        count(Change::Unresolved),
+    ));
+    let gaps = unaccounted(before, obligations);
+    if !gaps.is_empty() {
+        out.push_str(&format!("not accounted for: {}\n", gaps.join("; ")));
+    }
+    out
+}
+
+impl Change {
+    fn words(self) -> &'static str {
+        match self {
+            Change::Preserved => "preserved, to prove:",
+            Change::Changed => "changed:",
+            Change::New => "new:",
+            Change::Removed => "removed:",
+            Change::Unresolved => "unresolved:",
         }
     }
 }

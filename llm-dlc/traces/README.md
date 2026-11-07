@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 04:32 UTC |
-| Prompts | 1,081 |
-| Model calls | 10,730 |
-| Tool calls | 11,584 (243 failed) |
-| Compactions | 147 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 04:46 UTC |
+| Prompts | 1,086 |
+| Model calls | 10,769 |
+| Tool calls | 11,625 (244 failed) |
+| Compactions | 148 |
 | Subagents | 5 |
-| Tokens written | 13,293,250 |
-| Tokens read | 1,760,744,926 (97.9% from cache) |
-| Commits with a trace | 330 |
-| Log snapshots | 407 (1069.7 MB gzipped, 404 uploaded) |
+| Tokens written | 13,334,711 |
+| Tokens read | 1,766,042,047 (97.9% from cache) |
+| Commits with a trace | 331 |
+| Log snapshots | 408 (1070.8 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | open | 31 min | `claude-opus-5-5` | 10 | 119 | 119 | 1 | 2 | 242,494 | 2 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | open | 45 min | `claude-opus-5-5` | 15 | 158 | 160 | 2 | 3 | 242,494 | 3 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,15 +127,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 86,661 | 236 | 442,240 | 17,834,332 | 97.6% | 211 |
+| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 128,122 | 314 | 613,635 | 22,959,980 | 97.4% | 184 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,177 | 87.9% | 46 |
-| `Edit` | 461 | 4.0% | 21 |
-| `Read` | 400 | 3.5% | 23 |
+| `Bash` | 10,208 | 87.8% | 46 |
+| `Edit` | 464 | 4.0% | 22 |
+| `Read` | 407 | 3.5% | 23 |
 | `Write` | 343 | 3.0% | 20 |
 | `ToolSearch` | 72 | 0.6% | 17 |
 | `Monitor` | 42 | 0.4% | 12 |
@@ -485,6 +485,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 328 | [`71ae92d2`](https://github.com/pilifs/in-the-loop/commit/71ae92d24caacaaa16d45594f06654af6bd9059e) | Record publishing the loops' run records as finding VF-013, deferred until after the next feature loop | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) ([log](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)) |
 | 329 | change `lslmmpwr` | Observation specs per entry point (foundations O1, step 1): lib/src/observations.rs, jvmcontract observations, and observe::entry_points | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/a10f822cf2eda481d43a923401b4637dd3881e543f78a2a36e681479fb85e107.jsonl.gz)) |
 | 330 | change `zmqrplsq` | Observation specs for every Box Office entry point (foundations O1, step 2), with sibling modules followed | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/278ea47be6bdfa79870dc448cc0bf7b5fc6da19b47f5317a6cbb5f9972ebbd57.jsonl.gz)) |
+| 331 | change `xstwptus` | Two builds' observation specs compared into accounted obligations (foundations O2, step 1): observations::compare and observations --against | [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) ([log](https://terminalvalue.net/raw-traces/e65240e3-5cf7-41e9-b648-0b36ce9f1129/fc77552d2be43ed25a2dc85f04f7a4c2cbc07394fe45fa6a93c331c47e9e4264.jsonl.gz)) |
 
 ## Logs
 
@@ -537,7 +538,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 2 | 0 | 1.2 MB | `278ea47be6bd`, not uploaded |
+| [`e65240e3`](e65240e3-5cf7-41e9-b648-0b36ce9f1129/summary.md) | 3 | 0 | 2.3 MB | `fc77552d2be4`, not uploaded |
 
 ## Session notes
 
