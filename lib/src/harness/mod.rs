@@ -120,6 +120,85 @@ pub struct Corresponds {
     /// one fails is outside the relation), and compared of them as the calls leave them, and of two results of the
     /// same pair of classes.
     pub equations: Vec<FieldEquation>,
+    /// The correspondence's output relations for the parameter's fields as the calls leave them (H5's rest): each
+    /// compared in place of the equations about the path it is for, which still make the previous object.
+    pub relations: Vec<FieldRelation>,
+}
+
+impl Corresponds {
+    /// The equations compared of the parameter as the calls leave it: those no output relation takes the place of.
+    pub fn compared_equations(&self) -> Vec<FieldEquation> {
+        self.equations.iter().filter(|e| !self.relations.iter().any(|r| r.covers(&e.old))).cloned().collect()
+    }
+}
+
+/// An output relation of a correspondence for an object parameter's field as the calls leave it (H5's rest): a
+/// boolean over primitive field paths of both versions' objects, `new.p.dollars * 100 + new.p.cents - old.p.cents <
+/// 100`, compared in place of equality for the previous version's path `path` (`cents`; empty for the whole
+/// object). A path through null makes it not hold.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FieldRelation {
+    /// The previous version's field path it is for, under the parameter: `cents`, `amount.cents`, or empty.
+    pub path: String,
+    /// As the correspondence writes it.
+    pub holds: String,
+    pub pieces: Vec<Piece>,
+    /// The paths read, each once, in order of first reading.
+    pub reads: Vec<RelationRead>,
+}
+
+/// A field path a [`FieldRelation`] reads: of the previous version's object (`previous`) or the new one's.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RelationRead {
+    pub previous: bool,
+    pub path: String,
+    pub ty: Type,
+}
+
+impl FieldRelation {
+    /// Whether it takes the place of equality for the previous version's path `old`: its own path, or one under it.
+    pub fn covers(&self, old: &str) -> bool {
+        self.path.is_empty() || old == self.path || old.strip_prefix(self.path.as_str()).is_some_and(|rest| rest.starts_with('.'))
+    }
+
+    /// The observation id it is for, `field:p.cents`, for the parameter `name`.
+    pub fn observation(&self, name: &str) -> String {
+        if self.path.is_empty() {
+            format!("field:{name}")
+        } else {
+            format!("field:{name}.{}", self.path)
+        }
+    }
+
+    /// It written with each read as `name(previous, path)`.
+    pub fn text(&self, name: &dyn Fn(bool, &str) -> String) -> String {
+        self.pieces.iter().map(|p| match p {
+            Piece::Text(t) => t.clone(),
+            Piece::Read(i) => name(self.reads[*i].previous, &self.reads[*i].path),
+        }).collect()
+    }
+
+    /// It compiled over locals, read `i` in the local `slots[i]`; `Err` unless it is a boolean.
+    pub fn parse(&self, slots: &[u16]) -> Result<expr::Expr, Error> {
+        let params: Vec<Param> = self.reads.iter().zip(slots).enumerate().map(|(i, (r, s))| Param { name: format!("read__{i}"), ty: r.ty.clone(), slot: *s }).collect();
+        let text = self.text(&|previous, path| format!("read__{}", self.reads.iter().position(|r| r.previous == previous && r.path == path).unwrap_or(0)));
+        let e = expr::parse_value(&text, &params, None, slots.iter().map(|s| s + 2).max().unwrap_or(0))?;
+        if e.ty() != expr::Ty::Boolean {
+            return Err(Error::new(format!("{} is not a boolean", self.holds.trim())));
+        }
+        Ok(e)
+    }
+
+    /// Whether it holds of the values of its reads, in order; `Err` where it can't be evaluated (a division by zero).
+    pub fn eval(&self, values: &[crate::interp::Value]) -> Result<bool, Error> {
+        let slots: Vec<u16> = (0..self.reads.len() as u16).map(|i| 2 * i).collect();
+        let e = self.parse(&slots)?;
+        let mut locals = vec![crate::interp::Value::Int(0); 2 * self.reads.len()];
+        for (i, v) in values.iter().enumerate() {
+            locals[2 * i] = *v;
+        }
+        Ok(expr::eval(&e, &locals)? == crate::interp::Value::Int(1))
+    }
 }
 
 /// What a leaf of the previous version's construction is made from, under a correspondence (step H5).
@@ -1541,7 +1620,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             let (Some(c), Some(fields), Some(old_fields)) = (&previous.corresponds, &record.fields, &previous.fields) else { continue };
             let (new_local, old_local) = object_slots(i);
             let scratch = code.max_locals;
-            let used = compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, scratch, outside);
+            let used = compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, &[], scratch, outside);
             code.max_locals = code.max_locals.max(used);
             related = true;
         }
@@ -1795,7 +1874,7 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                 // them, as of a parameter's objects of the same classes.
                 let (Some(fields), Some(old_fields), Some(equations)) = (&layout.result_fields.0, &layout.result_fields.1, &layout.result_equations) else { unreachable!("checked") };
                 let scratch = code.max_locals.max(index + 1);
-                let used = compare_corresponding(&mut code, &mut writer.pool, a, b, old_fields, fields, equations, scratch, fail);
+                let used = compare_corresponding(&mut code, &mut writer.pool, a, b, old_fields, fields, equations, &[], scratch, fail);
                 code.max_locals = code.max_locals.max(used);
             }
             Type::Object(_) if layout.result_fields.0.is_some() && layout.result_fields.1.is_some() => {
@@ -1843,7 +1922,8 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
             code.if_null(compared);
         }
         let used = match &previous.corresponds {
-            Some(c) => compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.equations, scratch, fail),
+            // Under output relations for its fields (H5's rest), each in place of the equations about its path.
+            Some(c) => compare_corresponding(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, &c.compared_equations(), &c.relations, scratch, fail),
             None => compare_fields(&mut code, &mut writer.pool, old_local, new_local, old_fields, fields, scratch, index, fail),
         };
         code.bind(compared);
@@ -2017,10 +2097,10 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
 
 /// Emits a jump to `fail` unless the previous version's object in the local `old` and the new version's in `new`
 /// agree under `equations` (step H5): both null, or neither, and each equation's two field paths reading the same,
-/// where a path through a null reads as absent and two absent agree. Uses the locals from `scratch` on and returns
-/// the first it leaves free.
+/// where a path through a null reads as absent and two absent agree, and each of `relations` holding of the two,
+/// where a path through null makes it fail. Uses the locals from `scratch` on and returns the first it leaves free.
 #[allow(clippy::too_many_arguments)]
-fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, equations: &[FieldEquation], scratch: u16, fail: Label) -> u16 {
+fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, old: u16, new: u16, old_fields: &Fields, fields: &Fields, equations: &[FieldEquation], relations: &[FieldRelation], scratch: u16, fail: Label) -> u16 {
     let (link, old_value, new_value, old_present, new_present, read_present, reads) = (scratch, scratch + 1, scratch + 3, scratch + 5, scratch + 6, scratch + 7, scratch + 8);
     let mut used = scratch + 8;
     let compare = code.label();
@@ -2084,6 +2164,26 @@ fn compare_corresponding(code: &mut CodeBuilder, pool: &mut crate::classfile::wr
         code.if_zero(Cond::Eq, next);
         compare_values(code, &ty, fail, &|code, side| code.load(kind_of(&ty), if side == 0 { old_value } else { new_value }));
         code.bind(next);
+    }
+    // Each output relation for a field (H5's rest): its paths read from both objects, failing where one goes
+    // through null, then the boolean.
+    for relation in relations {
+        let slots: Vec<u16> = (0..relation.reads.len() as u16).map(|j| reads + 2 * j).collect();
+        used = used.max(reads + 2 * relation.reads.len() as u16);
+        let steps = relation.reads.iter().map(|r| field_steps(if r.previous { old_fields } else { fields }, &r.path).map(|(s, _)| s)).collect::<Option<Vec<_>>>();
+        let (Ok(compiled), Some(steps)) = (relation.parse(&slots), steps) else {
+            // Refused when the correspondence was read; never agree on one.
+            code.goto(fail);
+            continue;
+        };
+        for ((r, steps), slot) in relation.reads.iter().zip(&steps).zip(&slots) {
+            let (root, prefix) = if r.previous { (old, Some("before")) } else { (new, None) };
+            emit_read_path(code, pool, root, steps, prefix, &r.ty, *slot, read_present, link);
+            code.load(Kind::Int, read_present);
+            code.if_zero(Cond::Eq, fail);
+        }
+        expr::emit(&compiled, code, pool);
+        code.if_zero(Cond::Eq, fail);
     }
     code.bind(done);
     used
@@ -2414,7 +2514,15 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     for slot in &records {
         if let Slot::Record { name, record, before: Some(previous), .. } = slot {
             let compared = match (&record.fields, &previous.fields, &previous.corresponds) {
-                (Some(_), Some(_), Some(c)) => equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations),
+                (Some(_), Some(_), Some(c)) => {
+                    let (old, new) = (format!("{name}_before"), format!("{name}_after"));
+                    let mut compared = equations_source(&old, &new, &c.compared_equations());
+                    // An output relation for a field in place of the equations about it (H5's rest).
+                    for r in &c.relations {
+                        compared = format!("{compared} && ({})", r.text(&|previous, path| format!("{}.{path}", if previous { &old } else { &new })).trim());
+                    }
+                    compared
+                }
                 (Some(fields), Some(old_fields), None) => fields_source(&format!("{name}_before"), &format!("{name}_after"), old_fields, fields),
                 _ => continue,
             };

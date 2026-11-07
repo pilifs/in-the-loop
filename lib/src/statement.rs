@@ -491,7 +491,17 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
         .records()
         .iter()
         .filter_map(|s| match s {
-            Slot::Record { name, before: Some(previous), .. } if previous.corresponds.is_some() => previous.corresponds.as_ref().map(|c| format!("{name}: under the correspondence, {}", c.equations.iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", "))),
+            // The equations an output relation for a field takes the place of are left out, and the relation
+            // follows (H5's rest): `p: under the correspondence; p.cents under the output relation …`.
+            Slot::Record { name, before: Some(previous), .. } if previous.corresponds.is_some() => previous.corresponds.as_ref().map(|c| {
+                let equations = c.compared_equations().iter().map(|e| e.text(name, name)).collect::<Vec<_>>().join(", ");
+                let mut text = if equations.is_empty() { format!("{name}: under the correspondence") } else { format!("{name}: under the correspondence, {equations}") };
+                for r in &c.relations {
+                    let path = if r.path.is_empty() { name.clone() } else { format!("{name}.{}", r.path) };
+                    text.push_str(&format!("; {path} under the output relation {}", r.holds.trim()));
+                }
+                text
+            }),
             Slot::Record { name, record, before: Some(_), .. } => record.fields.as_ref().map(|f| format!("{name}: {}", f.paths().iter().map(|(p, _)| p.as_str()).collect::<Vec<_>>().join(", "))),
             _ => None,
         })

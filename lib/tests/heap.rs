@@ -705,6 +705,10 @@ fn a_result_that_became_a_value_object_is_related_by_the_correspondences_output_
     let mut gap = correspondence(&[], None);
     gap.outputs.push(jvmcontract::spec::Relation { observation: "field:l.quantity".into(), holds: "old.l.quantity == new.l.quantity".into() });
     let o = related(root, "after", "objects.Kernel#price", gap, "gap");
+    assert!(o.problem.as_deref().unwrap().contains("is about l, which is not an object parameter the correspondence's input equations relate"), "{}", o.output);
+    let mut gap = correspondence(&[], None);
+    gap.outputs.push(jvmcontract::spec::Relation { observation: "identity:result==l".into(), holds: "true".into() });
+    let o = related(root, "after", "objects.Kernel#price", gap, "gap-identity");
     assert!(o.problem.as_deref().unwrap().contains("only one for the result"), "{}", o.output);
 }
 
@@ -1042,7 +1046,18 @@ public final class Prices {
 }
 "#;
 
-/// The price kernel's builds, compiled once: `before` (`Price(long cents)`), and `after` and `defect`
+const PRICES_ROUNDED: &str = r#"package prices;
+public final class Prices {
+    public static long total(Price p, int n) { return (p.dollars * 100 + p.cents) * n; }
+    public static Price doubled(Price p) { long c = (p.dollars * 100 + p.cents) * 2; return new Price(c / 100, (int) (c % 100)); }
+    // Raised, then rounded up to whole dollars: a change in what the price holds after the call.
+    public static void raise(Price p, int by) {
+        if (by > 0) { long c = p.dollars * 100 + p.cents + by; p.dollars = c % 100 > 0 ? c / 100 + 1 : c / 100; p.cents = 0; }
+    }
+}
+"#;
+
+/// The price kernel's builds, compiled once: `before` (`Price(long cents)`), and `after`, `defect` and `rounded`
 /// (`Price(long dollars, int cents)`).
 fn price_builds() -> Option<&'static PathBuf> {
     static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
@@ -1050,7 +1065,7 @@ fn price_builds() -> Option<&'static PathBuf> {
         compiled()?;
         let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("heap-prices");
         let _ = std::fs::remove_dir_all(&root);
-        for (build, price, prices) in [("before", PRICE_BEFORE, PRICES_BEFORE), ("after", PRICE_AFTER, PRICES_AFTER), ("defect", PRICE_AFTER, PRICES_DEFECT)] {
+        for (build, price, prices) in [("before", PRICE_BEFORE, PRICES_BEFORE), ("after", PRICE_AFTER, PRICES_AFTER), ("defect", PRICE_AFTER, PRICES_DEFECT), ("rounded", PRICE_AFTER, PRICES_ROUNDED)] {
             let src = root.join(format!("{build}-src/prices"));
             std::fs::create_dir_all(&src).unwrap();
             std::fs::write(src.join("Price.java"), price).unwrap();
@@ -1105,7 +1120,7 @@ fn a_previous_field_an_expression_gives_from_the_new_leaves_relates_two_shapes_o
     let o = related(root, "defect", "prices.Prices#raise", dollars_and_cents(), "raise");
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let cx = o.counterexample.as_ref().unwrap();
-    assert_eq!(cx.differs, ["field:p"], "{}", o.output);
+    assert_eq!(cx.differs, ["field:p", "field:p.cents"], "{}", o.output);
     // The new version's price as left reads, through the equation, as it was made: only the previous one moved.
     assert!(cx.before.starts_with("void, leaving p=Price{cents=") && cx.after == "void", "{} / {}", cx.before, cx.after);
     confirmed_on_the_jvm(&o);
@@ -1146,6 +1161,122 @@ fn an_offset_in_a_computed_equation_hides_a_changed_total_and_a_claim_that_ancho
     assert_eq!(o.verdict, V::Verified, "{o:?}");
     let gap = check("defect", &stated(offset, "old.p.cents == new.p.dollars * 100 + new.p.cents")).expect_err("not what the person stated");
     assert!(gap.what.contains("does not say"), "{gap:?}");
+}
+
+// Output relations for a parameter's field as the call leaves it (H5's rest): compared in place of the input
+// equation about its path, which still makes the previous object, and accounted for as the result's are.
+
+/// Within a dollar above: `raise` that rounds up to whole dollars, as the price kernel's `rounded` build does.
+const ROUNDED_UP: &str = "new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && new.p.dollars * 100 + new.p.cents - old.p.cents < 100";
+
+fn rounded_up() -> jvmcontract::spec::Correspondence {
+    let mut c = dollars_and_cents();
+    c.outputs.push(jvmcontract::spec::Relation { observation: "field:p.cents".into(), holds: ROUNDED_UP.into() });
+    c
+}
+
+#[test]
+fn an_output_relation_for_a_parameters_field_compares_it_as_the_call_leaves_it_in_place_of_the_equation() {
+    let Some(root) = price_builds() else { return };
+    // Under the equation alone, rounding up is a change in the price as left.
+    let o = related(root, "rounded", "prices.Prices#raise", dollars_and_cents(), "raise-equation");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert_eq!(o.counterexample.as_ref().unwrap().differs, ["field:p", "field:p.cents"], "{}", o.output);
+    // Under the relation for p.cents it is what the relation allows; so is the exact rewrite.
+    let o = related(root, "rounded", "prices.Prices#raise", rounded_up(), "raise-relation");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().unwrap();
+    assert_eq!(stated.observations.objects, [format!("p: under the correspondence; p.cents under the output relation {ROUNDED_UP}")]);
+    let domain = o.domain.as_deref().unwrap_or_default();
+    assert!(domain.contains("as the correspondence's input equations say (old.p.cents == new.p.dollars * 100 + new.p.cents)"), "the equation still makes the previous object: {domain}");
+    let source = std::fs::read_to_string(o.statement.as_ref().unwrap()).unwrap();
+    assert!(source.contains("if (!(p_before.cents == (p_after.dollars * 100 + p_after.cents))) { return; }"), "assumed of the objects as made: {source}");
+    assert!(source.contains("(true) && (p_after.dollars * 100 + p_after.cents - p_before.cents >= 0 && p_after.dollars * 100 + p_after.cents - p_before.cents < 100)"), "compared as left: {source}");
+    let o = related(root, "after", "prices.Prices#raise", rounded_up(), "raise-relation");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    // The carry dropped breaks it: refuted in the relation's observation, on a JVM too.
+    let o = related(root, "defect", "prices.Prices#raise", rounded_up(), "raise-relation");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let cx = o.counterexample.as_ref().unwrap();
+    assert_eq!(cx.differs, ["field:p.cents"], "{}", o.output);
+    assert!(o.output.contains(&format!("p.cents as the calls leave it is not related by {ROUNDED_UP}")), "{}", o.output);
+    confirmed_on_the_jvm(&o);
+    // A relation whose path the previous version doesn't have is named.
+    let mut c = dollars_and_cents();
+    c.outputs.push(jvmcontract::spec::Relation { observation: "field:p.dollars".into(), holds: "true".into() });
+    let o = related(root, "rounded", "prices.Prices#raise", c, "raise-unknown");
+    assert!(o.problem.as_deref().unwrap().contains("names dollars, which is not a field path of the previous version's Price"), "{}", o.output);
+}
+
+#[test]
+fn a_required_field_under_an_output_relation_is_unresolved_until_approved_and_then_changed_with_approval_or_refuted() {
+    use jvmcontract::spec::{ApprovedChange, Derivation, Observation, ObservationState, Verdict as V};
+    let Some(root) = price_builds() else { return };
+    let claim_of = |c: jvmcontract::spec::Correspondence| {
+        let mut claim = price_claim("prices.Prices#raise", c);
+        claim.contract.inputs[0].derivation = Derivation::Stated { expression: "old.p.cents == new.p.dollars * 100 + new.p.cents".into() };
+        let field = Observation::FieldPath { path: "p.cents".into() };
+        claim.contract.required.push(field.id());
+        claim.observations.push(field);
+        claim
+    };
+    let check = |build: &str, claim: &jvmcontract::spec::CanonicalClaim| jvmcontract::spec::heap::check(claim, &root.join("before"), &root.join(build)).expect("supported");
+    // Without the relation, rounding up is refuted in the price as left.
+    let o = check("rounded", &claim_of(dollars_and_cents()));
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "field:p.cents"), ObservationState::Refuted, "{o:?}");
+    // Under the relation, the contract still requires equality: unresolved, never verified, until a person approves.
+    let mut claim = claim_of(rounded_up());
+    let o = check("rounded", &claim);
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "field:p.cents"), ObservationState::Unresolved);
+    assert_eq!(state_of(&o, "result"), ObservationState::Preserved);
+    assert!(o.problem.as_deref().unwrap().contains("compares field:p.cents in place of equality"), "{o:?}");
+    // `true` would hide the dropped carry: it too stays unresolved.
+    let mut anything = claim_of(dollars_and_cents());
+    anything.correspondence.as_mut().unwrap().outputs.push(jvmcontract::spec::Relation { observation: "field:p.cents".into(), holds: "true".into() });
+    let o = check("defect", &anything);
+    assert_eq!(o.verdict, V::Unresolved, "{o:?}");
+    assert_eq!(state_of(&o, "field:p.cents"), ObservationState::Unresolved);
+    // Approved, by its path or the object's: changed with approval where it holds, refuted where it doesn't.
+    for approved in ["field:p.cents", "field:p"] {
+        claim.contract.approved_changes = vec![ApprovedChange { observation: approved.into(), text: "rounded up to whole dollars".into() }];
+        let o = check("rounded", &claim);
+        assert_eq!(o.verdict, V::Verified, "{approved}: {o:?}");
+        assert_eq!(state_of(&o, "field:p.cents"), ObservationState::ChangedWithApproval);
+        assert_eq!(state_of(&o, "exception"), ObservationState::Preserved);
+    }
+    let o = check("defect", &claim);
+    assert_eq!(o.verdict, V::Refuted, "{o:?}");
+    assert_eq!(state_of(&o, "field:p.cents"), ObservationState::Refuted);
+    // An approval of another path approves nothing here.
+    claim.contract.approved_changes = vec![ApprovedChange { observation: "field:p.dollars".into(), text: "elsewhere".into() }];
+    assert_eq!(check("rounded", &claim).verdict, V::Unresolved);
+}
+
+/// The output relations for a parameter's field under JBMC and under `auto --confirm`: the same verdicts as on the
+/// own checker, each refutation's witness run on a JVM, since JBMC checks the same harness (the relation compared in
+/// its bytecode). A pipeline job (`cargo test --release --test heap -- --ignored field_relations`).
+#[test]
+#[ignore = "runs JBMC on the field relations: a pipeline job"]
+fn the_field_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm() {
+    if Command::new("jbmc").arg("--version").output().is_err() {
+        return;
+    }
+    let Some(root) = price_builds() else { return };
+    let cases = [("rounded", false, Verdict::Violation), ("rounded", true, Verdict::Verified), ("after", true, Verdict::Verified), ("defect", true, Verdict::Violation)];
+    let mut failures = Vec::new();
+    for (engine, confirm) in [(jvmcontract::Engine::Jbmc, false), (jvmcontract::Engine::Auto, true)] {
+        for (build, relation, expected) in cases {
+            let c = if relation { rounded_up() } else { dollars_and_cents() };
+            let o = related_on(engine, confirm, root, build, "prices.Prices#raise", c, &format!("field-{relation}"));
+            let jvm = o.counterexample.as_ref().is_some_and(|cx| cx.jvm.is_some());
+            if o.verdict != expected || (expected == Verdict::Violation && !jvm) {
+                failures.push(format!("{engine:?} confirm={confirm} {build} relation={relation}: {:?} (expected {expected:?}, on a JVM {jvm})\n{}", o.verdict, o.output));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
 /// The computed input equations under JBMC and under `auto --confirm`: the same verdicts as on the own checker,

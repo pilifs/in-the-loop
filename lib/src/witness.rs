@@ -300,6 +300,9 @@ pub struct Replayed {
     /// Each primitive field path of a returned object the layout reads by its fields, as the call left it
     /// (`amount.cents`), for a relation between the results (step H5); a path through null is absent.
     pub result_paths: BTreeMap<String, Value>,
+    /// Under output relations for an object parameter's fields (H5's rest), each such parameter's primitive field
+    /// paths as the call left it, by name, for evaluating them over both replays; a path through null is absent.
+    pub object_paths: Vec<(String, BTreeMap<String, Value>)>,
 }
 
 impl Replayed {
@@ -496,7 +499,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     };
     let arg_values = values.clone();
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -527,12 +530,19 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         };
         references.push((r.path.clone(), v));
     }
-    // Under a correspondence, the objects it relates as the call left them, read through its equations.
+    // Under a correspondence, the objects it relates as the call left them, read through its equations; those an
+    // output relation takes the place of are left to it, which reads the object's paths (H5's rest).
     let mut views = Vec::new();
+    let mut object_paths = Vec::new();
     for (slot, v) in layout.args.iter().zip(&arg_values) {
-        if let Slot::Record { name, before: Some(previous), .. } = slot {
+        if let Slot::Record { name, record, before: Some(previous), .. } = slot {
             if let (Some(c), Some(old)) = (&previous.corresponds, &previous.fields) {
-                views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.equations, prefix.is_some())));
+                views.push((name.clone(), corresponding_view(&m, *v, &old.class, &c.compared_equations(), prefix.is_some())));
+                let fields = if prefix.is_some() { Some(old) } else { record.fields.as_ref() };
+                // A parameter its choice made null is null in both versions, and has nothing to relate.
+                if let (false, Some(fields), Value::Ref(_)) = (c.relations.is_empty(), fields, v) {
+                    object_paths.push((name.clone(), primitive_paths(&m, *v, fields)));
+                }
             }
         }
     }
@@ -564,11 +574,11 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new() },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
     };
     if let (Some(v), Some(fields)) = (result_value, result_fields_of) {
         replayed.result_paths = primitive_paths(&m, v, fields);
@@ -576,6 +586,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     replayed.objects_after = objects_after;
     replayed.references = references;
     replayed.views = views;
+    replayed.object_paths = object_paths;
     replayed.category = category;
     replayed
 }
@@ -583,7 +594,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
 /// The observations two replays of the same input differ in, by id ([`crate::spec::Observation::id`]), as the
 /// harness compares them: `exception` for the category, `result` (when both returned; through the correspondence's
 /// view under one), `array:a` for an array parameter as left, `field:q` for an object parameter as left (its view
-/// under a correspondence), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
+/// under a correspondence, with `field:q.cents` for each previous version's path the views read differently), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
 pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> Vec<String> {
     let mut out = Vec::new();
     let view = |r: &Replayed, name: &str| r.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
@@ -610,6 +621,19 @@ pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], argume
         let left = |r: &Replayed| view(r, name).or_else(|| r.objects_after.iter().find(|(n, _)| n == name).map(|(_, t)| t.clone()));
         if left(before) != left(after) {
             out.push(format!("field:{name}"));
+            // Through a correspondence's views, each previous version's path read differently too, `field:q.cents`.
+            if let (Some(x), Some(y)) = (view(before, name), view(after, name)) {
+                let parts = |v: &str| -> Vec<(String, String)> {
+                    let inner = v.split_once('{').map(|(_, rest)| rest.trim_end_matches('}')).unwrap_or_default();
+                    inner.split(", ").filter_map(|p| p.split_once('=')).map(|(k, v)| (k.to_string(), v.to_string())).collect()
+                };
+                let (xs, ys) = (parts(&x), parts(&y));
+                for (path, value) in &xs {
+                    if ys.iter().find(|(p, _)| p == path).map(|(_, v)| v) != Some(value) {
+                        out.push(format!("field:{name}.{path}"));
+                    }
+                }
+            }
         }
     }
     let holds = |r: &Replayed, x: &str, y: &str| {

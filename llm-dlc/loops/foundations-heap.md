@@ -480,8 +480,45 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     an old side that is an expression.
   - Shared files changed: `equivalence.rs` (two comments, the `correspondence` option's doc), `lib/README.md` (step
     5, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (the price kernel).
-- Next: H5's rest, third step: output relations for other observations, a parameter's field as the call leaves it
-  (`field:q.cents`, compared under the relation in place of the input equations), accounted as the result's are.
+- **H5's rest, third step (2026-11-07): output relations for an object parameter's field as the calls leave it.**
+  A correspondence's output relation for `field:p.cents` (a previous version's path; `field:p` for the whole object)
+  is a boolean over primitive field paths of that parameter's two objects, `old.p.…` and `new.p.…`
+  ([`harness::FieldRelation`](../../lib/src/harness/mod.rs) on `Corresponds::relations`, made by
+  [`spec::heap::relate`](../../lib/src/spec/heap.rs)), compared after the calls in place of the input equations about
+  that path or under it, which still make the previous object and are still assumed of the two as made: a `raise`
+  that now rounds up to whole dollars is related by `new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && … <
+  100`. A path through null makes it fail. The observations say so (`p: under the correspondence; p.cents under the
+  output relation …`); the replay evaluates it on both objects' paths as left (`Replayed::object_paths`), and a
+  witness it fails on differs in `field:p.cents`, with a note (`p.cents as the calls leave it is not related by …`).
+  A counterexample's `differs` now also names each previous version's path its correspondence views read differently
+  (`field:p` and `field:p.cents`), so that a claim requiring a path can be refuted in it. In `spec::heap::check`, a
+  relation for a field path bears on the required observations of that path, of paths under it and of the object
+  above it, and is approved by a change of its own path or one above it: unresolved without approval (`true` on the
+  dropped-carry defect included), changed with approval when proved, refuted when the witness breaks it. Refused by
+  name: a relation for a parameter no input equation relates, for a path the previous object doesn't have, two that
+  overlap, one that reads another parameter or a parameter as a whole, one that is not a boolean, and still one for
+  an identity relation.
+  - Evidence inline: `lib/tests/heap.rs`, a `rounded` build of the price kernel and two tests: rounding up refuted
+    under the equation alone (`differs = [field:p, field:p.cents]`) and verified under the relation, with the
+    observations' words and the harness's source checked; the exact `raise` verified under it; the dropped carry
+    refuted in `field:p.cents` with the note, on the JVM; an unknown path named. The claim's accounting: refuted in
+    `field:p.cents` without the relation; unresolved under it, and under `true` on the defect; approved by
+    `field:p.cents` or `field:p`, changed with approval, and the defect refuted; an approval of `field:p.dollars`
+    approving nothing. Two unit tests (the relation's reads, evaluation and refusals; `within` and `overlaps`), and
+    `output_relation` leaving field relations to `relate`. Unit tests (196), `heap.rs` (36), `foundations.rs`,
+    `conformance.rs` and `integration.rs` (64, 22 s at load 1.4) pass.
+  - *For review*: quick job `20261107-085410` (no runner was active), the new ignored test in `heap.rs`, the four
+    checks under `--engine jbmc` and `auto --confirm`: expected exit 0, `rounded` without the relation and `defect`
+    under it refuted with witnesses run on a JVM, `rounded` and `after` under it verified.
+  - Not yet: output relations for identity relations or over the previous version's parameters as the call got
+    them; a relation for a field of a parameter whose two versions have the same shape and no input equations; a
+    view's paths through an object field (`differs` names leaf paths only under a correspondence).
+  - Shared files changed: `equivalence.rs` (the refusal of a relation no parameter took, the replays' evaluation of
+    field relations, the `correspondence` option's doc), `statement.rs` (the objects' words under a field relation),
+    `lib/README.md` (step 5, `differs`, `spec::heap::check`'s paragraph), `lib/tests/heap.rs` (the `rounded` build,
+    the relation test's words for `field:l.quantity` changed to the new refusal).
+- Next: H5's rest, fourth step: an input equation's expression over several of the new version's parameters,
+  primitives among them (`old.q.total == new.q.price * new.n`), made before the call and compared after it.
 - Status: working
 
 ## Loop settings

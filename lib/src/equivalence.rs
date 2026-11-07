@@ -123,8 +123,9 @@ pub struct Options {
     /// How the previous version's objects are made from the new version's and compared with them where their
     /// shapes differ (step H5 of `llm-dlc/loops/foundations-heap.md`): a correspondence's input equations giving
     /// field paths of the previous version's parameter from the new one's, or an expression over them
-    /// ([`crate::spec::heap::relate`]), and an output relation for the
-    /// result in place of [`Options::results_agree_when`] ([`crate::spec::heap::output_relation`]).
+    /// ([`crate::spec::heap::relate`]), output relations for such a parameter's fields as the calls leave them in
+    /// place of the equations about them, and an output relation for the result in place of
+    /// [`Options::results_agree_when`] ([`crate::spec::heap::output_relation`]).
     pub correspondence: Option<crate::spec::Correspondence>,
     /// Object parameters made by their constructor that may be null (`--nullable`, step H2 of
     /// `llm-dlc/loops/foundations-heap.md`); every other is an object.
@@ -1003,6 +1004,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             None => None,
         });
     }
+    // An output relation for a parameter's fields (H5's rest) is compared with the parameter its input equations
+    // relate; one about anything else is refused.
+    if let Some(c) = correspondence {
+        for (root, r) in crate::spec::heap::field_relation_roots(c) {
+            let taken = before_names.iter().position(|n| *n == root).and_then(|i| both_records.get(i)).and_then(|b| b.as_ref()).and_then(|(_, b)| b.as_ref()).and_then(|b| b.corresponds.as_ref()).is_some_and(|c| c.relations.iter().any(|x| x.observation(&root) == r.observation));
+            if !taken {
+                return refuse(&mut out, line, format!("the correspondence's output relation for {} ({}) is about {root}, which is not an object parameter the correspondence's input equations relate: only relations for such a parameter's fields, and one for the result, are supported yet", r.observation, r.holds));
+            }
+        }
+    }
     // The records among the previous version's parameters, each built by a constructor call among the expressions.
     let mut previous_records = Vec::new();
     for t in &before_descriptor.params {
@@ -1445,6 +1456,36 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Some(b) if harness.before_args.is_none() => witness::differences(b, &after, params, arguments, &identity_pairs),
             _ => Vec::new(),
         };
+        // The correspondence's output relations for an object parameter's fields (H5's rest), each evaluated over
+        // the two versions' objects as the calls left them; one that fails is a difference in its observation.
+        let mut field_notes: Vec<String> = Vec::new();
+        if let Some(b) = &before {
+            for slot in &layout.args {
+                let harness::Slot::Record { name, before: Some(previous), .. } = slot else { continue };
+                let Some(c) = &previous.corresponds else { continue };
+                let paths = |x: &witness::Replayed| x.object_paths.iter().find(|(n, _)| n == name).map(|(_, p)| p.clone());
+                let (Some(old), Some(new)) = (paths(b), paths(&after)) else { continue };
+                for r in &c.relations {
+                    let values: Option<Vec<Value>> = r.reads.iter().map(|x| if x.previous { old.get(&x.path) } else { new.get(&x.path) }.copied()).collect();
+                    let shown = r.observation(name).trim_start_matches("field:").to_string();
+                    let note = match values.map(|v| r.eval(&v)) {
+                        Some(Ok(true)) => continue,
+                        Some(Ok(false)) => format!("{shown} as the calls leave it is not related by {}", r.holds.trim()),
+                        None => format!("{shown} as the calls leave it is not related by {}: a path it reads goes through null", r.holds.trim()),
+                        Some(Err(e)) => format!("the relation {} cannot be evaluated on {shown} as the calls leave it: {e}", r.holds.trim()),
+                    };
+                    field_notes.push(note);
+                    differs.push(r.observation(name));
+                }
+            }
+        }
+        let finish = |mut r: Replays| -> Replays {
+            if !field_notes.is_empty() {
+                r.agree = false;
+                r.relation_note = Some(r.relation_note.into_iter().chain(field_notes.iter().cloned()).collect::<Vec<_>>().join("; "));
+            }
+            r
+        };
         // A side that returned: a primitive or array value, or a record (null or not).
         let returned = |x: &witness::Replayed, record: bool| if record { x.thrown.is_none() && !x.outcome.starts_with('<') && x.outcome != "void" } else { x.returned.is_some() };
         let (agree, relation_note) = match (&harness.relation, &before) {
@@ -1463,7 +1504,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     if !agree && !differs.iter().any(|d| d == "result") {
                         differs.push("result".into());
                     }
-                    return Replays { before: before_text, after: after_text, agree, relation_note: note, differs };
+                    return finish(Replays { before: before_text, after: after_text, agree, relation_note: note, differs });
                 }
                 if let Some(cp) = &relation_cp {
                     // Over objects, the relation reads each result's field paths as the replay left them; whether
@@ -1484,7 +1525,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     if note.is_some() {
                         differs.push("result".into());
                     }
-                    return Replays { before: before_text, after: after_text, agree: holds && note.is_none(), relation_note: note, differs };
+                    return finish(Replays { before: before_text, after: after_text, agree: holds && note.is_none(), relation_note: note, differs });
                 }
                 let (mut locals, mut arrays) = locals_of(params, arguments);
                 locals.resize(usize::from(r.previous.max(r.result).max(r.slots_end)) + 2, Value::Int(0));
@@ -1514,7 +1555,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         if relation_note.is_some() && !differs.iter().any(|d| d == "result") {
             differs.push("result".into());
         }
-        Replays { before: before_text, after: after_text, agree, relation_note, differs }
+        finish(Replays { before: before_text, after: after_text, agree, relation_note, differs })
     };
     // With the shared callees first: a proof with them is a proof, and a counterexample with them is one when it
     // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are

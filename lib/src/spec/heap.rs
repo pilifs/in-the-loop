@@ -5,7 +5,7 @@
 use std::path::Path;
 
 use super::{Accounted, CanonicalClaim, Correspondence, Observation, ObservationState, Outcome, Part, Unsupported, Verdict};
-use crate::harness::{field_steps, Computed, Corresponds, FieldEquation, Piece, Read, RecordType, Source};
+use crate::harness::{field_steps, Computed, Corresponds, FieldEquation, FieldRelation, Piece, Read, RecordType, RelationRead, Source};
 
 /// How long one check may take: the joint example's are small.
 const DEADLINE_SECONDS: u64 = 300;
@@ -21,8 +21,8 @@ const DEADLINE_SECONDS: u64 = 300;
 /// otherwise unresolved, as is every observation the check does not compare, so that none leaves the count. A
 /// witness that differs only in observations the claim does not require refutes nothing, and the result is
 /// unresolved, as it is when no JVM has run the witness too (step H4). A required observation under one of the
-/// correspondence's output relations is compared under it rather than for equality, so it stays unresolved until a
-/// person approves the change in the contract. An input equation that computes a field of an input the contract anchors
+/// correspondence's output relations (the result's, or a parameter's field's as the call leaves it) is compared
+/// under it rather than for equality, so it stays unresolved until a person approves the change in the contract. An input equation that computes a field of an input the contract anchors
 /// (identity), rather than naming the field that holds it, is refused unless a person stated it in the input's
 /// derivation ([`anchored`]). A construction that needs more input objects than a version's bound leaves the result unresolved
 /// rather than proving something outside the claim. Claims about effects (an environment model) are the
@@ -92,15 +92,17 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
     // contract says: only a person's approved change makes that the claim. Without one it is unresolved, whatever
     // the check finds, so that no relation can make a difference disappear (`old.result == new.result - 1`) or
     // stand in for one.
+    // A relation for a field path (H5's rest) bears on every required observation of a path at or under it, or
+    // above it, and is approved by a change of its path or one above it.
     let related: Vec<&str> = claim.correspondence.iter().flat_map(|c| &c.outputs).map(|r| r.observation.as_str()).collect();
-    let approved = |id: &str| claim.contract.approved_changes.iter().any(|a| same_id(&a.observation, id));
-    let unapproved = |id: &str| related.iter().any(|r| same_id(r, id)) && !approved(id);
+    let approved = |relation: &str| claim.contract.approved_changes.iter().any(|a| within(relation, &a.observation));
+    let unapproved = |id: &str| related.iter().any(|r| overlaps(r, id) && !approved(r));
     match checked.verdict {
         crate::Verdict::Verified if checked.vacuous.is_some() => Ok(unresolved_all(domain, format!("vacuous: {}", checked.vacuous.unwrap_or_default()))),
         crate::Verdict::Verified => {
             let state = |r: &str| match () {
                 _ if !is_compared(r) || unapproved(r) => ObservationState::Unresolved,
-                _ if related.iter().any(|x| same_id(x, r)) => ObservationState::ChangedWithApproval,
+                _ if related.iter().any(|x| overlaps(x, r)) => ObservationState::ChangedWithApproval,
                 _ => ObservationState::Preserved,
             };
             let accounting: Vec<Accounted> = required.iter().map(|r| Accounted { observation: r.clone(), state: state(r) }).collect();
@@ -124,10 +126,10 @@ pub fn check(claim: &CanonicalClaim, before: &Path, after: &Path) -> Result<Outc
                 let how = checked.proof.clone().unwrap_or_default();
                 return Ok(Outcome { verdict: Verdict::Unresolved, domain, accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: Some(witness), problem: Some(format!("the witness replays in the interpreter but was not confirmed on a JVM ({how})")) });
             }
-            let refuted: Vec<&String> = required.iter().filter(|r| cx.differs.iter().any(|d| same_id(d, r)) && !unapproved(r)).collect();
+            let refuted: Vec<&String> = required.iter().filter(|r| cx.differs.iter().any(|d| within(d, r)) && !unapproved(r)).collect();
             let accounting: Vec<Accounted> = required.iter().map(|r| Accounted { observation: r.clone(), state: if refuted.contains(&r) { ObservationState::Refuted } else { ObservationState::Unresolved } }).collect();
             if refuted.is_empty() {
-                if let Some(r) = required.iter().find(|r| unapproved(r) && cx.differs.iter().any(|d| same_id(d, r))) {
+                if let Some(r) = required.iter().find(|r| unapproved(r) && cx.differs.iter().any(|d| overlaps(d, r))) {
                     return Ok(Outcome { verdict: Verdict::Unresolved, domain, accounting, witness: Some(witness), problem: Some(format!("the versions differ under the correspondence's output relation for {r}, which takes the place of the equality the preservation contract requires and which no person approved as changed")) });
                 }
                 let differs = if cx.differs.is_empty() { "observations the check does not tell apart".to_string() } else { cx.differs.join(", ") };
@@ -174,6 +176,16 @@ fn same_id(a: &str, b: &str) -> bool {
     swapped(a).is_some_and(|s| s == b)
 }
 
+/// Whether the observation `a` is `b` or, for field paths, under it: `field:q.amount.cents` within `field:q`.
+fn within(a: &str, b: &str) -> bool {
+    same_id(a, b) || matches!((a.strip_prefix("field:"), b.strip_prefix("field:")), (Some(x), Some(y)) if under(x, y))
+}
+
+/// Whether two observations bear on each other: one within the other.
+fn overlaps(a: &str, b: &str) -> bool {
+    within(a, b) || within(b, a)
+}
+
 /// The observations a regression statement compares, by id: the result and the exception always (a void method's
 /// result is nothing, alike in both), each array parameter, each object parameter's fields by path (`field:q.cents`,
 /// under a correspondence the previous version's paths), and each identity relation.
@@ -183,8 +195,16 @@ fn compared_observations(stated: &crate::statement::Statement) -> Vec<String> {
     out.extend(o.arrays.iter().map(|a| Observation::ArrayParameter { parameter: a.clone() }.id()));
     for object in &o.objects {
         let Some((name, rest)) = object.split_once(": ") else { continue };
-        let paths: Vec<String> = match rest.strip_prefix("under the correspondence, ") {
-            Some(equations) => equations.split(", ").filter_map(|e| e.split(" == ").next()?.strip_prefix(&format!("old.{name}.")).map(str::to_string)).collect(),
+        let paths: Vec<String> = match rest.strip_prefix("under the correspondence") {
+            // The equations compared, then each path an output relation compares (`; q.cents under the output
+            // relation …`), which counts as compared: how it is held to its relation is the accounting's.
+            Some(compared) => {
+                let mut parts = compared.split("; ");
+                let equations = parts.next().unwrap_or_default().strip_prefix(", ").unwrap_or_default();
+                let mut paths: Vec<String> = equations.split(", ").filter_map(|e| e.split(" == ").next()?.strip_prefix(&format!("old.{name}.")).map(str::to_string)).collect();
+                paths.extend(parts.filter_map(|p| p.split_once(" under the output relation ")).filter_map(|(path, _)| path.strip_prefix(&format!("{name}.")).map(str::to_string)));
+                paths
+            }
             None => rest.split(", ").map(str::to_string).collect(),
         };
         out.extend(paths.iter().map(|p| Observation::FieldPath { path: format!("{name}.{p}") }.id()));
@@ -239,9 +259,24 @@ fn expression_root(e: &super::Equation) -> Result<String, String> {
 /// version's input (`Err((root, path))`, `new.p.dollars` as `("p", "dollars")`). A read of the previous version's
 /// input, or of a parameter as a whole, is refused.
 fn new_pieces(text: &str) -> Result<Vec<Result<String, (String, String)>>, String> {
+    let mut out = Vec::new();
+    for piece in pieces_of(text)? {
+        match piece {
+            Ok(plain) => out.push(Ok(plain)),
+            Err((true, _, _)) => return Err("reads the previous version's input: the new side is over the new version's".into()),
+            Err((false, root, path)) => out.push(Err((root, path))),
+        }
+    }
+    Ok(out)
+}
+
+/// An expression over both versions as pieces: text as written (`Ok`), and each read of a field path
+/// (`Err((previous, root, path))`, `old.q.cents` as `(true, "q", "cents")`). A read of a parameter as a whole is
+/// refused.
+fn pieces_of(text: &str) -> Result<Vec<Result<String, (bool, String, String)>>, String> {
     let chars: Vec<char> = text.chars().collect();
     let identifier = |c: char| c.is_alphanumeric() || c == '_';
-    let mut out: Vec<Result<String, (String, String)>> = Vec::new();
+    let mut out: Vec<Result<String, (bool, String, String)>> = Vec::new();
     let mut plain = String::new();
     let mut i = 0;
     while i < chars.len() {
@@ -254,9 +289,6 @@ fn new_pieces(text: &str) -> Result<Vec<Result<String, (String, String)>>, Strin
             }
             let word: String = chars[start..i].iter().collect();
             if (word == "old" || word == "new") && chars.get(i) == Some(&'.') {
-                if word == "old" {
-                    return Err("reads the previous version's input: the new side is over the new version's".into());
-                }
                 let mut steps = Vec::new();
                 while chars.get(i) == Some(&'.') {
                     let next = i + 1;
@@ -271,12 +303,12 @@ fn new_pieces(text: &str) -> Result<Vec<Result<String, (String, String)>>, Strin
                     i = end;
                 }
                 if steps.len() < 2 {
-                    return Err(format!("reads new.{} as a whole: only its primitive field paths are read", steps.join(".")));
+                    return Err(format!("reads {word}.{} as a whole: only its primitive field paths are read", steps.join(".")));
                 }
                 if !plain.is_empty() {
                     out.push(Ok(std::mem::take(&mut plain)));
                 }
-                out.push(Err((steps[0].clone(), steps[1..].join("."))));
+                out.push(Err((word == "old", steps[0].clone(), steps[1..].join("."))));
                 continue;
             }
             plain.push_str(&word);
@@ -300,15 +332,17 @@ pub(crate) fn is_computed(e: &super::Equation) -> bool {
 /// The correspondence's output relation as a result relation of the regression check (`--results-agree-when`'s
 /// form): a boolean over `old.result` (the previous version's result), `new.result` (the new one's) and the new
 /// version's parameters, `new.n` or `n`, which becomes one over `previous`, `result` and `n`. An object result is
-/// in it by its field paths, `old.result.cents == new.result.amount.cents`. None without output relations; `Err`
-/// names an output relation not supported yet: one about another observation than the result, several about it,
-/// or one that reads the previous version's parameters.
+/// in it by its field paths, `old.result.cents == new.result.amount.cents`. None without an output relation for
+/// the result (those for a parameter's fields are [`relate`]'s); `Err` names an output relation not supported yet:
+/// one about another observation than the result or a field path, several about the result, or one that reads the
+/// previous version's parameters.
 pub(crate) fn output_relation(correspondence: &Correspondence) -> Result<Option<String>, String> {
     let result = Observation::Result.id();
-    if let Some(r) = correspondence.outputs.iter().find(|r| r.observation != result) {
-        return Err(format!("the correspondence's output relation for {} ({}) is not supported yet: only one for the result, over old.result, new.result and the new version's parameters", r.observation, r.holds));
+    if let Some(r) = correspondence.outputs.iter().find(|r| r.observation != result && !r.observation.starts_with("field:")) {
+        return Err(format!("the correspondence's output relation for {} ({}) is not supported yet: only one for the result, over old.result, new.result and the new version's parameters, and ones for an object parameter's fields as the call leaves them, over old.p and new.p paths", r.observation, r.holds));
     }
-    let mut relations = correspondence.outputs.iter();
+    // Those for a parameter's fields are compared with the parameter (relate).
+    let mut relations = correspondence.outputs.iter().filter(|r| r.observation == result);
     let Some(relation) = relations.next() else { return Ok(None) };
     if relations.next().is_some() {
         return Err("the correspondence has several output relations for the result: state them as one, joined by &&".into());
@@ -442,7 +476,74 @@ pub(crate) fn relate(correspondence: &Correspondence, old_name: &str, new_name: 
             }
         }
     }
-    Some(Ok(Corresponds { leaves, equations }))
+    let relations = match field_relations(correspondence, old_name, new_name, new, old) {
+        Ok(r) => r,
+        Err(gap) => return Some(Err(gap)),
+    };
+    Some(Ok(Corresponds { leaves, equations, relations }))
+}
+
+/// The correspondence's output relations for the parameter's fields as the calls leave them (H5's rest), each for
+/// `field:{old_name}` or `field:{old_name}.path` (a previous version's path, primitive or an object's), a boolean
+/// over primitive field paths of the parameter's two objects, `old.{old_name}.…` and `new.{new_name}.…`. `Err`
+/// names one that is not supported.
+fn field_relations(correspondence: &Correspondence, old_name: &str, new_name: &str, new: &RecordType, old: &RecordType) -> Result<Vec<FieldRelation>, String> {
+    let (Some(fields), Some(old_fields)) = (&new.fields, &old.fields) else { return Ok(Vec::new()) };
+    let paths_of = |f: &crate::harness::Fields| f.paths().iter().map(|(p, _)| p.clone()).collect::<Vec<_>>().join(", ");
+    let whole = format!("field:{old_name}");
+    let mut out: Vec<FieldRelation> = Vec::new();
+    for r in &correspondence.outputs {
+        let path = match r.observation.strip_prefix(whole.as_str()) {
+            Some("") => "",
+            Some(rest) if rest.starts_with('.') => &rest[1..],
+            _ => continue,
+        };
+        let about = |why: String| format!("the correspondence's output relation for {} ({}) {why}", r.observation, r.holds);
+        if !path.is_empty() && !old_fields.paths().iter().any(|(p, _)| p == path || p.strip_prefix(path).is_some_and(|rest| rest.starts_with('.'))) {
+            return Err(about(format!("names {path}, which is not a field path of the previous version's {} ({})", old.simple_name(), paths_of(old_fields))));
+        }
+        if let Some(other) = out.iter().find(|o| o.covers(path) || under(&o.path, path)) {
+            return Err(about(format!("overlaps the one for {}: state the relations for a path as one, joined by &&", other.observation(old_name))));
+        }
+        let mut relation = FieldRelation { path: path.to_string(), holds: r.holds.clone(), pieces: Vec::new(), reads: Vec::new() };
+        for piece in pieces_of(&r.holds).map_err(&about)? {
+            match piece {
+                Ok(plain) => relation.pieces.push(Piece::Text(plain)),
+                Err((previous, root, path)) => {
+                    let (name, f, version) = if previous { (old_name, old_fields, "previous") } else { (new_name, fields, "new") };
+                    if root != name {
+                        return Err(about(format!("reads {}.{root}: an output relation for {old_name}'s fields reads only the two versions' {old_name}, as the call leaves it", if previous { "old" } else { "new" })));
+                    }
+                    let Some((_, ty)) = field_steps(f, &path).filter(|(_, ty)| ty.is_primitive()) else {
+                        return Err(about(format!("reads {path}, which is not a primitive field path of the {version} version's {} ({})", if previous { old.simple_name() } else { new.simple_name() }, paths_of(f))));
+                    };
+                    let at = match relation.reads.iter().position(|x| x.previous == previous && x.path == path) {
+                        Some(at) => at,
+                        None => {
+                            relation.reads.push(RelationRead { previous, path, ty });
+                            relation.reads.len() - 1
+                        }
+                    };
+                    relation.pieces.push(Piece::Read(at));
+                }
+            }
+        }
+        if let Err(why) = relation.parse(&(0..relation.reads.len() as u16).map(|i| 2 * i).collect::<Vec<_>>()) {
+            return Err(about(format!("is not one the harness compares: {why}")));
+        }
+        out.push(relation);
+    }
+    Ok(out)
+}
+
+/// Whether the field path `path` is `prefix` or under it; every path is under the empty one.
+fn under(path: &str, prefix: &str) -> bool {
+    prefix.is_empty() || path == prefix || path.strip_prefix(prefix).is_some_and(|rest| rest.starts_with('.'))
+}
+
+/// The parameters the correspondence's output relations for fields are about: `q` for `field:q.cents`.
+pub(crate) fn field_relation_roots(correspondence: &Correspondence) -> Vec<(String, &super::Relation)> {
+    correspondence.outputs.iter().filter_map(|r| r.observation.strip_prefix("field:").map(|p| (p.split('.').next().unwrap_or(p).to_string(), r))).collect()
 }
 
 #[cfg(test)]
@@ -547,13 +648,62 @@ mod tests {
     }
 
     #[test]
+    fn an_output_relation_for_a_field_takes_the_place_of_the_equations_about_its_path() {
+        let (new, old) = prices();
+        let mut c = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
+        let holds = "new.p.dollars * 100 + new.p.cents - old.p.cents >= 0 && new.p.dollars * 100 + new.p.cents - old.p.cents < 100";
+        c.outputs.push(super::super::Relation { observation: "field:p.cents".into(), holds: holds.into() });
+        let related = relate(&c, "p", "p", &new, &old).expect("about p").expect("supported");
+        let [r] = related.relations.as_slice() else { panic!("one relation: {related:?}") };
+        assert_eq!((r.path.as_str(), r.observation("p")), ("cents", "field:p.cents".to_string()));
+        assert_eq!(r.reads.iter().map(|x| (x.previous, x.path.as_str())).collect::<Vec<_>>(), vec![(false, "dollars"), (false, "cents"), (true, "cents")]);
+        // The equation still makes the previous object; after the calls the relation is compared in its place.
+        assert_eq!(related.equations.len(), 1);
+        assert!(related.compared_equations().is_empty());
+        use crate::interp::Value::{Int, Long};
+        assert!(r.eval(&[Long(3), Int(0), Long(250)]).unwrap(), "300 is 250 rounded up to a dollar");
+        assert!(!r.eval(&[Long(4), Int(0), Long(250)]).unwrap());
+        assert!(r.covers("cents") && !r.covers("centsx"));
+        // Refused by name.
+        let gap = |observation: &str, holds: &str| {
+            let mut c = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
+            c.outputs.push(super::super::Relation { observation: observation.into(), holds: holds.into() });
+            relate(&c, "p", "p", &new, &old).expect("about p").expect_err("a gap")
+        };
+        assert!(gap("field:p.euros", "true").contains("names euros, which is not a field path of the previous version's Price"));
+        assert!(gap("field:p.cents", "new.p.dollars").contains("is not a boolean"));
+        assert!(gap("field:p.cents", "old.q.cents == new.p.cents").contains("reads old.q"));
+        assert!(gap("field:p.cents", "old.p.dollars == 0").contains("reads dollars, which is not a primitive field path of the previous version's Price"));
+        assert!(gap("field:p.cents", "old.p == new.p").contains("reads old.p as a whole"));
+        let mut both = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
+        for o in ["field:p", "field:p.cents"] {
+            both.outputs.push(super::super::Relation { observation: o.into(), holds: "true".into() });
+        }
+        assert!(relate(&both, "p", "p", &new, &old).unwrap().unwrap_err().contains("overlaps the one for field:p"));
+        // About another parameter: not p's.
+        let mut other = correspondence(&[("old.p.cents", "new.p.dollars * 100 + new.p.cents")]);
+        other.outputs.push(super::super::Relation { observation: "field:pp.cents".into(), holds: "true".into() });
+        assert!(relate(&other, "p", "p", &new, &old).unwrap().unwrap().relations.is_empty());
+        assert_eq!(field_relation_roots(&other).iter().map(|(root, _)| root.as_str()).collect::<Vec<_>>(), ["pp"]);
+    }
+
+    #[test]
+    fn a_relation_for_a_field_path_bears_on_the_observations_at_under_and_above_it() {
+        assert!(within("field:q.amount.cents", "field:q") && !within("field:q", "field:q.amount.cents"));
+        assert!(overlaps("field:q", "field:q.cents") && !overlaps("field:q.cents", "field:q.centsx") && !overlaps("field:q", "field:qq"));
+        assert!(within("identity:q==result", "identity:result==q") && !within("result", "field:result"));
+    }
+
+    #[test]
     fn an_output_relation_becomes_one_between_previous_and_result() {
         let with = |outputs: &[(&str, &str)]| Correspondence { inputs: Vec::new(), outputs: outputs.iter().map(|(o, h)| super::super::Relation { observation: (*o).into(), holds: (*h).into() }).collect() };
         assert_eq!(output_relation(&with(&[])).unwrap(), None);
         assert_eq!(output_relation(&with(&[("result", "old.result == new.result.amount.cents && new.n > 0")])).unwrap().as_deref(), Some("previous == result.amount.cents && n > 0"));
         // A word that only ends in old, a member after a dot, and a bare parameter are left alone.
         assert_eq!(output_relation(&with(&[("result", "Math.abs(old.result - new.result.cents) <= gold.length")])).unwrap().as_deref(), Some("Math.abs(previous - result.cents) <= gold.length"));
-        assert!(output_relation(&with(&[("field:q.cents", "old.q.cents == new.q.amount.cents")])).unwrap_err().contains("only one for the result"));
+        // One for a parameter's field is the parameter's (relate); one for an identity relation isn't supported.
+        assert_eq!(output_relation(&with(&[("field:q.cents", "old.q.cents == new.q.amount.cents")])).unwrap(), None);
+        assert!(output_relation(&with(&[("identity:result==q", "true")])).unwrap_err().contains("only one for the result"));
         assert!(output_relation(&with(&[("result", "old.result == new.result"), ("result", "true")])).unwrap_err().contains("several output relations"));
         assert!(output_relation(&with(&[("result", "old.result == old.q.cents")])).unwrap_err().contains("reads old.q"));
     }
