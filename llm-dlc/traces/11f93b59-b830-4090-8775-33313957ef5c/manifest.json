@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.567Z",
-  "ended": "2026-11-07T04:58:52.715Z",
-  "duration_seconds": 3453,
+  "ended": "2026-11-07T04:59:14.251Z",
+  "duration_seconds": 3475,
   "stats": {
     "turns": 15,
-    "api_calls": 152,
-    "tool_calls": 152,
+    "api_calls": 154,
+    "tool_calls": 154,
     "tool_errors": 4,
     "compactions": 3,
-    "peak_context_tokens": 239583,
+    "peak_context_tokens": 243008,
     "usage": {
-      "input_tokens": 304,
-      "output_tokens": 171897,
-      "cache_read_input_tokens": 22167318,
-      "cache_creation_input_tokens": 624795
+      "input_tokens": 308,
+      "output_tokens": 173410,
+      "cache_read_input_tokens": 22648502,
+      "cache_creation_input_tokens": 628220
     }
   },
   "tools": {
-    "Bash": 132,
+    "Bash": 134,
     "Read": 13,
     "Write": 5,
     "Edit": 1,
@@ -89,24 +89,24 @@
     {
       "index": 3,
       "started": "2026-11-07T04:29:27.356Z",
-      "ended": "2026-11-07T04:58:52.715Z",
+      "ended": "2026-11-07T04:59:14.251Z",
       "turns": 4,
-      "api_calls": 58,
+      "api_calls": 60,
       "usage": {
-        "input_tokens": 118,
-        "output_tokens": 71806,
-        "cache_read_input_tokens": 9455880,
-        "cache_creation_input_tokens": 226504
+        "input_tokens": 122,
+        "output_tokens": 73319,
+        "cache_read_input_tokens": 9937064,
+        "cache_creation_input_tokens": 229929
       },
-      "peak_context_tokens": 239583
+      "peak_context_tokens": 243008
     }
   ],
   "log": {
-    "sha256": "39ba85dbce2b8161e4587d36779118ccb78dfc7755bb7571986630b794cafead",
-    "bytes": 5397888,
-    "lines": 1717,
-    "gzip_bytes": 1115536,
-    "path": "llm-dlc/traces/11f93b59-b830-4090-8775-33313957ef5c/logs/39ba85dbce2b8161e4587d36779118ccb78dfc7755bb7571986630b794cafead.jsonl.gz"
+    "sha256": "c7eedb8b56b0e35cfb8691c3a877f28d98ec6c6dc385320bba7b3115bf77b72a",
+    "bytes": 5458536,
+    "lines": 1736,
+    "gzip_bytes": 1126901,
+    "path": "llm-dlc/traces/11f93b59-b830-4090-8775-33313957ef5c/logs/c7eedb8b56b0e35cfb8691c3a877f28d98ec6c6dc385320bba7b3115bf77b72a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -141,6 +141,14 @@
       "summary": "Alignment A3 (static half): align maps each matched pair's arguments, records and result under the preservation contract, scored on examples 121-139",
       "body": "jvmcontract align now relates, for every method pair it matches, how each old input is made from the new inputs and how the results compare, in the form --before-arguments and --results-agree-when take (lib/src/alignment/mappings.rs). It works under the comparison's preservation contract (the new --contract option, or for a standalone method the one its two signatures imply): an input the contract fixes is mapped to itself and nothing else, a stated derivation is used as stated, and candidates are only names, field paths, an integral cast and records built with their constructors, never arithmetic, so the offset mapping before.c = after.c + 1 cannot be proposed. Internal inputs (a parameter gathered into a record, a record that gained a component) are ranked by name, type and position, a weak or tied match is a question, and new inputs nothing uses are left free. Results come from a small catalogue (equal, widened, wrapped or unwrapped, compared on the old components, or a changed meaning put to a person as a question), and every required observation stays in the accounting. Proposals go to the hints file as inferred, proposed, unchecked correspondences.\n\nVerified with 8 new tests in lib/tests/alignment.rs (the planted offset case with and without a contract among them), 4 in examples/tools/test_alignment.py, and the whole cargo suite; the integration contract still reports alignment as unsupported, now naming A4. Scored on the A1 table (examples/tools/alignment/scores/A3-mappings.json): 50 of 50 anchored inputs, 8 of 8 internal, 4 of 4 new inputs left free, 17 of 17 inferred results found, and the 2 changed results (122, 123) asked; nothing wrong or missed, and the proposals amount to the examples' own hand-written flags. The rules were written with that table in view, so this shows consistency, not generality. No proofs yet: checking proposals by the regression proof is A3's second half, after A4's narrow case.",
       "log_sha256": "39ba85dbce2b8161e4587d36779118ccb78dfc7755bb7571986630b794cafead"
+    },
+    {
+      "change_id": "orvwtmzmlqtskzqrympuyknmkxwuumko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Alignment Progress: name the sync.py check errors after A3's static half, none of them this stream's",
+      "body": "After the A3 commit, sync.py check lists 18 errors: more of the other streams' commits without a manifest in this workspace, and five of the planning session's launch commits from before the fork, which point at a log their manifest does not list. None is on this stream's work, and the traces they concern are outside what a stream may edit; the Progress section names them for the reconcile loop. No code changed.",
+      "log_sha256": "c7eedb8b56b0e35cfb8691c3a877f28d98ec6c6dc385320bba7b3115bf77b72a"
     }
   ],
   "logs": {
@@ -154,6 +162,12 @@
       "bytes": 1531768,
       "lines": 422,
       "gzip_bytes": 336301,
+      "url": null
+    },
+    "c7eedb8b56b0e35cfb8691c3a877f28d98ec6c6dc385320bba7b3115bf77b72a": {
+      "bytes": 5458536,
+      "lines": 1736,
+      "gzip_bytes": 1126901,
       "url": null
     },
     "e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e": {

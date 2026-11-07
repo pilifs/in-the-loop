@@ -158,7 +158,12 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
 - For the reconcile loop: `sync.py check` in this workspace reports errors this stream can't fix, all "session …
   has no manifest", for other streams' commits that `check` sees in the shared repository: `xuxuymrrrqsq` and
   `spkzmqwzmuom` (summaries S1, S2a), `uyqkxslyysrm` (heap H1) and `lslmmpwrvxuz` (observations O1). None is on this
-  branch. Their manifests are in their own workspaces; the errors should resolve at the merge.
+  branch. Their manifests are in their own workspaces; the errors should resolve at the merge. After A3's static
+  half (2026-11-07) `check` lists 18: the same kind for more of the other streams' commits (`xstwptusvqsx`,
+  `uvmurzwkyukn`, `wwxvkxkmywxp`, `tumpnkkqksyp`, `zmqrplsqzwmm`, among them), and five of the planning session's
+  launch commits before the fork (`olwyzkwouyln`, `xrkxxnnuwwuq`, `nnqrnknuvslx`, `xpsxzuolnwop`, `kxnqrntnkztt`),
+  which "point at log 1f2230c9f137 that the manifest does not list". Those are ancestors of every stream, their traces
+  outside what a stream may edit; none of the 18 is this stream's commit.
 - **A3, its static half, done** (2026-11-07): `align` now maps the arguments, records and result of every pair it
   matches (`lib/src/alignment/mappings.rs`), under the comparison's preservation contract (`--contract FILE`, or for
   a standalone method the one its two signatures imply, reported as standalone).
