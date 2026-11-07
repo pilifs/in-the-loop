@@ -137,6 +137,10 @@ pub struct Options {
     /// Pairs of object parameters of one class that may be the same object (`--may-alias a,b`), closed under chains;
     /// every other is an object of its own.
     pub may_alias: Vec<(String, String)>,
+    /// The builds `before` and `after` were made from, when they are copies of them (the effect-trace proof's
+    /// rewritten builds, [`crate::effects`]): the run a stored result's provenance names. None names `before` and
+    /// `after` themselves.
+    pub copied_from: Option<(PathBuf, PathBuf)>,
 }
 
 impl Options {
@@ -175,6 +179,7 @@ impl Options {
             correspondence: None,
             nullable: Vec::new(),
             may_alias: Vec::new(),
+            copied_from: None,
         }
     }
 }

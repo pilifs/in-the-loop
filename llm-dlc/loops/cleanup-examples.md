@@ -260,8 +260,24 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   - Inline: `foundations.rs` (4, with the integration contract at 24 passed, 0 unsupported), `heap.rs` (46, 9
     JBMC tests ignored as before), `compare.rs`, `effects.rs` (17) and the unit tests (203) pass.
   - Shared file: `lib/README.md`, one sentence added to the heap check's refusals.
-- Next: E4's other two leftovers, the reused proof's source run, then the golden domain's `allocations: 0`. E1's five
-  jobs (`20261107-16515x`) and E2's two runs are still pending. E2's third job follows once its two runs are collected.
+- **E4, the third leftover: fixed.** A reuse names the run it came from by the builds that run was given. The
+  effect-trace proof runs on rewritten copies of the two builds in a temporary directory, and the proof cache's
+  provenance named those copies (`on /tmp/jvmcontract-effects-…/before and …/after`). It now names the builds the
+  copies were made from (`on copies of BEFORE and AFTER`).
+  - `equivalence::Options` gains `copied_from` (additive, a shared file). `effects::check_in` sets it, and the
+    provenance in `proof_cache.rs` reads it. `proof_cache.rs` is no stream's: the change is that one format. Helper
+    proofs clone the caller's options, so they name the same builds.
+  - `jvmcontract effects`' text now says where an exact hit came from (`from …`), as `compare` already did for the
+    kernel's.
+  - **Reproducers:** `tests/effects.rs`' `an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged` checks the
+    reuse's `from`, the reused proof and the text. `tests/compare.rs`'s `the_joint_example_passes_every_row` checks the
+    entry point's, the three kernel pairs' and alias-to-copy's reuse (which names the run on `after` it came from),
+    and the text. Both failed before the fix, on the temporary paths, and pass after it.
+  - Inline: `effects.rs` (17), `compare.rs` (1), `foundations.rs` (4), `heap.rs` (46, 9 ignored), `summaries.rs`
+    (40) and the unit tests (203) pass. The build has no warnings.
+  - Shared file: `lib/README.md`, one sentence added to the effect trace's cache paragraph.
+- Next: E4's last leftover, the golden domain's `allocations: 0`. E1's five jobs (`20261107-16515x`) and E2's two runs
+  are still pending. E2's third job follows once its two runs are collected.
 - Status: working
 
 ## Loop settings
