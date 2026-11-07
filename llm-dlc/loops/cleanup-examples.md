@@ -348,9 +348,22 @@ In order. E1 to E4 don't depend on each other: when one waits on a job, go on wi
   branch's.
 - This cycle's prompt named the brief in the default workspace (`/home/filip/code/in-the-loop/llm-dlc/…`). That copy's
   Progress is the one from before this stream's first commit, so this workspace's copy is the one updated.
-- Next: E2's last step, a fresh `lib/benchmark/results.json` recorded at the current commit as a separate job,
-  through `collect`.
-- Status: working
+- **E2, VF-014: the fresh recording queued**, as the entry's separate step: `20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso`.
+  - It runs `20261106-201041`'s step unchanged, at this stream's current commit. That is the job that wrote the
+    committed `results.json`: native, jbmc and auto, under strict, assume and advised, with JBMC under its three
+    staging policies. So the reference keeps every engine's runs, not only the own checker's, which would have made
+    it weaker.
+  - `results.json` and `RESULTS.md` are its outputs, so `collect` replaces both. The default workspace's copies have
+    the same sha256 as this commit's, so they can be applied.
+  - The budget is 2 CPUs, 4.5G with a 6G limit, about 2 h, timeout 6 h. `201041` peaked at its 4G limit, and the
+    corpus has grown since. `submit` said that no runner here can take 6G, but it read this workspace's
+    `pipeline.toml`, which has no local file. The default workspace's `pipeline.local.toml` allows 14G a job.
+  - If it exits 1 on a JBMC or auto run, that is a finding for the jbmc stream, and `results.json` isn't replaced.
+- `ytqpqomo` and `rzmrlklw` (the verification loop's `ed84ffdf`) have no manifest here either: more check errors that
+  aren't this branch's.
+- Next: nothing that needs only this stream's work. E2 closes when the comparison passes. VF-002's 147 and 148 are
+  deferred by the timebox, and every other item is closed.
+- Status: waiting on jobs 20261107-183328-vf-014-h1-isolated-run-3-of-3-the-benchm 20261107-183709-vf-014-a-fresh-lib-benchmark-results-jso
 
 ## Loop settings
 
