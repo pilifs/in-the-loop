@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:45:26.751Z",
-  "duration_seconds": 4543,
+  "ended": "2026-11-07T22:45:43.806Z",
+  "duration_seconds": 4560,
   "stats": {
     "turns": 25,
-    "api_calls": 226,
-    "tool_calls": 229,
+    "api_calls": 227,
+    "tool_calls": 230,
     "tool_errors": 6,
     "compactions": 4,
-    "peak_context_tokens": 256556,
+    "peak_context_tokens": 258123,
     "usage": {
-      "input_tokens": 458,
-      "output_tokens": 134735,
-      "cache_read_input_tokens": 24699810,
-      "cache_creation_input_tokens": 549317
+      "input_tokens": 460,
+      "output_tokens": 135717,
+      "cache_read_input_tokens": 24956364,
+      "cache_creation_input_tokens": 550884
     }
   },
   "tools": {
-    "Bash": 202,
+    "Bash": 203,
     "Read": 12,
     "Edit": 5,
     "AskUserQuestion": 3,
@@ -102,24 +102,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:45:26.751Z",
+      "ended": "2026-11-07T22:45:43.806Z",
       "turns": 7,
-      "api_calls": 122,
+      "api_calls": 123,
       "usage": {
-        "input_tokens": 244,
-        "output_tokens": 87326,
-        "cache_read_input_tokens": 17387836,
-        "cache_creation_input_tokens": 243477
+        "input_tokens": 246,
+        "output_tokens": 88308,
+        "cache_read_input_tokens": 17644390,
+        "cache_creation_input_tokens": 245044
       },
-      "peak_context_tokens": 256556
+      "peak_context_tokens": 258123
     }
   ],
   "log": {
-    "sha256": "acfc726b62365c2af79b2c4dda4ce8da095978683feb1f7f5f2dd4affd987337",
-    "bytes": 6530224,
-    "lines": 2168,
-    "gzip_bytes": 1248476,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/acfc726b62365c2af79b2c4dda4ce8da095978683feb1f7f5f2dd4affd987337.jsonl.gz"
+    "sha256": "d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419",
+    "bytes": 6606457,
+    "lines": 2184,
+    "gzip_bytes": 1263248,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -274,6 +274,14 @@
       "summary": "VF-018: a triage job that records what JBMC is given for H5's objects.Kernel#price and measures where its time goes (verification pending)",
       "body": "VF-018: three of H5's regression proofs over objects under a correspondence get no verdict from JBMC within 1800 s, where the own checker proves them. The user decided to triage the harness and keep the tests' expectation. verification/triage/vf018.sh, run by job 20261107-224523-vf-018-triage-what-jbmc-is-given-for-h5, runs the output relations test with JBMC behind a wrapper that records each command line (120 s per run; the test is expected to fail), measures the first proof's harness and goto program, and reruns that proof directly with --verbosity 8, as given, at --unwind 8, 4 and 2, and with --slice-formula, 900 s each. Only summary.txt and proof-command.txt are declared outputs, so the result stays small. Nothing in the tests or the tool changes. The script's plumbing was checked inline against stand-in jbmc and cargo commands: the proof command is picked past a goto-program run, --json-ui and --timestamp are dropped, and each variant changes only --unwind or adds --slice-formula. verification/findings.md records the job under VF-018.",
       "log_sha256": "acfc726b62365c2af79b2c4dda4ce8da095978683feb1f7f5f2dd4affd987337"
+    },
+    {
+      "change_id": "vlqkuwrmzuqrxqtxnxqxotqqmtouqxmn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 148's resubmitted job no longer names three contracts in its title",
+      "body": "The job 20261107-223430-example-148-b11-advised-contracts-full-j kept its predecessor's title, '1 proved against the JDK's bytecode, 2 tested on the JVM', which the run may no longer give now that Integer.numberOfLeadingZeros is no gap (VF-002). It now says the run reports the contracts and their evidence, as its description and expectation already did. Nothing else changed; pipeline.py validate finds 0 problems.",
+      "log_sha256": "d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419"
     }
   ],
   "logs": {
@@ -347,6 +355,12 @@
       "bytes": 6530224,
       "lines": 2168,
       "gzip_bytes": 1248476,
+      "url": null
+    },
+    "d120c7448a4f6fce974363a3e84e27824f749336e425c63f190d8b0ac488e419": {
+      "bytes": 6606457,
+      "lines": 2184,
+      "gzip_bytes": 1263248,
       "url": null
     },
     "e4cd86f8e8253c24f18c141af07b55a2bf29d6d7a2a05b150b7aefbde1e89f57": {
