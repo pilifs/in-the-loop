@@ -26,7 +26,7 @@ Job 20261107-000039 (engine-priorities step 4a rerun) passed on vm-1 in 4m22s: 4
 
 ### Record session traces
 
-change `xlnupmwrqvow` · [log `b110c1620fe0`](https://terminalvalue.net/raw-traces/6c5734d4-89ff-437e-bc66-c0e159c45d5c/b110c1620fe08b99471d2739fe1ed820b247518cbdfa916a6693ac697f789434.jsonl.gz)
+[`372a8c8c8187`](https://github.com/pilifs/in-the-loop/commit/372a8c8c8187c3cc2a3a1a99fe18ca32d21b4c20) · [log `b110c1620fe0`](https://terminalvalue.net/raw-traces/6c5734d4-89ff-437e-bc66-c0e159c45d5c/b110c1620fe08b99471d2739fe1ed820b247518cbdfa916a6693ac697f789434.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

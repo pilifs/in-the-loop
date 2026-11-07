@@ -532,7 +532,7 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   8. the smaller ones the streams noted: ~~the sampled encoding flagging short runs `phasesExcess`~~ (fixed; job
      `20261107-032249` failed on another cause, VF-012: the benchmark read a single-digit `long` witness as a `char`,
      fixed in `run.py`. Read by hand from that job's output, 0 of 533 runs are flagged and the median ratio of seconds
-     is 0.963. Rerun `20261107-033320` pending). Single gates and whole word-level circuits were sampled one in 64 from one stream
+     is 0.963. The rerun, `20261107-033320`, passed both steps: 0 of 533 runs flagged, median ratio 0.974, VF-012 closed). Single gates and whole word-level circuits were sampled one in 64 from one stream
      with a fixed seed, so a short run that sampled a multiplier counted it 64 times on every run. Each word-level
      operation is now timed whole and only single gates are sampled. Reproducer:
      `the_encoding_estimate_does_not_count_a_large_circuit_many_times_over` estimated 0.063 s of 0.001 s before the
@@ -555,7 +555,7 @@ its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jb
   KB, but six of the seven hold unredacted local paths. So they should be published through the redaction pipeline,
   as the traces are (into git beside each session's summary, or to R2 with the logs), rather than by removing them
   from `.gitignore`. That is a change to `sync.py`, not made here.
-- Status: waiting on jobs 20261107-033320
+- Status: done
 
 ## Loop settings
 

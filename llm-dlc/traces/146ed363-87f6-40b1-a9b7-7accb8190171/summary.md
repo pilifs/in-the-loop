@@ -26,9 +26,15 @@ Job 20261107-033320 (rerun of the VF-012 job at dc03b87fb961, vm-1) passed both 
 
 ### Record session traces
 
-change `xlnupmwrqvow` · [log `0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)
+[`372a8c8c8187`](https://github.com/pilifs/in-the-loop/commit/372a8c8c8187c3cc2a3a1a99fe18ca32d21b4c20) · [log `0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
+### The engine-priorities brief is done: its last job passed
+
+change `oktzykqrqovt` · [log `0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz)
+
+Job 20261107-033320 (the own checker's encoding timed whole per word-level operation, rerun after the benchmark's witness fix) passed both steps, as the runner recorded in the previous commit, closing VF-012. 0 of 533 own-checker runs are flagged phasesExcess, against 1 of 356 in job 20261106-201041. The median ratio of seconds is 0.974 (quartiles 0.872 to 1.002) over the 29 runs of 0.1 s or more. The brief's Progress records it, and its status is now done. What is left is deferred by the user as findings (VF-009, VF-010, VF-011), the draft brief llm-dlc/loops/jbmc-upstream.md, and the run records flagged for publishing later. Only Progress changed.
 
 ## Conversation
 

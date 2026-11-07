@@ -40,6 +40,12 @@ Housekeeping, at the user's request: the six loop run records only the two strea
 
 Job 20261107-033320 (rerun of the VF-012 job at dc03b87fb961, vm-1) passed both steps in 2m20s: no false alarm on leadingZerosLong/2, 0 of 533 own-checker runs flagged phasesExcess (reference job: 1 of 356), median seconds ratio 0.974 against job 20261106-201041 over 29 runs of 0.1 s or more. VF-012 is closed in verification/findles.md.
 
+### The engine-priorities brief is done: its last job passed
+
+change `oktzykqrqovt` · [log `3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz)
+
+Job 20261107-033320 (the own checker's encoding timed whole per word-level operation, rerun after the benchmark's witness fix) passed both steps, as the runner recorded in the previous commit, closing VF-012. 0 of 533 own-checker runs are flagged phasesExcess, against 1 of 356 in job 20261106-201041. The median ratio of seconds is 0.974 (quartiles 0.872 to 1.002) over the 29 runs of 0.1 s or more. The brief's Progress records it, and its status is now done. What is left is deferred by the user as findings (VF-009, VF-010, VF-011), the draft brief llm-dlc/loops/jbmc-upstream.md, and the run records flagged for publishing later. Only Progress changed.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) has every step in between: reasoning, tool calls and their results.
