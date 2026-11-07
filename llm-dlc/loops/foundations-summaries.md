@@ -266,6 +266,16 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
     - `lib/README.md` (a paragraph on `impact`);
     - `examples/tools/impact_check.py` (new).
   - Own file: `closure.rs` (`digest_of_version`).
+- `sync.py check` after S3 reports 15 errors, none from this branch's work:
+  - 9 sessions with no manifest, behind other streams' commits, none an ancestor of `@`:
+    - heap: `uyqkxslyysrm`, `lonuluzqnlmt`, and `uvmurzwkyukn` (a verification record on its branch);
+    - observations: `lslmmpwrvxuz`, `zmqrplsqzwmm`, `xstwptusvqsx`;
+    - alignment: `yomwzkpyqppx`, `prrxuoknonuz`, `szkpqzylrnmv`.
+  - 5 commits from before the fork, ancestors of `@`, point at log `1f2230c9f137` of session `c2bd9df4`:
+    `olwyzkwouyln`, `xrkxxnnuwwuq`, `nnqrnknuvslx`, `xpsxzuolnwop`, `kxnqrntnkztt`. Another workspace rewrote them at
+    04:44 on 2026-11-07, after S2b, and jj rebased this branch onto the rewrite. The default workspace's manifest of
+    `c2bd9df4` lists that log, and this branch's copy, from before the rewrite, doesn't. This branch may not edit
+    `llm-dlc/traces/`, so the errors clear at the merge.
 - Next: S4, narrow shared helpers proved equivalent.
   - In `shared.rs`: a pure, deterministic helper pair with the same parameter and result types, whose own
     equivalence proof (in the cache, or proved first within the budget) covers the caller's call sites. It gets one
