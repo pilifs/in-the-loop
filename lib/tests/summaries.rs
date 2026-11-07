@@ -747,3 +747,86 @@ fn the_cache_is_used_with_the_own_checker_only() {
     assert!(run.output.contains("the proof cache is not used") && run.output.contains("JBMC"), "{}", run.output);
     assert!(walk_files(&dir).is_empty(), "nothing stored");
 }
+
+// S3: change impact.
+
+use jvmcontract::impact::{self, Claim, ClaimImpact};
+
+const MONEY: &str = "package k;\npublic record Money(long cents) { public Money { if (cents < 0) throw new IllegalArgumentException(); } }\n";
+const TILL: &str = "package k;\npublic final class Till { public static long add(Money a, Money b) { return a.cents() + b.cents(); } }\n";
+
+fn report(a: &Path, b: &Path, claims: &[Claim]) -> Vec<ClaimImpact> {
+    let none = Configuration::none();
+    impact::impact(&cp(a), &cp(b), &none, &none, claims).claims
+}
+
+fn status(c: &ClaimImpact) -> &'static str {
+    match c.verdict {
+        impact::Verdict::Unchanged => "unchanged",
+        impact::Verdict::Invalidated { .. } => "invalidated",
+        impact::Verdict::Unresolved { .. } => "unresolved",
+    }
+}
+
+fn parts(c: &ClaimImpact) -> Vec<String> {
+    match &c.verdict {
+        impact::Verdict::Invalidated { changes, .. } => changes.iter().map(|p| format!("{p:?}")).collect(),
+        _ => Vec::new(),
+    }
+}
+
+#[test]
+fn the_impact_report_names_the_claims_a_change_invalidates_and_the_parts_that_changed() {
+    let changed = PRICING.replace("gross / RATE", "gross / RATE + 0 * gross");
+    let (Some(a), Some(b)) = (base("impact-a", &[]), base("impact-b", &[("k/Pricing.java", &changed)])) else { return };
+    let claims = [Claim::new("k.Pricing#total"), Claim::new("k.Pricing#discount"), Claim::new("k.Other#one"), Claim::new("k.Shape#twice")];
+    let out = report(&a, &b, &claims);
+    assert_eq!(out.iter().map(status).collect::<Vec<_>>(), ["invalidated", "invalidated", "unchanged", "unchanged"]);
+    let discount = PartChange::Changed { part: "method k/Pricing.discount(J)J".into() };
+    assert_eq!(parts(&out[0]), [format!("{discount:?}")], "total is invalidated by its callee, and nothing else");
+    assert_eq!(parts(&out[1]), [format!("{discount:?}")]);
+    // The same build twice invalidates nothing.
+    assert!(report(&a, &a, &claims).iter().all(|c| status(c) == "unchanged"));
+}
+
+#[test]
+fn a_renamed_target_a_target_gone_and_one_not_in_the_first_build() {
+    let renamed = PRICING.replace("long total(", "long net(");
+    let (Some(a), Some(b)) = (base("impact-rename-a", &[]), base("impact-rename-b", &[("k/Pricing.java", &renamed)])) else { return };
+    let mut moved = Claim::new("k.Pricing#net");
+    moved.before_target = Some("k.Pricing#total".into());
+    let out = report(&a, &b, &[moved, Claim::new("k.Pricing#total"), Claim::new("k.Pricing#net"), Claim::new("k.Nowhere#x")]);
+    assert_eq!(out.iter().map(status).collect::<Vec<_>>(), ["invalidated", "invalidated", "unresolved", "unresolved"]);
+    assert!(parts(&out[0]).iter().any(|p| p.contains("Removed") && p.contains("k/Pricing.total(J)J")), "{:?}", parts(&out[0]));
+    assert!(parts(&out[0]).iter().any(|p| p.contains("Added") && p.contains("k/Pricing.net(J)J")), "{:?}", parts(&out[0]));
+    let impact::Verdict::Invalidated { reason: Some(reason), .. } = &out[1].verdict else { panic!("{:?}", out[1]) };
+    assert!(reason.contains("gone from the second build"), "{reason}");
+}
+
+#[test]
+fn a_record_input_s_constructor_is_part_of_the_claim_s_code() {
+    let checked = MONEY.replace("cents < 0", "cents < -1");
+    let (Some(a), Some(b)) = (base("impact-record-a", &[("k/Money.java", MONEY), ("k/Till.java", TILL)]), base("impact-record-b", &[("k/Money.java", &checked), ("k/Till.java", TILL)])) else { return };
+    let add = MemberRef::new("k/Till", "add", "(Lk/Money;Lk/Money;)J");
+    assert!(changes(&a, &b, &add).is_empty(), "add's own closure never runs the constructor");
+    let roots = impact::roots(&cp(&a), "k.Till#add").unwrap();
+    assert_eq!(roots, [add, MemberRef::new("k/Money", "<init>", "(J)V")], "the target and the record's canonical constructor");
+    let out = report(&a, &b, &[Claim::new("k.Till#add")]);
+    assert_eq!(status(&out[0]), "invalidated");
+    assert_eq!(parts(&out[0]), [format!("{:?}", PartChange::Changed { part: "method k/Money.<init>(J)V".into() })]);
+    // The verdict is the cache key's: the version digest over the same roots differs.
+    let (x, y) = version_digests(&a, &b, &roots);
+    assert_ne!(x, y);
+}
+
+#[test]
+fn claims_are_read_from_build_py_s_records_as_they_are() {
+    let plan: Value = serde_json::json!([{"example": "023", "claim": {"approach": "B11", "target": "p.A#f"}},
+        {"example": "128", "claim": {"target": "p.B#g", "previousSymbol": "p.C#g"}}]);
+    let record: Value = serde_json::json!({"id": "0123abcd", "example": "031", "statement": {"target": "p.D#h"}});
+    let own: Value = serde_json::json!({"claims": [{"id": "x", "target": "p.E#i", "beforeTarget": "p.E#j", "status": "unchanged"}]});
+    let claims: Vec<Claim> = [plan, record, own].iter().flat_map(|v| impact::claims_from_json(v).unwrap()).collect();
+    let expected = [("023", "p.A#f", None), ("128", "p.B#g", Some("p.C#g")), ("031", "p.D#h", None), ("x", "p.E#i", Some("p.E#j"))];
+    assert_eq!(claims, expected.map(|(id, t, b)| Claim { id: id.into(), target: t.into(), before_target: b.map(str::to_string) }));
+    assert!(impact::claims_from_json(&serde_json::json!([{"example": "1"}])).is_err(), "a claim with no target is refused");
+}

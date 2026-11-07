@@ -45,6 +45,7 @@ pub mod digest;
 pub mod domain;
 pub mod equivalence;
 pub mod harness;
+pub mod impact;
 pub mod interp;
 pub mod jbmc;
 pub mod jbmc_contracts;

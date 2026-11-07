@@ -328,6 +328,18 @@ to an exact reuse naming the claim key and the run it came from, and no checker 
 stored witness in the harness on both versions as they are now, and is a miss if it no longer reproduces; a
 refutation whose witness doesn't reproduce in the interpreter, as stored, is not stored at all.
 
+`impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
+invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as
+it is, with `previousSymbol` for a renamed method). A claim's code is what its key digests: the closures of the
+target and of the canonical constructor of each record its inputs are made with. Per claim, it is *invalidated*,
+with each part that differs (`changed method k/Pricing.discount(J)J`; a class's declaration, a dispatch set, a
+configuration file, a name that appeared or went), or with the reason when the target is gone; *unchanged*, so a
+cached result is still hit on its code; or *unresolved*, when the first build has no such method.
+[`examples/tools/impact_check.py`](../examples/tools/impact_check.py) checks it on the B9 and B11 examples of the
+javac apps: for each example, every claim of its app against the unpatched build and the build with its patch,
+judged against what the class files show independently of the closure walk (which classes' bytes changed, and which
+application classes each target's class refers to or may dispatch to).
+
 ## Limits
 
 - The interpreter models a subset of the JDK. Code outside it is *unverifiable*, never wrong; the message names the method. JBMC's view of the JDK is narrower still: it gets six JDK classes (`Byte`, `Short`, `Integer`, `Long`, `Math`, `StrictMath`) and the tool's [models](models/README.md) of a few more (the boxing caches, `Character.digit`, `java.nio.charset`, `Enum`, `List.of` and `List.copyOf`), and treats every other JDK class as a stub with nondeterministic fields and results, so a class whose static initializer reads a JDK static the tool does not model, or a call into a JDK method it does not, can end in a `NullPointerException` or an arbitrary result the JVM never produces. The replay in the interpreter is the check that catches most of these (a witness the interpreter cannot reproduce is reported as unverifiable, not as a violation); the fix is a model. Enum `hashCode` is deterministic here (the constant's name hash) where a JVM's is identity-based, and `ClassCastException` messages omit the class-loader suffix a JVM adds.

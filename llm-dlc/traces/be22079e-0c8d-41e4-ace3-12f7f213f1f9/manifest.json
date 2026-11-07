@@ -12,31 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T04:01:19.542Z",
-  "ended": "2026-11-07T04:38:40.375Z",
-  "duration_seconds": 2241,
+  "ended": "2026-11-07T04:53:41.588Z",
+  "duration_seconds": 3142,
   "stats": {
-    "turns": 15,
-    "api_calls": 138,
-    "tool_calls": 141,
-    "tool_errors": 0,
-    "compactions": 3,
-    "peak_context_tokens": 252284,
+    "turns": 20,
+    "api_calls": 198,
+    "tool_calls": 203,
+    "tool_errors": 1,
+    "compactions": 4,
+    "peak_context_tokens": 255299,
     "usage": {
-      "input_tokens": 274,
-      "output_tokens": 153471,
-      "cache_read_input_tokens": 21355198,
-      "cache_creation_input_tokens": 657275
+      "input_tokens": 396,
+      "output_tokens": 205440,
+      "cache_read_input_tokens": 30001283,
+      "cache_creation_input_tokens": 850763
     }
   },
   "tools": {
-    "Bash": 117,
-    "Read": 17,
-    "Write": 4,
-    "Edit": 3
+    "Bash": 171,
+    "Read": 21,
+    "Write": 6,
+    "Edit": 5
   },
   "files_touched": [
+    "examples/tools/impact_check.py",
     "lib/README.md",
     "lib/src/closure.rs",
+    "lib/src/impact.rs",
     "lib/src/proof_cache.rs",
     "lib/src/spec/cache.rs",
     "lib/tests/summaries.rs",
@@ -88,24 +90,38 @@
     {
       "index": 3,
       "started": "2026-11-07T04:21:54.987Z",
-      "ended": "2026-11-07T04:38:40.375Z",
-      "turns": 4,
-      "api_calls": 50,
+      "ended": "2026-11-07T04:38:58.064Z",
+      "turns": 5,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 100,
-        "output_tokens": 69630,
-        "cache_read_input_tokens": 8720186,
-        "cache_creation_input_tokens": 239205
+        "input_tokens": 106,
+        "output_tokens": 70754,
+        "cache_read_input_tokens": 9226440,
+        "cache_creation_input_tokens": 242218
       },
-      "peak_context_tokens": 252284
+      "peak_context_tokens": 255299
+    },
+    {
+      "index": 4,
+      "started": "2026-11-07T04:39:34.125Z",
+      "ended": "2026-11-07T04:53:41.588Z",
+      "turns": 4,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 116,
+        "output_tokens": 50845,
+        "cache_read_input_tokens": 8139831,
+        "cache_creation_input_tokens": 190475
+      },
+      "peak_context_tokens": 203554
     }
   ],
   "log": {
-    "sha256": "0aafe926b7f7dc1ff807d83cf829eb8890fd5fc22939e4b9d82d00ceafe155aa",
-    "bytes": 5409513,
-    "lines": 1606,
-    "gzip_bytes": 1131846,
-    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/0aafe926b7f7dc1ff807d83cf829eb8890fd5fc22939e4b9d82d00ceafe155aa.jsonl.gz"
+    "sha256": "67bb1c62ef957ae44ca49b16ffbddae17b2583a26822db443bb8a2604402b895",
+    "bytes": 7244321,
+    "lines": 2231,
+    "gzip_bytes": 1508106,
+    "path": "llm-dlc/traces/be22079e-0c8d-41e4-ace3-12f7f213f1f9/logs/67bb1c62ef957ae44ca49b16ffbddae17b2583a26822db443bb8a2604402b895.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -140,6 +156,14 @@
       "summary": "Summaries Progress: name the other streams' commits that sync.py check reports without a manifest",
       "body": "After the S2b commit, sync.py check reports 6 errors, each a session with no manifest behind another stream's commit: heap uyqkxslyysrm, observations lslmmpwrvxuz and zmqrplsqzwmm, alignment yomwzkpyqppx, prrxuoknonuz and szkpqzylrnmv. None is an ancestor of this branch's @. Each manifest lives on its own stream's branch, so this branch can't fix them, and they clear at the merge. Recorded under Progress in foundations-summaries.md; nothing else changed.",
       "log_sha256": "0aafe926b7f7dc1ff807d83cf829eb8890fd5fc22939e4b9d82d00ceafe155aa"
+    },
+    {
+      "change_id": "nplsyutxqysnzzqwzmyyuulnptwszmsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summaries S3: jvmcontract impact, the claims a change invalidates and the parts of their code that changed",
+      "body": "New command jvmcontract impact --before DIR --after DIR, with claims from --target or a --claims file. build.py's claim.json and --plan output serve as they are, with previousSymbol for a renamed method. A claim's code is what its proof-cache key digests: the closures of the target and of the canonical constructor of each record its inputs are made with. Each claim is invalidated (with each closure part that differs, or the reason when the target is gone), unchanged (a cached result is still hit on its code), or unresolved (the first build has no such method). The verdict uses the key's own version digest (closure::digest_of_version, split out of version_digest).\n\nChecked on the recorded examples by the new examples/tools/impact_check.py, run inline in 15 s. For each of the 59 B9 and B11 examples of Crosscut, Quorum and Mica, impact was asked about every claim of the example's app, between the unpatched build and the build with the example's patch. The report is judged against facts read from the class files independently of the closure walk. The rules: the example's own claim is invalidated; every part named lies in a class whose bytes changed; a claim whose class-level reach holds no changed class is unchanged; and a claim is unresolved only where the first build lacks the method. All 59 pass. Across the reports, 170 claims are invalidated, 1123 unchanged and 84 unresolved. The unresolved ones are examples 147-149, whose patches add the Jitter class. Two mutations of impact.rs show the rules can fail: reporting every claim unchanged fails every example's own claim, and invalidating every claim gives 2216 failures.",
+      "log_sha256": "67bb1c62ef957ae44ca49b16ffbddae17b2583a26822db443bb8a2604402b895"
     }
   ],
   "logs": {
@@ -159,6 +183,12 @@
       "bytes": 1540668,
       "lines": 430,
       "gzip_bytes": 337400,
+      "url": null
+    },
+    "67bb1c62ef957ae44ca49b16ffbddae17b2583a26822db443bb8a2604402b895": {
+      "bytes": 7244321,
+      "lines": 2231,
+      "gzip_bytes": 1508106,
       "url": null
     },
     "ff1ae5bfb9aaf5f728d7602f4c617e8b7120da67fa80e8a7f1cb3dc02ff52b25": {

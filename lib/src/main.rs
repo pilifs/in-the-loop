@@ -50,6 +50,30 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Say which claims a change from one build to another invalidates, and why: per claim, invalidated with the
+    /// parts of its code that changed (a method's body, a class's declaration, a call's dispatch targets, a
+    /// configuration file), unchanged, or unresolved when the first build has no such method.
+    Impact {
+        /// The first build's classes: a directory or jar (repeatable).
+        #[arg(long = "before", required = true)]
+        before: Vec<PathBuf>,
+        /// The second build's classes: a directory or jar (repeatable).
+        #[arg(long = "after", required = true)]
+        after: Vec<PathBuf>,
+        /// Further class path entries both builds refer to (repeatable, or PATH-separated).
+        #[arg(long = "classpath")]
+        classpath: Vec<String>,
+        /// A JSON file of claims: an array of objects with a `target` (`pkg.Class#method`) and optionally a
+        /// `beforeTarget` or `previousSymbol` and an `id`. build.py's claim.json and --plan output serve as they are.
+        #[arg(long)]
+        claims: Option<PathBuf>,
+        /// A claim's target (repeatable), `pkg.Class#method`, beside or instead of --claims.
+        #[arg(long = "target")]
+        targets: Vec<String>,
+        /// Print JSON instead of the report.
+        #[arg(long)]
+        json: bool,
+    },
     /// Check the contract library on this JDK (exit 1 when a contract is refused, or has no record that holds):
     /// each contract for a gap of the tool's own checker is proved against the JDK's bytecode where it can be and
     /// tested on a real JVM, as a run under `--gaps advised` checks the agent's. With `--record`, the evidence is
@@ -778,6 +802,34 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 println!("{}", serde_json::to_string_pretty(&scan.record(&targets)).map_err(|e| Error::new(e.to_string()))?);
             } else {
                 print!("{}", scan.report(&targets));
+            }
+            Ok(0)
+        }
+        Command::Impact { before, after, classpath, claims, targets, json } => {
+            let mut list = Vec::new();
+            if let Some(path) = &claims {
+                let text = std::fs::read_to_string(path).map_err(|e| Error::new(format!("{}: {e}", path.display())))?;
+                let value: serde_json::Value = serde_json::from_str(&text).map_err(|e| Error::new(format!("{}: {e}", path.display())))?;
+                list.extend(jvmcontract::impact::claims_from_json(&value)?);
+            }
+            list.extend(targets.iter().map(|t| jvmcontract::impact::Claim::new(t)));
+            if list.is_empty() {
+                return Err(Error::new("name the claims with --claims FILE or --target"));
+            }
+            let shared: Vec<PathBuf> = classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect();
+            let build = |entries: &[PathBuf]| -> Result<(ClassPath, jvmcontract::closure::Configuration), Error> {
+                let all: Vec<&std::path::Path> = entries.iter().chain(shared.iter()).map(PathBuf::as_path).collect();
+                let cp = jvmcontract::closure::build_class_path(&all)?;
+                let configuration = jvmcontract::closure::Configuration::read(&cp, &[])?;
+                Ok((cp, configuration))
+            };
+            let (before_cp, before_configuration) = build(&before)?;
+            let (after_cp, after_configuration) = build(&after)?;
+            let report = jvmcontract::impact::impact(&before_cp, &after_cp, &before_configuration, &after_configuration, &list);
+            if json {
+                println!("{}", serde_json::to_string_pretty(&report).map_err(|e| Error::new(e.to_string()))?);
+            } else {
+                print!("{}", report.render());
             }
             Ok(0)
         }

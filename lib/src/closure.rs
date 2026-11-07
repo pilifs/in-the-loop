@@ -190,8 +190,13 @@ pub fn closures(cp: &ClassPath, roots: &[MemberRef], configuration: &Configurati
 /// of each root's closure, by root, in root order. The roots are the method compared and every constructor or factory
 /// its inputs are made with, so that a change to how an input is made changes the claim.
 pub fn version_digest(cp: &ClassPath, roots: &[MemberRef], configuration: &Configuration) -> String {
+    digest_of_version(&closures(cp, roots, configuration))
+}
+
+/// [`version_digest`] of closures already computed, one per root in root order.
+pub fn digest_of_version(closures: &[Closure]) -> String {
     let mut text = String::from("version\n");
-    for c in closures(cp, roots, configuration) {
+    for c in closures {
         text.push_str(&format!("{}\t{}\n", c.root, c.digest()));
     }
     format!("sha256:{}", sha256_hex(text.as_bytes()))

@@ -225,9 +225,56 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   - alignment: `yomwzkpyqppx`, `prrxuoknonuz`, `szkpqzylrnmv`.
 
   None of them is an ancestor of `@`. Each manifest lives on its stream's branch, so the errors clear at the merge.
-- Next: S3, `jvmcontract impact --before DIR --after DIR`. For a set of claims (a `build.py` run's), it names those
-  a change invalidates and why: the parts of each closure that changed, from `Closure::changes`. It is checked on the
-  recorded examples' own before and after builds.
+- **S3 done** (2026-11-07): `jvmcontract impact --before DIR --after DIR`, in `lib/src/impact.rs` (new, this
+  stream's).
+  - The claims come from `--target`, or from a `--claims` file. `build.py`'s `claim.json` and its `--plan` output
+    serve as they are, with `previousSymbol` (or `beforeTarget`) for a renamed method.
+  - A claim's code is what its cache key digests: the closures of the target and of the canonical constructor of
+    each record its inputs are made with (`impact::roots`).
+  - Each claim gets one of three verdicts:
+    - invalidated, with the parts that differ, or the reason when the target is gone from the second build;
+    - unchanged;
+    - unresolved, when the first build has no such method.
+  - The verdict comes from `closure::digest_of_version` (new, split out of `version_digest`), the function the key
+    uses.
+  - Tests: 4 more in `lib/tests/summaries.rs` (31 in all).
+    - A callee's change names its callers and that one part, and leaves the rest unchanged.
+    - A renamed target, a target that is gone, and one not in the first build.
+    - A record input's constructor is in the claim's code, though the target never calls it.
+    - Claims are read from `build.py`'s records.
+  - **Checked on the recorded examples** with `examples/tools/impact_check.py` (new), inline: 15 s of wall time
+    with 4 javac processes at once.
+    - The examples are the 59 B9 and B11 examples of Crosscut, Quorum and Mica. For each, `impact` was asked about
+      every claim of its app between the unpatched build and the build with its patch.
+    - The report is judged against the class files, independently of the closure walk:
+      - the example's own claim is invalidated;
+      - every part named lies in a class whose bytes changed;
+      - a claim whose class-level reach (the classes it refers to and their subclasses, transitively) holds no
+        changed class is unchanged;
+      - "unresolved" only where the first build has no such method.
+    - Result: all 59 pass. Over the reports, 170 claims are invalidated, 1123 unchanged and 84 unresolved.
+      - The unresolved ones are 147–149 in every Crosscut report: their patches add the `Jitter` class.
+      - 15 of the unchanged claims have a changed class in their reach but don't call the changed method. That is
+        what method-level closures add over class-level reach.
+    - Checked that the rules can fail: with every claim reported unchanged, each example's own claim fails. With
+      every claim invalidated, 2216 failures.
+  - The unit tests, `conformance.rs`, `integration.rs`, `foundations.rs` and `summaries.rs` (31) pass.
+  - Shared files changed:
+    - `lib/src/lib.rs` (`pub mod impact`);
+    - `lib/src/main.rs` (the `impact` command);
+    - `lib/tests/summaries.rs`;
+    - `lib/README.md` (a paragraph on `impact`);
+    - `examples/tools/impact_check.py` (new).
+  - Own file: `closure.rs` (`digest_of_version`).
+- Next: S4, narrow shared helpers proved equivalent.
+  - In `shared.rs`: a pure, deterministic helper pair with the same parameter and result types, whose own
+    equivalence proof (in the cache, or proved first within the budget) covers the caller's call sites. It gets one
+    stub in both versions, with an assumption of basis `proved` naming the helper's claim key.
+  - The applicability check is at each call: the helper proof's bounds and assumptions become assertions there.
+  - The dependencies are acyclic.
+  - Examples 160 and 161: a refactored helper proved once, then reused by its caller; and a sibling where the
+    helper's change is wrong and the caller's check finds it.
+  - Then the integration contract's "summaries reuse" check.
 - Status: working
 
 ## Loop settings
