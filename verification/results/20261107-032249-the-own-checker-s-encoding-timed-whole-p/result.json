@@ -1,0 +1,238 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261107-032249-the-own-checker-s-encoding-timed-whole-p",
+  "title": "The own checker's encoding timed whole per word-level operation: the benchmark's own-checker runs, flagged phasesExcess and time against job 20261106-201041",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 skipped step(s) in 2m23s, peak 1.1 GiB (estimated 30m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (benchmark, own checker only) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261107-032249-the-own-checker-s-encoding-timed-whole-p.json",
+    "sha256": "ba200b2529a2e6d9156f5ab2e0eeb8fe21ed60d7b280a0b80639fc962bb6b782",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261107-032249-the-own-checker-s-encoding-timed-whole-p",
+      "title": "The own checker's encoding timed whole per word-level operation: the benchmark's own-checker runs, flagged phasesExcess and time against job 20261106-201041",
+      "description": "The own checker (lib/src/bmc/bits.rs) estimated its encoding phase by timing one in 64 operations at random and counting it 64 times over. Single gates (nanoseconds) and whole word-level circuits (a 32-bit multiplier is thousands of gates) were sampled from the same stream, and the seed is fixed, so a short run that sampled one large circuit counted it 64 times on every run: its encoding plus solving passed the run's own time, and Phases::excess flagged it phasesExcess (1 of 356 own-checker runs in job 20261106-201041, real/checksum/broken-property under advised; example 018's proof in jobs -231837 and -000039). Now every word-level operation is timed whole, and only single gates are sampled. A new unit test (the_encoding_estimate_does_not_count_a_large_circuit_many_times_over) put one multiplication among 256 cheap gates at each position: before the change, at position 74 the encoding was estimated at 0.063 s of 0.001 s; after it, every position is within the phases' tolerance. This job reruns the benchmark's own-checker runs (all modes, no JBMC) at this commit, then checks that no run is flagged and that timing each word-level operation (two clock reads, about 0.6 us on WSL2) made the runs no slower than job -201041 measured on the same machine, by the median ratio of seconds over runs of 0.1 s or more. The committed lib/benchmark results are not rewritten: the run writes under lib/target.",
+      "kind": "library",
+      "capabilities": [
+        "benchmark",
+        "own-checker",
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/bits.rs",
+          "lib/src/phases.rs",
+          "lib/benchmark"
+        ]
+      },
+      "expected": "exits 0: the benchmark runs, no own-checker run carries phasesExcess, and the median ratio of the own checker's seconds to job 20261106-201041's, over runs of 0.1 s or more, is at most 1.10. The second step prints the counts and the ratio's median and quartiles. A flagged run or a median above 1.10 is a finding to read, not a reason to change the tolerance.",
+      "submitted": {
+        "at": "2026-11-07T03:22:49+00:00",
+        "session": "c2bd9df4-5f20-4312-95a4-3eb88a60e0cd",
+        "by": "claude (engine-priorities wrap-up)"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "30m",
+        "memoryLimit": "3G",
+        "timeout": "2h",
+        "notes": "job -102624's own-checker runs took about 7 minutes over 356 runs; this is those runs alone, plus a build"
+      },
+      "steps": [
+        {
+          "name": "benchmark, own checker only",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+          "cwd": "."
+        },
+        {
+          "name": "compare with job 20261106-201041",
+          "run": "python3 - <<'PY'\nimport json, statistics, sys\nnew = [r for r in json.load(open(\"lib/target/benchmark-native.json\"))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(\"lib/benchmark/results.json\"))[\"runs\"] if r[\"engine\"] == \"native\"}\nflagged = [(r[\"case\"], r[\"mode\"], r[\"phasesExcess\"]) for r in new if r.get(\"phasesExcess\")]\nratios = [r[\"seconds\"] / old[(r[\"case\"], r[\"mode\"])][\"seconds\"] for r in new\n          if (r[\"case\"], r[\"mode\"]) in old and old[(r[\"case\"], r[\"mode\"])][\"seconds\"] >= 0.1]\nmedian = statistics.median(ratios)\nprint(f\"own-checker runs: {len(new)}; flagged phasesExcess: {len(flagged)} (job 20261106-201041: 1 of 356)\")\nfor f in flagged:\n    print(\"  flagged:\", *f)\nprint(f\"seconds against job 20261106-201041, runs of 0.1 s or more: {len(ratios)}, median ratio {median:.3f}, \"\n      f\"quartiles {statistics.quantiles(ratios, n=4)[0]:.3f} to {statistics.quantiles(ratios, n=4)[2]:.3f}\")\nsys.exit(0 if not flagged and median <= 1.10 else 1)\nPY",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/benchmark-native.json",
+        "lib/target/benchmark-native.md"
+      ]
+    }
+  },
+  "sourceCommit": "58b89dd9ce1c84b70770a8673908eb0eb6b444a3",
+  "startedAt": "2026-11-07T03:26:43+00:00",
+  "finishedAt": "2026-11-07T03:29:07+00:00",
+  "wallSeconds": 144.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2223495,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 7516192768,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 1800.0,
+    "notes": "job -102624's own-checker runs took about 7 minutes over 356 runs; this is those runs alone, plus a build"
+  },
+  "usage": {
+    "peakMemoryBytes": 1129574400,
+    "wallSeconds": 143.3,
+    "cpuSeconds": 177.5,
+    "memoryOfEstimate": 0.53,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark, own checker only",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native --out lib/target/benchmark-native.json --table lib/target/benchmark-native.md",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 143.304,
+      "cpuSeconds": 177.486,
+      "cpuThrottledSeconds": 2.387,
+      "peakMemoryBytes": 1129574400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-benchmark-own-checker-only.log",
+        "lines": 533,
+        "bytes": 68224,
+        "sha256": "c6ba7417219f48a9b9e2650731ca1f334521615566d385fa5b6878b776dcccba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "real/checksum/fix-confined                   native assume             verified     correct                   0.44 s    40.8 MB",
+        "real/checksum/fix-confined                   native advised            verified     correct                   0.45 s    44.3 MB",
+        "held/saturating                              native strict             verified     correct                   0.05 s    31.1 MB",
+        "held/saturating                              native assume             verified     correct                   0.07 s    31.1 MB",
+        "held/saturating                              native advised            verified     correct                   0.05 s    31.9 MB",
+        "held/average/bits                            native strict             verified     correct                   0.05 s    31.0 MB",
+        "held/average/bits                            native assume             verified     correct                   0.05 s    31.3 MB",
+        "held/average/bits                            native advised            verified     correct                   0.05 s    31.7 MB",
+        "held/average/unsigned-shift                  native strict             violation    correct                   0.05 s    36.5 MB",
+        "held/average/unsigned-shift                  native assume             violation    correct                   0.07 s    36.5 MB",
+        "held/average/unsigned-shift                  native advised            violation    correct                   0.06 s    36.7 MB",
+        "held/floor-mod/wide-modulus                  native strict             violation    correct                   0.60 s    45.7 MB",
+        "held/floor-mod/wide-modulus                  native assume             violation    correct                   0.60 s    45.9 MB",
+        "held/floor-mod/wide-modulus                  native advised            violation    correct                   0.63 s    48.8 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.06 s    36.8 MB",
+        "held/floor-mod/jdk                           native assume             verified     correct                   0.06 s    36.8 MB",
+        "held/floor-mod/jdk                           native advised            verified     correct                   0.06 s    37.0 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.06 s    36.7 MB",
+        "held/ceil-div                                native assume             verified     correct                   0.06 s    36.8 MB",
+        "held/ceil-div                                native advised            verified     correct                   0.07 s    36.9 MB",
+        "held/lower-bound                             native strict             verified     correct                   0.25 s    38.9 MB",
+        "held/lower-bound                             native assume             verified     correct                   0.25 s    40.4 MB",
+        "held/lower-bound                             native advised            verified     correct                   0.26 s    44.4 MB",
+        "held/utf8-length                             native strict             verified     correct                   0.32 s    34.6 MB",
+        "held/utf8-length                             native assume             verified     correct                   0.33 s    34.8 MB",
+        "held/utf8-length                             native advised            verified     correct                   0.34 s    40.2 MB",
+        "held/reverse                                 native strict             verified     correct                   0.14 s    39.6 MB",
+        "held/reverse                                 native assume             verified     correct                   0.15 s    39.6 MB",
+        "held/reverse                                 native advised            verified     correct                   0.15 s    45.0 MB",
+        "held/prefix-sums                             native strict             verified     correct                   0.05 s    31.1 MB",
+        "held/prefix-sums                             native assume             verified     correct                   0.05 s    31.0 MB",
+        "held/prefix-sums                             native advised            verified     correct                   0.06 s    32.3 MB",
+        "held/overlap/meets                           native strict             verified     correct                   0.06 s    37.2 MB",
+        "held/overlap/meets                           native assume             verified     correct                   0.05 s    37.0 MB",
+        "held/overlap/meets                           native advised            verified     correct                   0.06 s    37.2 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.07 s    37.3 MB",
+        "held/overlap/length                          native assume             violation    correct                   0.07 s    37.3 MB",
+        "held/overlap/length                          native advised            violation    correct                   0.08 s    37.6 MB",
+        "example/141                                  native strict             verified     correct                   1.29 s    60.0 MB",
+        "example/142                                  native strict             verified     correct                   4.89 s    83.9 MB"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "compare with job 20261106-201041",
+      "run": "python3 - <<'PY'\nimport json, statistics, sys\nnew = [r for r in json.load(open(\"lib/target/benchmark-native.json\"))[\"runs\"] if r[\"engine\"] == \"native\"]\nold = {(r[\"case\"], r[\"mode\"]): r for r in json.load(open(\"lib/benchmark/results.json\"))[\"runs\"] if r[\"engine\"] == \"native\"}\nflagged = [(r[\"case\"], r[\"mode\"], r[\"phasesExcess\"]) for r in new if r.get(\"phasesExcess\")]\nratios = [r[\"seconds\"] / old[(r[\"case\"], r[\"mode\"])][\"seconds\"] for r in new\n          if (r[\"case\"], r[\"mode\"]) in old and old[(r[\"case\"], r[\"mode\"])][\"seconds\"] >= 0.1]\nmedian = statistics.median(ratios)\nprint(f\"own-checker runs: {len(new)}; flagged phasesExcess: {len(flagged)} (job 20261106-201041: 1 of 356)\")\nfor f in flagged:\n    print(\"  flagged:\", *f)\nprint(f\"seconds against job 20261106-201041, runs of 0.1 s or more: {len(ratios)}, median ratio {median:.3f}, \"\n      f\"quartiles {statistics.quantiles(ratios, n=4)[0]:.3f} to {statistics.quantiles(ratios, n=4)[2]:.3f}\")\nsys.exit(0 if not flagged and median <= 1.10 else 1)\nPY",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/benchmark-native.json",
+      "change": "added",
+      "bytes": 1019135,
+      "sha256": "fd07ff10c262abf5c8b766aa16835cd2d312e97874b4db91f252ba8eda9bcb13",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/benchmark-native.md",
+      "change": "added",
+      "bytes": 29021,
+      "sha256": "c6d1a13e10b7c19cc2d059d6ca93e0a8b9d3c2545bbf050fb818173b061ba048",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-07T03:29:26+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "lib/target/benchmark-native.json",
+      "lib/target/benchmark-native.md"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-032249-the-own-checker-s-encoding-timed-whole-p"
+}

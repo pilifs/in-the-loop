@@ -18,6 +18,25 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-012: the own checker raises a false alarm on `conformance/leadingZerosLong/2`, so the benchmark step exits 1 and the encoding-timing check never ran
+
+- **Status**: open
+- **Raised**: 2026-11-07 on `vm-1` (run with `--memory 7G --workers 3`). Job
+  `20261107-032249-the-own-checker-s-encoding-timed-whole-p` at `58b89dd9ce1c`.
+- **Found**: step 1 (`lib/benchmark/run.py --engines native`) ran all 533 own-checker runs in 143 s and exited 1,
+  because three runs are classed `false-alarm`: `conformance/leadingZerosLong/2` under strict, assume and advised. The
+  own checker reports `violation` with witness `48` in 0.04 s (610 variables, 2114 clauses), and the JVM replay says
+  `witnessOnTheJvm: holds`, i.e. the witness is spurious. The case is not in the committed `lib/benchmark/results.json`
+  (new since that run, probably from the numberOfLeadingZeros change), so this is not a regression of the encoding
+  timing. Step 2 (no run flagged `phasesExcess`; median seconds ratio against job `20261106-201041` at most 1.10) was
+  skipped. Read from the saved JSON in the work directory: 0 of 533 runs carry `phasesExcess`, which is promising but
+  is not the check the job names, and the ratio was not computed. No other reference disagreement.
+- **Needs**: whoever owns the `Long.numberOfLeadingZeros` modelling in the own checker (the engine-priorities loop)
+  fixes the encoding behind case `leadingZerosLong/2` or marks the case as expected-unsupported; then the job is
+  resubmitted unchanged (`pipeline.py resubmit 20261107-032249-the-own-checker-s-encoding-timed-whole-p`).
+- **Tracked in**: the job's `logs/1-benchmark-own-checker-only.log`.
+- **Closes when**: the resubmitted job passes (no false alarm, no `phasesExcess`, median ratio at most 1.10).
+
 ### VF-011: the own checker counts a loop's unwinding over the whole path, so example 052 is left to JBMC
 
 - **Status**: open (deferred by the user on 2026-11-07, until after the foundations loop)

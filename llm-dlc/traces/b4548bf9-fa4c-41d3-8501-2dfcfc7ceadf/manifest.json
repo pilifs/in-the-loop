@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-07T03:26:31.410Z",
+  "ended": "2026-11-07T03:30:13.113Z",
+  "duration_seconds": 222,
+  "stats": {
+    "turns": 1,
+    "api_calls": 15,
+    "tool_calls": 16,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 49406,
+    "usage": {
+      "input_tokens": 30,
+      "output_tokens": 4505,
+      "cache_read_input_tokens": 554009,
+      "cache_creation_input_tokens": 36287
+    }
+  },
+  "tools": {
+    "Bash": 15,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-07T03:26:31.410Z",
+      "ended": "2026-11-07T03:30:13.113Z",
+      "turns": 1,
+      "api_calls": 15,
+      "usage": {
+        "input_tokens": 30,
+        "output_tokens": 4505,
+        "cache_read_input_tokens": 554009,
+        "cache_creation_input_tokens": 36287
+      },
+      "peak_context_tokens": 49406
+    }
+  ],
+  "log": {
+    "sha256": "923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40",
+    "bytes": 438427,
+    "lines": 116,
+    "gzip_bytes": 91801,
+    "path": "llm-dlc/traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/logs/923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uttmttlmkytwlxtzltpskmkxsrzxmvqm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result for the own checker's encoding-timing job: it fails on a false alarm in leadingZerosLong/2 before the timing check runs (VF-012)",
+      "body": "Job 20261107-032249 ran the 533 own-checker benchmark runs in 2m23s; the step exited 1 because conformance/leadingZerosLong/2 gets a spurious violation (witness 48, the JVM says it holds) in all three modes. The phasesExcess and slowdown comparison was skipped, though 0 of 533 runs carry phasesExcess in the saved JSON. Recorded as VF-012 in verification/findings.md with what would close it; nothing was resubmitted since it would fail the same way until the checker is fixed.",
+      "log_sha256": "923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40"
+    }
+  ],
+  "logs": {
+    "923b5e3821a1622f216138ce853c728a04c00082f68834246ee2d0ec11fcda40": {
+      "bytes": 438427,
+      "lines": 116,
+      "gzip_bytes": 91801,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
