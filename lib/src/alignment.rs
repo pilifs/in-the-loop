@@ -12,9 +12,13 @@
 //! a score, and the candidates are ranked by it ([`Candidate::score`]). The first *leads* when it scores at least
 //! [`LEAD`] and is alone or [`LEAD`] ahead of the second. Where none leads, the choice is a person's, not the tool's.
 //!
-//! What this does not do: relate arguments, records or results (A3), or fields (A4); match loops or other control
-//! flow (deferred); or match one old method to several new ones (an inlined or split method gets the closest one, or
-//! none).
+//! For each pair matched, [`mappings`] relates the arguments, records and result under the comparison's
+//! preservation contract (step A3): anchored inputs fixed to themselves, internal ones and the result proposed from a
+//! small catalogue.
+//!
+//! What this does not do: relate fields of classes that changed shape (A4); prove anything (a regression proof
+//! settles a proposal's evidence); match loops or other control flow (deferred); or match one old method to several
+//! new ones (an inlined or split method gets the closest one, or none).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -24,6 +28,9 @@ use serde::{Deserialize, Serialize};
 use crate::classfile::{flags, ClassFile, Insn, Method};
 use crate::spec::{Evidence, Hint, HintContent, Hints, Intent, Source};
 use crate::Error;
+
+pub mod mappings;
+pub use mappings::{mapping_hints, mappings, Mapping};
 
 /// How far ahead of the second the first candidate must be to lead, and the least score with which even a candidate
 /// that has no rival leads: one weak tie is a question, not a proposal.
@@ -430,14 +437,38 @@ fn tool_proposal(h: &Hint) -> bool {
     h.source == Source::Inferred && h.intent == Intent::Proposed
 }
 
-/// `existing` with its method proposals replaced by `proposed`'s. Every hint a person stated or approved is kept as
-/// it is, and no proposal is added for a subject a person has already decided the method of.
-pub fn merge_method_hints(existing: Hints, proposed: Hints) -> Hints {
-    let is_method = |h: &Hint| matches!(h.content, HintContent::Method { .. });
-    let decided: BTreeSet<String> = existing.entries.iter().filter(|h| is_method(h) && !tool_proposal(h)).map(|h| h.subject.clone()).collect();
-    let mut entries: Vec<Hint> = existing.entries.into_iter().filter(|h| !(is_method(h) && tool_proposal(h))).collect();
-    entries.extend(proposed.entries.into_iter().filter(|h| !decided.contains(&h.subject)));
+/// `existing` with its proposals replaced by `proposed`'s. Every hint a person stated or approved is kept as it is,
+/// and no proposal is added for a subject a person has already decided, for that kind of hint (a method, a
+/// correspondence, an observation change).
+pub fn merge_hints(existing: Hints, proposed: Hints) -> Hints {
+    let kind = |h: &Hint| std::mem::discriminant(&h.content);
+    let decided: Vec<(std::mem::Discriminant<HintContent>, String)> = existing.entries.iter().filter(|h| !tool_proposal(h)).map(|h| (kind(h), h.subject.clone())).collect();
+    let mut entries: Vec<Hint> = existing.entries.into_iter().filter(|h| !tool_proposal(h)).collect();
+    entries.extend(proposed.entries.into_iter().filter(|h| !decided.contains(&(kind(h), h.subject.clone()))));
     Hints { version: HINTS_VERSION, entries }
+}
+
+/// What `jvmcontract align` reports: the method correspondence, and the mappings of the pairs it matched.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Alignment {
+    #[serde(flatten)]
+    pub methods: MethodReport,
+    pub mappings: Vec<Mapping>,
+}
+
+/// Aligns two builds: their methods, then each pair's mapping, under `contract` for the pair it names (every other
+/// pair under the contract its signatures imply).
+pub fn align(before: &Build, after: &Build, contract: Option<&crate::spec::PreservationContract>) -> Alignment {
+    let report = methods(before, after);
+    let mappings = mappings::mappings(before, after, &report, contract);
+    Alignment { methods: report, mappings }
+}
+
+/// Every hint an alignment proposes: the methods', then the mappings'.
+pub fn hints(alignment: &Alignment) -> Hints {
+    let mut out = method_hints(&alignment.methods);
+    out.entries.extend(mapping_hints(&alignment.mappings).entries);
+    out
 }
 
 /// Reads a hints file; an empty one when it doesn't exist.
@@ -520,7 +551,7 @@ mod tests {
             version: HINTS_VERSION,
             entries: vec![hint("a.A#f", "a.A#f2", Source::Inferred, Intent::Proposed), hint("a.A#h", "a.A#h2", Source::Inferred, Intent::Proposed), hint("a.A#k", "a.A#k2", Source::Inferred, Intent::Proposed)],
         };
-        let merged = merge_method_hints(existing, proposed);
+        let merged = merge_hints(existing, proposed);
         let pairs: Vec<(&str, &str)> = merged
             .entries
             .iter()

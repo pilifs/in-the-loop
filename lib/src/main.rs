@@ -183,7 +183,9 @@ enum Command {
     },
     /// Propose which method of a new build corresponds to each method of an old one that changed or is gone,
     /// statically, from names, descriptors, body shapes and callers: ranked candidates, each with what ties it to the
-    /// old method. Proves nothing; --hints writes them to a hints file as proposed, their evidence unchecked.
+    /// old method. Then, for each pair, how its arguments, records and result relate, under the preservation
+    /// contract: an input it fixes is mapped to itself and nothing else. Proves nothing; --hints writes them to a
+    /// hints file as proposed, their evidence unchecked.
     Align {
         /// The old build's class files.
         #[arg(long)]
@@ -195,6 +197,10 @@ enum Command {
         /// stated or approved is kept as it is. Keep it beside the build, not in the source tree.
         #[arg(long)]
         hints: Option<PathBuf>,
+        /// The preservation contract (a JSON file, `jvmcontract::spec::PreservationContract`) of the comparison
+        /// whose subject it names; every other pair is mapped under the contract its two signatures imply.
+        #[arg(long)]
+        contract: Option<PathBuf>,
         /// Print the report as JSON.
         #[arg(long)]
         json: bool,
@@ -803,15 +809,21 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(if checked.ok() { 0 } else { 1 })
         }
-        Command::Align { before, after, hints, json } => {
-            let report = jvmcontract::alignment::methods(&jvmcontract::alignment::Build::load(&before)?, &jvmcontract::alignment::Build::load(&after)?);
+        Command::Align { before, after, hints, contract, json } => {
+            let contract: Option<jvmcontract::spec::PreservationContract> = match contract {
+                Some(path) => Some(serde_json::from_str(&std::fs::read_to_string(&path)?).map_err(|e| Error::new(format!("{}: not a preservation contract: {e}", path.display())))?),
+                None => None,
+            };
+            let (before, after) = (jvmcontract::alignment::Build::load(&before)?, jvmcontract::alignment::Build::load(&after)?);
+            let alignment = jvmcontract::alignment::align(&before, &after, contract.as_ref());
             if json {
-                println!("{}", serde_json::to_string_pretty(&report).map_err(|e| Error::new(e.to_string()))?);
+                println!("{}", serde_json::to_string_pretty(&alignment).map_err(|e| Error::new(e.to_string()))?);
             } else {
-                print!("{}", jvmcontract::alignment::render(&report));
+                print!("{}", jvmcontract::alignment::render(&alignment.methods));
+                print!("{}", jvmcontract::alignment::mappings::render(&alignment.mappings));
             }
             if let Some(path) = hints {
-                let merged = jvmcontract::alignment::merge_method_hints(jvmcontract::alignment::read_hints(&path)?, jvmcontract::alignment::method_hints(&report));
+                let merged = jvmcontract::alignment::merge_hints(jvmcontract::alignment::read_hints(&path)?, jvmcontract::alignment::hints(&alignment));
                 jvmcontract::alignment::write_hints(&path, &merged)?;
                 eprintln!("({} hints in {})", merged.entries.len(), path.display());
             }

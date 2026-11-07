@@ -135,5 +135,46 @@ class ScoringMethods(unittest.TestCase):
         self.assertEqual(self.outcome(self.KEPT, self.report("p.A#f", ["p.B#f"], True)), "wrong")
 
 
+class ScoringMappings(unittest.TestCase):
+    """Step A3's score of input, new-input and result parts from a made-up mapping."""
+
+    @staticmethod
+    def mapping(inputs, result=("equal", [], True), free=(), unsupported=()):
+        kind, exprs, inferred = result
+        return {"inputs": [{"old": old, "anchor": anchor, "leads": leads, "candidates": [{"expression": e} for e in exprs]}
+                           for old, anchor, exprs, leads in inputs],
+                "result": {"kind": kind, "inferred": inferred, "candidates": [{"expression": e} for e in exprs]},
+                "free": list(free), "unsupported": list(unsupported), "proposals": []}
+
+    def outcome(self, part, mapping):
+        return A.score_part(part, mapping)[2]
+
+    def test_an_input_is_found_when_its_lead_is_the_table_s(self):
+        part = {"kind": "input", "old": "a", "new": "this.start", "anchor": "internal", "decide": "infer"}
+        self.assertEqual(self.outcome(part, self.mapping([("a", "internal", ["this . start"], True)])), "found")
+        self.assertEqual(self.outcome(part, self.mapping([("a", "internal", ["this.size"], True)])), "wrong")
+        self.assertEqual(self.outcome(part, self.mapping([("a", "internal", ["this.size", "this.start"], False)])), "asked")
+        self.assertEqual(self.outcome(part, self.mapping([("a", "internal", [], False)])), "missed")
+        self.assertEqual(self.outcome(part, None), "missed")
+
+    def test_a_new_input_is_found_when_left_free(self):
+        part = {"kind": "new-input", "new": "this.m", "anchor": "new", "decide": "infer"}
+        self.assertEqual(self.outcome(part, self.mapping([], free=["this.m"])), "found")
+        self.assertEqual(self.outcome(part, self.mapping([])), "wrong")
+        self.assertEqual(self.outcome(part, self.mapping([], unsupported=["A4"])), "missed")
+
+    def test_a_person_s_result_can_only_be_asked(self):
+        part = {"kind": "result", "relation": "changed", "decide": "person", "holds": "previous == (result <= 0)"}
+        question = ("changed", ["previous == (result < 0)", "previous == (result <= 0)"], False)
+        self.assertEqual(self.outcome(part, self.mapping([], result=question)), "asked")
+        self.assertEqual(self.outcome(part, self.mapping([], result=("changed", ["previous == (result <= 0)"], True))), "wrong")
+        self.assertEqual(self.outcome(part, self.mapping([], result=("changed", [], False))), "missed")
+
+    def test_components_compare_as_a_set_of_conjuncts(self):
+        part = {"kind": "result", "relation": "components", "decide": "infer", "holds": "previous.a == result.a && previous.b == result.b"}
+        self.assertEqual(self.outcome(part, self.mapping([], result=("components", ["previous.b == result.b && previous.a == result.a"], True))), "found")
+        self.assertEqual(self.outcome({"kind": "result", "relation": "equal", "decide": "infer"}, self.mapping([], result=("widened", ["previous == result"], True))), "wrong")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 46, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-07 04:28 UTC |
-| Prompts | 1,081 |
-| Model calls | 10,703 |
-| Tool calls | 11,558 (243 failed) |
-| Compactions | 147 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-07 04:58 UTC |
+| Prompts | 1,086 |
+| Model calls | 10,763 |
+| Tool calls | 11,617 (246 failed) |
+| Compactions | 148 |
 | Subagents | 5 |
-| Tokens written | 13,305,393 |
-| Tokens read | 1,755,187,106 (97.9% from cache) |
-| Commits with a trace | 331 |
-| Log snapshots | 408 (1070.2 MB gzipped, 404 uploaded) |
+| Tokens written | 13,378,486 |
+| Tokens read | 1,765,260,535 (97.9% from cache) |
+| Commits with a trace | 332 |
+| Log snapshots | 409 (1071.3 MB gzipped, 404 uploaded) |
 
 ## Sessions
 
@@ -72,7 +72,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 02:50 UTC | [3a75b7cc-0877-41e5-8ae0-589e1f0a5306](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 39,116 | 3 |
 | 2026-11-07 03:26 UTC | [b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 16 | 16 | 1 | 0 | 51,295 | 4 |
 | 2026-11-07 03:34 UTC | [146ed363-87f6-40b1-a9b7-7accb8190171](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | open | 3 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 35,554 | 4 |
-| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | open | 27 min | `claude-opus-5-5` | 10 | 92 | 93 | 1 | 2 | 198,359 | 3 |
+| 2026-11-07 04:01 UTC | [Next multi-stream loop draft](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | open | 57 min | `claude-opus-5-5` | 15 | 152 | 152 | 4 | 3 | 239,583 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -127,17 +127,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 2,140 | 16 | 25,997 | 233,987 | 90.0% | 121 |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 5,190 | 32 | 38,176 | 603,413 | 94.0% | 124 |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2,059 | 12 | 22,434 | 169,697 | 88.3% | 93 |
-| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 98,804 | 182 | 394,921 | 12,323,885 | 96.9% | 129 |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 171,897 | 304 | 624,795 | 22,167,318 | 97.3% | 133 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 10,148 | 87.8% | 46 |
-| `Edit` | 461 | 4.0% | 21 |
-| `Read` | 401 | 3.5% | 23 |
-| `Write` | 345 | 3.0% | 20 |
-| `ToolSearch` | 72 | 0.6% | 17 |
+| `Bash` | 10,200 | 87.8% | 46 |
+| `Edit` | 462 | 4.0% | 22 |
+| `Read` | 405 | 3.5% | 23 |
+| `Write` | 346 | 3.0% | 20 |
+| `ToolSearch` | 73 | 0.6% | 18 |
 | `Monitor` | 42 | 0.4% | 12 |
 | `WebFetch` | 26 | 0.2% | 6 |
 | `AskUserQuestion` | 24 | 0.2% | 7 |
@@ -486,6 +486,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 329 | change `yomwzkpy` | Alignment A1: the ground truth of the hand-written mappings in examples 121-139, part by part, anchored or internal | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/c5ebbf1d1bd82395979551376b5173609ba61b007296656393ebd4868349c01b.jsonl.gz)) |
 | 330 | change `prrxuokn` | Alignment A2: jvmcontract align proposes method correspondence between two builds, ranked, written to the hints file | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/ecff2f691d4e1d28381dddef4dadce90759417f1bc56b30657f95c4157ddfbfa.jsonl.gz)) |
 | 331 | change `szkpqzyl` | Alignment Progress: name every other stream's commit that sync.py check reports without a manifest | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/e37f2368a9be4173c092d7cef3270fc7d32c432eebfa9df9c3673daf671a1c9e.jsonl.gz)) |
+| 332 | change `vvtltnmz` | Alignment A3 (static half): align maps each matched pair's arguments, records and result under the preservation contract, scored on examples 121-139 | [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) ([log](https://terminalvalue.net/raw-traces/11f93b59-b830-4090-8775-33313957ef5c/39ba85dbce2b8161e4587d36779118ccb78dfc7755bb7571986630b794cafead.jsonl.gz)) |
 
 ## Logs
 
@@ -538,7 +539,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`3a75b7cc`](3a75b7cc-0877-41e5-8ae0-589e1f0a5306/summary.md) | 3 | 3 | 0.2 MB | [`dbffa1323e1c`](https://terminalvalue.net/raw-traces/3a75b7cc-0877-41e5-8ae0-589e1f0a5306/dbffa1323e1cbd26f18abe9f976adb52fbcf3d9d6f11791b89348355ce2032c6.jsonl.gz) |
 | [`b4548bf9`](b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/summary.md) | 2 | 2 | 0.2 MB | [`3354196db9d3`](https://terminalvalue.net/raw-traces/b4548bf9-fa4c-41d3-8501-2dfcfc7ceadf/3354196db9d33ddfad19d9c8c31bad2be4d943158bb28a1bb77c29d24db986b1.jsonl.gz) |
 | [`146ed363`](146ed363-87f6-40b1-a9b7-7accb8190171/summary.md) | 2 | 2 | 0.1 MB | [`0a4d23e911c5`](https://terminalvalue.net/raw-traces/146ed363-87f6-40b1-a9b7-7accb8190171/0a4d23e911c5ad980c65749830e655ed6ceb85e250bcb7c86552fc892148e108.jsonl.gz) |
-| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 3 | 0 | 1.7 MB | `e37f2368a9be`, not uploaded |
+| [`11f93b59`](11f93b59-b830-4090-8775-33313957ef5c/summary.md) | 4 | 0 | 2.8 MB | `39ba85dbce2b`, not uploaded |
 
 ## Session notes
 

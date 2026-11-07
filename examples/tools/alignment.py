@@ -248,11 +248,11 @@ def score_method(entry, report):
     return scored, "asked" if new in candidates else "wrong", f"none leads: {shown}"
 
 
-def score_methods(truth):
+def score_methods(truth, reports=None):
     rows = []
     for entry in truth["examples"]:
         example = example_json(entry["example"])
-        report = align(*versions(example))
+        report = reports[entry["example"]] if reports else align(*versions(example))
         scored, outcome, proposed = score_method(entry, report)
         others = [m for m in report["methods"] if bare(m["before"]) != entry["before"]["symbol"]]
         rows.append({"example": entry["example"], "part": scored, "table": entry["after"]["symbol"], "outcome": outcome,
@@ -262,6 +262,94 @@ def score_methods(truth):
     return rows
 
 
+def norm(expression):
+    """An expression without its spacing, and a conjunction as the set of its conjuncts, so that two that differ only
+    in spacing or in the order of `&&` compare equal."""
+    return frozenset("".join(c.split()) for c in expression.split("&&"))
+
+
+def find_mapping(entry, report):
+    old, new = entry["before"]["symbol"], entry["after"]["symbol"]
+    return next((m for m in report.get("mappings", []) if bare(m["before"]) == old and bare(m["after"]) == new), None)
+
+
+def score_part(part, mapping, unchanged=False):
+    """Step A3's score for one input, new-input or result part, against the mapping `align` proposed for the
+    example's pair (None if it proposed none). Returns (part label, the table's, outcome, what was proposed)."""
+    kind = part["kind"]
+    if kind == "input":
+        label, table = f"input {part['anchor']}", part["new"]
+    elif kind == "new-input":
+        label, table = "new input", part["new"]
+    else:
+        label, table = f"result {part['relation']}", part.get("holds", "equality")
+    if mapping is None:
+        return (label, table, "found", "no hint: the method is unchanged") if unchanged else (label, table, "missed", "no mapping for the pair")
+    complete = not mapping["unsupported"] and all(i["candidates"] for i in mapping["inputs"])
+    if kind == "new-input":
+        if not complete:
+            return label, table, "missed", "no complete mapping"
+        return (label, table, "found", "left free") if table in mapping["free"] else (label, table, "wrong", "used by a candidate")
+    if kind == "input":
+        i = next((x for x in mapping["inputs"] if x["old"] == part["old"]), None)
+        if i is None or not i["candidates"]:
+            return label, table, "missed", "no candidate" + (f" ({'; '.join(mapping['unsupported'])})" if mapping["unsupported"] else "")
+        exprs = [c["expression"] for c in i["candidates"]]
+        if i["leads"]:
+            outcome = "found" if norm(exprs[0]) == norm(table) and part["decide"] == "infer" else "wrong"
+            return label, table, outcome, f"{exprs[0]} ({i['anchor']})"
+        return label, table, "asked" if norm(table) in map(norm, exprs) else "wrong", "a question: " + " | ".join(exprs)
+    r = mapping["result"]
+    exprs = [c["expression"] for c in r["candidates"]]
+    if part["relation"] == "equal":
+        return (label, table, "found", "equal") if r["kind"] == "equal" else (label, table, "wrong", f"{r['kind']}: {' | '.join(exprs)}")
+    if not exprs:
+        return label, table, "missed", f"{r['kind']}, no candidate"
+    decided = r["inferred"] and len(exprs) == 1
+    if decided:
+        outcome = "found" if norm(exprs[0]) == norm(table) and part["decide"] == "infer" else "wrong"
+        return label, table, outcome, f"{r['kind']}: {exprs[0]}"
+    return label, table, "asked" if norm(table) in map(norm, exprs) else "wrong", f"{r['kind']}, a question: " + " | ".join(exprs)
+
+
+def score_mapping(entry, report):
+    """Step A3's rows for an example: one per input, new-input and result part."""
+    mapping = find_mapping(entry, report)
+    unchanged = mapping is None and entry["before"]["symbol"] == entry["after"]["symbol"] and not any(bare(m["before"]) == entry["before"]["symbol"] for m in report["methods"])
+    rows = []
+    for part in entry["parts"]:
+        if part["kind"] == "method":
+            continue
+        label, table, outcome, proposed = score_part(part, mapping, unchanged)
+        name = part.get("old") or part.get("new") or "result"
+        rows.append({"example": entry["example"], "part": label, "table": f"{name}: {table}" if part["kind"] == "input" else table,
+                     "outcome": outcome, "proposed": proposed})
+    return rows
+
+
+def score_mappings(truth, reports=None):
+    rows = []
+    for entry in truth["examples"]:
+        report = reports[entry["example"]] if reports else align(*versions(example_json(entry["example"])))
+        rows += score_mapping(entry, report)
+    return rows
+
+
+FLAG_NAMES = {"previousSymbol": "before_target", "previousArguments": "before_arguments", "resultsAgreeWhen": "results_agree_when"}
+
+
+def flags_agree(entry, example, report):
+    """Where the example's hand-written flags are among the proposals `align` made for its pair: `proposed` (the one
+    proposal), `asked` (among a question's, whose order decides nothing), or `no`."""
+    mapping = find_mapping(entry, report)
+    want = {FLAG_NAMES[k]: "".join(v.split()) for k, v in flags_of(example).items()}
+    if mapping is None:
+        unchanged = not want and not any(bare(m["before"]) == entry["before"]["symbol"] for m in report["methods"])
+        return "proposed" if unchanged else "no"
+    proposed = [{k: "".join(v.split()) for k, v in p["flags"].items()} for p in mapping["proposals"]]
+    return "proposed" if proposed == [want] else "asked" if want in proposed else "no"
+
+
 def tally(rows):
     by = {}
     for r in rows:
@@ -269,13 +357,15 @@ def tally(rows):
     return by
 
 
-def record(step, rows):
+def record(step, rows, flags=None):
     sys.path.insert(0, str(HERE))
     import build
     tool = hashlib.sha256(Path(build.jvmcontract()).read_bytes()).hexdigest()
     SCORES.mkdir(exist_ok=True)
     out = {"step": step, "date": datetime.date.today().isoformat(), "tool": f"sha256:{tool}",
            "wrongAndAccepted": [], "counts": tally(rows), "rows": rows}
+    if flags is not None:
+        out["flags"] = flags
     (SCORES / f"{step}.json").write_text(json.dumps(out, indent=2) + "\n")
 
 
@@ -288,10 +378,22 @@ def render_scores():
                  + (", ".join(s["wrongAndAccepted"]) or "none") + ".", "",
                  "| Part | " + " | ".join(OUTCOMES) + " |", "|---|" + "---|" * len(OUTCOMES)]
         lines += [f"| {k} | " + " | ".join(str(v[o]) for o in OUTCOMES) + " |" for k, v in sorted(s["counts"].items())]
-        lines += ["", "| Example | Part | Table | Score | Proposed | Elsewhere in the module |", "|---|---|---|---|---|---|"]
-        for r in s["rows"]:
-            elsewhere = f"{r['otherChanged']} changed" + (f"; vanished: {'; '.join(r['otherVanished'])}" if r["otherVanished"] else "")
-            lines.append(f"| {r['example']} | {r['part']} | `{r['table'].split('.')[-1]}` | {r['outcome']} | {cell(r['proposed'])} | {cell(elsewhere)} |")
+        if s["rows"] and "otherChanged" in s["rows"][0]:
+            lines += ["", "| Example | Part | Table | Score | Proposed | Elsewhere in the module |", "|---|---|---|---|---|---|"]
+            for r in s["rows"]:
+                elsewhere = f"{r['otherChanged']} changed" + (f"; vanished: {'; '.join(r['otherVanished'])}" if r["otherVanished"] else "")
+                lines.append(f"| {r['example']} | {r['part']} | `{r['table'].split('.')[-1]}` | {r['outcome']} | {cell(r['proposed'])} | {cell(elsewhere)} |")
+        else:
+            if "flags" in s:
+                f = s["flags"]
+                count = lambda v: sum(1 for x in f.values() if x == v)
+                lines += ["", f"The example's hand-written flags are what the mapping amounts to in {count('proposed')} of {len(f)} examples, "
+                          f"one of a question's alternatives in {count('asked')}, and neither in {count('no')}"
+                          + (f" ({', '.join(k for k, v in sorted(f.items()) if v == 'no')})" if count("no") else "") + "."]
+            lines += ["", "Every part that isn't found:", "", "| Example | Part | Table | Score | Proposed |", "|---|---|---|---|---|"]
+            for r in s["rows"]:
+                if r["outcome"] != "found":
+                    lines.append(f"| {r['example']} | {r['part']} | `{cell(r['table'])}` | {r['outcome']} | {cell(r['proposed'])} |")
         blocks.append("\n".join(lines))
     return "\n\n".join(blocks) or "No step has been scored yet."
 
@@ -299,7 +401,7 @@ def render_scores():
 def print_scores(rows):
     for r in rows:
         print(f"{r['example']}  {r['outcome']:6}  {r['part']:22}  {r['table']}: {r['proposed']}")
-        for v in r["otherVanished"]:
+        for v in r.get("otherVanished", []):
             print(f"        also vanished: {v}")
     for k, v in sorted(tally(rows).items()):
         print(f"{k}: " + ", ".join(f"{v[o]} {o}" for o in OUTCOMES))
@@ -367,13 +469,24 @@ def main(argv=None):
     sub.add_parser("render")
     sc = sub.add_parser("score")
     sc.add_argument("--record", action="store_true", help="keep the score in alignment/scores/ and rewrite the page")
+    sc.add_argument("--step", choices=("methods", "mappings", "all"), default="all",
+                    help="methods (A2), mappings (A3: the input, new-input and result parts), or both (the default)")
     args = p.parse_args(argv)
     truth = load()
     if args.command == "score":
-        rows = score_methods(truth)
-        print_scores(rows)
+        reports = {e["example"]: align(*versions(example_json(e["example"]))) for e in truth["examples"]}
+        for step, name, score in (("methods", "A2-methods", score_methods), ("mappings", "A3-mappings", score_mappings)):
+            if args.step in (step, "all"):
+                rows = score(truth, reports)
+                print(f"{name}:")
+                print_scores(rows)
+                flags = None
+                if step == "mappings":
+                    flags = {e["example"]: flags_agree(e, example_json(e["example"]), reports[e["example"]]) for e in truth["examples"]}
+                    print("flags: " + ", ".join(f"{k} {v}" for k, v in flags.items()))
+                if args.record:
+                    record(name, rows, flags)
         if args.record:
-            record("A2-methods", rows)
             PAGE.write_text(render(truth))
         return 0
     if args.command == "signatures":

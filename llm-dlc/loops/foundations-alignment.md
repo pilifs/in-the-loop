@@ -159,10 +159,46 @@ The shared files are the main brief's [list](foundations.md#streams). Name every
   has no manifest", for other streams' commits that `check` sees in the shared repository: `xuxuymrrrqsq` and
   `spkzmqwzmuom` (summaries S1, S2a), `uyqkxslyysrm` (heap H1) and `lslmmpwrvxuz` (observations O1). None is on this
   branch. Their manifests are in their own workspaces; the errors should resolve at the merge.
-- Next: A3, argument, record and result mappings under the contract, for the pairs A2 matches: anchored inputs fixed
-  to themselves, internal ones (a parameter gathered into a record, a reordering, a widening) and catalogue result
-  relations proposed, candidates collapsed, checked by the existing regression proof (a quick job), scored on the
-  input and result parts.
+- **A3, its static half, done** (2026-11-07): `align` now maps the arguments, records and result of every pair it
+  matches (`lib/src/alignment/mappings.rs`), under the comparison's preservation contract (`--contract FILE`, or for
+  a standalone method the one its two signatures imply, reported as standalone).
+  - An anchored input (an external input with the identity derivation; standalone, a parameter both versions take
+    by name and type, wherever it now stands) is mapped to itself and nothing else, and a stated derivation is used
+    as stated. Candidates are only names, field paths, an integral cast and a record built with its canonical
+    constructor, never arithmetic, so the offset mapping can't arise (a test plants it, with and without a contract).
+  - Internal inputs get candidates from the new inputs no anchored one took (parameters, `p.c`, `this.f`), ranked by
+    name (the same, or one inside the other), type and position; an old record whose components changed is built
+    component by component. A lone match on type alone, or a tie, is a question. A new input nothing uses is left
+    free. An old object that isn't a record and whose fields changed is left to A4, named as such.
+  - The result, from the catalogue: equal; widened; wrapped in or unwrapped from a one-component record; a record
+    compared on its old components; or a changed meaning (a boolean against `result OP 0`, six candidates), always a
+    question. Every required observation is accounted for, with how it is compared; a changed result stays
+    unresolved.
+  - Collapse is syntactic only so far (the same expression up to spacing); collapse by proof is A3's second half.
+  - Each proposal is written to the hints file as a correspondence (`Correspondence::from_flags`), inferred,
+    proposed, unchecked, ranked when there are several, its `why` naming each input's anchor and basis, what is left
+    free, "standalone", and the flags it amounts to. A default mapping (the same method, inputs by position, results
+    equal) gets no hint. Tests: 8 more in `lib/tests/alignment.rs` (offset, stated derivation, reordering, gathered
+    into a record, a record that gained a component, a tie on type alone, the result catalogue with its accounting,
+    the kernel's `Quote` left to A4), and 4 in `test_alignment.py` for the part scoring.
+  - **Score** (`alignment.py score --record`, `scores/A3-mappings.json`): inputs anchored 50 found of 50, internal 8
+    of 8, new inputs left free 4 of 4, results equal 15 of 15, by components 2 of 2, changed 2 asked of 2 (122, 123:
+    `previous == (result <= 0)` among six, a person's decision). Nothing wrong or missed. The flags each mapping
+    amounts to are the example's own hand-written flags in 17 of 19, and one of a question's in the other 2.
+  - **Caveat:** written with the table in view, by the stream that wrote the table, and right at its first run; it
+    shows the rules reproduce the table, not that they generalize. Nothing is proved yet, so nothing can be wrong and
+    accepted.
+  - `align::propose` stays `Unsupported`, its message narrowed to A4: the kernel's `Pricing#total` takes a `Quote`
+    whose fields changed, which only field correspondence relates.
+- Shared files changed: `lib/src/main.rs` (`align --contract`, and the mappings in its output and hints);
+  `lib/README.md` (the `align` paragraph and the module sentence); `lib/tests/alignment.rs` (the A3 tests, and each
+  kernel test compiling into its own directory: three tests sharing one raced).
+- Next: A4's narrow case, the joint example first (the main brief's rule): the field equations
+  `old.q.cents == new.q.amount.cents`, `old.q.quantity == new.q.quantity` from how each version's constructor routes
+  its parameters into fields, so that `align::propose` passes the integration checks. Then A3's second half: each
+  proposal checked by the existing regression proof (`align` calling `equivalence` as a caller, a quick job over
+  121–139), with collapse by proof, vacuity, and the outcome rules (one proved: evidence for its claim key, intent
+  still proposed; several: ask; none: the counterexamples).
 - Status: working
 
 ## Loop settings

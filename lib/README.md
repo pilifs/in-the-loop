@@ -66,8 +66,13 @@ jvmcontract equivalence --before base/classes --after head/classes --target 'net
 jvmcontract equivalence --before base/classes --after head/classes --target 'net.example.Expiry#remainingNanos' \
     --before-target 'net.example.Expiry#isExpired' --results-agree-when 'previous == (result <= 0)'
 # Which new method corresponds to each old one that changed or is gone, proposed statically (names, descriptors,
-# body shapes, callers) and ranked, each with what ties it; --hints writes them to a hints file as proposed, their
-# evidence unchecked, keeping every hint a person stated or approved. Proves nothing.
+# body shapes, callers) and ranked, each with what ties it; then, for each pair, the mapping of its arguments,
+# records and result: the flags above, inferred. An input the contract fixes (with --contract, a JSON
+# PreservationContract; otherwise a parameter both versions take by name and type) is mapped to itself and nothing
+# else; only internal ones (a parameter gathered into a record, a record that gained a component) and the result
+# (equal, widened, wrapped, compared on the old components, or a changed meaning put as a question) are proposed.
+# --hints writes them to a hints file as proposed, their evidence unchecked, keeping every hint a person stated or
+# approved. Proves nothing.
 jvmcontract align --before base/classes --after head/classes --hints build/alignment-hints.json
 
 # A property of one method, proved over every input, or refuted with a witness.
@@ -300,8 +305,9 @@ optionally its rank among alternatives and the static facts it was proposed on),
 digests. `Statement` carries them in its optional `spec` field. Each of the loop's
 four streams owns one interface file there (`heap.rs`, `cache.rs`, `observe.rs`, `align.rs`), which returns a named
 `Unsupported` until that stream implements it; `tests/foundations.rs` checks every part against the joint example in
-`tests/fixtures/foundations/`. Method correspondence (`align`, `src/alignment.rs`) is scored against the hand-written
-mappings of the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md).
+`tests/fixtures/foundations/`. Method correspondence and the argument, record and result
+mappings (`align`, `src/alignment.rs` and `src/alignment/mappings.rs`) are scored against the hand-written mappings of
+the regression examples in [`examples/tools/alignment/`](../examples/tools/alignment/README.md).
 
 ## Limits
 
