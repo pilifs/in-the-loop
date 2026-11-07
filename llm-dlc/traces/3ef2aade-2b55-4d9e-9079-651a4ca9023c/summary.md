@@ -67,6 +67,12 @@ Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the co
 606ed0f7  long-token  pro…71 (48 chars): A test's work directory name, property-after-withQuantity-&lt;20-digit hash of the test's arguments> (48 chars), listed by ls in lib/tests/heap.rs's temporary directory: no credential.
 65c491aa  public-ip  5.…3: A JVMS section number (5.4.3.3, field and method resolution) cited in a doc comment of lib/src/relocate.rs, not an IP address
 
+### Record session traces
+
+change `rmstpyrkzono` · [log `d7d88434bf74`](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3ef2aade-2b55-4d9e-9079-651a4ca9023c/d7d88434bf74188e4df8f6b1cd0cced6d3bf95e79a1a3b6715378b71c0fe9d75.jsonl.gz) has every step in between: reasoning, tool calls and their results.
