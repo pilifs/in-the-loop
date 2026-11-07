@@ -379,24 +379,82 @@ Settled by the user on 2026-11-06:
 
 ## Progress
 
-- The streams `engines-jbmc` and `engines-native` work the plan in parallel ([Streams](#streams)); the reconcile
-  comes next, once both have stopped.
-- **Reconcile, steps 1–5: merged.** Both streams stopped with `done`. Their last turns were recorded on their branches
-  (`lukovtll`, `ulsslrtx`), their logs copied here, and the three lines merged.
-  - Conflicts: the generated trace files (taken from the default side, rewritten by the commit), and `lib/README.md`,
-    where the native stream's transcript and solver-interface paragraphs go before the JBMC stream's `--confirm`
-    paragraph.
-  - Fixed at the merge: `confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict` (JBMC stream) pinned
-    `caught`'s line, 82, which the native stream's cases moved to 291. It now reads the line from the corpus.
-    `lib/benchmark/conformance.json` was regenerated (`JVMCONTRACT_BLESS=1`): 146 claims, with the native stream's
-    48 new ones and its changed `nativeStrict` verdicts.
-  - Tests: unit 174, integration 64, skill 1 pass. Conformance fails only
-    `the_corpus_agrees_with_the_jvm_on_the_tools_own_checker`, on the 12 known library-record claims (JDK 25.0.5
-    against `checked.json`'s 25.0.4.1). Python: `test_run`, `test_compare`, `test_gap_table`, `test_pipeline`,
-    `test_metrics`, `test_review` pass. `test_build` has the 35 `KeyError: 'verdict'` errors both branches had, and
-    `test_performance` one failure (`test_the_exporter_stops_at_the_first_failure`), in files the merge doesn't touch.
-  - **Next:** fold the streams' Progress here (step 6), forget the workspaces (step 7), then `checked.json` from job
-    `-203501`, the examples' notes and 4c.
+The streams `engines-jbmc` and `engines-native` worked the plan in parallel ([Streams](#streams)) and both stopped
+with `done` on 2026-11-07. Each phase's detail, with the shared files each stream changed, is in its stream brief as
+its branch left it (`jj file show -r lukovtll llm-dlc/loops/engine-priorities-jbmc.md`, and `ulsslrtx` for
+`-native`), and in the commits named below (change ids).
+
+- **1a, exclusive JBMC phases: done** (`snprkxtx`, `tvquoumw`). `phases.rs` counts `Runtime Post-process` once, inside
+  `Runtime Solver`; a run whose phases pass its seconds by more than 1% plus 5 ms is flagged `phases_excess`, never
+  scaled. Fixtures from real JBMC 6.11.0 (proved, cut off, out of memory, two calls). The nesting was checked against
+  CBMC's source at `cbmc-6.11.0` by job `20261106-194328` (passed; its first run `-192959` failed on its own grep).
+- **1b, the SAT solver recorded: done** (`olttywtt`). `stated.checker.sat` in every result: CaDiCaL 1.9.5 for the own
+  checker, JBMC's `--sat-solver cadical` (3.0.0, read from its executable) with its standing options. `results.json`
+  lists them in `environment.sat`.
+- **1c, the Bitwuzla build: done** (`nzxrwvum`, `mwxvlkzz`). Job `20261106-194049` passed (its first run `-192008`
+  failed on a shared CaDiCaL subproject): Bitwuzla 0.8.2, commit `61bdc637`, linking CaDiCaL 2.1.2 static, recorded in
+  `lib/solvers/bitwuzla/build.json`. Built on x86_64, not the ARM64 the plan names.
+- **2a, the staging policy: done** (`uykqwxvr`). `--jbmc-staging staged|full-range|tight`.
+- **2b, the benchmark job: done** (`xtkwolst`). Job `20261106-201041` passed; its `results.json` and `RESULTS.md` are
+  collected, "Where the time goes" over corrected phases.
+- **2c, JBMC's default: `full-range`** (`wvkxpmzx`), from job `-201041`. Under strict JBMC's proofs were the same 54 of
+  65 under each policy, 575 s against `staged`'s 654 s; binary search 26 s against 56 s, 141 31 s against 61 s;
+  counterexamples 9 s against 27 s; no shrunk witness larger. The one case that changed class is a JBMC defect (3).
+- **3, the witnesses that don't reproduce: done** (`svvrpymr`, `pxqzmomt`, `xzvyuwxp`). Two JBMC 6.11.0 defects, and
+  a third found by 2b: `return-past-handler` (an exception computed into a `return` escapes its handler),
+  `stubbed-handler` (JBMC's JDK stubs have no superclass, so `catch (RuntimeException e)` misses), and
+  `unmasked-shift` (`>>`, `>>>` don't mask the distance). Each gave a **false proof under strict** on `--engine jbmc`.
+  The preflight (`jbmc_gaps.rs`, `Defect`) now refuses a JBMC proof through one under every mode, and `--confirm` takes
+  a refutation through one whose witness doesn't reproduce for no verdict. Jobs `20261106-203452` (failed, triaged)
+  and `-231317` (passed). Two upstream reports are drafted in `lib/tests/fixtures/jbmc-defects/README.md`, not filed.
+- **4a, the strict job on both engines: done** (`xrrrwlrm`, `tokyzsls`, `xyplqrtn`, `pmoympwn`). Job `20261107-000039`
+  passed (`-204220`, `-231837` failed on the result schema, fixed). Of 43 obligations: both engines decide 35 and
+  agree on all; only JBMC decides 5 (`013#0`, `035#0`, `052#0`, `071#2`, `127#0`); neither decides 3 (`037#0`,
+  `071#0`, `#1`). `037#0`'s recorded proof is refused by the unmasked-shift guard though correct (checked on all 2^32
+  ints). The tables are in that job's outputs, `lib/target/jobs/4a-coverage/`.
+- **4b, initializers counted: done** (`wnxlynrs`). Apps: 49 initializers, 36 enums and 13 `$SwitchMap`s, none
+  `throws`, `constants` or `other`. Recorded examples: only 013 and 071, through four Quorum enums. Benchmark: `Boom`,
+  `Base` throw, `Quiet` is constants. Scope chosen: full JVMS §5.5.
+- **5: mostly done** (`kumppqkz`, `knlrwnqu`, `ulstzomt`).
+  - Class initializers run in the own checker as JVMS §5.5 orders them; `boom`, `inherited`, `quiet` are correct on
+    it, with 8 more cases. Enums run too (arrays of references, `Enum`'s model, switch maps): over the apps the 49
+    `class-initializer` gaps are 0.
+  - `Enum.<init>`, `List.of`, `List.copyOf` are models on JBMC's class path, checked on the JVM by 11 cases and by
+    running them relocated against the JDK's classes.
+  - **Open: 071's two proofs don't stand under strict.** Job `20261106-203501` (failed): the models are used, but
+    JBMC's preflight walks the call graph, not paths, and reaches `Collection.isEmpty` and `toArray` stubs in
+    `ImmutableCollections.listCopy` that no path takes. The fix is a path-aware check in `jbmc_gaps.rs`.
+  - **Found by that job: a false success of JBMC under strict,** `declaring`: JBMC runs `Sub.<clinit>` on a
+    `getstatic Sub.value` declared in `Holder`, where the JVM initializes `Holder` alone. `auto` decides it right.
+  - That job also recorded the contract library on JDK 25.0.5 (step passed); its `checked.json` isn't applied yet.
+- **6a–6d: done** (`wnktqxrt`, `syntvmqp`, `osspkxkz`, `wqskvlym`, `ulsqmxuq`, `tpytwvmv`). Transcripts
+  (`JVMCONTRACT_TRANSCRIPTS`, `jvmcontract transcript`), the `Sat` trait, Bitwuzla behind it on clauses and on
+  word-level terms. Jobs `20261106-224616` and `-230455` passed: on clauses Bitwuzla is 2–43× slower; on terms with
+  `preprocess=0` at most 1.93× faster, and no case moves to decided. `lib/solvers/README.md` recommends against a
+  migration now.
+- **Reconcile, steps 1–5: merged** (`pkyqqotr`). The stream traces recorded on their branches, logs copied, the three
+  lines merged. `lib/README.md`'s conflict keeps both streams' paragraphs. Fixed at the merge: a conformance test
+  that pinned a corpus line, and `lib/benchmark/conformance.json` regenerated (146 claims). Rust unit 174,
+  integration 64, skill pass; conformance fails only the 12 known library-record claims. `test_build.py` (35
+  `KeyError: 'verdict'`, on both branches before) and `test_performance.py` (one failure, in files the merge doesn't
+  touch) fail as before the merge.
+- **Reconcile, steps 6–7: done.** This fold, and `jj workspace forget jbmc native`. The directories
+  `../in-the-loop-jbmc` (0.5 GB) and `../in-the-loop-native` (2.2 GB) stay for the user to delete, with the streams'
+  run records in their `llm-dlc/loop-summaries/`.
+- **Next, in order:**
+  1. take `checked.json` from job `-203501` (the 12 conformance claims);
+  2. the `declaring` gap in `jbmc_gaps.rs`, with a conformance claim, and a report drafted for the user;
+  3. a path-aware stub check in `jbmc_gaps.rs` so 071's two proofs can stand, then a job rerunning 071 and 013;
+  4. 4c, the coverage inventory from 4a's tables and 4b;
+  5. the examples' notes: 071 and 013 from `-203501` (and the rerun), 037 from `-000039`;
+  6. Bitwuzla's version in 1b's record (`statement::native_sat()` from the configured solver);
+  7. `test_build.py`'s and `test_performance.py`'s failures;
+  8. smaller ones the streams noted: the own checker's branch probes depend on wall-clock time (`Pricing#total` timing
+     out in 2 of 8 runs), the sampled encoding flagging short runs `phasesExcess`, the conformance job for the native
+     stream's step 3 cases under JBMC, `auto` and `--confirm`.
+- **For the user:** the 7 allow-list proposals (mangled C++ symbols in session `7b8a1d3b`'s logs); the two drafted
+  upstream reports, and a third once `declaring`'s is drafted; a push. CaDiCaL 2.x on its own, to separate it from
+  Bitwuzla's word-level gain, is below the brief's bar and not queued.
 - Status: working
 
 ## Loop settings
