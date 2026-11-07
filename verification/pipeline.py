@@ -23,6 +23,7 @@ import argparse
 import datetime as dt
 import difflib
 import fcntl
+import gzip
 import hashlib
 import importlib.util
 import json
@@ -1141,6 +1142,51 @@ class Runner:
                 step.cancelled = True
 
 
+# jj's default snapshot.max-new-file-size: a new file larger than this is left out of every commit (VF-020), so
+# collect keeps a changes.diff over it gzipped, or, when even that is too large, as a summary of what it changes.
+DIFF_MAX_BYTES = 1 << 20
+
+
+def diff_stat(diff):
+    """Each file a unified diff changes, with its added and removed lines, like `git diff --stat`."""
+    files, current = [], None
+    for line in diff.splitlines():
+        if line.startswith("+++ "):
+            current = [line[4:].removeprefix("b/"), 0, 0]
+            files.append(current)
+        elif line.startswith(("Binary file ", "File ")):
+            files.append([line, None, None])
+            current = None
+        elif current and line.startswith("+"):
+            current[1] += 1
+        elif current and line.startswith("-") and not line.startswith("--- "):
+            current[2] += 1
+    return "".join(f"{f[0]} | +{f[1]} -{f[2]}\n" if f[1] is not None else f"{f[0]}\n" for f in files)
+
+
+def keep_diff(src, dest, result):
+    """Copies a run's changes.diff into its collected result, so that a commit can hold it: as it is when it fits
+    under DIFF_MAX_BYTES, else gzipped, else as diff_stat()'s summary. result.json names the file kept."""
+    data = src.read_bytes()
+    if len(data) <= DIFF_MAX_BYTES:
+        shutil.copy2(src, dest / "changes.diff")
+        result["changesDiff"] = "changes.diff"
+        return None
+    packed = gzip.compress(data, mtime=0)
+    if len(packed) <= DIFF_MAX_BYTES:
+        kept, how = "changes.diff.gz", "gzipped"
+        (dest / kept).write_bytes(packed)
+    else:
+        kept, how = "changes.stat", "summarized"
+        text = data.decode(errors="replace")
+        (dest / kept).write_text(f"changes.diff, {len(data):,} bytes ({len(packed):,} gzipped), is over the "
+                                 f"{DIFF_MAX_BYTES:,} a commit takes: the files it changes, with lines added and "
+                                 f"removed. The outputs themselves are in the working copy, or under outputs/ if "
+                                 f"not applied.\n\n" + diff_stat(text))
+    result["changesDiff"] = kept
+    return {"bytes": len(data), "kept": kept, "how": how}
+
+
 def text_diff(path, old, new):
     try:
         a = old.decode().splitlines(keepends=True) if old is not None else []
@@ -1330,11 +1376,9 @@ def cmd_collect(args):
         if dest.exists():
             shutil.rmtree(dest)
         dest.mkdir(parents=True)
-        for name in ["logs", "changes.diff"]:
-            if (src / name).is_dir():
-                shutil.copytree(src / name, dest / name)
-            elif (src / name).exists():
-                shutil.copy2(src / name, dest / name)
+        if (src / "logs").is_dir():
+            shutil.copytree(src / "logs", dest / "logs")
+        diff_kept = keep_diff(src / "changes.diff", dest, result) if (src / "changes.diff").exists() else None
         applied, conflicts, kept = [], [], []
         apply = result["status"] == "passed" or args.apply_failed
         for out in result["outputs"]:
@@ -1362,6 +1406,8 @@ def cmd_collect(args):
                 keep.write_bytes(new)
         result["collected"] = {"at": iso(now()), "applied": applied, "conflicts": conflicts, "kept": kept,
                                "why": None if apply else f"not applied: the job {result['status']}"}
+        if diff_kept:
+            result["collected"]["changesDiff"] = diff_kept
         if conflicts:
             result["attention"].append(f"{len(conflicts)} output(s) changed in the working copy since the job's commit and were "
                                        f"not applied (kept under outputs/): rerun the job on the newer commit")

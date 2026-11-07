@@ -37,7 +37,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `jobs/ID.json` | one job, committed with the change it verifies | the submitting agent, with `submit` |
 | `results/ID/result.json` | what happened: status, summary, attention, every step's exit, time, memory and verdict lines, the environment | `collect` |
 | `results/ID/logs/` | each step's console output, whole if under 2 MB, else its head and tail | `collect` |
-| `results/ID/changes.diff` | the job's outputs against its commit | `collect` |
+| `results/ID/changes.diff` | the job's outputs against its commit; over 1 MiB, the most a commit takes, it is kept gzipped as `changes.diff.gz`, or as `changes.stat`, the files it changes, when that is still over (`collected.changesDiff` says which) | `collect` |
 | `results/ID/outputs/` | outputs that were not applied: the job did not pass, or the file changed since | `collect` |
 | `results/index.json` | one line per result, newest first | `collect` |
 | [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |

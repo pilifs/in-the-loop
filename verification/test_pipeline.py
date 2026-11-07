@@ -110,6 +110,38 @@ class PipelineTest(unittest.TestCase):
         self.assertNotIn(socket.gethostname(), (self.repo.dir / "verification/.state/results" / job_id / "result.json").read_text())
         self.assertTrue(pipeline.machine_label(r).startswith("test-box ("))
 
+    def test_a_diff_over_the_commit_limit_is_kept_gzipped_or_as_a_summary(self):
+        # VF-020: jj leaves a new file over 1 MiB out of every commit, so a collected changes.diff must fit under it.
+        import gzip
+        lines = "mkdir -p out; for i in $(seq 1 60); do seq 1 5000 > out/n$i.txt; done"
+        random = "mkdir -p out; for i in $(seq 1 20); do head -c 57000 /dev/urandom | base64 > out/r$i.txt; done"
+        for name, script, kept in (("compressible", lines, "changes.diff.gz"), ("random", random, "changes.stat")):
+            with self.subTest(name):
+                (self.repo.dir / "out").mkdir(exist_ok=True)
+                job_id = self.repo.submit(f"A large diff, {name}", "--output", "out", "--step", "make", script)
+                self.repo.commit(f"{name} job (verification pending)")
+                self.repo.pipeline("run", "--rev", "HEAD")
+                raw = (self.repo.dir / "verification/.state/results" / job_id / "changes.diff").stat().st_size
+                self.assertGreater(raw, pipeline.DIFF_MAX_BYTES)
+                self.repo.pipeline("collect")
+                dest = self.repo.dir / "verification/results" / job_id
+                r = self.repo.result(job_id)
+                self.assertEqual(r["status"], "passed", r["attention"])
+                self.assertFalse((dest / "changes.diff").exists())
+                self.assertEqual(r["changesDiff"], kept)
+                self.assertEqual(r["collected"]["changesDiff"]["bytes"], raw)
+                self.assertEqual(r["collected"]["changesDiff"]["kept"], kept)
+                self.assertLessEqual((dest / kept).stat().st_size, pipeline.DIFF_MAX_BYTES)
+                if kept == "changes.diff.gz":
+                    text = gzip.decompress((dest / kept).read_bytes()).decode()
+                    self.assertEqual(len(text.encode()), raw)
+                    self.assertIn("+++ b/out/n60.txt", text)
+                else:
+                    stat = (dest / kept).read_text()
+                    self.assertIn("out/r20.txt | +", stat)
+                    self.assertIn(f"{raw:,} bytes", stat)
+                self.assertEqual(self.repo.pipeline("validate").returncode, 0)
+
     def test_a_passing_job_brings_its_outputs_back_with_its_verdicts(self):
         (self.repo.dir / "out").mkdir()
         (self.repo.dir / "out/result.txt").write_text("old\n")

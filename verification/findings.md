@@ -38,7 +38,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   purpose.
 - **Decided** by the user on 2026-11-07: `collect` handles the size. A `changes.diff` over jj's limit is written
   gzipped (`changes.diff.gz`), or, if that is still over, as a `--stat` summary, and `result.json`'s `changesDiff`
-  says which. The limit stays at 1 MiB. The two results above are recorded as lacking their diff.
+  says which. The limit stays at 1 MiB.
+- **Fixed** 2026-11-07 in the commit that adds `keep_diff` to `verification/pipeline.py`: `collect` keeps a
+  `changes.diff` over 1 MiB as `changes.diff.gz`, or as `changes.stat` (the files it changes, with lines added and
+  removed) when even gzipped it is over, and records the original size in `collected.changesDiff`
+  (`test_pipeline.py`, `test_a_diff_over_the_commit_limit_is_kept_gzipped_or_as_a_summary`).
+  - Contrary to the entry above, both diffs did reach the repository. `git ls-tree` shows the first, 1,234,232
+    bytes, committed in `pkuvkyln` and the second, 1,359,746 bytes, in `rzmrlklw`; both have been pushed. How they
+    got past the limit is not known. Neither result lacks its diff, and they are left as they are.
+- **Closes when**, now: the next `collect` of a job whose diff is over 1 MiB leaves `jj st` with no refused file.
 
 ### VF-018: JBMC doesn't finish within 600 s on four of H5's regression proofs over objects under a correspondence
 

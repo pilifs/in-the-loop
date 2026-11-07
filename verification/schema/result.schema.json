@@ -166,7 +166,7 @@
         }
       }
     },
-    "changesDiff": {"description": "changes.diff: the outputs' changes as a unified diff against the job's commit.", "type": "string"},
+    "changesDiff": {"description": "The file that holds the outputs' changes against the job's commit: changes.diff, a unified diff; or, once collected, changes.diff.gz (that diff gzipped) or changes.stat (a summary of the files it changes) when the diff was over the 1 MiB a commit takes (collected.changesDiff).", "type": "string"},
     "workdir": {"description": "The work directory, kept on the runner (for a job that did not pass, by default).", "type": "string"},
     "collected": {
       "description": "Set when the result was collected into the repo. applied: outputs written to the working copy. conflicts: outputs that changed in the working copy since the job's commit, not applied, kept under outputs/. kept: outputs not applied because the job did not pass.",
@@ -176,7 +176,17 @@
         "applied": {"type": "array", "items": {"type": "string"}},
         "conflicts": {"type": "array", "items": {"type": "string"}},
         "kept": {"type": "array", "items": {"type": "string"}},
-        "why": {"type": ["string", "null"]}
+        "why": {"type": ["string", "null"]},
+        "changesDiff": {
+          "description": "Set when changes.diff was over the 1 MiB a commit takes (jj's snapshot.max-new-file-size): its size, the file kept in its place, and how.",
+          "type": "object",
+          "properties": {
+            "bytes": {"type": "integer"},
+            "kept": {"enum": ["changes.diff.gz", "changes.stat"]},
+            "how": {"enum": ["gzipped", "summarized"]}
+          },
+          "required": ["bytes", "kept", "how"]
+        }
       }
     }
   }

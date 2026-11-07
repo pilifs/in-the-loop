@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T21:29:43.449Z",
-  "ended": "2026-11-07T22:19:17.476Z",
-  "duration_seconds": 2974,
+  "ended": "2026-11-07T22:23:23.097Z",
+  "duration_seconds": 3220,
   "stats": {
     "turns": 25,
-    "api_calls": 156,
-    "tool_calls": 157,
+    "api_calls": 175,
+    "tool_calls": 176,
     "tool_errors": 4,
     "compactions": 4,
-    "peak_context_tokens": 130920,
+    "peak_context_tokens": 153031,
     "usage": {
-      "input_tokens": 318,
-      "output_tokens": 77806,
-      "cache_read_input_tokens": 11785554,
-      "cache_creation_input_tokens": 423681
+      "input_tokens": 356,
+      "output_tokens": 90196,
+      "cache_read_input_tokens": 14494985,
+      "cache_creation_input_tokens": 445792
     }
   },
   "tools": {
-    "Bash": 132,
+    "Bash": 151,
     "Read": 12,
     "Edit": 5,
     "TaskStop": 3,
@@ -100,24 +100,24 @@
     {
       "index": 4,
       "started": "2026-11-07T21:59:24.152Z",
-      "ended": "2026-11-07T22:19:17.476Z",
+      "ended": "2026-11-07T22:23:23.097Z",
       "turns": 7,
-      "api_calls": 52,
+      "api_calls": 71,
       "usage": {
-        "input_tokens": 104,
-        "output_tokens": 30397,
-        "cache_read_input_tokens": 4473580,
-        "cache_creation_input_tokens": 117841
+        "input_tokens": 142,
+        "output_tokens": 42787,
+        "cache_read_input_tokens": 7183011,
+        "cache_creation_input_tokens": 139952
       },
-      "peak_context_tokens": 130920
+      "peak_context_tokens": 153031
     }
   ],
   "log": {
-    "sha256": "26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb",
-    "bytes": 4970166,
-    "lines": 1552,
-    "gzip_bytes": 1039275,
-    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb.jsonl.gz"
+    "sha256": "340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e",
+    "bytes": 5311223,
+    "lines": 1714,
+    "gzip_bytes": 1081578,
+    "path": "llm-dlc/traces/2d24d762-29a6-4514-a681-485fd10f1c7e/logs/340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -232,6 +232,14 @@
       "summary": "An interrupted push starts no other upload, and the integration scripts run sync.py's run-record and performance suites",
       "body": "test_performance.py's test_an_interrupted_push_keeps_the_urls_it_verified failed 2 times in 3 under CPU load (40 busy loops on vm-1's 28 CPUs), with 5 puts where at most 4 may happen: once a worker took the interrupt, it was free at once and started the next queued log before cmd_upload's finally cancelled the pool. A real Ctrl-C, with a wrangler that dies of it, has the same window. sync.py's Uploader now has a stop flag: a KeyboardInterrupt or SystemExit in a worker sets it, cmd_upload sets it first thing when it is left early, and each log checks it before starting and again before its put, raising UploadStopped (not counted as a failure; the interrupt itself still propagates). A put already running finishes and is kept, as before. Reproducer: test_after_an_interrupt_in_a_worker_no_other_put_starts, which failed on the old code (the second log was put after the interrupt) and passes now. Under the same load the whole suite passed 3 times in 3 (103 tests), and every llm-dlc/tools test suite passes.\n\ncleanup-integration.sh now runs test_runs.py and test_performance.py beside test_review.py, as the cleanup loop's for-review list asked. application-core-integration.sh, for the next streams loop (not launched), ran only build.py's Python suite; it now runs sync.py's review, run-record and performance suites too, and application-core.md's list of what TESTS FAILED covers says so.",
       "log_sha256": "26dcc9424ec7bd340c20c7c6f0aa8cfcd191dd17aaf6bd5da567fcde61b116cb"
+    },
+    {
+      "change_id": "xsuwrvxnppyyzyxuqstkyuxupulukxmw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "collect keeps a changes.diff over jj's 1 MiB limit gzipped, or as a summary of the files it changes, for VF-020",
+      "body": "jj leaves a new file over snapshot.max-new-file-size (1 MiB) out of every commit, so a large changes.diff never reached the repository. As the user decided, the limit stays and collect fits the diff under it. verification/pipeline.py's keep_diff copies changes.diff as it is when it fits, else writes changes.diff.gz, else changes.stat (each file the diff changes, with lines added and removed, and the diff's size). result.json's changesDiff names the file kept, and collected.changesDiff records the original size and how it was kept; result.schema.json and the README's table describe both. Reproducer: test_pipeline.py's test_a_diff_over_the_commit_limit_is_kept_gzipped_or_as_a_summary, with a 60-file compressible job and a 20-file random one. It failed on the old pipeline.py, which copied each diff as it was, and passes now. The whole suite (28 tests) passes and pipeline.py validate finds 0 problems.\n\nverification/findings.md, VF-020: the fix is recorded, and a mistake in the entry is corrected. Both diffs it named are in fact committed (1,234,232 bytes in pkuvkyln, 1,359,746 bytes in rzmrlklw, both pushed); how they got past the limit is not known. The entry stays open until the next collect of a diff over 1 MiB leaves jj st with no refused file.",
+      "log_sha256": "340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e"
     }
   ],
   "logs": {
@@ -245,6 +253,12 @@
       "bytes": 4444864,
       "lines": 1338,
       "gzip_bytes": 966107,
+      "url": null
+    },
+    "340908073dae451f5af68723dec07edba4e5f7e7b50b5e1d88d4b56b97f6c94e": {
+      "bytes": 5311223,
+      "lines": 1714,
+      "gzip_bytes": 1081578,
       "url": null
     },
     "499f10255fdc2d22ea5a1abea5b5e494e46aea241abcdd72707db8a620684c69": {
