@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "201f326a-a536-4002-a0f8-5ac6cc2bbfb7",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T06:35:04.900Z",
+  "ended": "2026-11-08T06:58:59.759Z",
+  "duration_seconds": 1435,
+  "stats": {
+    "turns": 1,
+    "api_calls": 16,
+    "tool_calls": 16,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 53389,
+    "usage": {
+      "input_tokens": 32,
+      "output_tokens": 3906,
+      "cache_read_input_tokens": 581981,
+      "cache_creation_input_tokens": 40270
+    }
+  },
+  "tools": {
+    "Bash": 16
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T06:35:04.900Z",
+      "ended": "2026-11-08T06:58:59.759Z",
+      "turns": 1,
+      "api_calls": 16,
+      "usage": {
+        "input_tokens": 32,
+        "output_tokens": 3906,
+        "cache_read_input_tokens": 581981,
+        "cache_creation_input_tokens": 40270
+      },
+      "peak_context_tokens": 53389
+    }
+  ],
+  "log": {
+    "sha256": "74b830b3e3a6f36a87f1014c2207757a061c99b8133c5202654998f5cfaf2430",
+    "bytes": 450209,
+    "lines": 120,
+    "gzip_bytes": 92653,
+    "path": "llm-dlc/traces/201f326a-a536-4002-a0f8-5ac6cc2bbfb7/logs/74b830b3e3a6f36a87f1014c2207757a061c99b8133c5202654998f5cfaf2430.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "xrqyztrxlsmurttslunzpzptlxpxolyx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 jobs (R3 passed; O2's two integration runs failed, VF-022)",
+      "body": "Ran the queue on vm-1 (--memory 8G --workers 2). Application-core reuse R3's timing job passed (3m22s, 1.7 GiB) and its outputs lib/benchmark/preparation/shared-image.{json,md} were applied. Both application-core objects O2 jobs failed in 'cargo test --test integration' with one test, a_method_of_a_record_is_proved_on_its_components, failing at integration.rs:1961 on a stale assertion about the generated construction text; its verdict assertions passed and the 20 example steps (126-196) in the first job all gave their expected verdicts. Recorded as VF-022 for the objects stream.",
+      "log_sha256": "74b830b3e3a6f36a87f1014c2207757a061c99b8133c5202654998f5cfaf2430"
+    }
+  ],
+  "logs": {
+    "74b830b3e3a6f36a87f1014c2207757a061c99b8133c5202654998f5cfaf2430": {
+      "bytes": 450209,
+      "lines": 120,
+      "gzip_bytes": 92653,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

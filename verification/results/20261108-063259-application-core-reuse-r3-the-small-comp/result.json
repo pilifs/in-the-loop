@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-063259-application-core-reuse-r3-the-small-comp",
+  "title": "application-core reuse R3: the small compare run timed again with the JDK image's table of classes shared within the process",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m22s, peak 1.7 GiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261108-063259-application-core-reuse-r3-the-small-comp.json",
+    "sha256": "0076d54023876f5fb8e5bf38fe1231e200828122b9532ce4e52a32f938ee8be4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-063259-application-core-reuse-r3-the-small-comp",
+      "title": "application-core reuse R3: the small compare run timed again with the JDK image's table of classes shared within the process",
+      "description": "R3 (and the evidence for J4) of llm-dlc/loops/application-core-reuse.md, at the commit that carries this job. Job 20261108-060410 measured, in release on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191), that an unchanged compare rerun (5 proofs, all exact hits) took 209.8 ms in process and 290.3 ms as a process, 185.4 ms of it before the proofs' lookups, and that opening the JDK image (lib/modules) took 6.26 ms; counted with an open() shim, a rerun opens it 28 times and a cold run 50, since every class path with the JDK opens it, and each open built the table of every class in the image. The change: lib/src/jimage.rs builds that table once per process for each index and shares it (keyed by the index's bytes, read again at every open; resources are still read from the file opened). The same benchmark as before (lib/tests/preparation.rs, ignored inline, 7 repeats, release), which now also times an open whose index is new (the table built, writing a copy of the index included) apart from an open that shares the table; the report goes to lib/benchmark/preparation/shared-image.json and .md, beside the first job's. Native engine only, the fixture's own bounds; no JBMC. A debug smoke run inline gave a rerun of 37 ms in process against 846 ms before.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:compare",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jimage.rs",
+          "lib/tests/preparation.rs",
+          "llm-dlc/loops/application-core-reuse.md"
+        ]
+      },
+      "expected": "The step exits 0 (the benchmark asserts that every repeat and the process reach the same verdicts: under 'after' the entry point and Pricing#total, #withQuantity and #discount verified; under 'offset' the route and total refuted, and that the reruns are exact hits). The report has four scenarios; the reruns' time before the lookups is well under the first job's 185.4 ms. The figures are for these fixtures only.",
+      "submitted": {
+        "at": "2026-11-08T06:32:59+00:00"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "the first job ran in 3m57s at 1.7 GiB peak, its release build included; this one should be faster in its runs"
+      },
+      "steps": [
+        {
+          "name": "set -o pipefail; cd lib && mkdir -p target benchmark/prepara",
+          "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/shared-image.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-r3-shared.log",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/preparation/shared-image.json",
+        "lib/benchmark/preparation/shared-image.md"
+      ]
+    }
+  },
+  "sourceCommit": "3841df5e5340371029baf6bfa7c9c2248a52a4dd",
+  "startedAt": "2026-11-08T06:35:41+00:00",
+  "finishedAt": "2026-11-08T06:39:04+00:00",
+  "wallSeconds": 203.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2821719,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "the first job ran in 3m57s at 1.7 GiB peak, its release build included; this one should be faster in its runs"
+  },
+  "usage": {
+    "peakMemoryBytes": 1872445440,
+    "wallSeconds": 202.7,
+    "cpuSeconds": 288.6,
+    "memoryOfEstimate": 0.58,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "set -o pipefail; cd lib && mkdir -p target benchmark/prepara",
+      "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/shared-image.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-r3-shared.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 202.71,
+      "cpuSeconds": 288.631,
+      "cpuThrottledSeconds": 4.117,
+      "peakMemoryBytes": 1872445440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-set-o-pipefail-cd-lib-mkdir-p.log",
+        "lines": 163,
+        "bytes": 6940,
+        "sha256": "2f29f223927488f513b84a406ac4ae4603b5a73015b0664c2a8599269a7ca6b9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 162,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 42.40s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "",
+        "5 proofs, 0 exact hits; in process 1575.8 ms, as a process 1640.1 ms (medians of 7)",
+        "",
+        "| Stage | ms |",
+        "|---|---|",
+        "| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 48.4 |",
+        "| plan: both versions' reach and closures compared | 0.6 |",
+        "| key: the claim and its digest | 1.0 |",
+        "| key's closures: both versions' closures digested | 1.3 |",
+        "| lookup: reading the store | 0.0 |",
+        "| checker runs: decoding classes and methods (loading, lowering) | 0.0 |",
+        "| checker runs: exploring, encoding and solving | 1484.0 |",
+        "| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 35.8 |",
+        "| store: writing the result, a refutation's witness replayed first | 1.8 |",
+        "| replay of a stored or new witness (inside lookup and store) | 0.9 |",
+        "| outside every proof: compare's own steps after the last proof | 0.8 |",
+        "",
+        "### defect, rerun (`offset`)",
+        "",
+        "5 proofs, 5 exact hits; in process 31.9 ms, as a process 106.4 ms (medians of 7)",
+        "",
+        "| Stage | ms |",
+        "|---|---|",
+        "| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 27.3 |",
+        "| plan: both versions' reach and closures compared | 0.5 |",
+        "| key: the claim and its digest | 1.0 |",
+        "| key's closures: both versions' closures digested | 1.2 |",
+        "| lookup: reading the store | 0.2 |",
+        "| checker runs: decoding classes and methods (loading, lowering) | 0.0 |",
+        "| checker runs: exploring, encoding and solving | 0.0 |",
+        "| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |",
+        "| store: writing the result, a refutation's witness replayed first | 0.0 |",
+        "| replay of a stored or new witness (inside lookup and store) | 0.7 |",
+        "| outside every proof: compare's own steps after the last proof | 0.7 |",
+        "",
+        "written to benchmark/preparation/shared-image.json and benchmark/preparation/shared-image.md",
+        "test where_a_compare_runs_time_goes_stage_by_stage ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 42.40s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/preparation/shared-image.json",
+      "change": "added",
+      "bytes": 21341,
+      "sha256": "88480fa5801fc9d21f12d91ab56d07f6ada74ff79d957fba79729ed882a420a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/preparation/shared-image.md",
+      "change": "added",
+      "bytes": 4834,
+      "sha256": "64f00e9b1f006b6a927b5e5965732444265485de9fff38c1b710dec74fb2773d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T06:58:13+00:00",
+    "applied": [
+      "lib/benchmark/preparation/shared-image.json",
+      "lib/benchmark/preparation/shared-image.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

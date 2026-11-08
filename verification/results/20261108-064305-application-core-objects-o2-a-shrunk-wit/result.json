@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-064305-application-core-objects-o2-a-shrunk-wit",
+  "title": "application-core objects O2: a shrunk witness is the same failure as the one found; lib/tests/integration.rs under JBMC",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2m58s, peak 2.1 GiB (estimated 20m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "step 1 (integration tests) exited 101, expected 0",
+    "step 1 (integration tests) was held back 2m59s by its 2-CPU quota in 2m58s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-064305-application-core-objects-o2-a-shrunk-wit.json",
+    "sha256": "2c5b776a81880d8b3f1e3c5b516f62e36034162775bbbba8fbe572bcae14255d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-064305-application-core-objects-o2-a-shrunk-wit",
+      "title": "application-core objects O2: a shrunk witness is the same failure as the one found; lib/tests/integration.rs under JBMC",
+      "description": "Revision: the objects stream's commit of O2's shrinking (the one committing this job), row O2 of llm-dlc/loops/application-core-acceptance.md. Change: the shrinker's oracle (witness::shrink_in_harness_keeping) accepted any candidate the generated harness refuted, so a witness of one difference could shrink into a witness of another (a receiver's field difference at new Counter(20) became a narrower-constructor exception difference at new Counter(1)). A candidate is now accepted only where its replay is the same failure: in a regression check the two versions' replays differ in exactly the observations the found input differs in; in a property check the same throws clause applies and the same exception class is thrown, or the method returns normally. This can only make a shrunk witness larger, never change a verdict. lib/tests/integration.rs runs JBMC (engine jbmc and auto) and asserts particular shrunk witnesses (shrunk to the empty array, to two overflowing elements, to the even cluster nearest zero, majority's smallest cluster), so it is the check that the stricter oracle still reaches them. Domain, engine and bounds: as each test states (JBMC, its default full-range staging, max array length 8 or as given). Examples compare verdicts only, so none is rerun.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs",
+          "lib/tests/integration.rs"
+        ]
+      },
+      "expected": "integration tests: every non-ignored test passes (exit 0), its shrunk witnesses as asserted. A test failing on a shrunk witness that is now larger is a finding about this change, not a pass.",
+      "submitted": {
+        "at": "2026-11-08T06:43:05+00:00"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "timeout": "60m",
+        "notes": "job 20261108-045000 ran integration.rs plus 190-196 in 3m31s at 2.1 GiB; integration.rs alone held back by the 2-CPU quota"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ddf265db0e4373ccc8898105d816aed1ba5a840c",
+  "startedAt": "2026-11-08T06:54:58+00:00",
+  "finishedAt": "2026-11-08T06:57:58+00:00",
+  "wallSeconds": 180.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2932276,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "job 20261108-045000 ran integration.rs plus 190-196 in 3m31s at 2.1 GiB; integration.rs alone held back by the 2-CPU quota"
+  },
+  "usage": {
+    "peakMemoryBytes": 2277117952,
+    "wallSeconds": 178.8,
+    "cpuSeconds": 326.0,
+    "memoryOfEstimate": 0.71,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 178.824,
+      "cpuSeconds": 325.952,
+      "cpuThrottledSeconds": 179.87,
+      "peakMemoryBytes": 2277117952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 156,
+        "bytes": 10082,
+        "sha256": "0b2f3c06376c23f36ce21d13baa9976dc922c6419b3bfbb2a1a89714973dbdcb",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 154,
+          "text": "test result: FAILED. 64 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 118.98s",
+          "groups": [
+            "FAILED",
+            "64",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "failures:",
+        "",
+        "---- a_method_of_a_record_is_proved_on_its_components stdout ----",
+        "",
+        "thread 'a_method_of_a_record_is_proved_on_its_components' (2944033) panicked at tests/integration.rs:1961:5:",
+        "/** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */",
+        "public final class EquivalenceHarness {",
+        "    public static void check(long this_baseMillis, long this_capMillis, int attempt) {",
+        "        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.",
+        "        before.fixtures.Backoff this_before = null; fixtures.Backoff this_after = null;",
+        "        boolean rejectedAfter = false, rejectedBefore = false;",
+        "        try { this_after = new fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { rejectedAfter = true; }",
+        "        try { this_before = new before.fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { rejectedBefore = true; }",
+        "        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input",
+        "        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept",
+        "        long a = 0;",
+        "        int ea = 0;",
+        "        try { a = this_before.delayMillis(attempt); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringI",
+        "        long b = 0;",
+        "        int eb = 0;",
+        "        try { b = this_after.delayMillis(attempt); } catch (java.lang.NumberFormatException t) { eb = 1; } catch (java.lang.ArithmeticException t) { eb = 2; } catch (java.lang.NullPointerException t) { eb = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { eb = 4; } catch (java.lang.StringIn",
+        "        assert ea == eb && (ea != 0 || a == b);",
+        "    }",
+        "}",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    a_method_of_a_record_is_proved_on_its_components",
+        "",
+        "test result: FAILED. 64 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 118.98s",
+        "",
+        "error: test failed, to rerun pass `--test integration`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T06:58:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-064305-application-core-objects-o2-a-shrunk-wit"
+}

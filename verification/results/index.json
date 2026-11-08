@@ -2,6 +2,104 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-064305-application-core-objects-o2-a-shrunk-wit",
+      "title": "application-core objects O2: a shrunk witness is the same failure as the one found; lib/tests/integration.rs under JBMC",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 2m58s, peak 2.1 GiB (estimated 20m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [
+        "step 1 (integration tests) exited 101, expected 0",
+        "step 1 (integration tests) was held back 2m59s by its 2-CPU quota in 2m58s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/witness.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs",
+          "lib/tests/integration.rs"
+        ]
+      },
+      "sourceCommit": "ddf265db0e4373ccc8898105d816aed1ba5a840c",
+      "finishedAt": "2026-11-08T06:57:58+00:00",
+      "wallSeconds": 178.8,
+      "peakMemoryBytes": 2277117952,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 1200.0,
+        "notes": "job 20261108-045000 ran integration.rs plus 190-196 in 3m31s at 2.1 GiB; integration.rs alone held back by the 2-CPU quota"
+      },
+      "host": "vm-1",
+      "result": "20261108-064305-application-core-objects-o2-a-shrunk-wit/result.json"
+    },
+    {
+      "id": "20261108-063512-application-core-objects-o2-the-regressi",
+      "title": "application-core objects O2: the regression harness compares the two versions' constructor admission; lib/tests/integration.rs and the record and object examples under it",
+      "status": "failed",
+      "summary": "failed: 1 failed, 20 passed step(s) in 4m30s, peak 2.1 GiB (estimated 45m00s, 3.0 GiB); signals: cargo:tests×1; example:as-expected×1",
+      "attention": [
+        "step 1 (integration tests) exited 101, expected 0",
+        "step 1 (integration tests) was held back 2m55s by its 2-CPU quota in 2m48s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/statement.rs",
+          "lib/tests/integration.rs"
+        ]
+      },
+      "sourceCommit": "d7330651d8214f5d7dc2f389678b104808eb6d65",
+      "finishedAt": "2026-11-08T06:51:27+00:00",
+      "wallSeconds": 270.2,
+      "peakMemoryBytes": 2251321344,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 2700.0,
+        "notes": "as the earlier objects job 20261108-045000 (integration.rs 15m at 3G, 190-196 12m at 1G), plus 13 small B9 examples"
+      },
+      "host": "vm-1",
+      "result": "20261108-063512-application-core-objects-o2-the-regressi/result.json"
+    },
+    {
+      "id": "20261108-063259-application-core-reuse-r3-the-small-comp",
+      "title": "application-core reuse R3: the small compare run timed again with the JDK image's table of classes shared within the process",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 3m22s, peak 1.7 GiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:compare",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jimage.rs",
+          "lib/tests/preparation.rs",
+          "llm-dlc/loops/application-core-reuse.md"
+        ]
+      },
+      "sourceCommit": "3841df5e5340371029baf6bfa7c9c2248a52a4dd",
+      "finishedAt": "2026-11-08T06:39:04+00:00",
+      "wallSeconds": 202.7,
+      "peakMemoryBytes": 1872445440,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 600.0,
+        "notes": "the first job ran in 3m57s at 1.7 GiB peak, its release build included; this one should be faster in its runs"
+      },
+      "host": "vm-1",
+      "result": "20261108-063259-application-core-reuse-r3-the-small-comp/result.json"
+    },
+    {
       "id": "20261108-060410-application-core-reuse-r3-a-small-compar",
       "title": "application-core reuse R3: a small compare run's time by stage, cold, rerun and a defect, to decide whether a preparation cache is justified",
       "status": "passed",

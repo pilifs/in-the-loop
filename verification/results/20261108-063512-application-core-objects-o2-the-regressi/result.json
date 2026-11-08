@@ -1,0 +1,1731 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-063512-application-core-objects-o2-the-regressi",
+  "title": "application-core objects O2: the regression harness compares the two versions' constructor admission; lib/tests/integration.rs and the record and object examples under it",
+  "status": "failed",
+  "summary": "failed: 1 failed, 20 passed step(s) in 4m30s, peak 2.1 GiB (estimated 45m00s, 3.0 GiB); signals: cargo:tests×1; example:as-expected×1",
+  "attention": [
+    "step 1 (integration tests) exited 101, expected 0",
+    "step 1 (integration tests) was held back 2m55s by its 2-CPU quota in 2m48s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-063512-application-core-objects-o2-the-regressi.json",
+    "sha256": "8e451e5404f6018f1e0c643ce516fe0920337f3d834461c172639c5b7535b71e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-063512-application-core-objects-o2-the-regressi",
+      "title": "application-core objects O2: the regression harness compares the two versions' constructor admission; lib/tests/integration.rs and the record and object examples under it",
+      "description": "Row O2 of llm-dlc/loops/application-core-acceptance.md, the negative control of a narrower new constructor under an anchored domain. At this revision the regression harness (lib/src/harness/mod.rs, generate_in and its Java rendering) makes the new version's objects, then the previous version's, in separate handler regions: an input both versions' constructors reject is skipped as before, one that only one version's reject is now a difference (an AssertionError), where every object is made in both versions of the same shape (Layout::compares_admission). Before, an input either constructor rejected was skipped, so a narrower constructor was silently intersected. Verified inline on the native engine (tests/application_core_objects.rs). This job checks the same harness under JBMC and that the existing examples keep their verdicts: every record/object harness now has two construction regions and the previous version's construction emitted twice, so JBMC's formula changes even where the constructors are identical. Engine: as each example's build.py and the integration tests choose (JBMC and native); bounds as recorded per example.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/statement.rs",
+          "lib/tests/integration.rs"
+        ]
+      },
+      "expected": "integration tests: every non-ignored test passes (exit 0). Each example's build.py prints 'as expected' and exits 0, its verdict unchanged: 126 violation, 127 verified, 128 violation, 129 verified, 130 violation, 131 verified, 134 violation, 135 verified, 136 violation, 137 verified, 150 verified, 151 violation, 152 verified, 190 verified, 191-194 violation, 195 verified, 196 unverifiable. Only the statement's constructible-assumption text may change, where admission is compared. A changed verdict is a finding, not a pass.",
+      "submitted": {
+        "at": "2026-11-08T06:35:12+00:00"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "45m",
+        "timeout": "120m",
+        "notes": "as the earlier objects job 20261108-045000 (integration.rs 15m at 3G, 190-196 12m at 1G), plus 13 small B9 examples"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+          "cwd": "."
+        },
+        {
+          "name": "example 126 (B9)",
+          "run": "python3 examples/tools/build.py 126",
+          "cwd": "."
+        },
+        {
+          "name": "example 127 (B9)",
+          "run": "python3 examples/tools/build.py 127",
+          "cwd": "."
+        },
+        {
+          "name": "example 128 (B9)",
+          "run": "python3 examples/tools/build.py 128",
+          "cwd": "."
+        },
+        {
+          "name": "example 129 (B9)",
+          "run": "python3 examples/tools/build.py 129",
+          "cwd": "."
+        },
+        {
+          "name": "example 130 (B9)",
+          "run": "python3 examples/tools/build.py 130",
+          "cwd": "."
+        },
+        {
+          "name": "example 131 (B9)",
+          "run": "python3 examples/tools/build.py 131",
+          "cwd": "."
+        },
+        {
+          "name": "example 134 (B9)",
+          "run": "python3 examples/tools/build.py 134",
+          "cwd": "."
+        },
+        {
+          "name": "example 135 (B9)",
+          "run": "python3 examples/tools/build.py 135",
+          "cwd": "."
+        },
+        {
+          "name": "example 136 (B9)",
+          "run": "python3 examples/tools/build.py 136",
+          "cwd": "."
+        },
+        {
+          "name": "example 137 (B9)",
+          "run": "python3 examples/tools/build.py 137",
+          "cwd": "."
+        },
+        {
+          "name": "example 150 (B9)",
+          "run": "python3 examples/tools/build.py 150",
+          "cwd": "."
+        },
+        {
+          "name": "example 151 (B9)",
+          "run": "python3 examples/tools/build.py 151",
+          "cwd": "."
+        },
+        {
+          "name": "example 152 (B9)",
+          "run": "python3 examples/tools/build.py 152",
+          "cwd": "."
+        },
+        {
+          "name": "example 190 (B9)",
+          "run": "python3 examples/tools/build.py 190",
+          "cwd": "."
+        },
+        {
+          "name": "example 191 (B9)",
+          "run": "python3 examples/tools/build.py 191",
+          "cwd": "."
+        },
+        {
+          "name": "example 192 (B9)",
+          "run": "python3 examples/tools/build.py 192",
+          "cwd": "."
+        },
+        {
+          "name": "example 193 (B9)",
+          "run": "python3 examples/tools/build.py 193",
+          "cwd": "."
+        },
+        {
+          "name": "example 194 (B9)",
+          "run": "python3 examples/tools/build.py 194",
+          "cwd": "."
+        },
+        {
+          "name": "example 195 (B9)",
+          "run": "python3 examples/tools/build.py 195",
+          "cwd": "."
+        },
+        {
+          "name": "example 196 (B9)",
+          "run": "python3 examples/tools/build.py 196",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "d7330651d8214f5d7dc2f389678b104808eb6d65",
+  "startedAt": "2026-11-08T06:44:52+00:00",
+  "finishedAt": "2026-11-08T06:51:27+00:00",
+  "wallSeconds": 395.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2875201,
+    "workers": 2,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 2700.0,
+    "notes": "as the earlier objects job 20261108-045000 (integration.rs 15m at 3G, 190-196 12m at 1G), plus 13 small B9 examples"
+  },
+  "usage": {
+    "peakMemoryBytes": 2251321344,
+    "wallSeconds": 270.2,
+    "cpuSeconds": 448.6,
+    "memoryOfEstimate": 0.7,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 123.708,
+      "cpuSeconds": 123.928,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1656397824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "de40f00ba9858f4e7738c296ed9c99fbca0d0ffe83d640ae7dad8bbac88e3502",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-063512-application-core-objects-o2-the-regressi/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 03s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 168.178,
+      "cpuSeconds": 308.796,
+      "cpuThrottledSeconds": 175.04,
+      "peakMemoryBytes": 2251321344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 156,
+        "bytes": 10082,
+        "sha256": "a7494f0df2afa9f45f47b4a7508a99b1b7f92e922bf9796a29b4bdde3bf9e5c5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 154,
+          "text": "test result: FAILED. 64 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 109.66s",
+          "groups": [
+            "FAILED",
+            "64",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "failures:",
+        "",
+        "---- a_method_of_a_record_is_proved_on_its_components stdout ----",
+        "",
+        "thread 'a_method_of_a_record_is_proved_on_its_components' (2897151) panicked at tests/integration.rs:1961:5:",
+        "/** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */",
+        "public final class EquivalenceHarness {",
+        "    public static void check(long this_baseMillis, long this_capMillis, int attempt) {",
+        "        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.",
+        "        before.fixtures.Backoff this_before = null; fixtures.Backoff this_after = null;",
+        "        boolean rejectedAfter = false, rejectedBefore = false;",
+        "        try { this_after = new fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { rejectedAfter = true; }",
+        "        try { this_before = new before.fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { rejectedBefore = true; }",
+        "        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input",
+        "        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept",
+        "        long a = 0;",
+        "        int ea = 0;",
+        "        try { a = this_before.delayMillis(attempt); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringI",
+        "        long b = 0;",
+        "        int eb = 0;",
+        "        try { b = this_after.delayMillis(attempt); } catch (java.lang.NumberFormatException t) { eb = 1; } catch (java.lang.ArithmeticException t) { eb = 2; } catch (java.lang.NullPointerException t) { eb = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { eb = 4; } catch (java.lang.StringIn",
+        "        assert ea == eb && (ea != 0 || a == b);",
+        "    }",
+        "}",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    a_method_of_a_record_is_proved_on_its_components",
+        "",
+        "test result: FAILED. 64 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 109.66s",
+        "",
+        "error: test failed, to rerun pass `--test integration`"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 126 (B9)",
+      "run": "python3 examples/tools/build.py 126",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.609,
+      "cpuSeconds": 6.454,
+      "cpuThrottledSeconds": 0.67,
+      "peakMemoryBytes": 129286144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-126-b9.log",
+        "lines": 20,
+        "bytes": 818,
+        "sha256": "3a29e49aca17cf4ef54909167cd1bb5034b38d015f26d81db6f0b23e6301cbda",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components: violation (as expected)",
+          "groups": [
+            "126",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.6 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 127 (B9)",
+      "run": "python3 examples/tools/build.py 127",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.817,
+      "cpuSeconds": 8.803,
+      "cpuThrottledSeconds": 0.59,
+      "peakMemoryBytes": 139649024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-127-b9.log",
+        "lines": 20,
+        "bytes": 839,
+        "sha256": "f477fc39d6853ce7aa483730b16c520975c615698ea69c2aabd44827d203448f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)",
+          "groups": [
+            "127",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 2.9 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.211,
+      "cpuSeconds": 6.041,
+      "cpuThrottledSeconds": 0.699,
+      "peakMemoryBytes": 119250944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-128-b9.log",
+        "lines": 20,
+        "bytes": 808,
+        "sha256": "1e746b3d1dba86775dae7dc65f063d0c14b03763f29b9b0277d6ebe6b43c0738",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)",
+          "groups": [
+            "128",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 129 (B9)",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.214,
+      "cpuSeconds": 6.052,
+      "cpuThrottledSeconds": 0.661,
+      "peakMemoryBytes": 121008128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-129-b9.log",
+        "lines": 20,
+        "bytes": 825,
+        "sha256": "355bf08c7f3340e5eef048c2033549093bea22b2ddb792ae3a8c84806cd708a3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)",
+          "groups": [
+            "129",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 130 (B9)",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 8.016,
+      "cpuSeconds": 9.95,
+      "cpuThrottledSeconds": 0.812,
+      "peakMemoryBytes": 482422784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-130-b9.log",
+        "lines": 20,
+        "bytes": 816,
+        "sha256": "251fe1d50abb34c02316652db4b9c354123f9e58a5bb907109a275372088df72",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)",
+          "groups": [
+            "130",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 4.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 131 (B9)",
+      "run": "python3 examples/tools/build.py 131",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 10.225,
+      "cpuSeconds": 12.17,
+      "cpuThrottledSeconds": 0.803,
+      "peakMemoryBytes": 469078016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-131-b9.log",
+        "lines": 20,
+        "bytes": 851,
+        "sha256": "1f66309894cc1aeddef5e382898ed0e13c7b4a6abe3714e264b5956eaf0f1821",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two: verified (as expected)",
+          "groups": [
+            "131",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 6.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "example 134 (B9)",
+      "run": "python3 examples/tools/build.py 134",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.411,
+      "cpuSeconds": 6.312,
+      "cpuThrottledSeconds": 0.735,
+      "peakMemoryBytes": 122834944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-example-134-b9.log",
+        "lines": 20,
+        "bytes": 848,
+        "sha256": "7f2cdc90fa979545a234bb17b0048dbf71211080e0ecd5fdbcdc33a4d69008c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+          "groups": [
+            "134",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 9,
+      "name": "example 135 (B9)",
+      "run": "python3 examples/tools/build.py 135",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.21,
+      "cpuSeconds": 6.051,
+      "cpuThrottledSeconds": 0.698,
+      "peakMemoryBytes": 120229888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/9-example-135-b9.log",
+        "lines": 18,
+        "bytes": 782,
+        "sha256": "14ad3012db9381ce7b34d9453e736f7d19b8a3fa2ed6296c59d8d406e8b7fda8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: verified (as expected)",
+          "groups": [
+            "135",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 10,
+      "name": "example 136 (B9)",
+      "run": "python3 examples/tools/build.py 136",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.212,
+      "cpuSeconds": 6.086,
+      "cpuThrottledSeconds": 0.684,
+      "peakMemoryBytes": 118300672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/10-example-136-b9.log",
+        "lines": 18,
+        "bytes": 815,
+        "sha256": "f2833e8163af131d6453d923cb8c8e8d186c84a6e5b582e0117a65358cc70953",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: violation (as expected)",
+          "groups": [
+            "136",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 11,
+      "name": "example 137 (B9)",
+      "run": "python3 examples/tools/build.py 137",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.609,
+      "cpuSeconds": 6.631,
+      "cpuThrottledSeconds": 0.727,
+      "peakMemoryBytes": 125358080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/11-example-137-b9.log",
+        "lines": 18,
+        "bytes": 822,
+        "sha256": "2e91fc16f035eafd14978e7b3e4fe165c58f97e402ce6dd3eeb182f15198dab9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "137-a-window-start-aligned-by-a-mask-on-power-of-two-windows-and-by-the-remainder-elsewhere-proved-equal: verified (as expected)",
+          "groups": [
+            "137",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "137-a-window-start-aligned-by-a-mask-on-power-of-two-windows-and-by-the-remainder-elsewhere-proved-equal: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.5 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "137-a-window-start-aligned-by-a-mask-on-power-of-two-windows-and-by-the-remainder-elsewhere-proved-equal: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 12,
+      "name": "example 150 (B9)",
+      "run": "python3 examples/tools/build.py 150",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.209,
+      "cpuSeconds": 6.125,
+      "cpuThrottledSeconds": 0.513,
+      "peakMemoryBytes": 118149120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/12-example-150-b9.log",
+        "lines": 18,
+        "bytes": 814,
+        "sha256": "de32d0c77261ffa238e3d4a9b9ae951168ac207261f50b9f1b3e5b88a9bb4adf",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes: verified (as expected)",
+          "groups": [
+            "150",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 13,
+      "name": "example 151 (B9)",
+      "run": "python3 examples/tools/build.py 151",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.011,
+      "cpuSeconds": 5.916,
+      "cpuThrottledSeconds": 0.555,
+      "peakMemoryBytes": 123916288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/13-example-151-b9.log",
+        "lines": 18,
+        "bytes": 821,
+        "sha256": "0ad94a26d0cb3633817ef9619c6c8f38b87cee1da5b8b96a3f9d606c541378e2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: violation (as expected)",
+          "groups": [
+            "151",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.6 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 14,
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.008,
+      "cpuSeconds": 5.842,
+      "cpuThrottledSeconds": 0.52,
+      "peakMemoryBytes": 112025600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/14-example-152-b9.log",
+        "lines": 18,
+        "bytes": 812,
+        "sha256": "8f0b10bd373f736ae88e6d52b3cf57e73016f3da60e113b6940d2a81ca0ab868",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: verified (as expected)",
+          "groups": [
+            "152",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.6 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.6 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 15,
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.61,
+      "cpuSeconds": 6.49,
+      "cpuThrottledSeconds": 0.406,
+      "peakMemoryBytes": 98942976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/15-example-190-b9.log",
+        "lines": 24,
+        "bytes": 1031,
+        "sha256": "567bc3825cdc21e76578813843c205b6bff89c4300fda9955d834317f053334e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)",
+          "groups": [
+            "190",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.4 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 16,
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.414,
+      "cpuSeconds": 8.289,
+      "cpuThrottledSeconds": 0.348,
+      "peakMemoryBytes": 157532160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/16-example-191-b9.log",
+        "lines": 24,
+        "bytes": 1028,
+        "sha256": "97130e58e43fbe2f2d78561a5af34b072aeb5edc2188add839a7bbcb5f3cf40b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: violation (as expected)",
+          "groups": [
+            "191",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 1, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 2.0 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 17,
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.81,
+      "cpuSeconds": 6.764,
+      "cpuThrottledSeconds": 0.305,
+      "peakMemoryBytes": 105549824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/17-example-192-b9.log",
+        "lines": 24,
+        "bytes": 988,
+        "sha256": "a634d27f7bd142b093a1b0ff510c93b89a5bbb855200fb9422dc9941392a4b12",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: violation (as expected)",
+          "groups": [
+            "192",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.5 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.5 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 18,
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.81,
+      "cpuSeconds": 6.541,
+      "cpuThrottledSeconds": 0.33,
+      "peakMemoryBytes": 115560448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/18-example-193-b9.log",
+        "lines": 24,
+        "bytes": 1012,
+        "sha256": "656f4ebef941f296b61c735df4a32328ab2142d9ebe526462cfaaa0155887e11",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: violation (as expected)",
+          "groups": [
+            "193",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.5 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 19,
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.611,
+      "cpuSeconds": 6.513,
+      "cpuThrottledSeconds": 0.397,
+      "peakMemoryBytes": 111087616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/19-example-194-b9.log",
+        "lines": 24,
+        "bytes": 998,
+        "sha256": "7ddcc0af956894e0920c35b93204b649a1a041de46c245f834a5c22b759758c3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)",
+          "groups": [
+            "194",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.5 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 20,
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.61,
+      "cpuSeconds": 6.577,
+      "cpuThrottledSeconds": 0.361,
+      "peakMemoryBytes": 99942400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/20-example-195-b9.log",
+        "lines": 24,
+        "bytes": 1033,
+        "sha256": "2888c8b9a51ba9aa9b4f578cbe2e197a0712e0aaa41586843da4cb9f1f4a9b5d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: verified (as expected)",
+          "groups": [
+            "195",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.4 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 21,
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.409,
+      "cpuSeconds": 6.207,
+      "cpuThrottledSeconds": 0.261,
+      "peakMemoryBytes": 100237312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/21-example-196-b9.log",
+        "lines": 24,
+        "bytes": 1029,
+        "sha256": "4cc0480e8f73491cc9555ff268838a2c15a9d730d4a2dc27642031e937781632",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: unverifiable (as expected)",
+          "groups": [
+            "196",
+            "unverifiable"
+          ]
+        }
+      ],
+      "tail": [
+        "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.3 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: unverifiable (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T06:58:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "f5f516b4e19f429e825f18040698a63a6a0b0aab",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f5f516b4e19f429e825f18040698a63a6a0b0aab/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-063512-application-core-objects-o2-the-regressi"
+}

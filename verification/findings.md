@@ -18,6 +18,25 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-022: `a_method_of_a_record_is_proved_on_its_components` asserts a harness text the O2 constructor-admission change replaced
+
+- **Status**: open
+- **Raised**: 2026-11-08 on `vm-1`, jobs `20261108-063512-application-core-objects-o2-the-regressi` (at `d7330651d821`)
+  and `20261108-064305-application-core-objects-o2-a-shrunk-wit` (at `ddf265db0e43`).
+- **Found**: `cd lib && cargo test --test integration` gives 64 passed, 1 failed in both jobs (110 s and 119 s). The
+  failing test is `a_method_of_a_record_is_proved_on_its_components`, at `lib/tests/integration.rs:1961`. Its verdict
+  (`Verified`), domain and "behaves as before" assertions passed; the assertion that failed is on the generated
+  statement text, which must contain `try { this_before = new before.fixtures.Backoff(...); this_after = new fixtures.Backoff(...); } catch (Throwable t) { return; }`.
+  The statement now has two separate construction regions (`rejectedAfter` / `rejectedBefore`, `throw new AssertionError()`
+  when only one rejects), so that string is no longer there. This looks like a stale test expectation from the
+  `d7330651d821` change, not a wrong verdict. In the first job the 20 example steps (126-196) all passed with their
+  expected verdicts. The shrinker job's other tests, and its stricter-oracle witnesses, were not reached as a failure:
+  only this test failed, so the job's check on the shrunk witnesses held. I did not edit the test or the job.
+- **Needs**: the objects stream updates the assertion at `integration.rs:1961` to the new construction text (or states
+  it by what it must mean), and resubmits the integration-tests job.
+- **Tracked in**: `llm-dlc/loops/application-core-acceptance.md` row O2 (not edited by me).
+- **Closes when**: `cargo test --test integration` passes in a rerun of the O2 jobs' integration step.
+
 ### VF-020: a passed job's `changes.diff` (1.2 MiB) is not committed, because jj refuses to snapshot new files over 1 MiB
 
 - **Status**: open
