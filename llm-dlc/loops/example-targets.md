@@ -1,7 +1,6 @@
 # Brief: example targets, real-world changes as reproducible work packets
 
-**Drafted 2026-11-08, from an outside plan; decisions 1–4 [below](#decisions) were settled by the user on 2026-11-08,
-and 5–12 are proposed.** It starts after the [launch prerequisites](#launch-prerequisites), which include Phase 0.
+**Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08.** It starts after the [launch prerequisites](#launch-prerequisites), which include Phase 0.
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). It **scaffolds** external Java changes, Spring CVEs and
 independent upstream changes of the same kinds, as packets a later agent can execute, prove, refute or turn into an
@@ -281,7 +280,8 @@ fork from it, so Phase 0 is its work, done before any fork ([decision 7](#decisi
    `example-targets-acceptance` and `example-targets-sources`, which aren't briefs), `example-targets` with its four
    streams in `run-streams.sh`, and the integration check `llm-dlc/tools/example-targets-integration.sh`. Both
    launchers are replaced by rename if anything runs from them.
-6. **The briefs committed** with their session ids, and decisions 5–12 settled by the user.
+6. **The briefs committed** with their session ids (done 2026-11-08, in the workspace `example-targets-plan`, rebased onto
+   application-core's final commit at Phase 0), and the [decisions](#decisions) settled by the user (done 2026-11-08).
 7. **Push**, at the user's request.
 8. **This brief's status set to `working`**, and the planning session closed. The user then runs
    `FEATURE_LOOP_MEMORY_MAX=4G CARGO_BUILD_JOBS=8 llm-dlc/tools/run-streams.sh example-targets` from the default
@@ -437,11 +437,12 @@ Settled by the user on 2026-11-08:
    upstream build.
 4. **The archived registry** is supplied by the user, and committed with its sha256 checked (prerequisite 3).
 
-Proposed by the planning session on 2026-11-08, for the user:
+Proposed by the planning session and settled by the user on 2026-11-08, as proposed:
 5. **Verification with the pipeline**, not separate, so rows can close in the loop.
 6. **One writer for shared files**: the planning session in Phase 0; streams make only marked additive edits, and
    record other requests for the merge (as application-core's decision 3).
-7. **Phase 0 in the planning session** `e9be5afb`, after application-core finishes, before the fork. That conversation's
+7. **Phase 0 in the planning session** `e9be5afb`, after application-core finishes, before the fork (the user confirmed
+   it in that session). That conversation's
    earlier part is application-core's run and loop tooling; `run-streams.sh` compacts it once before forking.
 8. **Memory**: 4 GB per stream scope, about 24 GB for the runner, upstream builds as jobs with their own estimates.
 9. **Model and effort**: `claude-opus-5-5` at high effort for every loop.
@@ -456,12 +457,14 @@ Proposed by the planning session on 2026-11-08, for the user:
 
 - Drafted 2026-11-08 by the planning session, from the outside plan, while application-core's Phase 5 was running. The
   starting point was recounted at `210b9498`. The user settled decisions 1–4.
+- 2026-11-08, **decisions 5–12 settled** by the user, as proposed: the pipeline, one writer for shared files, Phase 0 in
+  this session after application-core finishes, 4 GB streams and about 24 GB for the runner, `claude-opus-5-5` at high
+  effort, example numbers 280–329, the v1 gap inventory as a Phase 5 output, and the adaptations to the outside plan.
 - 2026-11-08, **the JDKs installed** by the planning session, at the user's request, out of Phase 0: Temurin 17, 11 and 8
   with sdkman. sdkman made each the default as it installed, despite a declined prompt, so the default was set back to
   `25.0.5.0+8-tem` at once (about two minutes; no job ran and no loop ran `java` meanwhile). Phase 0 has six steps left. Prerequisites 1–8 are still to do:
   application-core finishes first, and the names are registered in Phase 0, so nothing can launch this loop before it.
-- Status: blocked: application-core's finish, the archived registry from the user, Phase 0 by the planning session,
-  and the user's decisions 5–12
+- Status: blocked: application-core's finish, the archived registry from the user, and Phase 0 by the planning session
 
 ## Loop settings
 
