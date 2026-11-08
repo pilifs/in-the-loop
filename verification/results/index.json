@@ -2,6 +2,42 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-185910-application-core-phase-5-a-receiver-whos",
+      "title": "application-core Phase 5: a receiver whose constructor takes dependencies, each passed null (J1's R2 on the quote family), on the own checker with no JBMC",
+      "status": "passed",
+      "summary": "passed: 4 passed step(s) in 3m27s, peak 2.3 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×1",
+      "attention": [
+        "step 1 (build the tests and the recording jbmc) was held back 5m28s by its 2-CPU quota in 3m15s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (the dependency tests) was held back 5.1s by its 2-CPU quota in 4.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/application_core_joint.rs",
+          "lib/tests/dependencies.rs",
+          "lib/src/construction.rs",
+          "lib/src/relocate.rs",
+          "llm-dlc/loops/application-core.md"
+        ]
+      },
+      "sourceCommit": "c99d01a31b8fdb66fd4373d285bf6af354eb6dcd",
+      "finishedAt": "2026-11-08T19:04:06+00:00",
+      "wallSeconds": 207.2,
+      "peakMemoryBytes": 2482032640,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 900.0,
+        "notes": "inline release runs on this machine: j1_r2 about 6 s, dependencies 2 s; plus a release build of the two test binaries (about 3 min)"
+      },
+      "host": "vm-1",
+      "result": "20261108-185910-application-core-phase-5-a-receiver-whos/result.json"
+    },
+    {
       "id": "20261108-180246-application-core-phase-5-step-2-the-join",
       "title": "application-core Phase 5 step 2: the joint acceptance at the merge (J1, J2, H, L), on the own checker with no JBMC",
       "status": "passed",
