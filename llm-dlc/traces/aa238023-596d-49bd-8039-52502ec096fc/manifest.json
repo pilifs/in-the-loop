@@ -12,27 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T04:52:24.183Z",
-  "duration_seconds": 1079,
+  "ended": "2026-11-08T05:08:14.644Z",
+  "duration_seconds": 2029,
   "stats": {
-    "turns": 10,
-    "api_calls": 68,
-    "tool_calls": 68,
+    "turns": 15,
+    "api_calls": 97,
+    "tool_calls": 98,
     "tool_errors": 0,
-    "compactions": 2,
+    "compactions": 3,
     "peak_context_tokens": 190852,
     "usage": {
-      "input_tokens": 136,
-      "output_tokens": 70803,
-      "cache_read_input_tokens": 7483378,
-      "cache_creation_input_tokens": 290059
+      "input_tokens": 196,
+      "output_tokens": 83977,
+      "cache_read_input_tokens": 9694179,
+      "cache_creation_input_tokens": 371401
     }
   },
   "tools": {
-    "Bash": 61,
-    "Read": 4,
+    "Bash": 81,
+    "Read": 9,
+    "Edit": 2,
+    "SendMessage": 2,
     "Write": 2,
-    "Edit": 1
+    "ListAgents": 1,
+    "ToolSearch": 1
   },
   "files_touched": [
     "lib/src/reuse.rs",
@@ -71,24 +74,38 @@
     {
       "index": 2,
       "started": "2026-11-08T04:47:04.081Z",
-      "ended": "2026-11-08T04:52:24.183Z",
+      "ended": "2026-11-08T04:53:06.703Z",
+      "turns": 5,
+      "api_calls": 28,
+      "usage": {
+        "input_tokens": 60,
+        "output_tokens": 20161,
+        "cache_read_input_tokens": 2342977,
+        "cache_creation_input_tokens": 97699
+      },
+      "peak_context_tokens": 108967
+    },
+    {
+      "index": 3,
+      "started": "2026-11-08T04:53:43.897Z",
+      "ended": "2026-11-08T05:08:14.644Z",
       "turns": 4,
-      "api_calls": 21,
+      "api_calls": 22,
       "usage": {
         "input_tokens": 44,
-        "output_tokens": 17940,
-        "cache_read_input_tokens": 1606168,
-        "cache_creation_input_tokens": 91222
+        "output_tokens": 10953,
+        "cache_read_input_tokens": 1473992,
+        "cache_creation_input_tokens": 74865
       },
-      "peak_context_tokens": 102490
+      "peak_context_tokens": 87944
     }
   ],
   "log": {
-    "sha256": "bc9aa0450064232ed23f89ed22d9561a4991a0e835a1a07e8cff7c606c44b87c",
-    "bytes": 2487360,
-    "lines": 827,
-    "gzip_bytes": 519335,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/bc9aa0450064232ed23f89ed22d9561a4991a0e835a1a07e8cff7c606c44b87c.jsonl.gz"
+    "sha256": "76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1",
+    "bytes": 3560994,
+    "lines": 1176,
+    "gzip_bytes": 768523,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -107,9 +124,23 @@
       "summary": "application-core reuse J3: a planned domain's plans and a modelled call's model in the claim key, digested whole as their strict types",
       "body": "The claim key's projection (lib/src/spec/cache.rs) refused every claim with a planned domain or a call model as uncacheable, since Phase 0 added those parts without registering them. TYPED now names domain.made_by.before/after (construction plans) and environment.calls[].model (a call model): each is digested whole once it reads back exactly as its type of spec::plans, which refuses every undeclared field and variant, so nothing in them is left out of the key and an undeclared field still makes the claim uncacheable by name.\n\nVerified inline: three new tests in lib/tests/reuse.rs. The 8 frozen claims of tests/fixtures/application-core each get a distinct key; 27 changes to their histories (setup calls, constructors, factories, setup bounds, one version's plan alone), model outcomes (results, exceptions, coupling, key, bound) and value bounds (String and list lengths, nullability, evidence levels, element kinds) each give a new key; undeclared fields, an unknown variant and a non-canonical plan are refused. The integration contract's J3 now passes on distinct keys instead of on the refusal. 230 unit tests and the contract, summaries, heap, effects and foundations suites pass.\n\nAlso recorded under Progress: an unsound regression-cache hit the objects stream found in proof_cache.rs (an inner object's constructor is missing from the closure's roots), which is this stream's next piece of work.",
       "log_sha256": "bc9aa0450064232ed23f89ed22d9561a4991a0e835a1a07e8cff7c606c44b87c"
+    },
+    {
+      "change_id": "qssovxorxqsyqzznwkspuzvxyuzuwnyo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse: a regression claim's closure rooted at every constructor its harness calls, an inner object's included",
+      "body": "proof_cache::Regression::claim rooted each version's closure at a made object's own constructor only, not at the constructors of the objects it is made from, which the harness calls too. So a build that changed only an inner constructor reused another build's verified result: get(new Wrap(new Inner(v), k)), whose Inner constructor stores v + 1 in one build, reused a rewrite's proof though get returns one more. The objects stream found it (their ignored test an_inner_objects_constructor_is_part_of_the_cached_claim). The claim now roots both versions, and a previous version's receiver and records, at every constructor RecordType::constructors lists.\n\nReproducer first: tests/reuse.rs's an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim failed before the fix with an exact hit on the changed build. It now checks that a rewrite is verified and reused on an unchanged rerun, and that a change to the inner constructor after, and then before, misses the cache and is refuted. Also fixed: tests/reuse.rs compiled each build into a shared directory it removed first, so parallel tests could remove each other's classes. Each build is now compiled once per run. Verified inline: tests/reuse.rs (11 tests, three runs), the 230 unit tests, and the application_core, compare, effects, foundations, heap, observations and summaries suites. The proof_cache module doc and lib/README.md say which constructors are roots.",
+      "log_sha256": "76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1"
     }
   ],
   "logs": {
+    "76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1": {
+      "bytes": 3560994,
+      "lines": 1176,
+      "gzip_bytes": 768523,
+      "url": null
+    },
     "bc9aa0450064232ed23f89ed22d9561a4991a0e835a1a07e8cff7c606c44b87c": {
       "bytes": 2487360,
       "lines": 827,

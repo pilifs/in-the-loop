@@ -21,18 +21,26 @@ fn tmp(name: &str) -> PathBuf {
 }
 
 /// Compiles the Java `sources` (each a directory of a source tree, later ones replacing the files of earlier ones)
-/// into `target/tmp/reuse/NAME`. The tests need `javac`: without it they fail rather than pass by skipping.
+/// into `target/tmp/reuse/NAME`, once per run of the tests: a NAME is one build, and tests running side by side
+/// would otherwise remove each other's classes while they are read. The tests need `javac`: without it they fail
+/// rather than pass by skipping.
 fn compile(name: &str, sources: &[&Path]) -> PathBuf {
+    static BUILT: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+    let mut built = BUILT.lock().unwrap_or_else(|e| e.into_inner());
+    let out = tmp(name).join("classes");
+    if built.iter().any(|b| b == name) {
+        return out;
+    }
     let mut files = std::collections::BTreeMap::new();
     for dir in sources {
         for f in java_files(dir) {
             files.insert(f.strip_prefix(dir).unwrap().to_path_buf(), f.clone());
         }
     }
-    let out = tmp(name).join("classes");
     let _ = std::fs::remove_dir_all(&out);
     let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "-d"]).arg(&out).args(files.values()).status().expect("the tests need javac");
     assert!(status.success(), "{name} compiles");
+    built.push(name.to_string());
     out
 }
 
@@ -403,4 +411,48 @@ fn a_field_a_plan_or_a_model_does_not_declare_makes_the_claim_uncacheable() {
     let mut spelled = golden_claim("throttle-constructed-claim");
     spelled["domain"]["made_by"]["before"]["setup"] = serde_json::json!([]);
     assert!(refused(&spelled, "domain.made_by.before").contains("does not read back"));
+}
+
+// The regression cache's own hole, found by the objects stream: a regression claim's code is the closure of every
+// constructor the harness calls, both versions', not only a made object's own.
+
+/// `get(new Wrap(new Inner(v), k))` in a build whose `Inner` constructor stores `inner` and whose `get` is `body`.
+fn wrapped(name: &str, inner: &str, body: &str) -> PathBuf {
+    let inner = format!("package boxes; public class Inner {{ final int v; public Inner(int v) {{ this.v = {inner}; }} }}");
+    let wrap = "package boxes; public class Wrap { final Inner in; final int k; public Wrap(Inner in, int k) { this.in = in; this.k = k; } }";
+    let get = format!("package boxes; public class Box {{ public static int get(Wrap w) {{ return {body}; }} }}");
+    compile_text(name, &[("boxes/Inner.java", &inner), ("boxes/Wrap.java", wrap), ("boxes/Box.java", &get)])
+}
+
+fn regression(before: &Path, after: &Path, cache: &Path, run: &str) -> jvmcontract::equivalence::Outcome {
+    let mut o = jvmcontract::equivalence::Options::new(before, after, "boxes.Box#get");
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.cache = Some(cache.to_path_buf());
+    o.work = Some(fresh(run));
+    jvmcontract::equivalence::run(&o).unwrap()
+}
+
+/// A build that changes only the constructor of an object another one is made from is another claim, in the version
+/// after and in the version before: neither reuses the rewrite's proof, and each is refuted. Before the fix the
+/// closure was rooted at `Wrap`'s constructor alone, so both reused `verified`.
+#[test]
+fn an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim() {
+    let before = wrapped("inner-before", "v", "w.in.v + w.k");
+    let same = wrapped("inner-same", "v", "w.k + w.in.v");
+    let cache = fresh("inner-cache");
+    let proved = regression(&before, &same, &cache, "inner-run-same");
+    assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+    let again = regression(&before, &same, &cache, "inner-run-again");
+    assert!(again.reuse.is_some(), "an unchanged rerun is an exact hit: {}", again.output);
+
+    let after_changed = wrapped("inner-after-changed", "v + 1", "w.k + w.in.v");
+    let o = regression(&before, &after_changed, &cache, "inner-run-after");
+    assert!(o.reuse.is_none(), "another inner constructor after is another claim: {}", o.output);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+
+    let before_changed = wrapped("inner-before-changed", "v + 1", "w.in.v + w.k");
+    let o = regression(&before_changed, &same, &cache, "inner-run-before");
+    assert!(o.reuse.is_none(), "another inner constructor before is another claim: {}", o.output);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }

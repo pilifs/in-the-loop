@@ -214,6 +214,24 @@ measurement stays as recorded.
     (`get(new Wrap(new Inner(0), 0))`: before 0, after 1). It predates this wave, and it is in this stream's file.
   - **Next**: that cache hole, with a reproducer here first (the closure rooted at every constructor the harness
     calls, both versions). Then R2.
+- 2026-11-08, **the regression cache's hole closed**, in `lib/src/proof_cache.rs`:
+  - **The fix**: `Regression::claim` roots each version's closure at every constructor the harness calls to make
+    an input (`RecordType::constructors`, the objects an input is made from included), for the slots of both
+    versions and for a previous version's receiver and records, not at the made object's own constructor alone.
+  - **The reproducer first**, `tests/reuse.rs`'s
+    `an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim`: `get(new Wrap(new Inner(v), k))`.
+    A rewrite of `get` is verified, and an unchanged rerun is an exact hit. Then a build changing only `Inner`'s
+    constructor, after and then before, must miss the cache and be refuted. Before the fix the first of those reused
+    `verified`. The objects stream's ignored test of the same case should pass at the merge, un-ignored.
+  - **Also**: `tests/reuse.rs` compiled into shared directories and removed them first, so tests running side by
+    side could remove each other's classes (a key test failed once with no claim). Each build is now compiled once
+    per run.
+  - **Verified inline**: `tests/reuse.rs` (11, three runs), the 230 unit tests, `application_core` (14), `compare`,
+    `effects`, `foundations`, `heap`, `observations` and `summaries` pass. `integration.rs` stays a job's.
+  - **Next**: R2, read-only heap helper summaries. First the footprint of a field-only helper, proved rather than
+    listed, and its summary as the `spec::plans::Summary` applicability record. Then applicability at the call site,
+    the adversarial cases, and reuse in a changed caller, whose claim carries the summaries it used with their keys
+    (J3's helper assumptions).
 - Status: working
 
 ## Loop settings

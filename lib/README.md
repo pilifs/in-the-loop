@@ -438,7 +438,8 @@ the tool's models and the tool itself are not in a closure; the canonical claim 
 A prepared claim's **key** ([`spec::cache`](src/spec/cache.rs)) is the SHA-256 of the canonical claim written
 canonically (object keys sorted), under a line naming the projection's version. Each version's code is the
 digest of the closures of its roots ([`closure::version_digest`](src/closure.rs)): the method compared, and every
-constructor or factory its inputs are made with. The tool is digests too ([`proof_cache`](src/proof_cache.rs)): the
+constructor or factory its inputs are made with, those of the objects an input is made from included (a regression
+claim's, as its harness calls them). The tool is digests too ([`proof_cache`](src/proof_cache.rs)): the
 running executable's bytes, the JDK's whole `release` file, and the models, so a rebuilt binary with the same version
 number is another claim. The projection knows every field of the claim by its path: a field it doesn't know (one
 another part adds) makes the claim uncacheable rather than leaving it out of the key, and so does a part never
