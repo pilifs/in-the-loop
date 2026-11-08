@@ -249,7 +249,35 @@ fn where_a_compare_runs_time_goes_stage_by_stage() {
         jvmcontract::spec::observe::entry_points(before).unwrap();
         jvmcontract::spec::observe::entry_points(build("after")).unwrap();
     })));
-    units.push(("opening the JDK's image, lib/modules (each class path with the JDK does: several per proof)".into(), unit(&mut || {
+    // Opening the JDK's image. Its table of classes is shared within the process by index (R3's cache), so a first
+    // open is timed on a copy of the index, alone in a file, that differs from every earlier one in one byte of its
+    // redirect table: that open builds the table, as every open did before the cache.
+    let home = jvmcontract::jimage::JImage::find_java_home().expect("a JDK");
+    let index = {
+        use std::io::Read;
+        let mut file = std::fs::File::open(home.join("lib").join("modules")).unwrap();
+        let mut header = [0u8; 28];
+        file.read_exact(&mut header).unwrap();
+        let field = |at: usize| u32::from_le_bytes(header[at..at + 4].try_into().unwrap()) as usize;
+        assert_eq!(field(0), 0xCAFE_DADA, "a little-endian image");
+        let mut index = header.to_vec();
+        index.resize(28 + field(16) * 8 + field(20) + field(24), 0);
+        file.read_exact(&mut index[28..]).unwrap();
+        index
+    };
+    let fresh = tmp.join("fresh-image");
+    std::fs::create_dir_all(fresh.join("lib")).unwrap();
+    let mut variant = 0u32;
+    units.push(("opening the JDK's image the first time in a process, its table of classes built, writing the copy of its index included (each open did before R3's cache)".into(), unit(&mut || {
+        variant += 1;
+        let mut bytes = index.clone();
+        let redirect = u32::from_le_bytes(bytes[28..32].try_into().unwrap()) ^ variant;
+        bytes[28..32].copy_from_slice(&redirect.to_le_bytes());
+        std::fs::write(fresh.join("lib").join("modules"), &bytes).unwrap();
+        jvmcontract::jimage::JImage::open(&fresh).expect("the copy opens");
+    })));
+    jvmcontract::jimage::JImage::open_default().expect("a JDK");
+    units.push(("opening the JDK's image again, its table shared (each class path with the JDK does: several per proof)".into(), unit(&mut || {
         jvmcontract::jimage::JImage::open_default().expect("a JDK");
     })));
     let models = tmp.join("models");

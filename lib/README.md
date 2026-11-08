@@ -506,6 +506,19 @@ keeps its body in both versions. `tests/reuse_summaries.rs` holds these: on the 
 and broken precondition are each refuted with a replayed witness, and whose classes with the summary applied agree
 with the versions as written on a JVM.
 
+**Preparation, measured** (the application-core loop's R3): [`tests/preparation.rs`](tests/preparation.rs), ignored
+inline and run as a queued job, times a `compare` run on the joint example cold, as an unchanged rerun, on the
+`offset` defect and as its rerun, stage by stage at the proof cache's own steps
+([`reuse::preparation`](src/reuse/preparation.rs)), with each repeated stage timed apart and compilation reported
+apart; its reports go to `benchmark/preparation/`. In release (job `20261108-060410`), a
+rerun whose proofs are all exact hits spent 185 of its 210 ms before the lookups, and opening the JDK image took 6.3
+ms each time: every class path with the JDK opens it, 28 times in a rerun and 50 in a cold run, and each open built
+the table of every class in the image. That table is now the one product of preparation cached:
+[`jimage`](src/jimage.rs) builds it once per process for each index and shares it, keyed by the index's bytes, which
+every open reads again, so that an image changed in place, or another JDK at the same path, gets a table of its own.
+Resources are still read from the file opened, and the proof cache's keys are unchanged. Its figures are job
+`20261108-063259`'s.
+
 `impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
 invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as
 it is, with `previousSymbol` for a renamed method). A claim's code is what its key digests: the closures of the

@@ -410,6 +410,45 @@ measurement stays as recorded.
   - **Next**: R3's decision. Job `20261108-060410` is back, passed, in the runner's workspace: read its release
     figures, then cache the JDK image per process if they show it is material, or record that no preparation cache
     is justified. J4 comes at the merge.
+- 2026-11-08, **R3, the decision: the JDK image's table of classes shared within the process**, in
+  `lib/src/jimage.rs`, from job `20261108-060410` (passed, at `fcff0e28`), with job `20261108-063259` queued for the
+  figures after it (verification pending):
+  - **What the job measured**, in release, medians of 7, on the joint example's builds:
+    - an unchanged rerun (5 proofs, all exact hits): 209.8 ms in process, 290.3 ms as a process. 185.4 ms of it is
+      before the proofs' lookups. The key with its closures is 2.7 ms, the lookup 0.3 ms;
+    - cold: 460.6 ms in process (55 ms of it solving, 161.7 ms after the runs: replay, the JVM, the statement); the
+      defect cold 2217 ms (1723 ms solving); its rerun 265.3 ms, 13.8 ms of it the stored witnesses replayed;
+    - the stages a run repeats, one by one: opening the JDK image 6.26 ms; decoding the old build 0.03 ms, relocating
+      it 0.14 ms, the models' digest 0.09 ms, writing the models 0.32 ms; once per run, the specs 12.8 ms and
+      alignment 0.2 ms; once per process, the binary's digest 35.7 ms;
+    - compilation, apart: `javac` 403–429 ms per build, and 636 ms for the Spring stand-ins.
+  - **The repeated stage**: counted with an `open()` shim on the CLI, a rerun opens `lib/modules` 28 times and a cold
+    run 50, since every class path with the JDK opens it, and each open built the table of every class in the image.
+    At 6.26 ms that is about 175 ms of the 290 ms rerun process: material. Nothing else repeated is above a
+    millisecond.
+  - **The cache**, the one product: `JImage::open` still reads the file's header and index each time, and takes the
+    table of classes built earlier in the process from the same index bytes, if any (up to 4 indexes kept). Keyed by
+    the index's bytes themselves, not by a path, size or time, so an image changed in place, or another JDK at the
+    same path, gets its own. Resources are still read from the file opened, and no proof key changed. It is per
+    process, not persistent.
+  - **Why `jimage.rs`**: it is in no stream's ownership row, and no stream has changed it or `classpath.rs` since the
+    fork (checked on all four `@-`). The change is internal: no signature moved, so no caller changed. Recorded for
+    review, against this Progress's earlier plan of an interface request.
+  - **Verified inline**: a test first, failing before (two opens of one image shared nothing), then
+    `images_opened_on_the_same_index_share_its_classes_and_another_index_gets_its_own`: two opens share the table and
+    read the same class; a copy of the index alone elsewhere shares it too, and a copy with `java/lang/Object` renamed
+    in one byte gets its own table and leaves the shared one alone. The benchmark in debug, 1 repeat: an unchanged
+    rerun went from 846 ms to 37 ms in process (756 ms to 19 ms before the lookups), with the same verdicts. 234 unit
+    tests, `reuse` (11), `reuse_summaries` (14), `compare`, `application_core` (14), `summaries` (40), `effects`
+    (18), `heap` (49), `foundations` (5) and `observations` (12) pass.
+  - **The benchmark** now times an open whose index is new (the table built, as every open was before, writing a copy
+    of the index included) apart from an open that shares it. Job `20261108-063259` writes
+    `lib/benchmark/preparation/shared-image.json` and `.md`, beside the first job's report, which stays as recorded.
+  - **For J4's report**: with compilation, the two builds' `javac` alone (about 0.8 s, and 0.6 s for the stand-ins)
+    outweighs a whole `compare` rerun. The cut is to preparation in a rerun, never a gain in proving, and not a
+    cheaper meaningful refactor: a changed helper still proves.
+  - **Next**: job `20261108-063259`'s figures, read into R3's record. R3 is then done, its outcome justified by both
+    jobs. R4 is optional, and the only work of this stream's own left before J4 at the merge.
 - Status: working
 
 ## Loop settings

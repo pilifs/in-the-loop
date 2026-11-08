@@ -4,7 +4,9 @@
 //!
 //! The format (OpenJDK `imageFile.hpp`): a header, a redirect table and an offsets table of `table_length` entries
 //! for perfect hashing, a location-attribute area, a string table, and the resources. Only the index (a few
-//! megabytes) is read when the image is opened; each resource is read on demand. A resource may be stored
+//! megabytes) is read when the image is opened; each resource is read on demand. What opening derives from the index,
+//! the table of every class, is built once per process for each index and shared by every image opened on the same
+//! bytes (see [`JImage::open`]). A resource may be stored
 //! compressed; the `zip` compressor (zlib) is supported, the string-sharing one is not, and uncompressed images,
 //! which `jlink` produces by default, need neither.
 
@@ -13,6 +15,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
 use crate::Error;
 
@@ -35,17 +38,30 @@ struct Location {
 pub struct JImage {
     file: RefCell<File>,
     /// The header and index: redirect table, offsets table, locations and strings.
-    index: Vec<u8>,
+    index: Arc<Vec<u8>>,
     little_endian: bool,
     locations_start: usize,
     strings_start: usize,
     offsets_start: usize,
     /// Class name (`java/lang/Object`) to the index of its location in the offsets table.
-    classes: HashMap<String, u32>,
+    classes: Arc<HashMap<String, u32>>,
 }
 
+/// The indexes opened in this process, with the classes built from each: the one product of preparation the R3
+/// measurement found repeated (`lib/benchmark/preparation/`). Every class path with the JDK opens the image, several
+/// times per proof, and building the table of its classes was most of a `compare` rerun.
+///
+/// Keyed by the index's bytes themselves, which are read again at every open: the table is a function of them alone,
+/// and resources are always read from the file being opened. So an image changed in place, or another JDK at the
+/// same path, gets a table of its own; no path, size or time stands in for the content.
+static SHARED: Mutex<Vec<(Arc<Vec<u8>>, Arc<HashMap<String, u32>>)>> = Mutex::new(Vec::new());
+
+/// How many indexes [`SHARED`] keeps, the latest first: a process uses one JDK, its tests a few at most.
+const SHARED_KEPT: usize = 4;
+
 impl JImage {
-    /// Opens `<java_home>/lib/modules`.
+    /// Opens `<java_home>/lib/modules`: the file, its header and its index are read every time, and the table of its
+    /// classes is the one built earlier in this process from the same index bytes, if any.
     pub fn open(java_home: &Path) -> Result<JImage, Error> {
         let path = java_home.join("lib").join("modules");
         JImage::open_file(&path).map_err(|e| Error::new(format!("{}: {e}", path.display())))
@@ -110,7 +126,14 @@ impl JImage {
         let mut index = vec![0u8; index_size];
         index[..HEADER_SIZE].copy_from_slice(&header);
         file.read_exact(&mut index[HEADER_SIZE..]).map_err(|_| Error::new("jimage: index larger than file"))?;
-        let mut image = JImage { file: RefCell::new(file), index, little_endian, locations_start, strings_start, offsets_start, classes: HashMap::new() };
+        let mut shared = SHARED.lock().unwrap_or_else(|e| e.into_inner());
+        if let Some(at) = shared.iter().position(|(bytes, _)| **bytes == index) {
+            let entry = shared.remove(at);
+            shared.insert(0, entry.clone());
+            let (index, classes) = entry;
+            return Ok(JImage { file: RefCell::new(file), index, little_endian, locations_start, strings_start, offsets_start, classes });
+        }
+        let mut image = JImage { file: RefCell::new(file), index: Arc::new(index), little_endian, locations_start, strings_start, offsets_start, classes: Arc::default() };
         let mut classes = HashMap::with_capacity(table_length);
         for i in 0..table_length {
             let location = image.location(i as u32)?;
@@ -122,7 +145,9 @@ impl JImage {
             let name = if parent.is_empty() { base.into_owned() } else { format!("{parent}/{base}") };
             classes.insert(name, i as u32);
         }
-        image.classes = classes;
+        image.classes = Arc::new(classes);
+        shared.insert(0, (image.index.clone(), image.classes.clone()));
+        shared.truncate(SHARED_KEPT);
         Ok(image)
     }
 
@@ -267,5 +292,47 @@ mod tests {
         assert!(class.methods.iter().any(|m| m.name == "multiplyExact"));
         assert!(image.read_class("no/such/Class").unwrap().is_none());
         assert!(image.contains("java/util/List"));
+    }
+
+    /// The image's header and index, as a file of their own: an image with no resources, which opens like the real
+    /// one (opening reads the index only).
+    fn index_copy(home: &Path, dir: &Path, edit: impl FnOnce(&JImage, &mut Vec<u8>)) -> PathBuf {
+        let real = JImage::open(home).unwrap();
+        let mut bytes = real.index.to_vec();
+        edit(&real, &mut bytes);
+        let _ = std::fs::remove_dir_all(dir);
+        std::fs::create_dir_all(dir.join("lib")).unwrap();
+        std::fs::write(dir.join("lib").join("modules"), &bytes).unwrap();
+        dir.to_path_buf()
+    }
+
+    #[test]
+    fn images_opened_on_the_same_index_share_its_classes_and_another_index_gets_its_own() {
+        let Some(home) = JImage::find_java_home() else {
+            eprintln!("no JDK found; skipping");
+            return;
+        };
+        let first = JImage::open(&home).unwrap();
+        let second = JImage::open(&home).unwrap();
+        assert!(Arc::ptr_eq(&first.classes, &second.classes), "a second open of one image builds its classes again");
+        assert!(Arc::ptr_eq(&first.index, &second.index));
+        assert_eq!(first.read_class("java/lang/Math").unwrap(), second.read_class("java/lang/Math").unwrap());
+
+        // Keyed by the index's bytes, not by the path: the same index elsewhere shares, and one byte changed doesn't.
+        let tmp = std::env::temp_dir().join(format!("jimage-shared-{}", std::process::id()));
+        let same = JImage::open(&index_copy(&home, &tmp.join("same"), |_, _| {})).unwrap();
+        assert!(Arc::ptr_eq(&first.classes, &same.classes));
+        let renamed = index_copy(&home, &tmp.join("renamed"), |real, bytes| {
+            let location = real.location(real.classes["java/lang/Object"]).unwrap();
+            let at = real.strings_start + location.base as usize;
+            assert_eq!(&bytes[at..at + 7], b"Object\0");
+            bytes[at] = b'X';
+        });
+        let other = JImage::open(&renamed).unwrap();
+        assert!(!Arc::ptr_eq(&first.classes, &other.classes));
+        assert!(other.contains("java/lang/Xbject") && !other.contains("java/lang/Object"));
+        assert!(first.contains("java/lang/Object") && !first.contains("java/lang/Xbject"));
+        assert!(JImage::open(&home).unwrap().contains("java/lang/Object"), "the other index replaced the shared one");
+        let _ = std::fs::remove_dir_all(&tmp);
     }
 }

@@ -12,32 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T06:19:51.275Z",
-  "duration_seconds": 6326,
+  "ended": "2026-11-08T06:33:46.879Z",
+  "duration_seconds": 7161,
   "stats": {
-    "turns": 32,
-    "api_calls": 293,
-    "tool_calls": 295,
-    "tool_errors": 2,
-    "compactions": 6,
-    "peak_context_tokens": 280456,
+    "turns": 37,
+    "api_calls": 337,
+    "tool_calls": 340,
+    "tool_errors": 3,
+    "compactions": 7,
+    "peak_context_tokens": 285390,
     "usage": {
-      "input_tokens": 592,
-      "output_tokens": 343676,
-      "cache_read_input_tokens": 38559336,
-      "cache_creation_input_tokens": 1021467
+      "input_tokens": 680,
+      "output_tokens": 372785,
+      "cache_read_input_tokens": 42917403,
+      "cache_creation_input_tokens": 1135468
     }
   },
   "tools": {
-    "Bash": 257,
-    "Read": 17,
-    "Edit": 8,
+    "Bash": 294,
+    "Read": 20,
+    "Edit": 13,
     "Write": 6,
     "SendMessage": 3,
     "ListAgents": 2,
     "ToolSearch": 2
   },
   "files_touched": [
+    "lib/README.md",
+    "lib/src/jimage.rs",
     "lib/src/proof_cache.rs",
     "lib/src/reuse.rs",
     "lib/src/reuse/footprint.rs",
@@ -135,24 +137,38 @@
     {
       "index": 6,
       "started": "2026-11-08T05:46:51.132Z",
-      "ended": "2026-11-08T06:19:51.275Z",
-      "turns": 6,
-      "api_calls": 90,
+      "ended": "2026-11-08T06:20:17.366Z",
+      "turns": 7,
+      "api_calls": 93,
       "usage": {
-        "input_tokens": 182,
-        "output_tokens": 112555,
-        "cache_read_input_tokens": 14877495,
-        "cache_creation_input_tokens": 267377
+        "input_tokens": 188,
+        "output_tokens": 113924,
+        "cache_read_input_tokens": 15724964,
+        "cache_creation_input_tokens": 272311
       },
-      "peak_context_tokens": 280456
+      "peak_context_tokens": 285390
+    },
+    {
+      "index": 7,
+      "started": "2026-11-08T06:21:01.855Z",
+      "ended": "2026-11-08T06:33:46.879Z",
+      "turns": 4,
+      "api_calls": 41,
+      "usage": {
+        "input_tokens": 82,
+        "output_tokens": 27740,
+        "cache_read_input_tokens": 3510598,
+        "cache_creation_input_tokens": 109067
+      },
+      "peak_context_tokens": 122146
     }
   ],
   "log": {
-    "sha256": "ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5",
-    "bytes": 9124752,
-    "lines": 3365,
-    "gzip_bytes": 1742713,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5.jsonl.gz"
+    "sha256": "38ccc3675014da817c4c4965df004e9b0e9ab0815c303df335fe83c76b26091a",
+    "bytes": 10409122,
+    "lines": 3834,
+    "gzip_bytes": 2020616,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/38ccc3675014da817c4c4965df004e9b0e9ab0815c303df335fe83c76b26091a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -211,6 +227,14 @@
       "summary": "application-core reuse R2: a read-only helper's summary over the primitive arrays its receiver's fields hold, applied only within its bound",
       "body": "R2's bounded reads of primitive arrays, after the field-only case (llm-dlc/loops/application-core-reuse.md). The footprint (lib/src/reuse/footprint.rs) now accepts a field holding a one-dimensional non-floating primitive array, read by its length and elements. A flow over every path of the helper's code, locals included, proves every reference it handles is its receiver or such an array, kept only in a local and used only by arraylength and an element load of its own type. A write, passing it on, comparing or null-testing it, two arrays meeting at a join, and arrays of floats, references or arrays are each refused by name. A read out of bounds throws ArrayIndexOutOfBoundsException, an outcome the summary's proof compares: this departs from the brief's 'total' for the field case, recorded for review.\n\nThe lifted helper takes the array itself. Since the proof's harness makes no null array and none over the claim's bound, the summary carries facts (this.tiers != null, this.tiers.length <= 8). Each version's adapter checks them on the actual receiver at each call and, where one fails, calls its own version's helper as written instead. Each adapter is now a class of its own in its version's package, so it reaches package-private members legally.\n\nVerified inline in tests/reuse_summaries.rs, 4 new tests (14 in all, three runs): eight refusals; a lifted array helper agreeing with the helper on a JVM over 72 cases, 54 out of bounds; a for-each rewrite's summary reused by five changed callers, through a tier mutated via the field and via the caller's alias (each verified, and refuted and replayed in a stale defect), and through a 10-element and a null array, where the body is kept; a helper charging one tier more refused, its caller refuted; and a helper whose versions differ only past the bound, whose caller on 10 elements is refuted and replayed. With the guard taken out for a check, that caller was verified, the defect hidden. On a JVM with -Xverify:all, the applied classes agree with the versions as written. The 233 unit tests and reuse, summaries, application_core, compare, heap, effects and foundations pass. R3's job 20261108-060410 has come back passed; deciding R3 from it is next.",
       "log_sha256": "ba6db898278f8c55bb7c562fd12f957cb0d48113bc4b9c264d544676d81dc2f5"
+    },
+    {
+      "change_id": "womryvutuspnkqwkmpznptyzuupvxknt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse R3: the JDK image's table of classes built once per process and shared, keyed by its index (verification pending)",
+      "body": "R3's measurement (job 20261108-060410, passed, release, on the joint example's builds) put an unchanged compare rerun at 209.8 ms in process and 290.3 ms as a process, 185.4 ms of it before the proofs' lookups, and opening the JDK image (lib/modules) at 6.26 ms. Counted with an open() shim, a rerun opens the image 28 times and a cold run 50: every class path with the JDK opens it, and each open built the table of every class in the image, about 175 ms of the rerun. No other repeated stage is above a millisecond (decoding and relocating a build, the models' digest and writing them), and compilation is reported apart (javac 0.4 s per build).\n\nSo that table is the one product of preparation now cached. JImage::open still reads the file's header and index each time, and takes the table built earlier in the same process from the same index bytes, if any (up to 4 indexes). It is keyed by the index's bytes themselves, not by a path, size or time, so an image changed in place or another JDK at the same path gets its own. Resources are still read from the file opened, and no proof key changes. jimage.rs is in no stream's ownership row and no stream has touched it since the fork. The change is internal, with no signature moved. That departs from the brief's Progress, which planned an interface request, and is recorded there for review.\n\nVerified inline: a new unit test, which could not pass before, shows that two opens share the table and read the same class. A copy of the index alone elsewhere shares it too, and a copy with java/lang/Object renamed by one byte gets its own table and leaves the shared one intact. The benchmark run once in debug: an unchanged rerun went from 846 ms to 37 ms in process, with the same verdicts. Also passing: the 234 unit tests and the reuse (11), reuse_summaries (14), compare, application_core (14), summaries (40), effects (18), heap (49), foundations (5) and observations (12) suites. The benchmark now also times an open whose index is new apart from one that shares the table. Job 20261108-063259 reruns it in release into lib/benchmark/preparation/shared-image.json beside the first report.",
+      "log_sha256": "38ccc3675014da817c4c4965df004e9b0e9ab0815c303df335fe83c76b26091a"
     }
   ],
   "logs": {
@@ -218,6 +242,12 @@
       "bytes": 8125640,
       "lines": 2923,
       "gzip_bytes": 1602780,
+      "url": null
+    },
+    "38ccc3675014da817c4c4965df004e9b0e9ab0815c303df335fe83c76b26091a": {
+      "bytes": 10409122,
+      "lines": 3834,
+      "gzip_bytes": 2020616,
       "url": null
     },
     "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7": {
