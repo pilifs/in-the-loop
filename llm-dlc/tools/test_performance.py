@@ -1733,6 +1733,8 @@ class Uploads(unittest.TestCase):
         stack.enter_context(patches[0])
         body = f"<Error><Code>SignatureDoesNotMatch</Code><AWSAccessKeyId>{self.r2_key_id}</AWSAccessKeyId></Error>".encode()
         error = sync.urllib.error.HTTPError("https://x", 403, "Forbidden", {}, io.BytesIO(body))
+        # Closed here, not collected later inside another test, whose captured stderr its ResourceWarning would join.
+        self.addCleanup(error.close)
         with stack, mock.patch.object(sync.urllib.request, "urlopen", side_effect=error):
             with self.assertRaises(RuntimeError) as raised:
                 sync.R2Client.from_file().delete(sync.CDN_BUCKET, "raw-traces/s1/x.jsonl.gz")

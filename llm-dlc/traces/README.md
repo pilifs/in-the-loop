@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 80, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 17:20 UTC |
-| Prompts | 1,953 |
-| Model calls | 19,026 |
-| Tool calls | 19,986 (342 failed) |
-| Compactions | 295 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 17:42 UTC |
+| Prompts | 1,965 |
+| Model calls | 19,075 |
+| Tool calls | 20,036 (343 failed) |
+| Compactions | 297 |
 | Subagents | 11 |
-| Tokens written | 19,856,960 |
-| Tokens read | 3,015,367,320 (97.9% from cache) |
-| Commits with a trace | 565 |
-| Log snapshots | 690 (1492.5 MB gzipped, 593 uploaded) |
+| Tokens written | 19,875,900 |
+| Tokens read | 3,020,597,011 (97.9% from cache) |
+| Commits with a trace | 566 |
+| Log snapshots | 692 (1498.1 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -103,8 +103,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 11 | 12 | 1 | 0 | 43,133 | 1 |
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 7 | 8 | 0 | 0 | 44,014 | 1 |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 43,064 | 1 |
-| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 6 h 58 min | `claude-opus-5-5` | 85 | 902 | 899 | 6 | 14 | 292,860 | 34 |
-| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 5 h 54 min | `claude-opus-5-5` | 8 | 122 | 122 | 3 | 0 | 339,175 | 34 |
+| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 7 h 20 min | `claude-opus-5-5` | 93 | 951 | 949 | 7 | 15 | 292,860 | 35 |
+| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | ended | 5 h 57 min | `claude-opus-5-5` | 12 | 122 | 122 | 3 | 1 | 339,175 | 34 |
 | 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 36,274 | 1 |
 | 2026-11-08 14:15 UTC | [637cae8e-d166-477d-b0d2-51161e0c6d62](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | ended | 30 min | `claude-sonnet-5-5` | 1 | 10 | 11 | 1 | 0 | 43,173 | 2 |
 
@@ -192,7 +192,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 3,056 | 22 | 30,014 | 369,948 | 92.5% | 131 |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2,917 | 14 | 30,895 | 214,765 | 87.4% | 84 |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 3,151 | 20 | 29,945 | 311,967 | 91.2% | 109 |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 598,662 | 1,850 | 2,471,270 | 127,376,381 | 98.1% | 217 |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 617,602 | 1,956 | 2,586,274 | 132,490,962 | 98.1% | 219 |
 | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 130,544 | 262 | 752,719 | 22,283,398 | 96.7% | 176 |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1,755 | 16 | 24,890 | 230,901 | 90.3% | 146 |
 | [`637cae8e`](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 2,538 | 20 | 31,789 | 334,565 | 91.3% | 144 |
@@ -201,17 +201,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 17,544 | 87.8% | 80 |
-| `Read` | 932 | 4.7% | 40 |
-| `Edit` | 722 | 3.6% | 39 |
+| `Bash` | 17,587 | 87.8% | 80 |
+| `Read` | 935 | 4.7% | 40 |
+| `Edit` | 724 | 3.6% | 39 |
 | `Write` | 438 | 2.2% | 35 |
-| `ToolSearch` | 119 | 0.6% | 31 |
-| `Monitor` | 89 | 0.4% | 31 |
+| `ToolSearch` | 120 | 0.6% | 31 |
+| `Monitor` | 90 | 0.4% | 31 |
 | `AskUserQuestion` | 34 | 0.2% | 10 |
 | `TaskStop` | 34 | 0.2% | 14 |
 | `WebFetch` | 27 | 0.1% | 7 |
 | `Agent` | 11 | 0.1% | 6 |
-| `SendMessage` | 10 | 0.1% | 4 |
+| `SendMessage` | 10 | 0.0% | 4 |
 | `ScheduleWakeup` | 9 | 0.0% | 3 |
 | `Skill` | 7 | 0.0% | 4 |
 | `ListAgents` | 4 | 0.0% | 2 |
@@ -789,6 +789,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 563 | change `vvlqvmon` | application-core Phase 5 step 1: a string literal is read by its code units, an isolated surrogate included, so two literals that differ only in one are never one | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/f6728c862e8ebf22bcb574b7acf84851f74397f09df5a6d28da32aa9e6ee8245.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)) |
 | 564 | change `rntvlrrv` | application-core Phase 5 step 1: a list of Strings bounds its elements' code units, and no variant of the shared interfaces drops a field it doesn't have | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/4223cc3944c3de3472a036b0ca553eae1c207f8fe4c6e1d9b74b3e3027fb4136.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)) |
 | 565 | change `ozqzmwkp` | application-core Phase 5 step 1: compare --domains, a kernel subject's declared domain passed to the heap check as it is, and the claim's object domain refuses a field it doesn't have | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be163b0de126763ae0c37f875e5313e6f32ba03d2797fca8b4291457f68e2a8e.jsonl.gz)) |
+| 566 | change `kvukqmto` | application-core Phase 5 step 1: lib/README.md's sentences the streams couldn't rewrite, and the used-result refusal names the model it lacks | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/969ce3603f5512223a32cce61e9b8698918acf63e38dade01e87aed2effcdfc4.jsonl.gz)) |
 
 ## Logs
 
@@ -872,8 +873,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 2 | 0 | 0.2 MB | `f30ef695d4d7`, not uploaded |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2 | 0 | 0.2 MB | `9171325d7b0a`, not uploaded |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 2 | 0 | 0.2 MB | `001bb75a2eb3`, not uploaded |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 16 | 0 | 39.4 MB | `5dafa16e50a3`, not uploaded |
-| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 11 | 0 | 3.3 MB | `be163b0de126`, not uploaded |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 17 | 0 | 44.4 MB | `969ce3603f55`, not uploaded |
+| [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 12 | 0 | 3.9 MB | `8eb05e296a25`, not uploaded |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 2 | 0 | 0.2 MB | `677ec8afc6b4`, not uploaded |
 | [`637cae8e`](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 3 | 0 | 0.2 MB | `a63a17ed656f`, not uploaded |
 

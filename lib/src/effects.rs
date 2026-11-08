@@ -1526,7 +1526,7 @@ fn rewrite(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
                     let dropped = matches!(insns.get(k + 1), Some((_, Insn::Pop | Insn::Pop2)));
                     // A modelled result may be used: the stub answers from the environment model.
                     if ret != Type::Void && !dropped && model.models[i].is_none() {
-                        return Err(unsupported(format!("{}.{} uses the result of {}: a modeled return value comes after the narrow case", parsed.name.replace('/', "."), m.name, short(&call))));
+                        return Err(unsupported(format!("{}.{} uses the result of {}, a modeled call with no model of its results: give its ModeledCall a model (a CallModel, as with --environment FILE) to have the result answered", parsed.name.replace('/', "."), m.name, short(&call))));
                     }
                 } else if dependencies.contains(&member.owner) && !matches!(insn, Insn::InvokeSpecial(_)) {
                     let invoke = if matches!(insn, Insn::InvokeStatic(_)) { Invoke::Static } else { Invoke::Virtual };

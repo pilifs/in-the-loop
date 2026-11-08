@@ -1109,6 +1109,43 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     interfaces paragraph), `compare --domains`'s help, and the docs of `compare` and `spec::ObjectDomain`.
   - **Item 6 is done.** **Next**: item 7, `lib/README.md`'s four sentences the streams couldn't rewrite. Then step 2's
     joint acceptance as jobs.
+- 2026-11-08, **Phase 5 step 1, interface request 7 done: `lib/README.md`'s sentences the streams couldn't rewrite**,
+  each checked against the code first. **Step 1's interface requests are all done.**
+  - **The four sentences**:
+    - Limits' "Property proofs (`prove`) are still over static methods": `property::run` takes an instance method on
+      a receiver made by its constructor (`construction::receiver`) or by a `--plan`'s root `this` and setup calls. It
+      now says so, pointing at **An ordinary receiver**.
+    - "How a regression proof works", step 5's record rule: "an input a constructor of either version rejects is
+      outside the statement" now says an input both reject is outside, and one only one version's constructor rejects
+      is a difference on the `exception`, pointing at **A narrower constructor** (`Layout::compares_admission`). The
+      `--before-arguments` sentence keeps the old rule, as the code does.
+    - The effect-trace paragraph's "a handler that uses a modeled call's result is refused until modeled return values
+      come": such a call is refused only without a model of its results, and answered from one (**Modelled
+      results**).
+    - The own checker's fragment: arrays of references' "cells hold objects or `null`" now names the symbolic
+      reference an `aastore` stores as it is when every object it may be is of the element type, and the split
+      otherwise, as `bmc`'s module table already did.
+  - **Two more stale clauses, the same kind**: the fragment's "strings and other objects only as opaque values" (the
+    own checker's Strings have content, the paragraph below it), and Limits' "the tool's own checker covers methods
+    over integers, arrays of them and records of them, without other objects", which now names constructor- and
+    plan-made objects, bounded Strings and the short immutable lists.
+  - **The refusal itself was stale too**: `effects::check` refused an unmodelled used result with "a modeled return
+    value comes after the narrow case". It now says the call has no model of its results, and how to give it one (a
+    `CallModel`, as with `--environment FILE`). The reproducer: `tests/effects.rs`'s
+    `a_handler_that_uses_a_modeled_calls_result_is_refused_by_name` asks for that and no "comes after"; it failed
+    before. The brief's [Where it starts from](#where-it-starts-from) row "Effects" quotes the old message, as the
+    recount at the merge read it.
+  - **Checks**: `effects` 19 of 19, `skill` 1 (it reads the README), `environment` 17, `environment_quotes` 4,
+    `environment_responses` 8. The integration check passes.
+  - **An infrastructure failure, recorded apart**: the integration check's first run failed in
+    `llm-dlc/tools/test_performance.py` (3 of 3 runs of the suite, none alone), in no file this cycle touched. The
+    cause was `test_an_r2_error_names_its_code_and_no_key`'s `HTTPError`, never closed, whose `ResourceWarning` was
+    raised by the garbage collector inside the next test, which compares its captured stderr. The test now closes it
+    (`addCleanup`); no assertion changed. The suite then passes 3 of 3, and so does the integration check.
+  - **Next**: step 2's joint acceptance at the merge, as jobs: J1 (the quote family composing O, V, E and R), J2 (the
+    new native claims with JBMC unavailable), and the H and L families, each correct change proved, each defect
+    refuted with its witness replayed, and exact reuse, helper reuse and invalidation shown. Then step 3's examples
+    with `lib/tests/integration.rs`, J4 and the for-review list.
 - Status: working
 
 ## Loop settings

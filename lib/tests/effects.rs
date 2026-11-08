@@ -324,6 +324,9 @@ fn a_handler_that_uses_a_modeled_calls_result_is_refused_by_name() {
     let before = build("before").unwrap();
     let err = effects::check(&claim(), &quotes(&before, "POST /quotes"), &quotes(&uses, "POST /quotes"), &before, &uses).unwrap_err();
     assert!(err.what.contains("uses the result of KafkaTemplate.send"), "{err}");
+    // Modelled results exist (E1), so the refusal names what is missing, a model of the call's results, and not a
+    // capability to come.
+    assert!(err.what.contains("no model of its results") && err.what.contains("--environment") && !err.what.contains("comes after"), "{err}");
 }
 
 /// The refactor's controller with `extra` in place of its `if (total > 0) ...` line, and `fields` and `parameters`

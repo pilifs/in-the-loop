@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T17:20:50.082Z",
-  "duration_seconds": 25101,
+  "ended": "2026-11-08T17:42:40.488Z",
+  "duration_seconds": 26412,
   "stats": {
-    "turns": 85,
-    "api_calls": 902,
-    "tool_calls": 899,
-    "tool_errors": 6,
-    "compactions": 14,
+    "turns": 93,
+    "api_calls": 951,
+    "tool_calls": 949,
+    "tool_errors": 7,
+    "compactions": 15,
     "peak_context_tokens": 292860,
     "usage": {
-      "input_tokens": 1850,
-      "output_tokens": 598662,
-      "cache_read_input_tokens": 127376381,
-      "cache_creation_input_tokens": 2471270
+      "input_tokens": 1956,
+      "output_tokens": 617602,
+      "cache_read_input_tokens": 132490962,
+      "cache_creation_input_tokens": 2586274
     }
   },
   "tools": {
-    "Bash": 818,
-    "Read": 39,
-    "Edit": 17,
-    "Monitor": 8,
-    "ToolSearch": 7,
+    "Bash": 861,
+    "Read": 42,
+    "Edit": 19,
+    "Monitor": 9,
+    "ToolSearch": 8,
     "TaskStop": 5,
     "Write": 5
   },
@@ -248,24 +248,38 @@
     {
       "index": 14,
       "started": "2026-11-08T17:05:31.493Z",
-      "ended": "2026-11-08T17:20:50.082Z",
-      "turns": 4,
-      "api_calls": 59,
+      "ended": "2026-11-08T17:24:53.855Z",
+      "turns": 7,
+      "api_calls": 62,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 40214,
-        "cache_read_input_tokens": 7204985,
-        "cache_creation_input_tokens": 160870
+        "input_tokens": 130,
+        "output_tokens": 41505,
+        "cache_read_input_tokens": 7731214,
+        "cache_creation_input_tokens": 165144
       },
-      "peak_context_tokens": 173949
+      "peak_context_tokens": 178225
+    },
+    {
+      "index": 15,
+      "started": "2026-11-08T17:25:27.900Z",
+      "ended": "2026-11-08T17:42:40.488Z",
+      "turns": 5,
+      "api_calls": 46,
+      "usage": {
+        "input_tokens": 96,
+        "output_tokens": 17649,
+        "cache_read_input_tokens": 4588352,
+        "cache_creation_input_tokens": 110730
+      },
+      "peak_context_tokens": 123809
     }
   ],
   "log": {
-    "sha256": "5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768",
-    "bytes": 24607677,
-    "lines": 8315,
-    "gzip_bytes": 4697499,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768.jsonl.gz"
+    "sha256": "969ce3603f5512223a32cce61e9b8698918acf63e38dade01e87aed2effcdfc4",
+    "bytes": 25980250,
+    "lines": 8763,
+    "gzip_bytes": 4994362,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/969ce3603f5512223a32cce61e9b8698918acf63e38dade01e87aed2effcdfc4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -540,6 +554,14 @@
       "summary": "application-core Phase 5 step 1: compare --domains, a kernel subject's declared domain passed to the heap check as it is, and the claim's object domain refuses a field it doesn't have",
       "body": "The last of interface request 6 (the objects stream's: give compare a plan per subject). Before, compare built every kernel claim with no domain, so on the throttle family's after-setup defect (one unit short only once a setup call has taken some) it verified Throttle#allows over the constructor domain, and had no way to state the setup plan's domain. Now compare --domains FILE takes a JSON object from each kernel subject (the new method, pkg.Class#method) to its ObjectDomain, as a frozen claim states one; the subject's claim carries it as it is, so spec::heap::check_with enforces or refuses each part. A whole domain rather than a bare plan, because a plan doesn't say the claim's classes, bounds or label, which the user decided twice for frozen claims. A domain for a subject the run checks no claim of (an unchanged method, an entry point's handler, a misspelt name) is refused before any proof; each declared domain counts as one domain restriction in the effort report.\n\nWith it, the serde hole cycle 13 closed in spec/plans.rs is closed in spec/mod.rs: ObjectDomain, VersionBounds, ObjectBounds and Construction had no deny_unknown_fields, so a domain with a misspelt option (nulable) was read as the domain without it. They now refuse unknown fields, and Construction::FieldByField is an empty struct variant so the attribute reaches it. The JSON is unchanged and every frozen claim still reads.\n\nVerified: the new lib/tests/compare_domains.rs (3 tests: after-setup verified over the constructor domain and refuted over the declared setup plan with the whole history run on a JVM, after verified, one-short refuted over the constructor-only plan; an exact rerun reused and another plan or an edited target checked again; the refusals and the command line). Two sabotages fail it (the claim ignoring the declared domain; ObjectDomain without deny_unknown_fields). The library's unit tests (257) and every affected test binary pass, and so does the integration check (the contract 14 of 14). Found for the for-review list: the proof cache keys the check a domain makes, not its label or bounds, so a constructor-only plan and no declared domain share one stored proof, each result stating its own domain. That is sound, but the brief's Phase 0 sentence 'the claim key covers the label' holds of spec::cache::key, not of the regression key a heap check is reused under. Item 6 is done; item 7 is next.",
       "log_sha256": "5dafa16e50a3093cc45a17771a9b1d6690f233b48a238203502db4631e721768"
+    },
+    {
+      "change_id": "kvukqmtooxrwmzrtpwlvmltwqxmvnzyx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: lib/README.md's sentences the streams couldn't rewrite, and the used-result refusal names the model it lacks",
+      "body": "Interface request 7, the last of Phase 5 step 1's. lib/README.md's four stale sentences, each checked against the code: property proofs take an instance method on a receiver made by its constructor or a --plan (not only static methods); a record input only one version's constructor rejects is a difference on the exception, as A narrower constructor says (only an input both reject is outside the statement); a used result of a modeled call is refused only without a model of its results; and an array of references' cell may hold a symbolic reference of its element type. Two more stale clauses of the same kind were fixed: the own checker's Strings have content, and Limits' summary of its fragment now names constructor- and plan-made objects, bounded Strings and short immutable lists.\n\neffects::check's refusal of an unmodelled used result said 'a modeled return value comes after the narrow case'; it now says the call has no model of its results and how to give one. Reproducer: tests/effects.rs's a_handler_that_uses_a_modeled_calls_result_is_refused_by_name asks for that wording, and failed before. The brief's 'Where it starts from' table (row Effects) still quotes the old message, as the recount at the merge read it; that section isn't edited by the loop.\n\nAlso an infrastructure fix: llm-dlc/tools/test_performance.py failed in the full suite (never alone) because test_an_r2_error_names_its_code_and_no_key left an HTTPError unclosed, whose ResourceWarning the garbage collector raised inside the next test's captured stderr. The test now closes it; no assertion changed.\n\nVerified: effects 19, skill 1, environment 17, environment_quotes 4, environment_responses 8; test_performance.py passes 3 of 3; the integration check passes (the contract 14/14, the unit tests 257, compare 1, effects 19, foundations 5, the Python suites). Next: Phase 5 step 2's joint acceptance as jobs.",
+      "log_sha256": "969ce3603f5512223a32cce61e9b8698918acf63e38dade01e87aed2effcdfc4"
     }
   ],
   "logs": {
@@ -595,6 +617,12 @@
       "bytes": 2185440,
       "lines": 606,
       "gzip_bytes": 505282,
+      "url": null
+    },
+    "969ce3603f5512223a32cce61e9b8698918acf63e38dade01e87aed2effcdfc4": {
+      "bytes": 25980250,
+      "lines": 8763,
+      "gzip_bytes": 4994362,
       "url": null
     },
     "a13da12cf945399228b493897158649c9892856f0d76a7c60fb2e76334e1d408": {
