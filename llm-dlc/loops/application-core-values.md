@@ -534,9 +534,36 @@ just to bring a gap count down.
     references' "cells hold objects or `null`". It should say that a cell may hold a symbolic reference of the
     element type. It is a shared page, so I didn't edit it.
   - No job: the sweep is 36 s inline and runs no JBMC.
-- **Next**: VF-023's second probe's result, when it comes (job `20261108-091002-…`). Meanwhile, the tests that the
-  cached evidence a change of model or domain identity affects is invalidated (R1's projection, with the reuse stream).
-  Then V3's wiring of model identity into claims.
+- 2026-11-08, **VF-023's second probe came back** (job `20261108-091002-…`, passed at `ec45c5dd`) and names the
+  ingredient: **a choice between two lists**. JBMC refutes `l.size()` whenever `l` is one of two lists made on
+  different branches, whatever their classes: two `List12`s (`oneOrTwo`), a `List12` or a `ListN` (`oneOrThree`),
+  `EMPTY_LIST` or a `List12` (`emptyOrOne`), and `listChange`'s choice without its switch (`changeNoSwitch`). The
+  corpus's two claims reproduce. It proves one list alone, after objects are made (`oneMadeFirst`), under the
+  assumption (`oneAssumed`), and through `listChange`'s switch (`oneThenSwitch`).
+  - **The trace** of `oneOrTwo(n=1)`: JBMC sets the new list's class identifier to `List12`, then calls
+    `ImmutableCollections$ListN.size` on it, which reads a `ListN`'s `elements` and returns 0. Every refuted probe also
+    reaches `java.util.List.size()` as JBMC's stub.
+  - **What that points at**: the model `java.util.List` (`lib/models/java/util/List.java`) declares List's own abstract
+    methods (`get`, `set`, `indexOf`, …) but not the ones it inherits from `Collection` (`size`, `isEmpty`,
+    `iterator`, `contains`, …), and `Collection` is not on JBMC's class path. The JDK's `List` re-declares them all.
+    Every list claim JBMC got right asks a method the model declares (`listGet`'s `get`) or has a single list; every
+    one it gets wrong asks `size`, `isEmpty` or `iterator` of a choice. My hypothesis is that JBMC's dispatch of an
+    interface method the interface doesn't declare is wrong on a reference that may be either of two objects.
+- 2026-11-08, **VF-023's third probe, a job** (`20261108-093809-vf-023-s-third-probe-does-the-model-java`, this commit):
+  `verification/triage/vf023-dispatch.sh` tests that hypothesis without changing the repository. It runs six JBMC
+  proofs (the corpus's two claims, `oneOrTwo`, `oneOrThree`, `emptyOrOne`, and `oneAssumed` as the control) in two
+  class paths: the tool's models as they are, and the same models with `List` re-declaring `Collection`'s 15 abstract
+  methods as the JDK's does (compiled into `lib/target`, put on `--classpath`, which comes before the models on JBMC's
+  class path). It keeps each probe method's dispatch of `size()` from JBMC's goto program. Checked inline: the probes'
+  JVM outcomes, the patched models compiling, and their `List` declaring `size`, `isEmpty` and `iterator` (`javap`).
+  - No timebox attempt is spent: nothing is fixed. If the declared variant proves all six, the fix is that change in
+    `lib/models` (bytecode only, JVM semantics unchanged), with `values::LIST_MODEL` bumped, since JBMC's semantics of
+    the models change, and job `20261108-070211-…`'s corpus steps resubmitted as the last attempt. If it doesn't, the
+    goto dispatch says what to try, or VF-023 is left to the timebox with the finding (a JBMC dispatch issue outside
+    this stream's files).
+- **Next**: the third probe's result, when it comes (job `20261108-093809-…`). Meanwhile, the tests that the cached
+  evidence a change of model or domain identity affects is invalidated (R1's projection, with the reuse stream). Then
+  V3's wiring of model identity into claims.
 - Status: working
 
 ## Loop settings

@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T09:32:28.727Z",
-  "duration_seconds": 17883,
+  "ended": "2026-11-08T09:38:33.318Z",
+  "duration_seconds": 18248,
   "stats": {
-    "turns": 61,
-    "api_calls": 564,
-    "tool_calls": 557,
-    "tool_errors": 9,
-    "compactions": 11,
+    "turns": 66,
+    "api_calls": 597,
+    "tool_calls": 590,
+    "tool_errors": 10,
+    "compactions": 12,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 1150,
-      "output_tokens": 468154,
-      "cache_read_input_tokens": 72306399,
-      "cache_creation_input_tokens": 1741741
+      "input_tokens": 1216,
+      "output_tokens": 494495,
+      "cache_read_input_tokens": 75441362,
+      "cache_creation_input_tokens": 1861865
     }
   },
   "tools": {
-    "Bash": 512,
-    "Read": 22,
-    "Write": 8,
-    "Edit": 7,
+    "Bash": 540,
+    "Read": 25,
+    "Write": 9,
+    "Edit": 8,
     "ToolSearch": 4,
     "Monitor": 3,
     "TaskStop": 1
@@ -48,6 +48,7 @@
     "lib/tests/values.rs",
     "llm-dlc/loops/application-core-values.md",
     "verification/triage/vf023-choice.sh",
+    "verification/triage/vf023-dispatch.sh",
     "verification/triage/vf023.sh"
   ],
   "context_windows": [
@@ -208,24 +209,38 @@
     {
       "index": 11,
       "started": "2026-11-08T09:11:17.180Z",
-      "ended": "2026-11-08T09:32:28.727Z",
-      "turns": 4,
-      "api_calls": 37,
+      "ended": "2026-11-08T09:32:58.135Z",
+      "turns": 5,
+      "api_calls": 40,
       "usage": {
-        "input_tokens": 74,
-        "output_tokens": 22776,
-        "cache_read_input_tokens": 3048893,
-        "cache_creation_input_tokens": 110190
+        "input_tokens": 80,
+        "output_tokens": 24336,
+        "cache_read_input_tokens": 3422226,
+        "cache_creation_input_tokens": 113939
       },
-      "peak_context_tokens": 123269
+      "peak_context_tokens": 127018
+    },
+    {
+      "index": 12,
+      "started": "2026-11-08T09:33:36.947Z",
+      "ended": "2026-11-08T09:38:33.318Z",
+      "turns": 4,
+      "api_calls": 30,
+      "usage": {
+        "input_tokens": 60,
+        "output_tokens": 24781,
+        "cache_read_input_tokens": 2761630,
+        "cache_creation_input_tokens": 116375
+      },
+      "peak_context_tokens": 129454
     }
   ],
   "log": {
-    "sha256": "248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a",
-    "bytes": 16838255,
-    "lines": 6177,
-    "gzip_bytes": 3216613,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a.jsonl.gz"
+    "sha256": "c464f6f5331484d62e82b4fd58207a36cf6e0ae6a8052c30aba2676ad57665af",
+    "bytes": 18017265,
+    "lines": 6509,
+    "gzip_bytes": 3483320,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/c464f6f5331484d62e82b4fd58207a36cf6e0ae6a8052c30aba2676ad57665af.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -316,6 +331,14 @@
       "summary": "application-core values: the list cliff past five lines fixed, an array's cell holds a symbolic reference of its element type, so List.of's varargs array no longer splits a path per pick",
       "body": "The tiny bound sweep found that the own checker couldn't check lists of 7 or more lines within its time limit (6 took 4 s, 1,833 paths). The cause was not the list adapter's encoding but the checker's aastore. List.of of three or more elements builds a varargs array, and an array's cell could hold only a known object, so storing each pick (a symbolic reference among the made objects) split the path per object it may be: n! paths for n elements. Now a cell of an array of references holds a symbolic reference as a field does (bmc::Array::refs holds Vals), stored as it is when every object it may be is of the array's element type. Any other store still splits per object, so a store the JVM refuses with ArrayStoreException is refused by name as before. Merging chooses between two paths' cells, and a path that takes one option of a reference substitutes it in cells too.\n\nThe ignored reproducer the_list_sweep_past_five_lines (6, 7, 8 and 10 lines) passed: 6 lines in 0.03 s, 7 in 1.4 s, 8 in 2.7 s, 10 in 12.8 s (908 paths, release, merging from the start), so the suite's sweep in lib/tests/values.rs now covers every length up to the adapter's bound of 10 and the ignored test is gone. A new test, an_array_cell_holds_a_symbolic_reference_of_its_element_type, checks three new checks in lib/tests/fixtures/values/values/Lists.java: a reference read back from a cell is the one stored (proved), a claim that it is the first line is refuted and replayed on the JVM and in the interpreter, and a choice between a Line and a String stored into a Line[] is refused naming the ArrayStoreException, under both search orders. Verified by the whole library suite in the dev profile, 15 suites all passing (the release build of the unit tests is killed for memory in the 4 GB scope while linking with LTO). values::LIST_MODEL is not bumped: what the checker computes is unchanged, only how many paths it takes. lib/README.md's description of the checker's fragment ('cells hold objects or null') is a shared page and is left for the merge, recorded under the brief's Progress. No job: no JBMC, and the sweep runs in 36 s inline.",
       "log_sha256": "248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a"
+    },
+    {
+      "change_id": "nptumypywqvruzslpqnozsxuturrsopq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values: VF-023's second probe names the ingredient, a choice between two lists; its third probe tests whether the model List re-declaring Collection's methods fixes JBMC's dispatch of size() (verification pending)",
+      "body": "VF-023's second probe (job 20261108-091002-..., passed) shows JBMC 6.11.0 refuting l.size() whenever l is one of two lists made on different branches, whatever their classes (even two List12s), while proving it for a single list. Its trace of oneOrTwo(n=1) shows JBMC calling ImmutableCollections$ListN.size on a List12, which returns 0, and every refuted probe reaches java.util.List.size() as JBMC's stub. The model java.util.List declares List's own abstract methods but not those it inherits from Collection, which is not on JBMC's class path; the JDK's List re-declares them, and every list claim JBMC got right asks a declared method or has a single list.\n\nThe third probe, verification/triage/vf023-dispatch.sh, tests that without changing the repository: six JBMC proofs (the corpus's listSizes and listChange, oneOrTwo, oneOrThree, emptyOrOne, and oneAssumed as the control) under the tool's models as they are and under a patched copy whose List re-declares Collection's 15 abstract methods, put first on JBMC's class path, keeping each probe's goto dispatch of size(). Checked inline: the JVM outcomes, the patched models compiling and declaring size/isEmpty/iterator. No fix, so no timebox attempt is spent. Progress in llm-dlc/loops/application-core-values.md records the result and the next step.",
+      "log_sha256": "c464f6f5331484d62e82b4fd58207a36cf6e0ae6a8052c30aba2676ad57665af"
     }
   ],
   "logs": {
@@ -365,6 +388,12 @@
       "bytes": 4231436,
       "lines": 1751,
       "gzip_bytes": 735168,
+      "url": null
+    },
+    "c464f6f5331484d62e82b4fd58207a36cf6e0ae6a8052c30aba2676ad57665af": {
+      "bytes": 18017265,
+      "lines": 6509,
+      "gzip_bytes": 3483320,
       "url": null
     },
     "c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152": {
