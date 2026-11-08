@@ -39,7 +39,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-022: `a_method_of_a_record_is_proved_on_its_components` asserts a harness text the O2 constructor-admission change replaced
 
-- **Status**: open
+- **Status**: closed by job `20261108-072230-application-core-objects-o2-lib-tests-in` (at `ac38d9c636f9`, passed 2026-11-08 on `vm-1`: `cargo test --test integration` with the assertion updated)
 - **Raised**: 2026-11-08 on `vm-1`, jobs `20261108-063512-application-core-objects-o2-the-regressi` (at `d7330651d821`)
   and `20261108-064305-application-core-objects-o2-a-shrunk-wit` (at `ddf265db0e43`).
 - **Found**: `cd lib && cargo test --test integration` gives 64 passed, 1 failed in both jobs (110 s and 119 s). The

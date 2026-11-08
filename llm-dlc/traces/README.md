@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 69, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 07:39 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 07:41 UTC |
 | Prompts | 1,615 |
-| Model calls | 15,995 |
-| Tool calls | 16,977 (310 failed) |
+| Model calls | 15,999 |
+| Tool calls | 16,981 (310 failed) |
 | Compactions | 237 |
 | Subagents | 10 |
-| Tokens written | 17,487,525 |
-| Tokens read | 2,611,840,467 (97.9% from cache) |
-| Commits with a trace | 489 |
-| Log snapshots | 603 (1358.5 MB gzipped, 593 uploaded) |
+| Tokens written | 17,488,632 |
+| Tokens read | 2,612,048,669 (97.9% from cache) |
+| Commits with a trace | 490 |
+| Log snapshots | 604 (1358.6 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -95,7 +95,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 05:08 UTC | [Verification loop status](4e390f05-cc89-494e-98ab-c027ea3b76a3/summary.md) | ended | 0 min | `claude-opus-5-5` | 1 | 4 | 3 | 0 | 0 | 54,216 | 0 |
 | 2026-11-08 06:05 UTC | [e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac](e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 9 | 9 | 1 | 0 | 38,732 | 1 |
 | 2026-11-08 06:35 UTC | [201f326a-a536-4002-a0f8-5ac6cc2bbfb7](201f326a-a536-4002-a0f8-5ac6cc2bbfb7/summary.md) | ended | 24 min | `claude-sonnet-5-5` | 1 | 18 | 17 | 0 | 0 | 54,642 | 1 |
-| 2026-11-08 07:03 UTC | [9ef76667-69d8-4501-a1e3-a3001d1a7809](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | open | 35 min | `claude-sonnet-5-5` | 6 | 25 | 20 | 2 | 0 | 49,194 | 1 |
+| 2026-11-08 07:03 UTC | [9ef76667-69d8-4501-a1e3-a3001d1a7809](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | open | 38 min | `claude-sonnet-5-5` | 6 | 29 | 24 | 2 | 0 | 52,820 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -173,13 +173,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`4e390f05`](4e390f05-cc89-494e-98ab-c027ea3b76a3/summary.md) | 926 | 8 | 24,719 | 173,635 | 87.5% | 214 |
 | [`e9fd9c4f`](e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/summary.md) | 2,063 | 18 | 27,348 | 279,178 | 91.1% | 149 |
 | [`201f326a`](201f326a-a536-4002-a0f8-5ac6cc2bbfb7/summary.md) | 4,945 | 36 | 41,523 | 689,607 | 94.3% | 148 |
-| [`9ef76667`](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | 4,135 | 62 | 36,075 | 894,070 | 96.1% | 225 |
+| [`9ef76667`](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | 5,242 | 70 | 39,701 | 1,098,638 | 96.5% | 217 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,855 | 87.5% | 69 |
+| `Bash` | 14,859 | 87.5% | 69 |
 | `Read` | 777 | 4.6% | 34 |
 | `Edit` | 647 | 3.8% | 33 |
 | `Write` | 408 | 2.4% | 29 |
@@ -690,6 +690,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 487 | change `kwvoqwkn` | Record verification results for application-core reuse R3 | [`e9fd9c4f`](e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/summary.md) ([log](https://terminalvalue.net/raw-traces/e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/48e13096ec218fba8f712ea2360bb800c1aa37ee17115d11d905ab72a35050bc.jsonl.gz)) |
 | 488 | change `xrqyztrx` | Record verification results for 3 jobs (R3 passed; O2's two integration runs failed, VF-022) | [`201f326a`](201f326a-a536-4002-a0f8-5ac6cc2bbfb7/summary.md) ([log](https://terminalvalue.net/raw-traces/201f326a-a536-4002-a0f8-5ac6cc2bbfb7/74b830b3e3a6f36a87f1014c2207757a061c99b8133c5202654998f5cfaf2430.jsonl.gz)) |
 | 489 | change `lslwokrr` | Record verification results for application-core values V2 step 1 (corpus under auto --confirm failed, VF-023) | [`9ef76667`](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) ([log](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69.jsonl.gz)) |
+| 490 | change `qvqznkty` | Record verification result for application-core objects O2 integration tests (passed, closes VF-022) | [`9ef76667`](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) ([log](https://terminalvalue.net/raw-traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/f28153f3e55c1f33b9e9e35cd561d41aa3ec32e19cb47be27e5be19ec0c71ad6.jsonl.gz)) |
 
 ## Logs
 
@@ -765,7 +766,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`4e390f05`](4e390f05-cc89-494e-98ab-c027ea3b76a3/summary.md) | 1 | 0 | 0.1 MB | `cc5c64510c35`, not uploaded |
 | [`e9fd9c4f`](e9fd9c4f-039e-41fc-9828-9d2f1e60b3ac/summary.md) | 2 | 0 | 0.2 MB | `995eda56fd2b`, not uploaded |
 | [`201f326a`](201f326a-a536-4002-a0f8-5ac6cc2bbfb7/summary.md) | 2 | 0 | 0.2 MB | `803d20c92c00`, not uploaded |
-| [`9ef76667`](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | 1 | 0 | 0.1 MB | `b64906715e25`, not uploaded |
+| [`9ef76667`](9ef76667-69d8-4501-a1e3-a3001d1a7809/summary.md) | 2 | 0 | 0.2 MB | `f28153f3e55c`, not uploaded |
 
 ## Session notes
 
