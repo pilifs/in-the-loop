@@ -1,0 +1,1050 @@
+{
+  "format_role": "design_research_seed_metadata_not_runtime_schema",
+  "design_seed_version": "1.0",
+  "prepared_on": "2026-11-08",
+  "timezone": "America/Toronto",
+  "repository_reviewed": {
+    "url": "https://github.com/pilifs/in-the-loop",
+    "commit": "57f04e556377d6c7d01524d0f0cc537ab87c58da"
+  },
+  "status": "proposed_design_not_implemented_or_executed",
+  "numeric_example_ids_assigned": false,
+  "historical_catalog_input": {
+    "filename": "spring-cve-targets.json",
+    "as_of": "2026-11-04",
+    "original_cve_count": 15,
+    "purpose": "Preserve as historical research; promote three existing entries without duplicates.",
+    "all_original_cases_run_status": "not_run",
+    "package_path": "inputs/spring-cve-targets.research-2026-11-04.json",
+    "sha256": "e86301abe767bcd9c39c5c9dc8889dfcbb1c22bb45bead53fc630acd0b9c62e5"
+  },
+  "scope": {
+    "deep_cve_cases": 3,
+    "deep_positive_pairs": 3,
+    "additional_catalog_cves": 1,
+    "initial_families": 3,
+    "ordinary_positive_definition": "Upstream-accepted change with an intended preservation or named-property expectation, not a proof of security.",
+    "fix_positive_is_distinct_from_independent_positive": true
+  },
+  "source_evidence_policy": "Exact parent/child patches inspected from upstream commit metadata. Prior CVE registry source/ancestry evidence retained. No target bytecode builds, replay, capability probes or proofs were performed for this design.",
+  "execution_contract": {
+    "use_existing_runner_and_format2": true,
+    "pure_task_plan": "proposed interface, to freeze at Phase0",
+    "prepared_target": "proposed interface, to freeze at Phase0",
+    "canonical_claim_keys": "Use existing implementation functions; null until claims and artifacts are frozen.",
+    "separate_original_jvm_per_revision": true,
+    "mutant_keys": "Same domain/observations/property text, but new artifact-bound claim key and explicit mutation relationship.",
+    "predicted_gaps_are_not_observed": true,
+    "observed_blocker_packet": [
+      "exact command",
+      "revision and artifact hashes",
+      "diagnostic",
+      "minimal reproducer",
+      "required semantics",
+      "owner",
+      "closure test"
+    ]
+  },
+  "deep_cases": [
+    {
+      "logical_case_id": "boot-method-labels-cve",
+      "numeric_example_id": null,
+      "family_id": "boot-method-metrics",
+      "kind": "historical_cve",
+      "title": "Unbounded HTTP method labels in web metrics",
+      "planned_depth": "deep_scaffold",
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "artifact_hashes": null,
+      "jdk_lock": null,
+      "dependency_lock": null,
+      "build_recipe": null,
+      "build_recipe_status": "to_author_and_validate",
+      "adapter_hash": null,
+      "oracle_hash": null,
+      "replay_driver": null,
+      "runtime_schema_status": "design_research_metadata_only",
+      "catalog_cve_id": "CVE-2023-34055",
+      "catalog_action": "promote_existing_entry_without_duplicate_number",
+      "repository": "https://github.com/spring-projects/spring-boot",
+      "maven_coordinates": [
+        "org.springframework.boot:spring-boot-actuator"
+      ],
+      "revision_pair_candidates": {
+        "release_pair": {
+          "vulnerable": "2.7.17",
+          "fixed": "2.7.18",
+          "vulnerable_tag": "v2.7.17",
+          "fixed_tag": "v2.7.18",
+          "fixed_tag_commit": "0c8b382d42db22b92efcf47000d0ff9ef4971629",
+          "status": "Vendor mapping; fix ancestry to fixed tag verified; not executed"
+        },
+        "exact_fix_pair": {
+          "before": "7ad6e4470c945ae0e39e63af28c47aebbe27bbc0",
+          "after": "5490e73922b37a7f0bdde43eb318cb1038b45d60",
+          "after_url": "https://github.com/spring-projects/spring-boot/commit/5490e73922b37a7f0bdde43eb318cb1038b45d60",
+          "ancestry": "parentage_reviewed"
+        }
+      },
+      "execution_pair_selection": "must_select_and_lock_one_before_claim_freeze",
+      "introduction": {
+        "status": "unconfirmed",
+        "confirmed_commit_sha": null,
+        "note": "Fix parent is a vulnerable control, not an attributed introducing commit."
+      },
+      "entrypoints": [
+        "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(HttpServletRequest)",
+        "org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTags#method(ServerWebExchange)"
+      ],
+      "preconditions": [
+        "Spring MVC or Spring WebFlux application",
+        "spring-boot-actuator on the classpath and web request metrics enabled",
+        "Actual ingress must permit arbitrary HTTP method tokens for an end-to-end witness"
+      ],
+      "source_links": [
+        "https://spring.io/security/cve-2023-34055/",
+        "https://github.com/spring-projects/spring-boot/commit/5490e73922b37a7f0bdde43eb318cb1038b45d60"
+      ],
+      "historical_evidence_status": "prior_registry_source_and_release_review_not_execution",
+      "upstream_tests": {
+        "paths": [
+          "spring-boot-project/spring-boot-actuator/src/test/java/org/springframework/boot/actuate/endpoint/web/servlet/WebMvcTagsTests.java",
+          "spring-boot-project/spring-boot-actuator/src/test/java/org/springframework/boot/actuate/metrics/web/reactive/server/WebFluxTagsTests.java"
+        ],
+        "methods": [
+          "methodTagIsWellKnownHttpMethod",
+          "methodTagForUnknownHttpMethods",
+          "methodTagValueIsHttpMethod",
+          "methodTagMarksNonStandardHttpMethodsAsUnknown"
+        ],
+        "status": "Patch contains positive and unknown-method tests; not executed"
+      },
+      "anticipated_requirements_not_observed_gaps": [
+        "String and enum semantics",
+        "Servlet request or WebFlux exchange adapter",
+        "Tag objects and class initialization"
+      ],
+      "selected_initial_entrypoint": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#method(HttpServletRequest)",
+      "planned_tasks": [
+        {
+          "logical_task_id": "vulnerable-security",
+          "kind": "absolute_property",
+          "expected_outcome": "refuted",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Method tag key is method; value is a version-specific supported HTTP method name or UNKNOWN.",
+          "scope": "original MVC method with raw request method strings",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "fixed-security",
+          "kind": "absolute_property",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Same property and domain as vulnerable-security.",
+          "scope": "original MVC method with raw request method strings",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "fix-preservation",
+          "kind": "relational_preservation",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Known HTTP methods retain their tag values and documented null-request behavior is preserved.",
+          "scope": "tag key/value, exceptions and specified request observations",
+          "allowed_change_region": "Only unsupported non-null method tokens may change their emitted label to UNKNOWN.",
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        }
+      ],
+      "planned_probes": [
+        {
+          "input": "GET and POST",
+          "expected": "Known method labels preserved on both revisions."
+        },
+        {
+          "input": "Nonstandard token XSCF passed unchanged through request adapter",
+          "expected_before": "Raw method label",
+          "expected_after": "UNKNOWN"
+        },
+        {
+          "input": "Null request where supported",
+          "expected": "Documented UNKNOWN behavior preserved."
+        }
+      ],
+      "proof_boundary": "Finite cardinality of one label dimension, not whole-application memory or availability. WebFlux is a separate entrypoint obligation.",
+      "nonvacuity_and_controls": [
+        "Reach the original raw-string classifier.",
+        "Run known-method positives to detect reject-all/UNKNOWN-all implementations.",
+        "Preserve unrelated class initialization; no enum-only preclassification."
+      ],
+      "mutation_control": {
+        "origin": "constructed",
+        "idea": "Restore raw request method emission in the fixed target.",
+        "status": "not_run",
+        "requirement": "Same property/domain; a new artifact-bound claim key, linked to the original case."
+      },
+      "matched_positive": "boot-outcome-enum-positive"
+    },
+    {
+      "logical_case_id": "binder-case-aliases-cve",
+      "numeric_example_id": null,
+      "family_id": "spring-data-binding",
+      "kind": "historical_cve",
+      "title": "Case-sensitive DataBinder disallowedFields",
+      "planned_depth": "deep_scaffold",
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "artifact_hashes": null,
+      "jdk_lock": null,
+      "dependency_lock": null,
+      "build_recipe": null,
+      "build_recipe_status": "to_author_and_validate",
+      "adapter_hash": null,
+      "oracle_hash": null,
+      "replay_driver": null,
+      "runtime_schema_status": "design_research_metadata_only",
+      "catalog_cve_id": "CVE-2022-22968",
+      "catalog_action": "promote_existing_entry_without_duplicate_number",
+      "repository": "https://github.com/spring-projects/spring-framework",
+      "maven_coordinates": [
+        "org.springframework:spring-context"
+      ],
+      "revision_pair_candidates": {
+        "release_pair": {
+          "vulnerable": "5.3.18",
+          "fixed": "5.3.19",
+          "status": "vendor release mapping, not replayed",
+          "vulnerable_tag": "v5.3.18",
+          "fixed_tag": "v5.3.19"
+        },
+        "exact_fix_pair": {
+          "before": "0cf7f7bd890504061883c48e382dc23e0c5d4df0",
+          "after": "a7cf19cec5ebd270f97a194d749e2d5701ad2ab7",
+          "after_url": "https://github.com/spring-projects/spring-framework/commit/a7cf19cec5ebd270f97a194d749e2d5701ad2ab7",
+          "ancestry": "parentage_reviewed"
+        }
+      },
+      "execution_pair_selection": "must_select_and_lock_one_before_claim_freeze",
+      "introduction": {
+        "status": "unconfirmed",
+        "confirmed_commit_sha": null,
+        "note": "Fix parent is a vulnerable control, not an attributed introducing commit."
+      },
+      "entrypoints": [
+        "org.springframework.validation.DataBinder#setDisallowedFields",
+        "org.springframework.validation.DataBinder#isAllowed",
+        "org.springframework.beans.PropertyAccessorUtils#canonicalPropertyName",
+        "org.springframework.util.PatternMatchUtils#simpleMatch"
+      ],
+      "preconditions": [
+        "Application uses data binding with disallowed-field patterns to protect sensitive fields",
+        "Property name aliases can differ in first-character capitalization, including nested property paths"
+      ],
+      "source_links": [
+        "https://spring.io/security/cve-2022-22968/",
+        "https://github.com/spring-projects/spring-framework/commit/a7cf19cec5ebd270f97a194d749e2d5701ad2ab7"
+      ],
+      "historical_evidence_status": "prior_registry_source_and_release_review_not_execution",
+      "upstream_tests": {
+        "path": "spring-context/src/test/java/org/springframework/validation/DataBinderTests.java",
+        "methods": [
+          "bindingWithOverlappingAllowedAndDisallowedFields",
+          "bindingWithAllowedAndDisallowedMapFields"
+        ],
+        "status": "tests modified in fix commit; AGE-versus-age and quoted/case-varied map patterns inspected"
+      },
+      "anticipated_requirements_not_observed_gaps": [
+        "String case conversion",
+        "DataBinder instance and wildcard semantics",
+        "JavaBeans aliases; reflection for full binding"
+      ],
+      "selected_initial_entrypoint": "DataBinder configuration plus protected isAllowed decision; full bind is a separate task",
+      "planned_tasks": [
+        {
+          "logical_task_id": "vulnerable-security",
+          "kind": "absolute_property",
+          "expected_outcome": "refuted",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "The configured forbidden ASCII property and specified case variants are denied under the pinned locale.",
+          "scope": "original DataBinder decision; exact-pattern first",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "fixed-security",
+          "kind": "absolute_property",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Same property, locale, and domain as vulnerable-security.",
+          "scope": "original DataBinder decision; exact-pattern first",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "fix-preservation",
+          "kind": "relational_preservation",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Allowed ordinary fields retain binding values and specified suppression/exception behavior.",
+          "scope": "actual binding observations where supported",
+          "allowed_change_region": "Only case aliases of configured forbidden fields may change from permitted to suppressed.",
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "protected-state-mutation",
+          "kind": "stronger_property",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Denied property inputs cannot mutate the protected field through actual binding.",
+          "scope": "full binder and property resolution; distinct from decision lemma",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        }
+      ],
+      "planned_probes": [
+        {
+          "input": "Allowed fields name/age, disallowed field AGE, submitted age",
+          "upstream_input": "age=32x exercises suppression versus a binding error",
+          "additional_input": "age=32 should test actual protected-field mutation on the vulnerable revision",
+          "expected_fixed": "Age remains unchanged; age is recorded as suppressed."
+        },
+        {
+          "input": "Permitted name field",
+          "expected": "Still binds on both revisions."
+        },
+        {
+          "input": "Wildcard and map patterns from changed upstream tests",
+          "expected": "Explicit matching and suppression observations; no copied matcher oracle."
+        }
+      ],
+      "proof_boundary": "A predicate theorem does not establish that reflection/property-path resolution cannot mutate a bean. Default locale and setup/invocation ordering are part of the claim.",
+      "nonvacuity_and_controls": [
+        "Pin default locale explicitly.",
+        "Reach a case-alias denial and a legitimate allowed bind.",
+        "Expose protected methods only through a delegating subclass."
+      ],
+      "mutation_control": {
+        "origin": "constructed",
+        "idea": "Remove case normalization or normalize only one side.",
+        "status": "not_run",
+        "requirement": "Same policy/domain; new artifact-bound claim key with a mutation relationship."
+      },
+      "linked_catalog_cases": [
+        "CVE-2024-38820"
+      ],
+      "matched_positive": "pattern-match-prefix-positive"
+    },
+    {
+      "logical_case_id": "bcrypt-byte-limit-cve",
+      "numeric_example_id": null,
+      "family_id": "bcrypt-input-limit",
+      "kind": "historical_cve",
+      "title": "BCryptPasswordEncoder does not enforce maximum password length",
+      "planned_depth": "deep_scaffold",
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "artifact_hashes": null,
+      "jdk_lock": null,
+      "dependency_lock": null,
+      "build_recipe": null,
+      "build_recipe_status": "to_author_and_validate",
+      "adapter_hash": null,
+      "oracle_hash": null,
+      "replay_driver": null,
+      "runtime_schema_status": "design_research_metadata_only",
+      "catalog_cve_id": "CVE-2025-22228",
+      "catalog_action": "promote_existing_entry_without_duplicate_number",
+      "repository": "https://github.com/spring-projects/spring-security",
+      "maven_coordinates": [
+        "org.springframework.security:spring-security-crypto"
+      ],
+      "revision_pair_candidates": {
+        "release_pair": {
+          "vulnerable": "6.3.7",
+          "fixed": "6.3.8",
+          "vulnerable_tag": "6.3.7",
+          "fixed_tag": "6.3.8",
+          "status": "Vendor release mapping and fix ancestry inspected; not executed"
+        },
+        "exact_fix_pair": {
+          "before": "36ea1b11a7dae7904e3c70b5e10fb01152fec5d4",
+          "after": "46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
+          "after_url": "https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
+          "ancestry": "parentage_reviewed"
+        }
+      },
+      "execution_pair_selection": "must_select_and_lock_one_before_claim_freeze",
+      "introduction": {
+        "status": "unconfirmed",
+        "confirmed_commit_sha": null,
+        "note": "Fix parent is a vulnerable control, not an attributed introducing commit."
+      },
+      "entrypoints": [
+        "org.springframework.security.crypto.bcrypt.BCrypt.hashpw(byte[],String,boolean)",
+        "Public behavioral entry: BCryptPasswordEncoder.matches(CharSequence,String)"
+      ],
+      "preconditions": [
+        "BCryptPasswordEncoder validates a supplied password longer than bcrypt's input limit.",
+        "The supplied password shares the relevant prefix with a valid password."
+      ],
+      "source_links": [
+        "https://spring.io/security/cve-2025-22228/",
+        "https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3"
+      ],
+      "historical_evidence_status": "prior_registry_source_and_release_review_not_execution",
+      "upstream_tests": {
+        "path": "crypto/src/test/java/org/springframework/security/crypto/bcrypt/BCryptPasswordEncoderTests.java",
+        "methods": [
+          "enforcePasswordLength"
+        ],
+        "note": "Added test encodes the 73-character input inside the expected-throw lambda, so it can pass because encode throws before matches executes. Add a separate test using a hash generated from a valid 72-byte input and an overlong candidate passed to matches."
+      },
+      "anticipated_requirements_not_observed_gaps": [
+        "String to UTF-8 conversion",
+        "Domain must include more than 72 bytes",
+        "BCrypt length guard, wrapper and exception semantics",
+        "Stored-hash validation uses java.util.regex in BCryptPasswordEncoder.matches; a lower-level guard proof has narrower scope"
+      ],
+      "selected_initial_entrypoint": "BCryptPasswordEncoder.matches(CharSequence,String); lower-level byte-array guard as an explicitly narrower lemma",
+      "historical_policy": "March 2025 selected fix rejects matches for candidates longer than 72 UTF-8 bytes. Do not project this policy onto later releases.",
+      "planned_tasks": [
+        {
+          "logical_task_id": "vulnerable-security",
+          "kind": "absolute_property",
+          "expected_outcome": "refuted",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Given a valid stored bcrypt hash, an over-72-UTF-8-byte candidate must never authenticate.",
+          "scope": "original public matches entry under the selected historical policy",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "fixed-security",
+          "kind": "absolute_property",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Same property/domain; the selected fix may reject with its specified IllegalArgumentException.",
+          "scope": "original public matches entry under the selected historical policy",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "fix-preservation",
+          "kind": "relational_preservation",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Valid in-range candidates continue to match; incorrect in-range candidates remain rejected.",
+          "scope": "return and specified exception observations",
+          "allowed_change_region": "Inputs whose UTF-8 encoding exceeds 72 bytes may change to the selected rejection behavior.",
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        }
+      ],
+      "planned_probes": [
+        {
+          "input": "Pin a valid stored hash for a 72-byte password; call matches separately with exact password and password plus one byte",
+          "expected_vulnerable_overlong": "May match the same prefix",
+          "expected_fixed_overlong": "Specified IllegalArgumentException rejection; not arbitrary failure."
+        },
+        {
+          "input": "71, 72 and 73 UTF-8 bytes",
+          "expected": "Reach both sides of byte-length guard."
+        },
+        {
+          "input": "36 U+00E9 characters plus x, or 18 supplementary characters plus x",
+          "expected": "73 UTF-8 bytes with fewer than 73 Java characters; check exact encoding in pinned JDK."
+        },
+        {
+          "input": "Incorrect in-range candidate",
+          "expected": "False on both revisions."
+        }
+      ],
+      "proof_boundary": "UTF-8 conversion, regex stored-hash validation, class initialization, crypto behavior and exceptions are included or explicitly scoped. A guard lemma is not a proof of bcrypt security.",
+      "nonvacuity_and_controls": [
+        "The domain must reach 73 UTF-8 bytes; an eight-code-unit bound cannot.",
+        "Do not evaluate encode(overlong) inside the only matches regression probe.",
+        "Pin a valid stored hash independently.",
+        "Record the exact exception type."
+      ],
+      "mutation_control": {
+        "origin": "constructed",
+        "idea": "Check Java character count instead of UTF-8 byte length.",
+        "status": "not_run",
+        "requirement": "Same byte policy and multibyte domain; new artifact-bound claim key."
+      },
+      "linked_catalog_cases": [
+        "CVE-2025-22234"
+      ],
+      "matched_positive": "bcrypt-standard-charset-positive",
+      "property_definition_note": "The same independently authored predicate and exception policy must serve vulnerable-security and fixed-security: an overlong candidate must not authenticate, and only declared rejection behavior is acceptable. A replay failure or arbitrary exception does not satisfy rejection."
+    },
+    {
+      "logical_case_id": "boot-outcome-enum-positive",
+      "numeric_example_id": null,
+      "family_id": "boot-method-metrics",
+      "kind": "historical_preservation_candidate",
+      "title": "Extract outcome enum while preserving metric tag values",
+      "planned_depth": "deep_scaffold",
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "artifact_hashes": null,
+      "jdk_lock": null,
+      "dependency_lock": null,
+      "build_recipe": null,
+      "build_recipe_status": "to_author_and_validate",
+      "adapter_hash": null,
+      "oracle_hash": null,
+      "replay_driver": null,
+      "runtime_schema_status": "design_research_metadata_only",
+      "catalog_cve_id": null,
+      "repository": "https://github.com/spring-projects/spring-boot",
+      "revisions": {
+        "before": "9b8decf99c9665f219cdd3a7c3fa9aaa61aec3ca",
+        "after": "e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "after_url": "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "relation": "direct_parent_child_verified_from_upstream_commit_metadata"
+      },
+      "upstream_commit_date": "2019-09-05",
+      "upstream_acceptance_evidence": "Commit and patch inspected in upstream file history; not evidence of universal correctness or security.",
+      "entrypoint": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags#outcome(HttpServletResponse)",
+      "matching_features": [
+        "Finite label classification",
+        "Tag key/value observation",
+        "Enum construction and static initialization"
+      ],
+      "matching_limitations": [
+        "Input is integer status rather than the negative case's method string.",
+        "Only MVC outcome entry is selected; client-path exception changes are outside scope."
+      ],
+      "introduction": {
+        "status": "not_applicable",
+        "confirmed_commit_sha": null
+      },
+      "source_links": [
+        "https://github.com/spring-projects/spring-boot/commit/e8de5a6d95ffb45cd532c2a863e6a726e159b7e3",
+        "https://github.com/spring-projects/spring-boot/issues/18150"
+      ],
+      "absolute_security_status": "not_inferred_from_preservation",
+      "historical_evidence_status": "read_only_commit_and_parent_review_not_execution",
+      "planned_tasks": [
+        {
+          "logical_task_id": "preservation",
+          "kind": "relational_preservation",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "For null response or arbitrary int status, old/new MVC outcome methods agree on tag key/value and specified exception observations.",
+          "scope": "original MVC outcome methods; reference identity intentionally excluded",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        },
+        {
+          "logical_task_id": "finite-outcome-domain",
+          "kind": "absolute_property",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Each result has key outcome and value INFORMATIONAL, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR or UNKNOWN.",
+          "scope": "both revisions; separate absolute property",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        }
+      ],
+      "planned_probes": [
+        {
+          "input": "Null response",
+          "expected": "UNKNOWN tag."
+        },
+        {
+          "input": "99,100,199,200,299,300,399,400,499,500,599,600",
+          "expected": "Boundary classifications agree."
+        },
+        {
+          "input": "Integer.MIN_VALUE and Integer.MAX_VALUE",
+          "expected": "UNKNOWN on both revisions."
+        }
+      ],
+      "observation_decision": "Tag key/value semantics; object allocation/reference identity is excluded explicitly because the patch changes caching ownership.",
+      "proof_boundary": "No whole-commit equivalence claim: eight files and multiple client/reactive entries change. Class initialization remains part of preparation/semantics.",
+      "upstream_tests": {
+        "path": "spring-boot-project/spring-boot-actuator/src/test/java/org/springframework/boot/actuate/metrics/http/OutcomeTests.java",
+        "status": "added in patch, not executed"
+      },
+      "anticipated_requirements_not_observed_gaps": [
+        "Original servlet-response interface adapter",
+        "Tag and enum state",
+        "Class initialization",
+        "Integer status-to-outcome helper semantics"
+      ],
+      "mutation_control": {
+        "origin": "constructed",
+        "idea": "Misclassify the status-200 boundary.",
+        "status": "not_run",
+        "requirement": "Keep domain/observations unchanged; issue a new claim key for mutated artifacts."
+      },
+      "matched_negative": "boot-method-labels-cve"
+    },
+    {
+      "logical_case_id": "pattern-match-prefix-positive",
+      "numeric_example_id": null,
+      "family_id": "spring-data-binding",
+      "kind": "historical_preservation_candidate",
+      "title": "Use startsWith while preserving wildcard matching decisions",
+      "planned_depth": "deep_scaffold",
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "artifact_hashes": null,
+      "jdk_lock": null,
+      "dependency_lock": null,
+      "build_recipe": null,
+      "build_recipe_status": "to_author_and_validate",
+      "adapter_hash": null,
+      "oracle_hash": null,
+      "replay_driver": null,
+      "runtime_schema_status": "design_research_metadata_only",
+      "catalog_cve_id": null,
+      "repository": "https://github.com/spring-projects/spring-framework",
+      "revisions": {
+        "before": "27bfcbbc823897169942ddc9a9ff9538486426c5",
+        "after": "db9a10bf3524923e8cd5be3f2b847002b8289f75",
+        "after_url": "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
+        "relation": "direct_parent_child_verified_from_upstream_commit_metadata"
+      },
+      "upstream_commit_date": "2021-04-21",
+      "upstream_acceptance_evidence": "Commit and patch inspected in upstream file history; not evidence of universal correctness or security.",
+      "entrypoint": "org.springframework.util.PatternMatchUtils#simpleMatch(String,String)",
+      "matching_features": [
+        "Actual helper used by DataBinder",
+        "Bounded UTF-16 strings",
+        "Recursive wildcard decisions"
+      ],
+      "matching_limitations": [
+        "No new case-insensitivity or locale guarantee.",
+        "Predicate preservation is not full binder mutation protection."
+      ],
+      "introduction": {
+        "status": "not_applicable",
+        "confirmed_commit_sha": null
+      },
+      "source_links": [
+        "https://github.com/spring-projects/spring-framework/commit/db9a10bf3524923e8cd5be3f2b847002b8289f75",
+        "https://github.com/spring-projects/spring-framework/issues/26822"
+      ],
+      "absolute_security_status": "not_inferred_from_preservation",
+      "historical_evidence_status": "read_only_commit_and_parent_review_not_execution",
+      "planned_tasks": [
+        {
+          "logical_task_id": "preservation",
+          "kind": "relational_preservation",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Old/new original methods agree on boolean result and specified exceptions over the same nullable bounded UTF-16 pattern/string domain.",
+          "scope": "original simpleMatch methods; explicit length/unwind bounds",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        }
+      ],
+      "planned_probes": [
+        {
+          "pattern": null,
+          "string": "x"
+        },
+        {
+          "pattern": "*",
+          "string": ""
+        },
+        {
+          "pattern": "abc*",
+          "string": "ab"
+        },
+        {
+          "pattern": "abc*",
+          "string": "abcdef"
+        },
+        {
+          "pattern": "abc*",
+          "string": "xbcdef",
+          "purpose": "Reach a false prefix comparison and kill a removed-prefix-guard mutation."
+        },
+        {
+          "pattern": "a*c",
+          "string": "abbbc"
+        },
+        {
+          "pattern": "a*c",
+          "string": "abbbd"
+        },
+        {
+          "pattern": "a**c",
+          "string": "abc"
+        },
+        {
+          "pattern": "é*",
+          "string": "éx"
+        }
+      ],
+      "proof_boundary": "Bounded claim only until a separate induction argument exists; unchanged recursion and class initialization are preserved.",
+      "upstream_tests": {
+        "status": "No test changed in the one-file patch; source history/issue documents intent."
+      },
+      "nonvacuity_and_controls": [
+        "At least one true and one false result must reach the changed prefix branch.",
+        "Include null, empty, no-star and multiple-star branches."
+      ],
+      "anticipated_requirements_not_observed_gaps": [
+        "String substring/startsWith/equality semantics",
+        "Recursion and unwind coverage",
+        "Nullability"
+      ],
+      "mutation_control": {
+        "origin": "constructed",
+        "idea": "Drop the prefix guard in the changed branch.",
+        "status": "not_run",
+        "requirement": "Same contract with a new artifact-bound key."
+      },
+      "matched_negative": "binder-case-aliases-cve"
+    },
+    {
+      "logical_case_id": "bcrypt-standard-charset-positive",
+      "numeric_example_id": null,
+      "family_id": "bcrypt-input-limit",
+      "kind": "historical_preservation_candidate",
+      "title": "Use StandardCharsets.UTF_8 while preserving password hashing behavior",
+      "planned_depth": "deep_scaffold",
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "artifact_hashes": null,
+      "jdk_lock": null,
+      "dependency_lock": null,
+      "build_recipe": null,
+      "build_recipe_status": "to_author_and_validate",
+      "adapter_hash": null,
+      "oracle_hash": null,
+      "replay_driver": null,
+      "runtime_schema_status": "design_research_metadata_only",
+      "catalog_cve_id": null,
+      "repository": "https://github.com/spring-projects/spring-security",
+      "revisions": {
+        "before": "fb39d9c255196031a9622cfd197d1fb05fd96bb2",
+        "after": "fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "after_url": "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1",
+        "relation": "direct_parent_child_verified_from_upstream_commit_metadata"
+      },
+      "upstream_commit_date": "2019-08-08",
+      "upstream_acceptance_evidence": "Commit and patch inspected in upstream file history; not evidence of universal correctness or security.",
+      "entrypoint": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(String,String)",
+      "matching_features": [
+        "Password UTF-16 to UTF-8 conversion",
+        "Byte length versus character length",
+        "Exceptional behavior and unchanged crypto helper"
+      ],
+      "matching_limitations": [
+        "This historical pair does not introduce the later 72-byte restriction.",
+        "Conversion lemma alone does not establish full-method hashing equivalence."
+      ],
+      "introduction": {
+        "status": "not_applicable",
+        "confirmed_commit_sha": null
+      },
+      "source_links": [
+        "https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1"
+      ],
+      "absolute_security_status": "not_inferred_from_preservation",
+      "historical_evidence_status": "read_only_commit_and_parent_review_not_execution",
+      "planned_tasks": [
+        {
+          "logical_task_id": "preservation",
+          "kind": "relational_preservation",
+          "expected_outcome": "established",
+          "expectation_basis": "research_hypothesis_not_verdict",
+          "statement": "Old/new hashpw(String,String) agree on return and specified exceptions on a fixed password/salt domain with pinned JDK semantics.",
+          "scope": "original methods; fixed salt, not independently randomized salts",
+          "allowed_change_region": null,
+          "canonical_claim_key": null,
+          "claim_status": "proposed_not_frozen",
+          "result": null,
+          "run_status": "not_run"
+        }
+      ],
+      "planned_probes": [
+        {
+          "input": "Fixed valid low-cost salt from an upstream test",
+          "requirement": "Resolve and lock exact salt during case implementation."
+        },
+        {
+          "input": "Empty, ASCII, BMP non-ASCII and supplementary passwords",
+          "expected": "Old/new observations agree."
+        },
+        {
+          "input": "71,72,73 UTF-8 bytes",
+          "expected": "Preserve this historical pair's behavior, without importing later policy."
+        },
+        {
+          "input": "Malformed surrogates, null password, invalid salt",
+          "requirement": "Explicitly include with observations or document exclusion before claim freeze."
+        }
+      ],
+      "proof_boundary": "May use a checked unchanged-callee summary tied to actual hashpw(byte[],String) bytecode. If unavailable, retain full task unresolved and create a separately scoped conversion lemma.",
+      "upstream_tests": {
+        "status": "No tests changed in the inspected three-file patch."
+      },
+      "anticipated_requirements_not_observed_gaps": [
+        "Named charset lookup and StandardCharsets semantics",
+        "Java UTF-16 to UTF-8 encoding",
+        "Exception paths",
+        "Unchanged crypto callee reuse",
+        "BCrypt static initialization"
+      ],
+      "mutation_control": {
+        "origin": "constructed",
+        "idea": "Replace UTF-8 by US-ASCII and include a short non-ASCII input.",
+        "status": "not_run",
+        "requirement": "Validate detection independently; same observation/domain contract, new artifact-bound key."
+      },
+      "matched_negative": "bcrypt-byte-limit-cve"
+    }
+  ],
+  "additional_catalog_entries": [
+    {
+      "logical_case_id": "bcrypt-timing-followup-catalog",
+      "numeric_example_id": null,
+      "catalog_cve_id": "CVE-2025-22234",
+      "family_id": "bcrypt-input-limit",
+      "kind": "historical_cve",
+      "planned_depth": "catalog_only",
+      "title": "BCrypt maximum password length breaks authentication timing mitigation",
+      "repository": "https://github.com/spring-projects/spring-security",
+      "advisory_date": "2025-04-22",
+      "severity_vendor": "MEDIUM",
+      "source_links": [
+        "https://spring.io/security/cve-2025-22234/",
+        "https://github.com/spring-projects/spring-security/issues/16802",
+        "https://github.com/spring-projects/spring-security/commit/c1aa99fdd2113a232986e9c3a44673ae752de840"
+      ],
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "selected_release_pair": {
+        "before": "6.3.8",
+        "after": "6.3.9",
+        "after_commit": "f6354250a12b950d00d86bfb1c991d6e82e89a68"
+      },
+      "fix_pair": {
+        "before": "eb013944277879b4c1541857a5b8263f5235ff82",
+        "after": "c1aa99fdd2113a232986e9c3a44673ae752de840",
+        "author_and_committer_date": "2025-04-17T08:53:33Z",
+        "branch_evidence": "gradle.properties at repair: version=6.3.9-SNAPSHOT; samplesBranch=6.3.x"
+      },
+      "fix_ancestry_evidence": {
+        "compare": "https://api.github.com/repos/spring-projects/spring-security/compare/c1aa99fdd2113a232986e9c3a44673ae752de840...6.3.9",
+        "ahead_by": 3,
+        "behind_by": 0,
+        "merge_base": "c1aa99fdd2113a232986e9c3a44673ae752de840",
+        "also_listed_in": "6.3.8...6.3.9"
+      },
+      "introduction": {
+        "status": "vendor_attributed_transition_unreproduced",
+        "candidate_commit": "46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
+        "candidate_parent": "36ea1b11a7dae7904e3c70b5e10fb01152fec5d4",
+        "evidence": "Vendor advisory explicitly says the CVE-2025-22228 fix broke DaoAuthenticationProvider timing mitigation; commit metadata and fix ancestry reviewed.",
+        "formally_confirmed_commit": null,
+        "fix_to_repair_compare": {
+          "ahead_by": 32,
+          "behind_by": 0,
+          "merge_base": "46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3"
+        }
+      },
+      "policy_chronology": [
+        {
+          "stage": "March selected22228fix",
+          "revision": "46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3",
+          "guard": "passwordb.length > 72",
+          "effect": "Overlong hashing/matching rejected with IllegalArgumentException; affected timing mitigation downstream."
+        },
+        {
+          "stage": "April22234repair",
+          "revision": "c1aa99fdd2113a232986e9c3a44673ae752de840",
+          "guard": "!for_check && passwordb.length > 72",
+          "effect": "Reject overlong new encodings while allowing legacy match verification; upstream tests explicitly split encode and matches."
+        }
+      ],
+      "oracle_status": "timing_observation_and_independent_oracle_not_defined",
+      "planned_task_note": "Keep separate contracts for historical overlong-match rejection, later new-encoding restriction/legacy matching, and authentication timing mitigation. No frozen timing claim yet.",
+      "proof_boundary": "Output or attempted-call equality cannot establish timing noninterference. A timing/cost model and environment assumptions are a separate extension; no timing proof is claimed.",
+      "related_cves": [
+        "CVE-2025-22228"
+      ],
+      "build_recipe": null,
+      "artifact_hashes": null,
+      "result": null
+    }
+  ],
+  "optional_controls": [
+    {
+      "logical_case_id": "boot-tag-allocation-preservation-control",
+      "numeric_example_id": null,
+      "family_id": "boot-method-metrics",
+      "kind": "historical_preservation_candidate",
+      "planned_depth": "optional_catalog_control",
+      "repository": "https://github.com/spring-projects/spring-boot",
+      "revisions": {
+        "before": "0bc7bef5e535e05a61a623f2db9e116583a83ca3",
+        "after": "d6761476803e519ecb74e2c7e1fd78ea2e165250"
+      },
+      "date": "2018-04-18",
+      "source_links": [
+        "https://github.com/spring-projects/spring-boot/commit/d6761476803e519ecb74e2c7e1fd78ea2e165250"
+      ],
+      "status": {
+        "source_review": "completed",
+        "build": "not_run",
+        "jvm_replay": "not_run",
+        "capability_probe": "not_run",
+        "proof": "not_run",
+        "mutation_controls": "not_run",
+        "claim_freeze": "proposed_not_frozen",
+        "ready_to_execute": false,
+        "observed_blockers": []
+      },
+      "expected_preservation": "Tag key/value behavior of method/status paths under fixed observations.",
+      "absolute_property_caveat": "Both revisions still emit arbitrary request method strings; a preservation-positive can fail finite method-label cardinality on both sides.",
+      "planned_probes": [
+        "Null request",
+        "GET",
+        "Nonstandard XSCF",
+        "Null response",
+        "Integer status boundaries"
+      ],
+      "artifact_hashes": null,
+      "build_recipe": null,
+      "result": null
+    }
+  ],
+  "existing_report_migration": {
+    "default_example_id": "105",
+    "fallback_example_id": "106",
+    "selection_rule": "Fallback only with recorded reason; coordinator owns final selection.",
+    "inventory": [
+      "105",
+      "106",
+      "107",
+      "108",
+      "109"
+    ],
+    "notes": [
+      "Preserve historical handwritten reports.",
+      "108 is unresolved, not a proved positive.",
+      "109 has known replay/class-initialization traps and user-deferred work; do not reopen by default."
+    ]
+  },
+  "acceptance_scope": "All six deep packets require reproducible artifacts, frozen claims and validated original-JVM controls for reproducible-scaffold status. Missing provenance/build/replay leaves a packet partial; an observed proof-capability blocker can remain unresolved. Infrastructure must demonstrate a seeded vulnerable violation and fixed response on the same trigger with legitimate behavior retained, an independent positive original-JVM pair and mutation, and an actual established/refuted native result from a supported real-world migration task. Merely running processes or returning an unresolved refusal does not meet those gates.",
+  "unperformed_actions": [
+    "Target builds",
+    "Original JVM probes",
+    "Independent replay",
+    "Capability probes",
+    "Proof runs",
+    "Mutation runs",
+    "Repository modifications",
+    "Implementation agent launch"
+  ]
+}

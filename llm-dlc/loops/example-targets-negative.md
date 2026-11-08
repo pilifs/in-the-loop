@@ -1,0 +1,156 @@
+# Stream brief: example targets, the CVE catalog and three negative packets
+
+One of four streams of [`example-targets.md`](example-targets.md) that run in parallel, each in its own jj workspace on
+its own branch. The others are [`example-targets-runtime.md`](example-targets-runtime.md),
+[`example-targets-positive.md`](example-targets-positive.md) and [`example-targets-workflow.md`](example-targets-workflow.md).
+Once all four are finished, the main brief's loop merges them ([Reconciling](example-targets.md#reconciling)) and runs
+your packets through the merged infrastructure.
+
+Started with the others by `llm-dlc/tools/run-streams.sh example-targets` from the default workspace, or alone with
+`llm-dlc/tools/feature-loop.sh example-targets-negative` from this stream's workspace
+(`jj workspace root --name example-targets-negative`).
+
+**The main brief is the instruction.** Read [`example-targets.md`](example-targets.md), the acceptance contract
+[`example-targets-acceptance.md`](example-targets-acceptance.md) and [`example-targets-inputs/seeds.json`](example-targets-inputs/seeds.json)
+in full every cycle, with their inputs. Their direction, starting point, working rules, safety rules, downloads policy,
+deferrals and decisions all apply here. This file says which items are yours, and keeps your Progress. Within the
+briefs, edit only this file's `## Progress` section.
+
+**Every cycle, read the integration check first**:
+`$(jj workspace root --name default)/llm-dlc/loop-summaries/example-targets-integration.md`, if it exists. A failure in
+your files is your next piece of work; a conflict in a file you own is a coordination task, recorded under Progress.
+
+## Goal
+
+Turn three researched Spring vulnerabilities into durable packets a later agent can execute, prove or diagnose without
+rediscovering revisions, security intent or reproduction conditions. Each keeps both the security question and the
+legitimate behaviour the fix must preserve. A capability refusal is evidence about the verifier, not about the program.
+
+## Starting evidence
+
+The archived registry `example-targets-inputs/spring-cve-targets.research-2026-11-04.json` holds 15 researched CVEs,
+none executed; its verifier review is from `4c279ba6` and stale. The three promoted entries, and the fix pairs the
+outside review inspected:
+
+| Case | Release pair | Exact fix pair, parent → change |
+|---|---|---|
+| CVE-2023-34055 | Boot `v2.7.17` → `v2.7.18` | `7ad6e4470c945ae0e39e63af28c47aebbe27bbc0` → `5490e73922b37a7f0bdde43eb318cb1038b45d60` |
+| CVE-2022-22968 | Framework `v5.3.18` → `v5.3.19` | `0cf7f7bd890504061883c48e382dc23e0c5d4df0` → `a7cf19cec5ebd270f97a194d749e2d5701ad2ab7` |
+| CVE-2025-22228 | Security `6.3.7` → `6.3.8` | `36ea1b11a7dae7904e3c70b5e10fb01152fec5d4` → `46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3` |
+
+These are fix pairs; none is an established introducing pair. Release comparison and exact-patch comparison stay
+separately named, and one execution pair is selected explicitly before a claim is frozen. Check every SHA and parent
+against upstream (you may fetch, pinned) before relying on it.
+
+## Your items
+
+Every case has separate tasks for: the security property on the vulnerable revision (expected refuted); the **same
+property** on the fixed revision (expected established); and preservation outside a stated allowed-change region
+(expected established). There is no `fix` command: these are composed from `prove`, `compare` and `equivalence` tasks.
+An all-input equivalence failure on a security fix may be intended, and an exit 1 establishes nothing. Each task keeps
+its own receipt.
+
+Original methods are called through minimal adapters, every adapter and model boundary recorded, static initialization
+and exceptions kept. An adapter that maps the input to a safe enum first, catches every exception as success, or
+replaces the vulnerable method with an assumed summary invalidates the claim.
+
+### N0. The catalog
+
+Import the fifteen CVEs into the router as numbered examples in 285–304, with advisory and patch links, distinct
+release and commit pairs, unknown introductions and the original research date. Promote the three above in place,
+numbered once. Each catalog-only entry shows its missing prerequisites and no proof verdict. Keep the later binder, URI,
+traversal, dispatch and reflection cases discoverable without making them deep builds. Tags are additions to
+`examples/tags.json`, in a block marked `negative`, or an interface request.
+
+### N1. Method labels (CVE-2023-34055)
+
+The MVC entry `WebMvcTags.method(HttpServletRequest)` first. The [patch](https://github.com/spring-projects/spring-boot/commit/5490e73922b37a7f0bdde43eb318cb1038b45d60)
+limits method values to known HTTP methods or `UNKNOWN`; the [advisory](https://spring.io/security/cve-2023-34055/)
+gives the release context. Freeze the version-specific output set, and keep known-method labels and the documented null
+behaviour. Probes: `GET`, `POST`, a nonstandard token such as `XSCF` that reaches the original classifier unchanged, and
+a null request. Record the tag key, value and exceptions; the benign controls must reject an implementation that maps
+everything to `UNKNOWN`. This is a property of one metric label dimension: whole-application availability and the
+WebFlux carrier are further obligations. Record an actual obstacle (request interfaces, `Tag`, enums, unrelated regex
+class initialization) instead of removing it from the artifact. Mutation control: restore raw method emission in the
+fixed target.
+
+### N2. Binder case handling (CVE-2022-22968)
+
+The actual `DataBinder` configuration and its `isAllowed` decision, with the [case-normalization patch](https://github.com/spring-projects/spring-framework/commit/a7cf19cec5ebd270f97a194d749e2d5701ad2ab7).
+Pin the default locale explicitly. Start from the upstream `age`/`AGE` disallowed-field regression, a permitted field,
+and the changed wildcard and map tests: copy the tests' intent and inputs, never the implementation, into the oracle.
+Keep the predicate lemma apart from the stronger claim that protected bean fields can't be mutated through binding
+(`protected-state-mutation`); if reflection or property resolution blocks the latter, keep both tasks and attach an
+observed gap to the blocked one. A subclass exposing the protected predicate delegates to the original bytecode. Link
+[CVE-2024-38820](https://spring.io/security/cve-2024-38820/) as the later locale challenge: locale invariance and
+case-alias protection are different properties. Don't report the 2022 patch as an introduction without a stable oracle
+and a reproduced parent/child transition. Mutation control: remove the normalization, or normalize one side only.
+
+### N3. BCrypt byte boundary (CVE-2025-22228)
+
+Freeze the March 2025 behaviour of the [length patch](https://github.com/spring-projects/spring-security/commit/46f0dc6dfc8402cd556c598fdf2d31f9d46cdbf3):
+it rejects passwords over **72 UTF-8 bytes**. The public-entry claim is about `BCryptPasswordEncoder.matches` with an
+otherwise valid stored hash; a byte-array guard lemma is narrower. Provide the valid stored hash independently of the
+overlong check. Probes: 71, 72 and 73 bytes; a wrong in-range candidate; a multibyte candidate that crosses the limit
+with fewer Java characters (36 × U+00E9 plus `x`, or 18 supplementary characters plus `x`, checked under the pinned
+JDK). Never rely on `matches(overlong, encode(overlong))`: encoding can throw first (the upstream test does exactly
+this). Bounds must reach the rejected branch: eight UTF-16 code units can't reach 73 bytes. Only the specified
+rejection exception counts as the intended outcome. Pin stored-hash validation (it uses `java.util.regex`), UTF-8
+semantics and any cryptographic summary; without unchanged-callee reasoning, record the precise gap rather than claim a
+guard proof covers authentication. Mutation control: count Java characters instead of UTF-8 bytes.
+
+### N4. The follow-up, and the handoffs
+
+Add [CVE-2025-22234](https://spring.io/security/cve-2025-22234/) as research-only, linked to N3. The vendor attributes a
+broken `DaoAuthenticationProvider` timing mitigation to the 22228 fix. Its repair pair is
+`eb013944277879b4c1541857a5b8263f5235ff82` → [`c1aa99fdd2113a232986e9c3a44673ae752de840`](https://github.com/spring-projects/spring-security/commit/c1aa99fdd2113a232986e9c3a44673ae752de840),
+in 6.3.8 → 6.3.9: long **new encodings** are refused and legacy matching is allowed. The earlier blanket rejection
+property never silently becomes this different policy, and output or call-log equality proves no timing
+noninterference. For every attempted blocker, the gap packet of the main brief; predicted gaps are labelled as such.
+After two substantive failures on one obstacle, stop expanding the workaround and write the handoff.
+
+## Ownership and cooperation
+
+- **Yours**: the catalog folders and the three packets in 285–304: their `example.json`, `target.json`,
+  `sources.lock.json`, `claims/`, `replay/`, `controls/`, local adapters, oracles, probes and notes.
+- **Not yours**: acquisition, builds and JVM execution (runtime); planning and ingestion (workflow); shared files (the
+  coordinator). No downloader or parser code in a case folder. Ask through Progress.
+- Until the merge, check a driver against a pinned JAR fetched by hand if you like, with its sha256 noted: a note, never
+  evidence.
+
+## Acceptance
+
+At your finish, on your branch: the catalog imported and valid against Phase 0's sidecar schema; all three packets with
+source locks checked against upstream, task definitions, frozen-or-pending claim state, concrete probes, an independent
+oracle, mutation controls, and a replay driver or a precise build blocker. A blocked packet is partial. In Phase 5, at
+least one negative/fixed pair runs original-JVM controls through the integrated path (A3): the oracle observes the
+vulnerable violation, the specified fixed response on the same trigger, and retained legitimate behaviour. Two process
+exits are not enough. Proof success on every Spring task is not required.
+
+## Working rules
+
+The main brief's [How to work through it](example-targets.md#how-to-work-through-it): the pipeline, the two-failure
+timebox, the downloads policy and the safety rules. Queue anything heavy, and record each job's revision and id.
+
+## Progress
+
+- Not started. Forks after the main brief's [launch prerequisites](example-targets.md#launch-prerequisites), Phase 0
+  included.
+- Status: working
+
+## Loop settings
+
+- session: 70d4b729-3b1f-41d1-a89c-03fd78a71818
+- model: claude-opus-5-5
+- effort: high
+- memory: 4G
+- workspace: example-targets-negative
+- fork: e9be5afb-09c9-4473-a9e9-38f2fb61ca80
+
+## Loop until
+
+Go on while an item has a step that needs nothing but your own work. When everything left waits on jobs, stop with
+`waiting on jobs ID ...`. Stop with `done` when N0–N4 and your acceptance are met, or each is deferred by the timebox
+with the finding. Stop with `blocked: ...` when what is left needs the user or another stream, and is recorded under
+Progress. Don't go on into an unbounded proof or introducing-commit investigation. Anything new you find goes under
+Progress, for the main brief's for-review list.
