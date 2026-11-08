@@ -78,9 +78,11 @@ there now, but a single loop is rerun by hand.
    - The module doc, `lib/README.md`'s gap section and `Preflight::paths`' doc move with it.
 4. **The checks, as jobs**:
    - VF-015's job resubmitted unchanged (`pipeline.py resubmit`), its title naming "closes VF-015 when it passes".
-     That is N3's second and last attempt under the cleanup timebox. If step 4's replay then fails on
-     `StandardCharsets.UTF_8` (`lib/src/interp/natives.rs:373`), that is the interpreter fix VF-015's entry names, and
-     it is this brief's next item.
+     That is N3's second and last attempt under the cleanup timebox. With step 3 proved, the job then failed at step 5,
+     the ASCII equivalence: the old `toDigit` throws the checked `DecoderException`, which the equivalence
+     harness (`harness::EXCEPTIONS`) doesn't catch, so JBMC fails `EquivalenceHarness.check:(CI)V.1`. That fix is in
+     the harness, outside this brief, so a failure there defers VF-015 by the timebox (see Progress). The
+     `StandardCharsets.UTF_8` replay (`lib/src/interp/natives.rs:373`) that VF-015's entry names never came up.
    - A guard that no stub a proof does enter is left out: the gap-preflight tests in `lib/tests/` and the conformance
      corpus under `--engine jbmc` (`the_corpus_agrees_with_the_jvm_under_jbmc_and_auto`), unchanged, expected to pass.
 
