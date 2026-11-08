@@ -12,24 +12,24 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-08T14:15:26.989Z",
-  "ended": "2026-11-08T14:39:04.744Z",
-  "duration_seconds": 1418,
+  "ended": "2026-11-08T14:46:02.252Z",
+  "duration_seconds": 1835,
   "stats": {
     "turns": 1,
-    "api_calls": 6,
-    "tool_calls": 8,
+    "api_calls": 9,
+    "tool_calls": 11,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 36847,
+    "peak_context_tokens": 42078,
     "usage": {
-      "input_tokens": 12,
-      "output_tokens": 942,
-      "cache_read_input_tokens": 177050,
-      "cache_creation_input_tokens": 25463
+      "input_tokens": 18,
+      "output_tokens": 2131,
+      "cache_read_input_tokens": 292489,
+      "cache_creation_input_tokens": 30694
     }
   },
   "tools": {
-    "Bash": 7,
+    "Bash": 10,
     "Monitor": 1
   },
   "files_touched": [],
@@ -37,24 +37,24 @@
     {
       "index": 0,
       "started": "2026-11-08T14:15:26.989Z",
-      "ended": "2026-11-08T14:39:04.744Z",
+      "ended": "2026-11-08T14:46:02.252Z",
       "turns": 1,
-      "api_calls": 6,
+      "api_calls": 9,
       "usage": {
-        "input_tokens": 12,
-        "output_tokens": 942,
-        "cache_read_input_tokens": 177050,
-        "cache_creation_input_tokens": 25463
+        "input_tokens": 18,
+        "output_tokens": 2131,
+        "cache_read_input_tokens": 292489,
+        "cache_creation_input_tokens": 30694
       },
-      "peak_context_tokens": 36847
+      "peak_context_tokens": 42078
     }
   ],
   "log": {
-    "sha256": "826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601",
-    "bytes": 310606,
-    "lines": 67,
-    "gzip_bytes": 76827,
-    "path": "llm-dlc/traces/637cae8e-d166-477d-b0d2-51161e0c6d62/logs/826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601.jsonl.gz"
+    "sha256": "e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2",
+    "bytes": 359792,
+    "lines": 87,
+    "gzip_bytes": 82694,
+    "path": "llm-dlc/traces/637cae8e-d166-477d-b0d2-51161e0c6d62/logs/e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -65,6 +65,14 @@
       "summary": "application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls",
       "body": "Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.\n\nReproducer first: o2_a_setup_methods_edit_alone_is_another_claim_never_reused now also asks that exact reruns of the proof and the refutation are reused and that the typed calls list the history. It failed on the rerun with the guard in place, and with the guard dropped but the setup methods not rooted it failed on a stale hit (an edit of the setup method alone was answered by the stored proof). Verified: application_core_objects 22/22, build.py's new test_a_witness_keeps_its_setup_calls_and_they_validate, the integration check (contract 14/14, unit tests 254, compare, effects, foundations, Python suites), and every other test binary but integration.rs (JBMC).\n\nFound and recorded in Progress for item 6: property::run still refuses prove --cache --plan although the reuse stream's property key already reads the plan; lifting it needs an end-to-end test. Docs: lib/README.md's plan and claim-root paragraphs, proof_cache's module doc.",
       "log_sha256": "826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601"
+    },
+    {
+      "change_id": "pszyvtwkuqoovtwotnznuyrnvyxkknop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the VF-023 rerun; VF-023 closed",
+      "body": "Job 20261108-141443 (the conformance corpus under auto --confirm, at 13f3e9a0dac8) passed in 23m18s, peak 1.8 GiB, so VF-023 is closed in verification/findings.md. Its only output, lib/target/conformance-confirm.log, was not applied because the file changed since the job's commit; it is a log, so no rerun.",
+      "log_sha256": "e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2"
     }
   ],
   "logs": {
@@ -72,6 +80,12 @@
       "bytes": 310606,
       "lines": 67,
       "gzip_bytes": 76827,
+      "url": null
+    },
+    "e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2": {
+      "bytes": 359792,
+      "lines": 87,
+      "gzip_bytes": 82694,
       "url": null
     }
   },

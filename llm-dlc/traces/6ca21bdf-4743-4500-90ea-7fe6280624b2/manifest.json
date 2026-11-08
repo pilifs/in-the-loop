@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T14:43:03.285Z",
-  "duration_seconds": 15634,
+  "ended": "2026-11-08T14:45:49.191Z",
+  "duration_seconds": 15800,
   "stats": {
-    "turns": 39,
-    "api_calls": 463,
-    "tool_calls": 468,
+    "turns": 44,
+    "api_calls": 484,
+    "tool_calls": 489,
     "tool_errors": 2,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 286462,
     "usage": {
-      "input_tokens": 938,
-      "output_tokens": 297992,
-      "cache_read_input_tokens": 64423709,
-      "cache_creation_input_tokens": 1284230
+      "input_tokens": 980,
+      "output_tokens": 305683,
+      "cache_read_input_tokens": 66256706,
+      "cache_creation_input_tokens": 1398079
     }
   },
   "tools": {
-    "Bash": 426,
-    "Read": 19,
+    "Bash": 444,
+    "Read": 22,
     "Edit": 13,
     "Monitor": 4,
     "TaskStop": 3,
@@ -146,24 +146,38 @@
     {
       "index": 7,
       "started": "2026-11-08T14:15:47.417Z",
-      "ended": "2026-11-08T14:43:03.285Z",
-      "turns": 6,
-      "api_calls": 50,
+      "ended": "2026-11-08T14:43:26.417Z",
+      "turns": 7,
+      "api_calls": 53,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 20472,
-        "cache_read_input_tokens": 4977746,
-        "cache_creation_input_tokens": 116435
+        "input_tokens": 114,
+        "output_tokens": 21633,
+        "cache_read_input_tokens": 5369348,
+        "cache_creation_input_tokens": 120259
       },
-      "peak_context_tokens": 129514
+      "peak_context_tokens": 133338
+    },
+    {
+      "index": 8,
+      "started": "2026-11-08T14:43:56.457Z",
+      "ended": "2026-11-08T14:45:49.191Z",
+      "turns": 4,
+      "api_calls": 18,
+      "usage": {
+        "input_tokens": 36,
+        "output_tokens": 6530,
+        "cache_read_input_tokens": 1441395,
+        "cache_creation_input_tokens": 110025
+      },
+      "peak_context_tokens": 123104
     }
   ],
   "log": {
-    "sha256": "e744ed94716ccda5785568d1b45dbba8cc08a8695f86f5a3156f166a5c1dd846",
-    "bytes": 12610342,
-    "lines": 4238,
-    "gzip_bytes": 2380630,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/e744ed94716ccda5785568d1b45dbba8cc08a8695f86f5a3156f166a5c1dd846.jsonl.gz"
+    "sha256": "e540c20b2dca5f6e4b7adf86ce61c5a0ba71095b84b695b884b97c587d1ff3df",
+    "bytes": 13656782,
+    "lines": 4495,
+    "gzip_bytes": 2621089,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/e540c20b2dca5f6e4b7adf86ce61c5a0ba71095b84b695b884b97c587d1ff3df.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -374,6 +388,14 @@
       "summary": "application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls",
       "body": "Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.\n\nReproducer first: o2_a_setup_methods_edit_alone_is_another_claim_never_reused now also asks that exact reruns of the proof and the refutation are reused and that the typed calls list the history. It failed on the rerun with the guard in place, and with the guard dropped but the setup methods not rooted it failed on a stale hit (an edit of the setup method alone was answered by the stored proof). Verified: application_core_objects 22/22, build.py's new test_a_witness_keeps_its_setup_calls_and_they_validate, the integration check (contract 14/14, unit tests 254, compare, effects, foundations, Python suites), and every other test binary but integration.rs (JBMC).\n\nFound and recorded in Progress for item 6: property::run still refuses prove --cache --plan although the reuse stream's property key already reads the plan; lifting it needs an end-to-end test. Docs: lib/README.md's plan and claim-root paragraphs, proof_cache's module doc.",
       "log_sha256": "e744ed94716ccda5785568d1b45dbba8cc08a8695f86f5a3156f166a5c1dd846"
+    },
+    {
+      "change_id": "pszyvtwkuqoovtwotnznuyrnvyxkknop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for the VF-023 rerun; VF-023 closed",
+      "body": "Job 20261108-141443 (the conformance corpus under auto --confirm, at 13f3e9a0dac8) passed in 23m18s, peak 1.8 GiB, so VF-023 is closed in verification/findings.md. Its only output, lib/target/conformance-confirm.log, was not applied because the file changed since the job's commit; it is a log, so no rerun.",
+      "log_sha256": "e540c20b2dca5f6e4b7adf86ce61c5a0ba71095b84b695b884b97c587d1ff3df"
     }
   ],
   "logs": {
@@ -411,6 +433,12 @@
       "bytes": 6916101,
       "lines": 2353,
       "gzip_bytes": 1273482,
+      "url": null
+    },
+    "e540c20b2dca5f6e4b7adf86ce61c5a0ba71095b84b695b884b97c587d1ff3df": {
+      "bytes": 13656782,
+      "lines": 4495,
+      "gzip_bytes": 2621089,
       "url": null
     },
     "e744ed94716ccda5785568d1b45dbba8cc08a8695f86f5a3156f166a5c1dd846": {

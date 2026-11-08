@@ -20,7 +20,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 
-- **Status**: open
+- **Status**: closed by job `20261108-141443-vf-023-rerun-the-conformance-corpus-unde` (at `13f3e9a0dac8`, passed 2026-11-08 on `vm-1`, 23m18s, peak 1.8 GiB: the `auto --confirm` conformance corpus step, after a JBMC refutation through a stub that doesn't reproduce was made no verdict under `--confirm`). Its one output, `lib/target/conformance-confirm.log`, was not applied (the file changed since the commit); it is a build log, so nothing is lost.
 - **Raised**: 2026-11-08 on `vm-1`, job `20261108-070211-application-core-values-v2-step-1-the-co` (at `1fd394556a7c`).
 - **Found**: step 1 (`conformance` corpus under `--engine jbmc` and `auto`) passed (661 s). Step 2
   (`cargo test --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm`, 1249 s, peak 1.7 GiB) failed at
