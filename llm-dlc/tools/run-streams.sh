@@ -42,9 +42,12 @@
 # it: waiting on jobs, it polls every RUN_STREAMS_POLL seconds until each job's
 # result is collected here and runs the loop again, which picks up where it
 # left off (and counts the loop as blocked after RUN_STREAMS_JOB_WAIT seconds);
-# done or blocked, the loop is finished. A loop that stops on an error or a cycle
-# with no commit, with no such status, is run once more to finish what it left;
-# twice in a row, it counts as blocked. A blocked stream doesn't hold the merge
+# done or blocked, the loop is finished. A loop that stops with no such status,
+# on an error, a cycle with no commit, or a decision to stop that left it
+# working, is run once more to finish what it left; twice in a row, it counts as
+# blocked. (Until 2026-11-08 a decision to stop counted as done whatever the
+# status said, and three application-core streams that were waiting on jobs or
+# blocked went to the merge as finished.) A blocked stream doesn't hold the merge
 # up: the merge takes what it committed and lists what needs the user.
 #
 # Every line comes here, prefixed with its loop ([jbmc], [native], [verify],
@@ -348,10 +351,10 @@ supervise() {
       log "[$label] it says it waits on jobs that are already back"  # counted as a stop with no reason
       code=1
     fi
-    if (( code == 0 )); then
-      log "[$label] it decided to stop, and its status doesn't say why: counted as done"
-      exit 0
-    fi
+    # A clean stop with a status that says neither done, blocked nor waiting
+    # isn't finished: feature-loop.sh records the status at a stop, so a stop
+    # without one is run again like a failure.
+    (( code == 0 )) && log "[$label] it decided to stop, but its status doesn't say why (${status:-no status})"
     failed=$(( failed + 1 ))
     if (( failed >= 2 )); then
       log "[$label] stopped twice in a row without a status that says why: counted as blocked; its session needs a look"
