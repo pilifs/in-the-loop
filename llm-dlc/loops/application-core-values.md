@@ -163,10 +163,60 @@ just to bring a gap count down.
   lossily (`classfile::decode_modified_utf8` ends in `String::from_utf16_lossy`, and `Constant::Utf8` holds a Rust
   `String`), so a string literal with an isolated surrogate in its source is read as U+FFFD by the interpreter and
   every engine alike. Keeping the code units of a literal (`ConstantPool::utf16(index)`, say) would close it.
-- **Next**: V1 step 2, the own checker's bounded Strings. A String is an object with a code-unit array of
-  symbolic length up to a bound. A literal has its content. `length`, `isEmpty`, `charAt`, `equals` and
-  `startsWith` are modelled with their exceptions. A String parameter of the harness has every content up to the
-  bound, and its witness holds its code units. Then `values::adapter` for a String, for the objects stream to take.
+- 2026-11-08, **the integration check** (05:36, the four streams' first commits) stopped at the merge: a 4-sided
+  conflict in `lib/README.md`, where every stream added its paragraph at the same place, after the application-core
+  paragraph of the foundations IR section, and in the generated `llm-dlc/README.md`, `index.json` and `traces/`
+  files. The README's additions are all additive and resolve as their union. To keep this stream out of it, this
+  commit moves its paragraph to the end of "The tool's own checker" (before "Library use"). The generated files
+  are `sync.py`'s, for the merge.
+- 2026-11-08, **V1 step 2, the own checker's bounded Strings** (this commit), in `bmc/`:
+  - **The representation**: a String is an `Obj` of class `java/lang/String` whose `array` is its content, `char`
+    cells of a symbolic length (`Obj::content`, kept apart from an array by `Obj::as_array`), so that merging,
+    aliasing and witnesses reuse the arrays' machinery. Any of the 65,536 code units is a content. A literal has
+    its units (one interned object per literal). Identity is the object, apart from content.
+  - **The methods**, modelled on content (`Engine::string_method`, `bmc::models_string_method`, which the gap scan
+    shares): `length`, `isEmpty`, `charAt` (`StringIndexOutOfBoundsException` out of range), `equals` (the same
+    object, null, another class, then the lengths and every unit) and `startsWith` (`NullPointerException` on
+    null). On a String with no content they stay the JDK gap they were.
+  - **The concatenation** (`Engine::concatenation`): Strings, `null` as "null", `char`s and the recipe's constants
+    give the content of the parts in order. A number or a boolean converted gives a String with no content
+    (numeric formatting is outside the core), and one that could pass `bmc::MAX_STRING_CONTENT` (64) units has
+    none either, with a named limit: asking for its content ends the path with no verdict, never a truncated
+    String.
+  - **A String parameter** is taken only under an explicit bound, `bmc::Parameters::max_string_length` (`None`,
+    the default, refuses it by name, so no check borrows a bound it didn't state). It has every content up to the
+    bound, is nullable or one String with another under the same `nullable` and `may_alias` as an array, and its
+    witness is its code units in `raw_arrays` (decimal). A bound makes `Parameters::is_default` false, so
+    `property` refuses JBMC for such a domain, as it does for a widened array domain.
+  - **Reproducer and checks**: before, every String parameter was refused (`bmc::unsupported_parameter`: "a
+    java.lang.String parameter"), and `length`, `charAt` and the like were the gap `jdk-primitive-method`. Now
+    `tests/values.rs` runs the checker on harness-shaped methods (`tests/fixtures/values/values/Checks.java`),
+    merging from the start and never, and replays every violation's witness on the JVM and in the interpreter,
+    each of which must throw the check's `AssertionError`:
+    - the quote fixture's `Codes.vip` rewrite proved up to 5 units, and its dropped-prefix defect refuted with
+      "VI" and a third unit that isn't 'P' (negative control: a dropped prefix character);
+    - an isolated high surrogate and "A\0" found as inputs; a pair is two units, and a defect taking it for one
+      (`charAt(0) == 0x1F600`) refuted with the pair (negative control: a supplementary character as one unit);
+    - `equals` agreeing with a unit-by-unit comparison; equal content behind two references refuting a claim that
+      they are one object, with and without `may_alias` (negative control: equal content behind distinct
+      references); one object equal to itself; null and another class unequal; a literal interned with its
+      content;
+    - `charAt`'s bounds, `startsWith(null)`, `isEmpty`, a nullable String refuted by null and its `length` a
+      `NullPointerException`;
+    - the bound: `length() <= 4` proved under 4 and refuted with 5 units under 5; no bound, no check;
+    - concatenations proved by content, a wrong commutation claim refuted, `null` as "null", nine copies proved
+      under 7 (63 units) and a named limit under 8 (72), and a number concatenated still the gap;
+    - the gap scan counts the modelled methods as no gap, and `toUpperCase` still as one.
+
+    Evidence level: `tested` (sampled JVM conformance of the methods, and replays), not `proved`. No job: these
+    checks are seconds, run inline as unit tests.
+  - **Not yet**: no proof entry point takes a String parameter. `equivalence` and `property` refuse it through
+    `values::adapter`, which is next.
+- **Next**: `values::adapter` for a String (`lib/src/values.rs`): its `ValueDomain` (kind string, nullable, the bound,
+  the model's evidence), `encode` from the interpreter's `JStr`, `rebuild` for a replay, and the witness's units
+  read from the checker's `raw_arrays`. Then an interface note for the objects stream: pass the bound as
+  `bmc::Parameters::max_string_length`, and rebuild a String argument through the adapter in replay
+  (`jbmc::JbmcResult::arguments` reads a String slot as a scalar today).
 - Status: working
 
 ## Loop settings

@@ -31,6 +31,8 @@
 //! A JDK call the engine reproduces exactly is not a gap ([`jdk_instance_call`]): `Object.<init>`,
 //! `Record.<init>`, the constructors of the JDK's exceptions that take no argument or a message (and a cause),
 //! which change nothing the proof observes, and the static JDK methods it models ([`super::models_jdk_static`]).
+//! Nor are the String methods it models on a String's content ([`super::models_string_method`]): on a String whose
+//! content it doesn't hold (a number's digits) it meets the call as the gap it was, where it runs it.
 //! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
 //! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
@@ -935,6 +937,12 @@ impl<'a> Walker<'a> {
                         if m.code.is_some() {
                             self.enqueue(&c.name, &member.name, &member.descriptor);
                         }
+                        continue;
+                    }
+                    // A String method the engine models on the content it holds; on a String with none (a
+                    // number's digits) the engine meets the JDK call as a gap where it is run.
+                    if !special && super::models_string_method(&member.owner, &member.name, &member.descriptor) {
+                        *self.scan.exact.entry(format!("{}.{}{} (on its content)", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1;
                         continue;
                     }
                     // The method is the JDK's, on this receiver: the engine's fallback.

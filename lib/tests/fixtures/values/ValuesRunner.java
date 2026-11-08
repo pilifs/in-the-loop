@@ -4,10 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Runs the values stream's conformance cases on a JVM (lib/tests/values.rs): each line of standard input is a
- * class, a method and its int arguments; each line of output is what the call gave, in the form the test reads the
- * interpreter's in: "int N", "bool true", "str" and the String's code units in hex, "null", or "throws" and the
- * class of what it threw.
+ * Runs the values stream's conformance cases and replays on a JVM (lib/tests/values.rs): each line of standard
+ * input is a class, a method and its arguments; each line of output is what the call gave, in the form the test
+ * reads the interpreter's in: "int N", "bool true", "str" and the String's code units in hex, "null", or "throws"
+ * and the class of what it threw. An argument is an int, a char (the method's parameter type decides), "null", a
+ * String as "s:" and its code units in decimal, comma-separated (a fresh String each), or "same:N", the very object
+ * the argument at index N is.
  */
 public final class ValuesRunner {
     public static void main(String[] args) throws Exception {
@@ -29,11 +31,35 @@ public final class ValuesRunner {
             }
             target.setAccessible(true);
             Object[] values = new Object[parts.length - 2];
+            Class<?>[] types = target.getParameterTypes();
             for (int i = 0; i < values.length; i++) {
-                values[i] = Integer.decode(parts[i + 2]);
+                values[i] = argument(parts[i + 2], types[i], values);
             }
             System.out.println(render(target, values));
         }
+    }
+
+    private static Object argument(String text, Class<?> type, Object[] earlier) {
+        if (text.equals("null")) {
+            return null;
+        }
+        if (text.startsWith("same:")) {
+            return earlier[Integer.parseInt(text.substring(5))];
+        }
+        if (text.startsWith("s:")) {
+            String units = text.substring(2);
+            if (units.isEmpty()) {
+                return new String(new char[0]);
+            }
+            String[] each = units.split(",");
+            char[] chars = new char[each.length];
+            for (int i = 0; i < each.length; i++) {
+                chars[i] = (char) Integer.parseInt(each[i]);
+            }
+            return new String(chars);
+        }
+        int n = Integer.decode(text);
+        return type == char.class ? (Object) (char) n : (Object) n;
     }
 
     private static String render(Method target, Object[] values) throws IllegalAccessException {

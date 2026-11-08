@@ -12,30 +12,31 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T04:59:03.536Z",
-  "duration_seconds": 1478,
+  "ended": "2026-11-08T06:01:11.989Z",
+  "duration_seconds": 5206,
   "stats": {
-    "turns": 5,
-    "api_calls": 88,
-    "tool_calls": 88,
-    "tool_errors": 1,
-    "compactions": 1,
-    "peak_context_tokens": 246999,
+    "turns": 13,
+    "api_calls": 166,
+    "tool_calls": 163,
+    "tool_errors": 2,
+    "compactions": 2,
+    "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 176,
-      "output_tokens": 68510,
-      "cache_read_input_tokens": 13479010,
-      "cache_creation_input_tokens": 256605
+      "input_tokens": 338,
+      "output_tokens": 134079,
+      "cache_read_input_tokens": 24850515,
+      "cache_creation_input_tokens": 458401
     }
   },
   "tools": {
-    "Bash": 84,
-    "Monitor": 1,
-    "Read": 1,
-    "ToolSearch": 1,
-    "Write": 1
+    "Bash": 155,
+    "Monitor": 2,
+    "Read": 2,
+    "ToolSearch": 2,
+    "Write": 2
   },
   "files_touched": [
+    "lib/tests/fixtures/values/values/Checks.java",
     "lib/tests/values.rs"
   ],
   "context_windows": [
@@ -56,24 +57,38 @@
     {
       "index": 1,
       "started": "2026-11-08T04:34:21.844Z",
-      "ended": "2026-11-08T04:59:03.536Z",
-      "turns": 5,
-      "api_calls": 88,
+      "ended": "2026-11-08T05:38:47.580Z",
+      "turns": 9,
+      "api_calls": 94,
       "usage": {
-        "input_tokens": 176,
-        "output_tokens": 68510,
-        "cache_read_input_tokens": 13479010,
-        "cache_creation_input_tokens": 256605
+        "input_tokens": 192,
+        "output_tokens": 70662,
+        "cache_read_input_tokens": 14975686,
+        "cache_creation_input_tokens": 262913
       },
-      "peak_context_tokens": 246999
+      "peak_context_tokens": 253307
+    },
+    {
+      "index": 2,
+      "started": "2026-11-08T05:40:03.637Z",
+      "ended": "2026-11-08T06:01:11.989Z",
+      "turns": 4,
+      "api_calls": 72,
+      "usage": {
+        "input_tokens": 146,
+        "output_tokens": 63417,
+        "cache_read_input_tokens": 9874829,
+        "cache_creation_input_tokens": 195488
+      },
+      "peak_context_tokens": 208567
     }
   ],
   "log": {
-    "sha256": "e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888",
-    "bytes": 2251823,
-    "lines": 908,
-    "gzip_bytes": 377604,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888.jsonl.gz"
+    "sha256": "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae",
+    "bytes": 4231436,
+    "lines": 1751,
+    "gzip_bytes": 735168,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -84,9 +99,23 @@
       "summary": "application-core values V1 step 1: the interpreter's Strings are UTF-16 code units, as the JVM's",
       "body": "The interpreter, which replays every witness, held a String as Rust UTF-8 text, so every isolated surrogate became U+FFFD: \"\\uD800\".equals(\"\\uFFFD\") and \"\\uD800\".equals(\"\\uDC00\") were true, charAt gave 65533, and a surrogate pair split by substring became two U+FFFD. Now interp::JStr holds a String's and a StringBuilder's code units, and every modelled operation works on them as the JDK's do: StringBuilder.reverse keeps a pair together, indexOf(int) takes a supplementary code point, strip and isBlank use Character.isWhitespace's set, new String(char[]) and its siblings are modelled, append(CharSequence, int, int) is refused instead of appending the whole sequence, and setLength(-1) throws. An operation that needs Unicode's tables (case conversion, equalsIgnoreCase, number syntax) is refused on a String with an isolated surrogate, and Integer.parseInt on any non-ASCII code unit (Character.digit takes every Unicode digit), rather than answered for other text. Messages that quote a String keep its units, and Objects.requireNonNull's message is the very String given. Machine::str_of keeps its signature, now for readers; Machine::units_of is what a String is.\n\nReproducer first: lib/tests/values.rs, the values stream's model conformance test, runs 67 small String methods (lib/tests/fixtures/values/) on a real JVM and in the interpreter and requires the same code units, or a refusal where one is listed. Before the fix, 28 cases differed and one was refused; now all agree. The full lib suite passes (cargo test: 476 tests, the integration contract application_core.rs included). The audit of what native runs faithfully, two wrong answers found outside V1's core (Character's classification uses Rust's Unicode tables, and a surrogate char renders as U+FFFD in a contract), and an interface request for the merge (the class reader decodes a string literal lossily) are in the brief's Progress. Next: the own checker's bounded Strings.",
       "log_sha256": "e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888"
+    },
+    {
+      "change_id": "ltwqxnvqzznorzxnpmnxvzmyskrxzyzo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values V1 step 2: the own checker's Strings are bounded code units with content, and a String parameter has every content up to its bound",
+      "body": "In the native engine (lib/src/bmc/), a String is now an object whose content is UTF-16 code units of a symbolic length, a char cell per unit it may have, any of the 65,536 values. The content reuses the arrays' machinery for merging, aliasing and witnesses, and Obj::content/as_array keep a String apart from an array. A literal has its units. length, isEmpty, charAt (StringIndexOutOfBoundsException), equals (identity, null, another class, then the lengths and every unit) and startsWith (NullPointerException on null) are modelled on content, through bmc::models_string_method, which the gap scan shares. A compiler-generated concatenation of Strings, null, chars and constants has its parts' content. A number concatenated gives a String with no content, whose methods stay the jdk-primitive-method gap. One that could pass bmc::MAX_STRING_CONTENT (64) units ends with a named limit wherever its content is asked for, never a truncated String. A harness String parameter is taken only under an explicit bound, the new bmc::Parameters::max_string_length; None refuses it by name. It has every content up to the bound, the same nullable and may-alias options as an array, and its witness is its code units in raw_arrays.\n\nReproducer: before, every String parameter was outside the fragment (bmc::unsupported_parameter), and String.length/charAt/equals were gaps. The new tests in lib/tests/values.rs run the checker on harness-shaped methods (lib/tests/fixtures/values/values/Checks.java), merging paths from the start and never. Every violation's witness is replayed on the JVM (ValuesRunner now takes String, null and same-object arguments) and in the interpreter, and must throw the check's AssertionError. The quote fixture's Codes.vip rewrite is proved up to 5 units, and its dropped-prefix defect refuted with 'VI' plus a unit that isn't 'P'. An isolated surrogate and 'A\\\\0' are found as inputs. A defect that takes a surrogate pair for one unit is refuted with the pair. Equal content behind distinct references refutes an identity claim. Further cases cover charAt's bounds, startsWith(null), null Strings, the bound (proved under 4, refuted with 5 units under 5), and concatenation up to the cap and past it. The gap scan counts the modelled methods as no gap. Evidence level: tested. The whole lib suite passes (lib unit 226, alignment 34, application_core 14, compare 1, conformance 10, effects 18, foundations 5, heap 49, integration 65, observations 12, skill 1, summaries 40, values 8).",
+      "log_sha256": "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae"
     }
   ],
   "logs": {
+    "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae": {
+      "bytes": 4231436,
+      "lines": 1751,
+      "gzip_bytes": 735168,
+      "url": null
+    },
     "e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888": {
       "bytes": 2251823,
       "lines": 908,
