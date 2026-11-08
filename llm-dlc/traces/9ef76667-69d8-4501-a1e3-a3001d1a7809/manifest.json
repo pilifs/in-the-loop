@@ -1,0 +1,82 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "9ef76667-69d8-4501-a1e3-a3001d1a7809",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T07:03:40.538Z",
+  "ended": "2026-11-08T07:39:03.692Z",
+  "duration_seconds": 2123,
+  "stats": {
+    "turns": 6,
+    "api_calls": 25,
+    "tool_calls": 20,
+    "tool_errors": 2,
+    "compactions": 0,
+    "peak_context_tokens": 49194,
+    "usage": {
+      "input_tokens": 62,
+      "output_tokens": 4135,
+      "cache_read_input_tokens": 894070,
+      "cache_creation_input_tokens": 36075
+    }
+  },
+  "tools": {
+    "Bash": 14,
+    "Monitor": 4,
+    "Read": 1,
+    "ToolSearch": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T07:03:40.538Z",
+      "ended": "2026-11-08T07:39:03.692Z",
+      "turns": 6,
+      "api_calls": 25,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 4135,
+        "cache_read_input_tokens": 894070,
+        "cache_creation_input_tokens": 36075
+      },
+      "peak_context_tokens": 49194
+    }
+  ],
+  "log": {
+    "sha256": "b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69",
+    "bytes": 505261,
+    "lines": 165,
+    "gzip_bytes": 110441,
+    "path": "llm-dlc/traces/9ef76667-69d8-4501-a1e3-a3001d1a7809/logs/b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lslwokrrkrvluvmtnztsyxzkuulvkysl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for application-core values V2 step 1 (corpus under auto --confirm failed, VF-023)",
+      "body": "One job collected, run on vm-1: the conformance corpus under --engine jbmc and auto passed; under auto --confirm it failed with 8 disagreements on the listSizes and listChange models (the own checker proves them, JBMC refutes them with a witness the interpreter says holds). Recorded as VF-023 for the values stream; nothing resubmitted.",
+      "log_sha256": "b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69"
+    }
+  ],
+  "logs": {
+    "b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69": {
+      "bytes": 505261,
+      "lines": 165,
+      "gzip_bytes": 110441,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

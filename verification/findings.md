@@ -18,6 +18,25 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
+
+- **Status**: open
+- **Raised**: 2026-11-08 on `vm-1`, job `20261108-070211-application-core-values-v2-step-1-the-co` (at `1fd394556a7c`).
+- **Found**: step 1 (`conformance` corpus under `--engine jbmc` and `auto`) passed (661 s). Step 2
+  (`cargo test --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm`, 1249 s, peak 1.7 GiB) failed at
+  `lib/tests/conformance.rs:902` with 8 disagreements with the JVM, all on the two immutable-list models, each under
+  `--gaps Strict` and `--gaps Assume`: `listSizes [assume n >= 1 && n <= 3; assert result == n * 10]` and
+  `listChange [assume n == 0 || n == 8; assert result == 1]`. In both, the own checker (CaDiCaL) proves the property in
+  0.0 s, while JBMC 6.11.0 refutes it with `listSizes(n=1)` / `listChange(n=0)`; the interpreter replay gives 10 and 1,
+  where the property holds, so the witness is spurious (JBMC's list model disagrees with the interpreter and the own
+  checker), not a real violation. The `auto` run reports "a violation the JVM does not reproduce: the harness holds"
+  and `--confirm` reports "the engines disagree, neither verdict stands". The other 82 cases were fine.
+- **Needs**: the values stream (application-core-values V2) decides whether the JBMC list model (or the witness
+  replay) is at fault and fixes it, or marks these two cases as expected disagreements with a stated reason; then
+  resubmits the job. I did not change the job.
+- **Tracked in**: `llm-dlc/loops/application-core-values.md` (not edited by me).
+- **Closes when**: the job's step 2 passes in a rerun unchanged.
+
 ### VF-022: `a_method_of_a_record_is_proved_on_its_components` asserts a harness text the O2 constructor-admission change replaced
 
 - **Status**: open

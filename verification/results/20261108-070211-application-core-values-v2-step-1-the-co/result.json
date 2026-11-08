@@ -1,0 +1,332 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-070211-application-core-values-v2-step-1-the-co",
+  "title": "application-core values V2 step 1: the conformance corpus under --engine auto and auto --confirm, now that the own checker runs the immutable-list models",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 34m30s, peak 1.7 GiB (estimated 50m00s, 3.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+  "attention": [
+    "step 2 (conformance corpus under auto --confirm) exited 101, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-070211-application-core-values-v2-step-1-the-co.json",
+    "sha256": "6039db174e748319807cbaa62e47104dff37d852711ad610fd3b3b880656c152",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-070211-application-core-values-v2-step-1-the-co",
+      "title": "application-core values V2 step 1: the conformance corpus under --engine auto and auto --confirm, now that the own checker runs the immutable-list models",
+      "description": "Values stream of llm-dlc/loops/application-core.md (llm-dlc/loops/application-core-values.md, V2 step 1, acceptance row V2), at the commit that submits this job. The tool's own checker (lib/src/bmc) now runs lib/models' List.of/List.copyOf and ImmutableCollections bytecode (models::CHECKER_RUNS), which it met as the gap jdk-static-method before. Inline, lib/tests/conformance.rs's own-checker test passes with 12 list claims of the corpus now decided natively, each as the JVM decides it (listSizes, listNull, listChange, listCopySame, listGet proved and refuted; listCopyMutable's and listOfArray's refutations). This job runs the two ignored corpus tests that need JBMC: under --engine jbmc and --engine auto (auto now takes the native verdict on those claims instead of falling back to JBMC), and under auto --confirm (JBMC is now asked to confirm the own checker's new list proofs, on JBMC's class path with the same models). Domain and bounds: the corpus's, unchanged (int parameters, the claims' assumptions, unwind 16). Engine: jbmc, native via auto. Expected verdicts: no Verified the JVM refutes, every violation reproduced on the JVM; under --confirm a proof of the own checker's is Confirmed or NotAsked, never Disagreed where the JVM agrees with it. Expected process status: exit 0 for both steps. matchesExpected is the tests passing; a failure lists each disagreement, a finding to triage, not to retry.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/src/bmc/mod.rs",
+          "lib/src/models.rs",
+          "llm-dlc/loops/application-core-values.md"
+        ]
+      },
+      "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_jbmc_and_auto and the_corpus_agrees_with_the_jvm_under_auto_confirm both pass",
+      "submitted": {
+        "at": "2026-11-08T07:02:11+00:00"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "50m",
+        "memoryLimit": "3.5G",
+        "timeout": "150m",
+        "notes": "the two tests ran about 21 and 22 min each in 20261107-222356's jobs, peak 1.2 GiB"
+      },
+      "steps": [
+        {
+          "name": "conformance corpus under jbmc and auto",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under auto --confirm",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/conformance-jbmc.log",
+        "lib/target/conformance-confirm.log"
+      ]
+    }
+  },
+  "sourceCommit": "1fd394556a7c2647434c07c63f78a5f1c4632142",
+  "startedAt": "2026-11-08T07:04:09+00:00",
+  "finishedAt": "2026-11-08T07:38:40+00:00",
+  "wallSeconds": 2071.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3022582,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 38654705664,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 9000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 3000.0,
+    "notes": "the two tests ran about 21 and 22 min each in 20261107-222356's jobs, peak 1.2 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1848741888,
+    "wallSeconds": 2070.7,
+    "cpuSeconds": 2131.3,
+    "memoryOfEstimate": 0.57,
+    "durationOfEstimate": 0.69
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance corpus under jbmc and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 821.163,
+      "cpuSeconds": 886.604,
+      "cpuThrottledSeconds": 1.041,
+      "peakMemoryBytes": 1848741888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-corpus-under-jbmc.log",
+        "lines": 395,
+        "bytes": 27538,
+        "sha256": "9be3b91ad25bacca5a8b13db31ec478bb3d53d0fa0d0834bb33e78cf822116cb",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 394,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 661.39s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "leadingZeros     Jbmc/Strict Verified     assert (x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)",
+        "leadingZeros     Auto/Strict Verified     assert (x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)",
+        "leadingZeros     Jbmc/Strict Violation    assert result < 32",
+        "leadingZeros     Auto/Strict Violation    assert result < 32",
+        "leadingZeros     Jbmc/Strict Violation    assume x > 0; assert (-1 >>> (result - 1)) == x - 1",
+        "leadingZeros     Auto/Strict Violation    assume x > 0; assert (-1 >>> (result - 1)) == x - 1",
+        "leadingZerosLong Jbmc/Strict Verified     assert (x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)",
+        "leadingZerosLong Auto/Strict Verified     assert (x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)",
+        "leadingZerosLong Jbmc/Strict Violation    assert result < 64",
+        "leadingZerosLong Auto/Strict Violation    assert result < 64",
+        "",
+        "84 cases, 166 claims (87 refuted on the JVM), 332 runs; the interpreter refuses firstByte([0])",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 661.39s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 1249.495,
+      "cpuSeconds": 1244.674,
+      "cpuThrottledSeconds": 0.464,
+      "peakMemoryBytes": 923705344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-conformance-corpus-under-auto.log",
+        "lines": 382,
+        "bytes": 31524,
+        "sha256": "3e92305f0f37aa49aaa5c311abb6bdad59762f536b6f28a4c856cd9fab8ca007",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 380,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1249.35s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "8 disagreements with the JVM:",
+        "listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: Auto --gaps Strict reports a violation on listSizes(n=1) that the JVM does not reproduce: the harness holds",
+        "listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: Auto --gaps Assume reports a violation on listSizes(n=1) that the JVM does not reproduce: the harness holds",
+        "listChange [assume n == 0 || n == 8; assert result == 1]: Auto --gaps Strict reports a violation on listChange(n=0) that the JVM does not reproduce: the harness holds",
+        "listChange [assume n == 0 || n == 8; assert result == 1]: Auto --gaps Assume reports a violation on listChange(n=0) that the JVM does not reproduce: the harness holds",
+        "listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#listSizes cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result ==",
+        "  listSizes(n=1)",
+        "    outcome in the interpreter: 10, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#listSizes cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result ==",
+        "  listSizes(n=1)",
+        "    outcome in the interpreter: 10, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "listChange [assume n == 0 || n == 8; assert result == 1]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#listChange cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 1`",
+        "  listChange(n=0)",
+        "    outcome in the interpreter: 1, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "listChange [assume n == 0 || n == 8; assert result == 1]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#listChange cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `result == 1`",
+        "  listChange(n=0)",
+        "    outcome in the interpreter: 1, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "failures:",
+        "    the_corpus_agrees_with_the_jvm_under_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1249.35s",
+        "",
+        "error: test failed, to rerun pass `--test conformance`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/conformance-jbmc.log",
+      "change": "added",
+      "bytes": 27538,
+      "sha256": "9be3b91ad25bacca5a8b13db31ec478bb3d53d0fa0d0834bb33e78cf822116cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/conformance-confirm.log",
+      "change": "added",
+      "bytes": 31524,
+      "sha256": "3e92305f0f37aa49aaa5c311abb6bdad59762f536b6f28a4c856cd9fab8ca007",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T07:38:45+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "lib/target/conformance-jbmc.log",
+      "lib/target/conformance-confirm.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-070211-application-core-values-v2-step-1-the-co"
+}
