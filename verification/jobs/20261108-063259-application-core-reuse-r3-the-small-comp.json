@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-063259-application-core-reuse-r3-the-small-comp",
+  "title": "application-core reuse R3: the small compare run timed again with the JDK image's table of classes shared within the process",
+  "description": "R3 (and the evidence for J4) of llm-dlc/loops/application-core-reuse.md, at the commit that carries this job. Job 20261108-060410 measured, in release on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191), that an unchanged compare rerun (5 proofs, all exact hits) took 209.8 ms in process and 290.3 ms as a process, 185.4 ms of it before the proofs' lookups, and that opening the JDK image (lib/modules) took 6.26 ms; counted with an open() shim, a rerun opens it 28 times and a cold run 50, since every class path with the JDK opens it, and each open built the table of every class in the image. The change: lib/src/jimage.rs builds that table once per process for each index and shares it (keyed by the index's bytes, read again at every open; resources are still read from the file opened). The same benchmark as before (lib/tests/preparation.rs, ignored inline, 7 repeats, release), which now also times an open whose index is new (the table built, writing a copy of the index included) apart from an open that shares the table; the report goes to lib/benchmark/preparation/shared-image.json and .md, beside the first job's. Native engine only, the fixture's own bounds; no JBMC. A debug smoke run inline gave a rerun of 37 ms in process against 846 ms before.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:compare",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/jimage.rs",
+      "lib/tests/preparation.rs",
+      "llm-dlc/loops/application-core-reuse.md"
+    ]
+  },
+  "expected": "The step exits 0 (the benchmark asserts that every repeat and the process reach the same verdicts: under 'after' the entry point and Pricing#total, #withQuantity and #discount verified; under 'offset' the route and total refuted, and that the reruns are exact hits). The report has four scenarios; the reruns' time before the lookups is well under the first job's 185.4 ms. The figures are for these fixtures only.",
+  "submitted": {
+    "at": "2026-11-08T06:32:59+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "the first job ran in 3m57s at 1.7 GiB peak, its release build included; this one should be faster in its runs"
+  },
+  "steps": [
+    {
+      "name": "set -o pipefail; cd lib && mkdir -p target benchmark/prepara",
+      "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/shared-image.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-r3-shared.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/preparation/shared-image.json",
+    "lib/benchmark/preparation/shared-image.md"
+  ]
+}

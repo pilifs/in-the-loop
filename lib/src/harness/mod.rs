@@ -5,8 +5,9 @@
 //! (`--unchanged-unless`), the harness returns early on the inputs the developer meant to change, so the proof
 //! covers everything else. A receiver, parameter or result of record type is made of the record's components,
 //! each a primitive: the components are the harness's symbolic parameters, the record is built from them through
-//! its canonical constructor (an input a constructor of either version rejects is outside the statement), and a
-//! record result is compared component by component ([`Layout`]).
+//! its canonical constructor (an input both versions' constructors reject is outside the statement, and one only
+//! one version's reject is a difference, [`Layout::compares_admission`]), and a record result is compared component
+//! by component ([`Layout`]).
 //!
 //! The harness is written as bytecode directly, with no Java compiler in the loop: the statement is generated,
 //! not transcribed, and the tool needs only JBMC. A Java rendering of the same statement is produced alongside it
@@ -500,6 +501,13 @@ impl Fields {
     }
 }
 
+/// Whether a constructor's argument of type `t` is a leaf of its construction, a symbolic parameter of the harness:
+/// a primitive, or a bounded array of integral or boolean elements (O1 of `llm-dlc/loops/application-core-objects.md`),
+/// which the previous version is given its own copy of, as an array parameter is.
+pub fn is_leaf(t: &Type) -> bool {
+    t.is_primitive() || expr::element_ty(t).is_some()
+}
+
 impl RecordType {
     /// A record of primitive components, made by its canonical constructor.
     pub fn record(class: &str, components: Vec<(String, Type)>) -> RecordType {
@@ -512,7 +520,7 @@ impl RecordType {
         let mut components = Vec::new();
         let mut nested = inner.iter();
         for (name, t) in &params {
-            if t.is_primitive() {
+            if is_leaf(t) {
                 components.push((name.clone(), t.clone()));
             } else if let Some(made) = nested.next() {
                 components.extend(made.components.iter().map(|(c, t)| (format!("{name}.{c}"), t.clone())));
@@ -666,10 +674,12 @@ impl RecordType {
     }
 }
 
-/// Where a reference of [`RefPath`] starts: the result, or the target's argument `args[i]`.
+/// Where a reference of [`RefPath`] starts: the result, the receiver made by its constructor (`this`, O1 of
+/// `llm-dlc/loops/application-core-objects.md`), or the target's argument `args[i]`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Root {
     Result,
+    Receiver,
     Arg(usize),
 }
 
@@ -764,6 +774,31 @@ pub struct Layout {
     /// [`EXCEPTIONS`]: closing VF-015, under which a checked exception left the harness uncaught and no
     /// equivalence over a method that throws one could be verified ([`Layout::exceptions`]).
     pub checked: Vec<Checked>,
+    /// The setup sequence (O3 of `llm-dlc/loops/application-core-objects.md`): calls on the receiver after it is
+    /// made and before the target, in order, each in both versions on the same symbolic arguments. Empty for a
+    /// constructor-only domain.
+    pub setup: Vec<Setup>,
+}
+
+/// One call of a setup sequence: a void instance method of the receiver's class, called on the receiver in both
+/// versions before the target, its arguments flat parameters of the harness (`setup.0.n`). A call that throws ends
+/// that version's history: its exception, the step's own category ([`setup_category`]), is the version's outcome,
+/// compared with the other's, and the target is not called; the receiver's fields are compared as the history left
+/// them. So an input a setup call rejects in one version only is a difference, never dropped.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Setup {
+    /// The method's name.
+    pub method: String,
+    /// Its descriptor, of primitive parameters and `V`, the same in both versions.
+    pub descriptor: String,
+    /// The flat parameters that are its arguments, in order.
+    pub args: Vec<usize>,
+}
+
+/// The category of an exception the setup call `step` threw, the `index`th class the harness tells apart: apart
+/// from the target's, and from another step's, so that a history that ends earlier is never one that ends later.
+pub fn setup_category(step: usize, index: usize) -> i32 {
+    1000 * (step as i32 + 1) + index as i32 + 1
 }
 
 /// A checked exception class a version of the target declares in its `throws` clause.
@@ -789,6 +824,10 @@ pub struct Choice {
     /// For each earlier parameter it may be the same object as, that one's name and the flat parameter that makes it
     /// so (`b.same.a`).
     pub same: Vec<(String, usize)>,
+    /// The earlier parameter it always is, with no flag (O2 of `llm-dlc/loops/application-core-objects.md`): a
+    /// construction plan's node at two roots, one object and never two equal copies. That parameter has an object
+    /// of its own, never null; this one's leaves are unused.
+    pub always: Option<String>,
 }
 
 /// What a [`Choice`] made of a parameter on one input.
@@ -819,7 +858,7 @@ pub fn alias_groups(pairs: &[(String, String)], order: &[String]) -> Vec<Vec<Str
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
     }
 
     /// Lets the object parameters `nullable` be null and those of each group of `groups` be one object (step H2):
@@ -889,12 +928,45 @@ impl Layout {
                 }
             }
             if null.is_some() || !same.is_empty() {
-                choices.push(Choice { name: name.clone(), null, same });
+                choices.push(Choice { name: name.clone(), null, same, always: None });
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
         self.params = params(&flat_names, &flat_types);
         self.choices = choices;
+        Ok(())
+    }
+
+    /// Makes the object parameter `name` always the same object as `other` (O2 of
+    /// `llm-dlc/loops/application-core-objects.md`): a construction plan's node at two roots. Called after
+    /// [`Layout::choose`]; the later of the two in slot order is the one made the same, and neither may have a
+    /// choice of its own, so that the object they are is made by its constructor and never null.
+    pub fn share(&mut self, name: &str, other: &str) -> Result<(), String> {
+        let order: Vec<(String, String, Option<String>)> = self
+            .receiver
+            .iter()
+            .chain(self.args.iter())
+            .filter_map(|s| match s {
+                Slot::Record { name, record, before, .. } if record.is_made() => Some((name.clone(), record.class.clone(), before.as_ref().map(|b| b.class.clone()))),
+                _ => None,
+            })
+            .collect();
+        let at = |n: &str| order.iter().position(|(x, _, _)| x == n).ok_or_else(|| format!("{n} is no object parameter made by its constructor, which alone may be one object with another"));
+        let (i, j) = (at(name)?, at(other)?);
+        if i == j {
+            return Err(format!("{name} is shared with itself"));
+        }
+        if order[i].1 != order[j].1 || order[i].2 != order[j].2 {
+            return Err(format!("{name} and {other} are a {} and a {}, never one object", crate::classfile::simple_name_of(&order[i].1), crate::classfile::simple_name_of(&order[j].1)));
+        }
+        let (later, earlier) = if i > j { (&order[i].0, &order[j].0) } else { (&order[j].0, &order[i].0) };
+        if let Some(n) = [later, earlier].into_iter().find(|n| self.choice(n).is_some()) {
+            return Err(format!("{n} is one object with another and has a choice of null or of another object as well: a shared object of its own is supported"));
+        }
+        if self.choices.iter().any(|c| c.always.as_deref() == Some(later.as_str())) {
+            return Err(format!("{later} is the same object as {earlier}, and another parameter is the same as {later}: name the first of them"));
+        }
+        self.choices.push(Choice { name: later.clone(), null: None, same: Vec::new(), always: Some(earlier.clone()) });
         Ok(())
     }
 
@@ -910,6 +982,7 @@ impl Layout {
         for slot in self.receiver.iter().chain(self.args.iter()) {
             let Slot::Record { name, .. } = slot else { continue };
             let made = match self.choice(name) {
+                Some(Choice { always: Some(other), .. }) => Made::Same(other.clone()),
                 Some(c) if c.null.is_some_and(flag) => Made::Null,
                 Some(c) => c
                     .same
@@ -955,6 +1028,15 @@ impl Layout {
         }
         if !with_args {
             return out;
+        }
+        // An ordinary receiver (O1) is a named root, `this`, like an object parameter.
+        if let Some(Slot::Record { name, record, before, .. }) = &self.receiver {
+            let made = if previous { before.as_ref() } else { Some(record) };
+            if let Some(fields) = made.and_then(|r| r.fields.as_ref()) {
+                let at = out.len();
+                out.push(RefPath { path: name.clone(), ty: fields.class.clone(), root: Root::Receiver, field: None });
+                field_refs(&mut out, name, at, Root::Receiver, fields);
+            }
         }
         for (i, slot) in self.args.iter().enumerate() {
             match slot {
@@ -1048,7 +1130,34 @@ impl Layout {
             }
         }
         let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
-        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
+        Layout { receiver, args, params: params(&flat_names, &flat_types), result, result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+    }
+
+    /// Appends the setup call `method` of `descriptor` (O3), whose arguments are the new flat parameters `args`,
+    /// named by their path (`setup.0.n`). Called before [`Layout::choose`], whose flags come after every leaf.
+    pub fn add_setup(&mut self, method: &str, descriptor: &str, args: &[(String, Type)]) -> Result<(), String> {
+        if !self.choices.is_empty() {
+            return Err("a setup call is laid out before the choices of null or one object".into());
+        }
+        let mut flat: Vec<(String, Type)> = self.params.iter().map(|p| (p.name.clone(), p.ty.clone())).collect();
+        let mut at = Vec::new();
+        for (name, t) in args {
+            if flat.iter().any(|(n, _)| n == name) {
+                return Err(format!("the setup call's argument {name} has the name of another input"));
+            }
+            flat.push((name.clone(), t.clone()));
+            at.push(flat.len() - 1);
+        }
+        let (flat_names, flat_types): (Vec<String>, Vec<Type>) = flat.into_iter().unzip();
+        self.params = params(&flat_names, &flat_types);
+        self.setup.push(Setup { method: method.to_string(), descriptor: descriptor.to_string(), args: at });
+        Ok(())
+    }
+
+    /// The setup sequence as a witness or a domain says it: `this.take(setup.0.n)`, each call on its arguments'
+    /// names, or on their values as `value` gives them.
+    pub fn setup_text(&self, value: &dyn Fn(usize) -> String) -> Vec<String> {
+        self.setup.iter().map(|s| format!("this.{}({})", s.method, s.args.iter().map(|i| value(*i)).collect::<Vec<_>>().join(", "))).collect()
     }
 
     /// The flat parameters' types: the harness method's.
@@ -1103,6 +1212,17 @@ impl Layout {
         self.receiver.iter().chain(self.args.iter()).filter(|s| matches!(s, Slot::Record { .. })).collect()
     }
 
+    /// Whether the regression harness compares the two versions' admission of an input (O2's negative control of
+    /// a narrower new constructor, `llm-dlc/loops/application-core-objects.md`): an input that one version's
+    /// constructors reject and the other's accept is a difference, not skipped, so that a constructor which rejects
+    /// inputs admitted before can't shrink the claim to the inputs both accept. It holds when every object is made
+    /// in both versions, of the same shape. An object made through a correspondence's input equations (step H5),
+    /// or in the new version only, keeps the stated assumption that an input either constructor rejects is skipped.
+    pub fn compares_admission(&self) -> bool {
+        let records = self.records();
+        !records.is_empty() && records.iter().all(|s| matches!(s, Slot::Record { before: Some(p), .. } if p.corresponds.as_ref().is_none_or(|c| c.same_shape)))
+    }
+
     /// The exception classes the harness tells apart, as internal names, in the order its handlers catch them:
     /// a call's category is the index of the first that catches it, plus one. They are [`EXCEPTIONS`], then
     /// [`Layout::checked`], which is empty for a target without a `throws` clause (so its harness, and the proofs
@@ -1134,6 +1254,44 @@ impl Layout {
         (calls.into_iter().collect(), classes.into_iter().collect())
     }
 
+    /// The claim roots of the check's inputs (O2 of `llm-dlc/loops/application-core-objects.md`, for the reuse
+    /// stream's claim key): in each version, every method the harness calls to make the receiver, the arguments
+    /// and the receiver's state, so that an edit of any of them alone changes the claim. They are each object's
+    /// constructors, the inner objects' included ([`RecordType::constructors`], a plan's chosen descriptor among
+    /// them), then the setup calls on the receiver ([`Layout::setup`]), in order and each once. The previous
+    /// version's are under the names its classes have in its own build, without the `before/` prefix of the
+    /// relocated build (a record's own names are unprefixed already), and include those of a receiver or record
+    /// it is given by `--before-arguments` (`previous`). The target itself is not among them.
+    pub fn construction_roots(&self, previous: Option<&BeforeMethod>) -> ConstructionRoots {
+        let unprefixed = |class: &str| class.strip_prefix("before/").unwrap_or(class).to_string();
+        let inits = |r: &RecordType| r.constructors().into_iter().map(|(owner, d)| crate::classfile::MemberRef::new(&unprefixed(&owner), "<init>", &d));
+        let (mut before, mut after) = (Vec::new(), Vec::new());
+        for slot in self.records() {
+            if let Slot::Record { record, before: previous_record, .. } = slot {
+                after.extend(inits(record));
+                before.extend(inits(previous_record.as_ref().unwrap_or(record)));
+            }
+        }
+        if let Some(p) = previous {
+            for r in p.receiver.iter().chain(p.records.iter().flatten()) {
+                before.extend(inits(r));
+            }
+        }
+        // The setup calls are on the receiver, of the target's class in each version.
+        let receiver_class = |version: bool| match &self.receiver {
+            Some(Slot::Record { record, before: b, .. }) => Some(if version { record.class.clone() } else { b.as_ref().map(|b| b.class.clone()).or_else(|| previous.and_then(|p| p.receiver.as_ref()).map(|r| r.class.clone())).unwrap_or_else(|| record.class.clone()) }),
+            _ => None,
+        };
+        for (roots, version) in [(&mut after, true), (&mut before, false)] {
+            if let Some(class) = receiver_class(version) {
+                roots.extend(self.setup.iter().map(|s| crate::classfile::MemberRef::new(&unprefixed(&class), &s.method, &s.descriptor)));
+            }
+            let mut seen = std::collections::HashSet::new();
+            roots.retain(|m| seen.insert(m.clone()));
+        }
+        ConstructionRoots { before, after }
+    }
+
     pub fn has_records(&self) -> bool {
         self.receiver.is_some() || self.result.0.is_some() || self.result.1.is_some() || self.args.iter().any(|s| matches!(s, Slot::Record { .. }))
     }
@@ -1150,11 +1308,19 @@ impl Layout {
                     let p = &self.params[*i];
                     (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
                 }
+                // A plan's node at two roots (O2): the earlier root's object, which its own part describes.
+                Slot::Record { name, .. } if self.choice(name).is_some_and(|c| c.always.is_some()) => (format!("{name}: the same object as {}", self.choice(name).and_then(|c| c.always.clone()).unwrap_or_default()), false),
                 Slot::Record { name, record, before: Some(previous), .. } if previous.corresponds.as_ref().is_some_and(|c| !c.same_shape) => (format!("{}{}; in the previous version, {}", record.domain_part(name), self.or_null(name), previous.made_from(name)), false),
-                Slot::Record { name, record, .. } => (format!("{}{}", record.domain_part(name), self.or_null(name)), false),
+                Slot::Record { name, record, .. } => (format!("{}{}{}", record.domain_part(name), arrays_of(record, max_array_length), self.or_null(name)), false),
             })
             .collect();
-        let text = domain(parts, max_array_length);
+        let mut text = domain(parts, max_array_length);
+        if !self.setup.is_empty() {
+            let calls = self.setup_text(&|i| self.params[i].name.clone());
+            let args: Vec<String> = self.setup.iter().flat_map(|s| &s.args).map(|i| format!("{}: {}", self.params[*i].name, self.params[*i].ty.java_name())).collect();
+            let args = if args.is_empty() { String::new() } else { format!(" × {}", args.join(" × ")) };
+            text = format!("{text}; this after the setup {}{args}", calls.join(" then "));
+        }
         let groups = self.alias_groups();
         if groups.is_empty() {
             return text;
@@ -1181,6 +1347,16 @@ impl Layout {
         let pairs: Vec<(String, String)> = self.choices.iter().flat_map(|c| c.same.iter().map(|(o, _)| (o.clone(), c.name.clone()))).collect();
         let order: Vec<String> = self.receiver.iter().chain(self.args.iter()).filter_map(|s| if let Slot::Record { name, .. } = s { Some(name.clone()) } else { None }).collect();
         alias_groups(&pairs, &order)
+    }
+}
+
+/// `, each array of length ≤ 4, not null, its own` for an object whose construction takes arrays (O1), each a leaf
+/// of its own; empty for one that takes none.
+fn arrays_of(record: &RecordType, max_array_length: u32) -> String {
+    if record.components.iter().any(|(_, t)| matches!(t, Type::Array(_))) {
+        format!(", each array of its construction of length ≤ {max_array_length}, not null, and no two the same array")
+    } else {
+        String::new()
     }
 }
 
@@ -1310,6 +1486,14 @@ fn previous_reads(text: &str) -> Vec<(String, bool)> {
         }
     }
     out
+}
+
+/// The claim roots of a check's inputs in each version ([`Layout::construction_roots`]): the methods the harness
+/// calls to make them, which a claim key's closures must cover along with the target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ConstructionRoots {
+    pub before: Vec<crate::classfile::MemberRef>,
+    pub after: Vec<crate::classfile::MemberRef>,
 }
 
 /// The previous version of the method, when it is not the target under the same name with the same parameters:
@@ -1808,21 +1992,38 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         code.bind(done);
     }
 
-    // The records, from their components, in both versions; an input a constructor rejects is outside the
-    // statement, and skipped as the scope skips an input.
+    // The records, from their components, in both versions: the new version's objects, then the previous one's. An
+    // input both versions' constructors reject is outside the statement, and skipped as the scope skips an input;
+    // one that only one version's reject is a difference (O2, [`Layout::compares_admission`]), unless an object is
+    // made in one version only or through a correspondence's input equations, where any rejection is skipped. An
+    // array leaf of the previous version's object is its copy, so that the two versions' heaps are apart, while
+    // each version's objects share what its arrays are.
+    let copied_params: Vec<Param> = params.iter().map(|p| match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
+        Some((_, copy, _)) => Param { slot: *copy, ..p.clone() },
+        None => p.clone(),
+    }).collect();
     if !records.is_empty() {
-        let build_start = code.label();
-        let build_end = code.label();
-        let built = code.label();
-        code.bind(build_start);
-        for (i, slot) in records.iter().enumerate() {
-            let Slot::Record { name, record, before: previous, first } = slot else { unreachable!("records() returns records") };
-            let (new_local, old_local) = object_slots(i);
-            let in_previous = previous.as_ref().map(|p| (p, Some("before"), old_local));
-            for (made, prefix, local) in std::iter::once((record, None, new_local)).chain(in_previous) {
+        // One version's objects, in order: the previous version's when `previous_version`.
+        let emit_version = |code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, previous_version: bool| {
+            for (i, slot) in records.iter().enumerate() {
+                let Slot::Record { name, record, before: previous, first } = slot else { unreachable!("records() returns records") };
+                let (new_local, old_local) = object_slots(i);
+                let (made, prefix, local) = match (previous_version, previous) {
+                    (false, _) => (record, None, new_local),
+                    (true, Some(p)) => (p, Some("before"), old_local),
+                    (true, None) => continue,
+                };
                 // A choice (step H2): null where its flag says so, or the same object as an earlier parameter that
                 // is not null, in both versions alike; otherwise an object of its own.
                 let done = code.label();
+                // A plan's node at two roots (O2): the same object as the earlier one, always, and no other choice.
+                let always = layout.choice(name).and_then(|c| c.always.as_ref());
+                if let Some(other) = always {
+                    let at = records.iter().position(|s| matches!(s, Slot::Record { name: n, .. } if n == other)).expect("an earlier object parameter");
+                    let (other_new, other_old) = object_slots(at);
+                    code.load(Kind::Ref, if prefix.is_some() { other_old } else { other_new });
+                    code.store(Kind::Ref, local);
+                }
                 if let Some(c) = layout.choice(name) {
                     if let Some(flag) = c.null {
                         let own = code.label();
@@ -1848,23 +2049,64 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                         code.bind(next);
                     }
                 }
-                emit_construct(&mut code, &mut writer.pool, made, prefix, params, &mut made.leaves(*first).into_iter());
-                code.store(Kind::Ref, local);
+                if always.is_none() {
+                    let leaf_params = if prefix.is_some() { &copied_params } else { params };
+                    emit_construct(code, pool, made, prefix, leaf_params, &mut made.leaves(*first).into_iter());
+                    code.store(Kind::Ref, local);
+                }
                 code.bind(done);
             }
-        }
-        code.bind(build_end);
-        code.goto(built);
-        let handler = code.label();
-        code.bind(handler);
-        code.op(0x57); // pop the exception
-        code.return_(None);
+        };
         // JBMC matches a handler by the exception's own class, not a superclass it has no model of: each class the
-        // harness tells apart has a handler, and Throwable last.
-        for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
-            let catch_type = writer.pool.class(exception);
-            code.handler(build_start, build_end, handler, Some(catch_type));
+        // harness tells apart has a handler, and Throwable last. A handler pops the exception and goes to `then`.
+        let catch_all = |code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, start: Label, end: Label, then: Label| {
+            let handler = code.label();
+            code.bind(handler);
+            code.op(0x57); // pop the exception
+            code.goto(then);
+            for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
+                let catch_type = pool.class(exception);
+                code.handler(start, end, handler, Some(catch_type));
+            }
+        };
+        let built = code.label();
+        let skipped = code.label();
+        if layout.compares_admission() {
+            // The new version's objects; then the previous version's, once where the new ones were made and once
+            // where they were rejected, so that which version rejects the input is where the code is.
+            let (new_start, new_end, new_rejected) = (code.label(), code.label(), code.label());
+            code.bind(new_start);
+            emit_version(&mut code, &mut writer.pool, false);
+            code.bind(new_end);
+            let (old_start, old_end, old_rejected) = (code.label(), code.label(), code.label());
+            code.bind(old_start);
+            emit_version(&mut code, &mut writer.pool, true);
+            code.bind(old_end);
+            code.goto(built);
+            catch_all(&mut code, &mut writer.pool, new_start, new_end, new_rejected);
+            catch_all(&mut code, &mut writer.pool, old_start, old_end, old_rejected);
+            // The previous version's constructors reject what the new version's accept: a difference.
+            code.bind(old_rejected);
+            emit_failure(&mut code, &mut writer.pool);
+            // The new version's reject it: a difference, unless the previous version's reject it too.
+            code.bind(new_rejected);
+            let (both_start, both_end) = (code.label(), code.label());
+            code.bind(both_start);
+            emit_version(&mut code, &mut writer.pool, true);
+            code.bind(both_end);
+            emit_failure(&mut code, &mut writer.pool);
+            catch_all(&mut code, &mut writer.pool, both_start, both_end, skipped);
+        } else {
+            let (start, end) = (code.label(), code.label());
+            code.bind(start);
+            emit_version(&mut code, &mut writer.pool, false);
+            emit_version(&mut code, &mut writer.pool, true);
+            code.bind(end);
+            code.goto(built);
+            catch_all(&mut code, &mut writer.pool, start, end, skipped);
         }
+        code.bind(skipped);
+        code.return_(None);
         code.bind(built);
         code.max_locals = code.max_locals.max(temps);
         // Under a correspondence (step H5), the two objects as made must satisfy its equations: an input on which
@@ -1974,6 +2216,36 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         let try_start = code.label();
         let try_end = code.label();
         let join = code.label();
+        // The setup sequence (O3), on this version's receiver: a call that throws ends the history, its category
+        // the version's outcome, and the target is not called.
+        if !layout.setup.is_empty() {
+            let receiver = layout.receiver.as_ref().ok_or_else(|| Error::new("a setup sequence is called on a receiver, and the target is static"))?;
+            let at = records.iter().position(|r| *r == receiver).expect("the receiver is a record");
+            let (new_local, old_local) = object_slots(at);
+            for (k, step) in layout.setup.iter().enumerate() {
+                let (start, end, next) = (code.label(), code.label(), code.label());
+                code.bind(start);
+                code.load(Kind::Ref, if on_copies { old_local } else { new_local });
+                for i in &step.args {
+                    code.load(kind_of(&params[*i].ty), params[*i].slot);
+                }
+                let setup = writer.pool.method_ref(owner, &step.method, &step.descriptor);
+                code.op_u16(0xb6, setup); // invokevirtual
+                code.bind(end);
+                code.goto(next);
+                for (e, exception) in layout.exceptions(on_copies.then_some("before")).iter().enumerate() {
+                    let handler = code.label();
+                    code.bind(handler);
+                    code.op(0x57); // pop the exception
+                    code.iconst(setup_category(k, e));
+                    code.store(Kind::Int, flag_slot);
+                    code.goto(join);
+                    let catch_type = writer.pool.class(exception);
+                    code.handler(start, end, handler, Some(catch_type));
+                }
+                code.bind(next);
+            }
+        }
         code.bind(try_start);
         // The object of this version standing for a record: the previous version's for the calls on the copies.
         let object_of = |slot: &Slot| -> Option<u16> {
@@ -2211,6 +2483,10 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                     None => {
                         let from = match r.root {
                             Root::Result => if previous { a } else { b },
+                            Root::Receiver => {
+                                let (new_local, old_local) = object_slots(0);
+                                if previous { old_local } else { new_local }
+                            }
                             Root::Arg(i) => match &layout.args[i] {
                                 Slot::Plain(p) => {
                                     let p = &params[*p];
@@ -2544,7 +2820,7 @@ fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     code.op(0x59); // dup
     let mut nested = record.inner.iter();
     for (_, t) in &record.params {
-        if t.is_primitive() {
+        if is_leaf(t) {
             match leaves.next().expect("a leaf for each primitive argument") {
                 Leaf::Flat(leaf) => code.load(kind_of(t), params[leaf].slot),
                 // An expression over the new version's leaves (H5's rest), compiled over their locals; one that
@@ -2692,7 +2968,13 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         s.push_str(&format!("        {} {}_before = java.util.Arrays.copyOf({}, {}.length); // the version before writes into its own copy\n", p.ty.java_name(), p.name, p.name, p.name));
     }
     if !records.is_empty() {
-        s.push_str("        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
+        let admission = layout.compares_admission();
+        if admission {
+            s.push_str("        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.\n");
+        } else {
+            s.push_str("        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
+        }
+        let (mut made_after, mut made_before) = (Vec::new(), Vec::new());
         for slot in &records {
             let Slot::Record { name, record, before: previous, first } = slot else { continue };
             let leaves = &params[*first..*first + record.components.len()];
@@ -2709,11 +2991,18 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                             match e.ty { Type::Long => format!("(long) ({})", text.trim()), _ => format!("({})", text.trim()) }
                         }
                     }).collect();
-                    s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
+                    if admission {
+                        s.push_str(&format!("        {old} {name}_before = null; {} {name}_after = null;\n", record.java_name()));
+                    } else {
+                        s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
+                    }
                     let (old_made, new_made) = (construction_source_of(previous, "before.", &mut old_leaves.into_iter()), construction_source(record, "", &mut leaves.iter()));
                     // A choice (step H2): null, or the same object as an earlier parameter that is not null.
                     let chosen = |side: &str, made: String| -> String {
                         let Some(c) = layout.choice(name) else { return made };
+                        if let Some(other) = &c.always {
+                            return format!("{other}_{side}");
+                        }
                         let mut text = made;
                         for (other, flag) in c.same.iter().rev() {
                             text = format!("{} && {other}_{side} != null ? {other}_{side} : {text}", params[*flag].name);
@@ -2723,6 +3012,11 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                         }
                         text
                     };
+                    if admission {
+                        made_after.push(format!("{name}_after = {};", chosen("after", new_made)));
+                        made_before.push(format!("{name}_before = {};", chosen("before", old_made)));
+                        continue;
+                    }
                     s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", chosen("before", old_made), chosen("after", new_made)));
                     if let Some(c) = previous.corresponds.as_ref().filter(|c| !c.same_shape) {
                         s.push_str(&format!("        if (!{}) {{ return; }} // the correspondence's input equations, of the objects as made\n", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations)));
@@ -2733,6 +3027,13 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     s.push_str(&format!("        try {{ {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(record, "", &mut leaves.iter())));
                 }
             }
+        }
+        if admission {
+            s.push_str("        boolean rejectedAfter = false, rejectedBefore = false;\n");
+            s.push_str(&format!("        try {{ {} }} catch (Throwable t) {{ rejectedAfter = true; }}\n", made_after.join(" ")));
+            s.push_str(&format!("        try {{ {} }} catch (Throwable t) {{ rejectedBefore = true; }}\n", made_before.join(" ")));
+            s.push_str("        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input\n");
+            s.push_str("        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept\n");
         }
     }
     if !mapping.is_empty() {
@@ -2753,7 +3054,18 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
             s.push_str(&format!("        {} {var} = {};\n", type_name(t), zero(t)));
         }
         s.push_str(&format!("        int e{var} = 0;\n"));
-        s.push_str(&format!("        try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
+        // The setup sequence (O3): a call that throws ends the history, its category the version's outcome.
+        let mut setup_ends = String::new();
+        for (k, step) in layout.setup.iter().enumerate() {
+            let call_args = step.args.iter().map(|i| params[*i].name.clone()).collect::<Vec<_>>().join(", ");
+            s.push_str(&format!("        {setup_ends}try {{ this_{side}.{}({call_args}); }}", step.method));
+            for (i, exception) in layout.exceptions((side == "before").then_some("before")).iter().enumerate() {
+                s.push_str(&format!(" catch ({} t) {{ e{var} = {}; }}", exception.replace('/', "."), setup_category(k, i)));
+            }
+            s.push('\n');
+            setup_ends = format!("if (e{var} == 0) ");
+        }
+        s.push_str(&format!("        {setup_ends}try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
         for (i, exception) in layout.exceptions((side == "before").then_some("before")).iter().enumerate() {
             s.push_str(&format!(" catch ({} t) {{ e{var} = {}; }}", exception.replace('/', "."), i + 1));
         }
@@ -3019,7 +3331,7 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() };
+    let layout = Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() };
     generate_property_over(class_internal, method, &layout, ret, assume, assertion, signals, max_array_length)
 }
 
@@ -3051,16 +3363,28 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
     let is_void = *ret == Type::Void;
-    let callee = Callee::of(class_internal, method, &descriptor, &target_types, ret);
+    // An instance method (O1 of `llm-dlc/loops/application-core-objects.md`) is called on its receiver, which an
+    // expression can't call it without: the callee is a static method's only.
+    let callee = if layout.receiver.is_some() { None } else { Callee::of(class_internal, method, &descriptor, &target_types, ret) };
     // Each object argument, made from its leaves before anything else, in a local of its own after the flat
-    // parameters (step H2).
+    // parameters (step H2); the receiver's first, when the method has one.
     let records = layout.records();
     let object_slot = |i: usize| arg_slots + i as u16;
     let base = arg_slots + records.len() as u16;
 
-    // The names the expressions see: the arguments (an object by its local), then the result.
+    // The names the expressions see: the receiver as `this`, the arguments (an object by its local), then the
+    // result.
     let mut arg_names: Vec<Param> = Vec::new();
     let mut objects: Vec<(String, Fields)> = Vec::new();
+    let receiver = match &layout.receiver {
+        Some(Slot::Record { name, record, .. }) => {
+            if let Some(fields) = &record.fields {
+                objects.push((name.clone(), fields.clone()));
+            }
+            Some(Param { name: name.clone(), ty: Type::Object(record.class.clone()), slot: object_slot(0) })
+        }
+        _ => None,
+    };
     for slot in &layout.args {
         match slot {
             Slot::Plain(i) => arg_names.push(params[*i].clone()),
@@ -3073,7 +3397,9 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
             }
         }
     }
-    let mut names = arg_names.clone();
+    // What the assumption and the throws clauses read: the receiver, then the arguments.
+    let visible: Vec<Param> = receiver.iter().cloned().chain(arg_names.iter().cloned()).collect();
+    let mut names = visible.clone();
     if !is_void {
         names.push(Param { name: RESULT.into(), ty: ret.clone(), slot: base });
         if let Some(fields) = &layout.result_fields.0 {
@@ -3095,7 +3421,7 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     let copies: Vec<(u16, u16)> = arg_names.iter().filter(|p| matches!(p.ty, Type::Array(_))).enumerate().map(|(i, p)| (p.slot, expected + 1 + i as u16)).collect();
     let first_free = expected + 1 + copies.len() as u16;
     let assume_expr = match assume {
-        Some(src) => Some(expr::parse_over_objects(src, &arg_names, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
+        Some(src) => Some(expr::parse_over_objects(src, &visible, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
         None => None,
     };
     let assertion_expr = expr::parse_over_objects(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies), &objects).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
@@ -3108,7 +3434,7 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
         if signal.class.is_empty() || signal.class.contains(|c: char| c.is_whitespace() || c == ';' || c == '[') {
             return Err(Error::new(format!("in the throws clause: {:?} is not a class name", signal.java_name())));
         }
-        let when = expr::parse_over_objects(&signal.when, &arg_names, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
+        let when = expr::parse_over_objects(&signal.when, &visible, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
         signal_exprs.push((signal.clone(), when));
     }
 
@@ -3128,6 +3454,13 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
             let Slot::Record { name, record, first, .. } = slot else { unreachable!("records() returns records") };
             let local = object_slot(i);
             let done = code.label();
+            // A plan's node at two roots (O2): the same object as the earlier one, always, and no other choice.
+            let always = layout.choice(name).and_then(|c| c.always.as_ref());
+            if let Some(other) = always {
+                let at = records.iter().position(|s| matches!(s, Slot::Record { name: n, .. } if n == other)).expect("an earlier object parameter");
+                code.load(Kind::Ref, object_slot(at));
+                code.store(Kind::Ref, local);
+            }
             if let Some(c) = layout.choice(name) {
                 if let Some(flag) = c.null {
                     let own = code.label();
@@ -3151,9 +3484,25 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
                     code.bind(next);
                 }
             }
-            emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaves(*first).into_iter());
-            code.store(Kind::Ref, local);
+            if always.is_none() {
+                emit_construct(&mut code, &mut writer.pool, record, None, params, &mut record.leaves(*first).into_iter());
+                code.store(Kind::Ref, local);
+            }
             code.bind(done);
+        }
+        // The setup sequence (O3), on the receiver as made: a history whose call throws reaches no state, and is
+        // outside the property, as an input a constructor rejects is.
+        if !layout.setup.is_empty() {
+            let receiver = layout.receiver.as_ref().ok_or_else(|| Error::new("a setup sequence is called on a receiver, and the target is static"))?;
+            let at = records.iter().position(|r| *r == receiver).expect("the receiver is a record");
+            for step in &layout.setup {
+                code.load(Kind::Ref, object_slot(at));
+                for i in &step.args {
+                    code.load(kind_of(&params[*i].ty), params[*i].slot);
+                }
+                let setup = writer.pool.method_ref(class_internal, &step.method, &step.descriptor);
+                code.op_u16(0xb6, setup); // invokevirtual
+            }
         }
         code.bind(build_end);
         code.goto(built);
@@ -3304,11 +3653,14 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
         emit_failure(&mut code, &mut writer.pool);
     }
     code.bind(try_start);
+    if let Some(this) = &receiver {
+        code.load(Kind::Ref, this.slot);
+    }
     for p in &arg_names {
         code.load(kind_of(&p.ty), p.slot);
     }
     let target = writer.pool.method_ref(class_internal, method, &descriptor);
-    code.op_u16(0xb8, target); // invokestatic
+    code.op_u16(if receiver.is_some() { 0xb6 } else { 0xb8 }, target); // invokevirtual, invokestatic
     if !is_void {
         code.store(ret_kind, result);
     }
@@ -3487,12 +3839,25 @@ pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout,
         })
         .collect();
     let plain: Vec<Param> = args.iter().map(|a| Param { name: a.clone(), ty: Type::Int, slot: 0 }).collect();
-    let mut s = property_source(class_internal, method, &plain, ret, assume, assertion, signals);
+    // An instance method's receiver (O1) is the local `self`, a static method's harness having no `this`.
+    let on_receiver = layout.receiver.is_some();
+    let own = |text: &str| if on_receiver { replace_word(text, "this", "self") } else { text.to_string() };
+    let (assume_shown, assertion_shown) = (assume.map(own), own(assertion));
+    let signals_shown: Vec<Signal> = signals.iter().map(|g| Signal { when: own(&g.when), ..g.clone() }).collect();
+    let mut s = property_source(class_internal, method, &plain, ret, assume_shown.as_deref(), &assertion_shown, &signals_shown);
+    if on_receiver {
+        let class = class_internal.replace('/', ".");
+        s = s.replacen(&format!("{class}.{method}("), &format!("self.{method}("), 1);
+    }
     let mut objects = String::from("        // The objects, from their leaves; an input a constructor rejects is outside the property.\n");
     for slot in layout.records() {
         let Slot::Record { name, record, first, .. } = slot else { continue };
+        let name = &if name == "this" { "self".to_string() } else { name.clone() };
         let mut made = construction_source(record, "", &mut record.leaf_indices(*first).into_iter().map(|i| &flat[i]));
         if let Some(c) = layout.choice(name) {
+            if let Some(other) = &c.always {
+                made = if other == "this" { "self".to_string() } else { other.clone() };
+            }
             for (other, flag) in c.same.iter().rev() {
                 made = format!("{} && {other} != null ? {other} : {made}", flat[*flag].name);
             }
@@ -3501,6 +3866,11 @@ pub fn property_source_over(class_internal: &str, method: &str, layout: &Layout,
             }
         }
         objects.push_str(&format!("        {} {name};\n        try {{ {name} = {made}; }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+    }
+    // The setup sequence (O3): a history whose call throws is outside the property.
+    for step in &layout.setup {
+        let args = step.args.iter().map(|i| flat[*i].name.clone()).collect::<Vec<_>>().join(", ");
+        objects.push_str(&format!("        try {{ self.{}({args}); }} catch (Throwable t) {{ return; }} // the setup sequence\n", step.method));
     }
     // The plain rendering's parameter list gives way to the leaves', and the objects are made first.
     let header = format!("    public static void {METHOD}({}) {{\n", plain.iter().map(|p| format!("int {}", p.name)).collect::<Vec<_>>().join(", "));
@@ -3540,7 +3910,65 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new() }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None), result_fields: (None, None), result_equations: None, choices: Vec::new(), identity_relations: Vec::new(), checked: Vec::new(), setup: Vec::new() }
+    }
+
+    /// A plan's node at two roots (O2): the later root is the earlier one's object, with no flag, in both versions and
+    /// both harnesses; a parameter with a choice, of another class, or not an object is refused.
+    #[test]
+    fn a_shared_object_is_the_earlier_roots_object_with_no_flag() {
+        let money = RecordType::made("m/Money", vec![("cents".into(), Type::Long)], Vec::new(), Fields { class: "m/Money".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] });
+        let fee = RecordType::made("m/Fee", vec![("cents".into(), Type::Long)], Vec::new(), Fields { class: "m/Fee".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] });
+        let names = ["a".to_string(), "b".to_string(), "n".to_string(), "f".to_string()];
+        let types = [Type::Object("m/Money".into()), Type::Object("m/Money".into()), Type::Int, Type::Object("m/Fee".into())];
+        let both = |r: &RecordType| Some((r.clone(), Some(r.clone())));
+        let layout_of = || Layout::new(None, &names, &types, &[both(&money), both(&money), None, both(&fee)], (None, None));
+        let mut layout = layout_of();
+        layout.choose(&[], &[]).unwrap();
+        layout.share("a", "b").unwrap();
+        assert_eq!(layout.choice("b").and_then(|c| c.always.clone()), Some("a".into()), "the later in slot order is the earlier's");
+        assert!(layout.flags().is_empty(), "no flag");
+        assert_eq!(layout.made(&|_| false).into_iter().map(|(_, m)| m).collect::<Vec<_>>(), vec![Made::Own, Made::Same("a".into()), Made::Own]);
+        assert!(layout.domain(8).contains("× b: the same object as a × n: int"), "{}", layout.domain(8));
+        let harness = generate("m/Kernel", "f", &layout, &Type::Void, None, 8, None).unwrap();
+        assert!(harness.source.contains("b_after = a_after;") && harness.source.contains("b_before = a_before;"), "{}", harness.source);
+        assert!(harness.source.contains("if (rejectedAfter || rejectedBefore) { throw new AssertionError(); }"), "the admission compared: {}", harness.source);
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let code = class.method(METHOD, "(JJIJ)V").expect("check method, no flag").code.as_ref().unwrap();
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        assert!(insns.iter().all(|(_, i)| i.targets().iter().all(|t| pcs.contains(t))), "every target an instruction");
+        let property = generate_property_over("m/Kernel", "f", &layout, &Type::Void, None, Some("true"), &[], 8).unwrap();
+        assert!(property.source.contains("try { b = a; }"), "{}", property.source);
+        assert!(layout_of().share("a", "f").unwrap_err().contains("never one object"));
+        assert!(layout_of().share("a", "n").unwrap_err().contains("n is no object parameter"));
+        let mut chosen = layout_of();
+        chosen.choose(&["a".into()], &[]).unwrap();
+        assert!(chosen.share("b", "a").unwrap_err().contains("has a choice of null or of another object as well"));
+    }
+
+    /// O2's claim roots: each version's constructors, an inner object's included, then the setup calls on its own
+    /// receiver's class, each once, so that the cache's key can cover every method that makes the inputs.
+    #[test]
+    fn the_construction_roots_are_every_constructor_and_setup_call_of_each_version() {
+        let fields = |class: &str, names: &[(&str, Type)]| Fields { class: class.into(), fields: names.iter().map(|(n, t)| (n.to_string(), FieldKind::Value(t.clone()))).collect() };
+        let counter = |class: &str| RecordType::made(class, vec![("step".into(), Type::Int)], Vec::new(), fields(class, &[("step", Type::Int)]));
+        let inner = RecordType::made("m/Inner", vec![("v".into(), Type::Int)], Vec::new(), fields("m/Inner", &[("v", Type::Int)]));
+        let wrap = RecordType::made("m/Wrap", vec![("in".into(), Type::Object("m/Inner".into())), ("k".into(), Type::Int)], vec![inner.clone()], fields("m/Wrap", &[("k", Type::Int)]));
+        let names = ["a".to_string(), "b".to_string(), "n".to_string()];
+        let types = [Type::Object("m/Wrap".into()), Type::Object("m/Wrap".into()), Type::Int];
+        let both = Some((wrap.clone(), Some(wrap.clone())));
+        // The previous version's receiver is of the class as it was named then.
+        let mut layout = Layout::new(Some((counter("m/Counter"), Some(counter("m/OldCounter")))), &names, &types, &[both.clone(), both, None], (None, None));
+        layout.add_setup("add", "(I)V", &[("setup.0.n".into(), Type::Int)]).unwrap();
+        layout.add_setup("reset", "()V", &[]).unwrap();
+        let text = |roots: &[crate::classfile::MemberRef]| roots.iter().map(|m| format!("{}.{}{}", m.owner, m.name, m.descriptor)).collect::<Vec<_>>();
+        let roots = layout.construction_roots(None);
+        assert_eq!(text(&roots.after), ["m/Counter.<init>(I)V", "m/Wrap.<init>(Lm/Inner;I)V", "m/Inner.<init>(I)V", "m/Counter.add(I)V", "m/Counter.reset()V"], "each once, in order");
+        assert_eq!(text(&roots.before), ["m/OldCounter.<init>(I)V", "m/Wrap.<init>(Lm/Inner;I)V", "m/Inner.<init>(I)V", "m/OldCounter.add(I)V", "m/OldCounter.reset()V"]);
+        // A static target's inputs have no setup calls; without records there is nothing to root.
+        let plain = Layout::new(None, &["n".to_string()], &[Type::Int], &[None], (None, None));
+        assert_eq!(plain.construction_roots(None), ConstructionRoots { before: Vec::new(), after: Vec::new() });
     }
 
     #[test]
@@ -3644,7 +4072,8 @@ mod tests {
         let code = check.code.as_ref().unwrap();
         let insns = code.instructions().unwrap();
         use crate::classfile::Insn;
-        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::New(_))).count(), 5, "two records in two versions, and the AssertionError");
+        assert!(layout.compares_admission());
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::New(_))).count(), 9, "the new version's two records, the previous version's twice (where the new ones were made, and where they were rejected), the AssertionError of each version's rejection alone, and the comparison's");
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeVirtual(_))).count(), 2, "the method on each version's receiver");
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeStatic(_))).count(), 0);
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::GetField(_))).count(), 4, "the result's two components in each version");
@@ -3655,7 +4084,8 @@ mod tests {
             }
         }
         assert!(harness.source.contains("public static void check(long this_baseMillis, long this_capMillis, int attempt, int window_from, boolean window_open)"), "{}", harness.source);
-        assert!(harness.source.contains("try { this_before = new before.net.example.Backoff(this_baseMillis, this_capMillis); this_after = new net.example.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { return; }"), "{}", harness.source);
+        assert!(harness.source.contains("try { this_after = new net.example.Backoff(this_baseMillis, this_capMillis); window_after = new net.example.Window(window_from, window_open); } catch (Throwable t) { rejectedAfter = true; }"), "{}", harness.source);
+        assert!(harness.source.contains("try { this_before = new before.net.example.Backoff(this_baseMillis, this_capMillis); window_before = new before.net.example.Window(window_from, window_open); } catch (Throwable t) { rejectedBefore = true; }"), "{}", harness.source);
         assert!(harness.source.contains("try { a = this_before.next(attempt, window_before); }"), "{}", harness.source);
         assert!(harness.source.contains("try { b = this_after.next(attempt, window_after); }"), "{}", harness.source);
         assert!(harness.source.contains("(ea != 0 || (a == null ? b == null : b != null && a.from == b.from && a.open == b.open))"), "{}", harness.source);

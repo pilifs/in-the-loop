@@ -99,7 +99,12 @@ pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String
             format!("{name}={}[{components}]", record.simple_name())
         }
     };
-    let rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
+    let mut rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
+    // The setup sequence (O3), which the call comes after.
+    if !layout.setup.is_empty() {
+        let calls = layout.setup_text(&|i| format!("{}={}", layout.params[i].name, witnesses[i]));
+        rendered = format!("{rendered}, after the setup {}", calls.join(" then "));
+    }
     (rendered, witnesses)
 }
 
@@ -487,12 +492,14 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             })
             .collect()
     };
+    // Every array among the flat parameters: an array argument, or an array leaf of an object's construction (O1),
+    // which the caller still holds.
     let arrays: Vec<(u16, Ref)> = layout
-        .args
+        .params
         .iter()
-        .zip(&values)
-        .filter_map(|(slot, v)| match (slot, v) {
-            (Slot::Plain(i), Value::Ref(r)) if matches!(m.heap.get(*r), Object::Array { .. }) => Some((layout.params[*i].slot, *r)),
+        .zip(&flat)
+        .filter_map(|(p, v)| match v {
+            Value::Ref(r) if matches!(p.ty, Type::Array(_)) && matches!(m.heap.get(*r), Object::Array { .. }) => Some((p.slot, *r)),
             _ => None,
         })
         .collect();
@@ -507,7 +514,26 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             .collect()
     };
     let arg_values = values.clone();
+    // The setup sequence (O3), on the receiver as made: a call that throws ends the history, and its exception,
+    // under the step's own category, is the outcome.
+    let mut setup_ended = None;
     let outcome = match rejected {
+        None if receiver.is_some() && !layout.setup.is_empty() => {
+            let this = receiver.expect("checked");
+            let mut ended = None;
+            for (k, step) in layout.setup.iter().enumerate() {
+                let args: Vec<Value> = step.args.iter().map(|i| flat[*i]).collect();
+                if let Err(f) = m.call_virtual(this, class_internal, &step.method, &step.descriptor, args) {
+                    setup_ended = Some(k);
+                    ended = Some(f);
+                    break;
+                }
+            }
+            match ended {
+                Some(f) => Err(f),
+                None => m.call_virtual(this, class_internal, method, descriptor, values),
+            }
+        }
         Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
         Some(f) => Err(f),
         None => match receiver {
@@ -527,6 +553,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
         let v = match &r.field {
             None => match r.root {
                 crate::harness::Root::Result => result_value,
+                crate::harness::Root::Receiver => receiver.unwrap_or(Value::Null),
                 crate::harness::Root::Arg(i) => arg_values.get(i).copied().unwrap_or(Value::Null),
             },
             Some((parent, _, name, _)) => match references[*parent].1 {
@@ -566,7 +593,11 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     let category = match &outcome {
         Err(Fault::Throw(r)) => {
             let exceptions = layout.exceptions(prefix);
-            Some(exceptions.iter().position(|e| m.is_instance(*r, e)).unwrap_or(exceptions.len()))
+            let index = exceptions.iter().position(|e| m.is_instance(*r, e)).unwrap_or(exceptions.len());
+            Some(match setup_ended {
+                Some(k) => crate::harness::setup_category(k, index) as usize,
+                None => index,
+            })
         }
         _ => None,
     };
@@ -594,7 +625,7 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
             Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() }
         }
         Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
+        Err(Fault::Throw(r)) => Replayed { outcome: match setup_ended { Some(k) => format!("{} in the setup call this.{}", render::thrown(&m, r), layout.setup[k].method), None => render::thrown(&m, r) }, returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: Some(m.class_of(r)), references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
         Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() },
     };
     if let (Some(v), Some(fields)) = (result_value, result_fields_of) {
@@ -613,8 +644,15 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
 /// view under one), `array:a` for an array parameter as left, `field:q` for an object parameter as left (its view
 /// under a correspondence, with `field:q.cents` for each previous version's path the views read differently, or
 /// each primitive path read differently of an object of the same shape compared without one), and `identity:x==y` for each relation of `pairs` that holds in one and not the other.
+///
+/// None where either replay could not run its version ([`Replayed::could_not_replay`]): an outcome the interpreter
+/// could not produce is unknown, and differs from nothing (O2, after VF-015's step 4). The caller runs such a
+/// witness on a JVM, whose outcomes it compares in its place.
 pub fn differences(before: &Replayed, after: &Replayed, params: &[Param], arguments: &[Argument], pairs: &[(String, String)]) -> Vec<String> {
     let mut out = Vec::new();
+    if before.could_not_replay() || after.could_not_replay() {
+        return out;
+    }
     let view = |r: &Replayed, name: &str| r.views.iter().find(|(n, _)| n == name).map(|(_, v)| v.clone());
     if before.category != after.category || before.thrown.is_some() != after.thrown.is_some() {
         out.push("exception".to_string());
@@ -727,7 +765,7 @@ fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Optio
     let mut nested = record.inner.iter();
     let mut args = Vec::new();
     for (_, t) in &record.params {
-        if t.is_primitive() {
+        if crate::harness::is_leaf(t) {
             args.push(match leaves.next().expect("a leaf for each primitive argument") {
                 crate::harness::Leaf::Flat(i) => flat[i],
                 // An expression over the new version's leaves (H5's rest), as the harness computes it; one that
@@ -797,17 +835,23 @@ pub const SHRINK_BUDGET: u32 = 4000;
 /// the interpreter, refutes the statement on an input exactly when it throws `AssertionError` on it (the scope or
 /// assumption is part of the harness, so an input outside it passes). An input the interpreter cannot run is not
 /// accepted.
-pub fn shrink_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
-    shrink_in_harness_keeping(cp, harness_class, types, found, &[])
+///
+/// It keeps the flat parameters `kept` as found, a choice's flags (step H2, [`crate::harness::Layout::flags`]),
+/// so that shrinking never makes two objects one or one object two. A
+/// candidate the harness refutes is accepted only where `same` says it is the same failure as the input found
+/// (O2 of `llm-dlc/loops/application-core-objects.md`): the regression check's replay differs in the same
+/// observations, the property check's fails in the same way. The harness alone would take any failure, and a
+/// witness of one difference could shrink into a witness of another, a constructor's narrower admission say,
+/// reported as the input found shrunk.
+///
+/// So a shrunk recipe is legal and reproduces the failure: every candidate is the harness's own input, with the
+/// harness's domain (its scope, its assumptions, its constructors' admission) and the plan's choices as found, no
+/// longer array than found and no null where there was none, and it is accepted only after it is replayed.
+pub fn shrink_in_harness_keeping(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize], same: impl FnMut(&[Argument]) -> bool) -> Shrunk {
+    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found, kept, same))
 }
 
-/// [`shrink_in_harness`], keeping the flat parameters `kept` as found: a choice's flags (step H2,
-/// [`crate::harness::Layout::flags`]), so that shrinking never makes two objects one or one object two.
-pub fn shrink_in_harness_keeping(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
-    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found, kept))
-}
-
-fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
+fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize], mut same: impl FnMut(&[Argument]) -> bool) -> Shrunk {
     let mut m = Machine::new(cp);
     m.monitor = false;
     let original = found.clone();
@@ -815,7 +859,10 @@ fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type]
         if kept.iter().any(|&i| arguments.get(i) != original.get(i)) {
             return Some(false);
         }
-        fails_in(&mut m, harness_class, types, arguments)
+        match fails_in(&mut m, harness_class, types, arguments) {
+            Some(true) => Some(same(arguments)),
+            other => other,
+        }
     };
     // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
     if fails(&found) != Some(true) {
@@ -861,6 +908,24 @@ mod tests {
     use super::*;
     use crate::harness::RecordType;
     use serde_json::json;
+
+    /// A replay of `outcome` alone, as a call that returned (`returned`) or could not be run.
+    fn replayed(outcome: &str, returned: Option<Value>) -> Replayed {
+        Replayed { outcome: outcome.into(), returned, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: BTreeMap::new(), object_paths: Vec::new() }
+    }
+
+    /// VF-015's step 4: the previous version returned 7 and the new one could not be replayed. Its outcome is
+    /// unknown, so the two differ in nothing the replay knows, never in `result`.
+    #[test]
+    fn a_replay_that_could_not_run_one_version_differs_in_nothing() {
+        let params = [crate::harness::expr::Param { name: "ch".into(), ty: Type::Char, slot: 0 }];
+        let arguments = [Argument::Scalar(Value::Int(0x667))];
+        let seven = replayed("7", Some(Value::Int(7)));
+        let unknown = replayed("<could not replay: <unsupported: String.format depends on the default locale>>", None);
+        assert_eq!(differences(&seven, &replayed("8", Some(Value::Int(8))), &params, &arguments, &[]), vec!["result".to_string()], "the premise: two outcomes that ran differ in the result");
+        assert!(differences(&seven, &unknown, &params, &arguments, &[]).is_empty());
+        assert!(differences(&unknown, &seven, &params, &arguments, &[]).is_empty());
+    }
 
     #[test]
     fn values_are_exact_for_their_type() {

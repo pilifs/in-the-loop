@@ -135,9 +135,163 @@ entry points, not proof that a dependency's contract is right.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
-  Phase 0 included.
-- Status: working
+- Forked 2026-11-08 after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
+  Phase 0 included. No integration report yet; no open finding is in this stream's files.
+- 2026-11-08, **E1, first part: the coupling policy, and a consumed primitive return under a query**:
+  - **The policy, defined first** (`lib/src/environment.rs`'s documentation):
+    - A deterministic read-only **query** answers with one function of its key: the same for both builds and for
+      every call, any function, stateless.
+    - A declared nondeterministic or fallible **choice** is a different model, refused by name until it is built.
+  - **The encoding** (`effects.rs`): the query's answers come from a table of `2 × bound` keys and answers plus a
+    default, passed as the generated `observe` method's inputs after the handler's, the same for both builds.
+    - Each build makes at most `bound` calls, and one more marks the log. So any function on the keys the two
+      builds ask for is one choice of the table: the proof covers every snapshot.
+    - Every choice is a function of the key, so a counterexample is one environment. Its witness names the
+      environment (`(arg0=0) gives 1, any other key gives 0`), and the JVM replays it under the stubs.
+    - Shrinking reduces the table with the inputs, and the reduced case is replayed.
+  - **What stays in place**:
+    - A used result without a model is still refused, or unresolved where the walk can't follow the call.
+    - A walk note on the model's owner is dismissed only where the owner's simple name names one class: every
+      other call on that owner is a stub that marks the log.
+    - Everything not encoded is refused by name (`Part::Environment`): throws (E2), DTOs (E3), String keys
+      (values), field or receiver keys (objects), non-integral results, a bound outside 1 to 8.
+  - **Reproducers**, in `lib/tests/environment.rs` (11 tests), on a static controller fixture that uses a rate:
+    - the rewrite is proved;
+    - a wrong query key, an ignored rate and an event on the wrong branch of the rate are each refuted and
+      replayed;
+    - keys asked for in the other order prove, and the difference taken the other way round is refuted: no
+      position coupling;
+    - one key asked for twice proves: functional consistency;
+    - a call past the model's bound is unresolved;
+    - the proof is reused exactly, another bound is a miss, and a stored refutation is replayed again;
+    - `effects --environment FILE` checks under the declared model.
+  - **An existing bug fixed, with its reproducer** (`the_old_builds_unresolved_mark_says_only_what_happened_in_it`):
+    - The two builds' unresolved marks were offset by `tag × 16`, and bit 16 is `NULL_THROWN`. So the old build's
+      unresolved reasons always included a NullPointerException it never had.
+    - The tag now sits above every mark bit (`TAG = 64`), and a model's bound has a bit of its own.
+    - Only the text of an unresolved result changes. No recorded output holds the spurious note.
+  - **Passing inline**: `effects` (18), `environment` (11), `compare`, `foundations`, `application_core` (14) and
+    the library's unit tests (228). E1 and E2 of the contract still stop at this stream's named refusal: Q's
+    receiver needs the objects stream's plan, and its code the values stream's String adapter.
+  - **Interface requests, for the merge** (not purely additive, in files this stream doesn't own):
+    1. `main.rs`: the `--environment` help of `effects` and `compare` says "Refused until it builds them". Now a
+       query of primitive keys is checked.
+    2. `compare.rs`: `Options::environment`'s doc says the same. Its effort report never counts a declared
+       `--environment` model as an "environment assumption" decision, though a person made it.
+    3. `lib/README.md`'s effect-trace paragraph says a used result "is refused until modeled return values come".
+       The paragraph added after it supersedes that, since the README takes additions only.
+  - **Next**: the choice coupling (a per-call occurrence policy), which completes E1. Then E2's modelled failures:
+    a `throws` result under either coupling, checked exceptions included, on the same fixture.
+- 2026-11-08, **E1, second part: a declared nondeterministic operation under a per-call choice** (completes E1's
+  own items; the contract's row still waits on Q's integration):
+  - **The policy** (`environment.rs`): `choice` with `per-call` makes a call's result a function of its key and of
+    the occurrence of that key in the trace, the same function in both builds. So a second read of a key is an
+    answer of its own, the n-th reads of a key correspond across the builds, and different keys are never coupled
+    by position. A finite `script` is the brief's optional work, refused by name.
+  - **The encoding** (`effects.rs`): the query's table, with each entry used once per trace (a flag per entry,
+    reset by `observe`). A call takes the first entry of its key that this trace hasn't used, else the default.
+    - Complete within the bound: the builds' calls are at most `2 × bound` pairs of a key and an occurrence, and
+      a key's earlier occurrences are always among them. So any choice is a table listing each key's answers in
+      order.
+    - Sound: every table is such a function.
+    - The witness lists a key's answers in occurrence order (`(arg0=20) gives 0, then 1`). The assumption, the plan
+      and the domain say "chosen per call, the same for the same (arg0) and occurrence of it".
+  - **Reproducers** (`tests/environment.rs`, now 13):
+    - Proved: the rewrite, and two keys that always differ (`code`, `code + 1`) asked for in the other order.
+    - Refuted and replayed:
+      - a wrong key;
+      - one read where the old build read a key twice (the query proves this one);
+      - two reads of one key taken in the other order;
+      - `rate(code)` and `rate(quantity)` swapped.
+    - The cache test adds that another coupling is another claim key.
+  - **Found on the way, recorded for review**: the swap of `rate(code)` and `rate(quantity)`, which a query
+    proves, is rightly refuted under a choice. Its witness has `code = quantity`, where the two reads are the first
+    and second occurrences of one key. Whether a refactor's reordering is preserving depends on the declared
+    coupling, never on an encoding detail. So the model a person declares decides such verdicts, and the result
+    names it.
+  - **Passing inline**: every suite of `lib` (`environment` 13, `effects` 18, `application_core` 14,
+    `foundations` 5, `compare`, `integration` 65, `heap`, `observations`, `alignment`, `summaries`, `conformance`,
+    and the unit tests, 229).
+  - **Next**: E2's modelled failures. A `throws` result under either coupling, checked exceptions included, chosen
+    beside the normal results (an outcome index in each entry). Then catch and propagation refuted where a catch
+    goes missing, the exception class recorded, and an inspection of its message or cause refused.
+- 2026-11-08, **E2: modelled failures** (E2's own items; the contract's row E1 still waits on Q's integration):
+  - **The model** (`environment.rs`): a `CallModel` may list exception classes beside its one normal result,
+    checked ones included. A void call may be modelled by its failures alone.
+    - Refused by name: only failures, a class twice, and a `NullPointerException`, which the check can't tell from
+      a dependency left null.
+    - The call's `outcomes` may name the model's classes; another name is refused.
+  - **The encoding** (`effects.rs`): each table entry and the default also hold an outcome input
+    (`rates.rate[0].outcome`). `k` throws the `k`-th class; any other value gives the normal result.
+    - So the outcome is part of the same function of the key (and of its occurrence, under a choice) as the value,
+      for both builds alike. Complete and sound as in E1.
+    - The stub throws `new C()` through C's public constructor without arguments: its class, and no message,
+      cause or stack. A class without one, an abstract class or no Throwable is refused, in either build.
+    - What escapes the handler is its outcome by class: the model's classes join the log's exception list.
+    - The witness names each outcome (`(arg0=0) throws java.io.IOException`). The shrunk witness keeps the
+      failing choice, and the JVM replays it.
+  - **What is refused, never invented** (`effects::inspections`): every handler that may catch a modelled failure
+    (a catch of its class or a superclass, or a `finally`) is checked where it keeps what it caught.
+    - Each read of that local, within its scope, must rethrow it, test its class or test it for null.
+    - A call on it (`getMessage`, `getCause`, any other) or handing it on (a wrapper's cause, a field, a return)
+      is refused by name.
+    - Conservative: a try-with-resources' `addSuppressed` is refused too, and so is a catch of `Exception`
+      around code that never reaches the model.
+  - **Reproducers** (`tests/environment.rs`, now 16), on a fallible fixture: `int rate(int) throws IOException`,
+    and an unchecked `RateUnavailable`:
+    - a rewrite that keeps a catch of the checked failure is proved;
+    - refuted and replayed: a newly missing catch (`returns -1` against `throws java.io.IOException`), and the
+      failure's event dropped or sent on the wrong topic;
+    - a dropped retry is refuted under a per-call choice, whose second call is an occurrence of its own. Under a
+      query the retry can change nothing, and its removal proves;
+    - a retry loop that rethrows on the second failure is proved: a rethrow reads nothing;
+    - refused: a handler that reads the message, reads the cause, or wraps the failure; and
+      `UncheckedIOException`, which has no constructor without arguments;
+    - the cache test adds that a modelled failure, and another class of it, are claims of their own.
+  - **Found on the way, recorded for review**:
+    1. Both mistakes in my first reproducers were int overflows (`quantity * rates.rate(code)` against a `long`
+       product), and the check refuted them rightly. Nothing to fix.
+    2. **An interface request, for the objects stream** (owner of the replay plumbing). `jvm_witness::run`'s main
+       sets `max_stack = 16` and pushes every argument. A witness whose arguments need more words fails JVM
+       verification ("Stack size too large") and stays unresolved: sound, but no replayed refutation.
+       - Beside two int inputs, that is a table of long results past bound 2 (E1's `MAX_BOUND` of 8 is
+         encodable, but its refutations past that don't replay), or past bound 1 with failures.
+       - The fix is the operand stack sized from the parameters' widths, one line in a file this stream doesn't
+         own.
+       - Until then, the unresolved reason names the words needed, and the fallible fixture uses an int rate.
+  - **Passing inline**: every suite of `lib` (`environment` 16, `effects` 18, `application_core` 14,
+    `foundations` 5, `compare`, `integration` 65, `heap` 49, `observations` 12, `alignment` 34, `summaries` 40,
+    `conformance` 10, and the unit tests, 230).
+  - **Next**: E3, a nullable DTO response through the objects stream's construction plan. It needs that plan
+    integrated, so check whether the objects stream's commits are visible to this workspace first. If not,
+    the remaining work waits on the objects stream (and Q on the values stream's String adapter).
+- 2026-11-08, rerun (after `wvournln`, the loop's stop fix copied here): **E3 checked, and it waits on the merge**.
+  - **The objects stream's construction plan isn't in this branch.** It's built on that stream's branch:
+    `construction::root`, `check_plans`, and receivers and parameters made by a plan (`skvmtlxn`, `xnwtzpsz`,
+    `rukolrmu`, `zuwkutws` and later). None of its commits is an ancestor of this stream's `@`. Here,
+    `construction.rs` is still Phase 0's hook, returning `Unsupported` for objects. The main brief allows
+    integration only by the merge, never by edits across branches.
+  - **What E3 needs from it.** The shared type is ready: `Returned::Object { plan, nullable, identity }` in
+    `spec/plans.rs`, with `Identity::{Fresh, Stable}`. `environment::lower` refuses it by name ("a DTO response
+    made by a construction plan: the environment stream's E3, not built yet").
+    - The classpath check of the DTO's plan comes from the objects stream: one constructor, primitive arguments,
+      no superclass and no cycle. After the merge, `environment.rs` will take it through `construction`.
+    - The stubs will make the response by the plan's constructor descriptor, from inputs of the table (a null
+      flag, then the leaves). A fresh identity makes an object per call; a stable one keeps an object per entry.
+    - Unmodelled methods and fields of the DTO are refused by an inspection, like E2's of a caught failure.
+    - Writing that now would mean writing the classpath check here: the object builder of the environment's own
+      that E3 forbids.
+  - **The integration check** (11:33): the four streams conflict only in `llm-dlc/README.md`, `llm-dlc/index.json`,
+    `llm-dlc/traces/README.md` and `llm-dlc/traces/metrics.json`, which are generated files or the coordinator's.
+    None is a file this stream owns, so it has nothing to fix here. The coordinator settles them at the merge.
+  - No open entry of `verification/findings.md` is in this stream's files. This run has no job pending.
+  - **Left for the merge, in order**:
+    1. E3 through the merged construction plan, with the identity policy in the claim, the nullable branch
+       replayed, and unmodelled methods, fields and cycles refused.
+    2. Q's E1 and E2 rows through `environment::check`, with the values stream's String adapter for its code.
+    3. The interface requests above: `main.rs`, `compare.rs`, `lib/README.md`, and the objects stream's
+       `jvm_witness` `max_stack`.
+- Status: blocked: E3 and Q's E1/E2 rows wait on the merge of the objects stream's construction plan (and of the values stream's String adapter for Q); E1's and E2's own items are done
 
 ## Loop settings
 

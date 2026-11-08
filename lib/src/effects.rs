@@ -12,10 +12,25 @@
 //!   the payload is, a path that class lacks is snapshotted as absent, and the class itself is snapshotted as one
 //!   more path (`data.class`), so payloads of two classes never compare equal. A stub gives back nothing, or
 //!   its type's default, which the caller must drop: a call whose result the handler uses needs a modeled return
-//!   value, which this narrow case doesn't model, and is refused.
+//!   value, and without a model of its results ([`crate::environment`]) it is refused.
+//! - **Modelled results.** A call with a model of its results (a [`crate::spec::plans::CallModel`], declared in
+//!   the claim's environment or with `--environment`) answers from it instead: a deterministic read-only query's
+//!   table of keys and results, with a default, among the check's inputs after the handler's, the same for both
+//!   builds, so that its answers are one function of the key for both and never coupled by a call's position
+//!   (the coupling policy is [`crate::environment`]'s). Under a per-call choice each entry answers one call per
+//!   trace, so the n-th call of a key gets the n-th entry of that key in both builds. One more call of it than its
+//!   bound marks the log past its bound. A witness names the table it chose, and the JVM replays it under the same stubs. The call on the
+//!   model's owner that the analysis can't follow (an interface nothing implements) is the one the model answers;
+//!   every other call on that owner is a stub that marks the log.
 //! - **One environment for both.** The two builds get the same stubs, in the same order, from one model: the union
-//!   of the claim's and both specs' modeled calls. Every call returns normally, the only outcome the model allows
-//!   so far, and the result says so.
+//!   of the claim's and both specs' modeled calls. Every call returns normally, unless its model of its results
+//!   declares failures, and the result says which may fail.
+//! - **Modelled failures.** A model's failures are outcomes of its table's entries, beside the normal result: a
+//!   stub whose answer's outcome is `k` throws a new instance of the `k`-th class, checked or not, made by its
+//!   constructor without arguments. What escapes the handler is its outcome, by class, like any of its own
+//!   exceptions. A failure carries its class and nothing a dependency would give it, so a build whose handlers read
+//!   more of a caught one (its message, its cause, or by handing it on) is refused by name ([`Part::Environment`]).
+//!   A witness names each chosen outcome (`(arg0=3) throws java.io.IOException`), and the JVM replays it.
 //! - **The handler, made the same way.** A generated static method in the handler's package makes the handler with
 //!   its one constructor, every dependency `null` (reached only through the stubs; an application class among them
 //!   is refused, since it would be null too), calls it on the entry point's inputs, and returns the log: the outcome (a normal
@@ -60,6 +75,11 @@ const UNSNAPSHOTTED: i64 = 2;
 const UNMADE: i64 = 4;
 const UNMODELED: i64 = 8;
 const NULL_THROWN: i64 = 16;
+const PAST_MODEL_BOUND: i64 = 32;
+/// The unresolved mark's bits, below the build's tag, which sits above them (`tag * TAG`) so that the two builds'
+/// marks differ and neither reads as a bit it didn't set.
+const MARK_BITS: i64 = 0x3f;
+const TAG: i64 = 64;
 
 /// What a check of an entry point established, with what it rests on and what each build did on a witness.
 #[derive(Debug, Clone, Serialize)]
@@ -121,12 +141,80 @@ struct Model {
     literals: Vec<String>,
     /// The payload classes the call sites of either build pass, which a `.class` path's snapshot names by index.
     classes: Vec<String>,
+    /// For each call, its model's table when its results are modelled ([`crate::environment::Lowered`]): the
+    /// stub answers from it, and the table is among the check's inputs, the same for both builds.
+    models: Vec<Option<crate::environment::Lowered>>,
 }
 
 impl Model {
     /// The log words per attempt: the call (with the snapshot's null bits), then one per payload path.
     fn width(&self) -> usize {
         1 + self.observed.iter().flatten().map(Vec::len).max().unwrap_or(0)
+    }
+
+    /// The check's inputs after the handler's: every modelled call's table, in call order.
+    fn environment_inputs(&self) -> Vec<Type> {
+        self.models.iter().flatten().flat_map(crate::environment::Lowered::inputs).collect()
+    }
+
+    /// The environment a witness chose, in words, from the values of [`Model::environment_inputs`]: each modelled
+    /// call's answers by key (`gives 3`, `throws java.io.IOException`, `returns`), then its default. A query's entry shadowed by an earlier one of the same key is left
+    /// out; a per-call choice lists a key's answers in the order of its occurrences.
+    fn environment_words(&self, values: &[Argument]) -> String {
+        let scalar = |a: Option<&Argument>, t: &Type| match (a, t) {
+            (Some(Argument::Scalar(Value::Int(v))), Type::Boolean) => (*v != 0).to_string(),
+            (Some(Argument::Scalar(Value::Int(v))), Type::Char) => format!("{:?}", char::from_u32(*v as u32 & 0xffff).unwrap_or('?')),
+            (Some(Argument::Scalar(Value::Long(v))), _) => v.to_string(),
+            (Some(Argument::Scalar(Value::Int(v))), _) => v.to_string(),
+            _ => "?".into(),
+        };
+        let mut at = 0;
+        let mut out = Vec::new();
+        for (call, m) in self.calls.iter().zip(&self.models) {
+            let Some(m) = m else { continue };
+            let names = m.key_names();
+            // Each key once, in the order of its first entry, with its answers.
+            let mut answers: Vec<(Vec<String>, Vec<String>)> = Vec::new();
+            // An answer, from its value and its outcome: a throw of the outcome's class, or the value.
+            let give = |at: &mut usize| -> String {
+                let value = if m.ret == Type::Void {
+                    "returns".to_string()
+                } else {
+                    *at += 1;
+                    format!("gives {}", scalar(values.get(*at - 1), &m.ret))
+                };
+                if m.throws.is_empty() {
+                    return value;
+                }
+                *at += 1;
+                let outcome = match values.get(*at - 1) {
+                    Some(Argument::Scalar(Value::Int(v))) => i64::from(*v),
+                    _ => 0,
+                };
+                match m.thrown(outcome) {
+                    Some(class) => format!("throws {}", class.replace('/', ".")),
+                    None => value,
+                }
+            };
+            for _ in 0..m.entries() {
+                let key: Vec<String> = m.key.iter().enumerate().map(|(c, (_, t))| scalar(values.get(at + c), t)).collect();
+                at += m.key.len();
+                let result = give(&mut at);
+                match answers.iter_mut().find(|(k, _)| *k == key) {
+                    Some((_, rs)) => {
+                        if m.per_call {
+                            rs.push(result);
+                        }
+                    }
+                    None => answers.push((key, vec![result])),
+                }
+            }
+            let default = give(&mut at);
+            let answers: Vec<String> = answers.iter().map(|(key, rs)| format!("({}) {}", names.iter().zip(key).map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join(", "), rs.join(", then "))).collect();
+            let rest = if m.per_call { "any other key or later call of one" } else { "any other key" };
+            out.push(format!("{} ({}): {}, {rest} {default}", short(call), m.id, answers.join(", ")));
+        }
+        out.join("; ")
     }
 }
 
@@ -141,7 +229,9 @@ pub fn plan(spec: &EntryPointSpec) -> Result<EffectLogPlan, Unsupported> {
                 Observation::Effect { call, payload } if call == &c.call => Some(payload.clone()),
                 _ => None,
             });
+            let lowered = c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok());
             let returns = match split_call(&c.call).and_then(|(_, _, d)| MethodDescriptor::parse(&d).ok()).map(|d| d.ret) {
+                _ if lowered.is_some() => lowered.as_ref().unwrap().returns(),
                 Some(Type::Void) => "nothing".to_string(),
                 Some(t) if t.is_primitive() => format!("{} 0, which the caller must drop", t.java_name()),
                 _ => "null, which the caller must drop".to_string(),
@@ -157,11 +247,16 @@ fn assumptions(environment: &EnvironmentModel, handler: &str) -> Vec<String> {
     let mut out: Vec<String> = environment
         .calls
         .iter()
-        .map(|c| format!("{} is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit", short(&c.call)))
+        .map(|c| match c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()) {
+            Some(m) => m.assumption(&short(&c.call)),
+            None => format!("{} is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit", short(&c.call)),
+        })
         .collect();
-    let failures: Vec<&ModeledCall> = environment.calls.iter().filter(|c| c.outcomes.iter().any(|o| o != "returns")).collect();
-    if failures.is_empty() && !environment.calls.is_empty() {
+    let failing: Vec<String> = environment.calls.iter().filter(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()).is_some_and(|m| !m.throws.is_empty())).map(|c| short(&c.call)).collect();
+    if failing.is_empty() && !environment.calls.is_empty() {
         out.push("every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim".into());
+    } else if !failing.is_empty() {
+        out.push(format!("only {} may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally", failing.join(" and ")));
     }
     if !handler.is_empty() {
         out.push(format!("{handler} is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default"));
@@ -231,6 +326,23 @@ pub fn claim_for(spec: &EntryPointSpec, trace_bound: Option<u32>, bounds: ClaimB
     }
 }
 
+/// `claim` with the modelled calls a person declared (`--environment`) in its environment model: each replaces the
+/// call of the same name, model and outcomes, or is added after the others. The assumptions follow.
+pub fn with_environment(mut claim: CanonicalClaim, declared: &[ModeledCall], handler: &str) -> CanonicalClaim {
+    if declared.is_empty() {
+        return claim;
+    }
+    let Some(environment) = claim.environment.as_mut() else { return claim };
+    for d in declared {
+        match environment.calls.iter_mut().find(|c| c.call == d.call) {
+            Some(c) => *c = d.clone(),
+            None => environment.calls.push(d.clone()),
+        }
+    }
+    claim.assumptions = assumptions(environment, handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or(""));
+    claim
+}
+
 /// One entry point of the old build, checked against its counterpart in the new one.
 #[derive(Debug, Clone, Serialize)]
 pub struct EntryCheck {
@@ -287,12 +399,12 @@ pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: O
     let obligations = crate::observations::compare(&old, &new);
     let mut out = Vec::new();
     for spec in old.iter().filter(|s| only.is_empty() || only.contains(&s.id)) {
-        let claim = claim_for(spec, trace_bound, bounds.clone());
+        let claim = with_environment(claim_for(spec, trace_bound, bounds.clone()), environment, &spec.handler);
         let matched = obligations.iter().find(|o| o.entry == spec.id && o.change != Change::Removed && o.change != Change::New).map(|o| o.new_entry.clone().unwrap_or_else(|| spec.id.clone()));
         let counterpart = matched.as_ref().and_then(|id| new.iter().find(|s| &s.id == id));
         let new_entry = matched.clone().filter(|id| id != &spec.id);
         let Some(counterpart) = counterpart else {
-            let domain = domain_of(spec);
+            let domain = domain_of(spec, claim.environment.as_ref().unwrap_or(&spec.environment));
             let checked = Checked {
                 outcome: Outcome { verdict: Verdict::Unresolved, domain, accounting: claim.contract.required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: None, problem: Some(format!("{} has no counterpart in {}: removed, renamed, or not told apart from another", spec.id, after.display())) },
                 reason: Some(format!("{} has no counterpart in {}: removed, renamed, or not told apart from another", spec.id, after.display())),
@@ -385,9 +497,14 @@ pub fn render_checks(checks: &[EntryCheck]) -> String {
     s
 }
 
-fn domain_of(spec: &EntryPointSpec) -> String {
+fn domain_of(spec: &EntryPointSpec, environment: &EnvironmentModel) -> String {
     let domain = spec.inputs.iter().map(|i| format!("{}: {}", i.name, i.ty)).collect::<Vec<_>>().join(" × ");
-    format!("{} (the request's inputs, the same in both builds)", if domain.is_empty() { "no inputs".to_string() } else { domain })
+    let mut s = format!("{} (the request's inputs, the same in both builds)", if domain.is_empty() { "no inputs".to_string() } else { domain });
+    let models: Vec<String> = environment.calls.iter().filter_map(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()).map(|m| m.domain(&short(&c.call)))).collect();
+    if !models.is_empty() {
+        s.push_str(&format!(" × the environment's answers, one for both builds: {}", models.join("; ")));
+    }
+    s
 }
 
 /// [`check`], with the builds, the proof and the JVM run under `work`.
@@ -396,7 +513,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     let environment = claim.environment.clone().unwrap_or_else(|| old.environment.clone());
     let handler = old.handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or("").to_string();
     let assumed = assumptions(&environment, &handler);
-    let domain = domain_of(old);
+    let domain = domain_of(old, &environment);
     let unresolved = |reason: String| Checked {
         outcome: Outcome { verdict: Verdict::Unresolved, domain: domain.clone(), accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: None, problem: Some(reason.clone()) },
         reason: Some(reason),
@@ -407,7 +524,19 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         key: None,
         reuse: None,
     };
-    let unseen: Vec<String> = old.unresolved.iter().map(|u| format!("the old build: {u}")).chain(new.unresolved.iter().map(|u| format!("the new build: {u}"))).collect();
+    let (before_cp, before_local) = class_path(before)?;
+    let (after_cp, after_local) = class_path(after)?;
+    // A call the walk can't follow on the owner of a modelled call is the call the model answers: every call on
+    // that owner is redirected, to the model's stub or to one that marks the log unresolved where it is reached.
+    // The analysis names the owner by its simple name, so only one that names one class of either build.
+    let answered = |u: &str| {
+        environment.calls.iter().filter(|c| c.model.is_some()).filter_map(|c| split_call(&c.call)).any(|(owner, _, _)| {
+            let simple = owner.rsplit('/').next().unwrap_or(&owner).to_string();
+            let named: BTreeSet<&String> = before_local.iter().chain(&after_local).filter(|l| l.rsplit('/').next() == Some(simple.as_str())).collect();
+            named.len() == 1 && named.contains(&owner) && u.starts_with(&format!("a call the walk can't follow: {simple}.")) && u.ends_with(": nothing followed implements it")
+        })
+    };
+    let unseen: Vec<String> = old.unresolved.iter().filter(|u| !answered(u)).map(|u| format!("the old build: {u}")).chain(new.unresolved.iter().filter(|u| !answered(u)).map(|u| format!("the new build: {u}"))).collect();
     if !unseen.is_empty() {
         return Ok(unresolved(format!("what the analysis can't see stays unresolved: {}", unseen.join("; "))));
     }
@@ -422,9 +551,25 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     for c in environment.calls.iter() {
         if let Some(model) = &c.model {
             crate::environment::check_model(c, model)?;
+        } else if let Some(o) = c.outcomes.iter().find(|o| *o != "returns") {
+            return Err(unsupported(format!("a modeled outcome other than a normal return ({o} of {}) with no model of the call's results: a modelled failure is a result of its model (crate::environment)", short(&c.call))));
         }
-        if let Some(o) = c.outcomes.iter().find(|o| *o != "returns") {
-            return Err(unsupported(format!("a modeled outcome other than a normal return ({o} of {}): modeled failures come after the narrow case", short(&c.call))));
+    }
+    let lowered = |call: &str| -> Option<crate::environment::Lowered> {
+        let c = environment.calls.iter().find(|c| c.call == call)?;
+        crate::environment::lower(c, c.model.as_ref()?).ok()
+    };
+    // The modelled failures: each a Throwable both builds have, made by a constructor without arguments, and a
+    // caught one read for nothing but its class.
+    let thrown: Vec<String> = environment.calls.iter().filter_map(|c| lowered(&c.call)).flat_map(|m| m.throws).collect::<BTreeSet<_>>().into_iter().collect();
+    for class in &thrown {
+        for (cp, build) in [(&before_cp, "old"), (&after_cp, "new")] {
+            failure_class(cp, class).map_err(|why| Unsupported::new(Part::Environment, format!("the modelled failure {} in the {build} build: {why}", class.replace('/', "."))))?;
+        }
+    }
+    if !thrown.is_empty() {
+        for (dir, cp, build) in [(before, &before_cp, "old"), (after, &after_cp, "new")] {
+            inspections(dir, cp, &thrown).map_err(|why| Unsupported::new(Part::Environment, format!("the {build} build {why}")))?;
         }
     }
 
@@ -464,11 +609,9 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             }
         }
     }
-    let (before_cp, before_local) = class_path(before)?;
-    let (after_cp, after_local) = class_path(after)?;
     let mut exceptions: Vec<(usize, String)> = Vec::new();
     for (cp, local) in [(&before_cp, &before_local), (&after_cp, &after_local)] {
-        for name in local {
+        for name in local.iter().chain(&thrown) {
             if cp.superclasses(name).iter().any(|s| s == "java/lang/Throwable") && !exceptions.iter().any(|(_, n)| n == name) {
                 exceptions.push((cp.superclasses(name).len(), name.clone()));
             }
@@ -491,7 +634,8 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             }
         }
     }
-    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect() };
+    let models = calls.iter().map(|c| lowered(c)).collect();
+    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect(), models };
 
     let _ = std::fs::remove_dir_all(work);
     let old_version = prepare(old, &before_cp, &before_local, before, &work.join("before"), &model, 1)?;
@@ -514,7 +658,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     let reuse = result.reuse.clone().filter(|r| matches!(r, crate::spec::cache::Reuse::Exact { .. }));
     // Every result below carries the proof's key and its reuse, an unresolved one included.
     let unresolved = |reason: String| Checked { key: key.clone(), reuse: reuse.clone(), ..unresolved(reason) };
-    let names: Vec<String> = old.inputs.iter().map(|i| i.name.clone()).collect();
+    let names: Vec<String> = old.inputs.iter().map(|i| i.name.clone()).chain(model.models.iter().flatten().flat_map(crate::environment::Lowered::input_names)).collect();
     let proof = result.proof.as_deref().map(|p| with_names(p, &names));
     match result.verdict {
         crate::Verdict::Verified => {
@@ -583,7 +727,12 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             ];
             let run = match crate::jvm_witness::run(&work.join("jvm"), crate::harness::CLASS, &new_version.params, &slots, &arguments, &calls, &entries) {
                 Ok(run) => run,
-                Err(e) => return Ok(Checked { proof, ..unresolved(format!("the witness {shown} could not be replayed on a JVM: {e}")) }),
+                Err(e) => {
+                    // The JVM runner's main passes the arguments on an operand stack of 16 words.
+                    let words: usize = new_version.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum();
+                    let why = if words > 16 { format!(" (its {words} words of arguments, the handler's and the environment's tables, are more than the JVM runner's 16: a smaller bound, or an int result, fits)") } else { String::new() };
+                    return Ok(Checked { proof, ..unresolved(format!("the witness {shown} could not be replayed on a JVM{why}: {e}")) });
+                }
             };
             let logs: Vec<Option<Vec<i64>>> = run.calls.iter().map(|r| r.result_array.as_ref().map(|a| a.iter().map(|v| match v { Value::Long(x) => *x, Value::Int(x) => i64::from(*x), _ => 0 }).collect())).collect();
             let (Some(Some(b)), Some(Some(a))) = (logs.first(), logs.get(1)) else {
@@ -626,8 +775,14 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             }
             let accounting = required.iter().map(|id| Accounted { observation: id.clone(), state: if refuted.contains(id) { ObservationState::Refuted } else { ObservationState::Unresolved } }).collect();
             let stubs = model.calls.iter().map(|c| short(c)).collect::<Vec<_>>().join(", ");
+            let chosen = model.environment_words(arguments.get(old.inputs.len()..).unwrap_or_default());
+            let (under, how) = if chosen.is_empty() {
+                (String::new(), "each returning normally")
+            } else {
+                (format!(" under the environment {chosen}"), "the modelled calls answering from that environment, the others returning normally")
+            };
             let witness = format!(
-                "{} on {shown}: the old build {}; the new one {}. Replayed on a JVM (JDK {}) under the modeled dependencies (recording stubs for {stubs}, each returning normally), not against real infrastructure",
+                "{} on {shown}{under}: the old build {}; the new one {}. Replayed on a JVM (JDK {}) under the modeled dependencies (generated stubs for {stubs}, {how}), not against real infrastructure",
                 old.id,
                 tb.words(),
                 ta.words(),
@@ -636,6 +791,89 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             Ok(Checked { outcome: Outcome { verdict: Verdict::Refuted, domain, accounting, witness: Some(witness), problem: None }, reason: None, assumptions: assumed, proof, before: Some(tb), after: Some(ta), key, reuse })
         }
     }
+}
+
+/// Why `class` can't be a modelled failure in a build of class path `cp`, if it can't: it is a Throwable the build
+/// has, with a public constructor without arguments, the one its stub makes it with.
+fn failure_class(cp: &ClassPath, class: &str) -> Result<(), String> {
+    let file = cp.load(class).ok().flatten().map(|l| l.class).ok_or("no such class")?;
+    if !cp.superclasses(class).iter().any(|s| s == "java/lang/Throwable") {
+        return Err("it is no Throwable".into());
+    }
+    if file.is_interface() || file.access & flags::ABSTRACT != 0 {
+        return Err("it is abstract: a stub can't make one".into());
+    }
+    match file.methods.iter().find(|m| m.name == "<init>" && m.descriptor == "()V") {
+        Some(m) if m.is_public() => Ok(()),
+        _ => Err("it has no public constructor without arguments: the stub makes a failure with none, so that it carries no message or cause the dependency wouldn't give".into()),
+    }
+}
+
+/// Throwable's methods that read what a modelled failure doesn't carry: its message, cause, stack and suppressed
+/// exceptions, or a string of them.
+const INSPECTIONS: &[&str] = &["getMessage", "getLocalizedMessage", "getCause", "toString", "getStackTrace", "printStackTrace", "getSuppressed"];
+
+/// Why a build (its classes under `dir`, class path `cp`) reads more of a caught modelled failure (of the classes
+/// `thrown`) than its class, if it does. Every handler that may catch one (a catch of one of its classes or a
+/// superclass, or a `finally`) is checked where it keeps what it caught: each read of that local (within its scope,
+/// when the class says) must rethrow it, test its class or test it for null. Anything else, a call on it or handing
+/// it to a call, a field or a return, may read its message or cause, which the model doesn't give, and is refused,
+/// never answered with an invented one.
+fn inspections(dir: &Path, cp: &ClassPath, thrown: &[String]) -> Result<(), String> {
+    let catches = |catch: &Option<String>| match catch {
+        None => true,
+        Some(c) => thrown.iter().any(|t| t == c || cp.superclasses(t).contains(c)),
+    };
+    for (_, bytes) in class_files(dir).map_err(|e| format!("can't be read: {e}"))? {
+        let Ok(class) = ClassFile::parse(&bytes) else { continue };
+        for m in &class.methods {
+            let Some(code) = &m.code else { continue };
+            let handlers: Vec<_> = code.exception_table.iter().filter(|h| catches(&h.catch_type)).collect();
+            if handlers.is_empty() {
+                continue;
+            }
+            let insns = code.instructions().map_err(|e| format!("can't be read: {e}"))?;
+            let at = |pc: u32| insns.iter().position(|(p, _)| *p == pc);
+            let place = format!("{}.{}", class.name.replace('/', "."), m.name);
+            for h in handlers {
+                let caught = h.catch_type.as_deref().map(|c| c.replace('/', ".")).unwrap_or_else(|| "any throwable (a finally)".into());
+                let Some(start) = at(u32::from(h.handler_pc)) else { continue };
+                let slot = match &insns[start].1 {
+                    Insn::Pop => continue,
+                    Insn::Store(Kind::Ref, n) => *n,
+                    other => return Err(format!("catches {caught} in {place} and uses it at once ({other:?}): what it reads of a modelled failure isn't followed, so it is refused")),
+                };
+                // The local's scope: from its local variable entry when the class has one, else the whole method.
+                let after = insns.get(start + 1).map_or(u32::MAX, |(p, _)| *p);
+                let scope = code.local_variables.iter().find(|v| v.index == slot && u32::from(v.start_pc) <= after && after <= u32::from(v.start_pc) + u32::from(v.length)).map(|v| (u32::from(v.start_pc), u32::from(v.start_pc) + u32::from(v.length)));
+                for (k, (pc, insn)) in insns.iter().enumerate() {
+                    if *insn != Insn::Load(Kind::Ref, slot) || scope.is_some_and(|(from, to)| *pc < from || *pc >= to) {
+                        continue;
+                    }
+                    let next = insns.get(k + 1).map(|(_, i)| i);
+                    let fine = match next {
+                        Some(Insn::AThrow | Insn::InstanceOf(_) | Insn::IfNull(_) | Insn::IfNonNull(_)) => true,
+                        Some(Insn::InvokeVirtual(i)) => class.pool.member(*i).is_ok_and(|r| r.name == "getClass" && r.descriptor == "()Ljava/lang/Class;"),
+                        _ => false,
+                    };
+                    if fine {
+                        continue;
+                    }
+                    let what = match next {
+                        Some(Insn::InvokeVirtual(i) | Insn::InvokeInterface(i)) => match class.pool.member(*i) {
+                            Ok(r) if INSPECTIONS.contains(&r.name.as_str()) => format!("reads its {} ({}.{})", if r.name == "getCause" { "cause" } else if r.name.contains("Stack") { "stack" } else if r.name == "getSuppressed" { "suppressed exceptions" } else { "message" }, r.owner.replace('/', "."), r.name),
+                            Ok(r) => format!("calls {}.{} on it", r.owner.replace('/', "."), r.name),
+                            Err(_) => "calls a method on it".into(),
+                        },
+                        Some(other) => format!("hands it on ({other:?})"),
+                        None => "hands it on".into(),
+                    };
+                    return Err(format!("catches {caught} in {place} and {what}: a modelled failure carries its class and no message or cause, so reading any more of it is refused, never answered with an invented one"));
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 /// `text` with the generated method's parameter names (`arg0`, `arg1`) replaced by the entry point's inputs'.
@@ -711,7 +949,7 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
         key.extend(&values);
         attempts.push((call, key, format!("{}({shown})", short(&model.calls[call]))));
     }
-    let mark = word(3) & 0x1f;
+    let mark = word(3) & MARK_BITS;
     let mut unresolved = Vec::new();
     if mark & PAST_BOUND != 0 {
         unresolved.push(format!("more attempts than the trace bound, {}", model.bound));
@@ -727,6 +965,10 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
     }
     if mark & NULL_THROWN != 0 {
         unresolved.push("a NullPointerException, which a dependency left null may have caused (a call on it through a supertype, Object.hashCode say)".into());
+    }
+    if mark & PAST_MODEL_BOUND != 0 {
+        let models: Vec<String> = model.models.iter().flatten().map(|m| format!("{} than its bound, {}", m.id, m.bound)).collect();
+        unresolved.push(format!("more calls of {}", models.join(", or of ")));
     }
     Trace { outcome, kind, result, attempts, unresolved }
 }
@@ -907,10 +1149,11 @@ fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
                 };
                 let Ok(member) = parsed.pool.member(index) else { continue };
                 let call = format!("{}#{}{}", member.owner, member.name, member.descriptor);
-                if model.calls.contains(&call) {
+                if let Some(i) = model.calls.iter().position(|c| *c == call) {
                     let ret = MethodDescriptor::parse(&member.descriptor).map(|d| d.ret).unwrap_or(Type::Void);
                     let dropped = matches!(insns.get(k + 1), Some((_, Insn::Pop | Insn::Pop2)));
-                    if ret != Type::Void && !dropped {
+                    // A modelled result may be used: the stub answers from the environment model.
+                    if ret != Type::Void && !dropped && model.models[i].is_none() {
                         return Err(unsupported(format!("{}.{} uses the result of {}: a modeled return value comes after the narrow case", parsed.name.replace('/', "."), m.name, short(&call))));
                     }
                 } else if dependencies.contains(&member.owner) && !matches!(insn, Insn::InvokeSpecial(_)) {
@@ -947,9 +1190,12 @@ fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
     std::fs::create_dir_all(&package_dir).map_err(|e| unsupported(e.to_string()))?;
     std::fs::write(out.join(format!("{stubs}.class")), stubs_class(&stubs, model, &reads, &unmodeled)).map_err(|e| unsupported(e.to_string()))?;
     let present: Vec<bool> = model.exceptions.iter().map(|e| if e.starts_with("java/") { true } else { local.contains(e) }).collect();
-    let entry_descriptor = format!("({})[J", descriptor.params.iter().map(Type::descriptor).collect::<String>());
+    // The entry method's parameters: the handler's inputs, then the environment model's tables.
+    let mut params = descriptor.params.clone();
+    params.extend(model.environment_inputs());
+    let entry_descriptor = format!("({})[J", params.iter().map(Type::descriptor).collect::<String>());
     std::fs::write(out.join(format!("{entry}.class")), entry_class(&entry, &stubs, &class_name, method_name, &method.descriptor, &descriptor, &constructor.descriptor, &ctor, model, &present, tag)).map_err(|e| unsupported(e.to_string()))?;
-    Ok(Prepared { target: format!("{}#{METHOD}", entry.replace('/', ".")), entry, descriptor: entry_descriptor, params: descriptor.params.clone(), strings })
+    Ok(Prepared { target: format!("{}#{METHOD}", entry.replace('/', ".")), entry, descriptor: entry_descriptor, params, strings })
 }
 
 /// How a stub of `call` (descriptor `d`) reads `path` at the call sites `sites`; `known` are the payload classes a
@@ -1046,6 +1292,16 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
     w.access = flags::PUBLIC | flags::FINAL | flags::SUPER;
     for (f, d) in [("LOG", "[J"), ("N", "I"), ("U", "I")] {
         w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: f.into(), descriptor: d.into() });
+    }
+    for (i, m) in model.models.iter().enumerate() {
+        let Some(m) = m else { continue };
+        w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: format!("c{i}"), descriptor: "I".into() });
+        for (f, t) in table_fields(i, m) {
+            w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: f, descriptor: t.descriptor() });
+        }
+        for f in used_fields(i, m) {
+            w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: f, descriptor: "I".into() });
+        }
     }
     let width = model.width() as i32;
     for (i, call) in model.calls.iter().enumerate() {
@@ -1195,7 +1451,10 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
                 code.op_u16(0xb3, n_ref);
             }
             code.bind(done);
-            return_default(&mut code, &descriptor.ret);
+            match model.models.get(i).and_then(Option::as_ref) {
+                Some(m) => answer(&mut code, &mut w, name, i, m, &slots, &descriptor.params),
+                None => return_default(&mut code, &descriptor.ret),
+            }
             let stub_descriptor = if receiver { format!("(Ljava/lang/Object;{}", &d[1..]) } else { d.clone() };
             w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: format!("e{i}"), descriptor: stub_descriptor, code: Some(code) });
         }
@@ -1217,6 +1476,111 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
         w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: format!("u{k}"), descriptor: stub_descriptor, code: Some(code) });
     }
     w.to_bytes()
+}
+
+/// The static fields of the stubs class that hold call `i`'s table, in the order of
+/// [`crate::environment::Lowered::inputs`]: each entry's key components (`k{i}_{e}_{c}`), result (`v{i}_{e}`, unless
+/// the call returns nothing) and outcome (`o{i}_{e}`, when the model has failures), then the default's (`d{i}`,
+/// `od{i}`).
+fn table_fields(i: usize, m: &crate::environment::Lowered) -> Vec<(String, Type)> {
+    let answer = |out: &mut Vec<(String, Type)>, value: String, outcome: String| {
+        if m.ret != Type::Void {
+            out.push((value, m.ret.clone()));
+        }
+        if !m.throws.is_empty() {
+            out.push((outcome, Type::Int));
+        }
+    };
+    let mut out = Vec::new();
+    for e in 0..m.entries() {
+        for (c, (_, t)) in m.key.iter().enumerate() {
+            out.push((format!("k{i}_{e}_{c}"), t.clone()));
+        }
+        answer(&mut out, format!("v{i}_{e}"), format!("o{i}_{e}"));
+    }
+    answer(&mut out, format!("d{i}"), format!("od{i}"));
+    out
+}
+
+/// The static fields of the stubs class that mark which of call `i`'s entries this trace used (`w{i}_{e}`), for a
+/// per-call choice; none for a query.
+fn used_fields(i: usize, m: &crate::environment::Lowered) -> Vec<String> {
+    if m.per_call { (0..m.entries()).map(|e| format!("w{i}_{e}")).collect() } else { Vec::new() }
+}
+
+/// Answers a modelled call from its table: one more call than the model's bound marks the log past its bound;
+/// otherwise the answer of the first entry whose key is the call's (for a per-call choice, the first such entry
+/// this trace hasn't used, which it then marks used), or the default. An answer whose outcome is `k` throws a new
+/// instance of the model's `k`-th failure, made by its constructor without arguments; any other outcome returns
+/// the answer's value. `slots` are the call's parameters'.
+fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m: &crate::environment::Lowered, slots: &[u16], params: &[Type]) {
+    let calls_ref = w.pool.field_ref(stubs, &format!("c{i}"), "I");
+    let u_ref = w.pool.field_ref(stubs, "U", "I");
+    let within = code.label();
+    code.op_u16(0xb2, calls_ref);
+    code.iconst(m.bound as i32);
+    code.if_icmp(Cond::Lt, within);
+    code.op_u16(0xb2, u_ref);
+    code.iconst(PAST_MODEL_BOUND as i32);
+    code.op(0x80); // ior
+    code.op_u16(0xb3, u_ref);
+    return_default(code, &m.ret);
+    code.bind(within);
+    code.op_u16(0xb2, calls_ref);
+    code.iconst(1);
+    code.op(0x60); // iadd
+    code.op_u16(0xb3, calls_ref);
+    let ret = (m.ret != Type::Void).then(|| kind_of(&m.ret));
+    // The answer `value`/`outcome` names: its failures thrown by outcome, then its value returned.
+    let give = |code: &mut CodeBuilder, w: &mut ClassWriter, value: &str, outcome: &str| {
+        if !m.throws.is_empty() {
+            let o = w.pool.field_ref(stubs, outcome, "I");
+            for (k, class) in m.throws.iter().enumerate() {
+                let other = code.label();
+                code.op_u16(0xb2, o);
+                code.iconst(k as i32 + 1);
+                code.if_icmp(Cond::Ne, other);
+                let c = w.pool.class(class);
+                code.op_u16(0xbb, c); // new
+                code.op(0x59); // dup
+                let init = w.pool.method_ref(class, "<init>", "()V");
+                code.op_u16(0xb7, init);
+                code.op(0xbf); // athrow
+                code.bind(other);
+            }
+        }
+        if m.ret != Type::Void {
+            let v = w.pool.field_ref(stubs, value, &m.ret.descriptor());
+            code.op_u16(0xb2, v);
+        }
+        code.return_(ret);
+    };
+    for e in 0..m.entries() {
+        let next = code.label();
+        let used = m.per_call.then(|| w.pool.field_ref(stubs, &format!("w{i}_{e}"), "I"));
+        if let Some(used) = used {
+            code.op_u16(0xb2, used);
+            code.if_zero(Cond::Ne, next);
+        }
+        for (c, (p, t)) in m.key.iter().enumerate() {
+            let k = w.pool.field_ref(stubs, &format!("k{i}_{e}_{c}"), &t.descriptor());
+            code.load(kind_of(&params[*p]), slots[*p]);
+            code.op_u16(0xb2, k);
+            if *t == Type::Long {
+                code.op(0x94); // lcmp
+                code.if_zero(Cond::Ne, next);
+            } else {
+                code.if_icmp(Cond::Ne, next);
+            }
+        }
+        if let Some(used) = used {
+            code.iconst(1);
+            code.op_u16(0xb3, used);
+        }
+        give(code, w, &format!("v{i}_{e}"), &format!("o{i}_{e}"));
+        code.bind(next);
+    }
+    give(code, w, &format!("d{i}"), &format!("od{i}"));
 }
 
 /// Takes the leaf value on the stack into `value` (a long) and jumps to `store`: an integral value widened, a string
@@ -1299,7 +1663,8 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     let mut code = CodeBuilder::new();
     let mut slot = 0u16;
     let mut slots = Vec::new();
-    for t in &descriptor.params {
+    let environment = model.environment_inputs();
+    for t in descriptor.params.iter().chain(&environment) {
         slots.push(slot);
         slot += if matches!(t, Type::Long | Type::Double) { 2 } else { 1 };
     }
@@ -1320,6 +1685,25 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     code.op_u16(0xb3, n_ref);
     code.iconst(0);
     code.op_u16(0xb3, u_ref);
+    // The environment model's tables, from the inputs after the handler's, and each model's count of calls.
+    let mut at = descriptor.params.len();
+    for (i, m) in model.models.iter().enumerate() {
+        let Some(m) = m else { continue };
+        let calls_ref = w.pool.field_ref(stubs, &format!("c{i}"), "I");
+        code.iconst(0);
+        code.op_u16(0xb3, calls_ref);
+        for (name, t) in table_fields(i, m) {
+            let f = w.pool.field_ref(stubs, &name, &t.descriptor());
+            code.load(kind_of(&t), slots[at]);
+            code.op_u16(0xb3, f);
+            at += 1;
+        }
+        for name in used_fields(i, m) {
+            let f = w.pool.field_ref(stubs, &name, "I");
+            code.iconst(0);
+            code.op_u16(0xb3, f);
+        }
+    }
     let set = |code: &mut CodeBuilder, w: &mut ClassWriter, index: i32, value: i64| {
         code.load(Kind::Ref, log);
         code.iconst(index);
@@ -1350,7 +1734,7 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     code.goto(call_start);
     code.bind(unmade);
     code.op(0x57); // pop
-    set(&mut code, &mut w, 3, tag * 16 + UNMADE);
+    set(&mut code, &mut w, 3, tag * TAG + UNMADE);
     code.load(Kind::Ref, log);
     code.return_(Some(Kind::Ref));
     code.handler(make_start, make_end, unmade, None);
@@ -1419,7 +1803,7 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     code.iconst(3);
     code.op_u16(0xb2, u_ref);
     code.op(0x85);
-    let t = w.pool.long(tag * 16);
+    let t = w.pool.long(tag * TAG);
     code.ldc2(t);
     code.op(0x61); // ladd
     code.op(0x50);
@@ -1447,7 +1831,7 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     }
     code.load(Kind::Ref, log);
     code.return_(Some(Kind::Ref));
-    let entry_descriptor = format!("({})[J", descriptor.params.iter().map(Type::descriptor).collect::<String>());
+    let entry_descriptor = format!("({})[J", descriptor.params.iter().chain(&environment).map(Type::descriptor).collect::<String>());
     w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: entry_descriptor, code: Some(code) });
     w.to_bytes()
 }

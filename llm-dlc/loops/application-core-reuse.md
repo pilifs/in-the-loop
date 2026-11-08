@@ -156,7 +156,400 @@ measurement stays as recorded.
 
 - Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
   Phase 0 included.
-- Status: working
+- 2026-11-08, **R1, the native property cache**, in `lib/src/reuse.rs`:
+  - **The claim**: `reuse::property_claim` keeps property results in the regression store
+    (`spec::cache`), under the same digest. It projects:
+    - the target's parameters by name and type;
+    - the closure of the target and of every constructor its object inputs, its result and its declared
+      exceptions are made with, recursively, plus a plan's makers and setup calls;
+    - as assumptions: a first one that it is a property claim (`PROPERTY_CLAIM`), then the assumption, the
+      assertion, the throws clauses, the meaning of `\old`, the null and alias choices and the construction plan
+      whole;
+    - the bounds, and the tools with every checker setting.
+  - **Every field of `property::Options` is named** in `PROPERTY_OPTIONS`. A field the list doesn't know refuses
+    the check under `--cache`, read from the options' `Debug`, so another stream's new field is never silently left
+    out of the key. `--engine jbmc` and `auto` are refused too.
+  - **Lookup and store**: the lookup comes before anything is prepared. A verified hit gives back the stored outcome
+    and statement, marked as reused. A refutation is stored with its harness (the key determines it), and only if
+    its witness fails that harness in the interpreter. A refuted hit is used only once its witness fails the stored
+    harness again on the current classes; otherwise the check proves again. Nothing unresolved is stored.
+  - **Verified inline**: `lib/tests/reuse.rs`, 7 tests: a verified and a refuted exact hit, a stale witness proved
+    again, a changed constructor of an input invalidating a proof of an unchanged method (it fails when the
+    constructor roots are taken out), a key per assertion, assumption, throws clause, domain, bound, model, gap
+    mode, target and plan history (constructor-only and setup are two keys), none for an unrelated change, and no
+    key shared with the target's regression claim in one cache. The contract's R1 now reaches `verified`, cold and
+    rerun. 230 unit tests, the contract and `summaries.rs` pass.
+  - **Interface requests for the merge** (files not this stream's):
+    - `property.rs` (objects): `reuse::property_store` should take `&mut Outcome`, so that its note ("stored as
+      claim K", or why not) goes in the output; it is on the standard error for now. `property::Outcome` should get
+      a `reuse` field (`spec::cache::Reuse`), so that `--json` carries the reuse as data, not only in `output` and
+      `proof`.
+    - `main.rs` (shared): the doc of `prove --cache` still says "Refused until that stream builds it", and so does
+      the comment at the hook in `property::run`.
+  - **Next**: J3, registering the streams' new claim fields (a planned domain's plans, a call's model) in
+    `spec::cache::KNOWN`, with their invalidation tests. Then R2.
+- 2026-11-08, **J3, the key over the streams' new claim parts**, in `lib/src/spec/cache.rs`:
+  - **Registered whole, as strict types**: `TYPED` names `domain.made_by.before`, `domain.made_by.after` (a
+    construction plan each) and `environment.calls[].model` (a call model). Each is digested whole once it reads back
+    exactly as its type of `spec::plans`, which refuses every field and variant it doesn't declare. A field a stream
+    adds to one of those types is in the digest with the rest, never left out; one the type doesn't declare, or a
+    plan that doesn't read back as written, makes the claim uncacheable by name. Listing the plans' paths one by one
+    in `KNOWN` would only repeat the types (a returned object holds a whole plan again).
+  - **Verified inline**, `tests/reuse.rs`, 3 tests: the 8 frozen claims each have a key, none shared; 27 changes to
+    them each give a key of their own, none an earlier one's: histories (no setup call, a second one, another method
+    or argument type, the setup bound alone, another constructor, a factory, a restriction, either version's plan
+    alone), model outcomes (one fewer, another exception, a choice or a script for a query, the query's key, the call
+    bound, the operation, a model on another call), value bounds and models (a String's length, nullability and
+    evidence level, an array's length, a dependency's class, a list's length, element kind and what its model leaves
+    out), and a returned object's identity, nullability and plan; an undeclared field in a plan or a model, an
+    unknown coupling and an empty setup spelled out are each refused. The contract's J3 now passes on distinct keys,
+    not on the refusal. 230 unit tests, the contract, `summaries.rs`, `heap.rs`, `effects.rs` and `foundations.rs`
+    pass.
+  - **Left for R2**: J3's helper assumptions. A summary's applicability record is not in any claim yet; R2 puts the
+    summaries a caller's proof used into its claim, with their keys.
+  - **Found, from the objects stream** (their reproducer `an_inner_objects_constructor_is_part_of_the_cached_claim`
+    in `tests/application_core_objects.rs`, `#[ignore]`d, on their branch): `proof_cache::Regression::claim` roots each
+    version's closure at a made object's own constructor only, not at the constructors of the objects it is made from,
+    which the harness calls too. So a build changing only an inner constructor reuses another's `verified`
+    (`get(new Wrap(new Inner(0), 0))`: before 0, after 1). It predates this wave, and it is in this stream's file.
+  - **Next**: that cache hole, with a reproducer here first (the closure rooted at every constructor the harness
+    calls, both versions). Then R2.
+- 2026-11-08, **the regression cache's hole closed**, in `lib/src/proof_cache.rs`:
+  - **The fix**: `Regression::claim` roots each version's closure at every constructor the harness calls to make
+    an input (`RecordType::constructors`, the objects an input is made from included), for the slots of both
+    versions and for a previous version's receiver and records, not at the made object's own constructor alone.
+  - **The reproducer first**, `tests/reuse.rs`'s
+    `an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim`: `get(new Wrap(new Inner(v), k))`.
+    A rewrite of `get` is verified, and an unchanged rerun is an exact hit. Then a build changing only `Inner`'s
+    constructor, after and then before, must miss the cache and be refuted. Before the fix the first of those reused
+    `verified`. The objects stream's ignored test of the same case should pass at the merge, un-ignored.
+  - **Also**: `tests/reuse.rs` compiled into shared directories and removed them first, so tests running side by
+    side could remove each other's classes (a key test failed once with no claim). Each build is now compiled once
+    per run.
+  - **Verified inline**: `tests/reuse.rs` (11, three runs), the 230 unit tests, `application_core` (14), `compare`,
+    `effects`, `foundations`, `heap`, `observations` and `summaries` pass. `integration.rs` stays a job's.
+  - **Next**: R2, read-only heap helper summaries. First the footprint of a field-only helper, proved rather than
+    listed, and its summary as the `spec::plans::Summary` applicability record. Then applicability at the call site,
+    the adversarial cases, and reuse in a changed caller, whose claim carries the summaries it used with their keys
+    (J3's helper assumptions).
+- 2026-11-08, **R2, first part: a read-only helper's footprint, proved, and its summary from a proof of its own**, in
+  `lib/src/reuse/footprint.rs` (a submodule of `reuse.rs`, so no shared file changed), `reuse::summarize` and
+  `proof_cache::lifted_proof`:
+  - **The footprint** (`footprint::footprint`) is established from the bytecode, not listed. The helper is an
+    instance method that no application class overrides, with primitive parameters and a primitive result. The only
+    reference it may handle is its receiver, loaded only by an `aload_0` that a `getfield` of a primitive field
+    consumes at once. Its static callees are walked under the same rules with no reference at all. So its
+    `getfield`s are all it reads of the heap, and since it writes nothing, its outcome is a function of those fields'
+    values and its arguments. Each exclusion of the brief is refused by name: a write, an allocation, an exception of
+    its own, a static field, an external call, a call on an object, an override, recursion, an escaping or other
+    reference, and an array. So are a division by anything but a non-zero constant (not total), a switch, and
+    floating point.
+  - **The explicit representation adapter** (`footprint::lift`): the helper as a static method of a class of its
+    own, `quotes/QuoteService$Footprint$fee`. Its parameters are the helper's arguments, then the values of the fields
+    either version reads (their union). Its code is the helper's, with each field read replaced by a parameter. It is
+    tested against the helper on a real JVM over 560 cases, lifted over one field more than it reads.
+  - **The summary** (`reuse::summarize`): the two versions' lifted helpers are proved by a regression check of their
+    own, under the caller's cache, engine and bounds, in the proof stack that keeps dependency proofs acyclic. The
+    `spec::plans::Summary` names:
+    - that proof's claim key;
+    - `reads` (`this.feeCents`, `arg0`);
+    - the domain: every value of those fields, on any receiver, whatever else it holds;
+    - relation `equal`, effects `read-only`, and the helper proofs it rests on.
+
+    No summary is given for a helper whose versions differ (`helper-extra-field`: lifted over the fee and the floor,
+    refuted), or for versions that read fields the other's receiver doesn't declare alike (a change of layout, with no
+    adapter established).
+  - **Verified inline**, in a new `tests/reuse_summaries.rs` (5 tests):
+    - `fee` reads `feeCents`, before and after, and the defect also reads `floorCents`;
+    - 17 helpers outside the category are each refused in the words of their case;
+    - the JVM conformance of the lifting;
+    - `fee`'s summary, with its proof verified in the cache, and an exact rerun giving the same summary, nothing new
+      stored;
+    - the extra read and the layout change have no summary.
+
+    Also passing: the 231 unit tests, `reuse` (11), `application_core` (14), `summaries`, `compare`, `heap`,
+    `effects` and `foundations`.
+  - **Found, for the claim key**: the lifted proof is of a function positional in the fields' values. Its key doesn't
+    name which field is which parameter. That mapping is the summary's `reads`, established again from each version's
+    bytecode every time. So a caller's claim has to carry the whole summary, not only its proof's key: that is the
+    next part.
+  - **The contract's R2 row** still stops at the objects stream's refusal (`construction::receiver`), because it
+    checks `fee` through the plain regression entry point. A summary doesn't need that, and isn't that row's path
+    until the merge.
+  - **Next**: applicability at the call site and reuse in a changed caller. Under `--cache` and the own checker,
+    `shared::plan_with` takes, for an instance call on a helper with a summary, a per-version adapter that reads the
+    footprint from the actual receiver at each call and calls the new version's lifted helper. That adapter is
+    reached through the receiver's own class, since a private field can't be read from another class. The caller's
+    claim then carries each summary it used, with its key. After that come the adversarial cases at a caller: a read
+    field mutated between two calls, a precondition holding at one call and not the next, an alias, and a
+    constructor-domain summary offered at a state a history reached.
+- 2026-11-08, **R2, second part: a changed caller reuses the helper's summary at each call**, in `lib/src/shared.rs`
+  (`plan_with`, `substitute`), `proof_cache::Helpers` and `reuse::application`, with the adapters in
+  `reuse::footprint::adapters`:
+  - **Asked for**: under `--cache` and the own checker, `plan_with` asks for a summary of each changed instance method
+    both versions call, declared by the same class (calls as the class path resolves them, `invokevirtual` and
+    `invokespecial`). `Helpers::prove` sends an instance method to `reuse::application`, which makes the summary (from
+    the cache, or proved now) and its adapters. A refusal is a note, "keeps its body in both versions: …", and the
+    helper keeps its body.
+  - **Applied at each call** (`shared::substitute`): every call of the helper, in both versions, becomes an
+    `invokestatic` of that version's adapter, `r/Tariff$Footprint$fee$Call.before` or `.after`. The adapter takes the
+    receiver and the arguments, reads each footprint field from the actual receiver as its own version lays it out,
+    and calls the new version's lifted helper. Both versions so call one function of the same values. Its first field
+    read throws the `NullPointerException` the call would. A helper that reads no field gets no adapter.
+  - **Why every call is in the domain**: the summary's proof is over every value of the fields and arguments, with no
+    precondition, alias or null fact, and no constructor domain. Reading those values at the call discharges its
+    applicability on the actual pre-call state. A mutation between two calls is read twice, and a write through an
+    aliasing parameter is seen.
+  - **The caller's claim** carries the whole summary as an assumption of kind `summary`, basis `proved`, with its
+    proof's key as its id (J3's helper assumptions). The proof line says the helper is "applied by its summary at each
+    call".
+  - **Verified inline**, `tests/reuse_summaries.rs`, 5 new tests (10 in all), on a tariff whose `fee` is rewritten
+    and a caller class `Bill`:
+    - the helper's own proof is stored first, then reused by three changed callers: `total`, `twice` (a mutation of
+      the fee between two calls) and `pair` (a write through another parameter, with and without `may_alias`). Each
+      is verified, its claim carrying the summary whole. The rewritten classes call the adapters, and an unchanged
+      rerun is an exact hit;
+    - the adversarial cases each reach the right result:
+      - a stale read after a mutation is refuted, with the summary applied, and its witness replays;
+      - a read before a write through an alias is verified while the tariffs are apart, and refuted, replayed, once
+        `may_alias` lets them be one;
+      - a helper that starts reading an extra field gets no summary, and its caller is refuted with its body kept;
+      - helper versions that agree only on constructor-made fees (`/ 2` and `>> 1`, with the constructor clamping
+        negatives) get no summary, since a summary is proved over every value. A single call is verified in the
+        constructor domain, and a second call after the caller lowers the fee is refuted, replayed;
+    - on a JVM with `-Xverify:all`, the classes with the summary applied give what the versions as written give over
+      a grid (192 lines, a call on `null` included).
+
+    Also passing: the 231 unit tests, `reuse` (11), `application_core` (14), `summaries` (40), `compare`, `heap`
+    (49), `effects` (18), `foundations` (5) and `observations` (12). The test helper `compile_text` now serializes
+    writing the sources, after a race between two tests compiling the same build.
+  - **R2 stands at the unit level**: a changed heap-reading helper's evidence is reused by a changed caller.
+    Inapplicable summaries and broken preconditions keep the body and reach the right verdict. No abstraction is
+    involved, so there is no spurious witness to refine: the substitution is exact by the summary's proof, as for a
+    proved pure helper. The contract's R2 row still stops at the objects stream's `construction::receiver`, because
+    the quote's `quote` is an instance target. At the merge it should reach `fee`'s summary through this path.
+    Bounded reads of primitive arrays are not done (the brief puts them after the field-only case).
+  - **Next**: R3, the measurement of preparation reuse as a queued job: a small `compare` run with several claims,
+    and an unchanged rerun, timed by stage. J4 comes at the merge.
+- 2026-11-08, **R3, first part: the measurement, queued** (job `20261108-060410-application-core-reuse-r3-a-small-compar`):
+  - **The ledger** (`lib/src/reuse/preparation.rs`): while a caller records one, spans are timed at the proof cache's
+    own steps, all in this stream's files:
+    - `shared::plan_with`, each helper's own proof in `Helpers::prove`;
+    - the key, with both versions' closures digested;
+    - the lookup, the store, and a witness replayed;
+    - each proof's checker runs, with their own phases, read at the store.
+
+    `preparation::proofs` splits a ledger into proofs (a helper's own inside its caller's plan). It gives each proof
+    the stretch before its first span, so that what no hook covers (relocating, decoding the target's classes, the
+    layout, the harness, and the caller's steps between proofs) is placed proof by proof. No other stream's file has
+    a hook. Without a ledger nothing is recorded.
+  - **The benchmark** (`lib/tests/preparation.rs`, ignored inline): `compare` on the joint example's builds (190 and
+    191) in four scenarios: cold, an unchanged rerun, the `offset` defect cold, and its rerun (the stored witnesses
+    replayed). Each runs in process under the ledger, and as the `compare` process `build.py` runs. Apart from the
+    runs, the stages a run repeats are timed one by one: `javac` per build, decoding and relocating a build,
+    alignment, the specs, opening the JDK image, writing the models, the models' digest, and the binary's digest.
+    The report goes to `lib/benchmark/preparation/`.
+  - **The existing caches, read first**: the binary's and the JDK's identities are computed once per process
+    (`OnceLock`). A class path caches the classes it decoded, but each proof builds its own class paths. The models'
+    digest is computed again for each key. The verifier build is the runner's cache.
+  - **A debug smoke run inline** (1 repeat; the figures that decide are the job's, in release). A rerun of the 5
+    proofs took 810 ms in process, 726 ms of it before each proof's lookup, about 120 ms a proof. Relocating the old
+    build took 0.8 ms and decoding it 0.3 ms. Opening the JDK image took 31 ms each time, and every class path with
+    the JDK opens it again, several times a proof. That is the likely repeated stage. The binary's digest (160 MB in
+    debug) is 5 s once per process, and a few tens of ms in release.
+  - **Verified inline**: the ledger's 2 unit tests (233 unit tests in all), `reuse` (11), `reuse_summaries` (10),
+    `compare`, `application_core` (14), `summaries` (40), `effects` (18), `heap` (49), `foundations` (5) and
+    `observations` (12). The benchmark itself ran once, in debug, and passed.
+  - **Found, from the integration check** of 05:36: the four streams conflict in `lib/README.md` (each added its
+    paragraph), and in the generated `llm-dlc/README.md`, `llm-dlc/index.json`, `llm-dlc/traces/README.md` and
+    `traces/metrics.json`. `lib/README.md` takes additions only, so the conflict is the merge's to take all four;
+    nothing here works around it.
+  - **Next**: R3's decision once the job is back. If opening the JDK image is material in release, share one image
+    per JDK home within the process: an immutable product, keyed by the image's path and its `release` digest,
+    behind one hook in the class path. That hook is `classpath.rs`, not this stream's file, so it goes as an
+    interface request, or into this stream's own class paths. Otherwise, the finding that no preparation cache is
+    justified. J4 comes at the merge.
+- 2026-11-08, **R2, third part: bounded reads of primitive arrays**, after the field-only case, in
+  `lib/src/reuse/footprint.rs` and `reuse::summarized`, with the R3 job still queued:
+  - **The footprint**: a helper may now read a field holding a one-dimensional array of a non-floating primitive
+    type, by its length and its elements. A flow over every path of the helper's own code, its locals included,
+    shows that every reference it handles is its receiver or such an array. An array is kept only in a local other
+    than the receiver's, and used only by `arraylength` and an element load of its own type. Each of these is refused
+    by name: a write, passing an array to a callee, comparing it or testing it for null, two arrays meeting where
+    paths join, arrays of floating point, of references or of arrays. A static callee still handles no reference.
+  - **Not total, said so**: a read out of bounds throws the JVM's `ArrayIndexOutOfBoundsException`. That is an
+    outcome like a result, and the summary's proof compares it. This departs from the brief's "total" for the field
+    case, for review. A division by a value that may be zero is still refused.
+  - **The summary's facts and domain**: the lifted helper takes the array itself. The proof's harness makes no
+    `null` array and none longer than the claim's array bound, so the summary carries
+    `facts: ["this.tiers != null", "this.tiers.length <= 8"]`, and its domain says so.
+  - **Applicability at each call**: each version's adapter first checks those facts on the actual receiver. Where one
+    fails (a `null` array, or one longer than the bound), it calls its own version's helper on that receiver, the
+    body as written, instead of the lifted helper. No alias fact is needed: the helper writes no array, so two arrays
+    being one changes nothing it reads.
+  - **Each version's adapter is now a class of its own**, in that version's package (`before/a/…$Call` and
+    `a/…$Call`), so it reads package-private fields and calls a package-private helper as that package may. A
+    private helper outside the domain is called by `invokespecial` from another class: valid for the checker, which
+    is the only one that runs these classes, though a JVM would refuse it.
+  - **Verified inline**, `tests/reuse_summaries.rs`, 4 new tests (14 in all, three runs):
+    - eight new refusals by name, and a for-each read accepted;
+    - a lifted array helper agrees with the helper on a JVM over 72 cases, 54 of them out of bounds;
+    - a for-each rewrite of `Rates.fee` gets the summary with its facts, and five changed callers reuse it:
+      - a tier changed between two calls, through the field and through the caller's own alias of the array, each
+        verified, and refuted, replayed, in a defect that reuses the earlier fee;
+      - an array of 10 and a `null` one are verified, through the body kept at the call;
+    - a helper charging one tier more has no summary, and its caller is refuted with its body kept;
+    - a helper whose versions differ only past the bound (`i < 8`) gets a summary, since its proof covers arrays up
+      to 8. A caller on 10 elements is refuted, replayed, because the adapter keeps the body there. With the guard
+      taken out for a check, that caller was verified: the defect hidden;
+    - on a JVM with `-Xverify:all`, the classes with the summary applied give what the versions as written give,
+      over arrays up to 10 elements and `null`.
+
+    Also passing: the 233 unit tests, `reuse` (11), `summaries` (40), `application_core` (14), `compare`, `heap`
+    (49), `effects` (18) and `foundations` (5).
+  - **Next**: R3's decision. Job `20261108-060410` is back, passed, in the runner's workspace: read its release
+    figures, then cache the JDK image per process if they show it is material, or record that no preparation cache
+    is justified. J4 comes at the merge.
+- 2026-11-08, **R3, the decision: the JDK image's table of classes shared within the process**, in
+  `lib/src/jimage.rs`, from job `20261108-060410` (passed, at `fcff0e28`), with job `20261108-063259` queued for the
+  figures after it (verification pending):
+  - **What the job measured**, in release, medians of 7, on the joint example's builds:
+    - an unchanged rerun (5 proofs, all exact hits): 209.8 ms in process, 290.3 ms as a process. 185.4 ms of it is
+      before the proofs' lookups. The key with its closures is 2.7 ms, the lookup 0.3 ms;
+    - cold: 460.6 ms in process (55 ms of it solving, 161.7 ms after the runs: replay, the JVM, the statement); the
+      defect cold 2217 ms (1723 ms solving); its rerun 265.3 ms, 13.8 ms of it the stored witnesses replayed;
+    - the stages a run repeats, one by one: opening the JDK image 6.26 ms; decoding the old build 0.03 ms, relocating
+      it 0.14 ms, the models' digest 0.09 ms, writing the models 0.32 ms; once per run, the specs 12.8 ms and
+      alignment 0.2 ms; once per process, the binary's digest 35.7 ms;
+    - compilation, apart: `javac` 403–429 ms per build, and 636 ms for the Spring stand-ins.
+  - **The repeated stage**: counted with an `open()` shim on the CLI, a rerun opens `lib/modules` 28 times and a cold
+    run 50, since every class path with the JDK opens it, and each open built the table of every class in the image.
+    At 6.26 ms that is about 175 ms of the 290 ms rerun process: material. Nothing else repeated is above a
+    millisecond.
+  - **The cache**, the one product: `JImage::open` still reads the file's header and index each time, and takes the
+    table of classes built earlier in the process from the same index bytes, if any (up to 4 indexes kept). Keyed by
+    the index's bytes themselves, not by a path, size or time, so an image changed in place, or another JDK at the
+    same path, gets its own. Resources are still read from the file opened, and no proof key changed. It is per
+    process, not persistent.
+  - **Why `jimage.rs`**: it is in no stream's ownership row, and no stream has changed it or `classpath.rs` since the
+    fork (checked on all four `@-`). The change is internal: no signature moved, so no caller changed. Recorded for
+    review, against this Progress's earlier plan of an interface request.
+  - **Verified inline**: a test first, failing before (two opens of one image shared nothing), then
+    `images_opened_on_the_same_index_share_its_classes_and_another_index_gets_its_own`: two opens share the table and
+    read the same class; a copy of the index alone elsewhere shares it too, and a copy with `java/lang/Object` renamed
+    in one byte gets its own table and leaves the shared one alone. The benchmark in debug, 1 repeat: an unchanged
+    rerun went from 846 ms to 37 ms in process (756 ms to 19 ms before the lookups), with the same verdicts. 234 unit
+    tests, `reuse` (11), `reuse_summaries` (14), `compare`, `application_core` (14), `summaries` (40), `effects`
+    (18), `heap` (49), `foundations` (5) and `observations` (12) pass.
+  - **The benchmark** now times an open whose index is new (the table built, as every open was before, writing a copy
+    of the index included) apart from an open that shares it. Job `20261108-063259` writes
+    `lib/benchmark/preparation/shared-image.json` and `.md`, beside the first job's report, which stays as recorded.
+  - **For J4's report**: with compilation, the two builds' `javac` alone (about 0.8 s, and 0.6 s for the stand-ins)
+    outweighs a whole `compare` rerun. The cut is to preparation in a rerun, never a gain in proving, and not a
+    cheaper meaningful refactor: a changed helper still proves.
+  - **Next**: job `20261108-063259`'s figures, read into R3's record. R3 is then done, its outcome justified by both
+    jobs. R4 is optional, and the only work of this stream's own left before J4 at the merge.
+- 2026-11-08, **R3 done: the cache's figures**, from job `20261108-063259` (passed at `3841df5e`, 3m22s, peak 1.7
+  GiB; its reports `lib/benchmark/preparation/shared-image.json` and `.md` are committed in the default workspace by
+  the runner, beside the first job's `preparation.*`, and reach this branch at the merge):
+  - **The same verdicts** as job `20261108-060410` in all four scenarios, in process and as a process: cold and the
+    rerun verify `POST /quotes`, `discount`, `total` and `withQuantity`; the defect refutes `POST /quotes` and
+    `total`; `POST /quotes/text` stays unresolved, `Money#cents` and `Quote#quantity` unsupported.
+  - **The open**: building the table (writing the index's copy included) 7.89 ms, against 6.26 ms for an open before;
+    an open that shares it 0.06 ms.
+  - **The runs**, medians of 7, before the cache → with it:
+
+    | Scenario | in process (ms) | as a process (ms) | before each proof (ms) | solving (ms) | after the runs (ms) |
+    |---|---|---|---|---|---|
+    | cold | 460.6 → 65.6 | 496.1 → 125.0 | 207.8 → 6.1 | 55.0 → 47.0 | 161.7 → 8.9 |
+    | unchanged rerun | 209.8 → 8.6 | 290.3 → 66.1 | 185.4 → 5.4 | 0 → 0 | 0 → 0 |
+    | defect, cold | 2217.2 → 1575.8 | 2215.9 → 1640.1 | 245.3 → 48.4 | 1723.0 → 1484.0 | 197.5 → 35.8 |
+    | defect, rerun | 265.3 → 31.9 | 491.1 → 106.4 | 222.5 → 27.3 | 0 → 0 | 0 → 0 |
+
+    "After the runs" (the witness replayed and run on a JVM, the statement) and part of "solving" fell too: those
+    steps build class paths with the JDK as well. As a process, about 37 ms of what is left is the binary's digest,
+    once per process.
+  - **Compilation, apart**: `javac` 395–404 ms per build and 602 ms for the Spring stand-ins, as before. With it, a
+    build's compilation is several times a whole `compare` rerun. The cut is to a rerun's preparation and to the
+    class paths a cold run builds, not to proving a change: the defect's solving is still 1.48 s.
+  - **R3's outcome**: one immutable product cached per process, keyed by all its input (the index's bytes),
+    justified by job `060410` and measured by job `063259`. `lib/README.md`'s paragraph now gives the figures.
+  - **Verified**: both jobs' reports read in full; the README change is prose only.
+  - **Found, for J4**: the benchmark has the contract's cold run, exact rerun and real defect, but not its unrelated
+    edit or safe rewrite of a helper. Without the helper rewrite it can't show helper evidence apart from exact hits
+    and preparation reuse, as this brief's Acceptance asks.
+  - **Next**: those two scenarios in `lib/tests/preparation.rs`. The first is an edit outside every claim's closure,
+    whose proofs should all be exact hits. The second is a rewrite of a helper that `compare` proves as a changed
+    helper and its callers reuse. Each is checked for its verdicts and cache outcomes inline in debug, then queued in
+    release, so that J4 at the merge runs the full set on the merged revision. R4 stays optional.
+- 2026-11-08, **J4's benchmark has all five cases**, in `lib/tests/preparation.rs` and a new fixture directory,
+  `lib/tests/fixtures/preparation/` (its README), with job `20261108-114325-application-core-reuse-j4-the-small-comp`
+  queued for the release figures (verification pending):
+  - **The two edits**, each an overlay on the joint example's `after`, as its defects are, and each checked from a
+    copy of the proof cache a cold run of `after` leaves (in process and as a process apart, since their tools'
+    identities differ), as a developer's next edit would be:
+    - `unrelated-edit` adds `shop.Shipping`, a class no route or kernel method reaches;
+    - `helper-rewrite` rewrites the pure helper `Pricing.discount` again (the tenth taken first), with `after`'s
+      result on every input.
+  - **The report tells the three apart**: per subject, whether it was an exact hit or proved, and the helper proofs
+    it was proved on, by key; the preparation reuse is the shared image's, timed among the units as before.
+  - **Asserted**, beside the earlier checks: both edits keep `after`'s verdicts; the unrelated edit proves nothing
+    again; in the helper rewrite `total` is proved again on a new proof of `discount` (a key other than the cold
+    run's), the helper's own proof is a miss, and `withQuantity` an exact hit.
+  - **The debug smoke run inline** (1 repeat, 58 s, passed): the unrelated edit's 5 proofs were all exact hits
+    (40 ms in process). The helper rewrite's were 1 exact hit (`withQuantity`) and 4 proved: the route, `discount` as
+    a kernel subject, `discount` again as `total`'s helper (a claim of its own, without the kernel's correspondence),
+    and `total` on that proof. The route's effect proof is proved again too, since its closure holds the helper's
+    body: helper evidence reaches the kernel's caller, not the entry point.
+  - **Not changed**: no library code. The earlier reports stay as recorded; this job writes
+    `lib/benchmark/preparation/j4.json` and `.md`.
+  - **R4 is left out for now**: the brief allows it only after R1 and R2 pass, and the contract's R2 row still stops
+    at the objects stream's `construction::receiver` until the merge. It never changes a row.
+  - **Next**: job `20261108-114325`'s figures, read into this record. J4 itself comes at the merge, on the merged
+    revision.
+- 2026-11-08, **J4's figures**, from job `20261108-114325` (passed at `283aa75d`, 3m37s, peak 1.7 GiB, on vm-1 like
+  both R3 jobs; its reports `lib/benchmark/preparation/j4.json` and `.md` are committed in the default workspace by
+  the runner, `tvwtmzkx`, and reach this branch at the merge):
+  - **The verdicts**, every repeat and the process alike: `after`, the unrelated edit and the helper rewrite verify
+    `POST /quotes`, `discount`, `total` and `withQuantity`, with `POST /quotes/text` unresolved and `Money#cents` and
+    `Quote#quantity` unsupported; `offset` refutes the route and `total`, cold and rerun. Every assertion of the
+    benchmark held.
+  - **The runs**, medians of 7, in release; "with javac" adds the edited build's own compilation (the before build
+    and the Spring stand-ins, 397 and 608 ms, are compiled once):
+
+    | Scenario | exact hits / proved | in process (ms) | as a process (ms) | solving (ms) | with javac (ms) |
+    |---|---|---|---|---|---|
+    | cold (`after`) | 0 / 5 | 71.5 | 127.0 | 50.0 | 546 |
+    | unchanged rerun | 5 / 0 | 9.5 | 62.5 | 0 | 481 |
+    | unrelated edit | 5 / 0 | 8.9 | 64.4 | 0 | 461 |
+    | safe helper rewrite | 1 / 4 | 79.2 | 138.7 | 59.0 | 534 |
+    | defect, cold (`offset`) | 0 / 5 | 1450.7 | 1687.6 | 1364.0 | 2085 |
+    | defect, rerun | 5 / 0 | 31.7 | 83.7 | 0 | 482 |
+
+    An open of the JDK image builds its table in 8.63 ms and shares it in 0.07 ms; the binary's digest is 37.7 ms
+    once per process; no other repeated stage is above a millisecond.
+  - **The three kinds of reuse, apart**:
+    - *exact hits*: the reruns and the unrelated edit prove nothing again. The added class changes no claim, since
+      closures are digested per method;
+    - *helper evidence*: in the helper rewrite, `total` is proved on the new proof of `discount`, by key
+      (`sha256:54af4a93…`, the cold run's `sha256:776dae08…`). `total`'s claim names that proof, and `discount` is
+      proved twice: as a kernel subject, and as `total`'s helper, a claim without the kernel's correspondence. It
+      doesn't make the rewrite cheaper: the route's effect proof holds the helper's body in its closure and is proved
+      again, so the rewrite costs a cold run's time, 4 proofs of 5;
+    - *preparation reuse*: the shared image table, in every scenario, cold included.
+  - **With compilation**, the edited build's `javac` (about 400 ms) is 74–87% of every scenario but the defect's cold
+    run, so the cut to preparation is a rerun's, never a whole build's. The figures are for these fixtures only.
+  - **Also**: `lib/README.md`'s preparation paragraph gives the two new cases.
+  - **Verified**: the job's report, its log and `j4.json`'s verdicts read in full. The README change is prose only.
+  - **For the for-review list**:
+    - the helper rewrite's route is proved again, because effect proofs don't use helper evidence. Reusing it there
+      would be later work, not this wave's;
+    - the R2 contract row still stops at the objects stream's `construction::receiver`. At the merge it should reach
+      `fee`'s summary, and a caller's reuse of it is J1's.
+  - **The stream's items**: R1, R2 (unit level, with array reads), R3 (one cache, justified and measured), J3, and
+    J4's report with all five cases are done. R4 is left out, as the brief allows. J4's rerun on the merged revision
+    is the main loop's Phase 5. The interface requests under R1 wait for the merge.
+- Status: done
 
 ## Loop settings
 

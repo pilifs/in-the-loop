@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-093809-vf-023-s-third-probe-does-the-model-java",
+  "title": "VF-023's third probe: does the model java.util.List re-declaring Collection's methods fix JBMC's dispatch of size() on a choice of two lists",
+  "description": "Values stream of llm-dlc/loops/application-core.md (llm-dlc/loops/application-core-values.md, acceptance row V2; finding VF-023 in verification/findings.md), at the commit that submits this job. The second probe (job 20261108-091002-..., passed) found that JBMC 6.11.0 refutes l.size() whenever l is a choice between two lists made on different branches (two List12s included) and proves it for one list alone; its trace of oneOrTwo(n=1) shows JBMC calling ImmutableCollections$ListN.size on a List12, which returns 0. Each refuted probe also reaches java.util.List.size() as JBMC's stub: the model java.util.List (lib/models/java/util/List.java) declares List's own abstract methods but not the ones it inherits from Collection (size, isEmpty, iterator, ...), and Collection is not on JBMC's class path, whereas the JDK's List re-declares them. This job changes nothing in the repository and fixes nothing (no timebox attempt). verification/triage/vf023-dispatch.sh runs six property proofs with JBMC alone (jvmcontract prove --engine jbmc, default unwind 16, timeout 300 s each) in two class-path variants: as-is (the tool's models) and declared (the models' java.util sources with Collection's 15 abstract methods re-declared in List, compiled with javac --release 8 into lib/target and passed with --classpath, which precedes the tool's models on JBMC's class path). Probes: the corpus's listSizes [assume n >= 1 && n <= 3; assert result == n * 10] and listChange [assume n == 0 || n == 8; assert result == 1], oneOrTwo, oneOrThree, emptyOrOne and oneAssumed. For each it records the verdict and, from jbmc-goto.txt, the probe method's dispatch of size()/isEmpty() (the class-identifier tests and the functions called). Domain: one int n under each probe's assumption. Expected: as-is reproduces the second probe (oneAssumed proved, the five others not verified: JBMC's counterexample does not reproduce); declared is the hypothesis under test, all six proved if it holds. Process status: exit 0 either way (the script reports, it doesn't judge). If declared proves all six, the next step is that change in lib/models with values::LIST_MODEL bumped, checked by resubmitting job 20261108-070211-...'s corpus steps, as VF-023's last timebox attempt.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "verification/triage/vf023-dispatch.sh",
+      "lib/models/java/util/List.java",
+      "lib/tests/conformance/conformance/Conformance.java",
+      "llm-dlc/loops/application-core-values.md"
+    ]
+  },
+  "expected": "exits 0; summary.txt names each variant's six verdicts and the dispatch of size() in each probe method; as-is: oneAssumed proved, the other five not verified; declared: the hypothesis holds if all six are proved",
+  "submitted": {
+    "at": "2026-11-08T09:38:09+00:00",
+    "session": "b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f",
+    "by": "application-core-values stream (claude-opus-5-5)"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1.5G",
+    "duration": "10m",
+    "notes": "twelve JBMC runs over methods of a few lines: the second probe's nine took 5.8 s in all"
+  },
+  "steps": [
+    {
+      "name": "VF-023 third probe under JBMC",
+      "run": "bash verification/triage/vf023-dispatch.sh",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/vf023-dispatch"
+  ]
+}

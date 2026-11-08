@@ -462,6 +462,18 @@ pub fn regression_assumptions(layout: &Layout, unchanged_unless: Option<&str>, b
                 continue;
             }
         }
+        // The objects stream's O2 (application-core): where the harness compares the versions' admission of an
+        // input, only an input both versions' constructors reject is skipped.
+        if let (true, Slot::Record { name, record, .. }) = (layout.compares_admission(), slot) {
+            let (what, built) = if record.is_made() { ("arguments", "objects") } else { ("components", "records") };
+            out.push(Assumption {
+                kind: AssumptionKind::Constructible,
+                text: format!("either version's constructor {} accepts the {what} of {name}: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the {built} both versions can build, and that they can build the same ones", record.describe()),
+                basis: Basis::Harness,
+                id: None,
+            });
+            continue;
+        }
         if let Slot::Record { name, record, before, .. } = slot {
             let versions = if before.is_some() { "either version's" } else { "the new version's" };
             let (what, built) = if record.is_made() { ("arguments", "objects") } else { ("components", "records") };

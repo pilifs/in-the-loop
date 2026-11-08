@@ -17,7 +17,8 @@
 //! built from what the check is about: the preservation contract (the target and its parameters, derived by identity
 //! or by `--before-arguments`), the observations, the correspondence the flags state, the bounds, the assumptions
 //! (the statement's own, its domain, the shared callees, the harness's digest), each version's closure from the
-//! target and every record constructor its inputs are made with, and the tools with every setting that can change
+//! target and every constructor the harness calls to make its inputs (those of the objects an input is made from
+//! included), and the tools with every setting that can change
 //! a verdict. Only a check by the own checker (`--engine native`) is cacheable for now: JBMC's own identity is not
 //! yet part of the key, so a claim JBMC may decide is uncacheable rather than keyed without it. The deadline is not
 //! in the claim: it decides only whether a verdict is reached, and an unresolved result is never stored.
@@ -313,7 +314,7 @@ fn split_top_level(text: &str) -> Vec<String> {
 }
 
 /// `2026-11-07T12:00:00Z`, now.
-fn utc_now() -> String {
+pub fn utc_now() -> String {
     let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs() as i64).unwrap_or(0);
     let (days, rest) = (secs.div_euclid(86_400), secs.rem_euclid(86_400));
     // Howard Hinnant's civil_from_days.
@@ -336,27 +337,31 @@ impl<'a> Regression<'a> {
         if o.engine != crate::Engine::Native {
             return Err(uncacheable("JBMC may decide it (--engine jbmc or auto), and JBMC's own identity is not yet part of the key; the cache is used with --engine native"));
         }
-        // Each version's roots: the method compared, and every constructor its inputs are made with.
-        let init = |class: &str, r: &harness::RecordType| MemberRef::new(class.strip_prefix("before/").unwrap_or(class), "<init>", &r.constructor());
+        // Each version's roots: the method compared, and every constructor the harness calls to make its inputs, those
+        // of the objects an input is made from included (`RecordType::constructors`), not only the input's own.
+        let inits = |r: &harness::RecordType| -> Vec<MemberRef> {
+            r.constructors().iter().map(|(class, descriptor)| MemberRef::new(class.strip_prefix("before/").unwrap_or(class), "<init>", descriptor)).collect()
+        };
         let mut after_roots = vec![self.target.clone()];
         let mut before_roots = vec![self.before_target.clone()];
         for slot in self.layout.records() {
             if let Slot::Record { record, before, .. } = slot {
-                after_roots.push(init(&record.class, record));
-                let b = before.as_ref().unwrap_or(record);
-                before_roots.push(init(&b.class, b));
+                after_roots.extend(inits(record));
+                before_roots.extend(inits(before.as_ref().unwrap_or(record)));
             }
         }
         if let Some(p) = self.previous {
             for r in p.receiver.iter().chain(p.records.iter().flatten()) {
-                before_roots.push(init(&r.class, r));
+                before_roots.extend(inits(r));
             }
         }
         let digest = |cp: &ClassPath, roots: &[MemberRef]| -> Result<String, Unsupported> {
             let configuration = crate::closure::Configuration::read(cp, &[]).map_err(|e| uncacheable(format!("its configuration could not be read: {e}")))?;
             Ok(crate::closure::version_digest(cp, roots, &configuration))
         };
-        let closures = VersionDigests { before: digest(self.before_cp, &before_roots)?, after: digest(self.after_cp, &after_roots)? };
+        let closures = crate::reuse::preparation::span(crate::reuse::preparation::Stage::Closures, &o.target, || -> Result<VersionDigests, Unsupported> {
+            Ok(VersionDigests { before: digest(self.before_cp, &before_roots)?, after: digest(self.after_cp, &after_roots)? })
+        })?;
 
         let mut observations = vec![Observation::Result, Observation::Exception];
         observations.extend(self.observations.arrays.iter().map(|a| Observation::ArrayParameter { parameter: a.clone() }));
@@ -422,7 +427,7 @@ impl<'a> Regression<'a> {
         let inert = Entry { place: None };
         let Some(dir) = self.options.cache.clone() else { return Ok((inert, None)) };
         let keying = Instant::now();
-        let key = match self.claim().and_then(|c| cache::key(&c)) {
+        let key = match crate::reuse::preparation::span(crate::reuse::preparation::Stage::Key, &self.options.target, || self.claim().and_then(|c| cache::key(&c))) {
             Ok(k) => k,
             Err(u) => {
                 let _ = writeln!(out, "note: the proof cache is not used: {}", u.what);
@@ -441,21 +446,24 @@ impl<'a> Regression<'a> {
         let mut place = Place { dir, key, replay, models: self.options.models, types: self.layout.types(), domain: self.shown.domain.to_string(), required, provenance, note: String::new() };
         let keyed = keying.elapsed();
         let looking = Instant::now();
-        let found = match cache::lookup_detail(&place.dir, &place.key) {
-            Ok(found) => found,
-            Err(u) => {
-                let _ = writeln!(out, "note: the proof cache is not used: {}", u.what);
-                return Ok((inert, None));
-            }
-        };
         let before = out.len();
-        let mut hit = match found {
-            None => {
-                let _ = writeln!(out, "note: the proof cache has no result for this claim ({}); proving", place.key.0);
-                None
-            }
-            Some((record, detail)) => self.reuse(&place, record, detail, out)?,
-        };
+        let found = crate::reuse::preparation::span(crate::reuse::preparation::Stage::Lookup, &self.options.target, || -> Result<Option<Option<Outcome>>, Error> {
+            let found = match cache::lookup_detail(&place.dir, &place.key) {
+                Ok(found) => found,
+                Err(u) => {
+                    let _ = writeln!(out, "note: the proof cache is not used: {}", u.what);
+                    return Ok(None);
+                }
+            };
+            Ok(Some(match found {
+                None => {
+                    let _ = writeln!(out, "note: the proof cache has no result for this claim ({}); proving", place.key.0);
+                    None
+                }
+                Some((record, detail)) => self.reuse(&place, record, detail, out)?,
+            }))
+        })?;
+        let Some(mut hit) = found else { return Ok((inert, None)) };
         // This run's own time with the cache, apart from the checker's: never stored, so a reuse names its own.
         let timing = format!(
             "note: the proof cache took {:.3} s to compute this claim's key (both versions' closures, the harness's digest and the tools') and {:.3} s to look it up{}\n",
@@ -526,6 +534,10 @@ impl Place {
     /// Whether the harness, run in the interpreter on `arguments`, refutes the statement: both versions as they are
     /// now disagree there.
     fn reproduces(&self, arguments: &[Argument]) -> bool {
+        crate::reuse::preparation::span(crate::reuse::preparation::Stage::Replay, "", || self.reproduces_untimed(arguments))
+    }
+
+    fn reproduces_untimed(&self, arguments: &[Argument]) -> bool {
         let Ok(cp) = witness::classpath(self.replay.iter().map(PathBuf::as_path)) else { return false };
         witness::fails_in_harness(&cp.with_models(self.models), harness::CLASS, &self.types, arguments) == Some(true)
     }
@@ -536,6 +548,18 @@ impl Entry {
     /// witness, read back as stored, reproduces; anything else is not. A note in the outcome's output says which.
     pub fn store(&self, outcome: &mut Outcome) {
         let Some(place) = &self.place else { return };
+        crate::reuse::preparation::span(crate::reuse::preparation::Stage::Store, &outcome.target.clone(), || {
+            let verdict = match outcome.verdict {
+                Verdict::Verified => "verified",
+                Verdict::Violation => "refuted",
+                Verdict::Unverifiable => "unresolved",
+            };
+            crate::reuse::preparation::solved(&outcome.target, verdict, outcome.search.as_ref());
+            self.store_at(place, outcome)
+        })
+    }
+
+    fn store_at(&self, place: &Place, outcome: &mut Outcome) {
         let note = |outcome: &mut Outcome, text: String| {
             let _ = writeln!(outcome.output, "note: {text}");
         };
@@ -651,6 +675,14 @@ impl<'a> Helpers<'a> {
         if !self.active() {
             return None;
         }
+        crate::reuse::preparation::span(crate::reuse::preparation::Stage::HelperProof, &crate::shared::target_of(callee), || self.prove_active(callee))
+    }
+
+    /// [`prove`](Self::prove), for a check that proves its helpers.
+    fn prove_active(&mut self, callee: &MemberRef) -> Option<crate::shared::Proved> {
+        if self.is_instance(callee) {
+            return self.summarize(callee);
+        }
         let target = crate::shared::target_of(callee);
         let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
         let mut note = |why: String| {
@@ -732,6 +764,112 @@ impl<'a> Helpers<'a> {
             id: Some(key.0.clone()),
         });
         Some(crate::shared::Proved { key: key.0, from: record.provenance })
+    }
+}
+
+impl Helpers<'_> {
+    /// Whether the new version declares `callee` as an instance method: a read-only helper a summary may stand for
+    /// ([`Self::summarize`]).
+    fn is_instance(&self, callee: &MemberRef) -> bool {
+        let mut cp = crate::classpath::ClassPath::new();
+        cp.add(&self.options.after).is_ok() && cp.find_method(&callee.owner, &callee.name, &callee.descriptor).is_some_and(|(_, m)| !m.is_static())
+    }
+
+    /// R2: the summary of a changed read-only heap helper, `callee` as the new version declares it, from the cache or
+    /// proved now ([`crate::reuse::application`]), applied at each of the caller's calls in both versions by
+    /// [`crate::shared::substitute`]; `None`, with a note, when there is none and the helper keeps its body. The
+    /// caller's claim gains the whole summary as an assumption of kind `summary`, basis `proved`, with its proof's
+    /// claim key as its id: its proof is positional in the fields' values, so the claim names which field is which
+    /// (its `reads`), and not only the key.
+    fn summarize(&mut self, callee: &MemberRef) -> Option<crate::shared::Proved> {
+        let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
+        let notes = &mut self.notes;
+        let mut note = |why: &str| {
+            let _ = writeln!(notes, "note: {name}, changed, keeps its body in both versions: {why}");
+        };
+        let caller = self.options.target.clone();
+        let names_callee = |t: &String| crate::verifier::parse_target(t).is_some_and(|(c, m)| c == callee.owner && m == callee.name);
+        if names_callee(&caller) || PROVING.with(|p| p.borrow().iter().any(names_callee)) {
+            note("its summary would rest on the proof it is used in");
+            return None;
+        }
+        let left = self.budget.saturating_sub(self.spent);
+        if left < Duration::from_secs(1) {
+            note("no time is left for its summary's proof");
+            return None;
+        }
+        let mut options = self.options.clone();
+        options.timeout_seconds = left.as_secs().max(1);
+        let started = Instant::now();
+        let applied = crate::reuse::application(&options, callee, &self.work.join(format!("{}.{}", callee.owner.replace('/', "."), callee.name)));
+        self.spent += started.elapsed();
+        let _ = writeln!(self.notes, "note: {name}'s summary took {:.3} s", started.elapsed().as_secs_f64());
+        let a = match applied {
+            Ok(a) => a,
+            Err(u) => {
+                let _ = writeln!(self.notes, "note: {name}, changed, keeps its body in both versions: {}", u.what);
+                return None;
+            }
+        };
+        let how = if a.found { "found in the proof cache" } else { "proved now and stored in the proof cache" };
+        let key = a.summary.proof.clone();
+        let _ = writeln!(
+            self.notes,
+            "note: {name}, changed, is applied by its summary at each call in both versions: its two versions, lifted over the fields it reads ({}), have the same outcome on every value of them and of its arguments{}, {how} (claim {key}); each call reads them from its actual receiver{}",
+            a.summary.reads.join(", "),
+            if a.summary.facts.is_empty() { String::new() } else { format!(" where {}", a.summary.facts.join(" and ")) },
+            if a.summary.facts.is_empty() { "" } else { ", and a call where they don't hold keeps the helper's body" }
+        );
+        let json = serde_json::to_string(&a.summary).expect("a summary serializes");
+        self.assumptions.push(Assumption {
+            kind: AssumptionKind::Summary,
+            text: format!("{name}, changed, is its summary at each call in either version, applied on the receiver's state at that call: {json}"),
+            basis: Basis::Proved,
+            id: Some(key.clone()),
+        });
+        Some(crate::shared::Proved { key, from: a.from })
+    }
+}
+
+/// R2: the regression proof of a read-only helper lifted over its footprint ([`crate::reuse::footprint::lift`]): the
+/// check of `target` in `before` and `after` (each a version's classes with its lifted helper), under the caller's
+/// cache, engine, bounds and tools, but over the helper's own inputs, as a changed helper's proof is ([`Helpers`]).
+/// Gives the claim key it was proved under, its outcome and its cache record's provenance, or why there is no proof to use: no cache, another
+/// engine, a proof it would rest on, a result other than verified, or one not stored.
+pub fn lifted_proof(options: &Options, target: &str, before: &Path, after: &Path, work: &Path) -> Result<(ClaimKey, Outcome, String), String> {
+    if options.cache.is_none() || options.engine != crate::Engine::Native {
+        return Err("a helper's summary is proved only under the proof cache and the own checker (--cache, --engine native)".into());
+    }
+    let caller = options.target.clone();
+    let names = |t: &String| t == target;
+    if names(&caller) || PROVING.with(|p| p.borrow().iter().any(names)) {
+        return Err("its proof would rest on the proof it is used in".into());
+    }
+    let mut helper = options.clone();
+    helper.before = before.to_path_buf();
+    helper.after = after.to_path_buf();
+    helper.target = target.to_string();
+    helper.before_target = None;
+    helper.before_arguments = None;
+    helper.results_agree_when = None;
+    helper.correspondence = None;
+    helper.nullable = Vec::new();
+    helper.may_alias = Vec::new();
+    helper.unchanged_unless = None;
+    helper.object_domain = None;
+    helper.plan = None;
+    helper.report = None;
+    helper.confirm = false;
+    helper.work = Some(work.to_path_buf());
+    PROVING.with(|p| p.borrow_mut().push(caller));
+    let outcome = crate::equivalence::run(&helper);
+    PROVING.with(|p| p.borrow_mut().pop());
+    let outcome = outcome.map_err(|e| format!("its check failed: {e}"))?;
+    applicable(&outcome)?;
+    let key = KEYS.with(|k| k.borrow().iter().rev().find(|(t, _)| t == target).map(|(_, key)| key.clone())).ok_or("its claim has no key")?;
+    match cache::lookup(options.cache.as_ref().expect("checked"), &key) {
+        Ok(Some(r)) if r.outcome.verdict == crate::spec::Verdict::Verified => Ok((key, outcome, r.provenance)),
+        _ => Err(format!("its proof is not in the proof cache (claim {})", key.0)),
     }
 }
 

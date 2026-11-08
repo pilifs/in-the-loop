@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that",
+  "title": "VF-023's diagnosis: why JBMC refutes that a one-element List.of from lib/models has size 1",
+  "description": "Values stream of llm-dlc/loops/application-core.md (llm-dlc/loops/application-core-values.md, acceptance row V2; finding VF-023 in verification/findings.md), at the commit that submits this job. Job 20261108-070211-… failed at step 2 because under --engine auto --confirm JBMC 6.11.0 refutes the corpus's listSizes(n=1) and listChange(n=0), which the own checker proves and the JVM, the interpreter and lib/models' lists run on a JVM all hold. Each spurious witness is a one-element List.of, whose List12 stores the static sentinel ImmutableCollections.EMPTY as its second element (size() is 'e1 != EMPTY ? 2 : 1'). Every other list claim JBMC decides agrees with the JVM, including a two-element List12's size, get(0) of a one-element one, and EMPTY_LIST's identity. This job changes nothing. verification/triage/vf023.sh runs three property proofs with JBMC alone (jvmcontract prove --engine jbmc, the default unwind and timeout 300 s, one int parameter the claims don't read, the models on JBMC's class path as always) and keeps JBMC's logs: 'one' (List.of(new Object()).size() == 1), 'oneAfterInit' (List.of() first, so that ImmutableCollections is initialized before the List12 constructor reads EMPTY), and 'two' (two elements, the control). From each counterexample trace it extracts the assignments to ImmutableCollections' statics, to a List12's e1 and to the class-initialization flags. On a JVM the three give 1, 1 and 2. Expected verdicts: 'one' refuted by JBMC, with the interpreter's replay holding (VF-023 reproduced); 'two' verified; 'oneAfterInit' unknown, which is the question. Expected process status: the script exits 0 (it exits 1 only if the probe fails to compile). matchesExpected is the script running to the end. The verdicts are the evidence, read from summary.txt and the trace files.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "verification/triage/vf023.sh",
+      "lib/models/java/util/ImmutableCollections.java",
+      "llm-dlc/loops/application-core-values.md"
+    ]
+  },
+  "expected": "exits 0, with summary.txt naming each probe's verdict and the trace steps that set EMPTY and e1",
+  "submitted": {
+    "at": "2026-11-08T08:22:44+00:00",
+    "session": "b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f",
+    "by": "application-core-values stream (claude-opus-5-5)"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1.5G",
+    "duration": "5m",
+    "notes": "three JBMC runs over a three-line method each: seconds to a minute each; the corpus's list claims took under 10 s each under JBMC"
+  },
+  "steps": [
+    {
+      "name": "VF-023 probes under JBMC",
+      "run": "bash verification/triage/vf023.sh",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/vf023"
+  ]
+}

@@ -345,6 +345,25 @@ impl ClassPath {
         self.is_application(name) || (crate::models::CHECKER_RUNS.contains(&name) && self.checker_model(name).is_some())
     }
 
+    /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an
+    /// application class, or a model it runs as bytecode ([`crate::models::CHECKER_RUNS`]: `ImmutableCollections`,
+    /// whose initializer makes the one empty list and the sentinel of a list of one). Any other JDK class is taken to
+    /// be initialized already, and only its constants are read.
+    pub fn checker_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if crate::models::CHECKER_RUNS.contains(&name) {
+            return self.checker_model(name);
+        }
+        if is_jdk_name(name) {
+            return None;
+        }
+        self.application(name).ok().flatten()
+    }
+
+    /// Whether [`checker_class`](Self::checker_class) has the class.
+    pub fn checker_statics(&self, name: &str) -> bool {
+        self.checker_class(name).is_some()
+    }
+
     fn method_in(&self, owner: &str, name: &str, descriptor: &str, bytecode: &dyn Fn(&str) -> Option<Rc<ClassFile>>) -> Option<(Rc<ClassFile>, Method)> {
         let mut current = Some(owner.to_string());
         let mut hops = 0;

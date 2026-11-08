@@ -1,0 +1,92 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-045000-application-core-objects-o1-lib-tests-in",
+  "title": "application-core objects O1: lib/tests/integration.rs and shop's examples 190-196 with an ordinary receiver made by its constructor",
+  "description": "Row O1 of llm-dlc/loops/application-core-acceptance.md, at the commit that commits this job (the objects stream's workspace, application-core-objects). O1 lets the regression check (equivalence) and the property check (prove) take an instance method of an ordinary class: the receiver is made by its constructor as an object parameter is (construction::receiver over equivalence::made_of), its fields compared after the call, and 'this' a root of the identity relations. Before, every such method was refused ('is an instance method; ... otherwise only static methods are'). Unit-level tests ran inline on the native engine (tests/application_core.rs's O1, tests/application_core_objects.rs). This job checks what needs JBMC or build.py: step 1 runs lib/tests/integration.rs unchanged (several tests run JBMC; expected: every non-ignored test passes, exit 0). Steps 2-8 rerun examples 190 to 196 (jvmcontract compare, domain and bounds as each example records them, the native engine as recorded): their kernels named Quote#quantity unresolved as an instance method, which O1 now checks, so their recorded kernel lines may change, but each example's top-level verdict must not. Expected: 190 verified, 191 violation, 192 violation, 193 violation, 194 violation, 195 verified, 196 unverifiable, build.py printing 'as expected' and exiting 0 for each. Every step runs even if one fails.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "jvmcontract:compare",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/construction.rs",
+      "lib/tests/integration.rs"
+    ],
+    "examples": [
+      "190",
+      "191",
+      "192",
+      "193",
+      "194",
+      "195",
+      "196"
+    ]
+  },
+  "expected": "integration tests: every non-ignored test passes (exit 0); examples 190 verified, 191-194 violation, 195 verified, 196 unverifiable, each with build.py printing 'as expected' and exiting 0",
+  "submitted": {
+    "at": "2026-11-08T04:50:00+00:00",
+    "session": "3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9",
+    "by": "application-core-objects"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "notes": "as the cleanup merge's jobs 20261107-215001-...-integration-rs (15m, 3G, a clean build) and -190-196 (12m, 1G)"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    },
+    {
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": "."
+    },
+    {
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": "."
+    },
+    {
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": "."
+    },
+    {
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": "."
+    },
+    {
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": "."
+    },
+    {
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": "."
+    },
+    {
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

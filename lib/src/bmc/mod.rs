@@ -22,8 +22,11 @@
 //! The fragment this engine handles is the one the proofs are mostly about: static methods over `int`, `long`,
 //! `short`, `byte`, `char` and `boolean`, straight-line and branching arithmetic, calls into the application's own
 //! static methods (inlined), the `Math`/`StrictMath` exact and floor operations with their overflow exceptions,
-//! `Integer`/`Long` comparisons, exceptions thrown and caught by class, and strings only as opaque objects (a
-//! message built for an exception). An array of those primitives is an object with a symbolic length and a cell
+//! `Integer`/`Long` comparisons, exceptions thrown and caught by class, and bounded Strings: a String is an object
+//! with its content, UTF-16 code units of a symbolic length (any units at all, a surrogate alone or a NUL), whose
+//! `length`, `isEmpty`, `charAt`, `equals` and `startsWith` are modelled; a String parameter has every content up to
+//! [`Parameters::max_string_length`], and its witness is its code units. A String whose content the engine doesn't
+//! compute (a number's digits) is an opaque object, which a message built for an exception may still be. An array of those primitives is an object with a symbolic length and a cell
 //! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
 //! as JBMC's nondeterministic arrays do (and is never null nor another parameter's array, unless
 //! [`Options::parameters`] lets it be, a symbolic reference then), a read is a choice among the cells by the index and a write a
@@ -44,7 +47,7 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
-//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
+//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
@@ -55,11 +58,13 @@
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
+//! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
+//! | `invokevirtual` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)` and `startsWith(String)` on a String whose content the engine holds ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
-//! | `invokedynamic` string concatenation | implemented over strings and primitives (the result an opaque string); an object argument it would convert is a gap, `string-conversion` |
-//! | `ldc` of a string or a class | implemented: one opaque object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class |
+//! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a number or a boolean converted gives an opaque String (numeric formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
+//! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content (the class reader's `CONSTANT_Utf8` is decoded lossily, so an isolated surrogate in a literal is U+FFFD there) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
@@ -134,16 +139,23 @@ impl Default for Options {
 /// the own array of each parameter before it in its group. Any partition of a group into arrays is so reachable,
 /// each array named by the first parameter holding it, and a witness says which parameters hold one array
 /// ([`Outcome::raw_same`]).
+///
+/// A `String` parameter is taken only under an explicit bound, [`Parameters::max_string_length`]: it is then a
+/// String of its own of every content up to the bound, any code units at all ([`Obj::content`]), and is nullable or
+/// one String with another as an array parameter is (`==` then tells them apart, `equals` doesn't).
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Parameters {
     pub nullable: Vec<u32>,
     /// Groups of parameters any two of which may be one array, each group in slot order.
     pub may_alias: Vec<Vec<u32>>,
+    /// The most code units a `String` parameter has: an input-domain bound, part of the claim. `None` refuses a
+    /// `String` parameter, so that no check takes one under a bound it didn't state.
+    pub max_string_length: Option<u32>,
 }
 
 impl Parameters {
     pub fn is_default(&self) -> bool {
-        self.nullable.is_empty() && self.may_alias.is_empty()
+        self.nullable.is_empty() && self.may_alias.is_empty() && self.max_string_length.is_none()
     }
 }
 
@@ -315,14 +327,27 @@ pub struct Stats {
     pub witness_seconds: f64,
 }
 
-/// Why a parameter type is outside the fragment, if it is.
+/// Why a parameter type is outside the fragment, if it is. A `String` is in it under a bound
+/// ([`Parameters::max_string_length`]).
 pub fn unsupported_parameter(t: &Type) -> Option<String> {
     match t {
         Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long => None,
         Type::Array(element) if matches!(**element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) => None,
+        t if is_string(t) => None,
         other => Some(format!("a {} parameter", other.java_name())),
     }
 }
+
+const STRING: &str = "java/lang/String";
+
+fn is_string(t: &Type) -> bool {
+    matches!(t, Type::Object(name) if name == STRING)
+}
+
+/// The most code units the engine computes a String's content to: a concatenation that could make more gives a
+/// String whose content is a named limit ([`Obj::limit`]), never a truncated one. An input's length is its own
+/// bound ([`Parameters::max_string_length`]), and a literal has the units it has.
+pub const MAX_STRING_CONTENT: usize = 64;
 
 /// The width of a cell of an array of `element`s: what a store keeps of the value, which a load extends to an
 /// int (a boolean and a char without sign, a byte and a short with it) or leaves a long.
@@ -342,7 +367,7 @@ fn cell_width(element: &Type) -> usize {
 ///
 /// A reference whose target is known is `R`, the fast path every reference took before symbolic ones: nothing
 /// about it is a formula. A `C` is made only where paths that differ in a reference merge ([`Engine::absorb`]),
-/// or where a read through a `C` gives references ([`Engine::get_field`]).
+/// or where a read through a `C` gives references ([`Engine::get_field`]); a field or an array's cell may then hold one.
 #[derive(Debug, Clone)]
 enum Val {
     I(Bits),
@@ -376,9 +401,10 @@ impl Val {
 ///
 /// `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas over the guards, `getfield` reads each
 /// candidate's field and chooses among the values by the guards, and `putfield` writes each candidate's field
-/// under its guard ([`Engine::put_field`]). Every other instruction that needs to know the object (a call on it,
-/// an array instruction, `checkcast`, `athrow`, a monitor) splits the path per option first
-/// ([`Engine::concrete_ref`]), the reference then known on each.
+/// under its guard ([`Engine::put_field`]); an `aastore` stores one into a cell as it is when every candidate is of
+/// the element type, and an `aaload` gives the one a cell holds. Every other instruction that needs to know the
+/// object (a call on it, an array instruction on it, `checkcast`, `athrow`, a monitor) splits the path per option
+/// first ([`Engine::concrete_ref`]), the reference then known on each.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Choice(Vec<(Lit, Option<usize>)>);
 
@@ -407,25 +433,51 @@ fn choice(b: &mut Blaster, options: Vec<(Lit, Option<usize>)>) -> Val {
 
 /// An object made during the run: its class, and the fields written so far (an application exception's, say), or
 /// the array it is.
+///
+/// A `java.lang.String` whose content the engine knows holds it in `array`: an [`Array`] of `char` cells, its
+/// length the String's (symbolic, for an input), each cell a UTF-16 code unit, any of the 65,536, so that a
+/// surrogate alone or a NUL is a content like any other ([`Obj::content`]). A String with no `array` is opaque:
+/// what a conversion the engine doesn't model made (a number's digits), or a concatenation beyond
+/// [`MAX_STRING_CONTENT`], whose `limit` says so. Its identity is its index, apart from its content: two Strings of
+/// one content are two objects, as on the JVM.
 #[derive(Debug, Clone)]
 struct Obj {
     class: String,
     fields: BTreeMap<String, Val>,
     array: Option<Array>,
+    /// Why an opaque String has no content, where that is a named limit rather than a gap.
+    limit: Option<String>,
+}
+
+impl Obj {
+    fn new(class: &str) -> Obj {
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None }
+    }
+
+    /// The array the object is: not a String's content.
+    fn as_array(&self) -> Option<&Array> {
+        self.array.as_ref().filter(|_| self.class.starts_with('['))
+    }
+
+    /// A String's content: its length and code units.
+    fn content(&self) -> Option<&Array> {
+        self.array.as_ref().filter(|_| self.class == STRING)
+    }
 }
 
 /// An array: its length, and a cell for every index it may have (as many as its length can be). An array of
 /// primitives has `cells`, each as wide as [`cell_width`] says: a read at a symbolic index is a choice among them,
 /// and a write updates each under the condition that the index is its own. An array of references has `refs`,
-/// the object in each cell or null, and no `cells`: a reference is not a choice among bits, so an index into one
-/// is made a constant first, the path split per cell ([`Engine::concrete_index`]). An index at or beyond the
-/// length is out of bounds whatever its cell holds.
+/// a reference in each cell (an object or null, or a symbolic reference, [`Choice`], as a field may hold), and no
+/// `cells`: a reference is not a choice among bits, so an index into one is made a constant first, the path split
+/// per cell ([`Engine::concrete_index`]). An index at or beyond the length is out of bounds whatever its cell
+/// holds.
 #[derive(Debug, Clone)]
 struct Array {
     element: Type,
     length: Bits,
     cells: Vec<Bits>,
-    refs: Vec<Option<usize>>,
+    refs: Vec<Val>,
 }
 
 /// Whether an array of `element`s holds references.
@@ -593,6 +645,9 @@ fn substitute(path: &mut Path, choice: &Rc<Choice>, target: Option<usize>) {
     path.statics.values_mut().for_each(fix);
     for o in &mut path.objects {
         o.fields.values_mut().for_each(fix);
+        if let Some(array) = &mut o.array {
+            array.refs.iter_mut().for_each(fix);
+        }
     }
 }
 
@@ -604,7 +659,7 @@ fn mergeable(a: &Val, b: &Val) -> bool {
 
 /// Whether two paths at the same join point have states of one shape, so that they can be merged: the same
 /// slots and objects, each object of the same class with the same fields (the paths differ only in bits and in
-/// which objects references denote). The cells of arrays of references must be the same objects.
+/// which objects references denote), an array's cells of references among them.
 fn same_shape(a: &Path, b: &Path) -> bool {
     let slots = |x: &Option<Val>, y: &Option<Val>| match (x, y) {
         (None, None) => true,
@@ -621,11 +676,12 @@ fn same_shape(a: &Path, b: &Path) -> bool {
         && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
         && a.objects.iter().zip(&b.objects).all(|(o, q)| {
             o.class == q.class
+                && o.limit == q.limit
                 && o.fields.len() == q.fields.len()
                 && o.fields.iter().zip(&q.fields).all(|((k, x), (l, y))| k == l && mergeable(x, y))
                 && match (&o.array, &q.array) {
                     (None, None) => true,
-                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len() && x.refs == y.refs,
+                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len() && x.refs.len() == y.refs.len(),
                     _ => false,
                 }
         })
@@ -866,15 +922,25 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
             if let Some(why) = unsupported_parameter(t) {
                 break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
             }
-            if let Type::Array(element) = t {
+            // An array, or a String (its code units, as an array of chars is): its own object, of every length up
+            // to its bound.
+            let held = match t {
+                Type::Array(element) => Some(((**element).clone(), options.max_array_length, t.descriptor())),
+                t if is_string(t) => match options_in.max_string_length {
+                    Some(bound) => Some((Type::Char, bound, STRING.to_string())),
+                    None => break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some("outside the fragment: a java.lang.String parameter with no bound on its length (bmc::Parameters::max_string_length)".into()))),
+                },
+                _ => None,
+            };
+            if let Some((element, bound, class)) = held {
                 let length = engine.b.fresh(32);
                 let zero = engine.b.constant(0, 32);
-                let most = engine.b.constant(i64::from(options.max_array_length), 32);
+                let most = engine.b.constant(i64::from(bound), 32);
                 cond.push(engine.b.sle(&zero, &length));
                 cond.push(engine.b.sle(&length, &most));
-                let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
-                engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
-                objects.push(Obj { class: t.descriptor(), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }) });
+                let cells: Vec<Bits> = (0..bound).map(|_| engine.b.fresh(cell_width(&element))).collect();
+                engine.arrays.push((slot, element.clone(), length.clone(), cells.clone()));
+                objects.push(Obj { array: Some(Array { element, length, cells, refs: Vec::new() }), ..Obj::new(&class) });
                 own.push((slot, t.clone(), objects.len() - 1));
                 // Null, the own arrays of the parameters before it in its group of the same type, and its own,
                 // one of them under exclusive guards that cover every input.
@@ -1514,6 +1580,9 @@ impl<'a> Engine<'a> {
                         *c = self.b.ite_bits(takes_into, c, d);
                     }
                 }
+                for (c, d) in x.refs.iter_mut().zip(&y.refs) {
+                    choose(&mut self.b, c, d);
+                }
             }
         }
         // The paths may be at different iterations of a loop (one left an earlier loop sooner); the merged path
@@ -1640,21 +1709,31 @@ impl<'a> Engine<'a> {
                 if !holds_references(&array.element) {
                     return unsupported(format!("an aaload from a {}[]", array.element.java_name()));
                 }
-                let Some(value) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).and_then(|k| array.refs.get(k).copied()) else {
+                let Some(value) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).and_then(|k| array.refs.get(k).cloned()) else {
                     // No cell there: out of bounds whatever the length.
                     return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
                 };
                 let in_bounds = self.b.ult(&index, &array.length);
-                self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", Val::R(value))
+                self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", value)
             }
             Insn::ArrayStore(ArrayKind::Ref) => {
-                if let Some(step) = self.concrete_ref(path, 2).or_else(|| self.concrete_ref(path, 0)) {
+                // A symbolic value is stored as it is, as `putfield` stores one, when every object it may be is of
+                // the element type; otherwise the path is split per object, so that the one that isn't throws.
+                if let Some(step) = self.concrete_ref(path, 2) {
                     return step;
+                }
+                if !self.stores_without_check(path) {
+                    if let Some(step) = self.concrete_ref(path, 0) {
+                        return step;
+                    }
                 }
                 if let Some(step) = self.concrete_index(path, 1) {
                     return step;
                 }
-                let value = self.pop_ref(path)?;
+                let value = self.pop(path)?;
+                if value.options().is_none() {
+                    return unsupported(format!("an aastore of {value:?}, not a reference"));
+                }
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
                     Ok(o) => o,
@@ -1667,8 +1746,10 @@ impl<'a> Engine<'a> {
                 let Some(cell) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).filter(|&k| k < array.refs.len()) else {
                     return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
                 };
-                if value.is_some_and(|v| !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element))) {
-                    return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[value.expect("an object")].class.replace('/', "."), array.element.java_name()));
+                if let Val::R(Some(v)) = value {
+                    if !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element)) {
+                        return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[v].class.replace('/', "."), array.element.java_name()));
+                    }
                 }
                 let in_bounds = self.b.ult(&index, &array.length);
                 self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
@@ -1748,7 +1829,7 @@ impl<'a> Engine<'a> {
                 self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
                     let zero = engine.b.constant(0, width);
                     let class = Type::Array(Box::new(element.clone())).descriptor();
-                    path.objects.push(Obj { class, fields: BTreeMap::new(), array: Some(Array { element, length: count, cells: vec![zero; cells], refs: Vec::new() }) });
+                    path.objects.push(Obj { array: Some(Array { element, length: count, cells: vec![zero; cells], refs: Vec::new() }), ..Obj::new(&class) });
                     let o = path.objects.len() - 1;
                     engine.push(path, Val::R(Some(o)));
                     engine.advance(path);
@@ -1764,7 +1845,7 @@ impl<'a> Engine<'a> {
                 let negative = self.b.negative(&count);
                 self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
                     let class = Type::Array(Box::new(element.clone())).descriptor();
-                    path.objects.push(Obj { class, fields: BTreeMap::new(), array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![None; cells] }) });
+                    path.objects.push(Obj { array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![Val::R(None); cells] }), ..Obj::new(&class) });
                     let o = path.objects.len() - 1;
                     engine.push(path, Val::R(Some(o)));
                     engine.advance(path);
@@ -1859,6 +1940,17 @@ impl<'a> Engine<'a> {
             }
         }
         self.raise(path, "java/lang/ArrayIndexOutOfBoundsException")
+    }
+
+    /// Whether an `aastore`'s value, on top of the stack, is a symbolic reference every object of which is of the
+    /// element type of the array below it (a known one): stored as it is, it can't throw `ArrayStoreException`.
+    fn stores_without_check(&self, path: &Path) -> bool {
+        let stack = &path.frames.last().expect("a frame").stack;
+        let n = stack.len();
+        let (Some(Val::C(choice)), Some(Val::R(Some(o)))) = (stack.last(), n.checked_sub(3).map(|i| &stack[i])) else { return false };
+        let Some(array) = path.objects[*o].as_array().filter(|a| holds_references(&a.element)) else { return false };
+        let element = class_of(&array.element);
+        choice.0.iter().all(|(_, t)| t.is_none_or(|v| self.cp.is_subtype(&path.objects[v].class, &element)))
     }
 
     /// Splits the path per option of the symbolic reference `depth` values below the top of the stack, if it is one
@@ -2064,7 +2156,7 @@ impl<'a> Engine<'a> {
     }
 
     fn alloc(&self, path: &mut Path, class: &str) -> usize {
-        path.objects.push(Obj { class: class.to_string(), fields: BTreeMap::new(), array: None });
+        path.objects.push(Obj::new(class));
         path.objects.len() - 1
     }
 
@@ -2072,7 +2164,7 @@ impl<'a> Engine<'a> {
     fn pop_array(&mut self, path: &mut Path) -> Result<usize, Step> {
         let r = self.pop_ref(path).map_err(Err)?;
         let o = self.null_check(path, r)?.expect("checked");
-        if path.objects[o].array.is_none() {
+        if path.objects[o].as_array().is_none() {
             return Err(unsupported("an array operation on an object that is not an array"));
         }
         Ok(o)
@@ -2417,7 +2509,7 @@ impl<'a> Engine<'a> {
             Insn::PutStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
-                if crate::classpath::is_jdk_name(&declaring) || !self.cp.is_application(&declaring) {
+                if !self.cp.checker_statics(&declaring) {
                     return unsupported(format!("writes static field {}.{} of the JDK", declaring.replace('/', "."), member.name));
                 }
                 if let Some(step) = self.initialise(path, &declaring) {
@@ -2465,10 +2557,15 @@ impl<'a> Engine<'a> {
             Insn::InvokeStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                if self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS {
+                // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
+                // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
+                // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names
+                // ([`gaps::outside_the_list_records`]).
+                let runs_model = !self.cp.is_application(&member.owner) && self.cp.checker_runs(&member.owner) && self.cp.checker_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some() && !gaps::outside_the_list_records(&class.name, &cf.name, &member.name, &member.descriptor));
+                if runs_model || (self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS) {
                     // The class that declares the method is initialized first (JVMS §5.5), the arguments still on
                     // the stack, so that the instruction can run again once its initializer returns.
-                    let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
+                    let declaring = if runs_model { self.cp.checker_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()) } else { self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()) }.unwrap_or_else(|| member.owner.clone());
                     if let Some(step) = self.initialise(path, &declaring) {
                         return step;
                     }
@@ -2515,7 +2612,7 @@ impl<'a> Engine<'a> {
                 let receiver_at = path.frames.last().expect("a frame").stack.len() - 1 - descriptor.params.len();
                 if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
                     let owner = if matches!(insn, Insn::InvokeSpecial(_)) { member.owner.clone() } else { path.objects[o].class.clone() };
-                    let application = self.cp.checker_method(&owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some());
+                    let application = self.cp.checker_method(&owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some() && !gaps::outside_the_list_records(&class.name, &cf.name, &member.name, &member.descriptor));
                     if !application {
                         for depth in 0..descriptor.params.len() {
                             if let Some(step) = self.concrete_ref(path, depth) {
@@ -2532,17 +2629,25 @@ impl<'a> Engine<'a> {
                 };
                 let special = matches!(insn, Insn::InvokeSpecial(_));
                 // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
-                if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].array.is_some() {
-                    let copy = Obj { class: path.objects[o].class.clone(), fields: BTreeMap::new(), array: path.objects[o].array.clone() };
+                if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].as_array().is_some() {
+                    let copy = Obj { array: path.objects[o].array.clone(), ..Obj::new(&path.objects[o].class) };
                     path.objects.push(copy);
                     let r = path.objects.len() - 1;
                     self.push(path, Val::R(Some(r)));
                     self.advance(path);
                     return Ok(None);
                 }
+                // A String method the engine models on the content it holds.
+                if !special && member.owner == STRING && path.objects[o].class == STRING {
+                    if let Some(step) = self.string_method(path, o, &member.name, &member.descriptor, &args) {
+                        return step;
+                    }
+                }
                 let owner = if special { member.owner.clone() } else { path.objects[o].class.clone() };
-                // An application method, or one of `java.lang.Enum`'s, which its model runs ([`ClassPath::checker_runs`]).
-                if let Some((cf, m)) = self.cp.checker_method(&owner, &member.name, &member.descriptor).filter(|(cf, _)| self.cp.checker_runs(&cf.name)) {
+                // An application method, or one of `java.lang.Enum`'s or the immutable lists', which their models run
+                // ([`ClassPath::checker_runs`]); a list model's method no evidence record samples is the JDK call it
+                // names, called from outside the models ([`gaps::outside_the_list_records`]).
+                if let Some((cf, m)) = self.cp.checker_method(&owner, &member.name, &member.descriptor).filter(|(cf, _)| self.cp.checker_runs(&cf.name) && !gaps::outside_the_list_records(&class.name, &cf.name, &member.name, &member.descriptor)) {
                     if m.code.is_some() {
                         let mut full = vec![Val::R(Some(o))];
                         full.extend(args);
@@ -2579,22 +2684,29 @@ impl<'a> Engine<'a> {
                 }
             }
             Insn::InvokeDynamic(index) => {
-                let (_, _, descriptor_text) = class.pool.invoke_dynamic(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let (bootstrap, _, descriptor_text) = class.pool.invoke_dynamic(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(descriptor_text).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                let _ = self.pop_args(path, descriptor.params.len())?;
-                match &descriptor.ret {
-                    Type::Object(name) if name == "java/lang/String" => {
-                        // An object argument is converted by its toString, which the engine does not run.
-                        for class in gaps::converted_arguments(&descriptor) {
-                            if let Some(end) = self.meet(path, GapKind::StringConversion, &class, "toString", "()Ljava/lang/String;") {
-                                return Ok(Some(end));
-                            }
-                        }
-                        let r = self.alloc(path, "java/lang/String");
-                        self.push(path, Val::R(Some(r)));
-                    }
-                    _ => return unsupported("invokedynamic other than string concatenation"),
+                if !is_string(&descriptor.ret) {
+                    return unsupported("invokedynamic other than string concatenation");
                 }
+                // An object argument is converted by its toString, which the engine does not run.
+                for class in gaps::converted_arguments(&descriptor) {
+                    if let Some(end) = self.meet(path, GapKind::StringConversion, &class, "toString", "()Ljava/lang/String;") {
+                        return Ok(Some(end));
+                    }
+                }
+                // The Strings concatenated are known objects, each with its content or none.
+                for (depth, t) in descriptor.params.iter().rev().enumerate() {
+                    if is_string(t) {
+                        if let Some(step) = self.concrete_ref(path, depth) {
+                            return step;
+                        }
+                    }
+                }
+                let args = self.pop_args(path, descriptor.params.len())?;
+                let recipe = class.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap)));
+                let r = self.concatenation(path, recipe.as_ref(), &descriptor, args)?;
+                self.push(path, Val::R(Some(r)));
             }
             Insn::New(index) => {
                 let name = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
@@ -2653,6 +2765,193 @@ impl<'a> Engine<'a> {
         Ok(None)
     }
 
+    /// `length()`, `isEmpty()`, `charAt(int)`, `equals(Object)` and `startsWith(String)` of a String whose content
+    /// the engine holds ([`Obj::content`]), as the JDK's do, by its Javadoc: `charAt` out of range throws
+    /// `StringIndexOutOfBoundsException`, `startsWith(null)` a `NullPointerException`, and `equals` is true of the
+    /// very object, false of null and of any other class, and otherwise compares the lengths and every code unit.
+    /// `None` for any other call, and for one whose String has no content, which stays the JDK call it was (a
+    /// gap), unless what it lacks is a named limit ([`Obj::limit`]), which ends the path with no verdict.
+    fn string_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if !models_string_method(STRING, name, descriptor) {
+            return None;
+        }
+        let limited = |obj: &Obj| obj.limit.clone().map(|why| unsupported(why));
+        let Some(s) = path.objects[o].content().cloned() else { return limited(&path.objects[o]) };
+        let zero = self.b.constant(0, 32);
+        let truth = match (name, args) {
+            ("length", _) => {
+                self.push(path, Val::I(s.length));
+                self.advance(path);
+                return Some(Ok(None));
+            }
+            ("isEmpty", _) => self.b.eq(&s.length, &zero),
+            ("charAt", [Val::I(index)]) => {
+                let mut unit = s.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, 16));
+                for (i, cell) in s.cells.iter().enumerate().rev().skip(1) {
+                    let here = self.b.constant(i as i64, 32);
+                    let is = self.b.eq(index, &here);
+                    unit = self.b.ite_bits(is, cell, &unit);
+                }
+                let unit = self.b.extend_cell(&Type::Char, &unit);
+                let in_bounds = self.b.ult(index, &s.length);
+                return Some(self.branch_throw(path, -in_bounds, "java/lang/StringIndexOutOfBoundsException", Val::I(unit)));
+            }
+            ("equals", [Val::R(other)]) => match *other {
+                None => FALSE,
+                Some(p) if p == o => TRUE,
+                Some(p) if path.objects[p].class != STRING => FALSE,
+                Some(p) => match path.objects[p].content().cloned() {
+                    Some(t) => {
+                        let lengths = self.b.eq(&s.length, &t.length);
+                        let units = self.units_agree(&s, &t, &s.length);
+                        self.b.and(lengths, units)
+                    }
+                    None => return limited(&path.objects[p]),
+                },
+            },
+            ("startsWith", [Val::R(prefix)]) => match *prefix {
+                None => return Some(self.raise(path, "java/lang/NullPointerException")),
+                Some(p) => match path.objects[p].content().cloned() {
+                    Some(t) => {
+                        let fits = self.b.sle(&t.length, &s.length);
+                        let units = self.units_agree(&s, &t, &t.length);
+                        self.b.and(fits, units)
+                    }
+                    None => return limited(&path.objects[p]),
+                },
+            },
+            _ => return Some(unsupported(format!("String.{name}{descriptor} with arguments {args:?}"))),
+        };
+        let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
+        let value = self.b.ite_bits(truth, &one, &zero);
+        self.push(path, Val::I(value));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// Whether two contents have the same code unit at every index below `upto` (the length of one of them, which
+    /// the caller has made at most the other's): an index past either's cells is past `upto` too.
+    fn units_agree(&mut self, s: &Array, t: &Array, upto: &Bits) -> Lit {
+        let mut agree = Vec::new();
+        for (i, (x, y)) in s.cells.iter().zip(&t.cells).enumerate() {
+            let here = self.b.constant(i as i64, 32);
+            let inside = self.b.ult(&here, upto);
+            let same = self.b.eq(x, y);
+            agree.push(self.b.or(-inside, same));
+        }
+        // Beyond the cells both have, `upto` must not reach.
+        let common = self.b.constant(s.cells.len().min(t.cells.len()) as i64, 32);
+        agree.push(self.b.sle(upto, &common));
+        self.b.all(&agree)
+    }
+
+    /// The String a compiler-generated concatenation (`StringConcatFactory.makeConcatWithConstants`, or
+    /// `makeConcat`) makes of its arguments: Strings (`null` as "null"), `char`s, and the recipe's constants, with
+    /// the content of each in order. A number or a boolean converted, or a String with no content, makes one with
+    /// no content (numeric formatting is outside the model), and one that could have more than
+    /// [`MAX_STRING_CONTENT`] code units has none either, its limit named.
+    fn concatenation(&mut self, path: &mut Path, bootstrap: Option<&crate::classfile::BootstrapMethod>, descriptor: &MethodDescriptor, args: Vec<Val>) -> Result<usize, Stop> {
+        enum Piece {
+            Units(Vec<u16>),
+            Content(Array),
+        }
+        let opaque = |engine: &mut Self, path: &mut Path, limit: Option<String>| {
+            let r = engine.alloc(path, STRING);
+            path.objects[r].limit = limit;
+            Ok(r)
+        };
+        let mut pieces = Vec::new();
+        let mut args = args.into_iter().zip(&descriptor.params);
+        let mut argument = |engine: &mut Self, path: &Path, pieces: &mut Vec<Piece>| -> Result<Option<Option<String>>, Stop> {
+            let (v, t) = args.next().ok_or_else(|| Stop::Unsupported("a concatenation recipe with more arguments than its call site".into()))?;
+            match (t, v) {
+                (t, Val::R(None)) if is_string(t) => pieces.push(Piece::Units("null".encode_utf16().collect())),
+                (t, Val::R(Some(p))) if is_string(t) => match path.objects[p].content() {
+                    Some(content) => pieces.push(Piece::Content(content.clone())),
+                    None => return Ok(Some(path.objects[p].limit.clone())),
+                },
+                (Type::Char, Val::I(bits)) => {
+                    let length = engine.b.constant(1, 32);
+                    pieces.push(Piece::Content(Array { element: Type::Char, length, cells: vec![engine.b.trunc(&bits, 16)], refs: Vec::new() }));
+                }
+                _ => return Ok(Some(None)),
+            }
+            Ok(None)
+        };
+        // What leaves the content unknown, if anything: the first such piece's limit, if it has one.
+        let mut unknown: Option<Option<String>> = None;
+        let with_constants = bootstrap.filter(|b| b.method.member.owner == "java/lang/invoke/StringConcatFactory" && b.method.member.name == "makeConcatWithConstants");
+        match with_constants {
+            Some(b) => {
+                let Some(BootstrapArg::Str(recipe)) = b.args.first() else { return unsupported("a concatenation with no recipe") };
+                let mut constants = b.args[1..].iter();
+                for unit in recipe.encode_utf16() {
+                    match unit {
+                        1 => {
+                            if let Some(why) = argument(self, path, &mut pieces)? {
+                                unknown.get_or_insert(why);
+                            }
+                        }
+                        2 => match constants.next() {
+                            Some(BootstrapArg::Str(text)) => pieces.push(Piece::Units(text.encode_utf16().collect())),
+                            Some(BootstrapArg::Int(v)) => pieces.push(Piece::Units(v.to_string().encode_utf16().collect())),
+                            Some(BootstrapArg::Long(v)) => pieces.push(Piece::Units(v.to_string().encode_utf16().collect())),
+                            _ => {
+                                unknown.get_or_insert(None);
+                            }
+                        },
+                        unit => pieces.push(Piece::Units(vec![unit])),
+                    }
+                }
+            }
+            None => {
+                for _ in 0..descriptor.params.len() {
+                    if let Some(why) = argument(self, path, &mut pieces)? {
+                        unknown.get_or_insert(why);
+                    }
+                }
+            }
+        }
+        if let Some(limit) = unknown {
+            return opaque(self, path, limit);
+        }
+        let most: usize = pieces.iter().map(|p| match p {
+            Piece::Units(u) => u.len(),
+            Piece::Content(c) => c.cells.len(),
+        }).sum();
+        if most > MAX_STRING_CONTENT {
+            return opaque(self, path, Some(format!("a concatenation of up to {most} code units, beyond the own checker's content cap of {MAX_STRING_CONTENT}: a named limit, not a truncated String")));
+        }
+        // Each piece's units at its offset, the sum of the lengths before it; a cell no piece reaches is past the length.
+        let mut length = self.b.constant(0, 32);
+        let mut cells = vec![self.b.constant(0, 16); most];
+        for piece in pieces {
+            let content = match piece {
+                Piece::Units(units) => {
+                    let length = self.b.constant(units.len() as i64, 32);
+                    Array { element: Type::Char, length, cells: units.iter().map(|&u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() }
+                }
+                Piece::Content(c) => c,
+            };
+            for (i, unit) in content.cells.iter().enumerate() {
+                let here = self.b.constant(i as i64, 32);
+                let present = self.b.ult(&here, &content.length);
+                let at = self.b.add(&length, &here);
+                for (j, cell) in cells.iter_mut().enumerate() {
+                    let target = self.b.constant(j as i64, 32);
+                    let is = self.b.eq(&at, &target);
+                    let writes = self.b.and(present, is);
+                    if writes != FALSE {
+                        *cell = self.b.ite_bits(writes, unit, cell);
+                    }
+                }
+            }
+            length = self.b.add(&length, &content.length);
+        }
+        path.objects.push(Obj { array: Some(Array { element: Type::Char, length, cells, refs: Vec::new() }), ..Obj::new(STRING) });
+        Ok(path.objects.len() - 1)
+    }
+
     /// The path reaches a gap: it is recorded with where, and under strict the path ends there (`Some(End::Gap)`);
     /// under assume the caller goes on with the approximation (`None`).
     fn meet(&mut self, path: &Path, kind: GapKind, owner: &str, name: &str, descriptor: &str) -> Option<End> {
@@ -2685,7 +2984,7 @@ impl<'a> Engine<'a> {
             // The array's elements become any values: what the call wrote, which the assertion that follows
             // narrows. Its length is the length it had.
             ("havoc", [Val::R(Some(o))]) => {
-                let Some(array) = path.objects[*o].array.as_ref() else { return unsupported("a contract modifies an object that is not an array") };
+                let Some(array) = path.objects[*o].as_array() else { return unsupported("a contract modifies an object that is not an array") };
                 let width = cell_width(&array.element);
                 let cells: Vec<Bits> = (0..array.cells.len()).map(|_| self.b.fresh(width)).collect();
                 path.objects[*o].array.as_mut().expect("an array").cells = cells;
@@ -2726,7 +3025,7 @@ impl<'a> Engine<'a> {
     /// which under assume, or closed by a contract that it throws nothing, is taken to have run. A JDK class is
     /// taken to be initialized already.
     fn initialise(&mut self, path: &mut Path, class: &str) -> Option<Step> {
-        if crate::classpath::is_jdk_name(class) || !self.cp.is_application(class) {
+        if !self.cp.checker_statics(class) {
             return None;
         }
         match self.initialise_class(path, class) {
@@ -2753,7 +3052,7 @@ impl<'a> Engine<'a> {
             // Begun by this instruction, which runs again: resume.
             Some(ClassState::InProgress) => {}
             None => {
-                if !self.cp.is_application(class) {
+                if !self.cp.checker_statics(class) {
                     return Ok(Initialising::Ready);
                 }
                 path.classes.insert(class.to_string(), ClassState::InProgress);
@@ -2775,7 +3074,7 @@ impl<'a> Engine<'a> {
             }
         }
         path.frames[top].entered.retain(|c| c != class);
-        let Some(cf) = self.cp.application(class).ok().flatten() else {
+        let Some(cf) = self.cp.checker_class(class) else {
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
         };
@@ -2810,7 +3109,7 @@ impl<'a> Engine<'a> {
     /// initialized: what the path wrote, else its `ConstantValue`, else zero or null. `None` for a JDK class, read
     /// by [`Engine::get_static`]. A class taken to be initialized has only its constants.
     fn application_static(&mut self, path: &mut Path, declaring: &str, name: &str, descriptor: &str) -> Option<Result<Val, Stop>> {
-        if crate::classpath::is_jdk_name(declaring) || !self.cp.is_application(declaring) {
+        if !self.cp.checker_statics(declaring) {
             return None;
         }
         if path.classes.get(declaring) == Some(&ClassState::Assumed) {
@@ -2819,7 +3118,7 @@ impl<'a> Engine<'a> {
         if let Some(v) = path.statics.get(&(declaring.to_string(), name.to_string())) {
             return Some(Ok(v.clone()));
         }
-        let constant = self.cp.application(declaring).ok().flatten().and_then(|cf| {
+        let constant = self.cp.checker_class(declaring).and_then(|cf| {
             let field = cf.field(name).filter(|f| f.is_static())?;
             let attr = field.attributes.iter().find(|a| a.name == "ConstantValue").filter(|a| a.data.len() == 2)?;
             cf.pool.loadable(u16::from_be_bytes([attr.data[0], attr.data[1]])).ok()
@@ -2836,14 +3135,28 @@ impl<'a> Engine<'a> {
         })
     }
 
-    /// The object a string or class literal is on this path: made at its first load.
-    fn literal(&self, path: &mut Path, literal: Literal, class: &str) -> usize {
+    /// The object a string or class literal is on this path: made at its first load, a string with its content.
+    fn literal(&mut self, path: &mut Path, literal: Literal, class: &str) -> usize {
         if let Some(&o) = path.literals.get(&literal) {
             return o;
         }
-        let o = self.alloc(path, class);
+        let o = match &literal {
+            Literal::Str(text) => {
+                let units: Vec<u16> = text.encode_utf16().collect();
+                self.string(path, &units)
+            }
+            Literal::Class(_) => self.alloc(path, class),
+        };
         path.literals.insert(literal, o);
         o
+    }
+
+    /// A new String of these code units.
+    fn string(&mut self, path: &mut Path, units: &[u16]) -> usize {
+        let length = self.b.constant(units.len() as i64, 32);
+        let cells = units.iter().map(|&u| self.b.constant(i64::from(u), 16)).collect();
+        path.objects.push(Obj { array: Some(Array { element: Type::Char, length, cells, refs: Vec::new() }), ..Obj::new(STRING) });
+        path.objects.len() - 1
     }
 
     /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
@@ -3232,6 +3545,12 @@ impl<'a> Engine<'a> {
 
 /// Whether [`Engine::call_jdk_static`] models `owner.name`: the arms of its match, for [`gaps::scan`], which counts
 /// such a call as reproduced exactly rather than a gap.
+/// Whether the engine models the String method `owner.name(descriptor)` on a String whose content it holds
+/// ([`Engine::string_method`]); the engine and the gap scan share it.
+pub fn models_string_method(owner: &str, name: &str, descriptor: &str) -> bool {
+    owner == STRING && matches!((name, descriptor), ("length", "()I") | ("isEmpty", "()Z") | ("charAt", "(I)C") | ("equals", "(Ljava/lang/Object;)Z") | ("startsWith", "(Ljava/lang/String;)Z"))
+}
+
 pub fn models_jdk_static(owner: &str, name: &str) -> bool {
     matches!(
         (owner, name),
@@ -3415,7 +3734,7 @@ mod tests {
         let distinct = run(&cp);
         assert_eq!(distinct.verdict, Verdict::Verified, "{:?}", distinct.problem);
         for merge_after in [0, u64::MAX] {
-            let parameters = Parameters { nullable: Vec::new(), may_alias: vec![vec![0, 1]] };
+            let parameters = Parameters { may_alias: vec![vec![0, 1]], ..Parameters::default() };
             let out = check(&cp, "Check", "check", &Options { parameters, merge_after, ..Options::default() }).unwrap();
             assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
             assert_eq!(out.raw_same, BTreeMap::from([(1, 0)]), "b is a's array");
@@ -3440,7 +3759,7 @@ mod tests {
                 code.bind(done);
             })
         };
-        let nullable = |cp: &ClassPath| check(cp, "Check", "check", &Options { parameters: Parameters { nullable: vec![0], may_alias: Vec::new() }, ..Options::default() }).unwrap();
+        let nullable = |cp: &ClassPath| check(cp, "Check", "check", &Options { parameters: Parameters { nullable: vec![0], ..Parameters::default() }, ..Options::default() }).unwrap();
         assert_eq!(run(&length(false)).verdict, Verdict::Verified, "never null by default");
         let unguarded = nullable(&length(false));
         assert_eq!(unguarded.verdict, Verdict::Unverifiable);

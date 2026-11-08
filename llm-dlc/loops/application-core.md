@@ -530,6 +530,80 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   takes it as a deliberate change to a frozen fixture, not a stream relaxing one. Also: `feature-loop.sh` now
   reads a stream's own brief, not the default workspace's copy (`unwrvwqw`); the reuse stream, already running,
   keeps the old reading until it stops.
+- 2026-11-08, **the reconcile (Phase 5, step 1): the four streams merged**, in the merge commit
+  `Merge the four application-core streams`.
+  - **Steps 1–3**: all four streams had finished: objects `blocked` (`tzsluzns`), values `blocked` (`pymxzpyu`),
+    environment `blocked` (`qrsyvrmk`), and reuse `done` (`tvrqpusw`). No stream's scope or the integration check's
+    was active, and no job was pending. Each stream's last turns were recorded on its branch (`Record session traces`:
+    objects `qqywzsvy`, values `kyqtplry`, environment `krwlnoop`, reuse `yxlnwoss`). Their 46 logs not yet here
+    were copied in. Their run records were already in `llm-dlc/loop-summaries/`, copied by `run-streams.sh`.
+  - **Step 4, the merge**: `jj new` of the default line's `tvwtmzkx` and the four branches. It conflicted only in the
+    generated `llm-dlc/README.md` session table, `index.json`, `traces/README.md` and `traces/metrics.json`; the
+    default line's side was taken, and the commit regenerates them. Files changed on more than one line merged
+    cleanly: `lib/README.md` (each stream's paragraphs, in places of their own), `lib/tests/conformance.rs` (objects
+    and values), and `feature-loop.sh` and `run-streams.sh`, whose identical stop-status fix the user committed on
+    each line.
+  - **Verified on the merge**, inline:
+    - the integration check, `application-core-integration.sh`, passes: the contract 14 of 14, the library's unit
+      tests (254), `foundations` 5, `compare` 1, `effects` 18, and the `build.py`, review, run-record and performance
+      suites;
+    - every other test binary but `integration.rs`, whose tests run JBMC: `alignment` 34, `application_core_objects`
+      21 (1 ignored, item 4 below), `conformance` 10 (2 JBMC), `environment` 16, `heap` 49 (9 JBMC), `observations`
+      12, `reuse` 11, `reuse_summaries` 14, `skill` 1, `summaries` 40, `values` 16 (1 ignored, item 3), with
+      `preparation`'s benchmark ignored as it always is;
+    - every Python suite: `examples/tools`, `lib/benchmark`, `lib/solvers`, `llm-dlc/tools` and `verification`.
+  - **Step 6**: the workspaces `application-core-objects`, `-values`, `-environment`, `-reuse` and `-integration`
+    are forgotten. Their directories, `../in-the-loop-application-core-*`, are the user's to delete.
+  - **Deferred by the timebox**: none, in any stream. **Deferred by the user**: VF-015's step 5 (above).
+  - **Interface requests that waited for the merge**, Phase 5 step 1's work, by the owner of the file:
+    1. **The String and list parameter wiring** (objects' `harness/`, `equivalence.rs`, `property.rs`, `jbmc.rs`'s
+       `arguments`, the replay), the values stream's two requests: take a String or list parameter in the layout,
+       give the checker `StringAdapter::bound` or make the list by `ListAdapter::choices` and `java`, read the
+       witness with the adapters' `read`, rebuild it with `rebuild`, and state `Bounds::max_value_length` and
+       `Models::values`. Then `values::adapter` returns the adapters (one line). It is objects' O2 String adapter and
+       what V1's and V2's rows wait on, and the environment stream's Q rows need it for the quote's code.
+    2. **`values::resolve`** in `construction::check_plans` and wherever a modelled call's `Returned::Adapted` is read,
+       before `proof_cache` digests a claim (V3's identity reaching the checks).
+    3. **VF-023**: in `equivalence::confirm`'s `Verdict::Violation` arm, a JBMC refutation that doesn't reproduce and
+       whose preflight found a stub is `Confirmed::NoVerdict`, naming the stubs. Then un-ignore values'
+       `confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict`, and rerun job
+       `20261108-070211-…`'s step 2 unchanged. VF-023 has one failure, so one attempt is left.
+    4. **The cache's roots of a setup sequence**: root `proof_cache::Regression::claim` at
+       `Layout::construction_roots(previous)`, drop the uncached guard for setup sequences in `equivalence.rs`, and
+       un-ignore objects' `an_inner_objects_constructor_is_part_of_the_cached_claim` (reuse's `qssovxor` closed the
+       inner-constructor hole itself). Also a `setup` field in `witness::Call` and in the cache's stored call.
+    5. **E3**, the environment stream's last required item: a nullable DTO response (`Returned::Object`) made through
+       the merged construction plan, with its identity policy in the claim, the null branch replayed, and unmodelled
+       methods, fields and cycles refused. Then Q's E1 and E2 rows through `environment::check`, after item 1.
+    6. **Smaller requests**: `compare` given a plan per subject (`main.rs`); `reuse::property_store` taking
+       `&mut Outcome` and `property::Outcome` a `reuse` field; `jvm_witness::run` sizing `max_stack` from the
+       parameters' widths, so that wide witnesses replay; the class reader keeping a `CONSTANT_Utf8`'s code units;
+       `ElementKind::String` with a bound; the stale help and docs of `--environment` and `prove --cache`
+       (`main.rs`, `compare.rs`, `property::run`), and `compare`'s effort report counting a declared environment.
+    7. **`lib/README.md`'s sentences that streams couldn't rewrite**: Limits' "property proofs are still over static
+       methods"; "an input a constructor of either version rejects is outside the statement"; "a used result is
+       refused until modeled return values come"; and arrays of references' "cells hold objects or `null`".
+  - **Found by the streams, for the for-review list** (each in its stream's Progress):
+    - objects: a regression check doesn't observe the target's own writes to static fields, and no doc says so;
+    - values: the interpreter's `Character` classification uses Rust's Unicode tables (`Character.digit('٧',
+      16)` is -1, where the JVM gives 7); `render::primitive` writes a surrogate `char` as U+FFFD; the interpreter
+      names a `List12` `ListN`; `List.of(E...)` has no evidence record; the checker's time limit overshoots
+      (20 s ended at 138 s); a property witness that couldn't be replayed at all was printed as violated; and
+      `bmc::bits`' timing test fails under load;
+    - environment: whether a reordering of reads preserves depends on the declared coupling (a query or a choice),
+      and the result names it;
+    - reuse: an array-reading helper's summary compares an out-of-bounds throw as an outcome, which departs from the
+      brief's "total"; R3's cache is in `jimage.rs`, a file in no stream's ownership row; a route's effect proof
+      doesn't use helper evidence, so a helper rewrite proves the route again; R4 is left out.
+  - **Rows at the merge, by the streams' accounts**: O1, O3, R1 and J3 reach their verdicts in the contract. O2's
+    rows pass but its String adapter waits for item 1. V1 and V2 stop at the values stream's named refusal until
+    item 1. E1 and E2 are done on the stream's fixtures, but Q's rows stop at the merge's items 1 and 5. R2 stands at
+    unit level, and its contract row should reach `fee`'s summary now that the receiver is built. The contract
+    accepts a named refusal as passing, so Phase 5's for-review list has to name each row's state from a run that
+    tells the two apart.
+  - **Next**: Phase 5 step 1's interface requests, in the order above, each a cycle with its reproducer. Then step
+    2's joint acceptance as jobs, and step 3's examples with `lib/tests/integration.rs` (JBMC) at the merged
+    revision.
 - Status: working
 
 ## Loop settings

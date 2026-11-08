@@ -5,15 +5,68 @@
 
 use crate::classfile::{BootstrapArg, ClassFile, MethodDescriptor, MethodHandle, Type};
 
-use super::render::{char_to_string, double_to_string, float_to_string, primitive};
-use super::{Base, Exec, Fault, Machine, Native, Object, Ref, Value};
+use super::render::{double_to_string, float_to_string, primitive};
+use super::{Base, Exec, Fault, JStr, Machine, Native, Object, Ref, Value};
 
-fn utf16(s: &str) -> Vec<u16> {
-    s.encode_utf16().collect()
+/// A primitive value as `String.valueOf` gives it: a char is its one code unit, whatever it is, a surrogate
+/// included, and every other primitive is ASCII text.
+fn primitive_units(v: Value, t: &Type) -> JStr {
+    match (t, v) {
+        (Type::Char, Value::Int(x)) => JStr::from_units(vec![x as u16]),
+        _ => JStr::from(primitive(v, t)),
+    }
 }
 
-fn from_utf16(units: &[u16]) -> String {
-    String::from_utf16_lossy(units)
+/// The code units of a `char[]`'s elements, or `None` for an object that is not an array.
+fn char_array_units(m: &Machine, r: Ref) -> Option<JStr> {
+    match m.heap.get(r) {
+        Object::Array { data, .. } => Some(JStr::from_units(data.iter().map(|v| v.as_int() as u16).collect())),
+        _ => None,
+    }
+}
+
+/// The text of `s`, for an operation whose meaning comes from Unicode's tables (case, whitespace, number syntax):
+/// refused for a String with an isolated surrogate, which those tables are not consulted on here, rather than
+/// answered for the U+FFFD a Rust string would make of it.
+fn text_of(s: &JStr, what: &str) -> Exec<String> {
+    s.text().ok_or_else(|| Fault::Unsupported(format!("{what} of a String with an isolated surrogate ({})", s.display())))
+}
+
+/// Whether a code point is whitespace as `Character.isWhitespace` says: a space, line or paragraph separator other
+/// than the non-breaking ones (U+00A0, U+2007, U+202F), or one of the controls U+0009–U+000D and U+001C–U+001F.
+fn java_whitespace(c: u32) -> bool {
+    matches!(c, 0x09..=0x0D | 0x1C..=0x20 | 0x1680 | 0x2000..=0x2006 | 0x2008..=0x200A | 0x2028 | 0x2029 | 0x205F | 0x3000)
+}
+
+/// The code points of `units`, an isolated surrogate as itself, as `String.codePoints` gives them, with the
+/// index of the code unit each starts at.
+fn code_points(units: &[u16]) -> Vec<(usize, u32)> {
+    let mut out = Vec::new();
+    let mut i = 0;
+    while i < units.len() {
+        let u = units[i];
+        if (0xD800..0xDC00).contains(&u) && i + 1 < units.len() && (0xDC00..0xE000).contains(&units[i + 1]) {
+            out.push((i, 0x10000 + ((u32::from(u) - 0xD800) << 10) + (u32::from(units[i + 1]) - 0xDC00)));
+            i += 2;
+        } else {
+            out.push((i, u32::from(u)));
+            i += 1;
+        }
+    }
+    out
+}
+
+/// `strip`, `stripLeading` and `stripTrailing`: the code units between the first and last code points that are not
+/// `Character.isWhitespace`.
+fn strip(units: &[u16], leading: bool, trailing: bool) -> JStr {
+    let points = code_points(units);
+    let start = if leading { points.iter().find(|(_, c)| !java_whitespace(*c)).map(|(i, _)| *i).unwrap_or(units.len()) } else { 0 };
+    let end = if trailing {
+        points.iter().rev().find(|(_, c)| !java_whitespace(*c)).map(|(i, c)| i + if *c >= 0x10000 { 2 } else { 1 }).unwrap_or(start)
+    } else {
+        units.len()
+    };
+    JStr::from_units(units[start..end.max(start)].to_vec())
 }
 
 fn unsupported<T>(what: impl Into<String>) -> Exec<T> {
@@ -30,13 +83,13 @@ pub fn string_hash(s: &str) -> i32 {
 }
 
 /// The message of a throwable object (native or an application instance), if any.
-pub fn throwable_message(m: &Machine, r: Ref) -> Option<String> {
+pub fn throwable_message(m: &Machine, r: Ref) -> Option<JStr> {
     let message = match m.heap.get(r) {
         Object::Native(Native::Throwable { message, .. }) => *message,
         Object::Instance { base: Base::Throwable { message, .. }, .. } => *message,
         _ => None,
     };
-    message.and_then(|s| m.heap.string(s).map(str::to_string))
+    message.and_then(|s| m.heap.string(s).cloned())
 }
 
 fn throwable_cause(m: &Machine, r: Ref) -> Option<Ref> {
@@ -147,46 +200,55 @@ fn boxed_type(class: &str) -> Type {
 // Strings and conversions
 
 /// `String.valueOf(x)` for a value of the given static type.
-pub fn to_java_string(m: &mut Machine, v: Value, t: &Type) -> Exec<String> {
+pub fn to_java_string(m: &mut Machine, v: Value, t: &Type) -> Exec<JStr> {
     match v {
         Value::Null => Ok("null".into()),
         Value::Ref(r) => object_to_string(m, r),
-        other => Ok(primitive(other, t)),
+        other => Ok(primitive_units(other, t)),
     }
 }
 
 /// `obj.toString()` with virtual dispatch: an application override, else the JDK's own.
-pub fn object_to_string(m: &mut Machine, r: Ref) -> Exec<String> {
+pub fn object_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
     let result = m.call_virtual(Value::Ref(r), "java/lang/Object", "toString", "()Ljava/lang/String;", Vec::new())?;
     match result {
-        Some(Value::Ref(s)) => m.heap.string(s).map(str::to_string).ok_or_else(|| Fault::Unsupported("toString returned a non-string".into())),
+        Some(Value::Ref(s)) => m.heap.string(s).cloned().ok_or_else(|| Fault::Unsupported("toString returned a non-string".into())),
         Some(Value::Null) => Ok("null".into()),
         _ => unsupported("toString returned nothing"),
     }
 }
 
-fn native_to_string(m: &mut Machine, r: Ref) -> Exec<String> {
+fn native_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
     let native = match m.heap.get(r) {
         Object::Native(n) => n.clone(),
         _ => return unsupported("not a native object"),
     };
     Ok(match native {
         Native::String(s) => s,
-        Native::Boxed { class, value } => primitive(value, &boxed_type(&class)),
+        Native::Boxed { class, value } => primitive_units(value, &boxed_type(&class)),
         Native::StringBuilder(s) => s,
         Native::List { elements, .. } | Native::Set { elements, .. } => {
             let mut parts = Vec::new();
             for e in elements {
                 parts.push(to_java_string(m, e, &Type::object("java/lang/Object"))?);
             }
-            format!("[{}]", parts.join(", "))
+            let mut out = JStr::from("[");
+            out.push(&JStr::join(&parts, &JStr::from(", ")));
+            out.push_str("]");
+            out
         }
         Native::Map { entries, .. } => {
             let mut parts = Vec::new();
             for (k, v) in entries {
-                parts.push(format!("{}={}", to_java_string(m, k, &Type::object("java/lang/Object"))?, to_java_string(m, v, &Type::object("java/lang/Object"))?));
+                let mut part = to_java_string(m, k, &Type::object("java/lang/Object"))?;
+                part.push_str("=");
+                part.push(&to_java_string(m, v, &Type::object("java/lang/Object"))?);
+                parts.push(part);
             }
-            format!("{{{}}}", parts.join(", "))
+            let mut out = JStr::from("{");
+            out.push(&JStr::join(&parts, &JStr::from(", ")));
+            out.push_str("}");
+            out
         }
         Native::Class(t) => match &t {
             Type::Object(name) => {
@@ -194,13 +256,23 @@ fn native_to_string(m: &mut Machine, r: Ref) -> Exec<String> {
                 format!("{} {}", if interface { "interface" } else { "class" }, name.replace('/', "."))
             }
             other => format!("class {}", other.class_get_name()),
-        },
-        Native::Throwable { class, message, .. } => match message.and_then(|s| m.heap.string(s).map(str::to_string)) {
-            Some(msg) => format!("{}: {msg}", class.replace('/', ".")),
-            None => class.replace('/', "."),
+        }
+        .into(),
+        Native::Throwable { class, message, .. } => match message.and_then(|s| m.heap.string(s).cloned()) {
+            Some(msg) => {
+                let mut out = JStr::from(format!("{}: ", class.replace('/', ".")));
+                out.push(&msg);
+                out
+            }
+            None => class.replace('/', ".").into(),
         },
         Native::Optional(None) => "Optional.empty".into(),
-        Native::Optional(Some(v)) => format!("Optional[{}]", to_java_string(m, v, &Type::object("java/lang/Object"))?),
+        Native::Optional(Some(v)) => {
+            let mut out = JStr::from("Optional[");
+            out.push(&to_java_string(m, v, &Type::object("java/lang/Object"))?);
+            out.push_str("]");
+            out
+        }
         Native::Iterator { .. } => return unsupported("Iterator.toString is identity-based"),
         Native::Lambda { .. } => return unsupported("a lambda's toString is identity-based"),
     })
@@ -320,7 +392,7 @@ fn native_hash(m: &mut Machine, r: Ref) -> Exec<i32> {
         _ => return unsupported("not a native object"),
     };
     Ok(match native {
-        Native::String(s) => string_hash(&s),
+        Native::String(s) => s.hash_code(),
         Native::Boxed { value, class } => match (class.as_str(), value) {
             ("java/lang/Boolean", Value::Int(x)) => {
                 if x != 0 {
@@ -378,7 +450,9 @@ pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
 
 pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
     let native = match class {
-        "java/lang/StringBuilder" | "java/lang/StringBuffer" => Native::StringBuilder(String::new()),
+        "java/lang/StringBuilder" | "java/lang/StringBuffer" => Native::StringBuilder(JStr::new()),
+        // A String the program constructs: `<init>` gives it its contents (`invoke_special_jdk`).
+        "java/lang/String" => Native::String(JStr::new()),
         "java/util/ArrayList" | "java/util/LinkedList" => Native::List { elements: Vec::new(), mutable: true },
         "java/util/HashMap" | "java/util/LinkedHashMap" | "java/util/TreeMap" => Native::Map { entries: Vec::new(), mutable: true },
         "java/util/HashSet" | "java/util/LinkedHashSet" | "java/util/TreeSet" => Native::Set { elements: Vec::new(), mutable: true },
@@ -407,14 +481,36 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         }
         Native::StringBuilder(_) => {
             let initial = match descriptor {
-                "()V" => String::new(),
+                "()V" => JStr::new(),
                 // AbstractStringBuilder allocates the capacity: a negative one is a NegativeArraySizeException.
                 "(I)V" if args[0].as_int() < 0 => return Err(m.throw("java/lang/NegativeArraySizeException", Some(&args[0].as_int().to_string()))),
-                "(I)V" => String::new(),
+                "(I)V" => JStr::new(),
                 "(Ljava/lang/String;)V" | "(Ljava/lang/CharSequence;)V" => char_sequence(m, args[0])?,
                 _ => return unsupported(format!("StringBuilder.<init>{descriptor}")),
             };
             *m.heap.get_mut(r) = Object::Native(Native::StringBuilder(initial));
+        }
+        Native::String(_) => {
+            let contents = match descriptor {
+                "()V" => JStr::new(),
+                "(Ljava/lang/String;)V" => string_arg(m, args[0])?,
+                "([C)V" => {
+                    let Some(a) = args[0].as_ref() else { return Err(m.npe()) };
+                    char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?
+                }
+                "([CII)V" => {
+                    let Some(a) = args[0].as_ref() else { return Err(m.npe()) };
+                    let units = char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?;
+                    let (offset, count) = (args[1].as_int(), args[2].as_int());
+                    if offset < 0 || count < 0 || offset as i64 + count as i64 > units.len() as i64 {
+                        return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("offset {offset}, count {count}, length {}", units.len()))));
+                    }
+                    JStr::from_units(units.units()[offset as usize..(offset + count) as usize].to_vec())
+                }
+                "(Ljava/lang/StringBuilder;)V" | "(Ljava/lang/StringBuffer;)V" => char_sequence(m, args[0])?,
+                _ => return unsupported(format!("String.<init>{descriptor}")),
+            };
+            *m.heap.get_mut(r) = Object::Native(Native::String(contents));
         }
         Native::List { .. } => {
             let elements = match descriptor {
@@ -552,8 +648,12 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
             "getCause" => Ok(Some(throwable_cause(m, r).map(Value::Ref).unwrap_or(Value::Null))),
             "toString" => {
                 let text = match throwable_message(m, r) {
-                    Some(msg) => format!("{}: {msg}", class.replace('/', ".")),
-                    None => class.replace('/', "."),
+                    Some(msg) => {
+                        let mut out = JStr::from(format!("{}: ", class.replace('/', ".")));
+                        out.push(&msg);
+                        out
+                    }
+                    None => class.replace('/', ".").into(),
                 };
                 Ok(Some(m.new_string(text)))
             }
@@ -631,7 +731,7 @@ fn index_of(m: &mut Machine, elements: &[Value], v: Value) -> Exec<i32> {
     Ok(-1)
 }
 
-fn char_sequence(m: &mut Machine, v: Value) -> Exec<String> {
+fn char_sequence(m: &mut Machine, v: Value) -> Exec<JStr> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     match m.heap.get(r) {
         Object::Native(Native::String(s)) | Object::Native(Native::StringBuilder(s)) => Ok(s.clone()),
@@ -639,9 +739,9 @@ fn char_sequence(m: &mut Machine, v: Value) -> Exec<String> {
     }
 }
 
-fn string_arg(m: &mut Machine, v: Value) -> Exec<String> {
+fn string_arg(m: &mut Machine, v: Value) -> Exec<JStr> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
-    m.heap.string(r).map(str::to_string).ok_or_else(|| Fault::Unsupported("expected a String".into()))
+    m.heap.string(r).cloned().ok_or_else(|| Fault::Unsupported("expected a String".into()))
 }
 
 fn immutable(m: &mut Machine) -> Fault {
@@ -690,15 +790,18 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         Native::List { elements, mutable } => list_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Set { elements, mutable } => set_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Map { entries, mutable } => map_method(m, r, entries, mutable, name, descriptor, &args),
-        Native::Iterator { elements, position } => match name {
+        Native::Iterator { elements, position, immutable: of_immutable } => match name {
             "hasNext" => Ok(Some(Value::bool(position < elements.len()))),
             "next" => {
                 if position >= elements.len() {
                     return Err(m.throw("java/util/NoSuchElementException", None));
                 }
-                *m.heap.get_mut(r) = Object::Native(Native::Iterator { elements: elements.clone(), position: position + 1 });
+                *m.heap.get_mut(r) = Object::Native(Native::Iterator { elements: elements.clone(), position: position + 1, immutable: of_immutable });
                 Ok(Some(elements[position]))
             }
+            // The immutable collections' iterators refuse `remove` whatever their position, as `Iterator.remove`'s
+            // default does; a mutable collection's would change the collection, which a snapshot can't.
+            "remove" if of_immutable => Err(immutable(m)),
             _ => unsupported(format!("Iterator.{name}")),
         },
         Native::Class(t) => match name {
@@ -746,13 +849,13 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
     }
 }
 
-fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &[Value]) -> Exec<Value> {
-    let units = utf16(s);
+fn string_method(m: &mut Machine, s: &JStr, name: &str, descriptor: &str, args: &[Value]) -> Exec<Value> {
+    let units = s.units();
     let len = units.len() as i32;
     Ok(match (name, descriptor) {
         ("length", _) => Value::Int(len),
         ("isEmpty", _) => Value::bool(units.is_empty()),
-        ("isBlank", _) => Value::bool(s.chars().all(char::is_whitespace)),
+        ("isBlank", _) => Value::bool(code_points(units).iter().all(|(_, c)| java_whitespace(*c))),
         ("charAt", _) => {
             let i = args[0].as_int();
             if i < 0 || i >= len {
@@ -765,18 +868,20 @@ fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &
             if i < 0 || i >= len {
                 return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&index_message(i.into(), units.len()))));
             }
-            let rest = from_utf16(&units[i as usize..]);
-            Value::Int(rest.chars().next().map(|c| c as i32).unwrap_or(0))
+            Value::Int(code_points(&units[i as usize..]).first().map(|(_, c)| *c as i32).unwrap_or(0))
         }
         ("equals", _) => Value::bool(matches!(args[0], Value::Ref(o) if m.heap.string(o) == Some(s))),
-        ("equalsIgnoreCase", _) => Value::bool(match args[0] {
-            Value::Ref(o) => m.heap.string(o).is_some_and(|t| t.to_lowercase() == s.to_lowercase()),
-            _ => false,
-        }),
-        ("hashCode", _) => Value::Int(string_hash(s)),
+        ("equalsIgnoreCase", _) => match args[0] {
+            Value::Ref(o) => match m.heap.string(o).cloned() {
+                Some(t) => Value::bool(text_of(&t, "String.equalsIgnoreCase")?.to_lowercase() == text_of(s, "String.equalsIgnoreCase")?.to_lowercase()),
+                None => Value::bool(false),
+            },
+            _ => Value::bool(false),
+        },
+        ("hashCode", _) => Value::Int(s.hash_code()),
         ("compareTo", _) => {
             let other = string_arg(m, args[0])?;
-            let o = utf16(&other);
+            let o = other.units();
             let mut result = 0;
             for (a, b) in units.iter().zip(o.iter()) {
                 if a != b {
@@ -791,8 +896,8 @@ fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &
         }
         ("compareToIgnoreCase", _) => {
             let other = string_arg(m, args[0])?;
-            let a = utf16(&s.to_lowercase());
-            let b = utf16(&other.to_lowercase());
+            let a = utf16_of(&text_of(s, "String.compareToIgnoreCase")?.to_lowercase());
+            let b = utf16_of(&text_of(&other, "String.compareToIgnoreCase")?.to_lowercase());
             let mut result = 0;
             for (x, y) in a.iter().zip(b.iter()) {
                 if x != y {
@@ -807,45 +912,50 @@ fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &
         }
         ("concat", _) => {
             let other = string_arg(m, args[0])?;
-            m.new_string(format!("{s}{other}"))
+            let mut out = s.clone();
+            out.push(&other);
+            m.new_string(out)
         }
         ("contains", _) => {
             let other = char_sequence(m, args[0])?;
-            Value::bool(s.contains(&other))
+            Value::bool(s.find(&other, 0) >= 0)
         }
         ("startsWith", "(Ljava/lang/String;)Z") => {
             let other = string_arg(m, args[0])?;
-            Value::bool(s.starts_with(&other))
+            Value::bool(units.starts_with(other.units()))
         }
         ("startsWith", "(Ljava/lang/String;I)Z") => {
-            let other = utf16(&string_arg(m, args[0])?);
+            let other = string_arg(m, args[0])?;
             let offset = args[1].as_int();
-            Value::bool(offset >= 0 && (offset as usize) <= units.len() && units[offset as usize..].starts_with(&other))
+            Value::bool(offset >= 0 && (offset as usize) <= units.len() && units[offset as usize..].starts_with(other.units()))
         }
         ("endsWith", _) => {
             let other = string_arg(m, args[0])?;
-            Value::bool(s.ends_with(&other))
+            Value::bool(units.ends_with(other.units()))
         }
         ("indexOf", "(I)I") | ("indexOf", "(II)I") => {
-            let c = args[0].as_int() as u16;
             let from = if descriptor == "(II)I" { args[1].as_int().max(0) as usize } else { 0 };
-            Value::Int(units.iter().enumerate().skip(from).find(|(_, u)| **u == c).map(|(i, _)| i as i32).unwrap_or(-1))
+            match code_point_units(args[0].as_int()) {
+                Some(_) if from >= units.len() => Value::Int(-1),
+                Some(needle) => Value::Int(s.find(&needle, from)),
+                None => Value::Int(-1),
+            }
         }
         ("indexOf", "(Ljava/lang/String;)I") | ("indexOf", "(Ljava/lang/String;I)I") => {
-            let needle = utf16(&string_arg(m, args[0])?);
+            let needle = string_arg(m, args[0])?;
             let from = if descriptor.ends_with("I)I") && args.len() > 1 { args[1].as_int().max(0) as usize } else { 0 };
-            Value::Int(find_units(&units, &needle, from))
+            Value::Int(s.find(&needle, from))
         }
-        ("lastIndexOf", "(I)I") => {
-            let c = args[0].as_int() as u16;
-            Value::Int(units.iter().rposition(|u| *u == c).map(|i| i as i32).unwrap_or(-1))
-        }
+        ("lastIndexOf", "(I)I") => match code_point_units(args[0].as_int()) {
+            Some(needle) => Value::Int((0..=units.len().saturating_sub(needle.len())).rev().find(|&i| units.len() >= needle.len() && units[i..].starts_with(needle.units())).map(|i| i as i32).unwrap_or(-1)),
+            None => Value::Int(-1),
+        },
         ("lastIndexOf", "(Ljava/lang/String;)I") => {
-            let needle = utf16(&string_arg(m, args[0])?);
+            let needle = string_arg(m, args[0])?;
             let mut result = -1;
             let mut from = 0;
             loop {
-                let i = find_units(&units, &needle, from);
+                let i = s.find(&needle, from);
                 if i < 0 {
                     break;
                 }
@@ -857,12 +967,12 @@ fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &
             }
             Value::Int(result)
         }
-        ("substring", "(I)I") | ("substring", "(I)Ljava/lang/String;") => {
+        ("substring", "(I)Ljava/lang/String;") => {
             let begin = args[0].as_int();
             if begin < 0 || begin > len {
                 return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("begin {begin}, end {len}, length {len}"))));
             }
-            m.new_string(from_utf16(&units[begin as usize..]))
+            m.new_string(JStr::from_units(units[begin as usize..].to_vec()))
         }
         ("substring", "(II)Ljava/lang/String;") | ("subSequence", _) => {
             let begin = args[0].as_int();
@@ -870,33 +980,63 @@ fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &
             if begin < 0 || end > len || begin > end {
                 return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("begin {begin}, end {end}, length {len}"))));
             }
-            m.new_string(from_utf16(&units[begin as usize..end as usize]))
+            m.new_string(JStr::from_units(units[begin as usize..end as usize].to_vec()))
         }
-        ("toUpperCase", "()Ljava/lang/String;") => m.new_string(s.to_uppercase()),
-        ("toLowerCase", "()Ljava/lang/String;") => m.new_string(s.to_lowercase()),
-        ("trim", _) => m.new_string(s.trim_matches(|c: char| c as u32 <= 0x20)),
-        ("strip", _) => m.new_string(s.trim()),
-        ("stripLeading", _) => m.new_string(s.trim_start()),
-        ("stripTrailing", _) => m.new_string(s.trim_end()),
+        ("toUpperCase", "()Ljava/lang/String;") => {
+            let text = text_of(s, "String.toUpperCase")?;
+            m.new_string(text.to_uppercase())
+        }
+        ("toLowerCase", "()Ljava/lang/String;") => {
+            let text = text_of(s, "String.toLowerCase")?;
+            m.new_string(text.to_lowercase())
+        }
+        ("trim", _) => {
+            let start = units.iter().position(|&u| u > 0x20).unwrap_or(units.len());
+            let end = units.iter().rposition(|&u| u > 0x20).map(|i| i + 1).unwrap_or(start);
+            m.new_string(JStr::from_units(units[start..end.max(start)].to_vec()))
+        }
+        ("strip", _) => m.new_string(strip(units, true, true)),
+        ("stripLeading", _) => m.new_string(strip(units, true, false)),
+        ("stripTrailing", _) => m.new_string(strip(units, false, true)),
         ("replace", "(CC)Ljava/lang/String;") => {
             let from = args[0].as_int() as u16;
             let to = args[1].as_int() as u16;
-            let replaced: Vec<u16> = units.iter().map(|u| if *u == from { to } else { *u }).collect();
-            m.new_string(from_utf16(&replaced))
+            m.new_string(JStr::from_units(units.iter().map(|u| if *u == from { to } else { *u }).collect()))
         }
         ("replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;") => {
             let from = char_sequence(m, args[0])?;
             let to = char_sequence(m, args[1])?;
-            m.new_string(s.replace(&from, &to))
+            let mut out = JStr::new();
+            if from.is_empty() {
+                // Java puts the replacement before every code unit and at the end.
+                for &u in units {
+                    out.push(&to);
+                    out.push_unit(u);
+                }
+                out.push(&to);
+            } else {
+                let mut at = 0;
+                loop {
+                    let i = s.find(&from, at);
+                    if i < 0 {
+                        break;
+                    }
+                    out.push(&JStr::from_units(units[at..i as usize].to_vec()));
+                    out.push(&to);
+                    at = i as usize + from.len();
+                }
+                out.push(&JStr::from_units(units[at..].to_vec()));
+            }
+            m.new_string(out)
         }
         ("repeat", _) => {
             let n = args[0].as_int();
             if n < 0 {
                 return Err(m.throw("java/lang/IllegalArgumentException", Some(&format!("count is negative: {n}"))));
             }
-            m.new_string(s.repeat(n as usize))
+            m.new_string(JStr::from_units(units.repeat(n as usize)))
         }
-        ("toString", _) | ("intern", _) => m.new_string(s),
+        ("toString", _) | ("intern", _) => m.new_string(s.clone()),
         ("toCharArray", _) => {
             let data = units.iter().map(|u| Value::Int(i32::from(*u))).collect();
             m.new_array_of(Type::Char, data)
@@ -908,79 +1048,109 @@ fn string_method(m: &mut Machine, s: &str, name: &str, descriptor: &str, args: &
     })
 }
 
-fn find_units(haystack: &[u16], needle: &[u16], from: usize) -> i32 {
-    if needle.is_empty() {
-        return from.min(haystack.len()) as i32;
-    }
-    if needle.len() > haystack.len() {
-        return -1;
-    }
-    (from..=haystack.len() - needle.len()).find(|&i| haystack[i..i + needle.len()] == *needle).map(|i| i as i32).unwrap_or(-1)
+fn utf16_of(s: &str) -> Vec<u16> {
+    s.encode_utf16().collect()
 }
 
-fn string_builder_method(m: &mut Machine, r: Ref, s: String, name: &str, descriptor: &str, args: &[Value]) -> Exec<Option<Value>> {
+/// The code units of a code point `indexOf(int)` searches for: one for a BMP code point, a surrogate included,
+/// two for a supplementary one, and `None` for a value that is no code point, which no String contains.
+fn code_point_units(c: i32) -> Option<JStr> {
+    match c {
+        0..=0xFFFF => Some(JStr::from_units(vec![c as u16])),
+        0x10000..=0x10FFFF => {
+            let v = (c - 0x10000) as u32;
+            Some(JStr::from_units(vec![0xD800 + (v >> 10) as u16, 0xDC00 + (v & 0x3FF) as u16]))
+        }
+        _ => None,
+    }
+}
+
+fn string_builder_method(m: &mut Machine, r: Ref, s: JStr, name: &str, descriptor: &str, args: &[Value]) -> Exec<Option<Value>> {
     let mut text = s;
     let result = match (name, descriptor) {
         ("append", d) => {
-            let param = MethodDescriptor::parse(d).map_err(|e| Fault::Unsupported(e.to_string()))?.params.into_iter().next().unwrap_or(Type::Int);
-            let piece = match (&param, args[0]) {
-                (Type::Array(_), Value::Ref(a)) => match m.heap.get(a) {
-                    Object::Array { data, .. } => from_utf16(&data.iter().map(|v| v.as_int() as u16).collect::<Vec<_>>()),
-                    _ => return unsupported("append of a non-array"),
-                },
-                (Type::Object(_), v) => to_java_string(m, v, &param)?,
-                (t, v) => primitive(v, t),
+            let params = MethodDescriptor::parse(d).map_err(|e| Fault::Unsupported(e.to_string()))?.params;
+            if params.len() != 1 {
+                return unsupported(format!("StringBuilder.append{descriptor}"));
+            }
+            let param = &params[0];
+            let piece = match (param, args[0]) {
+                (Type::Array(_), Value::Ref(a)) => char_array_units(m, a).ok_or_else(|| Fault::Unsupported("append of a non-array".into()))?,
+                (Type::Array(_), _) => return Err(m.npe()),
+                (Type::Object(_), v) => to_java_string(m, v, param)?,
+                (t, v) => primitive_units(v, t),
             };
-            text.push_str(&piece);
+            text.push(&piece);
             Some(Value::Ref(r))
         }
         ("toString", _) => Some(m.new_string(text.clone())),
-        ("length", _) => Some(Value::Int(utf16(&text).len() as i32)),
+        ("length", _) => Some(Value::Int(text.len() as i32)),
         ("isEmpty", _) => Some(Value::bool(text.is_empty())),
         ("charAt", _) => {
-            let units = utf16(&text);
             let i = args[0].as_int();
-            if i < 0 || i as usize >= units.len() {
-                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&index_message(i.into(), units.len()))));
+            if i < 0 || i as usize >= text.len() {
+                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&index_message(i.into(), text.len()))));
             }
-            Some(Value::Int(i32::from(units[i as usize])))
+            Some(Value::Int(i32::from(text.units()[i as usize])))
         }
         ("reverse", _) => {
-            text = text.chars().rev().collect();
+            // AbstractStringBuilder.reverse: the code units reversed, then every surrogate pair that was one put
+            // back in order, so that a supplementary character stays one; an isolated surrogate stays as it is.
+            let mut units = text.into_units();
+            units.reverse();
+            let mut i = 0;
+            while i + 1 < units.len() {
+                if (0xDC00..0xE000).contains(&units[i]) && (0xD800..0xDC00).contains(&units[i + 1]) {
+                    units.swap(i, i + 1);
+                    i += 2;
+                } else {
+                    i += 1;
+                }
+            }
+            text = JStr::from_units(units);
             Some(Value::Ref(r))
         }
         ("setLength", _) => {
-            let n = args[0].as_int().max(0) as usize;
-            let mut units = utf16(&text);
-            units.resize(n, 0);
-            text = from_utf16(&units);
+            let n = args[0].as_int();
+            if n < 0 {
+                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("String index out of range: {n}"))));
+            }
+            let mut units = text.into_units();
+            units.resize(n as usize, 0);
+            text = JStr::from_units(units);
             None
         }
         ("deleteCharAt", _) => {
-            let mut units = utf16(&text);
+            let mut units = text.into_units();
             let i = args[0].as_int();
             if i < 0 || i as usize >= units.len() {
-                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&index_message(i.into(), units.len()))));
+                let n = units.len();
+                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&index_message(i.into(), n))));
             }
             units.remove(i as usize);
-            text = from_utf16(&units);
+            text = JStr::from_units(units);
             Some(Value::Ref(r))
         }
         ("insert", d) => {
             let params = MethodDescriptor::parse(d).map_err(|e| Fault::Unsupported(e.to_string()))?.params;
+            if params.len() != 2 {
+                return unsupported(format!("StringBuilder.insert{descriptor}"));
+            }
             let offset = args[0].as_int();
-            let piece = match &params[1] {
-                Type::Object(_) => to_java_string(m, args[1], &params[1])?,
-                t => primitive(args[1], t),
+            let piece = match (&params[1], args[1]) {
+                (Type::Array(_), Value::Ref(a)) => char_array_units(m, a).ok_or_else(|| Fault::Unsupported("insert of a non-array".into()))?,
+                (Type::Array(_), _) => return Err(m.npe()),
+                (Type::Object(_), v) => to_java_string(m, v, &params[1])?,
+                (t, v) => primitive_units(v, t),
             };
-            let mut units = utf16(&text);
+            let mut units = text.into_units();
             if offset < 0 || offset as usize > units.len() {
                 return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("offset {offset}, length {}", units.len()))));
             }
             let tail = units.split_off(offset as usize);
-            units.extend(utf16(&piece));
+            units.extend_from_slice(piece.units());
             units.extend(tail);
-            text = from_utf16(&units);
+            text = JStr::from_units(units);
             Some(Value::Ref(r))
         }
         _ => return unsupported(format!("StringBuilder.{name}{descriptor}")),
@@ -989,6 +1159,7 @@ fn string_builder_method(m: &mut Machine, r: Ref, s: String, name: &str, descrip
     *m.heap.get_mut(r) = Object::Native(Native::StringBuilder(text));
     Ok(result)
 }
+
 
 fn boxed_method(m: &mut Machine, _r: Ref, class: &str, value: Value, name: &str, descriptor: &str, args: &[Value]) -> Exec<Value> {
     let t = boxed_type(class);
@@ -1104,7 +1275,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             }
             Some(Value::Int(result))
         }
-        ("iterator", _) => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0 }))),
+        ("iterator", _) => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0, immutable: !mutable }))),
         ("forEach", _) => {
             for e in elements {
                 m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![e])?;
@@ -1214,7 +1385,7 @@ fn set_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool, 
             }
             Some(Value::Int(1))
         }
-        "iterator" => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0 }))),
+        "iterator" => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0, immutable: !mutable }))),
         "forEach" => {
             for e in elements {
                 m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![e])?;
@@ -1490,14 +1661,14 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
             let Some(BootstrapArg::Str(recipe)) = bootstrap.args.first() else { return unsupported("concat recipe") };
             let mut constants = bootstrap.args[1..].iter();
             let mut args = args.into_iter().zip(descriptor.params.iter());
-            let mut out = String::new();
-            for c in recipe.chars() {
+            let mut out = JStr::new();
+            for c in recipe.encode_utf16() {
                 match c {
-                    '\u{1}' => {
+                    1 => {
                         let (v, t) = args.next().ok_or_else(|| Fault::Unsupported("concat arity".into()))?;
-                        out.push_str(&to_java_string(m, v, t)?);
+                        out.push(&to_java_string(m, v, t)?);
                     }
-                    '\u{2}' => match constants.next() {
+                    2 => match constants.next() {
                         Some(BootstrapArg::Str(s)) => out.push_str(s),
                         Some(BootstrapArg::Int(v)) => out.push_str(&v.to_string()),
                         Some(BootstrapArg::Long(v)) => out.push_str(&v.to_string()),
@@ -1505,15 +1676,15 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                         Some(BootstrapArg::Double(v)) => out.push_str(&double_to_string(*v)),
                         _ => return unsupported("concat constant"),
                     },
-                    other => out.push(other),
+                    other => out.push_unit(other),
                 }
             }
             Ok(Some(m.new_string(out)))
         }
         ("java/lang/invoke/StringConcatFactory", "makeConcat") => {
-            let mut out = String::new();
+            let mut out = JStr::new();
             for (v, t) in args.into_iter().zip(descriptor.params.iter()) {
-                out.push_str(&to_java_string(m, v, t)?);
+                out.push(&to_java_string(m, v, t)?);
             }
             Ok(Some(m.new_string(out)))
         }
@@ -1529,7 +1700,7 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                         if method == "enumSwitch" {
                             matches!(m.heap.get(selector), Object::Instance { base: Base::Enum { name, .. }, .. } if name == s)
                         } else {
-                            m.heap.string(selector) == Some(s)
+                            m.heap.string(selector) == Some(&JStr::from(s))
                         }
                     }
                     BootstrapArg::Int(v) => matches!(m.heap.get(selector), Object::Native(Native::Boxed { value: Value::Int(x), .. }) if x == v),
@@ -1612,9 +1783,13 @@ fn record_method(m: &mut Machine, class: &ClassFile, bootstrap_args: &[Bootstrap
             let mut parts = Vec::new();
             for (label, field, t) in &components {
                 let v = m.get_field(this, field)?;
-                parts.push(format!("{label}={}", to_java_string(m, v, t)?));
+                let mut part = JStr::from(format!("{label}="));
+                part.push(&to_java_string(m, v, t)?);
+                parts.push(part);
             }
-            let text = format!("{}[{}]", class.simple_name(), parts.join(", "));
+            let mut text = JStr::from(format!("{}[", class.simple_name()));
+            text.push(&JStr::join(&parts, &JStr::from(", ")));
+            text.push_str("]");
             Ok(Some(m.new_string(text)))
         }
         "hashCode" => {
@@ -1672,10 +1847,10 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
         "java/lang/Boolean" => match (name, descriptor) {
             ("valueOf", "(Z)Ljava/lang/Boolean;") => box_value(m, owner, a[0]),
             ("valueOf", _) => {
-                let s = m.str_of(a[0]).map(|s| s.eq_ignore_ascii_case("true")).unwrap_or(false);
+                let s = m.units_of(a[0]).and_then(|s| s.text()).is_some_and(|s| s.eq_ignore_ascii_case("true"));
                 box_value(m, owner, Value::bool(s))
             }
-            ("parseBoolean", _) => Value::bool(m.str_of(a[0]).map(|s| s.eq_ignore_ascii_case("true")).unwrap_or(false)),
+            ("parseBoolean", _) => Value::bool(m.units_of(a[0]).and_then(|s| s.text()).is_some_and(|s| s.eq_ignore_ascii_case("true"))),
             ("toString", _) => m.new_string((a[0].as_int() != 0).to_string()),
             ("compare", _) => Value::Int(a[0].as_int().cmp(&a[1].as_int()) as i32),
             ("hashCode", _) => Value::Int(if a[0].as_int() != 0 { 1231 } else { 1237 }),
@@ -1693,15 +1868,12 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             }
             ("valueOf", "([C)Ljava/lang/String;") | ("copyValueOf", "([C)Ljava/lang/String;") => {
                 let Some(r) = a[0].as_ref() else { return Err(m.npe()) };
-                let s = match m.heap.get(r) {
-                    Object::Array { data, .. } => from_utf16(&data.iter().map(|v| v.as_int() as u16).collect::<Vec<_>>()),
-                    _ => return unsupported("String.valueOf of a non-array"),
-                };
+                let s = char_array_units(m, r).ok_or_else(|| Fault::Unsupported("String.valueOf of a non-array".into()))?;
                 m.new_string(s)
             }
             ("valueOf", d) => {
                 let t = MethodDescriptor::parse(d).map_err(|e| Fault::Unsupported(e.to_string()))?.params[0].clone();
-                m.new_string(primitive(a[0], &t))
+                m.new_string(primitive_units(a[0], &t))
             }
             ("join", "(Ljava/lang/CharSequence;[Ljava/lang/CharSequence;)Ljava/lang/String;") => {
                 let delimiter = char_sequence(m, a[0])?;
@@ -1710,7 +1882,7 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
                 for e in elements {
                     parts.push(to_java_string(m, e, &Type::object("java/lang/CharSequence"))?);
                 }
-                m.new_string(parts.join(&delimiter))
+                m.new_string(JStr::join(&parts, &delimiter))
             }
             ("join", "(Ljava/lang/CharSequence;Ljava/lang/Iterable;)Ljava/lang/String;") => {
                 let delimiter = char_sequence(m, a[0])?;
@@ -1719,7 +1891,7 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
                 for e in elements {
                     parts.push(to_java_string(m, e, &Type::object("java/lang/CharSequence"))?);
                 }
-                m.new_string(parts.join(&delimiter))
+                m.new_string(JStr::join(&parts, &delimiter))
             }
             ("format", _) => return unsupported("String.format depends on the default locale"),
             _ => return unsupported(format!("String.{name}{descriptor}")),
@@ -1733,15 +1905,14 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             }
             ("requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;") => {
                 if a[0] == Value::Null {
-                    let message = m.str_of(a[1]);
-                    return Err(m.throw("java/lang/NullPointerException", message.as_deref()));
+                    return Err(m.throw_with("java/lang/NullPointerException", a[1].as_ref()));
                 }
                 a[0]
             }
             ("requireNonNull", "(Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;") => {
                 if a[0] == Value::Null {
-                    let message = m.call_virtual(a[1], "java/util/function/Supplier", "get", "()Ljava/lang/Object;", Vec::new())?.and_then(|v| m.str_of(v));
-                    return Err(m.throw("java/lang/NullPointerException", message.as_deref()));
+                    let message = m.call_virtual(a[1], "java/util/function/Supplier", "get", "()Ljava/lang/Object;", Vec::new())?.and_then(|v| v.as_ref());
+                    return Err(m.throw_with("java/lang/NullPointerException", message));
                 }
                 a[0]
             }
@@ -1881,10 +2052,10 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
                     Object::Native(Native::Class(Type::Object(n))) => n.clone(),
                     _ => return unsupported("Enum.valueOf of a non-class"),
                 };
-                let Some(wanted) = m.str_of(a[1]) else { return Err(m.throw("java/lang/NullPointerException", Some("Name is null"))) };
+                let Some(wanted) = m.units_of(a[1]) else { return Err(m.throw("java/lang/NullPointerException", Some("Name is null"))) };
                 for constant in m.enum_constants(&class_name)? {
                     if let Some(r) = constant.as_ref() {
-                        if matches!(m.heap.get(r), Object::Instance { base: Base::Enum { name, .. }, .. } if *name == wanted) {
+                        if matches!(m.heap.get(r), Object::Instance { base: Base::Enum { name, .. }, .. } if JStr::from(name) == wanted) {
                             return Ok(Some(constant));
                         }
                     }
@@ -2069,18 +2240,24 @@ fn java_min_f64(x: f64, y: f64) -> f64 {
     }
 }
 
-fn number_format(m: &mut Machine, s: Option<&str>, radix: u32) -> Fault {
-    let message = match s {
-        None => "Cannot parse null string: null".to_string(),
-        Some(s) if radix == 10 => format!("For input string: \"{s}\""),
-        Some(s) => format!("For input string: \"{s}\" under radix {radix}"),
-    };
-    m.throw("java/lang/NumberFormatException", Some(&message))
+/// `NumberFormatException` for the String `s`, quoted in its message as it is.
+fn number_format(m: &mut Machine, s: Option<&JStr>, radix: u32) -> Fault {
+    let Some(s) = s else { return m.throw("java/lang/NumberFormatException", Some("Cannot parse null string: null")) };
+    let mut message = JStr::from("For input string: \"");
+    message.push(s);
+    message.push_str(if radix == 10 { "\"".to_string() } else { format!("\" under radix {radix}") }.as_str());
+    m.throw_units("java/lang/NumberFormatException", message)
 }
 
 fn parse_integral(m: &mut Machine, v: Value, radix: u32, min: i64, max: i64) -> Exec<i64> {
-    let s = m.str_of(v);
-    let Some(text) = s.as_deref() else { return Err(number_format(m, None, radix)) };
+    let Some(s) = m.units_of(v) else { return Err(number_format(m, None, radix)) };
+    // Java takes any Unicode digit (`Character.digit`), whose tables aren't modelled: a String with a code unit
+    // outside ASCII is refused, not parsed as Rust's ASCII digits would parse it.
+    if s.units().iter().any(|&u| u > 0x7F) {
+        return unsupported(format!("parsing {} (Character.digit's Unicode digits are not modelled)", s.display()));
+    }
+    let text_owned = s.text().unwrap_or_default();
+    let text = text_owned.as_str();
     let trimmed = text.strip_prefix('+').unwrap_or(text);
     let parsed = if text.is_empty() || trimmed.is_empty() || (text.starts_with('+') && text[1..].starts_with(['+', '-'])) {
         None
@@ -2089,7 +2266,7 @@ fn parse_integral(m: &mut Machine, v: Value, radix: u32, min: i64, max: i64) -> 
     };
     match parsed {
         Some(v) if v >= min && v <= max => Ok(v),
-        _ => Err(number_format(m, Some(text), radix)),
+        _ => Err(number_format(m, Some(&s), radix)),
     }
 }
 
@@ -2185,7 +2362,7 @@ fn character(m: &mut Machine, name: &str, descriptor: &str, a: &[Value]) -> Exec
     let c = |v: Value| char::from_u32(v.as_int() as u32).unwrap_or('\u{FFFD}');
     Ok(match name {
         "valueOf" => box_value(m, "java/lang/Character", a[0]),
-        "toString" => m.new_string(char_to_string(a[0].as_int())),
+        "toString" => m.new_string(JStr::from_units(vec![a[0].as_int() as u16])),
         "isDigit" => Value::bool(c(a[0]).is_numeric()),
         "isLetter" => Value::bool(c(a[0]).is_alphabetic()),
         "isLetterOrDigit" => Value::bool(c(a[0]).is_alphanumeric()),
@@ -2210,20 +2387,19 @@ fn floating(m: &mut Machine, owner: &str, name: &str, descriptor: &str, a: &[Val
     let wrap = |x: f64| if is_double { Value::Double(x) } else { Value::Float(x as f32) };
     Ok(match name {
         "valueOf" if descriptor.starts_with("(Ljava/lang/String;") => {
-            let s = m.str_of(a[0]);
-            let Some(text) = s.as_deref() else { return Err(m.throw("java/lang/NullPointerException", None)) };
-            match text.trim().parse::<f64>() {
-                Ok(x) => box_value(m, owner, wrap(x)),
-                Err(_) => return Err(m.throw("java/lang/NumberFormatException", Some(&format!("For input string: \"{text}\"")))),
+            let Some(units) = m.units_of(a[0]) else { return Err(m.throw("java/lang/NullPointerException", None)) };
+            // A String with an isolated surrogate is no number: the exception quotes it as it is.
+            match units.text().and_then(|text| text.trim().parse::<f64>().ok()) {
+                Some(x) => box_value(m, owner, wrap(x)),
+                None => return Err(number_format(m, Some(&units), 10)),
             }
         }
         "valueOf" => box_value(m, owner, a[0]),
         "parseDouble" | "parseFloat" => {
-            let s = m.str_of(a[0]);
-            let Some(text) = s.as_deref() else { return Err(m.throw("java/lang/NullPointerException", None)) };
-            match text.trim().trim_end_matches(['d', 'D', 'f', 'F']).parse::<f64>() {
-                Ok(x) => wrap(x),
-                Err(_) => return Err(m.throw("java/lang/NumberFormatException", Some(&format!("For input string: \"{text}\"")))),
+            let Some(units) = m.units_of(a[0]) else { return Err(m.throw("java/lang/NullPointerException", None)) };
+            match units.text().and_then(|text| text.trim().trim_end_matches(['d', 'D', 'f', 'F']).parse::<f64>().ok()) {
+                Some(x) => wrap(x),
+                None => return Err(number_format(m, Some(&units), 10)),
             }
         }
         "toString" => m.new_string(if is_double { double_to_string(a[0].as_double()) } else { float_to_string(a[0].as_float()) }),
@@ -2261,7 +2437,10 @@ fn arrays(m: &mut Machine, name: &str, descriptor: &str, a: &[Value]) -> Exec<Va
             for v in data {
                 parts.push(to_java_string(m, v, &element)?);
             }
-            m.new_string(format!("[{}]", parts.join(", ")))
+            let mut out = JStr::from("[");
+            out.push(&JStr::join(&parts, &JStr::from(", ")));
+            out.push_str("]");
+            m.new_string(out)
         }
         "equals" => {
             let (Some(x), Some(y)) = (a[0].as_ref(), a[1].as_ref()) else { return Ok(Value::bool(a[0] == a[1])) };
@@ -2351,8 +2530,9 @@ mod tests {
     fn radix_and_find() {
         assert_eq!(to_radix(255, 16), "ff");
         assert_eq!(to_radix(-8, 2), "-1000");
-        assert_eq!(find_units(&utf16("hello"), &utf16("ll"), 0), 2);
-        assert_eq!(find_units(&utf16("hello"), &utf16("ll"), 3), -1);
-        assert_eq!(find_units(&utf16("hello"), &utf16(""), 2), 2);
+        assert_eq!(JStr::from("hello").find(&JStr::from("ll"), 0), 2);
+        assert_eq!(JStr::from("hello").find(&JStr::from("ll"), 3), -1);
+        assert_eq!(JStr::from("hello").find(&JStr::from(""), 2), 2);
+        assert_eq!(JStr::from("hello").hash_code(), string_hash("hello"));
     }
 }

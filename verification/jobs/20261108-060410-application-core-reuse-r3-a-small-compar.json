@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-060410-application-core-reuse-r3-a-small-compar",
+  "title": "application-core reuse R3: a small compare run's time by stage, cold, rerun and a defect, to decide whether a preparation cache is justified",
+  "description": "R3 of llm-dlc/loops/application-core-reuse.md: measure before adding any cache of preparation. The new benchmark test lib/tests/preparation.rs (ignored inline) runs jvmcontract compare on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191) in four scenarios, 7 repeats each: cold under a fresh proof cache, an unchanged rerun (every proof an exact hit), the 'offset' defect cold (refuted at the route and in the kernel), and its rerun (the stored witnesses replayed). Each run is timed in process under a new ledger (lib/src/reuse/preparation.rs, spans at the proof cache's own steps: plan, helper proofs, key and closures digested, lookup, store, witness replay, and the checker runs' own phases), proof by proof, and as the compare process build.py runs. Apart from the runs it times, one by one on the same builds, the stages a run repeats: javac per build, decoding a build, relocating the old build, alignment, the entry points' specs, opening the JDK image (lib/modules, which every class path with the JDK does, several times per proof), writing the models, the models' digest per key, and the binary's digest once per process. A debug smoke run inline (1 repeat) put most of a rerun before the lookup, about 120 ms per proof, with opening the JDK image at 31 ms per open the likely repeated part; this job gives the release figures that decide R3.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:compare",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/preparation.rs",
+      "lib/src/reuse/preparation.rs",
+      "llm-dlc/loops/application-core-reuse.md"
+    ]
+  },
+  "expected": "The step exits 0. lib/benchmark/preparation/preparation.json and .md come back with four scenarios; the reruns have no miss (every proof an exact hit) and every repeat and the process reach the same verdicts: under 'after' the entry point and Pricing#total, #withQuantity and #discount verified; under 'offset' the route and total refuted. The figures are for these fixtures only.",
+  "submitted": {
+    "at": "2026-11-08T06:04:10+00:00",
+    "session": "aa238023-596d-49bd-8039-52502ec096fc",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "a release build of lib's test binary (several minutes unless cached), then about 2 minutes: the debug smoke run took 49 s for 1 repeat, release is several times faster, 7 repeats; peak well under 1 GB besides cargo"
+  },
+  "steps": [
+    {
+      "name": "set -o pipefail; cd lib && mkdir -p target benchmark/prepara",
+      "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/preparation.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-r3.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/preparation/preparation.json",
+    "lib/benchmark/preparation/preparation.md"
+  ]
+}

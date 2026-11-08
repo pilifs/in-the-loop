@@ -72,11 +72,13 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
     }
     // The domain gate: a domain made otherwise than by constructors is refused here, and one whose constructors or
     // classes aren't the check's by `equivalence::run` once its layout is built ([`made_with`]), before any proof.
+    // A planned domain (the objects stream's O1 and O3) is checked by `construction::check_plans` here, and its
+    // inputs are made by the plan itself.
+    let mut plans = None;
     if let Some(d) = claim.domain.as_ref().filter(|d| !matches!(d.made_by, super::Construction::Constructors { .. })) {
-        if let super::Construction::Planned { before, after } = &d.made_by {
-            crate::construction::check_plans(before, after)?;
-        }
-        return Err(unsupported(unbuilt(&d.made_by)));
+        let super::Construction::Planned { before, after } = &d.made_by else { return Err(unsupported(unbuilt(&d.made_by))) };
+        crate::construction::check_plans(before, after)?;
+        plans = Some(crate::construction::Plans { before: before.clone(), after: after.clone() });
     }
     let mut options = crate::equivalence::Options::new(before, after, subject);
     options.engine = crate::Engine::Native;
@@ -86,11 +88,15 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
     options.timeout_seconds = DEADLINE_SECONDS;
     options.correspondence = claim.correspondence.clone();
     options.cache = cache.map(Path::to_path_buf);
+    options.plan = plans.clone();
     // The domain's parameters that may be null or one object (step H2); a field of an input object that may be
     // null or shared is not made yet.
     if let Some(d) = &claim.domain {
         if let Some(path) = d.nullable.iter().chain(d.may_alias.iter().flat_map(|(a, b)| [a, b])).find(|p| p.contains('.')) {
             return Err(unsupported(format!("the domain's {path} is a field path: only parameters may be null or one object yet, a field being whatever its object's constructor makes it")));
+        }
+        if plans.is_some() && (!d.nullable.is_empty() || !d.may_alias.is_empty()) {
+            return Err(Unsupported::new(Part::Objects, "a planned domain's nullable and may_alias: the plan's nodes say which inputs may be null or one object"));
         }
         options.nullable = d.nullable.clone();
         options.may_alias = d.may_alias.clone();
@@ -116,7 +122,15 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
         let callee = a.text.split('(').next()?.trim().to_string();
         Some(super::cache::Reuse::Callee { callee, key: super::cache::ClaimKey(key) })
     }).collect();
-    let domain = checked.domain.clone().unwrap_or_default();
+    // A planned domain's label and restrictions are what its result is about: the constructor-only claim says
+    // so, never passing for one over a history, and the setup claim names its sequence.
+    let domain = match (&plans, claim.domain.as_ref()) {
+        (Some(p), Some(d)) => {
+            let restrictions = if p.after.restrictions.is_empty() { String::new() } else { format!(" ({})", p.after.restrictions.join("; ")) };
+            format!("{}{restrictions}: {}", d.label, checked.domain.clone().unwrap_or_default())
+        }
+        _ => checked.domain.clone().unwrap_or_default(),
+    };
     let Some(stated) = &checked.stated else {
         // Refused before a statement: a named gap of the check.
         return Err(unsupported(checked.problem.unwrap_or_else(|| "refused".into())));
@@ -213,6 +227,16 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
 pub(crate) fn made_with(layout: &crate::harness::Layout, domain: &super::ObjectDomain) -> Option<String> {
     let calls = match &domain.made_by {
         super::Construction::Constructors { calls } => calls,
+        // A plan made the layout: its classes must still be the domain's.
+        super::Construction::Planned { .. } => {
+            let (_, classes) = layout.made_with();
+            let foreign: Vec<&String> = classes.iter().filter(|k| !domain.classes.iter().any(|d| d.trim() == k.as_str())).collect();
+            let absent: Vec<&String> = domain.classes.iter().filter(|d| !classes.iter().any(|k| k == d.trim())).collect();
+            if foreign.is_empty() && absent.is_empty() {
+                return None;
+            }
+            return Some(format!("the claim's plan makes objects of {}, and its domain names the classes {}: a check of other inputs than the claim's would be about inputs outside it", classes.join(", "), domain.classes.join(", ")));
+        }
         other => return Some(unbuilt(other)),
     };
     let squeeze = |c: &str| {

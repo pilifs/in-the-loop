@@ -24,6 +24,26 @@ change `vonmxkzztxwk` · [log `d1fd08068ac6`](https://terminalvalue.net/raw-trac
 
 Job 20261108-045000-application-core-objects-o1-lib-tests-in passed: 8 steps (integration tests and shop examples 190-196 under B9, each as expected) in 3m31s, peak 2.1 GiB against an estimate of 25m and 3.0 GiB. No findings; no outputs to apply.
 
+### application-core environment E1: a consumed primitive return under a deterministic query model
+
+change `ulzwwxvswvso` · [log `edaae9168204`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz)
+
+The effect check answers a modelled call whose result the handler uses from a declared CallModel instead of refusing it. The coupling policy is defined first, in lib/src/environment.rs: a deterministic read-only query answers with one function of its key, the same for both builds and every call. A declared nondeterministic or fallible choice is a different model, refused by name for now. The query is encoded as a table of 2 x bound keys and answers plus a default, passed as inputs of the generated observe method after the handler's. So the proof covers every snapshot, a counterexample is one environment, and calls are never coupled by their position. The witness names the environment it chose and is replayed on a JVM under the generated stubs. effects --environment FILE (and compare's) merges the declared calls into each entry point's claim. Anything the encoding doesn't take yet (throws, DTOs, String, field or receiver keys, non-integral results) is refused by name.
+
+Also fixes an existing bug: the two builds' unresolved marks were offset by tag x 16, which is the NullPointerException bit, so the old build's unresolved reasons always named a NullPointerException it never had. The tag now sits above every mark bit. Only the text of unresolved results changes.
+
+Verified inline: the new lib/tests/environment.rs (11 tests: a rewrite proved; a wrong key, an ignored rate and a wrong-branch event refuted and replayed; keys asked in another order and repeated reads proved; a call past the bound unresolved; the proof cached exactly and another bound a miss; the CLI flag), with tests/effects.rs (18), compare, foundations, application_core (14) and the 228 unit tests passing. Interface requests for main.rs's and compare.rs's stale --environment docs, and compare's uncounted decision, are recorded in the stream brief's Progress.
+
+### application-core reuse J3: a planned domain's plans and a modelled call's model in the claim key, digested whole as their strict types
+
+change `mslqzrprorvn` · [log `edaae9168204`](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz)
+
+The claim key's projection (lib/src/spec/cache.rs) refused every claim with a planned domain or a call model as uncacheable, since Phase 0 added those parts without registering them. TYPED now names domain.made_by.before/after (construction plans) and environment.calls[].model (a call model): each is digested whole once it reads back exactly as its type of spec::plans, which refuses every undeclared field and variant, so nothing in them is left out of the key and an undeclared field still makes the claim uncacheable by name.
+
+Verified inline: three new tests in lib/tests/reuse.rs. The 8 frozen claims of tests/fixtures/application-core each get a distinct key; 27 changes to their histories (setup calls, constructors, factories, setup bounds, one version's plan alone), model outcomes (results, exceptions, coupling, key, bound) and value bounds (String and list lengths, nullability, evidence levels, element kinds) each give a new key; undeclared fields, an unknown variant and a non-canonical plan are refused. The integration contract's J3 now passes on distinct keys instead of on the refusal. 230 unit tests and the contract, summaries, heap, effects and foundations suites pass.
+
+Also recorded under Progress: an unsound regression-cache hit the objects stream found in proof_cache.rs (an inner object's constructor is missing from the closure's roots), which is this stream's next piece of work.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/34b4ec0b-987f-413f-b1d9-3ef5149ea8cc/edaae91682040c51d5703c763efa18de5c8163e151e7b09e5d078c9522b16545.jsonl.gz) has every step in between: reasoning, tool calls and their results.

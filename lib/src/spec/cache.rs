@@ -4,7 +4,8 @@
 //! **The key** is a projection of a [`CanonicalClaim`], written canonically (object keys sorted, no whitespace) and
 //! digested with SHA-256 under a version line ([`PROJECTION`]). The projection knows every field of the claim by its
 //! path ([`KNOWN`]); a field it doesn't know makes the claim uncacheable, so that a field another stream adds to the
-//! claim can't be silently left out of the key. A part that was never computed (an empty closure digest or tool
+//! claim can't be silently left out of the key. The typed interfaces of [`super::plans`] a claim carries ([`TYPED`])
+//! are digested whole, once they read back as their strict types. A part that was never computed (an empty closure digest or tool
 //! identity) makes it uncacheable too. Nothing that depends on the result or the run is in the claim to begin with.
 //!
 //! **The cache** is a local directory, never committed (decision 3 of `foundations.md`): one JSON file per key,
@@ -114,6 +115,31 @@ pub const KNOWN: &[&str] = &[
     "tools.binary",
 ];
 
+/// The parts of a claim that are typed interfaces of [`super::plans`], digested whole: each must read back as its
+/// type exactly, and those types refuse every field and variant they don't declare. A field added to one of them is
+/// in the digest with the rest of it, never left out; a field the type doesn't declare makes the claim uncacheable.
+/// The application-core streams' (`llm-dlc/loops/application-core.md`): a planned domain's plan for each version,
+/// its setup sequence included, and a modelled call's model, its results and their bound included.
+pub const TYPED: &[(&str, &str)] = &[
+    ("domain.made_by.before", "construction plan"),
+    ("domain.made_by.after", "construction plan"),
+    ("environment.calls[].model", "call model"),
+];
+
+/// `v`, read as the typed interface `interface` of [`TYPED`] and written back, or why it doesn't read back exactly.
+fn typed(interface: &str, v: &Value) -> Result<(), String> {
+    fn exact<T: serde::de::DeserializeOwned + Serialize>(v: &Value) -> Result<(), String> {
+        let read: T = serde_json::from_value(v.clone()).map_err(|e| e.to_string())?;
+        let back = serde_json::to_value(&read).map_err(|e| e.to_string())?;
+        if &back == v { Ok(()) } else { Err("it does not read back as written".into()) }
+    }
+    match interface {
+        "construction plan" => exact::<super::plans::ConstructionPlan>(v),
+        "call model" => exact::<super::plans::CallModel>(v),
+        other => Err(format!("no typed interface is called {other}")),
+    }
+}
+
 /// The parts of a claim that are computed from the builds and the tool, which a claim must have before it has a key.
 const COMPUTED: &[&str] = &["closures.before", "closures.after", "tools.models", "tools.jdk", "tools.checker", "tools.binary"];
 
@@ -129,6 +155,10 @@ pub fn projection(claim: &Value) -> Result<Value, Unsupported> {
             Value::Object(map) => {
                 for (k, child) in map {
                     let p = if path.is_empty() { k.clone() } else { format!("{path}.{k}") };
+                    if let Some((_, interface)) = TYPED.iter().find(|(path, _)| *path == p) {
+                        typed(interface, child).map_err(|e| uncacheable(format!("its {p} is not a {interface} the key's projection knows: {e}")))?;
+                        continue;
+                    }
                     if !KNOWN.contains(&p.as_str()) {
                         return Err(uncacheable(format!("its field {p} is not one the key's projection knows (lib/src/spec/cache.rs)")));
                     }

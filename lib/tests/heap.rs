@@ -646,10 +646,12 @@ fn a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_
     refused("a class left out", &|c: &mut CanonicalClaim| c.domain.as_mut().unwrap().classes.retain(|k| k != "shop.Money"), &["shop.Money"]);
 }
 
-/// A construction plan (Phase 0 step 2 of `llm-dlc/loops/application-core.md`) is the objects stream's: until it
-/// builds it, a claim made by one is refused by name, never run as the constructor domain.
+/// A construction plan (Phase 0 step 2 of `llm-dlc/loops/application-core.md`), built by the objects stream (O1 of
+/// `llm-dlc/loops/application-core-objects.md`): a claim made by one is checked on the inputs the plan makes, by the
+/// constructor its node names, and a plan the classes can't realize is refused by name, never run as the
+/// constructor domain.
 #[test]
-fn a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_builds_it() {
+fn a_domain_made_by_a_construction_plan_is_checked_on_the_inputs_the_plan_makes() {
     use jvmcontract::spec::plans::{ConstructionPlan, Maker, Node, PlanBounds, PlanValue, Root};
     let Some(before) = kernel_builds().map(|r| r.join("before")) else { return };
     let quote = |descriptor: &str| ConstructionPlan {
@@ -660,10 +662,15 @@ fn a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_buil
         bounds: PlanBounds { nodes: 1, max_array_length: 0, setup_calls: 0 },
     };
     let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    // The plan gives both versions the same roots: no correspondence between them.
+    claim.correspondence = None;
+    claim.domain.as_mut().unwrap().classes = vec!["shop.Quote".into()];
     claim.domain.as_mut().unwrap().made_by = jvmcontract::spec::Construction::Planned { before: quote("(JI)V"), after: quote("(JI)V") };
-    let gap = jvmcontract::spec::heap::check(&claim, &before, &before).expect_err("a planned domain isn't built yet");
-    assert_eq!(gap.part, jvmcontract::spec::Part::Objects, "{gap}");
-    assert!(gap.what.contains("construction plan"), "{gap}");
+    let o = jvmcontract::spec::heap::check(&claim, &before, &before).expect("a plan the classes realize is checked");
+    assert_eq!(o.verdict, jvmcontract::spec::Verdict::Verified, "{o:?}");
+    claim.domain.as_mut().unwrap().made_by = jvmcontract::spec::Construction::Planned { before: quote("(JJ)V"), after: quote("(JJ)V") };
+    let gap = jvmcontract::spec::heap::check(&claim, &before, &before).expect_err("no such constructor");
+    assert!(gap.what.contains("has no constructor (JJ)V"), "{gap}");
 }
 
 #[test]

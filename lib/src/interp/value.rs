@@ -86,11 +86,134 @@ pub enum Base {
     Throwable { message: Option<Ref>, cause: Option<Ref> },
 }
 
+/// A Java String's contents, as the JVM holds them: UTF-16 code units, every one kept. An isolated surrogate, an
+/// embedded NUL and a supplementary character's pair are each what they are, so that a String the JVM can hold is
+/// never confused with another: a Rust `String` can't hold an isolated surrogate, and turning one into U+FFFD makes
+/// two different Java Strings one.
+#[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct JStr(Vec<u16>);
+
+impl JStr {
+    pub fn new() -> JStr {
+        JStr(Vec::new())
+    }
+
+    pub fn from_units(units: Vec<u16>) -> JStr {
+        JStr(units)
+    }
+
+    pub fn units(&self) -> &[u16] {
+        &self.0
+    }
+
+    pub fn into_units(self) -> Vec<u16> {
+        self.0
+    }
+
+    /// The length in code units, as `String.length` counts it.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// The text, when every surrogate in it is paired: what a Rust string can hold. An operation whose meaning
+    /// depends on Unicode's tables (case, whitespace, digits) asks for it, and is refused without it.
+    pub fn text(&self) -> Option<String> {
+        String::from_utf16(&self.0).ok()
+    }
+
+    /// For a reader: the text, with each isolated surrogate written `\uD800`. Not a Java String's contents, and
+    /// not for comparing two of them: only for messages the tool writes about one.
+    pub fn display(&self) -> String {
+        char::decode_utf16(self.0.iter().copied()).map(|c| c.map(String::from).unwrap_or_else(|e| format!("\\u{:04X}", e.unpaired_surrogate()))).collect()
+    }
+
+    pub fn push(&mut self, other: &JStr) {
+        self.0.extend_from_slice(&other.0);
+    }
+
+    pub fn push_str(&mut self, s: &str) {
+        self.0.extend(s.encode_utf16());
+    }
+
+    pub fn push_unit(&mut self, unit: u16) {
+        self.0.push(unit);
+    }
+
+    /// `String.hashCode`.
+    pub fn hash_code(&self) -> i32 {
+        self.0.iter().fold(0i32, |h, &c| h.wrapping_mul(31).wrapping_add(i32::from(c)))
+    }
+
+    /// Whether `other` is in it, from code unit `from`: `indexOf`'s answer, or -1.
+    pub fn find(&self, other: &JStr, from: usize) -> i32 {
+        let (haystack, needle) = (&self.0, &other.0);
+        if needle.is_empty() {
+            return from.min(haystack.len()) as i32;
+        }
+        if needle.len() > haystack.len() {
+            return -1;
+        }
+        (from..=haystack.len() - needle.len()).find(|&i| haystack[i..i + needle.len()] == **needle).map(|i| i as i32).unwrap_or(-1)
+    }
+
+    /// The pieces joined with `delimiter` between them, as `String.join` does.
+    pub fn join(pieces: &[JStr], delimiter: &JStr) -> JStr {
+        let mut out = JStr::new();
+        for (i, p) in pieces.iter().enumerate() {
+            if i > 0 {
+                out.push(delimiter);
+            }
+            out.push(p);
+        }
+        out
+    }
+}
+
+impl From<&str> for JStr {
+    fn from(s: &str) -> JStr {
+        JStr(s.encode_utf16().collect())
+    }
+}
+
+impl From<String> for JStr {
+    fn from(s: String) -> JStr {
+        JStr::from(s.as_str())
+    }
+}
+
+impl From<&String> for JStr {
+    fn from(s: &String) -> JStr {
+        JStr::from(s.as_str())
+    }
+}
+
+impl From<&JStr> for JStr {
+    fn from(s: &JStr) -> JStr {
+        s.clone()
+    }
+}
+
+impl std::fmt::Display for JStr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.display())
+    }
+}
+
+impl std::fmt::Debug for JStr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.display())
+    }
+}
+
 /// An object modelled natively, standing in for a JDK class whose bytecode is not run.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Native {
     /// `java.lang.String`.
-    String(String),
+    String(JStr),
     /// An immutable `java.util.List` from `List.of`/`List.copyOf`, or an `ArrayList`.
     List { elements: Vec<Value>, mutable: bool },
     /// `java.util.Set` from `Set.of`, or a `HashSet`/`LinkedHashSet` (insertion-ordered).
@@ -98,13 +221,14 @@ pub enum Native {
     /// `java.util.Map` from `Map.of`, or a `HashMap`/`LinkedHashMap`: insertion-ordered pairs.
     Map { entries: Vec<(Value, Value)>, mutable: bool },
     /// `java.lang.StringBuilder`.
-    StringBuilder(String),
+    StringBuilder(JStr),
     /// A boxed primitive: `Integer`, `Long`, `Boolean`, ...: the class name and the value.
     Boxed { class: String, value: Value },
     /// `java.lang.Class`, by the type it denotes.
     Class(Type),
-    /// An iterator over a snapshot of a list or set.
-    Iterator { elements: Vec<Value>, position: usize },
+    /// An iterator over a snapshot of a list or set; `immutable` for one of an immutable collection (`List.of`,
+    /// `Set.of`), whose `remove` throws `UnsupportedOperationException` as the JDK's does.
+    Iterator { elements: Vec<Value>, position: usize, immutable: bool },
     /// An exception of a JDK class: `java.lang.ArithmeticException`, say.
     Throwable { class: String, message: Option<Ref>, cause: Option<Ref> },
     /// A lambda or method reference: the functional interface and its method, the implementation method and the
@@ -200,7 +324,7 @@ impl Heap {
         self.epochs.truncate(len);
     }
 
-    pub fn string(&self, r: Ref) -> Option<&str> {
+    pub fn string(&self, r: Ref) -> Option<&JStr> {
         match self.get(r) {
             Object::Native(Native::String(s)) => Some(s),
             _ => None,

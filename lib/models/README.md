@@ -27,8 +27,8 @@ as a class path entry for any other tool.
 | `java.nio.charset.StandardCharsets` | the six standard charsets as instances of the model (`StandardCharsets$Standard`) | nothing | a static initializer that reads one used to read a stub reference |
 | `java.nio.charset.IllegalCharsetNameException`, `UnsupportedCharsetException` | the real classes, written out | nothing | the JDK generates them from a template at build time |
 | `java.lang.Enum` (JBMC only, and run by the tool's own checker) | the `name` and `ordinal` fields, the constructor `Enum(String, int)` that sets them (the name is the very string it is given), `name()`, `ordinal()`, `toString()`, `equals` (identity) | `compareTo` (the JDK's throws `ClassCastException` across two enum classes, which needs `Class`), `hashCode` (identity, as `Object`'s), `getDeclaringClass`, `valueOf(Class, String)`, `clone`, serialization: JBMC's stubs, named as gaps | every enum constant's constructor calls `Enum.<init>(String, int)`, which JBMC stubbed as a constructor that sets nothing, so `ordinal()` and `name()` returned any value. Example 071's property proofs reach it through the Quorum enums |
-| `java.util.List` (JBMC only) | the static factories `of` (every arity, and varargs) and `copyOf`, step for step as the JDK's; the instance methods the model's lists define, declared abstract | `listIterator`, `subList`, `reversed`, `spliterator`, `getFirst`, `getLast`, `addFirst`, `addLast`; `java.util.Collection` stays JBMC's own | JBMC stubbed `List.of` and `List.copyOf` as returning any list or `null`. Every Quorum kernel returns a `Decision`, which calls both |
-| `java.util.ImmutableCollections` and its `List12`, `ListN`, `AbstractImmutableList`, `ListItr` (JBMC only) | the JDK's immutable lists: `List12` for one or two elements, `ListN` over an array of its own otherwise, one `EMPTY_LIST`; no `null` element (`NullPointerException` when made, and on `contains`, `indexOf`, `lastIndexOf` of `null`); `UnsupportedOperationException` on every change, `remove` of the iterator included; `get` out of range throws `IndexOutOfBoundsException` from a `List12`, `ArrayIndexOutOfBoundsException` from a `ListN`, as the JDK's do; `iterator`, `toArray()`, `equals`, `hashCode` over the elements; `copyOf` of one of them is the list itself | exception messages (built by string concatenation, which JBMC stubs), the views (`subList`, `reversed`), `toArray(T[])`, `forEach`, `stream`, `toString`, `containsAll`, serialization (what JBMC makes of `java.util.AbstractCollection`, a stub), and the `ListN` that allows `null`s, which only `Stream.toList` makes | what `List.of` and `copyOf` return, written without a JDK call (not even `Objects.requireNonNull`), so that nothing in them is a stub |
+| `java.util.List` (JBMC and the tool's own checker) | the static factories `of` (every arity, and varargs) and `copyOf`, step for step as the JDK's; the instance methods the model's lists define, declared abstract | `listIterator`, `subList`, `reversed`, `spliterator`, `getFirst`, `getLast`, `addFirst`, `addLast`; `java.util.Collection` stays JBMC's own | JBMC stubbed `List.of` and `List.copyOf` as returning any list or `null`. Every Quorum kernel returns a `Decision`, which calls both |
+| `java.util.ImmutableCollections` and its `List12`, `ListN`, `AbstractImmutableList`, `ListItr` (JBMC and the tool's own checker) | the JDK's immutable lists: `List12` for one or two elements, `ListN` over an array of its own otherwise, one `EMPTY_LIST`; no `null` element (`NullPointerException` when made, and on `contains`, `indexOf`, `lastIndexOf` of `null`); `UnsupportedOperationException` on every change, `remove` of the iterator included; `get` out of range throws `IndexOutOfBoundsException` from a `List12`, `ArrayIndexOutOfBoundsException` from a `ListN`, as the JDK's do; `iterator`, `toArray()`, `equals`, `hashCode` over the elements; `copyOf` of one of them is the list itself | exception messages (built by string concatenation, which JBMC stubs), the views (`subList`, `reversed`), `toArray(T[])`, `forEach`, `stream`, `toString`, `containsAll`, serialization (what JBMC makes of `java.util.AbstractCollection`, a stub), and the `ListN` that allows `null`s, which only `Stream.toList` makes | what `List.of` and `copyOf` return, written without a JDK call (not even `Objects.requireNonNull`), so that nothing in them is a stub |
 
 ## Where the models are used
 
@@ -46,9 +46,24 @@ as a class path entry for any other tool.
 - **Models marked JBMC only** (`Model::jbmc_only` in [`src/models.rs`](../src/models.rs): `Enum`, `List` and the
   immutable lists) are on JBMC's class path and nowhere else. The interpreter keeps its natives for these classes,
   because the state they stand for (an enum's name and ordinal, a list's elements) is part of every object it
-  allocates. The tool's own checker runs `Enum`'s bytecode for an enum's constructor and accessors
-  (`CHECKER_RUNS` in `src/models.rs`, `ClassPath::checker_method`), since an enum's name and ordinal are two fields
-  of its objects there, and keeps its handling of the lists, which refuses what it does not have. The conformance
+  allocates. The tool's own checker runs all of them as bytecode (`CHECKER_RUNS` in `src/models.rs`,
+  `ClassPath::checker_method`): `Enum`'s for an enum's constructor and accessors, since an enum's name and ordinal are
+  two fields of its objects there, and since 2026-11-08 `List.of`, `List.copyOf` and the immutable lists, a list's
+  elements being fields of its objects (`List12`'s two, `ListN`'s array) and `ImmutableCollections`' initializer run
+  as an application class's (`ClassPath::checker_class`: the one empty list and the sentinel of a list of one). It
+  dispatches an interface call on a list or its iterator to the model's method, but only for the calls an evidence
+  record of `values::OPERATIONS` samples (`List.of`'s fixed forms, `copyOf`, `size`, `isEmpty`, `get`, the
+  iterator's path and the changes `add`, `set`, `remove(int)`, `clear`, the iterator's `remove`). Any other method
+  the models implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort`, `List.of(E...)` …),
+  called from outside them, is the JDK call it names, a named gap (`gaps::outside_the_list_records`); JBMC runs
+  their bytecode all the same. Every step is the models' own, with
+  no JDK call, but `AbstractCollection()`'s empty constructor, which the checker reproduces exactly; `copyOf` of
+  another implementation (an `ArrayList`) reaches that implementation's methods, which stay JDK gaps. Before, the
+  checker met `List.of` as the gap `jdk-static-method`. The values stream's `lib/tests/values.rs` checks the
+  checker's verdicts over these lists, each refutation's witness replayed on a JVM and in the interpreter. A list
+  value's domain (`values::ListAdapter`) states these models as its evidence (`values::list_model`), with the SHA-256
+  of their bytecode (`values::list_model_digest`), so that changing a model changes the identity of the evidence
+  that rests on it. The conformance
   corpus checks those natives against a JVM, and its test `the_models_only_jbmc_runs_agree_with_the_jvm` checks the
   models themselves: relocated out of `java.*`, with the corpus's references to them, its calls give the outcomes
   the JDK's classes give.

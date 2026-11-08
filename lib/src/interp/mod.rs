@@ -29,7 +29,7 @@ use crate::classpath::ClassPath;
 /// is smaller than the array. 2^24 elements is a 64 MB `int[]` on a JVM and 256 MB of values here.
 const MAX_ARRAY_LENGTH: usize = 1 << 24;
 
-pub use value::{Base, Heap, Native, Object, Ref, Value};
+pub use value::{Base, Heap, JStr, Native, Object, Ref, Value};
 
 /// Why an execution stopped, other than by returning.
 #[derive(Debug, Clone, PartialEq)]
@@ -210,7 +210,7 @@ impl<'a> Machine<'a> {
     }
 
     /// A new, uninterned string object.
-    pub fn new_string(&mut self, s: impl Into<String>) -> Value {
+    pub fn new_string(&mut self, s: impl Into<JStr>) -> Value {
         Value::Ref(self.alloc(Object::Native(Native::String(s.into()))))
     }
 
@@ -221,7 +221,7 @@ impl<'a> Machine<'a> {
         }
         let saved = self.clinit_depth;
         self.clinit_depth += 1; // literals are global state, not the case's own
-        let r = self.alloc(Object::Native(Native::String(s.to_string())));
+        let r = self.alloc(Object::Native(Native::String(JStr::from(s))));
         self.clinit_depth = saved;
         self.interned.insert(s.to_string(), r);
         Value::Ref(r)
@@ -240,18 +240,36 @@ impl<'a> Machine<'a> {
         Value::Ref(r)
     }
 
-    /// The string of a string object, or `None` for null or a non-string.
-    pub fn str_of(&self, v: Value) -> Option<String> {
+    /// The contents of a string object, or `None` for null or a non-string.
+    pub fn units_of(&self, v: Value) -> Option<JStr> {
         match v {
-            Value::Ref(r) => self.heap.string(r).map(str::to_string),
+            Value::Ref(r) => self.heap.string(r).cloned(),
             _ => None,
         }
+    }
+
+    /// A string object's contents for a reader ([`JStr::display`]: an isolated surrogate written `\uD800`), or
+    /// `None` for null or a non-string. What a String is goes by [`Machine::units_of`].
+    pub fn str_of(&self, v: Value) -> Option<String> {
+        self.units_of(v).map(|s| s.display())
     }
 
     /// Creates a JDK exception object (not thrown).
     pub fn new_throwable(&mut self, class: &str, message: Option<&str>) -> Ref {
         let message = message.map(|m| self.new_string(m).as_ref().unwrap());
         self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None }))
+    }
+
+    /// A fault that throws a new JDK exception whose message is the string object `message`, as `new E(message)`
+    /// keeps the very String it is given.
+    pub fn throw_with(&mut self, class: &str, message: Option<Ref>) -> Fault {
+        Fault::Throw(self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None })))
+    }
+
+    /// A fault that throws a new JDK exception with a message of these code units: one that quotes a String.
+    pub fn throw_units(&mut self, class: &str, message: JStr) -> Fault {
+        let message = self.new_string(message).as_ref();
+        self.throw_with(class, message)
     }
 
     /// A fault that throws a new JDK exception.

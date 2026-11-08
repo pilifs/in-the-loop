@@ -18,7 +18,15 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-*No commits yet.*
+### application-core environment E1: a declared nondeterministic operation under a per-call choice
+
+change `rxsvwkoslrtv` · [log `cc5c64510c35`](https://terminalvalue.net/raw-traces/4e390f05-cc89-494e-98ab-c027ea3b76a3/cc5c64510c3505ef1e655a33cf16dde7760830bfc6cbb50db9b53203fc1bbf44.jsonl.gz)
+
+The environment stream's E1 now has its second coupling. A call model with coupling choice and the per-call occurrence policy makes a call's result a function of its key and of the occurrence of that key in the trace, the same function in both builds: a second read of a key is an answer of its own, the n-th reads of a key correspond across the builds, and different keys are never coupled by position. A finite script stays refused by name (the brief's optional work).
+
+Encoded in effects.rs as the query's symbolic table with each entry used once per trace: a call takes the first entry of its key the trace hasn't used, else the default. This is complete within the bound (any choice per key and occurrence is a table listing each key's answers in order) and sound (every table is such a function). The witness lists a key's answers in occurrence order and is replayed on the JVM under the generated stubs; the assumption, plan and domain name the policy.
+
+Verified inline: tests/environment.rs (13 tests) proves the rewrite and two always-different keys reordered under a choice, and refutes with replayed witnesses a wrong key, one read where the old build read twice (which the query proves), two reads of one key in the other order, and two possibly-equal keys swapped (witness code = quantity); another coupling is another cache key. Every lib suite passes (unit tests 229, effects 18, application_core 14, foundations 5, integration 65, and the rest). The README's Modelled results paragraph, this stream's addition, describes it. Rest of the brief unchanged and current.
 
 ## Conversation
 

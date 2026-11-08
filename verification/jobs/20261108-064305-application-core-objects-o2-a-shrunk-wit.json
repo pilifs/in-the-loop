@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-064305-application-core-objects-o2-a-shrunk-wit",
+  "title": "application-core objects O2: a shrunk witness is the same failure as the one found; lib/tests/integration.rs under JBMC",
+  "description": "Revision: the objects stream's commit of O2's shrinking (the one committing this job), row O2 of llm-dlc/loops/application-core-acceptance.md. Change: the shrinker's oracle (witness::shrink_in_harness_keeping) accepted any candidate the generated harness refuted, so a witness of one difference could shrink into a witness of another (a receiver's field difference at new Counter(20) became a narrower-constructor exception difference at new Counter(1)). A candidate is now accepted only where its replay is the same failure: in a regression check the two versions' replays differ in exactly the observations the found input differs in; in a property check the same throws clause applies and the same exception class is thrown, or the method returns normally. This can only make a shrunk witness larger, never change a verdict. lib/tests/integration.rs runs JBMC (engine jbmc and auto) and asserts particular shrunk witnesses (shrunk to the empty array, to two overflowing elements, to the even cluster nearest zero, majority's smallest cluster), so it is the check that the stricter oracle still reaches them. Domain, engine and bounds: as each test states (JBMC, its default full-range staging, max array length 8 or as given). Examples compare verdicts only, so none is rerun.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/witness.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/property.rs",
+      "lib/tests/integration.rs"
+    ]
+  },
+  "expected": "integration tests: every non-ignored test passes (exit 0), its shrunk witnesses as asserted. A test failing on a shrunk witness that is now larger is a finding about this change, not a pass.",
+  "submitted": {
+    "at": "2026-11-08T06:43:05+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "20m",
+    "timeout": "60m",
+    "notes": "job 20261108-045000 ran integration.rs plus 190-196 in 3m31s at 2.1 GiB; integration.rs alone held back by the 2-CPU quota"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

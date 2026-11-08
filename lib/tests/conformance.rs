@@ -143,7 +143,9 @@ fn corpus() -> Vec<Case> {
         Case::new("fatal", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("boomTwice", &[("3", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         // Enums and immutable lists (Phase 5 of llm-dlc/loops/engine-priorities.md): the calls lib/models models for
-        // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them.
+        // JBMC alone ([`ON_THE_MODELS`]), as the JVM runs them. The own checker runs the list models too (V2 of
+        // llm-dlc/loops/application-core-values.md): a list claim is undecided (U) there only where it reaches
+        // another JDK call (an `ArrayList`, a boxed `Integer`'s methods).
         Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], V).refuted(None, "result < 20", &[], X),
         // Enums in the own checker (Phase 5, its last step): `$VALUES` at an index that is an input, a switch through
         // javac's `$SwitchMap` class, constants with bodies and a field named as `Enum`'s private one, an enum whose
@@ -158,19 +160,19 @@ fn corpus() -> Vec<Case> {
         Case::new("enumBroken", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 13", &[], X),
         Case::new("enumValueOf", &[("4", "returns 5")]).holds(None, "result == n + 1", &[], U).refuted(None, "result == n", &[], U),
         Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
-            .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], U)
-            .refuted(None, "result >= 10", &[], U),
-        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], U).refuted(None, "result == 5", &[], U),
+            .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], V)
+            .refuted(None, "result >= 10", &[], X),
+        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], U).refuted(None, "result == 5", &[], X),
         Case::new("listChange", &[("0", "returns 1"), ("1", UOE), ("2", UOE), ("3", UOE), ("4", UOE), ("5", UOE), ("6", UOE), ("7", UOE), ("8", "returns 1"), ("10", "returns 3"), ("13", UOE), ("-1", "returns 1")])
-            .holds(Some("n == 0 || n == 8"), "result == 1", &[], U)
-            .refuted(None, "result >= 1", &[], U),
+            .holds(Some("n == 0 || n == 8"), "result == 1", &[], V)
+            .refuted(None, "result >= 1", &[], X),
         Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], U).refuted(None, "result == 1", &[], U),
         Case::new("listCopyMutable", &[("0", "returns 1"), ("1", "returns 10"), ("2", NPE), ("9", NPE)])
             .holds(Some("n <= 0"), "result == 1", &[], U)
-            .refuted(None, "result <= 10", &[], U),
+            .refuted(None, "result <= 10", &[], X),
         Case::new("listGet", &[("0", "returns 1"), ("1", "throws java.lang.IndexOutOfBoundsException"), ("-1", "throws java.lang.IndexOutOfBoundsException"), ("10", "returns 2"), ("12", "returns 1"), ("13", "throws java.lang.ArrayIndexOutOfBoundsException"), ("20", "throws java.lang.ArrayIndexOutOfBoundsException")])
-            .holds(Some("n == 0 || n == 12"), "result == 1", &[], U)
-            .refuted(None, "result >= 1", &[], U),
+            .holds(Some("n == 0 || n == 12"), "result == 1", &[], V)
+            .refuted(None, "result >= 1", &[], X),
         Case::new("listSearch", &[("0", NPE), ("2", "returns -1089"), ("5", "returns 90"), ("7", "returns -1110")])
             .holds(Some("n == 5"), "result == 90", &[], U)
             .refuted(None, "result < 0", &[], U),
@@ -696,8 +698,19 @@ fn conformance(engines: &[Mode], recorded: bool) -> Option<Vec<String>> {
             match &run.outcome.advice {
                 None if verdict != claim.native => failures.push(format!("{label}: with no gap in the harness, --gaps advised says {verdict:?} where strict says {:?}", claim.native)),
                 Some(_) if verdict != Verdict::Unverifiable || run.outcome.search.is_some() => failures.push(format!("{label}: --gaps advised gave advice and solved anyway: {}", run.outcome.output)),
-                // The scan may see a gap on a path no input takes; on this corpus it sees none strict does not meet.
-                Some(_) if claim.native != Verdict::Unverifiable => failures.push(format!("{label}: --gaps advised asks for contracts where strict decides the claim ({:?}): {}", claim.native, run.outcome.output)),
+                // The scan may see a gap on a path no input takes; on this corpus it sees none strict does not meet,
+                // so strict proves no claim advised stops on, but for the one of [`ADVISED_ON_EXCLUDED_PATHS`], whose
+                // precondition excludes the only paths to its gaps, and only on exactly those gaps. A violation strict
+                // finds on a path that meets no gap stands though other paths meet one (`listCopyMutable`:
+                // `List.copyOf(null)`'s exception, and an `ArrayList` on the others), and advised stops before
+                // solving there, as it is meant to.
+                Some(a) if claim.native == Verdict::Verified => {
+                    let ids: Vec<&str> = a.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect();
+                    match ADVISED_ON_EXCLUDED_PATHS.iter().find(|(method, assume, _)| *method == case.method && claim.assume == Some(*assume)) {
+                        Some((_, _, gaps)) if ids == *gaps => advised.push(format!("{} ({}; strict: {:?}, the gaps on paths its precondition excludes)", case.method, ids.join(", "), claim.native)),
+                        _ => failures.push(format!("{label}: --gaps advised asks for contracts where strict proves the claim: {}", run.outcome.output)),
+                    }
+                }
                 Some(a) => advised.push(format!("{} ({}; strict: {:?})", case.method, a.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>().join(", "), claim.native)),
                 None => {}
             }
@@ -758,6 +771,13 @@ fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
     let Some(failures) = conformance(&[(Engine::Native, GapMode::Strict, false, Contracts::None), (Engine::Native, GapMode::Assume, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::None), (Engine::Native, GapMode::Advised, false, Contracts::File), (Engine::Native, GapMode::Advised, false, Contracts::Library)], true) else { return };
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
+
+/// The claims strict proves while `--gaps advised` stops on gaps its static scan sees, each with its precondition
+/// and exactly those gaps: the scan walks every path, and these gaps are only on paths the precondition excludes,
+/// which the engine prunes. `listChange` under `n == 0 || n == 8` takes the switch's default; its cases 4 and 6
+/// call `remove(Object)` and `addAll`, which no evidence record of `values::OPERATIONS` samples, so the engine meets
+/// them as JDK calls (V3 of `llm-dlc/loops/application-core-values.md`) where an input reaches them.
+const ADVISED_ON_EXCLUDED_PATHS: &[(&str, &str, &[&str])] = &[("listChange", "n == 0 || n == 8", &["jdk-primitive-method:java.util.List.addAll(Ljava/util/Collection;)Z", "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z"])];
 
 /// The cases whose calls go through the models of `lib/models` that only JBMC runs (`Model::jbmc_only`:
 /// `java.lang.Enum`, the factories of `java.util.List` and the immutable lists they return).
@@ -1525,7 +1545,8 @@ fn vacuity_is_a_status_of_a_verified_statement() {
     assert_eq!((st, basis), (VacuityStatus::NonVacuous, VacuityBasis::Probe), "{}", span.output);
     assert!(witness.as_deref().is_some_and(|w| w.starts_with("span(this=Range[lo=")), "{witness:?}");
     let caveat = span.stated.as_ref().unwrap().assumptions.iter().find(|a| a.kind == AssumptionKind::Constructible).expect("the constructors' caveat");
-    assert!(caveat.text.contains("whether the constructors accept the same inputs is not part of it"), "{}", caveat.text);
+    // The two versions' admission is compared (O2 of application-core-objects): only an input both reject is skipped.
+    assert!(caveat.text.contains("an input both versions' constructors reject is skipped, and one that only one version's reject is a difference"), "{}", caveat.text);
     assert!(span.output.contains(&format!("\n  constructors: {}\n", caveat.text)), "{}", span.output);
     // A scope every input satisfies: vacuous, records or not.
     let scoped = regress("span-scoped", "Range#span", &|o| o.unchanged_unless = Some("this.lo <= this.hi".into()));

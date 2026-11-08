@@ -302,10 +302,10 @@ public class QuotesController {
 }
 "#;
 
-/// A modelled call's model (Phase 0 step 2 of `llm-dlc/loops/application-core.md`) is the environment stream's:
-/// until it builds it, a claim with one is refused by name, never checked as a normal return.
+/// A modelled call's model (`spec::plans::CallModel`, the environment stream's) that the check doesn't encode is
+/// refused by name, never checked as a normal return: here a void call keyed by a String topic.
 #[test]
-fn a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it() {
+fn a_model_the_check_does_not_encode_is_refused_by_name() {
     use jvmcontract::spec::plans::{CallModel, Coupling, ModelledResult, Returned};
     let Some(after) = build("after") else { return };
     let before = build("before").unwrap();
@@ -314,7 +314,7 @@ fn a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it() {
     call.model = Some(CallModel { id: "send".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Void }], bound: 4 });
     let err = effects::check(&claim, &quotes(&before, "POST /quotes"), &quotes(&after, "POST /quotes"), &before, &after).unwrap_err();
     assert_eq!(err.part, jvmcontract::spec::Part::Environment, "{err}");
-    assert!(err.what.contains("modelled call's model"), "{err}");
+    assert!(err.what.contains("modelled call's model") && err.what.contains("a String key waits for the values stream's adapter"), "{err}");
 }
 
 #[test]
