@@ -5,8 +5,9 @@
 //! (`--unchanged-unless`), the harness returns early on the inputs the developer meant to change, so the proof
 //! covers everything else. A receiver, parameter or result of record type is made of the record's components,
 //! each a primitive: the components are the harness's symbolic parameters, the record is built from them through
-//! its canonical constructor (an input a constructor of either version rejects is outside the statement), and a
-//! record result is compared component by component ([`Layout`]).
+//! its canonical constructor (an input both versions' constructors reject is outside the statement, and one only
+//! one version's reject is a difference, [`Layout::compares_admission`]), and a record result is compared component
+//! by component ([`Layout`]).
 //!
 //! The harness is written as bytecode directly, with no Java compiler in the loop: the statement is generated,
 //! not transcribed, and the tool needs only JBMC. A Java rendering of the same statement is produced alongside it
@@ -1211,6 +1212,17 @@ impl Layout {
         self.receiver.iter().chain(self.args.iter()).filter(|s| matches!(s, Slot::Record { .. })).collect()
     }
 
+    /// Whether the regression harness compares the two versions' admission of an input (O2's negative control of
+    /// a narrower new constructor, `llm-dlc/loops/application-core-objects.md`): an input that one version's
+    /// constructors reject and the other's accept is a difference, not skipped, so that a constructor which rejects
+    /// inputs admitted before can't shrink the claim to the inputs both accept. It holds when every object is made
+    /// in both versions, of the same shape. An object made through a correspondence's input equations (step H5),
+    /// or in the new version only, keeps the stated assumption that an input either constructor rejects is skipped.
+    pub fn compares_admission(&self) -> bool {
+        let records = self.records();
+        !records.is_empty() && records.iter().all(|s| matches!(s, Slot::Record { before: Some(p), .. } if p.corresponds.as_ref().is_none_or(|c| c.same_shape)))
+    }
+
     /// The exception classes the harness tells apart, as internal names, in the order its handlers catch them:
     /// a call's category is the index of the first that catches it, plus one. They are [`EXCEPTIONS`], then
     /// [`Layout::checked`], which is empty for a target without a `throws` clause (so its harness, and the proofs
@@ -1934,23 +1946,27 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
         code.bind(done);
     }
 
-    // The records, from their components, in both versions; an input a constructor rejects is outside the
-    // statement, and skipped as the scope skips an input. An array leaf of the previous version's object is its
-    // copy, so that the two versions' heaps are apart, while each version's objects share what its arrays are.
+    // The records, from their components, in both versions: the new version's objects, then the previous one's. An
+    // input both versions' constructors reject is outside the statement, and skipped as the scope skips an input;
+    // one that only one version's reject is a difference (O2, [`Layout::compares_admission`]), unless an object is
+    // made in one version only or through a correspondence's input equations, where any rejection is skipped. An
+    // array leaf of the previous version's object is its copy, so that the two versions' heaps are apart, while
+    // each version's objects share what its arrays are.
     let copied_params: Vec<Param> = params.iter().map(|p| match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
         Some((_, copy, _)) => Param { slot: *copy, ..p.clone() },
         None => p.clone(),
     }).collect();
     if !records.is_empty() {
-        let build_start = code.label();
-        let build_end = code.label();
-        let built = code.label();
-        code.bind(build_start);
-        for (i, slot) in records.iter().enumerate() {
-            let Slot::Record { name, record, before: previous, first } = slot else { unreachable!("records() returns records") };
-            let (new_local, old_local) = object_slots(i);
-            let in_previous = previous.as_ref().map(|p| (p, Some("before"), old_local));
-            for (made, prefix, local) in std::iter::once((record, None, new_local)).chain(in_previous) {
+        // One version's objects, in order: the previous version's when `previous_version`.
+        let emit_version = |code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, previous_version: bool| {
+            for (i, slot) in records.iter().enumerate() {
+                let Slot::Record { name, record, before: previous, first } = slot else { unreachable!("records() returns records") };
+                let (new_local, old_local) = object_slots(i);
+                let (made, prefix, local) = match (previous_version, previous) {
+                    (false, _) => (record, None, new_local),
+                    (true, Some(p)) => (p, Some("before"), old_local),
+                    (true, None) => continue,
+                };
                 // A choice (step H2): null where its flag says so, or the same object as an earlier parameter that
                 // is not null, in both versions alike; otherwise an object of its own.
                 let done = code.label();
@@ -1989,24 +2005,62 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                 }
                 if always.is_none() {
                     let leaf_params = if prefix.is_some() { &copied_params } else { params };
-                    emit_construct(&mut code, &mut writer.pool, made, prefix, leaf_params, &mut made.leaves(*first).into_iter());
+                    emit_construct(code, pool, made, prefix, leaf_params, &mut made.leaves(*first).into_iter());
                     code.store(Kind::Ref, local);
                 }
                 code.bind(done);
             }
-        }
-        code.bind(build_end);
-        code.goto(built);
-        let handler = code.label();
-        code.bind(handler);
-        code.op(0x57); // pop the exception
-        code.return_(None);
+        };
         // JBMC matches a handler by the exception's own class, not a superclass it has no model of: each class the
-        // harness tells apart has a handler, and Throwable last.
-        for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
-            let catch_type = writer.pool.class(exception);
-            code.handler(build_start, build_end, handler, Some(catch_type));
+        // harness tells apart has a handler, and Throwable last. A handler pops the exception and goes to `then`.
+        let catch_all = |code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder, start: Label, end: Label, then: Label| {
+            let handler = code.label();
+            code.bind(handler);
+            code.op(0x57); // pop the exception
+            code.goto(then);
+            for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
+                let catch_type = pool.class(exception);
+                code.handler(start, end, handler, Some(catch_type));
+            }
+        };
+        let built = code.label();
+        let skipped = code.label();
+        if layout.compares_admission() {
+            // The new version's objects; then the previous version's, once where the new ones were made and once
+            // where they were rejected, so that which version rejects the input is where the code is.
+            let (new_start, new_end, new_rejected) = (code.label(), code.label(), code.label());
+            code.bind(new_start);
+            emit_version(&mut code, &mut writer.pool, false);
+            code.bind(new_end);
+            let (old_start, old_end, old_rejected) = (code.label(), code.label(), code.label());
+            code.bind(old_start);
+            emit_version(&mut code, &mut writer.pool, true);
+            code.bind(old_end);
+            code.goto(built);
+            catch_all(&mut code, &mut writer.pool, new_start, new_end, new_rejected);
+            catch_all(&mut code, &mut writer.pool, old_start, old_end, old_rejected);
+            // The previous version's constructors reject what the new version's accept: a difference.
+            code.bind(old_rejected);
+            emit_failure(&mut code, &mut writer.pool);
+            // The new version's reject it: a difference, unless the previous version's reject it too.
+            code.bind(new_rejected);
+            let (both_start, both_end) = (code.label(), code.label());
+            code.bind(both_start);
+            emit_version(&mut code, &mut writer.pool, true);
+            code.bind(both_end);
+            emit_failure(&mut code, &mut writer.pool);
+            catch_all(&mut code, &mut writer.pool, both_start, both_end, skipped);
+        } else {
+            let (start, end) = (code.label(), code.label());
+            code.bind(start);
+            emit_version(&mut code, &mut writer.pool, false);
+            emit_version(&mut code, &mut writer.pool, true);
+            code.bind(end);
+            code.goto(built);
+            catch_all(&mut code, &mut writer.pool, start, end, skipped);
         }
+        code.bind(skipped);
+        code.return_(None);
         code.bind(built);
         code.max_locals = code.max_locals.max(temps);
         // Under a correspondence (step H5), the two objects as made must satisfy its equations: an input on which
@@ -2868,7 +2922,13 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         s.push_str(&format!("        {} {}_before = java.util.Arrays.copyOf({}, {}.length); // the version before writes into its own copy\n", p.ty.java_name(), p.name, p.name, p.name));
     }
     if !records.is_empty() {
-        s.push_str("        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
+        let admission = layout.compares_admission();
+        if admission {
+            s.push_str("        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.\n");
+        } else {
+            s.push_str("        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
+        }
+        let (mut made_after, mut made_before) = (Vec::new(), Vec::new());
         for slot in &records {
             let Slot::Record { name, record, before: previous, first } = slot else { continue };
             let leaves = &params[*first..*first + record.components.len()];
@@ -2885,7 +2945,11 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                             match e.ty { Type::Long => format!("(long) ({})", text.trim()), _ => format!("({})", text.trim()) }
                         }
                     }).collect();
-                    s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
+                    if admission {
+                        s.push_str(&format!("        {old} {name}_before = null; {} {name}_after = null;\n", record.java_name()));
+                    } else {
+                        s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
+                    }
                     let (old_made, new_made) = (construction_source_of(previous, "before.", &mut old_leaves.into_iter()), construction_source(record, "", &mut leaves.iter()));
                     // A choice (step H2): null, or the same object as an earlier parameter that is not null.
                     let chosen = |side: &str, made: String| -> String {
@@ -2902,6 +2966,11 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                         }
                         text
                     };
+                    if admission {
+                        made_after.push(format!("{name}_after = {};", chosen("after", new_made)));
+                        made_before.push(format!("{name}_before = {};", chosen("before", old_made)));
+                        continue;
+                    }
                     s.push_str(&format!("        try {{ {name}_before = {}; {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", chosen("before", old_made), chosen("after", new_made)));
                     if let Some(c) = previous.corresponds.as_ref().filter(|c| !c.same_shape) {
                         s.push_str(&format!("        if (!{}) {{ return; }} // the correspondence's input equations, of the objects as made\n", equations_source(&format!("{name}_before"), &format!("{name}_after"), &c.equations)));
@@ -2912,6 +2981,13 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     s.push_str(&format!("        try {{ {name}_after = {}; }} catch (Throwable t) {{ return; }}\n", construction_source(record, "", &mut leaves.iter())));
                 }
             }
+        }
+        if admission {
+            s.push_str("        boolean rejectedAfter = false, rejectedBefore = false;\n");
+            s.push_str(&format!("        try {{ {} }} catch (Throwable t) {{ rejectedAfter = true; }}\n", made_after.join(" ")));
+            s.push_str(&format!("        try {{ {} }} catch (Throwable t) {{ rejectedBefore = true; }}\n", made_before.join(" ")));
+            s.push_str("        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input\n");
+            s.push_str("        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept\n");
         }
     }
     if !mapping.is_empty() {
@@ -3809,7 +3885,8 @@ mod tests {
         assert_eq!(layout.made(&|_| false).into_iter().map(|(_, m)| m).collect::<Vec<_>>(), vec![Made::Own, Made::Same("a".into()), Made::Own]);
         assert!(layout.domain(8).contains("× b: the same object as a × n: int"), "{}", layout.domain(8));
         let harness = generate("m/Kernel", "f", &layout, &Type::Void, None, 8, None).unwrap();
-        assert!(harness.source.contains("try { b_before = a_before; b_after = a_after; }"), "{}", harness.source);
+        assert!(harness.source.contains("b_after = a_after;") && harness.source.contains("b_before = a_before;"), "{}", harness.source);
+        assert!(harness.source.contains("if (rejectedAfter || rejectedBefore) { throw new AssertionError(); }"), "the admission compared: {}", harness.source);
         let class = ClassFile::parse(&harness.bytes).unwrap();
         let code = class.method(METHOD, "(JJIJ)V").expect("check method, no flag").code.as_ref().unwrap();
         let insns = code.instructions().unwrap();
@@ -3925,7 +4002,8 @@ mod tests {
         let code = check.code.as_ref().unwrap();
         let insns = code.instructions().unwrap();
         use crate::classfile::Insn;
-        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::New(_))).count(), 5, "two records in two versions, and the AssertionError");
+        assert!(layout.compares_admission());
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::New(_))).count(), 9, "the new version's two records, the previous version's twice (where the new ones were made, and where they were rejected), the AssertionError of each version's rejection alone, and the comparison's");
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeVirtual(_))).count(), 2, "the method on each version's receiver");
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeStatic(_))).count(), 0);
         assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::GetField(_))).count(), 4, "the result's two components in each version");
@@ -3936,7 +4014,8 @@ mod tests {
             }
         }
         assert!(harness.source.contains("public static void check(long this_baseMillis, long this_capMillis, int attempt, int window_from, boolean window_open)"), "{}", harness.source);
-        assert!(harness.source.contains("try { this_before = new before.net.example.Backoff(this_baseMillis, this_capMillis); this_after = new net.example.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { return; }"), "{}", harness.source);
+        assert!(harness.source.contains("try { this_after = new net.example.Backoff(this_baseMillis, this_capMillis); window_after = new net.example.Window(window_from, window_open); } catch (Throwable t) { rejectedAfter = true; }"), "{}", harness.source);
+        assert!(harness.source.contains("try { this_before = new before.net.example.Backoff(this_baseMillis, this_capMillis); window_before = new before.net.example.Window(window_from, window_open); } catch (Throwable t) { rejectedBefore = true; }"), "{}", harness.source);
         assert!(harness.source.contains("try { a = this_before.next(attempt, window_before); }"), "{}", harness.source);
         assert!(harness.source.contains("try { b = this_after.next(attempt, window_after); }"), "{}", harness.source);
         assert!(harness.source.contains("(ea != 0 || (a == null ? b == null : b != null && a.from == b.from && a.open == b.open))"), "{}", harness.source);

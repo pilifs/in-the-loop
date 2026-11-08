@@ -1525,7 +1525,8 @@ fn vacuity_is_a_status_of_a_verified_statement() {
     assert_eq!((st, basis), (VacuityStatus::NonVacuous, VacuityBasis::Probe), "{}", span.output);
     assert!(witness.as_deref().is_some_and(|w| w.starts_with("span(this=Range[lo=")), "{witness:?}");
     let caveat = span.stated.as_ref().unwrap().assumptions.iter().find(|a| a.kind == AssumptionKind::Constructible).expect("the constructors' caveat");
-    assert!(caveat.text.contains("whether the constructors accept the same inputs is not part of it"), "{}", caveat.text);
+    // The two versions' admission is compared (O2 of application-core-objects): only an input both reject is skipped.
+    assert!(caveat.text.contains("an input both versions' constructors reject is skipped, and one that only one version's reject is a difference"), "{}", caveat.text);
     assert!(span.output.contains(&format!("\n  constructors: {}\n", caveat.text)), "{}", span.output);
     // A scope every input satisfies: vacuous, records or not.
     let scoped = regress("span-scoped", "Range#span", &|o| o.unchanged_unless = Some("this.lo <= this.hi".into()));

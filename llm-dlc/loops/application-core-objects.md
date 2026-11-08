@@ -316,6 +316,43 @@ Never relax the interface to unblock it.
     observed), but neither `lib/README.md` nor the domain says so. Not changed here.
   - **Next**: O2's last negative control, a narrower new constructor under an externally anchored domain; then a
     shrinking check of the recipe's legality, and the claim roots.
+- 2026-11-08, **O2's negative control of a narrower new constructor under an anchored domain**. The integration
+  report is still the 05:36 one.
+  - **The reproducer**: a counter whose new constructor rejects `step 1` (`step < 2` where it was `step < 1`) was
+    verified ("behaves as before on every input"), since the regression harness skipped an input a constructor of
+    either version rejected: the two domains silently intersected, with only a `constructible` assumption saying
+    so. The frozen throttle claim, `this` anchored by identity, verified it too.
+  - **What**: the regression harness makes the new version's objects, then the previous version's, in handler
+    regions of their own (the previous version's emitted twice, so no new locals), and compares their admission
+    (`harness::Layout::compares_admission`): an input both versions' constructors reject is skipped as before, and
+    one that only one version's reject, narrower or wider, is a difference, refuted on `exception`. The replay
+    already gave a rejecting version's outcome as `<the constructor throws …>`, so the witness, the interpreter
+    replay and the JVM run needed no change. It holds where every object is made in both versions, of the same
+    shape (receivers, parameters, plan roots, records). An object made through a correspondence's input equations
+    (H5), or in the new version only (`--before-arguments`), keeps the old rule, named in its stated assumption.
+    The `constructible` assumption says which rule a check had. A claim that doesn't require `exception` gets
+    unresolved from such a witness, never verified. The property check, of one version, is unchanged.
+  - **Shared file**: `statement.rs`'s `regression_assumptions` has a block marked for this stream (O2), an early
+    branch with the new assumption text. Nothing else in it changed.
+  - **Verified inline** (native, no JBMC): `tests/application_core_objects.rs`'s
+    `o2_a_narrower_new_constructor_under_an_anchored_domain_is_never_silently_intersected`, which failed before
+    (verified). Narrower, refuted on a receiver for a getter and a void target, and on a parameter; wider, refuted;
+    the same admission written otherwise, verified; the frozen throttle claim with a narrowed constructor refuted
+    on `exception`, unresolved without `exception` among the required observations, and its own `after` still
+    verified. Updated to the new shape: two harness unit tests (the source's two regions, and the count of `new`
+    instructions) and `tests/conformance.rs`'s caveat text, which states the stricter rule. 18 pass and 1 ignored
+    in the stream's file; the lib tests (228) and the suites `heap`, `foundations`, `compare`, `effects`,
+    `observations`, `alignment`, `summaries`, `conformance` and `skill` pass; `application_core` passes except
+    O3, the fixture finding. `lib/README.md`: a paragraph **A narrower constructor**, and this stream's receiver
+    paragraph corrected.
+  - **Job** `20261108-063512-application-core-objects-o2-the-regressi` (pending): `lib/tests/integration.rs`
+    under JBMC, and examples 126–131, 134–137, 150–152 and 190–196, whose harnesses now have two construction
+    regions; their verdicts must not change.
+  - **For the merge, not additive**: `lib/README.md`'s "How a regression proof works" still says "an input a
+    constructor of either version rejects is outside the statement" for records. The new paragraph says it
+    overrides that sentence, which a stream doesn't rewrite.
+  - **Next**: a shrinking check that a shrunk recipe is still legal and still reproduces the same failure; then the
+    claim roots of constructors and setup methods (with reuse). O2's five negative controls are done.
 - Status: working
 
 ## Loop settings

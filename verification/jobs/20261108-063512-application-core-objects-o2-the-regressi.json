@@ -1,0 +1,147 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-063512-application-core-objects-o2-the-regressi",
+  "title": "application-core objects O2: the regression harness compares the two versions' constructor admission; lib/tests/integration.rs and the record and object examples under it",
+  "description": "Row O2 of llm-dlc/loops/application-core-acceptance.md, the negative control of a narrower new constructor under an anchored domain. At this revision the regression harness (lib/src/harness/mod.rs, generate_in and its Java rendering) makes the new version's objects, then the previous version's, in separate handler regions: an input both versions' constructors reject is skipped as before, one that only one version's reject is now a difference (an AssertionError), where every object is made in both versions of the same shape (Layout::compares_admission). Before, an input either constructor rejected was skipped, so a narrower constructor was silently intersected. Verified inline on the native engine (tests/application_core_objects.rs). This job checks the same harness under JBMC and that the existing examples keep their verdicts: every record/object harness now has two construction regions and the previous version's construction emitted twice, so JBMC's formula changes even where the constructors are identical. Engine: as each example's build.py and the integration tests choose (JBMC and native); bounds as recorded per example.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/statement.rs",
+      "lib/tests/integration.rs"
+    ]
+  },
+  "expected": "integration tests: every non-ignored test passes (exit 0). Each example's build.py prints 'as expected' and exits 0, its verdict unchanged: 126 violation, 127 verified, 128 violation, 129 verified, 130 violation, 131 verified, 134 violation, 135 verified, 136 violation, 137 verified, 150 verified, 151 violation, 152 verified, 190 verified, 191-194 violation, 195 verified, 196 unverifiable. Only the statement's constructible-assumption text may change, where admission is compared. A changed verdict is a finding, not a pass.",
+  "submitted": {
+    "at": "2026-11-08T06:35:12+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "jbmc",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "45m",
+    "timeout": "120m",
+    "notes": "as the earlier objects job 20261108-045000 (integration.rs 15m at 3G, 190-196 12m at 1G), plus 13 small B9 examples"
+  },
+  "steps": [
+    {
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": "."
+    },
+    {
+      "name": "example 126 (B9)",
+      "run": "python3 examples/tools/build.py 126",
+      "cwd": "."
+    },
+    {
+      "name": "example 127 (B9)",
+      "run": "python3 examples/tools/build.py 127",
+      "cwd": "."
+    },
+    {
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": "."
+    },
+    {
+      "name": "example 129 (B9)",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": "."
+    },
+    {
+      "name": "example 130 (B9)",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": "."
+    },
+    {
+      "name": "example 131 (B9)",
+      "run": "python3 examples/tools/build.py 131",
+      "cwd": "."
+    },
+    {
+      "name": "example 134 (B9)",
+      "run": "python3 examples/tools/build.py 134",
+      "cwd": "."
+    },
+    {
+      "name": "example 135 (B9)",
+      "run": "python3 examples/tools/build.py 135",
+      "cwd": "."
+    },
+    {
+      "name": "example 136 (B9)",
+      "run": "python3 examples/tools/build.py 136",
+      "cwd": "."
+    },
+    {
+      "name": "example 137 (B9)",
+      "run": "python3 examples/tools/build.py 137",
+      "cwd": "."
+    },
+    {
+      "name": "example 150 (B9)",
+      "run": "python3 examples/tools/build.py 150",
+      "cwd": "."
+    },
+    {
+      "name": "example 151 (B9)",
+      "run": "python3 examples/tools/build.py 151",
+      "cwd": "."
+    },
+    {
+      "name": "example 152 (B9)",
+      "run": "python3 examples/tools/build.py 152",
+      "cwd": "."
+    },
+    {
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": "."
+    },
+    {
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": "."
+    },
+    {
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": "."
+    },
+    {
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": "."
+    },
+    {
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": "."
+    },
+    {
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": "."
+    },
+    {
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

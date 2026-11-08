@@ -31,7 +31,8 @@
 //!
 //! A method of a record whose components are primitive is a target too, as is a method taking or returning such a
 //! record: the components are the symbolic inputs, the record is built from them in both versions through its
-//! canonical constructor (an input a constructor rejects is outside the statement), and a record result is
+//! canonical constructor (an input both versions' constructors reject is outside the statement, and one only one
+//! version's reject is a difference: [`harness::Layout::compares_admission`]), and a record result is
 //! compared component by component ([`harness::Layout`]). A static method that became a method of a record, or
 //! took one as a parameter (the components it took gathered into a record), is related to its previous version
 //! by [`Options::before_arguments`] over the components, `this.component` or `parameter.component`.

@@ -245,11 +245,16 @@ fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
 /// A build of the shared contract's throttle family (`tests/fixtures/application-core/throttle`): `before`,
 /// `after`, or a defect overlaid on `after`.
 fn throttle(build: &str) -> PathBuf {
+    throttle_in(&format!("throttle-{build}"), build)
+}
+
+/// [`throttle`], compiled into a directory of its own (`name`), apart from another test's running at the same time.
+fn throttle_in(name: &str, build: &str) -> PathBuf {
     let family = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/throttle");
     let base = family.join(if build == "before" { "before" } else { "after" });
     let overlay = family.join("defects").join(build);
     let file = if overlay.exists() { overlay } else { base }.join("throttle/Throttle.java");
-    compile(&format!("throttle-{build}"), &[("throttle/Throttle.java", &std::fs::read_to_string(file).unwrap())])
+    compile(name, &[("throttle/Throttle.java", &std::fs::read_to_string(file).unwrap())])
 }
 
 /// A frozen throttle claim, with its allocation bound at 1 in both versions: the frozen claims say 0, while
@@ -758,4 +763,68 @@ fn o2_a_constructors_side_effect_outside_its_object_is_refused_by_name() {
     let own = |s: &str| s.replace("    private int count;\n", "    private int count;\n    static final int START = 0;\n").replace("        this.step = step;\n", "        this.step = step;\n        reset();\n").replace("    public int count() {", "    private void reset() {\n        count = START;\n    }\n\n    public int count() {");
     let o = regression("effect-own", &counter("effect-own", own), &plain, "counters.Counter#count");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+}
+
+/// O2's negative control of a narrower new constructor: an input the previous version's constructor admits and the
+/// new one's rejects can't shrink the claim to the inputs both accept. The regression harness compares the two
+/// versions' admission: an input only one version can build is a difference, on the exception, refuted with a
+/// witness whose version that rejects it throws in its constructor, replayed in the interpreter and run on a JVM;
+/// an input both reject is skipped, as before. Under an externally anchored claim (the frozen throttle's, `this`
+/// anchored by identity) it is refuted where the claim requires the exception, and unresolved where it doesn't,
+/// never verified.
+#[test]
+fn o2_a_narrower_new_constructor_under_an_anchored_domain_is_never_silently_intersected() {
+    use jvmcontract::spec::{heap, ObservationState, Verdict as Claimed};
+    use jvmcontract::statement::AssumptionKind;
+    let before = counter("narrower-before", |s| s.to_string());
+    // The receiver's constructor rejects step 1, which the previous version's accepts: a void target, a getter.
+    let narrower = counter("narrower-after", |s| s.replace("if (step < 1) {", "if (step < 2) {"));
+    for target in ["counters.Counter#count", "counters.Counter#add"] {
+        let o = regression(&format!("narrower-{target}"), &before, &narrower, target);
+        assert_eq!(o.verdict, Verdict::Violation, "{target}: {}", o.output);
+        let c = o.counterexample.as_ref().unwrap();
+        assert!(c.input.contains("new Counter(1)"), "{target}: the input only the previous version admits: {}", c.input);
+        assert!(c.differs.iter().any(|d| d == "exception"), "{target}: {:?}", c.differs);
+        assert!(c.after.contains("<the constructor") && c.after.contains("IllegalArgumentException"), "{target}: the new version rejects it in its constructor: {}", c.after);
+        assert!(!c.before.contains("<the constructor"), "{target}: {}", c.before);
+        assert!(c.jvm.is_some() && o.replay.as_ref().is_some_and(|r| r.reproduced), "{target}: {}", o.output);
+    }
+    // A wider one is a difference too: the previous version rejects step 0, the new one builds it.
+    let wider = counter("wider-after", |s| s.replace("if (step < 1) {", "if (step < 0) {"));
+    let o = regression("wider-count", &before, &wider, "counters.Counter#count");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("new Counter(0)") && c.before.contains("<the constructor") && !c.after.contains("<the constructor"), "{} / {} / {}", c.input, c.before, c.after);
+    // Constructors that reject the same inputs, written otherwise: verified, and the statement says that an input
+    // both reject is skipped, and one only one version rejects would be a difference.
+    let same = counter("same-admission", |s| s.replace("if (step < 1) {", "if (!(step > 0)) {"));
+    let o = regression("same-admission", &before, &same, "counters.Counter#count");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let caveat = o.stated.as_ref().unwrap().assumptions.iter().find(|a| a.kind == AssumptionKind::Constructible).expect("the constructors' caveat");
+    assert!(caveat.text.contains("an input both versions' constructors reject is skipped, and one that only one version's reject is a difference"), "{}", caveat.text);
+    // A parameter's constructor, not the receiver's: the same, in a static method over a counter.
+    let user = |name: &str, step: &str| compile(name, &[("counters/Counter.java", &COUNTER.replace("if (step < 1) {", step)), ("counters/Use.java", "package counters;\n\npublic class Use {\n    public static int twice(Counter c) {\n        c.add(1);\n        return c.count() * 2;\n    }\n}\n")]);
+    let (b, a) = (user("narrower-param-before", "if (step < 1) {"), user("narrower-param-after", "if (step < 2) {"));
+    let o = regression("narrower-param", &b, &a, "counters.Use#twice");
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.counterexample.as_ref().unwrap().differs.iter().any(|d| d == "exception"), "{}", o.output);
+
+    // Under the frozen throttle claim, anchored: the new constructor rejects capacity 1.
+    let throttle_before = throttle_in("narrowed-throttle-before", "before");
+    let source = std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/application-core/throttle/after/throttle/Throttle.java")).unwrap();
+    assert!(source.contains("if (capacity < 1) {"), "the fixture's constructor check");
+    let narrowed = compile("throttle-narrowed", &[("throttle/Throttle.java", &source.replace("if (capacity < 1) {", "if (capacity < 2) {"))]);
+    let claim = throttle_claim("throttle-constructed-claim");
+    let r = heap::check(&claim, &throttle_before, &narrowed).unwrap_or_else(|u| panic!("{u}"));
+    assert_eq!(r.verdict, Claimed::Refuted, "{r:?}");
+    assert!(r.accounting.iter().any(|a| a.observation == "exception" && a.state == ObservationState::Refuted), "{r:?}");
+    assert!(r.witness.as_deref().unwrap_or_default().contains("new Throttle(1)"), "{r:?}");
+    // The same claim without the exception among its required observations: unresolved, not verified.
+    let mut lenient = claim.clone();
+    lenient.contract.required.retain(|o| o != "exception");
+    let r = heap::check(&lenient, &throttle_before, &narrowed).unwrap_or_else(|u| panic!("{u}"));
+    assert_eq!(r.verdict, Claimed::Unresolved, "{r:?}");
+    // The fixture's own rewrite, whose constructor admits the same capacities, is still verified.
+    let r = heap::check(&claim, &throttle_before, &throttle_in("narrowed-throttle-after", "after")).unwrap_or_else(|u| panic!("{u}"));
+    assert_eq!(r.verdict, Claimed::Verified, "{r:?}");
 }

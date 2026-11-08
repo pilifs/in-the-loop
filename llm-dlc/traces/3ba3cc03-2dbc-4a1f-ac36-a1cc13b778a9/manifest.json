@@ -12,30 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.480Z",
-  "ended": "2026-11-08T06:12:43.672Z",
-  "duration_seconds": 5898,
+  "ended": "2026-11-08T06:35:41.825Z",
+  "duration_seconds": 7276,
   "stats": {
-    "turns": 25,
-    "api_calls": 299,
-    "tool_calls": 297,
+    "turns": 30,
+    "api_calls": 374,
+    "tool_calls": 372,
     "tool_errors": 0,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 315218,
     "usage": {
-      "input_tokens": 606,
-      "output_tokens": 233456,
-      "cache_read_input_tokens": 46615512,
-      "cache_creation_input_tokens": 897736
+      "input_tokens": 758,
+      "output_tokens": 283141,
+      "cache_read_input_tokens": 56208293,
+      "cache_creation_input_tokens": 1065476
     }
   },
   "tools": {
-    "Bash": 264,
-    "Read": 18,
+    "Bash": 334,
+    "Read": 21,
     "Edit": 4,
     "SendMessage": 4,
-    "ToolSearch": 3,
+    "ToolSearch": 4,
     "ListAgents": 2,
-    "Monitor": 1,
+    "Monitor": 2,
     "Write": 1
   },
   "files_touched": [
@@ -117,24 +117,38 @@
     {
       "index": 5,
       "started": "2026-11-08T05:59:21.448Z",
-      "ended": "2026-11-08T06:12:43.672Z",
-      "turns": 4,
-      "api_calls": 36,
+      "ended": "2026-11-08T06:13:06.466Z",
+      "turns": 5,
+      "api_calls": 39,
       "usage": {
-        "input_tokens": 74,
-        "output_tokens": 23393,
-        "cache_read_input_tokens": 3213723,
-        "cache_creation_input_tokens": 114163
+        "input_tokens": 80,
+        "output_tokens": 24656,
+        "cache_read_input_tokens": 3599172,
+        "cache_creation_input_tokens": 117888
       },
-      "peak_context_tokens": 127242
+      "peak_context_tokens": 130967
+    },
+    {
+      "index": 6,
+      "started": "2026-11-08T06:13:42.678Z",
+      "ended": "2026-11-08T06:35:41.825Z",
+      "turns": 4,
+      "api_calls": 72,
+      "usage": {
+        "input_tokens": 146,
+        "output_tokens": 48422,
+        "cache_read_input_tokens": 9207332,
+        "cache_creation_input_tokens": 164015
+      },
+      "peak_context_tokens": 177094
     }
   ],
   "log": {
-    "sha256": "a0fc0a514d7a0dbbc7bdc517f035df2bbf1e99123a36dac95fc7d5f87fbca260",
-    "bytes": 9000990,
-    "lines": 3266,
-    "gzip_bytes": 1687907,
-    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/a0fc0a514d7a0dbbc7bdc517f035df2bbf1e99123a36dac95fc7d5f87fbca260.jsonl.gz"
+    "sha256": "e100ad198018322aae67da4baa6499db486cc8c80276767c661fec30f825b099",
+    "bytes": 10867649,
+    "lines": 4034,
+    "gzip_bytes": 2010925,
+    "path": "llm-dlc/traces/3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9/logs/e100ad198018322aae67da4baa6499db486cc8c80276767c661fec30f825b099.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -185,6 +199,14 @@
       "summary": "application-core objects O2: a constructor or setup call that writes a static field is refused by name, the negative control of unsupported side effects in a constructor",
       "body": "construction::side_effect finds a write to a static field in a constructor or in an application method it reaches (purity's walk, of which only that violation counts). Before, such a constructor was taken as it is, and since the checks make each object from the classes' initial state, a verdict over it was about the first object made only. It is now refused by name wherever a check makes an object: equivalence::made_of (receivers and parameters and their inner objects, in both versions and in prove), a plan's node, and a setup call, whose static write is outside every observation. The regression check's previous-version parameter now gives the reason instead of only 'not a record'. JDK calls with effects (System.out, clocks) were and stay refused by the engines. lib/README.md has a paragraph for it.\n\nVerified inline (native, no JBMC): tests/application_core_objects.rs's o2_a_constructors_side_effect_outside_its_object_is_refused_by_name covers each refusal, System.out, and a constructor that reads a constant and writes its own field through a method, still verified. 17 pass and 1 ignored there. The lib tests (228) and the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill pass; application_core passes except O3, which still waits on the frozen throttle claims' allocation bound (the coordinator's fixture finding in Progress). No job: no example or fixture constructor writes a static field. Found for the for-review list: a regression check doesn't observe the target's own static writes, and the README doesn't say so.",
       "log_sha256": "a0fc0a514d7a0dbbc7bdc517f035df2bbf1e99123a36dac95fc7d5f87fbca260"
+    },
+    {
+      "change_id": "qvzkzuzoswltwplsrprnmutllvptmtqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core objects O2: an input only one version's constructors accept is a difference, the negative control of a narrower new constructor under an anchored domain (verification pending)",
+      "body": "Before, the regression harness skipped every input a constructor of either version rejected, so a new constructor that rejects inputs the old one accepted (step < 2 where it was step < 1) silently shrank the claim to the inputs both accept: such a change was verified, under a plain regression check and under the frozen throttle claim whose receiver is anchored by identity. Now the harness (lib/src/harness/mod.rs) makes the new version's objects, then the previous version's, in handler regions of their own, and compares their admission (Layout::compares_admission): an input both versions reject is skipped as before; one that only one version's constructors reject, narrower or wider, is a difference refuted on the exception, with a witness whose rejecting version throws in its constructor, replayed in the interpreter and run on a JVM. It applies where every object is made in both versions with the same shape; objects made through a correspondence's input equations, or only in the new version (--before-arguments), keep the old rule and its stated assumption. The constructible assumption text says which rule a check had, from a block marked for this stream in the shared statement.rs. Under a claim that does not require the exception, such a witness gives unresolved, never verified.\n\nVerified inline on the native engine without JBMC: the new test in lib/tests/application_core_objects.rs failed before (verified) and passes now; the lib tests (228) and the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill pass; application_core passes except O3, the known fixture allocation bound for the coordinator. Two harness unit tests and tests/conformance.rs's caveat text were updated to the new harness shape and the stricter rule. The JBMC integration tests and examples 126-131, 134-137, 150-152 and 190-196, whose harness bytecode changes shape, are job 20261108-063512-application-core-objects-o2-the-regressi.\n\nFor the merge: lib/README.md's How a regression proof works still says that an input a constructor of either version rejects is outside the statement; the new paragraph overrides it, since a stream only adds to the README. The brief is otherwise current.",
+      "log_sha256": "e100ad198018322aae67da4baa6499db486cc8c80276767c661fec30f825b099"
     }
   ],
   "logs": {
@@ -216,6 +238,12 @@
       "bytes": 7718801,
       "lines": 2820,
       "gzip_bytes": 1431708,
+      "url": null
+    },
+    "e100ad198018322aae67da4baa6499db486cc8c80276767c661fec30f825b099": {
+      "bytes": 10867649,
+      "lines": 4034,
+      "gzip_bytes": 2010925,
       "url": null
     },
     "f2a72d8bf7720a04a5717514b603a3ed19ed9cec8b05c102d4f439271833eeb0": {
