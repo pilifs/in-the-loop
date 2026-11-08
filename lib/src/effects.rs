@@ -17,8 +17,9 @@
 //!   the claim's environment or with `--environment`) answers from it instead: a deterministic read-only query's
 //!   table of keys and results, with a default, among the check's inputs after the handler's, the same for both
 //!   builds, so that its answers are one function of the key for both and never coupled by a call's position
-//!   (the coupling policy is [`crate::environment`]'s). One more call of it than its bound marks the log past its
-//!   bound. A witness names the table it chose, and the JVM replays it under the same stubs. The call on the
+//!   (the coupling policy is [`crate::environment`]'s). Under a per-call choice each entry answers one call per
+//!   trace, so the n-th call of a key gets the n-th entry of that key in both builds. One more call of it than its
+//!   bound marks the log past its bound. A witness names the table it chose, and the JVM replays it under the same stubs. The call on the
 //!   model's owner that the analysis can't follow (an interface nothing implements) is the one the model answers;
 //!   every other call on that owner is a stub that marks the log.
 //! - **One environment for both.** The two builds get the same stubs, in the same order, from one model: the union
@@ -151,7 +152,8 @@ impl Model {
     }
 
     /// The environment a witness chose, in words, from the values of [`Model::environment_inputs`]: each modelled
-    /// call's answers by key, an entry shadowed by an earlier one of the same key left out, then its default.
+    /// call's answers by key, then its default. A query's entry shadowed by an earlier one of the same key is left
+    /// out; a per-call choice lists a key's answers in the order of its occurrences.
     fn environment_words(&self, values: &[Argument]) -> String {
         let scalar = |a: Option<&Argument>, t: &Type| match (a, t) {
             (Some(Argument::Scalar(Value::Int(v))), Type::Boolean) => (*v != 0).to_string(),
@@ -165,21 +167,27 @@ impl Model {
         for (call, m) in self.calls.iter().zip(&self.models) {
             let Some(m) = m else { continue };
             let names = m.key_names();
-            let mut seen: Vec<Vec<String>> = Vec::new();
-            let mut answers = Vec::new();
+            // Each key once, in the order of its first entry, with its answers.
+            let mut answers: Vec<(Vec<String>, Vec<String>)> = Vec::new();
             for _ in 0..m.entries() {
                 let key: Vec<String> = m.key.iter().enumerate().map(|(c, (_, t))| scalar(values.get(at + c), t)).collect();
                 at += m.key.len();
                 let result = scalar(values.get(at), &m.ret);
                 at += 1;
-                if !seen.contains(&key) {
-                    answers.push(format!("({}) gives {result}", names.iter().zip(&key).map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join(", ")));
-                    seen.push(key);
+                match answers.iter_mut().find(|(k, _)| *k == key) {
+                    Some((_, rs)) => {
+                        if m.per_call {
+                            rs.push(result);
+                        }
+                    }
+                    None => answers.push((key, vec![result])),
                 }
             }
             let default = scalar(values.get(at), &m.ret);
             at += 1;
-            out.push(format!("{} ({}): {}, any other key gives {default}", short(call), m.id, answers.join(", ")));
+            let answers: Vec<String> = answers.iter().map(|(key, rs)| format!("({}) gives {}", names.iter().zip(key).map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join(", "), rs.join(", then "))).collect();
+            let rest = if m.per_call { "any other key or later call of one" } else { "any other key" };
+            out.push(format!("{} ({}): {}, {rest} gives {default}", short(call), m.id, answers.join(", ")));
         }
         out.join("; ")
     }
@@ -198,10 +206,7 @@ pub fn plan(spec: &EntryPointSpec) -> Result<EffectLogPlan, Unsupported> {
             });
             let lowered = c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok());
             let returns = match split_call(&c.call).and_then(|(_, _, d)| MethodDescriptor::parse(&d).ok()).map(|d| d.ret) {
-                _ if lowered.is_some() => {
-                    let m = lowered.as_ref().unwrap();
-                    format!("any {} that is a function of ({}), the same in both builds ({})", m.ret.java_name(), m.key_names().join(", "), m.id)
-                }
+                _ if lowered.is_some() => lowered.as_ref().unwrap().returns(),
                 Some(Type::Void) => "nothing".to_string(),
                 Some(t) if t.is_primitive() => format!("{} 0, which the caller must drop", t.java_name()),
                 _ => "null, which the caller must drop".to_string(),
@@ -468,7 +473,7 @@ pub fn render_checks(checks: &[EntryCheck]) -> String {
 fn domain_of(spec: &EntryPointSpec, environment: &EnvironmentModel) -> String {
     let domain = spec.inputs.iter().map(|i| format!("{}: {}", i.name, i.ty)).collect::<Vec<_>>().join(" × ");
     let mut s = format!("{} (the request's inputs, the same in both builds)", if domain.is_empty() { "no inputs".to_string() } else { domain });
-    let models: Vec<String> = environment.calls.iter().filter_map(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()).map(|m| format!("{} ({}): any function of ({}) to {}, within {} calls of it per trace", short(&c.call), m.id, m.key_names().join(", "), m.ret.java_name(), m.bound))).collect();
+    let models: Vec<String> = environment.calls.iter().filter_map(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()).map(|m| m.domain(&short(&c.call)))).collect();
     if !models.is_empty() {
         s.push_str(&format!(" × the environment's answers, one for both builds: {}", models.join("; ")));
     }
@@ -1167,6 +1172,9 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
         for (f, t) in table_fields(i, m) {
             w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: f, descriptor: t.descriptor() });
         }
+        for f in used_fields(i, m) {
+            w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: f, descriptor: "I".into() });
+        }
     }
     let width = model.width() as i32;
     for (i, call) in model.calls.iter().enumerate() {
@@ -1358,9 +1366,15 @@ fn table_fields(i: usize, m: &crate::environment::Lowered) -> Vec<(String, Type)
     out
 }
 
+/// The static fields of the stubs class that mark which of call `i`'s entries this trace used (`w{i}_{e}`), for a
+/// per-call choice; none for a query.
+fn used_fields(i: usize, m: &crate::environment::Lowered) -> Vec<String> {
+    if m.per_call { (0..m.entries()).map(|e| format!("w{i}_{e}")).collect() } else { Vec::new() }
+}
+
 /// Answers a modelled call from its table: one more call than the model's bound marks the log past its bound;
-/// otherwise the result of the first entry whose key is the call's, or the default. `slots` are the call's
-/// parameters'.
+/// otherwise the result of the first entry whose key is the call's (for a per-call choice, the first such entry
+/// this trace hasn't used, which it then marks used), or the default. `slots` are the call's parameters'.
 fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m: &crate::environment::Lowered, slots: &[u16], params: &[Type]) {
     let calls_ref = w.pool.field_ref(stubs, &format!("c{i}"), "I");
     let u_ref = w.pool.field_ref(stubs, "U", "I");
@@ -1381,6 +1395,11 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
     let ret = kind_of(&m.ret);
     for e in 0..m.entries() {
         let next = code.label();
+        let used = m.per_call.then(|| w.pool.field_ref(stubs, &format!("w{i}_{e}"), "I"));
+        if let Some(used) = used {
+            code.op_u16(0xb2, used);
+            code.if_zero(Cond::Ne, next);
+        }
         for (c, (p, t)) in m.key.iter().enumerate() {
             let k = w.pool.field_ref(stubs, &format!("k{i}_{e}_{c}"), &t.descriptor());
             code.load(kind_of(&params[*p]), slots[*p]);
@@ -1391,6 +1410,10 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
             } else {
                 code.if_icmp(Cond::Ne, next);
             }
+        }
+        if let Some(used) = used {
+            code.iconst(1);
+            code.op_u16(0xb3, used);
         }
         let v = w.pool.field_ref(stubs, &format!("v{i}_{e}"), &m.ret.descriptor());
         code.op_u16(0xb2, v);
@@ -1516,6 +1539,11 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
             code.load(kind_of(&t), slots[at]);
             code.op_u16(0xb3, f);
             at += 1;
+        }
+        for name in used_fields(i, m) {
+            let f = w.pool.field_ref(stubs, &name, "I");
+            code.iconst(0);
+            code.op_u16(0xb3, f);
         }
     }
     let set = |code: &mut CodeBuilder, w: &mut ClassWriter, index: i32, value: i64| {

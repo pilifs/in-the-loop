@@ -3,7 +3,8 @@
 //! model of that dependency (`lib/src/environment.rs`, `spec::plans::CallModel`). The model is a deterministic
 //! read-only query: both builds see one function of the key, so a correct rewrite proves, a wrong key or an ignored
 //! result is refuted with the environment that shows it, replayed on a JVM under the generated stubs, and calls are
-//! never coupled by their position.
+//! never coupled by their position. Under a per-call choice, both builds see one choice per key and occurrence of
+//! it: a second read of a key is an answer of its own, and the n-th reads of a key in the two builds correspond.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -11,7 +12,7 @@ use std::sync::{Mutex, OnceLock};
 
 use jvmcontract::effects::{self, Checked};
 use jvmcontract::spec::observe::{self, EntryPointSpec};
-use jvmcontract::spec::plans::{CallModel, Coupling, ModelledResult, Returned};
+use jvmcontract::spec::plans::{CallModel, Coupling, ModelledResult, Occurrence, Returned};
 use jvmcontract::spec::{CanonicalClaim, ClaimBounds, ModeledCall, ObservationState, Verdict};
 
 const RATE: &str = "rates/Rates#rate(I)J";
@@ -117,6 +118,13 @@ fn spec(dir: &Path) -> EntryPointSpec {
 fn query(bound: u32) -> ModeledCall {
     let model = CallModel { id: "rates.rate".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Primitive { ty: "long".into() } }], bound };
     ModeledCall { call: RATE.into(), outcomes: vec!["returns".into()], model: Some(model) }
+}
+
+/// `Rates.rate` as a declared nondeterministic operation of its code, chosen per call, `bound` calls per trace.
+fn choice(bound: u32) -> ModeledCall {
+    let mut call = query(bound);
+    call.model.as_mut().unwrap().coupling = Coupling::Choice { policy: Occurrence::PerCall };
+    call
 }
 
 /// The claim `before`'s spec makes, with `Rates.rate` modelled.
@@ -258,6 +266,9 @@ fn the_environment_model_is_in_the_claim_key_of_the_cached_proof() {
     let wider = run(&a, &query(2));
     assert_eq!(wider.outcome.verdict, Verdict::Verified, "{wider:?}");
     assert!(wider.reuse.is_none() && wider.key.as_ref().is_some_and(|k| *k != key), "another bound is another claim: {:?}", wider.key);
+    let chosen = run(&a, &choice(1));
+    assert_eq!(chosen.outcome.verdict, Verdict::Verified, "{chosen:?}");
+    assert!(chosen.reuse.is_none() && chosen.key.as_ref().is_some_and(|k| *k != key && Some(k) != wider.key.as_ref()), "another coupling is another claim: {:?}", chosen.key);
     let refuted = run(&w, &query(1));
     assert_eq!(refuted.outcome.verdict, Verdict::Refuted, "{refuted:?}");
     let again = run(&w, &query(1));
@@ -283,4 +294,57 @@ fn the_command_checks_under_a_declared_environment() {
     // Without it, the used rate is what the analysis can't see.
     let plain = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).arg("effects").arg(&b).arg(&w).output().unwrap();
     assert!(String::from_utf8_lossy(&plain.stdout).contains("POST /price: unresolved"), "{}", String::from_utf8_lossy(&plain.stdout));
+}
+
+/// Under a per-call choice, a correct rewrite proves, keys asked for in another order keep their own choices, and a
+/// wrong key is refuted: the choices are coupled by key and occurrence, never by position.
+#[test]
+fn a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key() {
+    let after = "        long rate = rates.rate(code);\n        long total = quantity * rate;\n        if (total <= 0) return total;\n        kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
+    let Some(c) = check("choice-rewrite", BEFORE, after, &choice(1)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
+    assert!(c.assumptions.iter().any(|a| a.contains("chosen per call") && a.contains("same occurrence of it")), "{:?}", c.assumptions);
+    assert!(c.outcome.domain.contains("Rates.rate (rates.rate): any long per call, chosen alike for the same (arg0) and occurrence of it, within 1 calls of it per trace"), "{}", c.outcome.domain);
+    // Keys that always differ, asked for in the other order, keep their own choices.
+    let before = "        return rates.rate(code) - rates.rate(code + 1);";
+    let swapped = "        long b = rates.rate(code + 1);\n        long a = rates.rate(code);\n        return a - b;";
+    let Some(c) = check("choice-swapped", before, swapped, &choice(2)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
+    // Keys that may be equal may not be swapped: where code = quantity, the two reads are the first and second
+    // occurrences of one key, and the swap hands each the other's choice. A query proves the same swap.
+    let before = "        return rates.rate(code) - rates.rate(quantity);";
+    let swapped = "        long b = rates.rate(quantity);\n        long a = rates.rate(code);\n        return a - b;";
+    let Some(c) = check("choice-swapped-equal", before, swapped, &choice(2)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+    let witness = c.outcome.witness.as_deref().unwrap();
+    let inputs = witness.split(" under ").next().unwrap();
+    let (code, quantity) = (inputs.split("code=").nth(1).unwrap().split(',').next().unwrap(), inputs.split("quantity=").nth(1).unwrap());
+    assert_eq!(code, quantity, "only equal keys tell the swap apart: {witness}");
+    let wrong = "        long total = rates.rate(code + 1) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
+    let Some(c) = check("choice-wrong-key", BEFORE, wrong, &choice(1)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+    assert!(c.outcome.witness.as_deref().is_some_and(|w| w.contains("Replayed on a JVM") && w.contains("any other key or later call of one gives")), "{:?}", c.outcome.witness);
+}
+
+/// Under a per-call choice, a second read of a key is an answer of its own: a rewrite that reads once where the old
+/// build read twice is refuted, which a query proves; the n-th reads of a key correspond across the builds, so the
+/// same two reads taken in the other order are refuted too.
+#[test]
+fn under_a_per_call_choice_a_second_read_of_a_key_is_its_own_answer() {
+    let once = "        return rates.rate(code) * 2;";
+    let twice = "        return rates.rate(code) + rates.rate(code);";
+    let Some(c) = check("choice-twice", once, twice, &choice(2)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+    let witness = c.outcome.witness.as_deref().unwrap();
+    assert!(witness.contains(", then ") && witness.contains("Replayed on a JVM"), "the witness names the key's answers in the order of its occurrences: {witness}");
+    assert_ne!(c.before.as_ref().unwrap().result, c.after.as_ref().unwrap().result, "{witness}");
+    let Some(c) = check("query-twice", once, twice, &query(2)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "a query's equal keys get equal answers: {c:?}");
+    let first_minus_second = "        long first = rates.rate(code);\n        long second = rates.rate(code);\n        return first - second;";
+    let same = "        long a = rates.rate(code);\n        return a - rates.rate(code);";
+    let Some(c) = check("choice-same-order", first_minus_second, same, &choice(2)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "corresponding occurrences get the same choice: {c:?}");
+    let second_minus_first = "        long first = rates.rate(code);\n        long second = rates.rate(code);\n        return second - first;";
+    let Some(c) = check("choice-other-order", first_minus_second, second_minus_first, &choice(2)) else { return };
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
 }

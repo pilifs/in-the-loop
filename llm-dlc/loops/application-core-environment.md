@@ -182,6 +182,39 @@ entry points, not proof that a dependency's contract is right.
        The paragraph added after it supersedes that, since the README takes additions only.
   - **Next**: the choice coupling (a per-call occurrence policy), which completes E1. Then E2's modelled failures:
     a `throws` result under either coupling, checked exceptions included, on the same fixture.
+- 2026-11-08, **E1, second part: a declared nondeterministic operation under a per-call choice** (completes E1's
+  own items; the contract's row still waits on Q's integration):
+  - **The policy** (`environment.rs`): `choice` with `per-call` makes a call's result a function of its key and of
+    the occurrence of that key in the trace, the same function in both builds. So a second read of a key is an
+    answer of its own, the n-th reads of a key correspond across the builds, and different keys are never coupled
+    by position. A finite `script` is the brief's optional work, refused by name.
+  - **The encoding** (`effects.rs`): the query's table, with each entry used once per trace (a flag per entry,
+    reset by `observe`). A call takes the first entry of its key that this trace hasn't used, else the default.
+    - Complete within the bound: the builds' calls are at most `2 × bound` pairs of a key and an occurrence, and
+      a key's earlier occurrences are always among them. So any choice is a table listing each key's answers in
+      order.
+    - Sound: every table is such a function.
+    - The witness lists a key's answers in occurrence order (`(arg0=20) gives 0, then 1`). The assumption, the plan
+      and the domain say "chosen per call, the same for the same (arg0) and occurrence of it".
+  - **Reproducers** (`tests/environment.rs`, now 13):
+    - Proved: the rewrite, and two keys that always differ (`code`, `code + 1`) asked for in the other order.
+    - Refuted and replayed:
+      - a wrong key;
+      - one read where the old build read a key twice (the query proves this one);
+      - two reads of one key taken in the other order;
+      - `rate(code)` and `rate(quantity)` swapped.
+    - The cache test adds that another coupling is another claim key.
+  - **Found on the way, recorded for review**: the swap of `rate(code)` and `rate(quantity)`, which a query
+    proves, is rightly refuted under a choice. Its witness has `code = quantity`, where the two reads are the first
+    and second occurrences of one key. Whether a refactor's reordering is preserving depends on the declared
+    coupling, never on an encoding detail. So the model a person declares decides such verdicts, and the result
+    names it.
+  - **Passing inline**: every suite of `lib` (`environment` 13, `effects` 18, `application_core` 14,
+    `foundations` 5, `compare`, `integration` 65, `heap`, `observations`, `alignment`, `summaries`, `conformance`,
+    and the unit tests, 229).
+  - **Next**: E2's modelled failures. A `throws` result under either coupling, checked exceptions included, chosen
+    beside the normal results (an outcome index in each entry). Then catch and propagation refuted where a catch
+    goes missing, the exception class recorded, and an inspection of its message or cause refused.
 - Status: working
 
 ## Loop settings

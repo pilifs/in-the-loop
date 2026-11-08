@@ -18,10 +18,16 @@
 //!   function is any function: the check covers every snapshot, with no assumption about how results of different
 //!   keys relate. Stateless: a read after a write of the same store needs a contract for its state transitions,
 //!   which this isn't, and a method's name is never taken for one.
-//! - **A declared nondeterministic or fallible operation** ([`Coupling::Choice`], not built yet). Each call chooses
-//!   among the permitted results, governed by its occurrence policy: per call, corresponding calls of the two
-//!   versions (the same model, key and occurrence of that key) get the same choice; or a finite script. Two calls
-//!   with equal keys may get different results.
+//! - **A declared nondeterministic or fallible operation** ([`Coupling::Choice`]). Each call chooses among the
+//!   permitted results, so two calls with equal keys may get different results, in one version or across the two.
+//!   What makes it one environment for both versions is its occurrence policy:
+//!   - **per call** ([`Occurrence::PerCall`], built): the choice is a function of the call's key and of the
+//!     occurrence of that key in the trace (the first call of `arg0 = 3`, the second, ...), the same function in
+//!     both versions. So the n-th call of a key in one version gets what the n-th call of the same key gets in the
+//!     other, whatever their positions among other keys' calls: a version that reads a key once more than the other
+//!     is checked against an independent answer, never handed the first one again, and different keys are never
+//!     coupled by position;
+//!   - **a finite script** ([`Occurrence::Script`]): the brief's optional work, refused by name.
 //!
 //! **How a query is encoded** ([`Lowered`]). Both versions get the same symbolic table of `2 × bound` entries, each
 //! a key and its result, and one default result: a call's result is the first entry's whose key equals the call's,
@@ -32,6 +38,13 @@
 //! function of the key, so a counterexample is one environment, which the witness names and the JVM replays under
 //! the generated stubs.
 //!
+//! **How a per-call choice is encoded**: the same table, each entry used once per trace. A call's result is the first
+//! entry's whose key equals the call's and that no earlier call of this trace used, or the default. So the n-th call
+//! of a key takes the n-th entry of that key, in both versions alike: the result is a function of the key and its
+//! occurrence. Complete within the bound: the two versions' calls are at most `2 × bound` pairs of a key and an
+//! occurrence, and a key's occurrences up to n are all among them, so any function on the pairs is a table that
+//! lists each key's answers in the order of its occurrences. Sound: every table is such a function.
+//!
 //! **What the key can be**, so far: a primitive integral or boolean argument (`arg0`). A String key needs the values
 //! stream's adapter, a field path (`arg1.code`) or an object's identity the objects stream's construction plan;
 //! both are refused by name until then. The result: one normal return of an integral or boolean primitive. A thrown
@@ -40,14 +53,14 @@
 use std::path::Path;
 
 use crate::classfile::{MethodDescriptor, Type};
-use crate::spec::plans::{CallModel, Coupling, ModelledResult, Returned};
+use crate::spec::plans::{CallModel, Coupling, ModelledResult, Occurrence, Returned};
 use crate::spec::{ModeledCall, Part, Unsupported};
 
 /// The most calls of one model a trace may make that the effect check encodes: the table has twice as many
 /// entries, each compared with every call.
 pub const MAX_BOUND: u32 = 8;
 
-/// A call's model as the effect check encodes it: a query's table.
+/// A call's model as the effect check encodes it: a table of keys and results, read as a query or a per-call choice.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Lowered {
     /// The model's stable id, the same in both versions.
@@ -58,6 +71,9 @@ pub struct Lowered {
     pub ret: Type,
     /// The most calls of it one trace may make.
     pub bound: u32,
+    /// A per-call choice ([`Occurrence::PerCall`]): each entry answers one call per trace, so a result is a function of
+    /// the key and its occurrence. Otherwise a query: the first entry of the key answers every call of it.
+    pub per_call: bool,
 }
 
 impl Lowered {
@@ -96,13 +112,32 @@ impl Lowered {
 
     /// What the result rests on, in words.
     pub fn assumption(&self, call: &str) -> String {
-        format!(
-            "{call} is a generated stub in both builds, answering from the environment model {}: a deterministic read-only query of one declared snapshot, the same function in both builds, of ({}) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any {} for any key; at most {} calls of it in a trace, one more leaves the result unresolved",
-            self.id,
-            self.key_names().join(", "),
-            self.ret.java_name(),
-            self.bound
-        )
+        let (id, key, ty, bound) = (&self.id, self.key_names().join(", "), self.ret.java_name(), self.bound);
+        if self.per_call {
+            format!("{call} is a generated stub in both builds, answering from the environment model {id}: a declared nondeterministic operation, chosen per call: any {ty} for each call, the same choice in both builds for the same ({key}) and the same occurrence of it in the trace, so calls with equal keys may get different results and calls with different keys are never coupled by position; at most {bound} calls of it in a trace, one more leaves the result unresolved")
+        } else {
+            format!("{call} is a generated stub in both builds, answering from the environment model {id}: a deterministic read-only query of one declared snapshot, the same function in both builds, of ({key}) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any {ty} for any key; at most {bound} calls of it in a trace, one more leaves the result unresolved")
+        }
+    }
+
+    /// What a stub returns, in the effect-log plan's words.
+    pub fn returns(&self) -> String {
+        let (id, key, ty) = (&self.id, self.key_names().join(", "), self.ret.java_name());
+        if self.per_call {
+            format!("any {ty} chosen per call, the same in both builds for the same ({key}) and occurrence of it ({id})")
+        } else {
+            format!("any {ty} that is a function of ({key}), the same in both builds ({id})")
+        }
+    }
+
+    /// The part of the domain the model's answers are, in words.
+    pub fn domain(&self, call: &str) -> String {
+        let (id, key, ty, bound) = (&self.id, self.key_names().join(", "), self.ret.java_name(), self.bound);
+        if self.per_call {
+            format!("{call} ({id}): any {ty} per call, chosen alike for the same ({key}) and occurrence of it, within {bound} calls of it per trace")
+        } else {
+            format!("{call} ({id}): any function of ({key}) to {ty}, within {bound} calls of it per trace")
+        }
     }
 }
 
@@ -124,10 +159,11 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
     if model.id.trim().is_empty() {
         return Err(refused(call, "a model needs a stable id, the same in both versions"));
     }
-    match &model.coupling {
-        Coupling::Query => {}
-        Coupling::Choice { .. } => return Err(refused(call, "a declared nondeterministic or fallible operation (coupling `choice`) and its occurrence policy aren't built yet: only a deterministic read-only query is checked so far (the environment stream's E1)")),
-    }
+    let per_call = match &model.coupling {
+        Coupling::Query => false,
+        Coupling::Choice { policy: Occurrence::PerCall } => true,
+        Coupling::Choice { policy: Occurrence::Script { .. } } => return Err(refused(call, "a finite script of responses (occurrence `script`): the brief's optional work, not built; a per-call choice or a query is checked")),
+    };
     if model.bound == 0 || model.bound > MAX_BOUND {
         return Err(refused(call, format!("a bound of {} calls per trace: the check encodes 1 to {MAX_BOUND}", model.bound)));
     }
@@ -170,7 +206,7 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
                     Returned::Adapted { .. } => return Err(refused(call, "a value of an adapter's domain: it waits for the values stream's adapter")),
                 };
                 if ret.is_some() {
-                    return Err(refused(call, "two normal results: a query returns one type"));
+                    return Err(refused(call, "two normal results: a call returns one type"));
                 }
                 if &descriptor.ret.java_name() != t {
                     return Err(refused(call, format!("a result of type {t}, where the call returns {}", descriptor.ret.java_name())));
@@ -186,7 +222,7 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
     if let Some(o) = call.outcomes.iter().find(|o| *o != "returns") {
         return Err(refused(call, format!("the call's outcomes name {o}, which the model's results don't: a modelled failure is a result of the model (E2)")));
     }
-    Ok(Lowered { id: model.id.clone(), key, ret, bound: model.bound })
+    Ok(Lowered { id: model.id.clone(), key, ret, bound: model.bound, per_call })
 }
 
 /// Checks that the effect check can make `call`'s stubs give the results `model` says, under its coupling and
@@ -257,15 +293,29 @@ mod tests {
         let lowered = lower(&call("shop/Stock#has(JI)Z", &model), &model).unwrap();
         assert_eq!(lowered.key, vec![(1, Type::Int), (0, Type::Long)]);
         assert_eq!(lowered.inputs(), [Type::Int, Type::Long, Type::Boolean, Type::Int, Type::Long, Type::Boolean, Type::Boolean]);
+        assert!(!lowered.per_call);
+    }
+
+    #[test]
+    fn a_per_call_choice_is_lowered_to_the_same_table_each_entry_used_once() {
+        let mut model = query(&["arg0"], "long", 2);
+        model.coupling = Coupling::Choice { policy: Occurrence::PerCall };
+        let lowered = lower(&call(RATE, &model), &model).unwrap();
+        assert!(lowered.per_call);
+        assert_eq!(lowered.entries(), 4);
+        assert_eq!(lowered.inputs().len(), 9);
+        let words = lowered.assumption("Rates.rate");
+        assert!(words.contains("chosen per call") && words.contains("same occurrence of it") && words.contains("never coupled by position"), "{words}");
+        assert!(lowered.domain("Rates.rate").contains("any long per call, chosen alike for the same (arg0) and occurrence of it"));
     }
 
     #[test]
     fn what_the_check_does_not_encode_yet_is_refused_by_name() {
         let refusal = |c: &str, m: CallModel| lower(&call(c, &m), &m).unwrap_err();
-        let mut choice = query(&["arg0"], "long", 2);
-        choice.coupling = Coupling::Choice { policy: Occurrence::PerCall };
+        let mut script = query(&["arg0"], "long", 2);
+        script.coupling = Coupling::Choice { policy: Occurrence::Script { results: vec![0, 0] } };
         let cases = [
-            (refusal(RATE, choice), "coupling `choice`"),
+            (refusal(RATE, script), "occurrence `script`"),
             (refusal(RATE, CallModel { results: vec![ModelledResult::Throws { class: "shop.Unavailable".into() }], ..query(&["arg0"], "long", 1) }), "E2"),
             (refusal(RATE, query(&["this"], "long", 1)), "the receiver's identity"),
             (refusal(RATE, query(&["arg0.code"], "long", 1)), "field path"),

@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.548Z",
-  "ended": "2026-11-08T04:52:49.442Z",
-  "duration_seconds": 1104,
+  "ended": "2026-11-08T05:08:20.999Z",
+  "duration_seconds": 2035,
   "stats": {
-    "turns": 5,
-    "api_calls": 67,
-    "tool_calls": 68,
-    "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 223523,
+    "turns": 10,
+    "api_calls": 94,
+    "tool_calls": 96,
+    "tool_errors": 1,
+    "compactions": 2,
+    "peak_context_tokens": 230173,
     "usage": {
-      "input_tokens": 132,
-      "output_tokens": 75547,
-      "cache_read_input_tokens": 9914321,
-      "cache_creation_input_tokens": 233132
+      "input_tokens": 186,
+      "output_tokens": 99240,
+      "cache_read_input_tokens": 12758078,
+      "cache_creation_input_tokens": 352116
     }
   },
   "tools": {
-    "Bash": 61,
-    "Read": 4,
-    "Write": 2,
-    "Edit": 1
+    "Bash": 80,
+    "Read": 12,
+    "Edit": 2,
+    "Write": 2
   },
   "files_touched": [
     "lib/src/environment.rs",
@@ -57,24 +57,38 @@
     {
       "index": 1,
       "started": "2026-11-08T04:34:21.844Z",
-      "ended": "2026-11-08T04:52:49.442Z",
-      "turns": 5,
-      "api_calls": 67,
+      "ended": "2026-11-08T04:53:24.218Z",
+      "turns": 6,
+      "api_calls": 71,
       "usage": {
-        "input_tokens": 132,
-        "output_tokens": 75547,
-        "cache_read_input_tokens": 9914321,
-        "cache_creation_input_tokens": 233132
+        "input_tokens": 140,
+        "output_tokens": 77964,
+        "cache_read_input_tokens": 10819622,
+        "cache_creation_input_tokens": 239782
       },
-      "peak_context_tokens": 223523
+      "peak_context_tokens": 230173
+    },
+    {
+      "index": 2,
+      "started": "2026-11-08T04:54:18.673Z",
+      "ended": "2026-11-08T05:08:20.999Z",
+      "turns": 4,
+      "api_calls": 23,
+      "usage": {
+        "input_tokens": 46,
+        "output_tokens": 21276,
+        "cache_read_input_tokens": 1938456,
+        "cache_creation_input_tokens": 112334
+      },
+      "peak_context_tokens": 125413
     }
   ],
   "log": {
-    "sha256": "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07",
-    "bytes": 1975048,
-    "lines": 765,
-    "gzip_bytes": 347601,
-    "path": "llm-dlc/traces/73918f92-0381-4271-b3bb-48ca4e45803b/logs/c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07.jsonl.gz"
+    "sha256": "8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0",
+    "bytes": 3242865,
+    "lines": 1124,
+    "gzip_bytes": 620833,
+    "path": "llm-dlc/traces/73918f92-0381-4271-b3bb-48ca4e45803b/logs/8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -85,9 +99,23 @@
       "summary": "application-core environment E1: a consumed primitive return under a deterministic query model",
       "body": "The effect check answers a modelled call whose result the handler uses from a declared CallModel instead of refusing it. The coupling policy is defined first, in lib/src/environment.rs: a deterministic read-only query answers with one function of its key, the same for both builds and every call. A declared nondeterministic or fallible choice is a different model, refused by name for now. The query is encoded as a table of 2 x bound keys and answers plus a default, passed as inputs of the generated observe method after the handler's. So the proof covers every snapshot, a counterexample is one environment, and calls are never coupled by their position. The witness names the environment it chose and is replayed on a JVM under the generated stubs. effects --environment FILE (and compare's) merges the declared calls into each entry point's claim. Anything the encoding doesn't take yet (throws, DTOs, String, field or receiver keys, non-integral results) is refused by name.\n\nAlso fixes an existing bug: the two builds' unresolved marks were offset by tag x 16, which is the NullPointerException bit, so the old build's unresolved reasons always named a NullPointerException it never had. The tag now sits above every mark bit. Only the text of unresolved results changes.\n\nVerified inline: the new lib/tests/environment.rs (11 tests: a rewrite proved; a wrong key, an ignored rate and a wrong-branch event refuted and replayed; keys asked in another order and repeated reads proved; a call past the bound unresolved; the proof cached exactly and another bound a miss; the CLI flag), with tests/effects.rs (18), compare, foundations, application_core (14) and the 228 unit tests passing. Interface requests for main.rs's and compare.rs's stale --environment docs, and compare's uncounted decision, are recorded in the stream brief's Progress.",
       "log_sha256": "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07"
+    },
+    {
+      "change_id": "rxsvwkoslrtvrxxtlmptxvvmowmxtrvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core environment E1: a declared nondeterministic operation under a per-call choice",
+      "body": "The environment stream's E1 now has its second coupling. A call model with coupling choice and the per-call occurrence policy makes a call's result a function of its key and of the occurrence of that key in the trace, the same function in both builds: a second read of a key is an answer of its own, the n-th reads of a key correspond across the builds, and different keys are never coupled by position. A finite script stays refused by name (the brief's optional work).\n\nEncoded in effects.rs as the query's symbolic table with each entry used once per trace: a call takes the first entry of its key the trace hasn't used, else the default. This is complete within the bound (any choice per key and occurrence is a table listing each key's answers in order) and sound (every table is such a function). The witness lists a key's answers in occurrence order and is replayed on the JVM under the generated stubs; the assumption, plan and domain name the policy.\n\nVerified inline: tests/environment.rs (13 tests) proves the rewrite and two always-different keys reordered under a choice, and refutes with replayed witnesses a wrong key, one read where the old build read twice (which the query proves), two reads of one key in the other order, and two possibly-equal keys swapped (witness code = quantity); another coupling is another cache key. Every lib suite passes (unit tests 229, effects 18, application_core 14, foundations 5, integration 65, and the rest). The README's Modelled results paragraph, this stream's addition, describes it. Rest of the brief unchanged and current.",
+      "log_sha256": "8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0"
     }
   ],
   "logs": {
+    "8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0": {
+      "bytes": 3242865,
+      "lines": 1124,
+      "gzip_bytes": 620833,
+      "url": null
+    },
     "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07": {
       "bytes": 1975048,
       "lines": 765,
