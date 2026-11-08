@@ -105,6 +105,23 @@ pub(crate) fn quote(s: &str) -> String {
     format!("\"{}\"", s.replace('\\', "\\\\").replace('"', "\\\"").replace('\n', "\\n"))
 }
 
+/// A Java String quoted as [`quote`] quotes text, an isolated surrogate written `\uD800`: the backslash of its
+/// text doubled, so that no two Strings quote alike.
+pub(crate) fn quote_units(s: &super::JStr) -> String {
+    let mut out = String::from("\"");
+    for c in char::decode_utf16(s.units().iter().copied()) {
+        match c {
+            Ok('\\') => out.push_str("\\\\"),
+            Ok('"') => out.push_str("\\\""),
+            Ok('\n') => out.push_str("\\n"),
+            Ok(c) => out.push(c),
+            Err(e) => out.push_str(&format!("\\u{:04X}", e.unpaired_surrogate())),
+        }
+    }
+    out.push('"');
+    out
+}
+
 /// A value as the contract records it. For a reference, the structure decides: an enum by its name, a string
 /// quoted, a boxed primitive as a number, a record as `Name[component=value, ...]`, a collection as `[...]`,
 /// anything else as `<class name>`.
@@ -144,7 +161,7 @@ fn reference(m: &mut Machine, r: Ref) -> Exec<String> {
         }
         Object::Array { .. } => Ok(format!("<{}>", m.class_of(r).replace('/', "."))),
         Object::Native(native) => match native {
-            Native::String(s) => Ok(quote(&s)),
+            Native::String(s) => Ok(quote_units(&s)),
             Native::Boxed { class, value: boxed } => {
                 let t = match class.as_str() {
                     "java/lang/Boolean" => Type::Boolean,
@@ -178,7 +195,7 @@ pub fn thrown(m: &Machine, exception: Ref) -> String {
     };
     let message = super::natives::throwable_message(m, exception);
     match message {
-        Some(msg) if class != "java/lang/NullPointerException" => format!("throws {simple}({})", quote(&msg)),
+        Some(msg) if class != "java/lang/NullPointerException" => format!("throws {simple}({})", quote_units(&msg)),
         _ => format!("throws {simple}"),
     }
 }

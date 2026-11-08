@@ -132,8 +132,41 @@ just to bring a gap count down.
 
 ## Progress
 
-- Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
-  Phase 0 included.
+- Forked 2026-11-08 after the main brief's [launch prerequisites](application-core.md#launch-prerequisites), Phase 0
+  included. No integration report yet at the first cycle.
+- 2026-11-08, **the audit** ("which parts native can execute faithfully"), against the code at the fork:
+  - **The own checker** (`bmc/`): as the main brief's table says. A String is an opaque object: each literal one
+    interned object with no content, a concatenation a fresh opaque one, and `length`, `charAt`, `equals` and the
+    like the gap `jdk-primitive-method` (no assume form). A String parameter is refused (`bmc::unsupported_parameter`).
+  - **The interpreter** (`interp/`), the replay reference, was **lossy**: a String was Rust UTF-8 text, so every
+    isolated surrogate became U+FFFD (`"\uD800".equals("\uFFFD")` and `"\uD800".equals("\uDC00")` were both true,
+    `charAt` gave 65533, a surrogate pair split by `substring` became two U+FFFD). `new String(char[])` was refused.
+    `StringBuilder.append(CharSequence, int, int)` appended the whole sequence, `setLength(-1)` clamped to 0 instead
+    of throwing, and `reverse` broke surrogate pairs. `strip` and `isBlank` used Rust's whitespace, not
+    `Character.isWhitespace`'s.
+- 2026-11-08, **V1 step 1, the interpreter's Strings are UTF-16 code units** (this commit): `interp::JStr` holds a
+  String's and a `StringBuilder`'s code units, and every modelled operation works on them as the JDK's do; an
+  operation that needs Unicode's tables (case, `equalsIgnoreCase`, number syntax) is refused on a String with an
+  isolated surrogate, and `Integer.parseInt` on any non-ASCII code unit, instead of answering for other text.
+  Exception messages that quote a String keep its units (`Machine::throw_units`), and `Objects.requireNonNull`'s
+  message is the very String given (`throw_with`). The reproducer is `tests/values.rs`, the stream's model
+  conformance test: 67 cases run on the JVM and in the interpreter must give the same code units, or a listed
+  refusal. Before the fix 28 differed and one was refused.
+- **Found, not fixed** (outside V1's core, for the for-review list):
+  - `Character`'s classification natives use Rust's Unicode tables, not Java's: `isDigit` is `char::is_numeric`,
+    `isWhitespace` and `isSpaceChar` are both Rust's whitespace, and `digit` only knows ASCII, so
+    `Character.digit('\u0667', 16)` gives -1 where the JVM gives 7 (example 109's `toDigit`). These are wrong
+    answers, not refusals. A fix would refuse non-ASCII input in the interpreter, or model the tables.
+  - `render::primitive` writes a surrogate `char` as U+FFFD (`render::char_to_string`), so two different `char`
+    results render alike in a contract.
+- **Interface request, for the merge** (not additive, so it waits): the class reader decodes a `CONSTANT_Utf8`
+  lossily (`classfile::decode_modified_utf8` ends in `String::from_utf16_lossy`, and `Constant::Utf8` holds a Rust
+  `String`), so a string literal with an isolated surrogate in its source is read as U+FFFD by the interpreter and
+  every engine alike. Keeping the code units of a literal (`ConstantPool::utf16(index)`, say) would close it.
+- **Next**: V1 step 2, the own checker's bounded Strings. A String is an object with a code-unit array of
+  symbolic length up to a bound. A literal has its content. `length`, `isEmpty`, `charAt`, `equals` and
+  `startsWith` are modelled with their exceptions. A String parameter of the harness has every content up to the
+  bound, and its witness holds its code units. Then `values::adapter` for a String, for the objects stream to take.
 - Status: working
 
 ## Loop settings

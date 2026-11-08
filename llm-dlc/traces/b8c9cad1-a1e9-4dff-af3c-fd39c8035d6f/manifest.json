@@ -1,0 +1,99 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f",
+  "status": "open",
+  "title": "Multi agent feature stream run",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-08T04:34:25.535Z",
+  "ended": "2026-11-08T04:59:03.536Z",
+  "duration_seconds": 1478,
+  "stats": {
+    "turns": 5,
+    "api_calls": 88,
+    "tool_calls": 88,
+    "tool_errors": 1,
+    "compactions": 1,
+    "peak_context_tokens": 246999,
+    "usage": {
+      "input_tokens": 176,
+      "output_tokens": 68510,
+      "cache_read_input_tokens": 13479010,
+      "cache_creation_input_tokens": 256605
+    }
+  },
+  "tools": {
+    "Bash": 84,
+    "Monitor": 1,
+    "Read": 1,
+    "ToolSearch": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "lib/tests/values.rs"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T04:34:25.535Z",
+      "ended": "2026-11-08T04:34:25.536Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-08T04:34:21.844Z",
+      "ended": "2026-11-08T04:59:03.536Z",
+      "turns": 5,
+      "api_calls": 88,
+      "usage": {
+        "input_tokens": 176,
+        "output_tokens": 68510,
+        "cache_read_input_tokens": 13479010,
+        "cache_creation_input_tokens": 256605
+      },
+      "peak_context_tokens": 246999
+    }
+  ],
+  "log": {
+    "sha256": "e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888",
+    "bytes": 2251823,
+    "lines": 908,
+    "gzip_bytes": 377604,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lkvnqurnqwwtultqopvpxlxprqsvrquu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values V1 step 1: the interpreter's Strings are UTF-16 code units, as the JVM's",
+      "body": "The interpreter, which replays every witness, held a String as Rust UTF-8 text, so every isolated surrogate became U+FFFD: \"\\uD800\".equals(\"\\uFFFD\") and \"\\uD800\".equals(\"\\uDC00\") were true, charAt gave 65533, and a surrogate pair split by substring became two U+FFFD. Now interp::JStr holds a String's and a StringBuilder's code units, and every modelled operation works on them as the JDK's do: StringBuilder.reverse keeps a pair together, indexOf(int) takes a supplementary code point, strip and isBlank use Character.isWhitespace's set, new String(char[]) and its siblings are modelled, append(CharSequence, int, int) is refused instead of appending the whole sequence, and setLength(-1) throws. An operation that needs Unicode's tables (case conversion, equalsIgnoreCase, number syntax) is refused on a String with an isolated surrogate, and Integer.parseInt on any non-ASCII code unit (Character.digit takes every Unicode digit), rather than answered for other text. Messages that quote a String keep its units, and Objects.requireNonNull's message is the very String given. Machine::str_of keeps its signature, now for readers; Machine::units_of is what a String is.\n\nReproducer first: lib/tests/values.rs, the values stream's model conformance test, runs 67 small String methods (lib/tests/fixtures/values/) on a real JVM and in the interpreter and requires the same code units, or a refusal where one is listed. Before the fix, 28 cases differed and one was refused; now all agree. The full lib suite passes (cargo test: 476 tests, the integration contract application_core.rs included). The audit of what native runs faithfully, two wrong answers found outside V1's core (Character's classification uses Rust's Unicode tables, and a surrogate char renders as U+FFFD in a contract), and an interface request for the merge (the class reader decodes a string literal lossily) are in the brief's Progress. Next: the own checker's bounded Strings.",
+      "log_sha256": "e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888"
+    }
+  ],
+  "logs": {
+    "e7462bae943c2fc14612b7931c07fe16b8926837fa9ce28eafa038792bc45888": {
+      "bytes": 2251823,
+      "lines": 908,
+      "gzip_bytes": 377604,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
