@@ -215,6 +215,12 @@ The user settled the brief's six proposed decisions as drafted: the four streams
 
 It goes in Phase 0, not a stream: the fix is in harness/, the objects stream's file; the environment stream's E2 (modelled failures, catch and propagation) needs it; and it is small. Step 7 has a reproducer first. The handlers then catch each class in either version's throws clause, then java.lang.Exception, comparing by class, and a checked exception that only one version throws is refuted. The closing job is VF-015's resubmitted with step 4 made stricter: the change must be found with its witness replayed, where test $? -eq 1 also accepted 'cannot be verified'. It has no timebox attempt left, so a failure goes back to the user. The starting-point table, prerequisites 1 and 5, Phase 0's Done-when row and Progress are updated, and E2's brief points at step 7. The status stays blocked on Phase 0.
 
+### application-core, prerequisite 2: the starting point recounted at the merge, and the contracts pass there
+
+change `xvvulqqymyqm` · [log `78e28d952eab`](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz)
+
+Where it starts from was recounted at main's yzpmxwnx (08d23149), after the cleanup and stub-reachability loops. Every row still holds, with line numbers moved. ObjectDomain's made_by, classes, allocations and label are still read by nothing outside the cache key's projection, and no production path fills Statement.spec. lib/tests/foundations.rs, compare.rs and effects.rs pass inline (23 tests). The cleanup merge's four reruns (20261107-215001-...: examples 150-152 and 160-161, 170-172, 190-196, lib/tests/integration.rs) passed. Since then only the gap preflight changed, and its guard job passed. The fixture notes and the cleanup leftovers are updated: VF-016 and VF-017 are closed, and VF-002, VF-015, VF-018 and VF-020 are open. Phase 0 is next.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/2d24d762-29a6-4514-a681-485fd10f1c7e/78e28d952eab77852cdb5a85b65775708e8432ec83612fbd9299b6d0f1d4f8db.jsonl.gz) has every step in between: reasoning, tool calls and their results.

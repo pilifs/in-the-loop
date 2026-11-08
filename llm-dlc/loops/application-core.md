@@ -54,36 +54,41 @@ code and collected job results take precedence over it, and every claim it made 
 
 ## Where it starts from
 
-Recounted at `main`'s `wwlnosom` (commit `20f1a17d`, 2026-11-07), while the cleanup streams were still running. Line
-numbers are at that commit, and the cleanup merge will move some of them. Phase 0 recounts this table at the merge
-([launch prerequisite 2](#launch-prerequisites)).
+Drafted at `wwlnosom` (2026-11-07), while the cleanup streams still ran. Recounted at the merge, at `main`'s
+`yzpmxwnx` (commit `08d23149`, 2026-11-08), after the cleanup and stub-reachability loops
+([launch prerequisite 2](#launch-prerequisites)). Every row still held there. Only line numbers moved, and they are
+the recount's.
 
 | Area | What the code does | Stream |
 |---|---|---|
 | `compare` | `compare::run` (`lib/src/compare.rs:116`) already composes the observations, the effect check with the cache, alignment's inferred correspondences, and the kernel's heap proof under the cache. Don't rebuild it. | all |
-| Receivers in regression checks | Parameters go through `object_of`, which takes records, then constructor-made objects (`equivalence.rs:675–688`). The receiver goes through `record_of` only (866–872), and anything else is refused: "… is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are" (871). | objects |
-| Receivers in property checks | `property.rs:281` refuses every non-static target: "only static methods are supported". | objects |
-| The constructor domain | `made_of` and `fields_of` (`equivalence.rs:692–765`) take a class that extends `Object` directly and has one usable constructor, whose arguments are primitives or constructor-made objects. They refuse: arrays and Strings as constructor arguments (722); String fields (765); several constructors (705); superclasses (698, 746); self-reference (692, 743). Null and alias choices are per parameter only (`spec/heap.rs:79–81` refuses field paths). `lib/README.md:222` documents the fragment. | objects |
-| Strings | `bmc/mod.rs:24`: "strings only as opaque objects". Concatenation gives an opaque string (60), and each literal is one opaque interned object (61). `String.length`, `equals` and the like are the gap `jdk-primitive-method`, with no assume form (59). `effects.rs:23` snapshots a String payload only when it is a literal. | values |
+| Receivers in regression checks | Parameters go through `object_of`, which takes records, then constructor-made objects (`equivalence.rs:680–693`). The receiver goes through `record_of` only (876), and anything else is refused: "… is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are" (876). | objects |
+| Receivers in property checks | `property.rs:292` refuses every non-static target: "only static methods are supported". | objects |
+| The constructor domain | `made_of` and `fields_of` (`equivalence.rs:697–770`) take a class that extends `Object` directly and has one usable constructor, whose arguments are primitives or constructor-made objects. They refuse: arrays and Strings as constructor arguments (729); String fields (770); several constructors (710); superclasses (704, 752); self-reference (697, 748). Null and alias choices are per parameter only (`spec/heap.rs:83` refuses field paths). `lib/README.md:222` documents the fragment. | objects |
+| Strings | `bmc/mod.rs:25`: "strings only as opaque objects". Concatenation gives an opaque string (61), and each literal is one opaque interned object (62). `String.length`, `equals` and the like are the gap `jdk-primitive-method`, with no assume form (60). `effects.rs:23` snapshots a String payload only when it is a literal. | values |
 | Lists | `lib/models/README.md:30–31` marks the `List.of`/`copyOf` and `ImmutableCollections` models JBMC-only. Native never runs them (`classpath.rs:288–292`, `CHECKER_RUNS` at `models.rs:77`). A `List.of` is the gap `jdk-static-method`, with no verdict. No example kernel uses a list. The Quorum and Mica `Decision` classes and examples 013 and 071 touch them. | values |
-| Effects | `effects.rs` records the ordered attempts at modelled boundary calls, snapshots their payloads and replays under stubs (doc 1–35). It refuses a used result: "… uses the result of …: a modeled return value comes after the narrow case" (907). It refuses any outcome but a normal return: "modeled failures come after the narrow case" (419–421). | environment |
+| Effects | `effects.rs` records the ordered attempts at modelled boundary calls, snapshots their payloads and replays under stubs (doc 1–35). It refuses a used result: "… uses the result of …: a modeled return value comes after the narrow case" (908). It refuses any outcome but a normal return: "modeled failures come after the narrow case" (421). | environment |
 | Shared helpers | `shared.rs` shares only pure functions of primitive arguments (doc 1–3). `pure_closure` (525) rejects fields, statics and arrays (565–566), and floating point (552). | reuse |
-| The proof cache | `proof_cache.rs` covers regression (`Regression`, `lookup` at 419) and changed helpers (`Helpers`). Effect and heap checks reach it through `equivalence::run`. `property.rs` doesn't use the cache at all. The lookup comes after the harness is generated and the shared callees are planned (`equivalence.rs:1236–1309`). | reuse |
+| The proof cache | `proof_cache.rs` covers regression (`Regression`, `lookup` at 421) and changed helpers (`Helpers`). Effect and heap checks reach it through `equivalence::run`. `property.rs` doesn't use the cache at all. The lookup comes after the harness is generated and the shared callees are planned (`equivalence.rs:1215–1297`). | reuse |
 | The verifier build | `verification/pipeline.py:829–836` already caches the `jvmcontract` binary by `lib/`'s tree hash. Don't rebuild it. | reuse |
 | **Checked exceptions in the equivalence harness (VF-015)** | **In scope, for Phase 0** ([decision 7](#decisions)). The equivalence harness's call handlers catch only `harness::EXCEPTIONS` (`lib/src/harness/mod.rs:37`), unchecked exceptions, and then `RuntimeException` and `Error`. A checked exception leaves `EquivalenceHarness.check` uncaught, and JBMC's "no uncaught exception" property fails. So no equivalence over a method that throws one can be verified. The property harness already handles a declared exception (its throws clauses, `harness/mod.rs:2896`). Found by the stub-reachability loop on 2026-11-08: example 109's old `toDigit` throws commons-codec's `DecoderException`, and job `20261108-011411-vf-015-…` failed at step 5. Deferred there by the timebox as VF-015's second failure. Its step 4 passed only because `test $? -eq 1` also accepts "cannot be verified". | Phase 0 |
-| **Domain options nobody reads** | **A hole for Phase 0.** `ObjectDomain` (`spec/mod.rs:96–138`) has `classes`, `bounds.*.allocations`, `made_by` (`Constructors{calls}`, `FieldByField`, `Invariant`) and `label`. None of them is read anywhere in `lib/src`, except the cache key's projection (`spec/cache.rs:69–84`). So a claim with `made_by: FieldByField` or `Invariant` runs as the constructor domain. It is latent, because no production path fills an `ObjectDomain` yet: `Statement.spec` is always `None` (`statement.rs:49–52`), and `compare` passes `domain: None`. Only tests build one. This wave starts filling it, so Phase 0 makes every unread option refuse before any proof or lookup. | Phase 0 |
+| **Domain options nobody reads** | **A hole for Phase 0.** `ObjectDomain` (`spec/mod.rs:97–137`) has `classes`, `bounds.*.allocations`, `made_by` (`Constructors{calls}`, `FieldByField`, `Invariant`) and `label`. None of them is read anywhere in `lib/src`, except the cache key's projection (`spec/cache.rs:69–84`). So a claim with `made_by: FieldByField` or `Invariant` runs as the constructor domain. It is latent, because no production path fills an `ObjectDomain` yet: `Statement.spec` is always `None` (`statement.rs:50–52`), and `compare` passes `domain: None`. Only tests build one. This wave starts filling it, so Phase 0 makes every unread option refuse before any proof or lookup. | Phase 0 |
 
 **Fixtures to extend**, per the [acceptance contract](application-core-acceptance.md#small-fixture-families):
 - **Q, the quote service**: `examples/apps/shop` (`Pricing`, `Quote`, `QuoteEvent`, `QuotesController`), the fixtures
   `lib/tests/fixtures/foundations/` with their defects, examples 190–196, and `lib/tests/compare.rs`.
 - **H, the lifecycle**: `TokenBucket` and `RetryAfter` in `examples/apps/crosscut/…/ratelimit/` (examples 031, 120,
-  132, 133, 160 and 161), and `Throttle` (150–152). 150–152 and 160–161 are open cleanup entries (VF-017, VF-016),
-  so wait for the merge before reusing them.
+  132, 133, 160 and 161), and `Throttle` (150–152). Their cleanup entries (VF-017, VF-016) are closed at the merge.
 - **L, the list**: no kernel exists yet. Phase 0 writes its skeleton.
 
-**What the cleanup run leaves** (still running when this was drafted). The integration check of the cleanup streams
-reported a merge conflict on 2026-11-07, the same failure as the foundations run. That is why this brief gives
-shared files a [single writer](#streams).
+**What the cleanup run left.** It merged and closed most of its entries. Four stay open:
+- VF-002 (examples 147–149, blocked in `build.py`);
+- VF-015 (in scope here: [decision 7](#decisions));
+- VF-018 (JBMC timeouts, deferred to the user);
+- VF-020 (a large `changes.diff` jj won't snapshot).
+
+None but VF-015 is in this loop's files. Both the foundations and the cleanup integration checks reported merge
+conflicts while their streams ran. That is why this brief gives shared files a [single writer](#streams).
 
 ## How to work through it
 
@@ -402,6 +407,15 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
 - 2026-11-08: the user settled the six decisions as proposed, and brought VF-015 in scope as Phase 0's step 7
   (decision 7). The cleanup loop is merged and pushed (prerequisite 1). Prerequisites 2, 3 and 6–7 are left: the
   recount at the merge, then Phase 0 by the planning session.
+- 2026-11-08, prerequisite 2 done, at `yzpmxwnx` (`08d23149`):
+  - **The table**: [Where it starts from](#where-it-starts-from) recounted. Every row held, with line numbers moved,
+    and the domain options are still read by nothing.
+  - **The contracts**: `lib/tests/foundations.rs`, `compare.rs` and `effects.rs` pass inline (23 tests).
+  - **The evidence that holds**: the cleanup merge's four reruns passed at the merge (jobs `20261107-215001-…`:
+    150–152 and 160–161, 170–172, 190–196, and `lib/tests/integration.rs`).
+  - **Since then**: only the stub-reachability loop changed checker code, in the JBMC gap preflight, and its guard
+    job `20261108-011441-…` passed.
+  - Phase 0 is next.
 - Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings

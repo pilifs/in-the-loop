@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T02:05:18.345Z",
-  "duration_seconds": 25767,
+  "ended": "2026-11-08T02:07:50.621Z",
+  "duration_seconds": 25919,
   "stats": {
-    "turns": 16,
-    "api_calls": 122,
-    "tool_calls": 122,
+    "turns": 17,
+    "api_calls": 134,
+    "tool_calls": 134,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 307981,
+    "peak_context_tokens": 321718,
     "usage": {
-      "input_tokens": 270,
-      "output_tokens": 130317,
-      "cache_read_input_tokens": 23193264,
-      "cache_creation_input_tokens": 665582
+      "input_tokens": 296,
+      "output_tokens": 137840,
+      "cache_read_input_tokens": 26972428,
+      "cache_creation_input_tokens": 679319
     }
   },
   "tools": {
-    "Bash": 103,
+    "Bash": 115,
     "Write": 11,
     "ToolSearch": 3,
     "Read": 2,
@@ -54,24 +54,24 @@
     {
       "index": 0,
       "started": "2026-11-07T18:55:51.567Z",
-      "ended": "2026-11-08T02:05:18.345Z",
-      "turns": 16,
-      "api_calls": 122,
+      "ended": "2026-11-08T02:07:50.621Z",
+      "turns": 17,
+      "api_calls": 134,
       "usage": {
-        "input_tokens": 270,
-        "output_tokens": 130317,
-        "cache_read_input_tokens": 23193264,
-        "cache_creation_input_tokens": 665582
+        "input_tokens": 296,
+        "output_tokens": 137840,
+        "cache_read_input_tokens": 26972428,
+        "cache_creation_input_tokens": 679319
       },
-      "peak_context_tokens": 307981
+      "peak_context_tokens": 321718
     }
   ],
   "log": {
-    "sha256": "b540ff737ce6a152965c3b2f082457755db3c73b3aad57e358420e2f4cee7b29",
-    "bytes": 3246411,
-    "lines": 1035,
-    "gzip_bytes": 618553,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/b540ff737ce6a152965c3b2f082457755db3c73b3aad57e358420e2f4cee7b29.jsonl.gz"
+    "sha256": "886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058",
+    "bytes": 3448895,
+    "lines": 1132,
+    "gzip_bytes": 650258,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058.jsonl.gz"
   },
   "subagents": [
     {
@@ -270,6 +270,14 @@
       "summary": "application-core: the user's decisions settled, and VF-015 brought in scope as Phase 0's step 7",
       "body": "The user settled the brief's six proposed decisions as drafted: the four streams as scoped, with optional work never blocking a row; verification with the pipeline; one writer for shared files; Phase 0 in the planning session; 4 GB per stream and about 24 GB for the runner; claude-opus-5-5 at high effort. They added a seventh: VF-015 is in scope. The stub-reachability loop's timebox deferred VF-015 to a person on 2026-11-08, after finding its cause: the equivalence harness's call handlers (harness::EXCEPTIONS) catch only unchecked exceptions and Error, so commons-codec's checked DecoderException leaves EquivalenceHarness.check uncaught, and no equivalence over a method that throws a checked exception can be verified.\n\nIt goes in Phase 0, not a stream: the fix is in harness/, the objects stream's file; the environment stream's E2 (modelled failures, catch and propagation) needs it; and it is small. Step 7 has a reproducer first. The handlers then catch each class in either version's throws clause, then java.lang.Exception, comparing by class, and a checked exception that only one version throws is refuted. The closing job is VF-015's resubmitted with step 4 made stricter: the change must be found with its witness replayed, where test $? -eq 1 also accepted 'cannot be verified'. It has no timebox attempt left, so a failure goes back to the user. The starting-point table, prerequisites 1 and 5, Phase 0's Done-when row and Progress are updated, and E2's brief points at step 7. The status stays blocked on Phase 0.",
       "log_sha256": "b540ff737ce6a152965c3b2f082457755db3c73b3aad57e358420e2f4cee7b29"
+    },
+    {
+      "change_id": "xvvulqqymyqmzuquvtolxrlusmrotuzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core, prerequisite 2: the starting point recounted at the merge, and the contracts pass there",
+      "body": "Where it starts from was recounted at main's yzpmxwnx (08d23149), after the cleanup and stub-reachability loops. Every row still holds, with line numbers moved. ObjectDomain's made_by, classes, allocations and label are still read by nothing outside the cache key's projection, and no production path fills Statement.spec. lib/tests/foundations.rs, compare.rs and effects.rs pass inline (23 tests). The cleanup merge's four reruns (20261107-215001-...: examples 150-152 and 160-161, 170-172, 190-196, lib/tests/integration.rs) passed. Since then only the gap preflight changed, and its guard job passed. The fixture notes and the cleanup leftovers are updated: VF-016 and VF-017 are closed, and VF-002, VF-015, VF-018 and VF-020 are open. Phase 0 is next.",
+      "log_sha256": "886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058"
     }
   ],
   "logs": {
@@ -320,6 +328,12 @@
       "lines": 610,
       "gzip_bytes": 411777,
       "url": "https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/81d0faa6a1f7bd31fbdc1b3f92de4d22919641bca9e1cc9b24f1ad6082c1794a.jsonl.gz"
+    },
+    "886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058": {
+      "bytes": 3448895,
+      "lines": 1132,
+      "gzip_bytes": 650258,
+      "url": null
     },
     "9b71da9485928903f84f215c4c9a439eaae953b5614b2186eacc0cd8de3b3954": {
       "bytes": 831233,
