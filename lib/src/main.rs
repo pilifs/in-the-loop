@@ -669,9 +669,10 @@ struct ProveArgs {
     #[arg(long)]
     plan: Option<PathBuf>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
-    /// claim's key (both versions' code closures, the assertion, the assumptions, the domain, the bounds, the models,
+    /// claim's key (the code closure of the target and of what its inputs are made by, a construction plan's makers
+    /// and setup calls included, the assertion, the assumptions, the domain, the plan whole, the bounds, the models,
     /// the JDK and this binary's digest), and a later run of the same claim is that result, marked as reused, a
-    /// refutation only once its witness fails the stored harness again. Not yet with `--plan`.
+    /// refutation only once its witness fails the stored harness again.
     #[arg(long)]
     cache: Option<PathBuf>,
     /// A working directory for the harness and JBMC logs (a temporary one by default).

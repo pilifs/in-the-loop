@@ -955,6 +955,36 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Next**: item 6's property cache, `reuse::property_store` taking `&mut Outcome`, a `reuse` field on
     `property::Outcome`, and `prove --cache --plan`'s guard lifted with an end-to-end test. Then `compare` with a
     plan per subject, the class reader's `CONSTANT_Utf8` code units and `ElementKind::String`'s bound. Then item 7.
+- 2026-11-08, **Phase 5 step 1, interface request 6 (its property cache): `prove --cache --plan`**, and a property
+  result's reuse in its outcome.
+  - **The reproducer**: `tests/reuse.rs`'s new
+    `a_planned_property_is_cached_and_an_edit_of_its_setup_method_alone_is_proved_again`. It failed before on
+    `property::run`'s guard ("prove --cache with --plan: the property claim's key does not read the construction plan
+    yet").
+  - **The change**:
+    - The guard is gone. The reuse stream's property key already reads the plan whole, and roots its makers and
+      setup calls in the closure.
+    - `property::Outcome` has a `reuse` field, `Reuse::Exact` with the key and the stored run's provenance on a hit,
+      as `equivalence::Outcome` has.
+    - `reuse::property_store` takes `&mut Outcome`. A result it can't store says why in the outcome's output, not on
+      the standard error.
+  - **Checks**:
+    - The new test, on a counter whose `add` is the plan's setup call, under `this.step < 1000`:
+      - `count <= 4 * step` is verified and stored, and its exact rerun is reused (`reuse`, no checker run, the same
+        statement);
+      - a build that edits only `add` is another claim. It is proved again, and refuted with the history
+        `after the setup this.add(setup.0.n=4)`. Its rerun reuses the refutation, with that history;
+      - the plan without the setup call is a third key;
+      - a cache that is a file leaves the verdict and notes the failure in the output.
+    - A sabotage fails it: with the setup calls taken out of the key's roots, the edit of `add` is answered by the
+      stored proof.
+    - `reuse` 12 of 12, `application_core_objects` 22, `value_parameters` 10 and `summaries` 40 pass. So does the
+      integration check: the contract 14 of 14, the unit tests 254, `compare` 1, `effects` 18, `foundations` 5, and
+      the Python suites.
+  - **Docs**: `prove --cache`'s help (what the key covers, and no "Not yet with `--plan`"), `lib/README.md`'s plan and
+    property-cache paragraphs, and the docs of `reuse` and `property::Options::cache`.
+  - **Next**: the rest of item 6: `compare` with a plan per subject, the class reader's `CONSTANT_Utf8` code units,
+    and `ElementKind::String`'s bound. Then item 7.
 - Status: working
 
 ## Loop settings

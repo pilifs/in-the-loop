@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 80, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 16:15 UTC |
-| Prompts | 1,929 |
-| Model calls | 18,773 |
-| Tool calls | 19,737 (340 failed) |
-| Compactions | 291 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 16:24 UTC |
+| Prompts | 1,934 |
+| Model calls | 18,812 |
+| Tool calls | 19,775 (340 failed) |
+| Compactions | 292 |
 | Subagents | 11 |
-| Tokens written | 19,709,529 |
-| Tokens read | 2,983,176,754 (97.9% from cache) |
-| Commits with a trace | 561 |
-| Log snapshots | 685 (1475.1 MB gzipped, 593 uploaded) |
+| Tokens written | 19,727,528 |
+| Tokens read | 2,987,273,780 (97.9% from cache) |
+| Commits with a trace | 562 |
+| Log snapshots | 686 (1478.8 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -103,7 +103,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 11 | 12 | 1 | 0 | 43,133 | 1 |
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 7 | 8 | 0 | 0 | 44,014 | 1 |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 43,064 | 1 |
-| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 5 h 52 min | `claude-opus-5-5` | 62 | 655 | 655 | 4 | 10 | 292,860 | 30 |
+| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 6 h 1 min | `claude-opus-5-5` | 67 | 694 | 693 | 4 | 11 | 292,860 | 31 |
 | 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | ended | 2 h 11 min | `claude-opus-5-5` | 7 | 116 | 117 | 3 | 0 | 332,237 | 23 |
 | 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 36,274 | 1 |
 | 2026-11-08 14:15 UTC | [637cae8e-d166-477d-b0d2-51161e0c6d62](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | ended | 30 min | `claude-sonnet-5-5` | 1 | 10 | 11 | 1 | 0 | 43,173 | 2 |
@@ -192,7 +192,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 3,056 | 22 | 30,014 | 369,948 | 92.5% | 131 |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2,917 | 14 | 30,895 | 214,765 | 87.4% | 84 |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 3,151 | 20 | 29,945 | 311,967 | 91.2% | 109 |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 456,755 | 1,340 | 1,867,834 | 97,807,693 | 98.1% | 218 |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 474,754 | 1,420 | 1,989,500 | 101,782,973 | 98.1% | 219 |
 | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 125,020 | 248 | 441,071 | 20,577,128 | 97.9% | 168 |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1,755 | 16 | 24,890 | 230,901 | 90.3% | 146 |
 | [`637cae8e`](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 2,538 | 20 | 31,789 | 334,565 | 91.3% | 144 |
@@ -201,8 +201,8 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 17,322 | 87.8% | 80 |
-| `Read` | 920 | 4.7% | 40 |
+| `Bash` | 17,358 | 87.8% | 80 |
+| `Read` | 922 | 4.7% | 40 |
 | `Edit` | 719 | 3.6% | 39 |
 | `Write` | 436 | 2.2% | 35 |
 | `ToolSearch` | 116 | 0.6% | 31 |
@@ -785,6 +785,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 559 | change `lkwsnvtr` | application-core Phase 5 step 1: a dependency's DTO response, made by the construction plan, fresh or stable, or null (E3) | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/c48e809a28cc371008d9418c91510453c8bf259a18b1cfacedc07044da673703.jsonl.gz)) |
 | 560 | change `xmukllkr` | application-core Phase 5 step 1: a method's claim under an environment, its receiver and request made by their plan, so the quote family's E1 and E2 rows reach their verdicts | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/3882ccbae2bbb07d6d99348c57fe36a1d42045e42cdb47d53510aa40516b08b8.jsonl.gz)) |
 | 561 | change `olkzqrwk` | application-core Phase 5 step 1: compare counts a declared environment as a person's decision, and the stale help and docs of --environment, --plan and prove --cache | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/b4e4dbd84d14894b133c1131a5d93b8f0626d7f80657a9c9785c0d13f9719883.jsonl.gz)) |
+| 562 | change `xttxqzsn` | application-core Phase 5 step 1: prove --cache --plan, a planned property cached with its setup methods in the key, and a property result's reuse in its outcome | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/287adbf477247b268599375420cda236981b95f1605ebc42500154f27daa8265.jsonl.gz)) |
 
 ## Logs
 
@@ -868,7 +869,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 2 | 0 | 0.2 MB | `f30ef695d4d7`, not uploaded |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2 | 0 | 0.2 MB | `9171325d7b0a`, not uploaded |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 2 | 0 | 0.2 MB | `001bb75a2eb3`, not uploaded |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 12 | 0 | 22.6 MB | `b4e4dbd84d14`, not uploaded |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 13 | 0 | 26.3 MB | `287adbf47724`, not uploaded |
 | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 10 | 0 | 2.7 MB | `ca6ae47fac60`, not uploaded |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 2 | 0 | 0.2 MB | `677ec8afc6b4`, not uploaded |
 | [`637cae8e`](637cae8e-d166-477d-b0d2-51161e0c6d62/summary.md) | 3 | 0 | 0.2 MB | `a63a17ed656f`, not uploaded |

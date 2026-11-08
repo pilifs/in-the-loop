@@ -478,3 +478,99 @@ fn an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim(
     assert!(o.reuse.is_none(), "another inner constructor before is another claim: {}", o.output);
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
+
+/// A counter whose `add` is the setup call of a construction plan (`prove --plan`), for the planned property cache.
+const COUNTER: &str = r#"package counters;
+
+public class Counter {
+    private final int step;
+    private int count;
+
+    public Counter(int step) {
+        if (step < 1) {
+            throw new IllegalArgumentException("step below 1");
+        }
+        this.step = step;
+    }
+
+    public void add(int n) {
+        if (n < 0 || n > 4) {
+            throw new IllegalArgumentException("n out of range");
+        }
+        count += n * step;
+    }
+
+    public int count() {
+        return count;
+    }
+}
+"#;
+
+/// The plan of `this`, a `Counter(int step)`, followed by `add(setup.0.n)` when `setup` is true.
+fn counter_plan(setup: bool) -> jvmcontract::construction::Plans {
+    let calls = if setup { r#"{"method": "add(I)V", "args": [{"kind": "leaf", "path": "setup.0.n", "type": "int"}]}"# } else { "" };
+    let plan = format!(
+        r#"{{"nodes": [{{"id": 0, "class": "counters.Counter", "maker": {{"kind": "constructor", "descriptor": "(I)V"}}, "args": [{{"kind": "leaf", "path": "this.step", "type": "int"}}]}}],
+        "roots": [{{"name": "this", "value": {{"kind": "node", "id": 0}}}}], "setup": [{calls}],
+        "bounds": {{"nodes": 1, "max_array_length": 0, "setup_calls": {}}}}}"#,
+        u8::from(setup)
+    );
+    jvmcontract::construction::Plans { before: serde_json::from_str(&plan).unwrap(), after: serde_json::from_str(&plan).unwrap() }
+}
+
+/// `prove --cache --plan`: a property of the states a setup call reaches is stored, and its exact rerun is reused,
+/// marked so in the outcome (`reuse`); an edit of the setup method alone is another claim, proved again and refuted
+/// with the whole history, whose rerun reuses the refutation with that history; and a plan without the setup call is
+/// another claim too. A result that can't be stored says so in the outcome's output.
+#[test]
+fn a_planned_property_is_cached_and_an_edit_of_its_setup_method_alone_is_proved_again() {
+    let classes = compile_text("planned-counter", &[("counters/Counter.java", COUNTER)]);
+    let edited = compile_text("planned-counter-edited", &[("counters/Counter.java", &COUNTER.replace("count += n * step;", "count += n == 4 ? n * step + 1 : n * step;"))]);
+    let cache = fresh("planned-cache");
+    let run = |classes: &Path, setup: bool, cache: &Path, name: &str| {
+        let mut o = options(classes, "counters.Counter#count", "result <= 4 * this.step && result >= 0", cache, name);
+        o.assume = Some("this.step < 1000".into());
+        o.plan = Some(counter_plan(setup));
+        property::run(&o).unwrap_or_else(|e| panic!("{name}: {e}"))
+    };
+    let exact = |o: &property::Outcome| matches!(&o.reuse, Some(jvmcontract::spec::cache::Reuse::Exact { .. }));
+
+    let cold = run(&classes, true, &cache, "planned-cold");
+    assert_eq!(cold.verdict, Verdict::Verified, "{}", cold.output);
+    assert!(cold.reuse.is_none() && !cold.output.contains(REUSED), "{}", cold.output);
+    assert_eq!(entries(&cache), 1, "the verified result is stored");
+    let rerun = run(&classes, true, &cache, "planned-rerun");
+    assert_eq!(rerun.verdict, Verdict::Verified, "{}", rerun.output);
+    assert!(exact(&rerun) && rerun.output.contains(REUSED) && rerun.search.is_none(), "the exact rerun is reused: {}", rerun.output);
+    assert_eq!(serde_json::to_value(&rerun.stated).unwrap(), serde_json::to_value(&cold.stated).unwrap());
+
+    // The setup method's edit alone: `add(4)` counts one more, so a history reaches a state the property excludes.
+    let refuted = run(&edited, true, &cache, "planned-edited");
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    assert!(refuted.reuse.is_none() && !refuted.output.contains(REUSED), "another setup method is another claim: {}", refuted.output);
+    let c = refuted.counterexample.as_ref().unwrap();
+    assert!(c.input.contains("after the setup this.add(setup.0.n=4)"), "the whole history: {}", c.input);
+    assert_eq!(entries(&cache), 2, "the refutation is stored: its witness fails the harness");
+    let again = run(&edited, true, &cache, "planned-edited-again");
+    assert_eq!(again.verdict, Verdict::Violation, "{}", again.output);
+    assert!(exact(&again) && again.output.contains("failed the stored harness again"), "{}", again.output);
+    let history = |o: &property::Outcome| serde_json::to_value(&o.counterexample.as_ref().unwrap().call.setup).unwrap();
+    assert_eq!(history(&again), history(&refuted), "the reused refutation keeps its history");
+    assert_eq!(history(&again)[0]["arguments"][0]["value"], 4);
+
+    // The constructor-only plan is another claim: proved, not reused.
+    let constructed = run(&edited, false, &cache, "planned-constructed");
+    assert_eq!(constructed.verdict, Verdict::Verified, "count is 0 right after construction: {}", constructed.output);
+    assert!(constructed.reuse.is_none(), "{}", constructed.output);
+    assert_eq!(entries(&cache), 3);
+
+    // A cache that can't store says so in the result's own output, not on the standard error.
+    let blocked = tmp("planned-blocked-cache");
+    let _ = std::fs::remove_dir_all(&blocked);
+    let _ = std::fs::remove_file(&blocked);
+    std::fs::create_dir_all(blocked.parent().unwrap()).unwrap();
+    std::fs::write(&blocked, "not a directory").unwrap();
+    let unstored = run(&classes, false, &blocked, "planned-unstored");
+    assert_eq!(unstored.verdict, Verdict::Verified, "a failure to store never changes the verdict: {}", unstored.output);
+    assert!(unstored.output.contains("note: the property result is not stored in the proof cache"), "{}", unstored.output);
+}

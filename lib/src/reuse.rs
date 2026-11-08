@@ -27,8 +27,8 @@
 //!
 //! What is stored and reused follows the regression cache: a verified result, and a refuted one whose witness,
 //! read back as stored, fails the harness in the interpreter; never an unresolved one. A verified hit gives back the
-//! stored outcome as it was stated (its domain, bounds, assumptions and evidence), marked as a reuse in its output
-//! and its proof line; no checker runs. A refuted hit is used only once its witness fails the stored harness again
+//! stored outcome as it was stated (its domain, bounds, assumptions and evidence), marked as a reuse in its output,
+//! its proof line and its `reuse` field; no checker runs. A refuted hit is used only once its witness fails the stored harness again
 //! on the current classes; otherwise it is a miss, and the check runs and stores its own result in its place.
 //!
 //! **Read-only heap helpers** (R2) are summarized from a proof of their own: [`footprint`] establishes a helper's read
@@ -487,6 +487,7 @@ pub fn property_lookup(options: &Options) -> Result<Option<Outcome>, Unsupported
         stated: Some(statement),
         advice: None,
         refused: None,
+        reuse: Some(cache::Reuse::Exact { key: key.clone(), from: record.provenance.clone() }),
     }))
 }
 
@@ -501,11 +502,11 @@ fn anchor(options: &Options) -> (Option<String>, u32) {
 /// Stores a property check's verified or refuted result under its claim key. Called by `property::run` after its
 /// proof, under `--cache`, only once [`property_lookup`] has missed. A refutation is stored only when its witness,
 /// read back as stored, fails the check's own harness in the interpreter. A failure to store never changes the
-/// verdict: it is said on the standard error, since the hook gives this module no output of its own.
-pub fn property_store(options: &Options, outcome: &Outcome) -> Result<(), Unsupported> {
+/// verdict: a note in the outcome's output says why it wasn't stored, as the regression cache's does.
+pub fn property_store(options: &Options, outcome: &mut Outcome) -> Result<(), Unsupported> {
     let Some(dir) = &options.cache else { return Ok(()) };
     if let Err(why) = store(dir, options, outcome) {
-        eprintln!("note: the property result is not stored in the proof cache: {why}");
+        let _ = writeln!(outcome.output, "note: the property result is not stored in the proof cache: {why}");
     }
     Ok(())
 }
