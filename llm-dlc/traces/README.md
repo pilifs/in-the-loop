@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 07:02 UTC |
-| Prompts | 1,627 |
-| Model calls | 16,213 |
-| Tool calls | 17,199 (311 failed) |
-| Compactions | 240 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 07:22 UTC |
+| Prompts | 1,633 |
+| Model calls | 16,254 |
+| Tool calls | 17,240 (311 failed) |
+| Compactions | 241 |
 | Subagents | 10 |
-| Tokens written | 17,704,685 |
-| Tokens read | 2,650,461,745 (97.9% from cache) |
-| Commits with a trace | 489 |
-| Log snapshots | 597 (1358.7 MB gzipped, 593 uploaded) |
+| Tokens written | 17,753,391 |
+| Tokens read | 2,655,167,954 (97.9% from cache) |
+| Commits with a trace | 490 |
+| Log snapshots | 598 (1360.2 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 2 h 28 min | `claude-opus-5-5` | 25 | 283 | 278 | 5 | 4 | 253,307 | 4 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 2 h 48 min | `claude-opus-5-5` | 31 | 324 | 319 | 5 | 5 | 253,307 | 5 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,14 +165,14 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 231,571 | 580 | 795,414 | 41,173,830 | 98.1% | 181 |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 280,277 | 662 | 944,832 | 45,730,539 | 98.0% | 167 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 15,066 | 87.6% | 65 |
-| `Read` | 781 | 4.5% | 34 |
+| `Bash` | 15,105 | 87.6% | 65 |
+| `Read` | 783 | 4.5% | 34 |
 | `Edit` | 651 | 3.8% | 34 |
 | `Write` | 412 | 2.4% | 30 |
 | `ToolSearch` | 102 | 0.6% | 26 |
@@ -682,6 +682,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 487 | change `ltwqxnvq` | application-core values V1 step 2: the own checker's Strings are bounded code units with content, and a String parameter has every content up to its bound | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae.jsonl.gz)) |
 | 488 | change `nlkuyptr` | application-core values V1 step 3: the String value adapter, its domain, evidence, witness reader, encoding and rebuilding | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/e0c1ceae0ea7ef5b6d37ad79027360d66a828f00ee9bc0703afbd076e59f5972.jsonl.gz)) |
 | 489 | change `qmtpnxsu` | application-core values V2 step 1: the own checker runs the immutable-list models, keeping order, duplicates and aliases (verification pending) | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548.jsonl.gz)) |
+| 490 | change `qxpvnsml` | application-core values V2 step 2: the list value adapter, its domain and model digest, the harness's Java, witness reader, encoding and rebuilding | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff.jsonl.gz)) |
 
 ## Logs
 
@@ -753,7 +754,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 4 | 0 | 3.4 MB | `1f1361f8a1d2`, not uploaded |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 5 | 0 | 5.0 MB | `367614d26edf`, not uploaded |
 
 ## Session notes
 

@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T07:02:28.055Z",
-  "duration_seconds": 8883,
+  "ended": "2026-11-08T07:22:32.265Z",
+  "duration_seconds": 10087,
   "stats": {
-    "turns": 25,
-    "api_calls": 283,
-    "tool_calls": 278,
+    "turns": 31,
+    "api_calls": 324,
+    "tool_calls": 319,
     "tool_errors": 5,
-    "compactions": 4,
+    "compactions": 5,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 580,
-      "output_tokens": 231571,
-      "cache_read_input_tokens": 41173830,
-      "cache_creation_input_tokens": 795414
+      "input_tokens": 662,
+      "output_tokens": 280277,
+      "cache_read_input_tokens": 45730539,
+      "cache_creation_input_tokens": 944832
     }
   },
   "tools": {
-    "Bash": 259,
-    "Read": 5,
+    "Bash": 298,
+    "Read": 7,
     "Edit": 4,
     "Write": 4,
     "Monitor": 3,
@@ -105,24 +105,38 @@
     {
       "index": 4,
       "started": "2026-11-08T06:18:48.430Z",
-      "ended": "2026-11-08T07:02:28.055Z",
-      "turns": 6,
-      "api_calls": 79,
+      "ended": "2026-11-08T07:02:54.530Z",
+      "turns": 8,
+      "api_calls": 82,
       "usage": {
-        "input_tokens": 164,
-        "output_tokens": 66704,
-        "cache_read_input_tokens": 12601796,
-        "cache_creation_input_tokens": 219097
+        "input_tokens": 170,
+        "output_tokens": 68252,
+        "cache_read_input_tokens": 13301932,
+        "cache_creation_input_tokens": 223821
       },
-      "peak_context_tokens": 232176
+      "peak_context_tokens": 236900
+    },
+    {
+      "index": 5,
+      "started": "2026-11-08T07:03:49.786Z",
+      "ended": "2026-11-08T07:22:32.265Z",
+      "turns": 4,
+      "api_calls": 38,
+      "usage": {
+        "input_tokens": 76,
+        "output_tokens": 47158,
+        "cache_read_input_tokens": 3856573,
+        "cache_creation_input_tokens": 144694
+      },
+      "peak_context_tokens": 157773
     }
   ],
   "log": {
-    "sha256": "1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548",
-    "bytes": 7487314,
-    "lines": 3026,
-    "gzip_bytes": 1297867,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548.jsonl.gz"
+    "sha256": "367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff",
+    "bytes": 8892036,
+    "lines": 3518,
+    "gzip_bytes": 1570882,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -157,6 +171,14 @@
       "summary": "application-core values V2 step 1: the own checker runs the immutable-list models, keeping order, duplicates and aliases (verification pending)",
       "body": "V2's audit, then its first step. The models in lib/models/java/util (List.of, List.copyOf, ImmutableCollections' List12, ListN, ListItr) are the JDK's lists step for step with no JDK call, but were marked JBMC only, so the tool's own checker met List.of as the gap jdk-static-method and no check reached a list. models::CHECKER_RUNS now lists them. The checker calls their static methods as application methods, runs ImmutableCollections' initializer and holds its statics (ClassPath::checker_class, the one empty list and a list of one's sentinel), and treats AbstractCollection()'s empty constructor as exact. The gap scan walks the same methods and counts an interface call on a list or its iterator as no gap where the models implement it (gaps::dispatched_to_models). Any other java.util collection the checker could hold is made by a JDK call that is a gap where it's made, so copyOf of an ArrayList is still refused by name.\n\nReproducer: lib/tests/values.rs runs the checker on harness-shaped methods (tests/fixtures/values/values/Lists.java) that make lists the way a harness would: List.of over 0 to 3 constructor-made lines, any two of which may be one object. Before this change all of them met the jdk-static-method gap. Now the basket fixture's three rewrites are proved. Its four defects are refuted: a duplicate skipped, the last line for the first, a copy for the element, and an alias between elements. So is a wrong claim that two elements are two lines. size, isEmpty and the iterator behave as the JDK's; get out of range throws the JDK's class (List12 IndexOutOfBounds, ListN ArrayIndexOutOfBounds); null elements and changes are refused; copyOf of such a list is the list itself. Every refutation is replayed on a JVM and in the interpreter. Evidence level: tested.\n\nThe conformance corpus changed. 12 of its list claims that had no own-checker verdict are now decided, each as the JVM decides it. Their records are updated and lib/benchmark/conformance.json is re-blessed. One assertion of tests/conformance.rs is narrowed: it read any claim that strict decides while advised stops on a gap as a scan seeing an unreachable gap. listCopyMutable's refutation is a violation on a path with no gap, which strict's documented rule lets stand, so the assertion now fails only on a strict proof that advised stops on. The corpus also found an interpreter bug: an immutable collection's iterator refused remove instead of throwing UnsupportedOperationException, so one witness didn't replay. That is fixed (Native::Iterator records whether its collection is immutable). Found but not fixed, under Progress: the interpreter names every immutable list ListN, so getClass of a List12 differs from the JVM's. The whole lib suite passes. Job 20261108-070211-application-core-values-v2-step-1-the-co runs the corpus's two JBMC tests (engine jbmc and auto, and auto --confirm, which now confirms the checker's list proofs). Expected to pass.",
       "log_sha256": "1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548"
+    },
+    {
+      "change_id": "qxpvnsmlnxpoyqklkwxnwnyslsqwyrrw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values V2 step 2: the list value adapter, its domain and model digest, the harness's Java, witness reader, encoding and rebuilding",
+      "body": "values::ListAdapter is the value adapter for one bounded immutable-list family: lists List.of makes over at most max_length (up to 10) objects of one application class, null among them where the domain says so. Its domain is the shared ValueDomain of kind list, with the model's evidence (values::list_model: the list models with the SHA-256 of their bytecode, values::list_model_digest, so that a change in a model changes the evidence's identity; level tested on JDK 25.0.5; what it leaves out). Since the own checker runs the list models (V2 step 1), a list needs no symbolic form: a harness makes one as an application would, by List.of over max_length objects it made by the construction plan, from int choices the checker is free in (ListAdapter::choices, admitted, java): null, the length, and for each element after the first which made object it is, so that every pattern of duplicates and aliases is a choice. ListAdapter::read gives the witness's list as the plan's nodes in order; encode and rebuild go between it and the interpreter's list through values::Nodes (ValueAdapter's methods now take the run's plan objects; a String ignores them), rebuilding by the interpreter's own List.of. A list outside the family, longer than the bound, holding an object the plan didn't make, or a list of Strings, is refused by name, never cut or copied in.\n\nVerified by five unit tests in values.rs and a new end-to-end test in lib/tests/values.rs, which generates a harness-shaped class from the adapter's own Java over the basket's kernels, runs the own checker on it (merging from the start and never), proves total, first (identity), clearAll and a nullable total, and refutes a skipped duplicate, a reordering, a copy for the element, an alias between mutable elements and a nullable domain's null. Each witness is read through the adapter and replayed on the JVM and, through the adapter's rebuilt lists, in the interpreter, which must observe the difference; each rebuilt list encodes back as its witness. Sabotaging the adapter's picks makes the test fail. The whole lib suite passes. Evidence level tested; no job.\n\nvalues::adapter still refuses a list parameter by name: making it in a harness and rebuilding it in the replay is the objects stream's wiring, recorded under the brief's Progress as an interface request, with two points for the merge (a bound for String elements in the shared ElementKind, and the frozen basket claims' model evidence, level modelled, differing from the adapter's).",
+      "log_sha256": "367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff"
     }
   ],
   "logs": {
@@ -164,6 +186,12 @@
       "bytes": 7487314,
       "lines": 3026,
       "gzip_bytes": 1297867,
+      "url": null
+    },
+    "367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff": {
+      "bytes": 8892036,
+      "lines": 3518,
+      "gzip_bytes": 1570882,
       "url": null
     },
     "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae": {

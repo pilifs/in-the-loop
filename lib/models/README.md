@@ -55,7 +55,10 @@ as a class path entry for any other tool.
   no JDK call, but `AbstractCollection()`'s empty constructor, which the checker reproduces exactly; `copyOf` of
   another implementation (an `ArrayList`) reaches that implementation's methods, which stay JDK gaps. Before, the
   checker met `List.of` as the gap `jdk-static-method`. The values stream's `lib/tests/values.rs` checks the
-  checker's verdicts over these lists, each refutation's witness replayed on a JVM and in the interpreter. The conformance
+  checker's verdicts over these lists, each refutation's witness replayed on a JVM and in the interpreter. A list
+  value's domain (`values::ListAdapter`) states these models as its evidence (`values::list_model`), with the SHA-256
+  of their bytecode (`values::list_model_digest`), so that changing a model changes the identity of the evidence
+  that rests on it. The conformance
   corpus checks those natives against a JVM, and its test `the_models_only_jbmc_runs_agree_with_the_jvm` checks the
   models themselves: relocated out of `java.*`, with the corpus's references to them, its calls give the outcomes
   the JDK's classes give.

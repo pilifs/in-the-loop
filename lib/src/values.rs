@@ -16,16 +16,32 @@
 //!
 //! A String longer than the bound is never cut to it: encoding or rebuilding one is refused, naming the bound.
 //!
-//! Until a check takes an adapter's values (its harness declares the parameter, passes the bound to the checker and
-//! rebuilds the witness through [`StringAdapter::read`] and [`ValueAdapter::rebuild`]), [`adapter`] refuses, naming
-//! the values stream, and every call site keeps refusing the value it would have handled. A list is refused until
-//! the stream builds its adapter (V2).
+//! **A list** ([`ListAdapter`]) is one of the JDK's immutable lists (`List.of`, `List.copyOf` of one of them) of at
+//! most `max_length` elements, each an object of an application class the construction plan makes. The own checker
+//! runs the list models' bytecode (`lib/models`, [`crate::models::CHECKER_RUNS`]), so a list has no symbolic
+//! representation of its own: a harness makes one as an application would, by `List.of` over objects it made,
+//! from choices the checker is free in ([`ListAdapter::choices`], [`ListAdapter::java`]). The adapter:
+//! - declares the domain and the evidence of the model behind it ([`list_model`], with a digest of the models'
+//!   bytecode, so that a change in them changes the model's identity);
+//! - writes the harness's Java that makes the list: a length, and for each element after the first the made object
+//!   it is, so that any two elements may be one object ([`ListAdapter::admitted`], [`ListAdapter::java`]);
+//! - reads the list out of the checker's witness, its elements as the plan's nodes ([`ListAdapter::read`]);
+//! - encodes a list the interpreter holds as a witness holds it, and rebuilds one by the interpreter's own `List.of`
+//!   for a replay ([`ValueAdapter::encode`], [`ValueAdapter::rebuild`]), its elements the plan's objects
+//!   ([`Nodes`]).
+//!
+//! A list outside the family (an `ArrayList`), longer than the bound, or with an element the plan didn't make, is
+//! refused by each, never cut or copied into the family.
+//!
+//! Until a check takes an adapter's values (its harness declares the parameter, gives the checker the bound or the
+//! choices, and rebuilds the witness through the adapter's `read` and [`ValueAdapter::rebuild`]), [`adapter`]
+//! refuses, naming the values stream, and every call site keeps refusing the value it would have handled.
 
 use std::collections::BTreeMap;
 
 use crate::classfile::Type;
-use crate::interp::{JStr, Machine, Value};
-use crate::spec::plans::{EvidenceLevel, ModelEvidence, ValueDomain, ValueKind, WitnessValue};
+use crate::interp::{JStr, Machine, Native, Object, Value};
+use crate::spec::plans::{ElementKind, EvidenceLevel, ModelEvidence, ValueDomain, ValueKind, WitnessValue};
 use crate::spec::{Part, Unsupported};
 
 /// One kind of value a check can make symbolic, compare, snapshot, encode in a witness and rebuild for replay. Each
@@ -33,24 +49,56 @@ use crate::spec::{Part, Unsupported};
 pub trait ValueAdapter {
     /// The domain it makes values of.
     fn domain(&self) -> &ValueDomain;
-    /// A concrete value the interpreter holds, as a witness holds it.
-    fn encode(&self, machine: &Machine<'_>, value: Value) -> Result<WitnessValue, Unsupported>;
-    /// The value a witness holds, made on `machine` for a replay.
-    fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue) -> Result<Value, Unsupported>;
+    /// A concrete value the interpreter holds, as a witness holds it; an object of the construction plan as its
+    /// node in `nodes`.
+    fn encode(&self, machine: &Machine<'_>, value: Value, nodes: &Nodes) -> Result<WitnessValue, Unsupported>;
+    /// The value a witness holds, made on `machine` for a replay; a node as its object in `nodes`.
+    fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue, nodes: &Nodes) -> Result<Value, Unsupported>;
+}
+
+/// The objects of a construction plan, by node id, as one version's run (a replay, a snapshot) holds them: how a
+/// witness names an object it doesn't hold the content of. A String needs none.
+#[derive(Debug, Clone, Default)]
+pub struct Nodes {
+    by_id: BTreeMap<u32, Value>,
+}
+
+impl Nodes {
+    pub fn new() -> Nodes {
+        Nodes::default()
+    }
+
+    /// Node `id` is `object` in this run.
+    pub fn insert(&mut self, id: u32, object: Value) {
+        self.by_id.insert(id, object);
+    }
+
+    pub fn get(&self, id: u32) -> Option<Value> {
+        self.by_id.get(&id).copied()
+    }
+
+    /// The node `object` is, by identity: the first id it was given.
+    pub fn id_of(&self, object: Value) -> Option<u32> {
+        let Value::Ref(r) = object else { return None };
+        self.by_id.iter().find(|(_, v)| matches!(v, Value::Ref(o) if *o == r)).map(|(id, _)| *id)
+    }
 }
 
 /// The adapter for values of `ty` (a parameter's, a field's, a result's or a payload's), of at most `max_length`
 /// elements or code units, if a check can take it. Asked where a check meets a `String` or a `List`; its refusal
 /// is added to the check's.
 ///
-/// A String's adapter is built ([`StringAdapter`]), but no check's harness declares a String parameter, passes its
-/// bound to the checker or rebuilds its witness yet: that wiring is in the checks' harness and replay (an interface
-/// request of the values stream to the objects stream), so the hook still refuses it, rather than let a check say
-/// it has an adapter it can't use.
+/// Both adapters are built ([`StringAdapter`], [`ListAdapter`]), but no check's harness declares a String or list
+/// parameter, makes it from the adapter's bound or choices, or rebuilds its witness yet: that wiring is in the
+/// checks' harness and replay (interface requests of the values stream to the objects stream), so the hook still
+/// refuses them, rather than let a check say it has an adapter it can't use.
 pub fn adapter(ty: &Type, max_length: u32) -> Result<Box<dyn ValueAdapter>, Unsupported> {
     let _ = max_length;
     if matches!(ty, Type::Object(name) if name == STRING) {
         return Err(Unsupported::new(Part::Values, "a java.lang.String in this check: its value adapter is built (values::StringAdapter), and the values stream builds it into the checks once their harness declares a String parameter, passes its bound to the own checker (bmc::Parameters::max_string_length) and rebuilds its witness in the replay (llm-dlc/loops/application-core-values.md)"));
+    }
+    if matches!(ty, Type::Object(name) if name == LIST) {
+        return Err(Unsupported::new(Part::Values, "a java.util.List in this check: its value adapter is built (values::ListAdapter, an immutable list of List.of over the plan's objects), and the values stream builds it into the checks once their harness makes the list from the adapter's choices (ListAdapter::java) and rebuilds its witness in the replay (llm-dlc/loops/application-core-values.md)"));
     }
     Err(Unsupported::new(Part::Values, format!("a value adapter for {}: the values stream builds it (llm-dlc/loops/application-core-values.md)", ty.java_name())))
 }
@@ -58,10 +106,11 @@ pub fn adapter(ty: &Type, max_length: u32) -> Result<Box<dyn ValueAdapter>, Unsu
 /// Whether `ty` is one the values stream's adapters are for: a String, or a `java.util.List`. Every other type is
 /// another stream's or unsupported, and [`adapter`] isn't asked.
 pub fn is_adapted(ty: &Type) -> bool {
-    matches!(ty, Type::Object(name) if name == STRING || name == "java/util/List")
+    matches!(ty, Type::Object(name) if name == STRING || name == LIST)
 }
 
 const STRING: &str = "java/lang/String";
+const LIST: &str = "java/util/List";
 
 /// The String model's identity, to be bumped whenever its semantics change, so that evidence cached under the old
 /// one is not reused (V3 wires it into the claim key): the own checker's `bmc::Engine::string_method` and
@@ -148,7 +197,7 @@ impl ValueAdapter for StringAdapter {
         &self.domain
     }
 
-    fn encode(&self, machine: &Machine<'_>, value: Value) -> Result<WitnessValue, Unsupported> {
+    fn encode(&self, machine: &Machine<'_>, value: Value, _: &Nodes) -> Result<WitnessValue, Unsupported> {
         let gap = |what: String| Unsupported::new(Part::Values, format!("a String to encode: {what}"));
         match value {
             Value::Null if self.domain.nullable => Ok(WitnessValue::Null),
@@ -164,7 +213,7 @@ impl ValueAdapter for StringAdapter {
         }
     }
 
-    fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue) -> Result<Value, Unsupported> {
+    fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue, _: &Nodes) -> Result<Value, Unsupported> {
         let gap = |what: String| Unsupported::new(Part::Values, format!("a String to rebuild: {what}"));
         match witness {
             WitnessValue::Null if self.domain.nullable => Ok(Value::Null),
@@ -178,13 +227,239 @@ impl ValueAdapter for StringAdapter {
     }
 }
 
+/// The list model's identity, to be bumped whenever its semantics change outside the models' bytecode (the
+/// interpreter's natives, which replay, or how the checker runs the models); [`list_model`] adds the digest of the
+/// bytecode itself.
+pub const LIST_MODEL: &str = "jvmcontract list model 1: lib/models (java.util.List, java.util.ImmutableCollections and its list classes, run by the own checker and JBMC), lib/src/interp (Machine::immutable_list, which replays)";
+
+/// The JDK whose immutable lists the models were written after and sampled against (`lib/tests/values.rs`,
+/// `lib/tests/conformance.rs`, on the JVM).
+pub const LIST_MODEL_JDK: &str = "25.0.5";
+
+/// The most elements a list of the family the adapter makes has: `List.of`'s fixed forms. Its array form
+/// (`List.of(E...)`) is left out.
+pub const MAX_LIST_LENGTH: u32 = 10;
+
+/// The SHA-256 of the list models' bytecode, in class path order: every model of `java.util.List` and
+/// `java.util.ImmutableCollections` the own checker runs.
+pub fn list_model_digest() -> String {
+    let mut bytes = Vec::new();
+    for model in crate::models::MODELS.iter().filter(|m| crate::models::CHECKER_RUNS.contains(&m.name) && (m.name == LIST || m.name.starts_with("java/util/ImmutableCollections"))) {
+        bytes.extend_from_slice(model.name.as_bytes());
+        bytes.push(0);
+        bytes.extend_from_slice(&(model.bytes.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(model.bytes);
+    }
+    crate::digest::sha256_hex(&bytes)
+}
+
+/// The evidence of the list model: what it is (with its bytecode's digest), the JDK it follows, its level
+/// (`tested`: the models are the JDK's lists written out by hand, sampled by JVM conformance and replayed witnesses,
+/// not a proof), and what it leaves out.
+pub fn list_model() -> ModelEvidence {
+    ModelEvidence {
+        source: format!("{LIST_MODEL}; models sha256 {}", list_model_digest()),
+        jdk: LIST_MODEL_JDK.into(),
+        level: EvidenceLevel::Tested,
+        leaves_out: vec![
+            "every List implementation but the JDK's immutable List12, ListN and its one empty list: a list made otherwise (an ArrayList) is refused as an input, and copyOf of one reaches its JDK calls, named gaps".into(),
+            format!("List.of's array form, for more than {MAX_LIST_LENGTH} elements: no harness makes one"),
+            "lists of Strings: the shared ElementKind::String has no bound for its elements' code units yet".into(),
+            "the models' methods beyond construction, size, isEmpty, get, the iterator and the changes they refuse (contains, indexOf, equals, hashCode and the like): run as their bytecode is written, sampled only by the conformance corpus".into(),
+            "the interpreter's getClass of a list of one or two elements, which names ListN where the JVM's is List12".into(),
+        ],
+    }
+}
+
+/// The adapter for immutable lists of at most `max_length` objects of one application class, null among them when
+/// `nullable`.
+///
+/// **The shape a harness makes** (`tests/fixtures/values/values/Lists.java`'s `list`): the harness makes
+/// `max_length` objects by the construction plan, `m0` to `m{k-1}`, and the list from int choices the checker is
+/// free in ([`ListAdapter::choices`]): whether it is null (where `nullable`), its length `n` (0 to `max_length`),
+/// and for each element `i` after the first the made object it is (`m0` to `mi`), so that every pattern of
+/// duplicates and aliases among the elements is a choice. Element 0 is `m0`. The list is `List.of` over the first
+/// `n` elements: the JDK's own list, the empty one shared, as the application would make it.
+#[derive(Debug, Clone)]
+pub struct ListAdapter {
+    domain: ValueDomain,
+    class: String,
+}
+
+impl ListAdapter {
+    /// A list of objects of `element` (an `ElementKind::Object`'s Java class name), of at most `max_length`. A
+    /// list of Strings, or one longer than [`MAX_LIST_LENGTH`], is refused by name.
+    pub fn new(element: ElementKind, max_length: u32, nullable: bool) -> Result<ListAdapter, Unsupported> {
+        let class = match &element {
+            ElementKind::Object { class } => class.clone(),
+            ElementKind::String => return Err(Unsupported::new(Part::Values, "a list of Strings: the shared ElementKind::String has no bound for its elements' code units yet, so the adapter can't bound them (an interface request of the values stream, for the merge)")),
+        };
+        if max_length > MAX_LIST_LENGTH {
+            return Err(Unsupported::new(Part::Values, format!("a list of up to {max_length} elements: the adapter makes lists by List.of's fixed forms, of at most {MAX_LIST_LENGTH}, and its array form is outside the family")));
+        }
+        Ok(ListAdapter { domain: ValueDomain { kind: ValueKind::List { element }, nullable, max_length, model: list_model() }, class })
+    }
+
+    /// The elements' class, as the domain names it (`basket.Line`).
+    pub fn element_class(&self) -> &str {
+        &self.class
+    }
+
+    /// The names of the harness's int choices for the list called `name`, in order: `{name}Null` (where
+    /// `nullable`), `{name}Length`, then `{name}Pick1` to `{name}Pick{k-1}`.
+    pub fn choices(&self, name: &str) -> Vec<String> {
+        let mut out = Vec::new();
+        if self.domain.nullable {
+            out.push(format!("{name}Null"));
+        }
+        out.push(format!("{name}Length"));
+        out.extend((1..self.domain.max_length).map(|i| format!("{name}Pick{i}")));
+        out
+    }
+
+    /// The Java condition the choices of `name` are admitted under: the length within the bound, each pick an
+    /// object made so far, and the null choice 0 or 1. A harness returns before the check where it is false.
+    pub fn admitted(&self, name: &str) -> String {
+        let mut parts = Vec::new();
+        if self.domain.nullable {
+            parts.push(format!("({name}Null == 0 || {name}Null == 1)"));
+        }
+        parts.push(format!("0 <= {name}Length && {name}Length <= {}", self.domain.max_length));
+        parts.extend((1..self.domain.max_length).map(|i| format!("0 <= {name}Pick{i} && {name}Pick{i} <= {i}")));
+        parts.join(" && ")
+    }
+
+    /// Java statements declaring the list `target` (a `java.util.List<{class}>`, with locals `{target}0` and on) and
+    /// making it from the choices of `name`, over `made`, the `max_length` objects the harness made by the plan for
+    /// this version, whose class is `class` (the version's Java name for the element class:
+    /// `before.basket.Line`). Each version makes its own list, from the same choices.
+    pub fn java(&self, name: &str, target: &str, class: &str, made: &[String]) -> Result<String, Unsupported> {
+        let k = self.domain.max_length as usize;
+        if made.len() != k {
+            return Err(Unsupported::new(Part::Values, format!("the list {name}: {} objects made, where the adapter picks among {k}", made.len())));
+        }
+        let mut out = String::new();
+        for i in 0..k {
+            let mut pick = made[i].clone();
+            for j in (0..i).rev() {
+                pick = format!("{name}Pick{i} == {j} ? {} : {pick}", made[j]);
+            }
+            out.push_str(&format!("{class} {target}{i} = {pick};\n"));
+        }
+        let of = |n: usize| format!("java.util.List.<{class}>of({})", (0..n).map(|i| format!("{target}{i}")).collect::<Vec<_>>().join(", "));
+        let mut list = of(k);
+        for n in (0..k).rev() {
+            list = format!("{name}Length == {n} ? {} : {list}", of(n));
+        }
+        if self.domain.nullable {
+            list = format!("{name}Null == 1 ? null : {list}");
+        }
+        out.push_str(&format!("java.util.List<{class}> {target} = {list};\n"));
+        Ok(out)
+    }
+
+    /// The list the checker's witness gives, from the values of its choices (in [`ListAdapter::choices`]' order)
+    /// and the nodes of the objects it made (`made`, in order): null, or its elements as nodes, in order, a node at
+    /// two indices one object. Refused, never cut, when a choice is outside what [`ListAdapter::admitted`] admits.
+    pub fn read(&self, choices: &[i64], made: &[u32]) -> Result<WitnessValue, Unsupported> {
+        let gap = |what: String| Unsupported::new(Part::Values, format!("the witness's list: {what}"));
+        let k = self.domain.max_length as usize;
+        if choices.len() != self.choices("").len() || made.len() != k {
+            return Err(gap(format!("{} choices and {} objects made, where the domain has {} and {k}", choices.len(), made.len(), self.choices("").len())));
+        }
+        let mut rest = choices;
+        if self.domain.nullable {
+            match rest[0] {
+                1 => return Ok(WitnessValue::Null),
+                0 => {}
+                other => return Err(gap(format!("the null choice {other}, not 0 or 1"))),
+            }
+            rest = &rest[1..];
+        }
+        let length = rest[0];
+        if !(0..=k as i64).contains(&length) {
+            return Err(gap(format!("{length} elements, outside the domain's 0 to {k}: never cut to it")));
+        }
+        let mut elements = Vec::new();
+        for i in 0..length as usize {
+            let pick = if i == 0 { 0 } else { rest[i] };
+            if !(0..=i as i64).contains(&pick) {
+                return Err(gap(format!("element {i} the made object {pick}, outside 0 to {i}")));
+            }
+            elements.push(WitnessValue::Node { id: made[pick as usize] });
+        }
+        Ok(WitnessValue::List { elements })
+    }
+
+    fn within(&self, length: usize) -> Result<(), String> {
+        if length > self.domain.max_length as usize {
+            return Err(format!("{length} elements, beyond the domain's bound of {}: never cut to it", self.domain.max_length));
+        }
+        Ok(())
+    }
+}
+
+impl ValueAdapter for ListAdapter {
+    fn domain(&self) -> &ValueDomain {
+        &self.domain
+    }
+
+    /// The elements as the plan's nodes, in order. A list outside the family (a mutable one, another class), longer
+    /// than the bound, or holding an object `nodes` doesn't name (one the run made) is refused.
+    fn encode(&self, machine: &Machine<'_>, value: Value, nodes: &Nodes) -> Result<WitnessValue, Unsupported> {
+        let gap = |what: String| Unsupported::new(Part::Values, format!("a list to encode: {what}"));
+        let r = match value {
+            Value::Null if self.domain.nullable => return Ok(WitnessValue::Null),
+            Value::Null => return Err(gap("null, outside a domain that isn't nullable".into())),
+            Value::Ref(r) => r,
+            other => return Err(gap(format!("{other:?}, not a reference"))),
+        };
+        let (Some(_), Object::Native(Native::List { elements, mutable: false })) = (machine.immutable_list_kind(r), machine.heap.get(r)) else {
+            return Err(gap(format!("a {}, not one of the JDK's immutable lists List.of and List.copyOf make", machine.class_of(r).replace('/', "."))));
+        };
+        self.within(elements.len()).map_err(gap)?;
+        let elements = elements
+            .iter()
+            .enumerate()
+            .map(|(i, e)| match nodes.id_of(*e) {
+                Some(id) => Ok(WitnessValue::Node { id }),
+                None => Err(gap(format!("element {i} is no object of the construction plan"))),
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(WitnessValue::List { elements })
+    }
+
+    /// The list made by the interpreter's `List.of` over the nodes' objects: the JDK's class for its length, the one
+    /// empty list for none.
+    fn rebuild(&self, machine: &mut Machine<'_>, witness: &WitnessValue, nodes: &Nodes) -> Result<Value, Unsupported> {
+        let gap = |what: String| Unsupported::new(Part::Values, format!("a list to rebuild: {what}"));
+        match witness {
+            WitnessValue::Null if self.domain.nullable => Ok(Value::Null),
+            WitnessValue::Null => Err(gap("null, outside a domain that isn't nullable".into())),
+            WitnessValue::List { elements } => {
+                self.within(elements.len()).map_err(gap)?;
+                let values = elements
+                    .iter()
+                    .enumerate()
+                    .map(|(i, e)| match e {
+                        WitnessValue::Node { id } => nodes.get(*id).ok_or_else(|| gap(format!("element {i} is node {id}, which the run hasn't made"))),
+                        other => Err(gap(format!("element {i} is {other:?}, not a node of the plan"))),
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                Ok(machine.immutable_list(values))
+            }
+            other => Err(gap(format!("{other:?}, not a list's"))),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::classpath::ClassPath;
 
     #[test]
-    fn a_list_is_refused_by_name_until_the_stream_builds_its_adapter_and_a_string_until_a_check_takes_one() {
+    fn a_string_and_a_list_are_refused_by_name_until_a_check_takes_one() {
         for name in ["java/lang/String", "java/util/List"] {
             let ty = Type::Object(name.into());
             assert!(is_adapted(&ty));
@@ -192,8 +467,8 @@ mod tests {
             assert_eq!(gap.part, Part::Values);
             assert!(gap.what.contains("the values stream builds it"), "{gap}");
         }
-        let list = adapter(&Type::Object("java/util/List".into()), 8).err().unwrap();
-        assert!(list.what.contains("a value adapter for java.util.List"), "{list}");
+        let list = adapter(&Type::Object(LIST.into()), 8).err().unwrap();
+        assert!(list.what.contains("values::ListAdapter") && list.what.contains("ListAdapter::java"), "{list}");
         let string = adapter(&Type::Object(STRING.into()), 8).err().unwrap();
         assert!(string.what.contains("values::StringAdapter") && string.what.contains("max_string_length"), "{string}");
         assert!(!is_adapted(&Type::Int) && !is_adapted(&Type::Object("shop/Quote".into())));
@@ -240,21 +515,134 @@ mod tests {
         let cp = ClassPath::new().with_default_jdk();
         let mut m = Machine::new(&cp);
         let a = StringAdapter::new(4, true);
+        let none = Nodes::new();
         for units in [vec![], vec![0], vec![0xD83D, 0xDE00], vec![0xDC00, 0xD800, 0xFFFF, 0x41]] {
             let w = WitnessValue::String { units: units.clone() };
-            let v = a.rebuild(&mut m, &w).unwrap();
+            let v = a.rebuild(&mut m, &w, &none).unwrap();
             assert_eq!(m.units_of(v).unwrap().units(), &units[..]);
-            assert_eq!(a.encode(&m, v).unwrap(), w);
+            assert_eq!(a.encode(&m, v, &none).unwrap(), w);
         }
-        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null).unwrap(), Value::Null);
-        assert_eq!(a.encode(&m, Value::Null).unwrap(), WitnessValue::Null);
+        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null, &none).unwrap(), Value::Null);
+        assert_eq!(a.encode(&m, Value::Null, &none).unwrap(), WitnessValue::Null);
         let five = WitnessValue::String { units: vec![1; 5] };
-        assert!(a.rebuild(&mut m, &five).unwrap_err().what.contains("beyond the domain's bound of 4"));
+        assert!(a.rebuild(&mut m, &five, &none).unwrap_err().what.contains("beyond the domain's bound of 4"));
         let long = m.new_string(JStr::from_units(vec![1; 5]));
-        assert!(a.encode(&m, long).unwrap_err().what.contains("never cut"));
-        assert!(a.encode(&m, Value::Int(3)).is_err());
-        assert!(a.rebuild(&mut m, &WitnessValue::Node { id: 1 }).is_err());
+        assert!(a.encode(&m, long, &none).unwrap_err().what.contains("never cut"));
+        assert!(a.encode(&m, Value::Int(3), &none).is_err());
+        assert!(a.rebuild(&mut m, &WitnessValue::Node { id: 1 }, &none).is_err());
         let strict = StringAdapter::new(4, false);
-        assert!(strict.encode(&m, Value::Null).is_err() && strict.rebuild(&mut m, &WitnessValue::Null).is_err());
+        assert!(strict.encode(&m, Value::Null, &none).is_err() && strict.rebuild(&mut m, &WitnessValue::Null, &none).is_err());
+    }
+
+    fn line() -> ElementKind {
+        ElementKind::Object { class: "basket.Line".into() }
+    }
+
+    #[test]
+    fn a_lists_domain_states_its_element_class_bound_and_the_models_digest() {
+        let a = ListAdapter::new(line(), 3, false).unwrap();
+        let d = a.domain();
+        assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::List { element: line() }, false, 3));
+        assert_eq!(a.element_class(), "basket.Line");
+        assert_eq!(d.model.level, EvidenceLevel::Tested, "sampled conformance is tested, never proved");
+        assert_eq!(d.model.jdk, LIST_MODEL_JDK);
+        let digest = list_model_digest();
+        assert_eq!(digest.len(), 64);
+        assert!(d.model.source.contains(&digest), "the model's identity holds its bytecode's digest: {}", d.model.source);
+        assert!(d.model.leaves_out.iter().any(|l| l.contains("ArrayList")) && d.model.leaves_out.iter().any(|l| l.contains("getClass")));
+        let json = serde_json::to_value(d).unwrap();
+        assert_eq!(serde_json::from_value::<ValueDomain>(json).unwrap(), *d);
+        // Lists of Strings, and lists past List.of's fixed forms, are refused by name.
+        assert!(ListAdapter::new(ElementKind::String, 3, false).unwrap_err().what.contains("no bound for its elements"));
+        assert!(ListAdapter::new(line(), MAX_LIST_LENGTH + 1, false).unwrap_err().what.contains("array form"));
+        assert!(ListAdapter::new(line(), MAX_LIST_LENGTH, false).is_ok());
+    }
+
+    #[test]
+    fn a_harness_makes_a_list_by_list_of_over_the_objects_it_picks() {
+        let a = ListAdapter::new(line(), 3, true).unwrap();
+        assert_eq!(a.choices("lines"), ["linesNull", "linesLength", "linesPick1", "linesPick2"]);
+        assert_eq!(a.admitted("lines"), "(linesNull == 0 || linesNull == 1) && 0 <= linesLength && linesLength <= 3 && 0 <= linesPick1 && linesPick1 <= 1 && 0 <= linesPick2 && linesPick2 <= 2");
+        let made = ["m0".to_string(), "m1".into(), "m2".into()];
+        let java = a.java("lines", "before", "before.basket.Line", &made).unwrap();
+        assert_eq!(
+            java,
+            "before.basket.Line before0 = m0;\n\
+             before.basket.Line before1 = linesPick1 == 0 ? m0 : m1;\n\
+             before.basket.Line before2 = linesPick2 == 0 ? m0 : linesPick2 == 1 ? m1 : m2;\n\
+             java.util.List<before.basket.Line> before = linesNull == 1 ? null : linesLength == 0 ? java.util.List.<before.basket.Line>of() : linesLength == 1 ? java.util.List.<before.basket.Line>of(before0) : linesLength == 2 ? java.util.List.<before.basket.Line>of(before0, before1) : java.util.List.<before.basket.Line>of(before0, before1, before2);\n"
+        );
+        assert!(a.java("lines", "after", "basket.Line", &made[..2]).is_err(), "it picks among exactly max_length made objects");
+        let strict = ListAdapter::new(line(), 1, false).unwrap();
+        assert_eq!(strict.choices("xs"), ["xsLength"]);
+        assert_eq!(strict.admitted("xs"), "0 <= xsLength && xsLength <= 1");
+    }
+
+    #[test]
+    fn a_witnessed_list_is_its_elements_as_nodes_in_order_and_never_cut() {
+        let a = ListAdapter::new(line(), 3, true).unwrap();
+        let made = [7, 8, 9];
+        let node = |id| WitnessValue::Node { id };
+        let list = |ids: &[u32]| WitnessValue::List { elements: ids.iter().map(|&i| node(i)).collect() };
+        assert_eq!(a.read(&[1, 0, 0, 0], &made).unwrap(), WitnessValue::Null);
+        assert_eq!(a.read(&[0, 0, 1, 2], &made).unwrap(), list(&[]));
+        assert_eq!(a.read(&[0, 3, 0, 0], &made).unwrap(), list(&[7, 7, 7]), "duplicates: one object three times");
+        assert_eq!(a.read(&[0, 3, 1, 1], &made).unwrap(), list(&[7, 8, 8]));
+        assert_eq!(a.read(&[0, 2, 1, 5], &made).unwrap(), list(&[7, 8]), "a pick past the length is no element");
+        assert!(a.read(&[0, 4, 0, 0], &made).unwrap_err().what.contains("never cut"));
+        assert!(a.read(&[0, -1, 0, 0], &made).is_err());
+        assert!(a.read(&[0, 2, 2, 0], &made).unwrap_err().what.contains("outside 0 to 1"));
+        assert!(a.read(&[2, 0, 0, 0], &made).unwrap_err().what.contains("not 0 or 1"));
+        assert!(a.read(&[0, 0, 0], &made).is_err() && a.read(&[0, 0, 0, 0], &made[..2]).is_err());
+    }
+
+    #[test]
+    fn a_list_rebuilt_on_the_interpreter_is_its_list_of_and_encodes_as_the_same_nodes() {
+        let cp = ClassPath::new().with_default_jdk();
+        let mut m = Machine::new(&cp);
+        let a = ListAdapter::new(line(), 3, true).unwrap();
+        // Three objects of the plan, as a replay makes them (any object will do for the adapter: it holds identity).
+        let mut nodes = Nodes::new();
+        for id in [4, 5, 6] {
+            let o = m.new_string(JStr::from_units(vec![id as u16]));
+            nodes.insert(id, o);
+        }
+        let node = |id| WitnessValue::Node { id };
+        let mut empties = Vec::new();
+        for ids in [vec![], vec![4], vec![4, 4], vec![5, 4, 5], vec![6, 5, 4]] {
+            let w = WitnessValue::List { elements: ids.iter().map(|&i| node(i)).collect() };
+            let v = a.rebuild(&mut m, &w, &nodes).unwrap();
+            let Value::Ref(r) = v else { panic!() };
+            let expected = match ids.len() {
+                0 => None,
+                1 | 2 => Some(crate::interp::ImmutableList::List12),
+                _ => Some(crate::interp::ImmutableList::ListN),
+            };
+            if let Some(kind) = expected {
+                assert_eq!(m.immutable_list_kind(r), Some(kind), "{ids:?}: the JDK's class for its length");
+            } else {
+                empties.push(v);
+            }
+            assert_eq!(a.encode(&m, v, &nodes).unwrap(), w, "{ids:?}");
+        }
+        let again = a.rebuild(&mut m, &WitnessValue::List { elements: vec![] }, &nodes).unwrap();
+        assert_eq!(again, empties[0], "the one empty list, as List.of() gives");
+        assert_eq!(a.rebuild(&mut m, &WitnessValue::Null, &nodes).unwrap(), Value::Null);
+        assert_eq!(a.encode(&m, Value::Null, &nodes).unwrap(), WitnessValue::Null);
+        // Outside the domain: refused, never cut, copied or invented.
+        let four = WitnessValue::List { elements: vec![node(4); 4] };
+        assert!(a.rebuild(&mut m, &four, &nodes).unwrap_err().what.contains("beyond the domain's bound of 3"));
+        let o = nodes.get(4).unwrap();
+        let long = m.immutable_list(vec![o; 4]);
+        assert!(a.encode(&m, long, &nodes).unwrap_err().what.contains("never cut"));
+        assert!(a.rebuild(&mut m, &WitnessValue::List { elements: vec![node(9)] }, &nodes).unwrap_err().what.contains("hasn't made"));
+        assert!(a.rebuild(&mut m, &WitnessValue::List { elements: vec![WitnessValue::Null] }, &nodes).is_err());
+        let stranger = m.new_string(JStr::from_units(vec![1]));
+        let with_stranger = m.immutable_list(vec![stranger]);
+        assert!(a.encode(&m, with_stranger, &nodes).unwrap_err().what.contains("no object of the construction plan"));
+        let mutable = Value::Ref(m.alloc_native(Native::List { elements: vec![o], mutable: true }));
+        assert!(a.encode(&m, mutable, &nodes).unwrap_err().what.contains("java.util.ArrayList"));
+        let strict = ListAdapter::new(line(), 3, false).unwrap();
+        assert!(strict.encode(&m, Value::Null, &nodes).is_err() && strict.rebuild(&mut m, &WitnessValue::Null, &nodes).is_err());
     }
 }

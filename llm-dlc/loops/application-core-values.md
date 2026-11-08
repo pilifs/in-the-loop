@@ -308,10 +308,70 @@ just to bring a gap count down.
     jbmc`/`auto`, and `auto --confirm`, which now asks JBMC to confirm the checker's list proofs), expected to pass.
     Nothing below waits on it.
   - **Not yet**: a list *parameter*. As for a String, a check takes one only once the harness makes it.
-- **Next**: V2 step 2, the list value adapter (`values::ListAdapter`): its domain (`ValueDomain` of kind `list`,
-  the element class, the bound, the model's evidence), how a harness makes the list from the elements it made and
-  the choices of the witness (the shape `Lists.list` has), and `encode` and `rebuild` between the interpreter's list
-  and `WitnessValue::List`; then an interface request to the objects stream for the harness, as for Strings.
+- 2026-11-08, **V2 step 2, the list value adapter** (this commit), `values::ListAdapter` in `lib/src/values.rs`:
+  - **Its domain** is the shared `ValueDomain` of kind `list`: the element class (an `ElementKind::Object`), the
+    bound (at most `values::MAX_LIST_LENGTH`, 10: `List.of`'s fixed forms, its array form left out), whether null
+    is a value, and the model's evidence (`values::list_model`): its identity (`values::LIST_MODEL`, with the
+    SHA-256 of the list models' bytecode, `values::list_model_digest`, so that a change in a model changes it), the
+    JDK (25.0.5), the level `tested`, and what it leaves out (other implementations, the array form, lists of
+    Strings, the models' untested methods, the interpreter's `getClass` of a `List12`).
+  - **How a harness makes one** (`choices`, `admitted`, `java`): the shape `Lists.list` had, generalized. The
+    harness makes `max_length` objects by the plan; the checker is free in int choices: null (where nullable), the
+    length, and for each element `i` after the first which made object (`0` to `i`) it is, so that every pattern of
+    duplicates and aliases is a choice; the list is `List.of` over the first `length` elements. Each version makes
+    its own list from the same choices. Since the checker runs the models (step 1), a list needs no symbolic form of
+    its own.
+  - **Its functions**: `read` (the witness's list from the choices' values and the made objects' node ids:
+    `WitnessValue::List` of nodes in order, or null), and `encode` and `rebuild` between the interpreter's list and
+    the witness's, through the plan's objects (`values::Nodes`, a node id to a run's object; `ValueAdapter`'s two
+    methods now take it, and a String ignores it). `rebuild` uses the interpreter's own `List.of`, so a rebuilt
+    list is the one empty list or of the JDK's class for its length. A list outside the family (an `ArrayList`),
+    longer than the bound, holding an object the plan didn't make, or with a choice outside the admitted ones is
+    refused by each, never cut or copied in. A list of Strings is refused by name.
+  - **Reproducer and checks**: before, nothing could read a list out of a witness or rebuild one, and
+    `values::adapter` refused every list as unbuilt. Five unit tests (the domain and its digest; the harness's Java
+    exactly; reading duplicates, a pick past the length, every out-of-domain choice; rebuilding as `List12`, `ListN`
+    and the one empty list, each encoding back as its nodes; each refusal). `tests/values.rs`'s new
+    `the_list_adapter_makes_reads_and_rebuilds_lists_that_keep_order_duplicates_and_identity` generates a
+    harness-shaped class from the adapter's own Java over the basket's kernels, compiles it and runs the checker on
+    it, merging from the start and never: `total`, `first` (identity: the plan node returned), `clearAll` (with
+    every line's quantity after) and a nullable `total` proved; a duplicate skipped, the last line for the first, a
+    copy for the element, and an alias between mutable elements refuted (the negative controls), and a nullable
+    domain's null found. Each witness is read by `read` and replayed on the JVM (the harness's `AssertionError`) and
+    in the interpreter, each version's kernel called on its own on the list `rebuild` makes over that version's
+    lines, which must observe the difference, and each rebuilt list encodes back as the witness's. Sabotaging the
+    picks (no element ever another's object) fails the test: the duplicate defect then proves. The whole lib suite
+    passes.
+
+    Evidence level: `tested`. No job: seconds, inline.
+  - **Not registered yet**: `values::adapter` still refuses a list parameter, now saying that `values::ListAdapter`
+    is built and what a check lacks, for the same reason as a String (the contract's V2 row accepts only the values
+    stream's refusal, and the wiring is in other streams' files).
+- **Interface request, to the objects stream** (its files: `harness/`, `equivalence.rs`, `spec/heap.rs`'s planned
+  domain, the replay), for V2's row: for a list parameter of a regression check, or a planned domain's `adapted`
+  list root (the basket's three claims),
+  1. make the adapter for the parameter's domain (`ListAdapter::new`, the element class, the bound: the claim's
+     `max_length`, 3 for the basket), declare its choices (`ListAdapter::choices`) as int inputs, and return before
+     the check where `ListAdapter::admitted` is false;
+  2. make `max_length` element objects per version by the plan (constructor-made, as a node), then the list by
+     `ListAdapter::java` over them, in each version's world;
+  3. read the witness's list with `ListAdapter::read` (the choices' values, the made objects' nodes), and rebuild it
+     for the replay with `ValueAdapter::rebuild`, over the replay's objects for those nodes (`values::Nodes`);
+     encode a result or field list for a snapshot with `ValueAdapter::encode`;
+  4. state the bound and the model's evidence in the statement (`Bounds::max_value_length`, `Models::values`).
+
+  When that lands, `values::adapter` returns the adapter, and the contract's V2 row reaches its verdicts.
+- **For the merge** (shared types, not additive):
+  - a list of Strings needs a bound for its elements' code units, which the shared `ElementKind::String` has no
+    place for (`ElementKind::String { max_length }`, say);
+  - the frozen basket claims' model evidence (`golden/basket-*-claim.json`: level `modelled`, leaving out "the
+    identity of an empty list") differs from the adapter's (`tested`, and the one empty list is modelled, as
+    `List.of()` gives it). The claims are frozen, so a gate that compares them with the adapter's domain should
+    take the adapter's evidence as the record, or the claims' as the weaker statement; for the main loop to settle.
+- **Next**: V3 step 1, the evidence records: one record per modelled operation (the String methods and
+  concatenation, the list factories, `size`, `isEmpty`, `get` and the iterator), each with its source and JDK
+  identity, the inputs it admits, the exceptions it was seen to throw, what it leaves out and its level, checked
+  against the conformance cases that sample it; then the strict gap detection and the tiny bound sweep.
 - Status: working
 
 ## Loop settings
