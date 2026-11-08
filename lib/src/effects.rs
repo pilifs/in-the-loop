@@ -22,6 +22,12 @@
 //!   bound marks the log past its bound. A witness names the table it chose, and the JVM replays it under the same stubs. The call on the
 //!   model's owner that the analysis can't follow (an interface nothing implements) is the one the model answers;
 //!   every other call on that owner is a stub that marks the log.
+//! - **DTO responses** (E3). A model whose normal result is a DTO answers with an object its stub makes by the
+//!   class's constructor from the leaves of the chosen entry, or null, under the model's identity policy: a new
+//!   object for every call (fresh), or one per entry for the trace (stable). The witness names each answer
+//!   (`gives a new Offer(unitCents=3, minimumUnits=1)`, `gives null`), and the JVM replays it under the same stubs.
+//!   The class is checked by the objects stream's construction plan in both builds, and a build that uses a response
+//!   beyond reading its fields is refused by name ([`crate::environment::check_response`]).
 //! - **One environment for both.** The two builds get the same stubs, in the same order, from one model: the union
 //!   of the claim's and both specs' modeled calls. Every call returns normally, unless its model of its results
 //!   declares failures, and the result says which may fail.
@@ -76,10 +82,11 @@ const UNMADE: i64 = 4;
 const UNMODELED: i64 = 8;
 const NULL_THROWN: i64 = 16;
 const PAST_MODEL_BOUND: i64 = 32;
+const UNMADE_RESPONSE: i64 = 64;
 /// The unresolved mark's bits, below the build's tag, which sits above them (`tag * TAG`) so that the two builds'
 /// marks differ and neither reads as a bit it didn't set.
-const MARK_BITS: i64 = 0x3f;
-const TAG: i64 = 64;
+const MARK_BITS: i64 = 0x7f;
+const TAG: i64 = 128;
 
 /// What a check of an entry point established, with what it rests on and what each build did on a witness.
 #[derive(Debug, Clone, Serialize)]
@@ -177,7 +184,23 @@ impl Model {
             let mut answers: Vec<(Vec<String>, Vec<String>)> = Vec::new();
             // An answer, from its value and its outcome: a throw of the outcome's class, or the value.
             let give = |at: &mut usize| -> String {
-                let value = if m.ret == Type::Void {
+                let value = if let Some(r) = &m.response {
+                    let null = r.nullable && {
+                        *at += 1;
+                        !matches!(values.get(*at - 1), Some(Argument::Scalar(Value::Int(0))))
+                    };
+                    let leaves: Vec<String> = r.leaves.iter().map(|(n, t)| {
+                        *at += 1;
+                        format!("{n}={}", scalar(values.get(*at - 1), t))
+                    }).collect();
+                    if null {
+                        "gives null".to_string()
+                    } else if r.stable {
+                        format!("gives {}({}), one object for every call of that key", r.simple(), leaves.join(", "))
+                    } else {
+                        format!("gives a new {}({})", r.simple(), leaves.join(", "))
+                    }
+                } else if m.ret == Type::Void {
                     "returns".to_string()
                 } else {
                     *at += 1;
@@ -572,6 +595,15 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             inspections(dir, cp, &thrown).map_err(|why| Unsupported::new(Part::Environment, format!("the {build} build {why}")))?;
         }
     }
+    // The DTO responses (E3): each class made by the objects stream's plan in both builds, and data: no build calls
+    // a method of one or writes its field.
+    let responses: Vec<(String, crate::environment::Response)> = environment.calls.iter().filter_map(|c| lowered(&c.call).and_then(|m| m.response).map(|r| (c.call.clone(), r))).collect();
+    for (call, r) in &responses {
+        for (dir, cp, build) in [(before, &before_cp, "old"), (after, &after_cp, "new")] {
+            crate::environment::check_response(cp, r).map_err(|why| Unsupported::new(Part::Environment, format!("a DTO response of {}, a {}, in the {build} build: {why}", short(call), r.class.replace('/', "."))))?;
+            response_uses(dir, r).map_err(|why| Unsupported::new(Part::Environment, format!("a DTO response of {}: the {build} build {why}", short(call))))?;
+        }
+    }
 
     // The model: the claim's calls, then any either spec has besides.
     let mut calls: Vec<String> = environment.calls.iter().map(|c| c.call.clone()).collect();
@@ -876,6 +908,52 @@ fn inspections(dir: &Path, cp: &ClassPath, thrown: &[String]) -> Result<(), Stri
     Ok(())
 }
 
+/// Why a build of `dir` uses the DTO response `r` beyond its data, if it does (E3): a call of a method on its class
+/// but its constructor, or a write of its field outside its constructors. The stubs make it from the leaves the
+/// environment chose, and nothing else of it is modelled: what a method of it would do, or whether a later
+/// response would see a write, is refused, never assumed.
+fn response_uses(dir: &Path, r: &crate::environment::Response) -> Result<(), String> {
+    for (_, bytes) in class_files(dir).map_err(|e| format!("can't be read: {e}"))? {
+        let Ok(class) = ClassFile::parse(&bytes) else { continue };
+        for m in &class.methods {
+            let Some(code) = &m.code else { continue };
+            let place = format!("{}.{}", class.name.replace('/', "."), m.name);
+            let insns = code.instructions().map_err(|e| format!("can't be read: {e}"))?;
+            // A method that handles the response: it is given one, or names its class.
+            let named = format!("L{};", r.class);
+            let handles = m.descriptor.contains(&named)
+                || insns.iter().any(|(_, insn)| match insn {
+                    Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) | Insn::GetField(i) | Insn::PutField(i) => class.pool.member(*i).is_ok_and(|x| x.owner == r.class || x.descriptor.contains(&named)),
+                    _ => false,
+                });
+            for (_, insn) in insns {
+                let (index, write) = match insn {
+                    Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => (i, false),
+                    Insn::PutField(i) => (i, true),
+                    _ => continue,
+                };
+                let Ok(member) = class.pool.member(index) else { continue };
+                // Object's methods that depend on an object's identity, called where a response is handled: javac
+                // names them on Object, so their receiver isn't followed, and on a response they give nothing the
+                // model gives.
+                if handles && member.owner == "java/lang/Object" && ["hashCode", "toString", "wait", "notify", "notifyAll"].contains(&member.name.as_str()) {
+                    return Err(format!("calls java.lang.Object.{} in {place}, which handles a DTO response: on a response it gives no data the model gives, and its receiver isn't followed, so it is refused", member.name));
+                }
+                if member.owner != r.class {
+                    continue;
+                }
+                if write && !(class.name == r.class && m.is_constructor()) {
+                    return Err(format!("writes its field {} in {place}: a DTO response is the dependency's data, and whether a later response sees a write is a state contract this model isn't", member.name));
+                }
+                if !write && member.name != "<init>" {
+                    return Err(format!("calls {}.{} on it in {place}: a DTO response is data, and no method of it beside its constructor is modelled", r.class.replace('/', "."), member.name));
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
 /// `text` with the generated method's parameter names (`arg0`, `arg1`) replaced by the entry point's inputs'.
 fn with_names(text: &str, names: &[String]) -> String {
     let mut out = String::new();
@@ -965,6 +1043,9 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
     }
     if mark & NULL_THROWN != 0 {
         unresolved.push("a NullPointerException, which a dependency left null may have caused (a call on it through a supertype, Object.hashCode say)".into());
+    }
+    if mark & UNMADE_RESPONSE != 0 {
+        unresolved.push("a response its constructor wouldn't make from the environment's leaves, which no dependency gives".into());
     }
     if mark & PAST_MODEL_BOUND != 0 {
         let models: Vec<String> = model.models.iter().flatten().map(|m| format!("{} than its bound, {}", m.id, m.bound)).collect();
@@ -1296,7 +1377,7 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
     for (i, m) in model.models.iter().enumerate() {
         let Some(m) = m else { continue };
         w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: format!("c{i}"), descriptor: "I".into() });
-        for (f, t) in table_fields(i, m) {
+        for (f, t) in table_fields(i, m).into_iter().chain(kept_fields(i, m)) {
             w.fields.push(FieldWriter { access: flags::PUBLIC | flags::STATIC, name: f, descriptor: t.descriptor() });
         }
         for f in used_fields(i, m) {
@@ -1319,7 +1400,9 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
             }
             code.max_locals = slot;
             let (n, log, at, mask, value, tmp, arg) = (slot, slot + 1, slot + 2, slot + 3, slot + 4, slot + 6, slot + 7);
-            code.max_stack = 8;
+            // A DTO response's `new`, `dup` and leaves.
+            let response = model.models.get(i).and_then(Option::as_ref).and_then(|m| m.response.as_ref()).map_or(0, |r| 3 + r.leaves.iter().map(|(_, t)| t.slots()).sum::<u16>());
+            code.max_stack = 8.max(response);
             let done = code.label();
             if let Some(Some(rs)) = reads.get(i) {
                 let n_ref = w.pool.field_ref(name, "N", "I");
@@ -1484,7 +1567,9 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
 /// `od{i}`).
 fn table_fields(i: usize, m: &crate::environment::Lowered) -> Vec<(String, Type)> {
     let answer = |out: &mut Vec<(String, Type)>, value: String, outcome: String| {
-        if m.ret != Type::Void {
+        if let Some(r) = &m.response {
+            out.extend(response_fields(&value, r));
+        } else if m.ret != Type::Void {
             out.push((value, m.ret.clone()));
         }
         if !m.throws.is_empty() {
@@ -1500,6 +1585,24 @@ fn table_fields(i: usize, m: &crate::environment::Lowered) -> Vec<(String, Type)
     }
     answer(&mut out, format!("d{i}"), format!("od{i}"));
     out
+}
+
+/// The fields of a DTO answer named `value` (E3): its null flag (`{value}_n`), when it may be null, then its leaves
+/// (`{value}_0`, ...), in the order of [`crate::environment::Lowered::inputs`].
+fn response_fields(value: &str, r: &crate::environment::Response) -> Vec<(String, Type)> {
+    let mut out = Vec::new();
+    if r.nullable {
+        out.push((format!("{value}_n"), Type::Int));
+    }
+    out.extend(r.leaves.iter().enumerate().map(|(c, (_, t))| (format!("{value}_{c}"), t.clone())));
+    out
+}
+
+/// The static fields of the stubs class that keep the object each of call `i`'s answers made (`v{i}_{e}_r`,
+/// `d{i}_r`), under a stable identity: none otherwise. The entry method clears them, so they last one trace.
+fn kept_fields(i: usize, m: &crate::environment::Lowered) -> Vec<(String, Type)> {
+    let Some(r) = m.response.as_ref().filter(|r| r.stable) else { return Vec::new() };
+    (0..m.entries()).map(|e| format!("v{i}_{e}_r")).chain(std::iter::once(format!("d{i}_r"))).map(|f| (f, Type::Object(r.class.clone()))).collect()
 }
 
 /// The static fields of the stubs class that mark which of call `i`'s entries this trace used (`w{i}_{e}`), for a
@@ -1549,6 +1652,10 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
                 code.bind(other);
             }
         }
+        if let Some(r) = &m.response {
+            make_response(code, w, stubs, value, r);
+            return;
+        }
         if m.ret != Type::Void {
             let v = w.pool.field_ref(stubs, value, &m.ret.descriptor());
             code.op_u16(0xb2, v);
@@ -1581,6 +1688,63 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
         code.bind(next);
     }
     give(code, w, &format!("d{i}"), &format!("od{i}"));
+}
+
+/// Returns the DTO answer named `value` (E3): null when its null flag is set, under a stable identity the object
+/// this trace already made for it, else a new object of its class made by its constructor from its leaves (kept,
+/// under a stable identity). A constructor that throws on the leaves makes no response the dependency gives: the
+/// log is marked, and the stub returns null, never the constructor's exception as the dependency's.
+fn make_response(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, value: &str, r: &crate::environment::Response) {
+    let fields = response_fields(value, r);
+    let mut leaves = fields.iter();
+    if r.nullable {
+        let (flag, _) = leaves.next().expect("a null flag");
+        let made = code.label();
+        let f = w.pool.field_ref(stubs, flag, "I");
+        code.op_u16(0xb2, f);
+        code.if_zero(Cond::Eq, made);
+        code.op(0x01); // aconst_null
+        code.return_(Some(Kind::Ref));
+        code.bind(made);
+    }
+    let class_descriptor = Type::Object(r.class.clone()).descriptor();
+    let kept = r.stable.then(|| w.pool.field_ref(stubs, &format!("{value}_r"), &class_descriptor));
+    if let Some(kept) = kept {
+        let fresh = code.label();
+        code.op_u16(0xb2, kept);
+        code.op(0x59); // dup
+        code.if_null(fresh);
+        code.return_(Some(Kind::Ref));
+        code.bind(fresh);
+        code.op(0x57); // pop
+    }
+    let (start, end, unmade) = (code.label(), code.label(), code.label());
+    code.bind(start);
+    let c = w.pool.class(&r.class);
+    code.op_u16(0xbb, c); // new
+    code.op(0x59); // dup
+    for (f, t) in leaves {
+        let f = w.pool.field_ref(stubs, f, &t.descriptor());
+        code.op_u16(0xb2, f);
+    }
+    let init = w.pool.method_ref(&r.class, "<init>", &r.descriptor);
+    code.op_u16(0xb7, init);
+    code.bind(end);
+    if let Some(kept) = kept {
+        code.op(0x59);
+        code.op_u16(0xb3, kept);
+    }
+    code.return_(Some(Kind::Ref));
+    code.bind(unmade);
+    code.op(0x57); // pop the exception
+    let u_ref = w.pool.field_ref(stubs, "U", "I");
+    code.op_u16(0xb2, u_ref);
+    code.iconst(UNMADE_RESPONSE as i32);
+    code.op(0x80); // ior
+    code.op_u16(0xb3, u_ref);
+    code.op(0x01);
+    code.return_(Some(Kind::Ref));
+    code.handler(start, end, unmade, None);
 }
 
 /// Takes the leaf value on the stack into `value` (a long) and jumps to `store`: an integral value widened, a string
@@ -1701,6 +1865,11 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
         for name in used_fields(i, m) {
             let f = w.pool.field_ref(stubs, &name, "I");
             code.iconst(0);
+            code.op_u16(0xb3, f);
+        }
+        for (name, t) in kept_fields(i, m) {
+            let f = w.pool.field_ref(stubs, &name, &t.descriptor());
+            code.op(0x01); // aconst_null
             code.op_u16(0xb3, f);
         }
     }

@@ -826,6 +826,56 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     `proof_cache`.
   - **Next**: item 5, E3 (a nullable DTO response made through the construction plan), then Q's E1 and E2 rows.
     Then items 6–7.
+- 2026-11-08, **Phase 5 step 1, interface request 5 (its E3 half): a dependency's DTO response, made by the
+  construction plan**, on the environment stream's own Spring fixture. Q's E1 and E2 rows through
+  `environment::check` are the next cycle.
+  - **The reproducer**: the new `tests/environment_responses.rs`, 8 tests. Each failed before on
+    `environment::lower`'s refusal ("a DTO response made by a construction plan: the environment stream's E3, not
+    built yet").
+  - **The change**:
+    - `environment::lower` takes `Returned::Object` as a `Response`: the plan's one node, made by the constructor it
+      names, from integral or boolean leaves named from the plan's root (`result.unitCents`), nullable or not, of a
+      fresh or a stable identity. The call must return that class. Each table entry's answer is then its null flag
+      and its leaves (`offers.find[0].null`, `offers.find[0].unitCents`).
+    - Refused by name: an array, a String or adapted field, an inner object, a dependency, a factory, a setup call,
+      several roots, a nullable or aliased root, and a stable identity under a per-call choice.
+    - `environment::check_response` checks the class in each build. It must have primitive instance fields only, no
+      static field and no method beside its constructors. Then `construction::root` (the objects stream's plan, so
+      the environment has no object builder of its own) makes it, and its leaves must be the model's.
+    - The effect check (`effects::response_uses`) refuses, in each build: a call of a method on the DTO's class, a
+      write of its field outside its constructors, and `Object`'s `hashCode`, `toString`, `wait` and `notify` in a
+      method that handles one. javac names those on `Object`, so their receiver isn't followed.
+    - The stubs make the response from the chosen entry: null by its flag, else a new object by the constructor
+      (fresh), or the entry's object kept for the trace (stable). A constructor that throws on the chosen leaves sets
+      a new unresolved bit ("a response its constructor wouldn't make"), never passes its exception off as the
+      dependency's. The mark's bits widen to 7, and the build tag moves to 128.
+    - The witness names each answer (`gives a new Offer(unitCents=…, minimumUnits=…)`, `gives null`, or under a
+      stable identity `one object for every call of that key`). The assumptions and the domain say how the response
+      is made and what its identity is.
+  - **Checks**:
+    - `environment_responses` 8 of 8:
+      - the correct case, a rewrite that tests for null the other way round;
+      - a changed null branch refuted on `gives null`, and a changed field test refuted on a made `Offer`, each
+        replayed on a JVM;
+      - the identity policy deciding: `a == b` of two responses is proved equal to `1` under `stable` and refuted
+        (0 against 1, replayed) under `fresh`;
+      - a constructor that rejects the leaves left unresolved;
+      - five builds beyond data refused by name (a DTO method, an object field, a static field, `hashCode` on it, a
+        field written);
+      - the claim key: an exact rerun reused, a reused refutation replayed again, and `stable`, never-null and an
+        edited DTO constructor each another key;
+      - six refusals of the model's shape.
+    - Two sabotages fail them: a fresh identity kept like a stable one fails the identity and key tests, and an
+      ignored null flag fails the null-branch and key tests.
+    - The integration check passes (the contract 14 of 14, the unit tests 254, `effects` 18, `compare` 1,
+      `foundations` 5, the Python suites), and so do `environment` 16 and `observations` 12, the other binaries
+      that reach the effect check.
+  - **Docs**: `lib/README.md` (a new paragraph, and the refusal list no longer names a DTO), the module docs of
+    `environment` and `effects`.
+  - **Next**: item 5's other half, Q's E1 and E2 rows through `environment::check`: the quote fixture's receiver and
+    request made by their plan, a String key (`Rates.rate(code)`, `Offers.find(code)`), the String in the event's
+    snapshot, and `offer-claim`'s DTO. The effect check takes integral handler inputs only today, so this is a
+    harness of its own, or `equivalence` with stubs. Then items 6–7.
 - Status: working
 
 ## Loop settings

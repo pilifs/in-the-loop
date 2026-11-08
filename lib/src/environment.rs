@@ -58,14 +58,28 @@
 //!
 //! **What the key can be**, so far: a primitive integral or boolean argument (`arg0`). A String key needs the values
 //! stream's adapter, a field path (`arg1.code`) or an object's identity the objects stream's construction plan;
-//! both are refused by name until then. The normal result: an integral or boolean primitive, or nothing beside a
-//! modelled failure. A DTO is E3's. A value of an adapter's domain is refused, once its domain resolves under this
-//! tool's models (`values::resolve`): no stub makes one.
+//! both are refused by name until then. The normal result: an integral or boolean primitive, nothing beside a
+//! modelled failure, or a DTO. A value of an adapter's domain is refused, once its domain resolves under this tool's
+//! models (`values::resolve`): no stub makes one.
+//!
+//! **DTO responses** (E3, [`Returned::Object`], [`Response`]): the normal result may be an object of an application
+//! class, made by the one node of a construction plan (the objects stream's, [`crate::construction::root`]) by the
+//! constructor it names, from primitive leaves named by their path from the plan's root (`result.unitCents`), or
+//! null where the model says `nullable`. Each answer of the table is then its null flag and its leaves, a function
+//! of the key like any answer. Its identity is the model's, never assumed: under a **fresh** identity every call
+//! that gets an answer gets a new object; under a **stable** one, every call that gets the same entry's answer gets
+//! the same object, within a trace (a query only: under a per-call choice no entry answers twice). The class must be
+//! data ([`check_response`]): instance fields of primitive types, no static field, no method beside its
+//! constructors; and no build may call a method on it, write its field, or call Object's identity-dependent methods
+//! where it handles one (the effect check's inspection). An object inside a DTO, an array or String field, a
+//! factory, a dependency or a setup call in its plan are refused by name. A response its constructor won't make from
+//! the chosen leaves marks the log unresolved: it is no response the dependency gives, never the constructor's
+//! exception passed off as the dependency's.
 
 use std::path::Path;
 
 use crate::classfile::{MethodDescriptor, Type};
-use crate::spec::plans::{CallModel, Coupling, ModelledResult, Occurrence, Returned};
+use crate::spec::plans::{CallModel, ConstructionPlan, Coupling, Identity, Maker, ModelledResult, Occurrence, PlanValue, Returned};
 use crate::spec::{ModeledCall, Part, Unsupported};
 
 /// The most calls of one model a trace may make that the effect check encodes: the table has twice as many
@@ -89,6 +103,47 @@ pub struct Lowered {
     /// A per-call choice ([`Occurrence::PerCall`]): each entry answers one call per trace, so a result is a function of
     /// the key and its occurrence. Otherwise a query: the first entry of the key answers every call of it.
     pub per_call: bool,
+    /// When the normal result is a DTO (E3), how its stub makes it; `ret` is then its class.
+    pub response: Option<Response>,
+}
+
+/// A DTO response (E3, [`Returned::Object`]): an object of an application class made by the one node of its
+/// construction plan, by the constructor the node names, from primitive leaves, or null when the model allows it.
+/// Each entry of the table holds the answer's leaves (and its null flag); a fresh identity makes a new object for
+/// every call that gets the answer, a stable one the same object for every call that gets that entry's answer,
+/// within a trace. The class is checked in each build by the objects stream's plan ([`check_response`]).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Response {
+    /// The class, an internal name (`offers/Offer`).
+    pub class: String,
+    /// The constructor's descriptor (`(JI)V`).
+    pub descriptor: String,
+    /// The plan's root (`result`), the name its leaves are paths from.
+    pub root: String,
+    /// The constructor's arguments, in order: each leaf's name below the root (`unitCents`) and its type.
+    pub leaves: Vec<(String, Type)>,
+    /// Whether an answer may be null instead.
+    pub nullable: bool,
+    /// [`Identity::Stable`]: one object per entry, the same for every call it answers.
+    pub stable: bool,
+    /// The plan the class is checked under in each build.
+    pub plan: ConstructionPlan,
+}
+
+impl Response {
+    /// The class as Java names it, without its package: `Offer`.
+    pub fn simple(&self) -> &str {
+        self.class.rsplit('/').next().unwrap_or(&self.class)
+    }
+
+    /// How it is made, in words.
+    fn words(&self) -> String {
+        let class = self.class.replace('/', ".");
+        let leaves = self.leaves.iter().map(|(n, _)| n.as_str()).collect::<Vec<_>>().join(", ");
+        let made = format!("{class} made by its constructor {} from the leaves ({leaves})", self.descriptor);
+        let identity = if self.stable { format!("one {made} per answer, the same object for every call that gets that entry's answer") } else { format!("a new {made} for every call") };
+        if self.nullable { format!("{identity}, or null") } else { identity }
+    }
 }
 
 impl Lowered {
@@ -106,7 +161,12 @@ impl Lowered {
     /// has failures.
     fn answer_inputs(&self) -> Vec<Type> {
         let mut out = Vec::new();
-        if self.ret != Type::Void {
+        if let Some(r) = &self.response {
+            if r.nullable {
+                out.push(Type::Int);
+            }
+            out.extend(r.leaves.iter().map(|(_, t)| t.clone()));
+        } else if self.ret != Type::Void {
             out.push(self.ret.clone());
         }
         if !self.throws.is_empty() {
@@ -128,11 +188,17 @@ impl Lowered {
     }
 
     /// The names of [`Lowered::inputs`], as a proof or a search names them: `rates.rate[0].arg0`, `rates.rate[0]`,
-    /// `rates.rate[0].outcome`, ..., `rates.rate.default`, `rates.rate.default.outcome`.
+    /// `rates.rate[0].outcome`, ..., `rates.rate.default`, `rates.rate.default.outcome`. A DTO's answer is its null
+    /// flag and its leaves: `offers.find[0].null`, `offers.find[0].unitCents`.
     pub fn input_names(&self) -> Vec<String> {
         let answer = |at: String| {
             let mut out = Vec::new();
-            if self.ret != Type::Void {
+            if let Some(r) = &self.response {
+                if r.nullable {
+                    out.push(format!("{at}.null"));
+                }
+                out.extend(r.leaves.iter().map(|(n, _)| format!("{at}.{n}")));
+            } else if self.ret != Type::Void {
                 out.push(at.clone());
             }
             if !self.throws.is_empty() {
@@ -158,6 +224,7 @@ impl Lowered {
     /// of a function (`long, or a throw of ...`).
     fn outcomes(&self, any: bool) -> String {
         let normal = match (&self.ret, any) {
+            _ if self.response.is_some() => self.response.as_ref().unwrap().words(),
             (Type::Void, _) => "a normal return".to_string(),
             (t, true) => format!("any {}", t.java_name()),
             (t, false) => t.java_name(),
@@ -254,6 +321,7 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
         key.push((p, t.clone()));
     }
     let mut ret = None;
+    let mut response = None;
     let mut throws: Vec<String> = Vec::new();
     for result in &model.results {
         match result {
@@ -274,7 +342,18 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
                 let t = match value {
                     Returned::Primitive { ty } => ty.as_str(),
                     Returned::Void => "void",
-                    Returned::Object { .. } => return Err(refused(call, "a DTO response made by a construction plan: the environment stream's E3, not built yet")),
+                    Returned::Object { plan, nullable, identity } => {
+                        if ret.is_some() {
+                            return Err(refused(call, "two normal results: a call returns one value of one type"));
+                        }
+                        let r = dto(call, plan, *nullable, *identity, per_call)?;
+                        if descriptor.ret != Type::Object(r.class.clone()) {
+                            return Err(refused(call, format!("a DTO response, a {}, where the call returns {}", r.class.replace('/', "."), descriptor.ret.java_name())));
+                        }
+                        ret = Some(descriptor.ret.clone());
+                        response = Some(r);
+                        continue;
+                    }
                     Returned::Adapted { domain } => {
                         // Resolved first, so that a response stated under another model is refused for that.
                         crate::values::resolve(domain).map_err(|u| refused(call, format!("its result: {}", u.what)))?;
@@ -303,7 +382,92 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
     if let Some(o) = call.outcomes.iter().find(|o| *o != "returns" && !throws.contains(&o.replace('.', "/"))) {
         return Err(refused(call, format!("the call's outcomes name {o}, which the model's results don't: a modelled failure is a result of the model")));
     }
-    Ok(Lowered { id: model.id.clone(), key, ret, throws, bound: model.bound, per_call })
+    Ok(Lowered { id: model.id.clone(), key, ret, throws, bound: model.bound, per_call, response })
+}
+
+/// A primitive Java type by its name, integral or boolean.
+fn integral_named(name: &str) -> Option<Type> {
+    Some(match name {
+        "boolean" => Type::Boolean,
+        "byte" => Type::Byte,
+        "char" => Type::Char,
+        "short" => Type::Short,
+        "int" => Type::Int,
+        "long" => Type::Long,
+        _ => return None,
+    })
+}
+
+/// A DTO response's plan as its stub makes it (E3): one node, made by a constructor, of primitive leaves named by
+/// their path from the plan's one root; anything more is refused by name. Its class is checked against a build by
+/// [`check_response`].
+fn dto(call: &ModeledCall, plan: &ConstructionPlan, nullable: bool, identity: Identity, per_call: bool) -> Result<Response, Unsupported> {
+    let no = |what: String| refused(call, format!("a DTO response: {what}"));
+    if let Some(problem) = plan.shape_problem() {
+        return Err(no(format!("its plan {problem}")));
+    }
+    if identity == Identity::Stable && per_call {
+        return Err(no("a stable identity under a per-call choice: each entry answers one call, so no object is ever given twice; a fresh identity is the same claim, said plainly".into()));
+    }
+    let [root] = plan.roots.as_slice() else { return Err(no(format!("a plan of {} roots: a response is one root, the object returned", plan.roots.len()))) };
+    let PlanValue::Node { id, nullable: may_be_null, same_as } = &root.value else { return Err(no(format!("the plan's root {} is no node: a response's root is the object made", root.name))) };
+    if *may_be_null || !same_as.is_empty() {
+        return Err(no("a root that may be null or the same as another: whether the response may be null is the model's own `nullable`".into()));
+    }
+    if !plan.setup.is_empty() {
+        return Err(no("a setup sequence: a response is made by its constructor alone, as data".into()));
+    }
+    let [node] = plan.nodes.as_slice() else { return Err(no(format!("a plan of {} nodes: the first DTO is one object of primitive fields, and an object inside one waits for a later case", plan.nodes.len()))) };
+    if node.id != *id {
+        return Err(no(format!("the plan's root is node {id}, which it doesn't have")));
+    }
+    let Maker::Constructor { descriptor } = &node.maker else { return Err(no("a factory maker: a response is made by its class's constructor".into())) };
+    let mut leaves = Vec::new();
+    for arg in &node.args {
+        match arg {
+            PlanValue::Leaf { path, ty } => {
+                let Some(name) = path.strip_prefix(&format!("{}.", root.name)).filter(|n| !n.is_empty() && !n.contains('.')) else {
+                    return Err(no(format!("the leaf {path}: a leaf of the response is named by its path from the root, {}.NAME", root.name)));
+                };
+                let t = integral_named(ty).ok_or_else(|| no(format!("the leaf {path} of type {ty}: a response's leaves are integral or boolean primitives")))?;
+                leaves.push((name.to_string(), t));
+            }
+            PlanValue::Array { path, .. } => return Err(no(format!("an array, {path}: the first DTO's fields are primitive"))),
+            PlanValue::Adapted { path, .. } => return Err(no(format!("a value of an adapter's domain, {path}: a String field of a response comes later, through the values stream's adapter, and the stubs make primitive leaves so far"))),
+            PlanValue::Dependency { path, .. } => return Err(no(format!("a dependency, {path}: a DTO carries data, not a client object with callbacks"))),
+            PlanValue::Node { .. } => return Err(no("an object inside it: the first DTO is one object of primitive fields".into())),
+        }
+    }
+    Ok(Response { class: node.class.replace('.', "/"), descriptor: descriptor.clone(), root: root.name.clone(), leaves, nullable, stable: identity == Identity::Stable, plan: plan.clone() })
+}
+
+/// Checks a DTO response's class in a build of class path `cp` (E3): the objects stream's construction plan makes it
+/// ([`crate::construction::root`]: a concrete class extending `Object`, the named constructor, no side effect
+/// outside the object, its fields followed), its leaves are the constructor's parameters in order, and the class is
+/// data: instance fields of primitive types only, no static field, no method beside its constructors. A caller's
+/// use of it beyond reading its fields is the effect check's to refuse.
+pub fn check_response(cp: &crate::classpath::ClassPath, r: &Response) -> Result<(), String> {
+    let class = r.class.replace('/', ".");
+    let cf = cp.application(&r.class).ok().flatten().ok_or_else(|| format!("{class} is no application class of the build"))?;
+    for f in &cf.fields {
+        let t = Type::parse(&f.descriptor).map_err(|e| format!("its field {}: {e}", f.name))?;
+        if f.is_static() {
+            return Err(format!("{class} has a static field {}: a DTO is data, and state shared by every response isn't modelled", f.name));
+        }
+        if !t.is_primitive() {
+            return Err(format!("{class} has a field {} of type {}: a DTO response's fields are primitive, so no object, and no cycle, is reached from it", f.name, t.java_name()));
+        }
+    }
+    if let Some(m) = cf.methods.iter().find(|m| !m.is_constructor() && !m.is_synthetic()) {
+        return Err(format!("{class} has a method {}: a DTO response is data, and no method of it beside its constructor is modelled", m.name));
+    }
+    let made = crate::construction::root(cp, &r.plan, &r.root).map_err(|u| u.what)?;
+    let Some(crate::construction::Rooted::Object(record)) = made else { return Err(format!("its plan makes no object at {}", r.root)) };
+    if record.components != r.leaves {
+        let words = |ls: &[(String, Type)]| ls.iter().map(|(n, t)| format!("{} {n}", t.java_name())).collect::<Vec<_>>().join(", ");
+        return Err(format!("its constructor's leaves are ({}), and the model gives ({})", words(&record.components), words(&r.leaves)));
+    }
+    Ok(())
 }
 
 /// Checks that the effect check can make `call`'s stubs give the results `model` says, under its coupling and
