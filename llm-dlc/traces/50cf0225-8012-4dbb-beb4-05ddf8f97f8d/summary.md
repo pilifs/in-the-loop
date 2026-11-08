@@ -60,6 +60,12 @@ change `mykrrzxlktto` · [log `891faee1ddfb`](https://terminalvalue.net/raw-trac
 
 While the for-review list was being committed, the verification loop collected all six jobs it named as pending, all passed, in yxtmunzo. That commit also took the brief's edit, which was in the shared working copy, so the list is in yxtmunzo and the previous commit zpsmsyyp holds only traces. Progress now records that, and its status is working: the shop examples' Quote#quantity note and J4's figures at the merge are the next pieces, and they need no one else.
 
+### application-core Phase 5 step 5: the shop examples' Quote#quantity note gives the merged revision's reason
+
+change `ntwunskxruyu` · [log `891faee1ddfb`](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz)
+
+Examples 190-196 each carry a note naming what stays unresolved in every example of the set. Its reason for Quote#quantity was stale: since the application-core merge the regression check takes an instance method on a receiver made by its constructor, and step 3's collected shop job (20261108-195650-...-shop-s-e) now leaves Quote#quantity unsupported because the receiver is made differently in the two versions (Quote(long, int) before, Quote(Money, int) now), not because it is an instance method. Note 3 of each example.json now says so, and that the old refusal was the reason before the merge. The pages and examples/index.json were re-rendered with build.py --render-only; the note now agrees with each example's collected result.json and verifier-output.txt. The other two parts it names (POST /quotes/text, Money#cents) still match the results. The brief's Progress records this; next is J4's figures at the merge.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz) has every step in between: reasoning, tool calls and their results.

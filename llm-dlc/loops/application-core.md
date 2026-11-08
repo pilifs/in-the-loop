@@ -1514,6 +1514,13 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   `lib/benchmark/preparation/j4-merge.{json,md}`. **Next**: the two items the list leaves:
   - the shop examples' `Quote#quantity` note;
   - J4's figures at the merge, compared with the stream's.
+- 2026-11-08, **the shop examples' `Quote#quantity` note updated**, in 190–196's `example.json` (note 3, "What stays
+  unresolved in every example of the set"), their pages re-rendered with `build.py --render-only`. It now gives the
+  reason the collected results give (`shop-s-e`'s job, in each `result.json` and `verifier-output.txt`): the receiver
+  is made differently in the two versions, `Quote(long, int)` before and `Quote(Money, int)` now, and says it was
+  refused as an instance method before the merge. The other two parts it names (`POST /quotes/text`, `Money#cents`)
+  are unresolved for the reasons it gives. **Next**: J4's figures at the merge (`j4-merge.*`, job
+  `20261108-200158-…`), compared with the stream's, into J4's row.
 - Status: working
 
 ## Loop settings
