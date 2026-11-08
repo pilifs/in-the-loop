@@ -34,7 +34,7 @@ Job 20261108-024648-vf-015-example-109-revisited-hex-todigit: steps 3 and 4 pass
 
 ### Record session traces
 
-change `rqxxpmqtolyl` · [log `81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz)
+[`57f04e556377`](https://github.com/pilifs/in-the-loop/commit/57f04e556377d6c7d01524d0f0cc537ab87c58da) · [log `81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

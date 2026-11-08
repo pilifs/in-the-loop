@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "3da21514-fe46-49d5-8200-08d3cf89ea17",
-  "status": "open",
+  "status": "ended",
   "title": "Multi agent feature stream run",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T04:29:27.359Z",
-  "duration_seconds": 34416,
+  "ended": "2026-11-08T04:34:21.981Z",
+  "duration_seconds": 34710,
   "stats": {
-    "turns": 23,
-    "api_calls": 379,
-    "tool_calls": 400,
+    "turns": 26,
+    "api_calls": 381,
+    "tool_calls": 401,
     "tool_errors": 3,
-    "compactions": 1,
-    "peak_context_tokens": 484293,
+    "compactions": 2,
+    "peak_context_tokens": 485508,
     "usage": {
-      "input_tokens": 788,
-      "output_tokens": 373811,
-      "cache_read_input_tokens": 96854103,
-      "cache_creation_input_tokens": 1604977
+      "input_tokens": 792,
+      "output_tokens": 374464,
+      "cache_read_input_tokens": 97823603,
+      "cache_creation_input_tokens": 1606192
     }
   },
   "tools": {
-    "Bash": 351,
+    "Bash": 352,
     "Write": 24,
     "Edit": 18,
     "ToolSearch": 3,
@@ -87,24 +87,38 @@
     {
       "index": 1,
       "started": "2026-11-08T02:14:46.238Z",
-      "ended": "2026-11-08T04:29:27.359Z",
+      "ended": "2026-11-08T04:33:41.507Z",
       "turns": 5,
-      "api_calls": 235,
+      "api_calls": 237,
       "usage": {
-        "input_tokens": 472,
-        "output_tokens": 228383,
-        "cache_read_input_tokens": 66583828,
-        "cache_creation_input_tokens": 906421
+        "input_tokens": 476,
+        "output_tokens": 229036,
+        "cache_read_input_tokens": 67553328,
+        "cache_creation_input_tokens": 907636
       },
-      "peak_context_tokens": 484293
+      "peak_context_tokens": 485508
+    },
+    {
+      "index": 2,
+      "started": "2026-11-08T04:34:21.844Z",
+      "ended": "2026-11-08T04:34:21.981Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "0a6ddd3e5adb558250714c2207032bc72e8d848cdde71651956260ee9bd43b23",
-    "bytes": 8810056,
-    "lines": 3403,
-    "gzip_bytes": 1436220,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/0a6ddd3e5adb558250714c2207032bc72e8d848cdde71651956260ee9bd43b23.jsonl.gz"
+    "sha256": "2d9aa05da1ce9fc367f9b52d41e2ec1bc804148969cf3ee208a41d80bdc1ebe7",
+    "bytes": 9009956,
+    "lines": 3457,
+    "gzip_bytes": 1477027,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/2d9aa05da1ce9fc367f9b52d41e2ec1bc804148969cf3ee208a41d80bdc1ebe7.jsonl.gz"
   },
   "subagents": [
     {
@@ -299,7 +313,7 @@
     {
       "change_id": "tnnytrlwlsqlpmryvyutxrusuktnwmyy",
       "commit_id": "aec5636c8d3485b614f49feca17bc761b3320218",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core: the user's decisions settled, and VF-015 brought in scope as Phase 0's step 7",
       "body": "The user settled the brief's six proposed decisions as drafted: the four streams as scoped, with optional work never blocking a row; verification with the pipeline; one writer for shared files; Phase 0 in the planning session; 4 GB per stream and about 24 GB for the runner; claude-opus-5-5 at high effort. They added a seventh: VF-015 is in scope. The stub-reachability loop's timebox deferred VF-015 to a person on 2026-11-08, after finding its cause: the equivalence harness's call handlers (harness::EXCEPTIONS) catch only unchecked exceptions and Error, so commons-codec's checked DecoderException leaves EquivalenceHarness.check uncaught, and no equivalence over a method that throws a checked exception can be verified.\n\nIt goes in Phase 0, not a stream: the fix is in harness/, the objects stream's file; the environment stream's E2 (modelled failures, catch and propagation) needs it; and it is small. Step 7 has a reproducer first. The handlers then catch each class in either version's throws clause, then java.lang.Exception, comparing by class, and a checked exception that only one version throws is refuted. The closing job is VF-015's resubmitted with step 4 made stricter: the change must be found with its witness replayed, where test $? -eq 1 also accepted 'cannot be verified'. It has no timebox attempt left, so a failure goes back to the user. The starting-point table, prerequisites 1 and 5, Phase 0's Done-when row and Progress are updated, and E2's brief points at step 7. The status stays blocked on Phase 0.",
       "log_sha256": "b540ff737ce6a152965c3b2f082457755db3c73b3aad57e358420e2f4cee7b29"
@@ -307,7 +321,7 @@
     {
       "change_id": "xvvulqqymyqmzuquvtolxrlusmrotuzp",
       "commit_id": "c0fd50ba73f8b64779f1bcd74f906ec9dd758300",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core, prerequisite 2: the starting point recounted at the merge, and the contracts pass there",
       "body": "Where it starts from was recounted at main's yzpmxwnx (08d23149), after the cleanup and stub-reachability loops. Every row still holds, with line numbers moved. ObjectDomain's made_by, classes, allocations and label are still read by nothing outside the cache key's projection, and no production path fills Statement.spec. lib/tests/foundations.rs, compare.rs and effects.rs pass inline (23 tests). The cleanup merge's four reruns (20261107-215001-...: examples 150-152 and 160-161, 170-172, 190-196, lib/tests/integration.rs) passed. Since then only the gap preflight changed, and its guard job passed. The fixture notes and the cleanup leftovers are updated: VF-016 and VF-017 are closed, and VF-002, VF-015, VF-018 and VF-020 are open. Phase 0 is next.",
       "log_sha256": "886d71e060ec2328096c5b15ce69d27083235f2901f31f1e3b4847c74623b058"
@@ -315,7 +329,7 @@
     {
       "change_id": "vlnommrurvpvzzwxqrqlosqkvnquorut",
       "commit_id": "42b4c42640522846187a73ea27a06414a4bd014c",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core: the domain-options row corrected, since the allocation bound is enforced",
       "body": "The recount's grep missed it: spec/heap.rs:125-135 checks bounds.before/after.allocations against what each version's code makes in one call, a cleanup-loop fix, and gives an unresolved result over the bound. The row now names what check_with enforces (nullable, may_alias, both bounds) and what is unread: made_by's kind and calls, classes and label. Phase 0's step 1 says how calls and classes get enforced. equivalence::run reports the constructors its harness layout uses, and check_with compares them with the claim before any verdict. label stays the claim's words, covered by the key.",
       "log_sha256": "13b7d65abc80b63f58ac0f7f8e21e4c778df685bac0cb7daddbdb9e43055b92c"
@@ -323,7 +337,7 @@
     {
       "change_id": "wtvnurytxvnoskpwnvytzwrxknzolyuw",
       "commit_id": "2b692b93a55f2b0ff9ac8b7253feaf7def7d3787",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 1: the domain gate refuses a claim's domain the check doesn't make",
       "body": "Before, a claim's object domain had options nothing read: made_by (its kind and its constructors' calls) and classes. A claim made field by field, of invariants, or by a factory ran as whatever constructor domain the check happened to make, and the kernel's Pricing#total was verified under it. Now spec::heap::check_with refuses a domain made field by field or of invariants outright, and equivalence::run, given the claim's domain (Options::object_domain), compares its calls and classes with the constructors its harness layout calls in each version (Layout::made_with, in the claim's words, 'before: shop.Quote(long cents, int quantity)') and the classes they make, once the layout is built and before any helper proof, cache lookup or proof. Each side must name exactly what the other does, or the claim is refused as Unsupported, naming both lists. The label stays the claim's own words: the result states the check's domain, and the claim key covers the label. Docs: lib/README.md (the domain gate), the doc comments of ObjectDomain and heap::check.\n\nThe reproducer, tests/heap.rs a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_runs_as_the_constructor_domain, failed before (the field-by-field claim was verified) and passes now, with a factory, a constructor left out, another constructor, a call with no version, and a class added or left out. The gate showed that four heap tests had changed a reused kernel claim's classes but kept its Quote constructors; they now name their own kernels' constructors. foundations.rs's foreign-input test now asserts the gate's refusal under the kernel domain, and the foreign-input refusal without it. The whole lib suite passes inline (448 tests, 0 failed).",
       "log_sha256": "7c3e9373824cba6bb120dd39238b6bd869a5e6a30c2d01da8b252aaaea2ba2ed"
@@ -331,7 +345,7 @@
     {
       "change_id": "qspmrwntzuuuszzpylzqyqxnoxxmytwk",
       "commit_id": "eea1a8a8a6992f04dff0c2ec75b4aaca4efb52e6",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 7: the equivalence harness catches the checked exceptions either version declares, closing VF-015 (verification pending)",
       "body": "VF-015's triage found that the equivalence harness's call handlers caught only a fixed list of unchecked exceptions (harness::EXCEPTIONS), RuntimeException and Error. A checked exception, such as commons-codec's DecoderException in example 109's Hex.toDigit, left EquivalenceHarness.check uncaught, and no equivalence over a method that throws one could be verified; the old job's step 4 passed only because 'test $? -eq 1' also accepts 'cannot be verified'. Now equivalence::run reads both versions' throws clauses (declared_checked: the checked classes, most specific first, with java.lang.Exception among them; unchecked ones are caught by the list already) into harness::Layout::checked. The harness's handlers for each call, in bytecode and in the statement's Java source, are the listed exceptions then those, under before/ for the previous version's application classes (Layout::exceptions), and the interpreter's replay gives each thrown exception the same category. A checked exception thrown on other inputs, of another class, or by one version alone is a difference; one both throw alike is the same outcome. A method without a throws clause gets exactly the harness it had, so cached proofs of it stay valid. The statement names the declared classes among the exceptions compared. Docs: lib/README.md, regression step 2.\n\nReproducers: tests/integration.rs a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found failed before (native engine) with 'an uncaught before.fixtures.BadDigit leaves the harness'; now the rewrite is verified and three defects are refuted on the exception, each witness replayed. The harness unit test generates_a_harness_that_catches_the_declared_checked_exceptions checks the handlers' order and names. The whole lib suite passes inline (450 tests, 0 failed).\n\nJob 20261108-024648-vf-015-example-109-revisited-hex-todigit reruns VF-015's job at this commit, its steps unchanged except step 4, which now reads the --json outcome and checks for a violation, replayed, on a char above 127. Expected: step 3 verified, step 4 refuted that way, step 5 verified. It is VF-015's last attempt: a failure goes back to the user.",
       "log_sha256": "9d5a55d761703808bae774ecae4197bbb463fac3d840330a9eb20b9566ba700c"
@@ -339,7 +353,7 @@
     {
       "change_id": "tukutwvnpzsrovtqpnkmmqksrrwkuokw",
       "commit_id": "749578ed50e6c8b29950df06e1ac663055f8384b",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 2: the four interfaces as types in spec/plans.rs, each refused until its stream builds it",
       "body": "The application-core streams meet at four interfaces, now types in lib/src/spec/plans.rs that extend the foundations IR rather than compete with it: a construction plan (ConstructionPlan: a bounded DAG of constructor- or factory-made nodes with stable ids, shared nodes for aliasing, typed leaves, bounded arrays, adapted values, dependencies the environment stands for, the roots, an optional short setup sequence and the domain's restrictions; shape_problem names a cycle, a duplicate, a dangling id, a choice of another class or a bound exceeded), carried by a new Construction::Planned domain; a value domain (ValueDomain, with its model's evidence level, from implemented to proved) and the witness value a replay rebuilds (WitnessValue, UTF-16 code units); a modelled call's CallModel (stable id, argument key, query or choice coupling, permitted results or exceptions, bound), carried by ModeledCall's new optional model; and a helper's Summary (read footprint, alias and null facts, domain, bounds, relation, effects, dependency proofs). Every struct refuses unknown fields and every enum unknown variants. Part gains Objects, Values, Environment and Reuse.\n\nNothing gets read as absent: a planned domain is refused by the heap check (Part::Objects) and a call's model by the effect check (Part::Environment) until those streams build them, and neither is among the claim key's known fields, so a claim with one is uncacheable. Tests: plans.rs's unit tests (round trips, every interface refusing an unknown field or variant, the plan's shape problems), tests/heap.rs a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_builds_it, tests/effects.rs a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it; the spec unit tests and the heap, effects, foundations and summaries suites pass inline. Docs: lib/README.md, and the brief's Progress.",
       "log_sha256": "10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04"
@@ -347,7 +361,7 @@
     {
       "change_id": "ponxovxryktlvxtmnlrrmplprowxozwk",
       "commit_id": "6044b03adf7e8c4718b81fa300b138930d17d36e",
-      "immutable": false,
+      "immutable": true,
       "summary": "VF-015: the rerun at eea1a8a8 gets past the exception property and is refused on throwing initializers",
       "body": "Job 20261108-024648-vf-015-example-109-revisited-hex-todigit: steps 3 and 4 pass (step 4 now finds the change with a replayed witness), step 5 is refused by jvmcontract for 4 throwing-initializer defects. Its results/ files were already swept into the application-core Phase 0 step 2 commit by another session's commit; this commit holds only the VF-015 entry update in verification/findings.md.",
       "log_sha256": "d905afd9efbe653427b2ecca0151d4c70bdf77859401dcd41df0374cd2888d0b"
@@ -355,7 +369,7 @@
     {
       "change_id": "ntxnoszloxmozswykvxnzpwntnvyyrlr",
       "commit_id": "e965353e64b99a83b4d7fa36475f047704dd45e4",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 3: each stream's module registered, with its call sites in the shared files",
       "body": "So that no stream edits a shared file to begin, each of the four streams of llm-dlc/loops/application-core.md has a module of its own, registered in lib.rs: construction.rs (objects: check_plans for a planned domain, receiver for an ordinary receiver, load for --plan FILE), values.rs (the ValueAdapter trait, adapter for a String or List, is_adapted), environment.rs (check_model for a call's model, declared and load for --environment FILE) and reuse.rs (property_lookup and property_store for prove --cache, summaries for a helper). Each returns Unsupported naming its stream until the stream builds its part. The call sites are in place: the domain gate (spec::heap), the instance-method refusals of equivalence and property, their String and List parameter refusals (which add the values stream's words), the effect check for a call's model, property::run under --cache. The CLI flags --plan (equivalence, prove), --environment (effects, compare, through effects::check_builds and compare::Options::environment) and prove --cache load into the checks' options, and the checks refuse what they don't take yet, never ignore it. StatementSpec carries the environment and the summaries a check used.",
       "log_sha256": "1c58ba96bbb2a2c722719cf8c5f8f5df98f30c4f1e42d6a617749a25ed6a2ed7"
@@ -363,7 +377,7 @@
     {
       "change_id": "lypmmukzrnnkmlurxtqywuypozxykznu",
       "commit_id": "966b55e4a4533fe9f150438fc7bcc91fa85c1ab7",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 5: the frozen fixtures Q, H and L, with their claims and every case's verdict",
       "body": "The acceptance contract's three fixture families, frozen before any stream forks, in lib/tests/fixtures/application-core/ (its README says what each does and why). Q (package quotes): QuoteService, an ordinary receiver with a fee policy, asks the Rates query for a code's rate (which may throw the checked RateUnavailable), adds the helper fee(lines) that reads the receiver's policy, takes a tenth off a VIP code (Codes.vip), and announces a positive quote on Events; offerQuote uses a nullable Offer DTO; checked hands back the caller's request. Its refactor keeps the external meaning, and its seven defects are a wrong query key, an ignored rate, a missing catch, an event on the wrong branch, a shorter VIP prefix, a helper reading another field, and a copy in place of the caller's object. H: a Throttle whose after-setup defect only a setup call reaches, and one-short, wrong from construction. L: Basket's total, first and clearAll over an immutable list, with a skipped duplicate, the last for the first, a copied first, and an alias-blind clear.\n\ngolden/ holds eight canonical claims with planned domains (construction plans with dependencies, a String code of at most 4 units, quantities of at most 4, the environment model of Rates.rate, Offers.find and Events.send, the two throttle domains, the list of at most 3 lines) and expected.json, every build's verdict under every claim and under five plain regression checks (rows O1, V1, V2, R2). Checked on JDK 25.0.5 with the fixture's Conformance.java, which loads each build in its own class loader with the same dependency stubs: after agrees with before on every case of the grids (30,240, 315 and 43), and each defect differs exactly in the methods its expectations name. tests/application_core.rs starts with the claims' round trips and every build compiling; spec::plans now leaves out an array's false nullability, as a node's.",
       "log_sha256": "1b066d2fdc7f8a6905b7563527eca33674eb59ff635de967aadf5892339af857"
@@ -371,7 +385,7 @@
     {
       "change_id": "snzqpztrstxxsvlytwwtwxyyqoqzvpmp",
       "commit_id": "a911fc43ec09bdee869a08db1ca52b8ebf742e75",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 4: the integration contract, one test per acceptance row a unit run reaches",
       "body": "lib/tests/application_core.rs, which llm-dlc/tools/application-core-integration.sh runs on the streams' merge while they work, now has a test per row of llm-dlc/loops/application-core-acceptance.md that a unit-level run can reach: G0 (the domain gate on the foundations kernel: field by field, invariants, a factory, a constructor left out and an extra class each refused, the kernel's own claim verified), O1 (the throttle's receiver in the regression and property checks), O2 (checked's identity under its claim), O3 (the constructor-only and one-setup-call throttle claims), V1 (Codes.vip), V2 (the basket's list kernels and claims), E1 and E2 (the quote and offer claims, through the new environment::check), R1 (prove --cache twice), R2 (the fee helper on its own) and J3 (a setup call, a modelled outcome and a value bound each change the claim key, or leave it uncacheable by name). Every check runs on the native engine with a jbmc path that doesn't exist, J2's guard.\n\nEach case must reach the verdict the frozen tests/fixtures/application-core/golden/expected.json fixes, or be refused in the words of a stream that owns its row (Unsupported naming that part, or a refused check saying 'the STREAM stream builds it'); anything else fails, a refusal by another stream included. Today G0 reaches its verdicts and every other row stops at its streams' named refusals. The integration check passes on this commit's working copy: the contract (13 tests), the lib unit tests and the foundations, compare and effects contracts, and build.py's, review, run-record and performance suites.",
       "log_sha256": "ac9a7a865d23986833976e28fc08d61ad66ffc3d0ee53ce3151313f1b70731fb"
@@ -379,7 +393,7 @@
     {
       "change_id": "onuyqpqozpwuuwmsuotqsmmlutpmntxr",
       "commit_id": "bf6de9d7f089d623cef986008dead343b8035990",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 0 step 6: the statement and the examples' result schema register the streams' new kinds",
       "body": "So that a stream's results stay valid without a schema edit of its own, the statement (lib/src/statement.rs) and the examples' result schema (examples/schema/result.schema.json, edited as text to keep its layout) now name, as variants or optional fields: a value parameter (ParameterKind::Value, the values stream's String or list); the assumptions environment (a modelled dependency's stubs), summary (a helper's summary in place of its body) and setup (the states a setup sequence reaches); the bounds max_value_length, setup_calls and trace_bound; the value models a check ran under, each with its evidence level from implemented to proved (Models::values); and a replay by model, a JVM under the environment model's stubs, never the real dependency. Each is absent or unchosen until a stream fills it, so every existing statement serializes as before.\n\nAll 157 recorded example results still validate against the schema, a statement with each new variant validates, and an unknown evidence level is refused. tests/application_core.rs's the_result_schema_registers_the_statements_new_kinds holds the statement's kinds and the schema together. The whole lib suite passes inline (475 tests, 0 failed), and build.py's suite (189). With this, Phase 0 is committed, but for VF-015's job 20261108-024648, which the pipeline hasn't run; the brief's status names what is left: the user's push and launch, and that job.",
       "log_sha256": "e8feff517d6f10819c0c6a8ccc39671182e9f5e3f743e030a255a215210f7070"
@@ -387,7 +401,7 @@
     {
       "change_id": "vtkvtstowxmuspkrvovooppnqlukukky",
       "commit_id": "b76ee16e4dc9ab5203798310425d18bb90caeee8",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core: VF-015's job after Phase 0 goes back to the user, its harness cause fixed and another guard in the way",
       "body": "VF-015's job 20261108-024648 ran at eea1a8a8 (Phase 0 step 7) and failed at step 5 only, as the verification loop's triage records (ponxovxr). The harness fix works: step 5 no longer fails on the uncaught-exception property, and JBMC proves the harness. The tool then refuses the proof because JBMC runs CharEncoding's and Hex's class initializers, in both versions, as possibly throwing a NullPointerException, which the JVM doesn't (its throwing-initializer guard), a cause separate from VF-015's. Step 4 found the change (toDigit(ch='٧'): before 7), but the new version's replay could not run (String.format depends on the default locale) and the outcome still says reproduced, so its stricter check passed on half a replay. Decision 7 leaves no timebox attempt, so the brief's Progress hands both to the user with three ways a further attempt could go (step 5 on the native engine, a solver check of the initializers' throws, a model of the charset constants), and the replay issue for the objects stream's replay plumbing. Status: blocked on the user's push and launch, and the VF-015 decision.",
       "log_sha256": "347273cefc5fdb4c20e64c32e0640ae1d97087a0c5777a769fdb12869a89c1f6"
@@ -395,15 +409,15 @@
     {
       "change_id": "skywpvsqvvnuukryumumvxvzrvxzzotv",
       "commit_id": "6d51f82d6eac704cd29cef6cd0815024f9e80467",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core: VF-015 deferred by the user, and the brief set to working for launch",
       "body": "The user deferred VF-015 (2026-11-08): the streams launch without it, and other ways of proving its step 5 are for later, with the options the brief's Progress names. Launch prerequisites 6 (push) and 7 (status) are done by the planning session; the main brief's status is working, as are its four stream briefs', so run-streams.sh application-core runs them.",
       "log_sha256": "88bdeefde1279c3adcca4e29ae83a7fc7196065641ff55188062b03ee8c39f5c"
     },
     {
       "change_id": "rqxxpmqtolylqxyzywktllvwonxstvoz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "57f04e556377d6c7d01524d0f0cc537ab87c58da",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "0a6ddd3e5adb558250714c2207032bc72e8d848cdde71651956260ee9bd43b23"
@@ -445,6 +459,12 @@
       "lines": 894,
       "gzip_bytes": 557818,
       "url": "https://terminalvalue.net/raw-traces/3da21514-fe46-49d5-8200-08d3cf89ea17/1fb300437e32f3109982d950f53ff6527594b87698e71209af981a9251662197.jsonl.gz"
+    },
+    "2d9aa05da1ce9fc367f9b52d41e2ec1bc804148969cf3ee208a41d80bdc1ebe7": {
+      "bytes": 9009956,
+      "lines": 3457,
+      "gzip_bytes": 1477027,
+      "url": null
     },
     "306e0507c19217f524898587f5c9246156ae3a0325204383f8ee0a594cd0db3a": {
       "bytes": 1718014,

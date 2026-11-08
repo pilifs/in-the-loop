@@ -1,0 +1,802 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-045000-application-core-objects-o1-lib-tests-in",
+  "title": "application-core objects O1: lib/tests/integration.rs and shop's examples 190-196 with an ordinary receiver made by its constructor",
+  "status": "passed",
+  "summary": "passed: 8 passed step(s) in 3m31s, peak 2.1 GiB (estimated 25m00s, 3.0 GiB); signals: cargo:tests×1; example:as-expected×1",
+  "attention": [
+    "step 1 (integration tests) was held back 2m52s by its 2-CPU quota in 2m55s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-045000-application-core-objects-o1-lib-tests-in.json",
+    "sha256": "0156d4a49035c1f58c47b73bbba4ff5f81bb66bcc2b5b296f418aa0494dad850",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-045000-application-core-objects-o1-lib-tests-in",
+      "title": "application-core objects O1: lib/tests/integration.rs and shop's examples 190-196 with an ordinary receiver made by its constructor",
+      "description": "Row O1 of llm-dlc/loops/application-core-acceptance.md, at the commit that commits this job (the objects stream's workspace, application-core-objects). O1 lets the regression check (equivalence) and the property check (prove) take an instance method of an ordinary class: the receiver is made by its constructor as an object parameter is (construction::receiver over equivalence::made_of), its fields compared after the call, and 'this' a root of the identity relations. Before, every such method was refused ('is an instance method; ... otherwise only static methods are'). Unit-level tests ran inline on the native engine (tests/application_core.rs's O1, tests/application_core_objects.rs). This job checks what needs JBMC or build.py: step 1 runs lib/tests/integration.rs unchanged (several tests run JBMC; expected: every non-ignored test passes, exit 0). Steps 2-8 rerun examples 190 to 196 (jvmcontract compare, domain and bounds as each example records them, the native engine as recorded): their kernels named Quote#quantity unresolved as an instance method, which O1 now checks, so their recorded kernel lines may change, but each example's top-level verdict must not. Expected: 190 verified, 191 violation, 192 violation, 193 violation, 194 violation, 195 verified, 196 unverifiable, build.py printing 'as expected' and exiting 0 for each. Every step runs even if one fails.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jvmcontract:compare",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/construction.rs",
+          "lib/tests/integration.rs"
+        ],
+        "examples": [
+          "190",
+          "191",
+          "192",
+          "193",
+          "194",
+          "195",
+          "196"
+        ]
+      },
+      "expected": "integration tests: every non-ignored test passes (exit 0); examples 190 verified, 191-194 violation, 195 verified, 196 unverifiable, each with build.py printing 'as expected' and exiting 0",
+      "submitted": {
+        "at": "2026-11-08T04:50:00+00:00",
+        "session": "3ba3cc03-2dbc-4a1f-ac36-a1cc13b778a9",
+        "by": "application-core-objects"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "25m",
+        "notes": "as the cleanup merge's jobs 20261107-215001-...-integration-rs (15m, 3G, a clean build) and -190-196 (12m, 1G)"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+          "cwd": "."
+        },
+        {
+          "name": "example 190 (B9)",
+          "run": "python3 examples/tools/build.py 190",
+          "cwd": "."
+        },
+        {
+          "name": "example 191 (B9)",
+          "run": "python3 examples/tools/build.py 191",
+          "cwd": "."
+        },
+        {
+          "name": "example 192 (B9)",
+          "run": "python3 examples/tools/build.py 192",
+          "cwd": "."
+        },
+        {
+          "name": "example 193 (B9)",
+          "run": "python3 examples/tools/build.py 193",
+          "cwd": "."
+        },
+        {
+          "name": "example 194 (B9)",
+          "run": "python3 examples/tools/build.py 194",
+          "cwd": "."
+        },
+        {
+          "name": "example 195 (B9)",
+          "run": "python3 examples/tools/build.py 195",
+          "cwd": "."
+        },
+        {
+          "name": "example 196 (B9)",
+          "run": "python3 examples/tools/build.py 196",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4e5450111c3fcf27bec573ed8180a5882a761649",
+  "startedAt": "2026-11-08T04:52:37+00:00",
+  "finishedAt": "2026-11-08T04:58:16+00:00",
+  "wallSeconds": 339.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1614004,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 21474836480,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1500.0,
+    "notes": "as the cleanup merge's jobs 20261107-215001-...-integration-rs (15m, 3G, a clean build) and -190-196 (12m, 1G)"
+  },
+  "usage": {
+    "peakMemoryBytes": 2240598016,
+    "wallSeconds": 211.4,
+    "cpuSeconds": 369.8,
+    "memoryOfEstimate": 0.7,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 126.682,
+      "cpuSeconds": 126.943,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1638645760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "2ba9005967bde8a9e5e3c45f201cde4977b6903421d860b0c3cf2b2659c42982",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-045000-application-core-objects-o1-lib-tests-in/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 06s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 175.362,
+      "cpuSeconds": 320.411,
+      "cpuThrottledSeconds": 172.604,
+      "peakMemoryBytes": 2240598016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 124,
+        "bytes": 6609,
+        "sha256": "5efec04eeee7b6600778aca698b25c54fe835a943bd5880defc5cbc866ed5865",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 123,
+          "text": "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 114.50s",
+          "groups": [
+            "ok",
+            "65",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "test a_target_identical_in_both_versions_needs_no_proof ... ok",
+        "test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok",
+        "test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok",
+        "test an_overloaded_method_is_named_by_its_parameter_types ... ok",
+        "test a_witness_through_contracts_is_run_on_a_jvm ... ok",
+        "test arrays_are_quantified_over_and_witnessed ... ok",
+        "test capability_contracts_list_each_entry_point_with_its_call_site ... ok",
+        "test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok",
+        "test details_print_the_statement_and_where_the_time_went ... ok",
+        "test draws_the_state_machine_of_a_contract ... ok",
+        "test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok",
+        "test generates_the_tla_operator_the_python_generator_wrote ... ok",
+        "test generalized_quantifiers_fold_and_counterexamples_shrink ... ok",
+        "test impure_or_unbounded_methods_are_refused_with_the_reason ... ok",
+        "test identity_and_initialization_agree_with_the_jvm ... ok",
+        "test jbmc_applies_the_contracts_for_its_gaps ... ok",
+        "test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok",
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test old_reads_an_array_as_the_call_received_it ... ok",
+        "test relocation_renames_the_class_and_its_references ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test results_of_two_types_need_a_relation ... ok",
+        "test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_gap_scan_gives_each_class_initializer_a_shape ... ok",
+        "test the_gap_scan_names_what_the_own_checker_approximates ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 114.50s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.812,
+      "cpuSeconds": 6.704,
+      "cpuThrottledSeconds": 0.325,
+      "peakMemoryBytes": 106446848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-190-b9.log",
+        "lines": 24,
+        "bytes": 1031,
+        "sha256": "30c4a64db6307fbe41751c6e3fdd16c85b611e5706169d8daedb319662b66eda",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)",
+          "groups": [
+            "190",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.5 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 6.217,
+      "cpuSeconds": 7.952,
+      "cpuThrottledSeconds": 0.479,
+      "peakMemoryBytes": 142966784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-191-b9.log",
+        "lines": 24,
+        "bytes": 1028,
+        "sha256": "c22cc1219f340e9a55046e7cdcbb3be6cbe8ca226e8ee4dca228e869c6095a27",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: violation (as expected)",
+          "groups": [
+            "191",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 1, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 2.0 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.01,
+      "cpuSeconds": 6.856,
+      "cpuThrottledSeconds": 0.381,
+      "peakMemoryBytes": 104431616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-192-b9.log",
+        "lines": 24,
+        "bytes": 988,
+        "sha256": "a59028a401922da4b4e4ad64e90318877aa85af7d100f8d9e537c749d09e4cfc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: violation (as expected)",
+          "groups": [
+            "192",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.5 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.6 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.01,
+      "cpuSeconds": 6.842,
+      "cpuThrottledSeconds": 0.349,
+      "peakMemoryBytes": 113975296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-193-b9.log",
+        "lines": 24,
+        "bytes": 1012,
+        "sha256": "b3e7852a4cd513576551950145a74a8a959374288dea3a0e8b93b6586b558f90",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: violation (as expected)",
+          "groups": [
+            "193",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.6 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.813,
+      "cpuSeconds": 6.559,
+      "cpuThrottledSeconds": 0.251,
+      "peakMemoryBytes": 110882816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-194-b9.log",
+        "lines": 24,
+        "bytes": 998,
+        "sha256": "f3fe827cac27d7a1a1e520f4bea0c861d50eaf18aa8894a35834d2f340bdf722",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)",
+          "groups": [
+            "194",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.5 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.612,
+      "cpuSeconds": 7.818,
+      "cpuThrottledSeconds": 0.254,
+      "peakMemoryBytes": 94732288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-195-b9.log",
+        "lines": 24,
+        "bytes": 1033,
+        "sha256": "9003db43864a51cf1281d36c79bb8531f3b20992fd26b159b226382dc1b1bcde",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: verified (as expected)",
+          "groups": [
+            "195",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.7 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.5 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.6 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.6 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.609,
+      "cpuSeconds": 6.629,
+      "cpuThrottledSeconds": 0.346,
+      "peakMemoryBytes": 96317440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-example-196-b9.log",
+        "lines": 24,
+        "bytes": 1029,
+        "sha256": "2e6841079c1a2fb7d635281324e634accdb3bd68daa0f2f026a562bfbb08db87",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: unverifiable (as expected)",
+          "groups": [
+            "196",
+            "unverifiable"
+          ]
+        }
+      ],
+      "tail": [
+        "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.3 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: unverifiable (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T04:58:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "635f91e2b2ddd44c32fc6a2144b67380c554df8f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/635f91e2b2ddd44c32fc6a2144b67380c554df8f/jvmcontract",
+    "built": true
+  }
+}
