@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-114325-application-core-reuse-j4-the-small-comp",
+  "title": "application-core reuse J4: the small compare run's cost report with all five cases, an unrelated edit and a safe helper rewrite added",
+  "description": "J4 of llm-dlc/loops/application-core-acceptance.md (the reuse stream's share, llm-dlc/loops/application-core-reuse.md), at the commit that carries this job. The benchmark lib/tests/preparation.rs (ignored inline) timed four scenarios in jobs 20261108-060410 and 20261108-063259: a cold compare run on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191), an unchanged rerun, the real defect 'offset' cold, and its rerun. The contract's measurement also asks for an unrelated edit and a safe rewrite of a helper, and the reuse brief's acceptance asks the report to tell apart exact hits, helper evidence and preparation reuse. This change adds both, as overlays on 'after' in lib/tests/fixtures/preparation/ (its README), each checked from a copy of the proof cache a cold run of 'after' leaves: 'unrelated-edit' adds a class nothing reaches (every proof should be an exact hit), and 'helper-rewrite' rewrites the pure helper Pricing.discount again (its own proof made again, Pricing#total proved again on that new proof as one function in both versions, Pricing#withQuantity an exact hit, the route proved again). The report now lists per subject whether it was an exact hit or proved, and the helper proofs it rests on. No library code changed. Native engine only, the fixture's own bounds (unwind 16, arrays up to 8); no JBMC. A debug smoke run inline (1 repeat, 58 s) passed with exactly those cache outcomes.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:compare",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/preparation.rs",
+      "lib/tests/fixtures/preparation",
+      "llm-dlc/loops/application-core-reuse.md"
+    ]
+  },
+  "expected": "The step exits 0. The benchmark asserts: every repeat and the process reach the same verdicts; under 'after', 'unrelated-edit' and 'helper-rewrite' the entry point POST /quotes and Pricing#total, #withQuantity and #discount verified, POST /quotes/text unresolved; under 'offset' the route and total refuted; the reruns and the unrelated edit prove nothing again; in the helper rewrite total is proved again on a new proof of discount (a key other than the cold run's), the helper's own proof is a miss, and withQuantity an exact hit. The report has six scenarios. The figures are for these fixtures only.",
+  "submitted": {
+    "at": "2026-11-08T11:43:25+00:00"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "job 20261108-063259 ran the four scenarios in 3m22s at 1.7 GiB peak, its release build included; two scenarios more, each a cold-sized run"
+  },
+  "steps": [
+    {
+      "name": "set -o pipefail; cd lib && mkdir -p target benchmark/prepara",
+      "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/j4.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-j4.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/preparation/j4.json",
+    "lib/benchmark/preparation/j4.md"
+  ]
+}

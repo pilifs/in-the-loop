@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T11:35:32.842Z",
-  "duration_seconds": 25267,
+  "ended": "2026-11-08T11:43:58.947Z",
+  "duration_seconds": 25773,
   "stats": {
-    "turns": 43,
-    "api_calls": 359,
-    "tool_calls": 361,
-    "tool_errors": 3,
-    "compactions": 8,
+    "turns": 48,
+    "api_calls": 398,
+    "tool_calls": 402,
+    "tool_errors": 4,
+    "compactions": 9,
     "peak_context_tokens": 285390,
     "usage": {
-      "input_tokens": 724,
-      "output_tokens": 385502,
-      "cache_read_input_tokens": 44457916,
-      "cache_creation_input_tokens": 1245270
+      "input_tokens": 802,
+      "output_tokens": 416167,
+      "cache_read_input_tokens": 48150813,
+      "cache_creation_input_tokens": 1372440
     }
   },
   "tools": {
-    "Bash": 311,
-    "Read": 22,
-    "Edit": 15,
+    "Bash": 345,
+    "Read": 24,
+    "Edit": 20,
     "Write": 6,
     "SendMessage": 3,
     "ListAgents": 2,
@@ -165,24 +165,38 @@
     {
       "index": 8,
       "started": "2026-11-08T06:34:56.421Z",
-      "ended": "2026-11-08T11:35:32.842Z",
-      "turns": 5,
-      "api_calls": 19,
+      "ended": "2026-11-08T11:36:11.226Z",
+      "turns": 6,
+      "api_calls": 23,
       "usage": {
-        "input_tokens": 38,
-        "output_tokens": 11013,
-        "cache_read_input_tokens": 1170014,
-        "cache_creation_input_tokens": 105837
+        "input_tokens": 46,
+        "output_tokens": 12752,
+        "cache_read_input_tokens": 1544269,
+        "cache_creation_input_tokens": 110506
       },
-      "peak_context_tokens": 92166
+      "peak_context_tokens": 96835
+    },
+    {
+      "index": 9,
+      "started": "2026-11-08T11:36:48.360Z",
+      "ended": "2026-11-08T11:43:58.947Z",
+      "turns": 4,
+      "api_calls": 35,
+      "usage": {
+        "input_tokens": 70,
+        "output_tokens": 28926,
+        "cache_read_input_tokens": 3318642,
+        "cache_creation_input_tokens": 122501
+      },
+      "peak_context_tokens": 135580
     }
   ],
   "log": {
-    "sha256": "2434ad94804b18aeb4befd3d848f063299bff7fc63f7038ae8a018751afa9c52",
-    "bytes": 11321238,
-    "lines": 4114,
-    "gzip_bytes": 2254703,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/2434ad94804b18aeb4befd3d848f063299bff7fc63f7038ae8a018751afa9c52.jsonl.gz"
+    "sha256": "c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0",
+    "bytes": 12561694,
+    "lines": 4545,
+    "gzip_bytes": 2507514,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -265,6 +279,14 @@
       "summary": "application-core reuse R3 done: the shared JDK image table's release figures, read from job 20261108-063259",
       "body": "Job 20261108-063259 (passed at 3841df5e, 3m22s, peak 1.7 GiB) ran the same release benchmark as job 20261108-060410, with the JDK image's table of classes now shared within the process. It reached the same verdicts in all four scenarios, both in process and as a process. Medians of 7, before the cache and with it: an unchanged rerun took 209.8 ms and now 8.6 ms in process (290.3 and 66.1 ms as a process), the cold run 460.6 and 65.6 ms, the defect's cold run 2217 and 1576 ms (solving 1723 and 1484 ms), and its rerun 265.3 and 31.9 ms. An open that builds the table takes 7.89 ms, and one that shares it 0.06 ms. javac still takes about 0.4 s per build, so compilation outweighs a whole rerun: the cut is to preparation, not to proving a change. The runner committed the reports (lib/benchmark/preparation/shared-image.*) in the default workspace, and they reach this branch at the merge.\n\nR3's record in the brief's Progress now holds these figures, and lib/README.md's paragraph on preparation gives them in place of the pending note. Verified by reading both jobs' reports in full and comparing their verdicts. Nothing else changed: the README edit is prose only. Also found: the benchmark lacks the acceptance contract's unrelated edit and safe helper rewrite. Without the helper rewrite, it can't show helper evidence apart from exact hits, as the brief's Acceptance asks. Adding them is next, so that J4 at the merge runs the full set.",
       "log_sha256": "2434ad94804b18aeb4befd3d848f063299bff7fc63f7038ae8a018751afa9c52"
+    },
+    {
+      "change_id": "uxqrooysuqkqumvqylkszvpzoqqkzlwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse J4: the cost benchmark gets an unrelated edit and a safe helper rewrite, the contract's last two cases (verification pending)",
+      "body": "lib/tests/preparation.rs, the ignored benchmark of R3, timed a cold compare run on the joint example's builds (examples 190 and 191), an unchanged rerun, the real defect offset and its rerun. The acceptance contract's measurement also asks for an unrelated edit and a safe rewrite of a helper, and the reuse brief asks the report to tell exact hits, helper evidence and preparation reuse apart. Two overlays on after, in a new lib/tests/fixtures/preparation/ with a README, are now run from a copy of the proof cache a cold run of after leaves: unrelated-edit adds a class nothing reaches, and helper-rewrite rewrites Pricing.discount again. The report lists, per subject, whether it was an exact hit or proved, and which helper proofs it was proved on. The benchmark asserts that the unrelated edit proves nothing again, and that in the helper rewrite total is proved again on a new proof of discount while withQuantity is an exact hit. No library code changed.\n\nVerified with a debug smoke run inline (1 repeat, 58 s, passed): the unrelated edit gave 5 exact hits; the helper rewrite gave 1 exact hit and 4 proofs (the route, discount as a subject and as total's helper, and total on the new helper proof). The route is proved again because its effect proof's closure holds the helper's body. The release figures are job 20261108-114325-application-core-reuse-j4-the-small-comp, which writes lib/benchmark/preparation/j4.json and .md.",
+      "log_sha256": "c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0"
     }
   ],
   "logs": {
@@ -314,6 +336,12 @@
       "bytes": 6701375,
       "lines": 2351,
       "gzip_bytes": 1352359,
+      "url": null
+    },
+    "c4ef4a73f97388680562ccdd88b28e282f100cd56fc8b45622960fa7f9e37ba0": {
+      "bytes": 12561694,
+      "lines": 4545,
+      "gzip_bytes": 2507514,
       "url": null
     },
     "e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20": {

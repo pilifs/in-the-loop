@@ -482,7 +482,32 @@ measurement stays as recorded.
     whose proofs should all be exact hits. The second is a rewrite of a helper that `compare` proves as a changed
     helper and its callers reuse. Each is checked for its verdicts and cache outcomes inline in debug, then queued in
     release, so that J4 at the merge runs the full set on the merged revision. R4 stays optional.
-- Status: working
+- 2026-11-08, **J4's benchmark has all five cases**, in `lib/tests/preparation.rs` and a new fixture directory,
+  `lib/tests/fixtures/preparation/` (its README), with job `20261108-114325-application-core-reuse-j4-the-small-comp`
+  queued for the release figures (verification pending):
+  - **The two edits**, each an overlay on the joint example's `after`, as its defects are, and each checked from a
+    copy of the proof cache a cold run of `after` leaves (in process and as a process apart, since their tools'
+    identities differ), as a developer's next edit would be:
+    - `unrelated-edit` adds `shop.Shipping`, a class no route or kernel method reaches;
+    - `helper-rewrite` rewrites the pure helper `Pricing.discount` again (the tenth taken first), with `after`'s
+      result on every input.
+  - **The report tells the three apart**: per subject, whether it was an exact hit or proved, and the helper proofs
+    it was proved on, by key; the preparation reuse is the shared image's, timed among the units as before.
+  - **Asserted**, beside the earlier checks: both edits keep `after`'s verdicts; the unrelated edit proves nothing
+    again; in the helper rewrite `total` is proved again on a new proof of `discount` (a key other than the cold
+    run's), the helper's own proof is a miss, and `withQuantity` an exact hit.
+  - **The debug smoke run inline** (1 repeat, 58 s, passed): the unrelated edit's 5 proofs were all exact hits
+    (40 ms in process). The helper rewrite's were 1 exact hit (`withQuantity`) and 4 proved: the route, `discount` as
+    a kernel subject, `discount` again as `total`'s helper (a claim of its own, without the kernel's correspondence),
+    and `total` on that proof. The route's effect proof is proved again too, since its closure holds the helper's
+    body: helper evidence reaches the kernel's caller, not the entry point.
+  - **Not changed**: no library code. The earlier reports stay as recorded; this job writes
+    `lib/benchmark/preparation/j4.json` and `.md`.
+  - **R4 is left out for now**: the brief allows it only after R1 and R2 pass, and the contract's R2 row still stops
+    at the objects stream's `construction::receiver` until the merge. It never changes a row.
+  - **Next**: job `20261108-114325`'s figures, read into this record. J4 itself comes at the merge, on the merged
+    revision.
+- Status: waiting on jobs 20261108-114325-application-core-reuse-j4-the-small-comp
 
 ## Loop settings
 
