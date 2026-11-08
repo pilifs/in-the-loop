@@ -1,0 +1,220 @@
+{
+  "verdict": "violation",
+  "target": "org.apache.commons.codec.binary.Hex#toDigit",
+  "domain": "ch: char × index: int",
+  "counterexample": {
+    "input": "toDigit(ch='٧', index=-1)",
+    "before": "7",
+    "after": "<could not replay: <unsupported: String.format depends on the default locale>>",
+    "values": [
+      "'٧'",
+      "-1"
+    ],
+    "shrink_runs": 0,
+    "inputs": [
+      {
+        "name": "ch",
+        "type": "char",
+        "value": 1639
+      },
+      {
+        "name": "index",
+        "type": "int",
+        "value": -1
+      }
+    ],
+    "call": {
+      "class": "org.apache.commons.codec.binary.Hex",
+      "class_file": "org/apache/commons/codec/binary/Hex.class",
+      "classes": "after",
+      "method": "toDigit",
+      "descriptor": "(CI)I",
+      "static": true,
+      "arguments": [
+        {
+          "name": "ch",
+          "type": "char",
+          "value": 1639,
+          "from": "ch"
+        },
+        {
+          "name": "index",
+          "type": "int",
+          "value": -1,
+          "from": "index"
+        }
+      ]
+    },
+    "previous_call": {
+      "class": "org.apache.commons.codec.binary.Hex",
+      "class_file": "org/apache/commons/codec/binary/Hex.class",
+      "classes": "before",
+      "method": "toDigit",
+      "descriptor": "(CI)I",
+      "static": true,
+      "arguments": [
+        {
+          "name": "ch",
+          "type": "char",
+          "value": 1639,
+          "from": "ch"
+        },
+        {
+          "name": "index",
+          "type": "int",
+          "value": -1,
+          "from": "index"
+        }
+      ]
+    },
+    "differs": [
+      "result"
+    ]
+  },
+  "proof": "found by JBMC 6.11.0 in 0.6 s, replayed in the interpreter; domain ch: char × index: int",
+  "problem": null,
+  "statement": "work-change/harness/EquivalenceHarness.java",
+  "findings": [
+    {
+      "rule_id": "behaviour-changed",
+      "message": "Behaviour of org.apache.commons.codec.binary.Hex#toDigit changed:\n  toDigit(ch='٧', index=-1)\n    before: 7\n    after:  <could not replay: <unsupported: String.format depends on the default locale>>",
+      "uri": null,
+      "line": 380
+    }
+  ],
+  "output": "note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, work-change/jbmc-goto.txt):\n  jbmc gap: jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5: java.lang.String.format(java.lang.String, java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at before.org.apache.commons.codec.DecoderException.<init>:64\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: throwing-initializer at before.org.apache.commons.codec.CharEncoding.<clinit>: the initializer of before.org.apache.commons.codec.CharEncoding may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.Error) at EquivalenceHarness.check, catch (java.lang.Exception) at EquivalenceHarness.check, catch (java.lang.NullPointerException) at EquivalenceHarness.check, catch (java.lang.RuntimeException) at EquivalenceHarness.check tell them apart\n  jbmc defect: throwing-initializer at before.org.apache.commons.codec.binary.Hex.<clinit>: the initializer of before.org.apache.commons.codec.binary.Hex may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.Error) at EquivalenceHarness.check, catch (java.lang.Exception) at EquivalenceHarness.check, catch (java.lang.NullPointerException) at EquivalenceHarness.check, catch (java.lang.RuntimeException) at EquivalenceHarness.check tell them apart\n  jbmc defect: throwing-initializer at org.apache.commons.codec.CharEncoding.<clinit>: the initializer of org.apache.commons.codec.CharEncoding may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.Error) at EquivalenceHarness.check, catch (java.lang.Exception) at EquivalenceHarness.check, catch (java.lang.NullPointerException) at EquivalenceHarness.check, catch (java.lang.RuntimeException) at EquivalenceHarness.check tell them apart\n  jbmc defect: throwing-initializer at org.apache.commons.codec.binary.Hex.<clinit>: the initializer of org.apache.commons.codec.binary.Hex may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.Error) at EquivalenceHarness.check, catch (java.lang.Exception) at EquivalenceHarness.check, catch (java.lang.NullPointerException) at EquivalenceHarness.check, catch (java.lang.RuntimeException) at EquivalenceHarness.check tell them apart\n✗ Behaviour of org.apache.commons.codec.binary.Hex#toDigit changed:\n  toDigit(ch='٧', index=-1)\n    before: 7\n    after:  <could not replay: <unsupported: String.format depends on the default locale>>\n  (found by JBMC 6.11.0 in 0.6 s, replayed in the interpreter; domain ch: char × index: int)\n\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.\n",
+  "work": "work-change",
+  "search": {
+    "engine": "jbmc",
+    "checker": "JBMC 6.11.0",
+    "seconds": 0.57082055,
+    "properties": 2,
+    "unwind": 16,
+    "max_array_length": 8,
+    "stage": null,
+    "staging": "full-range",
+    "gap_mode": "strict",
+    "gaps": [
+      {
+        "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5",
+        "kind": "jdk-static-method",
+        "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+        "sites": [
+          "before.org.apache.commons.codec.DecoderException.<init>:64"
+        ],
+        "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
+        "treatment": "refused",
+        "checker": "jbmc"
+      }
+    ],
+    "deadline_seconds": 600.0,
+    "runs": [
+      {
+        "checker": "jbmc",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 599.64,
+        "seconds": 0.202,
+        "ended": "violation",
+        "ending": "counterexample",
+        "phases": {
+          "loading": 0.03,
+          "lowering": 0.01,
+          "symbolic": 0.056,
+          "encoding": 0.013,
+          "solving": 0.032,
+          "trace": 0.006,
+          "other": 0.055
+        },
+        "formula": {
+          "steps": 4223,
+          "conditions": 2,
+          "variables": 25786,
+          "clauses": 49155
+        }
+      }
+    ],
+    "phases": {
+      "seconds": 0.656,
+      "setup": 0.009,
+      "harness": 0.0,
+      "gaps": 0.345,
+      "contracts": 0.0,
+      "runs": 0.202,
+      "replay": 0.003,
+      "jvm": 0.0,
+      "other": 0.097
+    }
+  },
+  "replay": {
+    "by": "interpreter",
+    "reproduced": true
+  },
+  "stated": {
+    "kind": "regression",
+    "domain": {
+      "parameters": [
+        {
+          "name": "ch",
+          "type": "char",
+          "kind": "primitive",
+          "null": false
+        },
+        {
+          "name": "index",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        }
+      ],
+      "shared_arrays": false,
+      "text": "ch: char × index: int"
+    },
+    "assumptions": [
+      {
+        "kind": "library",
+        "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result, equal in both versions",
+      "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, org.apache.commons.codec.DecoderException, java.lang.Exception; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+    },
+    "bounds": {
+      "unwind": 16,
+      "max_array_length": null,
+      "complete": false
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1",
+      "classes": 17,
+      "jdk": "25.0.5"
+    },
+    "checker": {
+      "engine": "jbmc",
+      "name": "JBMC 6.11.0",
+      "solver": "cadical",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "3.0.0",
+        "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+        "configuration": [
+          "--trace",
+          "--throw-runtime-exceptions",
+          "--unwinding-assertions",
+          "--json-ui",
+          "--timestamp",
+          "monotonic",
+          "--no-refine-strings",
+          "--sat-solver",
+          "cadical"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  }
+}

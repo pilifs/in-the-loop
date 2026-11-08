@@ -380,6 +380,8 @@ the regression examples in [`examples/tools/alignment/`](../examples/tools/align
 questions a person decides, and their approval, are `src/alignment/questions.rs`; the evidence of a decision on a
 rerun, `src/alignment/evidence.rs`.
 
+The [application-core loop](../llm-dlc/loops/application-core.md) extends the IR with four interfaces in `src/spec/plans.rs`, each refusing unknown fields and variants: a **construction plan** (a bounded DAG of constructor- or factory-made nodes with stable ids, shared nodes for aliasing, typed leaves, bounded arrays, adapted values and dependencies, the roots, and an optional short setup sequence), carried by a domain made `planned`; a **value domain** (a String's or an immutable list's bounds and its model's evidence level) with the **witness value** a replay rebuilds (UTF-16 code units, never a Rust string); a modelled call's **call model** (a stable id, the argument key, query or choice coupling, the results or exceptions it permits, and its bound), carried by a `ModeledCall`; and a helper's **summary** (its read footprint, alias and null facts, domain, bounds, relation, effects and the proofs it rests on). Until its stream builds one, a claim that carries it is refused as `Unsupported` naming that stream (`objects`, `values`, `environment`, `reuse`), never checked as the case the checks make today.
+
 `spec::heap::check` is the heap stream's: the regression check of a `pkg.Class#method` claim on the own checker,
 strict, under the claim's bounds and correspondence (step 5 above). It accounts for every required observation: preserved
 by a proof that compared it, refuted where the replayed witness differs in it (the rest of a refuted claim stay

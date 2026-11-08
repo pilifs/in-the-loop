@@ -302,6 +302,21 @@ public class QuotesController {
 }
 "#;
 
+/// A modelled call's model (Phase 0 step 2 of `llm-dlc/loops/application-core.md`) is the environment stream's:
+/// until it builds it, a claim with one is refused by name, never checked as a normal return.
+#[test]
+fn a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it() {
+    use jvmcontract::spec::plans::{CallModel, Coupling, ModelledResult, Returned};
+    let Some(after) = build("after") else { return };
+    let before = build("before").unwrap();
+    let mut claim = claim();
+    let call = &mut claim.environment.as_mut().unwrap().calls[0];
+    call.model = Some(CallModel { id: "send".into(), key: vec!["arg0".into()], coupling: Coupling::Query, results: vec![ModelledResult::Returns { value: Returned::Void }], bound: 4 });
+    let err = effects::check(&claim, &quotes(&before, "POST /quotes"), &quotes(&after, "POST /quotes"), &before, &after).unwrap_err();
+    assert_eq!(err.part, jvmcontract::spec::Part::Environment, "{err}");
+    assert!(err.what.contains("modelled call's model"), "{err}");
+}
+
 #[test]
 fn a_handler_that_uses_a_modeled_calls_result_is_refused_by_name() {
     let Some(uses) = build_with("uses-the-result", Some(USES_THE_RESULT)) else { return };

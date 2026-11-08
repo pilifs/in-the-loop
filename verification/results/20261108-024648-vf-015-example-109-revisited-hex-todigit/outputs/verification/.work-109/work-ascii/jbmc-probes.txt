@@ -1,0 +1,96 @@
+JBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Parsing ...
+Trying to load Java main class: EquivalenceHarness
+Found Java main class: EquivalenceHarness
+Converting
+stub class symbol java::java.lang.Object already exists
+Java: added 62 String or Class constant symbols
+Generating GOTO Program
+Running GOTO functions transformation passes
+Running with 16 object bits, 48 offset bits (default)
+Starting Bounded Model Checking
+Unwinding recursion java::java.nio.charset.StandardCharsets.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.nio.charset.StandardCharsets.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.nio.charset.StandardCharsets.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.nio.charset.StandardCharsets.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.nio.charset.StandardCharsets.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.nio.charset.StandardCharsets.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::before.org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+aborting path on assume(false) at function java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; bytecode-index 5 thread 0
+Unwinding recursion java::org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.CharEncoding.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::org.apache.commons.codec.binary.Hex.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+Unwinding recursion java::java.lang.Integer$IntegerCache.<clinit_wrapper> iteration 1
+aborting path on assume(false) at function java::jvmcontract.StubProbe.p1:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; bytecode-index 5 thread 0
+aborting path on assume(false) at function java::EquivalenceHarness.check:(CI)V bytecode-index 174 thread 0
+Runtime Symex: 0.0438466s
+size of program expression: 4585 steps
+simple slicing removed 1 assignments
+Generated 4 VCC(s), 4 remaining after simplification
+Runtime Postprocess Equation: 0.000118651s
+Passing problem to propositional reduction
+converting SSA
+Runtime Convert SSA: 0.0127278s
+Running propositional reduction
+Runtime Post-process: 3.596e-06s
+26718 variables, 50351 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.00197481s
+Runtime decision procedure: 0.0149507s
+Running propositional reduction
+26719 variables, 50352 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.00093541s
+Runtime decision procedure: 0.00102189s
+Running propositional reduction
+26720 variables, 50353 clauses
+SAT checker: instance is UNSATISFIABLE
+Runtime Solver: 0.00829494s
+Runtime decision procedure: 0.00832891s
+
+** Results:
+function java::EquivalenceHarness.check:(CI)V
+[java::EquivalenceHarness.check:(CI)V.assertion.1] assertion at function java::EquivalenceHarness.check:(CI)V bytecode-index 174: SUCCESS
+
+function java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+[java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;.assertion.1] assertion at function java::jvmcontract.StubProbe.p0:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; bytecode-index 5: FAILURE
+
+function java::jvmcontract.StubProbe.p1:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+[java::jvmcontract.StubProbe.p1:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;.assertion.1] assertion at function java::jvmcontract.StubProbe.p1:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; bytecode-index 5: FAILURE
+
+EquivalenceHarness.java function java::EquivalenceHarness.check:(CI)V
+[java::EquivalenceHarness.check:(CI)V.1] no uncaught exception: SUCCESS
+
+** 2 of 4 failed (3 iterations)
+VERIFICATION FAILED

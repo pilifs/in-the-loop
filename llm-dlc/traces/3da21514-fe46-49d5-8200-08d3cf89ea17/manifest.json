@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T02:47:05.282Z",
-  "duration_seconds": 28274,
+  "ended": "2026-11-08T02:49:56.536Z",
+  "duration_seconds": 28445,
   "stats": {
     "turns": 22,
-    "api_calls": 286,
-    "tool_calls": 306,
+    "api_calls": 290,
+    "tool_calls": 310,
     "tool_errors": 2,
     "compactions": 1,
-    "peak_context_tokens": 341008,
+    "peak_context_tokens": 349752,
     "usage": {
-      "input_tokens": 600,
-      "output_tokens": 285253,
-      "cache_read_input_tokens": 58758217,
-      "cache_creation_input_tokens": 1010067
+      "input_tokens": 608,
+      "output_tokens": 288005,
+      "cache_read_input_tokens": 60139556,
+      "cache_creation_input_tokens": 1018811
     }
   },
   "tools": {
-    "Bash": 261,
+    "Bash": 265,
     "Write": 20,
     "Edit": 18,
     "ToolSearch": 3,
@@ -83,24 +83,24 @@
     {
       "index": 1,
       "started": "2026-11-08T02:14:46.238Z",
-      "ended": "2026-11-08T02:47:05.282Z",
+      "ended": "2026-11-08T02:49:56.536Z",
       "turns": 4,
-      "api_calls": 142,
+      "api_calls": 146,
       "usage": {
-        "input_tokens": 284,
-        "output_tokens": 139825,
-        "cache_read_input_tokens": 28487942,
-        "cache_creation_input_tokens": 311511
+        "input_tokens": 292,
+        "output_tokens": 142577,
+        "cache_read_input_tokens": 29869281,
+        "cache_creation_input_tokens": 320255
       },
-      "peak_context_tokens": 341008
+      "peak_context_tokens": 349752
     }
   ],
   "log": {
-    "sha256": "9d5a55d761703808bae774ecae4197bbb463fac3d840330a9eb20b9566ba700c",
-    "bytes": 6831654,
-    "lines": 2550,
-    "gzip_bytes": 1164521,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/9d5a55d761703808bae774ecae4197bbb463fac3d840330a9eb20b9566ba700c.jsonl.gz"
+    "sha256": "10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04",
+    "bytes": 6984410,
+    "lines": 2603,
+    "gzip_bytes": 1190204,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04.jsonl.gz"
   },
   "subagents": [
     {
@@ -331,9 +331,23 @@
       "summary": "application-core Phase 0 step 7: the equivalence harness catches the checked exceptions either version declares, closing VF-015 (verification pending)",
       "body": "VF-015's triage found that the equivalence harness's call handlers caught only a fixed list of unchecked exceptions (harness::EXCEPTIONS), RuntimeException and Error. A checked exception, such as commons-codec's DecoderException in example 109's Hex.toDigit, left EquivalenceHarness.check uncaught, and no equivalence over a method that throws one could be verified; the old job's step 4 passed only because 'test $? -eq 1' also accepts 'cannot be verified'. Now equivalence::run reads both versions' throws clauses (declared_checked: the checked classes, most specific first, with java.lang.Exception among them; unchecked ones are caught by the list already) into harness::Layout::checked. The harness's handlers for each call, in bytecode and in the statement's Java source, are the listed exceptions then those, under before/ for the previous version's application classes (Layout::exceptions), and the interpreter's replay gives each thrown exception the same category. A checked exception thrown on other inputs, of another class, or by one version alone is a difference; one both throw alike is the same outcome. A method without a throws clause gets exactly the harness it had, so cached proofs of it stay valid. The statement names the declared classes among the exceptions compared. Docs: lib/README.md, regression step 2.\n\nReproducers: tests/integration.rs a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found failed before (native engine) with 'an uncaught before.fixtures.BadDigit leaves the harness'; now the rewrite is verified and three defects are refuted on the exception, each witness replayed. The harness unit test generates_a_harness_that_catches_the_declared_checked_exceptions checks the handlers' order and names. The whole lib suite passes inline (450 tests, 0 failed).\n\nJob 20261108-024648-vf-015-example-109-revisited-hex-todigit reruns VF-015's job at this commit, its steps unchanged except step 4, which now reads the --json outcome and checks for a violation, replayed, on a char above 127. Expected: step 3 verified, step 4 refuted that way, step 5 verified. It is VF-015's last attempt: a failure goes back to the user.",
       "log_sha256": "9d5a55d761703808bae774ecae4197bbb463fac3d840330a9eb20b9566ba700c"
+    },
+    {
+      "change_id": "tukutwvnpzsrovtqpnkmmqksrrwkuokw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 0 step 2: the four interfaces as types in spec/plans.rs, each refused until its stream builds it",
+      "body": "The application-core streams meet at four interfaces, now types in lib/src/spec/plans.rs that extend the foundations IR rather than compete with it: a construction plan (ConstructionPlan: a bounded DAG of constructor- or factory-made nodes with stable ids, shared nodes for aliasing, typed leaves, bounded arrays, adapted values, dependencies the environment stands for, the roots, an optional short setup sequence and the domain's restrictions; shape_problem names a cycle, a duplicate, a dangling id, a choice of another class or a bound exceeded), carried by a new Construction::Planned domain; a value domain (ValueDomain, with its model's evidence level, from implemented to proved) and the witness value a replay rebuilds (WitnessValue, UTF-16 code units); a modelled call's CallModel (stable id, argument key, query or choice coupling, permitted results or exceptions, bound), carried by ModeledCall's new optional model; and a helper's Summary (read footprint, alias and null facts, domain, bounds, relation, effects, dependency proofs). Every struct refuses unknown fields and every enum unknown variants. Part gains Objects, Values, Environment and Reuse.\n\nNothing gets read as absent: a planned domain is refused by the heap check (Part::Objects) and a call's model by the effect check (Part::Environment) until those streams build them, and neither is among the claim key's known fields, so a claim with one is uncacheable. Tests: plans.rs's unit tests (round trips, every interface refusing an unknown field or variant, the plan's shape problems), tests/heap.rs a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_builds_it, tests/effects.rs a_modelled_calls_model_is_refused_until_the_environment_stream_builds_it; the spec unit tests and the heap, effects, foundations and summaries suites pass inline. Docs: lib/README.md, and the brief's Progress.",
+      "log_sha256": "10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04"
     }
   ],
   "logs": {
+    "10184405e16b896d063eb169facde3e423d7607c26f674d019b0ea70181d1c04": {
+      "bytes": 6984410,
+      "lines": 2603,
+      "gzip_bytes": 1190204,
+      "url": null
+    },
     "13b7d65abc80b63f58ac0f7f8e21e4c778df685bac0cb7daddbdb9e43055b92c": {
       "bytes": 3605288,
       "lines": 1197,

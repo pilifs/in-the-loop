@@ -435,6 +435,13 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     test `generates_a_harness_that_catches_the_declared_checked_exceptions`. A method without a `throws` clause
     gets the harness it had. VF-015's closing job is `20261108-024648-vf-015-example-109-revisited-hex-todigit`,
     with step 4 made stricter (a violation, replayed, on a char above 127). It has no timebox attempt left.
+  - **Step 2, the four interfaces**, in `lib/src/spec/plans.rs`: `ConstructionPlan` (carried by a new
+    `Construction::Planned` domain), `ValueDomain` and `WitnessValue`, `CallModel` (on a `ModeledCall`, as its
+    optional `model`), and `Summary`. Every struct refuses unknown fields and every enum unknown variants, with
+    serialization tests. `Part` has the four streams. Until a stream builds its part, a planned domain is refused by
+    the heap check (`Part::Objects`) and a call's model by the effect check (`Part::Environment`), tested in
+    `tests/heap.rs` and `tests/effects.rs`. Neither is in the claim key's known fields yet, so such a claim is
+    uncacheable until the reuse stream registers them.
 - Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings

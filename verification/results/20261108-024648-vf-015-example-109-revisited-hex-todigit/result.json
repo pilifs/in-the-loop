@@ -1,0 +1,3112 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-024648-vf-015-example-109-revisited-hex-todigit",
+  "title": "VF-015: example 109 revisited, Hex#toDigit's regression proof, after the equivalence harness catches checked exceptions; closes VF-015 when it passes",
+  "status": "failed",
+  "summary": "failed: 4 passed, 1 failed step(s) in 10.6s, peak 103.4 MiB (estimated 10m00s, 2.0 GiB); 336 output file(s) changed; signals: jvmcontract:holds×1; jvmcontract:fails×1",
+  "attention": [
+    "step 1 (clone) was held back 1.6s by its 1-CPU quota in 1.6s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (compile) was held back 10.2s by its 1-CPU quota in 7.0s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 5 (nothing else changed on ASCII) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-024648-vf-015-example-109-revisited-hex-todigit.json",
+    "sha256": "f58bf55243138abf6d76cecf947e27737a8e13b125759ac4b4280397e72c7d68",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-024648-vf-015-example-109-revisited-hex-todigit",
+      "title": "VF-015: example 109 revisited, Hex#toDigit's regression proof, after the equivalence harness catches checked exceptions; closes VF-015 when it passes",
+      "description": "Example 109 (apache/commons-codec commit 43a9aa66, Hex.toDigit restricted to ASCII): the regression proof between the old toDigit (Character.digit(ch, 16)) and the new one. The last run, 20261108-011411, passed steps 3 and 4 and failed step 5 with 'an unexpected property failed: java::EquivalenceHarness.check:(CI)V.1'. Triage found the cause: toDigit throws commons-codec's DecoderException, a checked exception, on a char that is no hex digit, and the equivalence harness's call handlers caught only the listed unchecked exceptions, RuntimeException and Error, so the checked one left the harness and JBMC's 'no uncaught exception' property failed. No equivalence over a method that throws a checked exception could be verified, and step 4's 'test $? -eq 1' passed only because it also accepts 'cannot be verified'. The fix (Phase 0 step 7 of llm-dlc/loops/application-core.md, decision 7 there): the harness tells apart, after the listed unchecked exceptions, the checked exceptions either version declares in its throws clause, most specific first (the previous version's application classes under before/), then java.lang.Exception; the interpreter's replay numbers them alike. A method without a throws clause gets the harness it had. This job runs the last one's steps unchanged except step 4, which is stricter, as VF-015's triage asks: instead of 'test $? -eq 1', it reads the --json outcome and checks the verdict is violation, the witness replayed (replay.reproduced), and the witness's ch a non-ASCII char (above 127). Revision: the commit that commits this job, the harness fix with its reproducers (lib/tests/integration.rs a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found, which failed before with 'an uncaught before.fixtures.BadDigit leaves the harness', and the harness unit test generates_a_harness_that_catches_the_declared_checked_exceptions). Domain: every char x int (step 4), and outside ch > 127 (step 5); engine: JBMC (jvmcontract's default), unwind 16, --gaps strict. This is VF-015's last attempt: it has no timebox attempt left, so a failure goes back to the user with the finding.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "109"
+        ],
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/witness.rs",
+          "llm-dlc/loops/application-core.md"
+        ],
+        "jobs": [
+          "20261108-011411-vf-015-example-109-revisited-hex-todigit",
+          "20261107-165827-example-109-revisited-hex-todigit-s-regr"
+        ]
+      },
+      "expected": "step 3 (prove, old toDigit(0x0660) == 0) verified, exit 0; step 4 a violation, exit 1, whose witness has ch > 127 (a Unicode digit the old version decodes and the new one rejects with DecoderException) and is replayed (replay.reproduced true), the step exiting 0 once the JSON checks hold; step 5 (--unchanged-unless 'ch > 127') verified over every char x int, exit 0. matchesExpected is all three steps passing. Acceptance row: Phase 0's step 7 (G0's gate) of llm-dlc/loops/application-core.md.",
+      "submitted": {
+        "at": "2026-11-08T02:46:48+00:00",
+        "session": "3da21514-fe46-49d5-8200-08d3cf89ea17",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "git",
+        "javac",
+        "jbmc",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "as 20261107-165827, whose clone, compile and step 3 took about 10 s at 100 MiB peak; the preflight now adds a probe run of the proof's size (about 0.1 s in the step 1 experiment)"
+      },
+      "steps": [
+        {
+          "name": "clone",
+          "run": "mkdir -p verification/.work-109 && cd verification/.work-109 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+          "cwd": "."
+        },
+        {
+          "name": "compile",
+          "run": "mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+          "cwd": "verification/.work-109"
+        },
+        {
+          "name": "old toDigit decodes the Arabic-Indic zero",
+          "run": "jvmcontract prove 'org.apache.commons.codec.binary.Hex#toDigit' --classes base-classes --assume 'ch == 1632' --assert 'result == 0' --timeout 300 --work work-old",
+          "cwd": "verification/.work-109"
+        },
+        {
+          "name": "the change, found, its witness non-ASCII and replayed",
+          "cwd": "verification/.work-109",
+          "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change --json > change.json; status=$?; python3 -c \"import json; o = json.load(open('change.json')); cx = o.get('counterexample') or {}; ch = [i['value'] for i in cx.get('inputs', []) if i['name'] == 'ch']; print('verdict', o['verdict'], 'input', cx.get('input'), 'before', cx.get('before'), 'after', cx.get('after'), 'replay', o.get('replay'), 'problem', o.get('problem')); assert o['verdict'] == 'violation', o['verdict']; assert (o.get('replay') or {}).get('reproduced'), o.get('replay'); assert ch and ch[0] > 127, ch\" && test $status -eq 1"
+        },
+        {
+          "name": "nothing else changed on ASCII",
+          "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --unchanged-unless 'ch > 127' --timeout 600 --work work-ascii",
+          "cwd": "verification/.work-109"
+        }
+      ],
+      "outputs": [
+        "verification/.work-109/work-old/jbmc.log",
+        "verification/.work-109/work-change",
+        "verification/.work-109/work-ascii",
+        "verification/.work-109/change.json"
+      ],
+      "supersedes": "20261108-011411-vf-015-example-109-revisited-hex-todigit"
+    }
+  },
+  "sourceCommit": "eea1a8a8a6992f04dff0c2ec75b4aaca4efb52e6",
+  "startedAt": "2026-11-08T02:47:34+00:00",
+  "finishedAt": "2026-11-08T02:49:45+00:00",
+  "wallSeconds": 131.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1255660,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 7516192768,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "as 20261107-165827, whose clone, compile and step 3 took about 10 s at 100 MiB peak; the preflight now adds a probe run of the proof's size (about 0.1 s in the step 1 experiment)"
+  },
+  "usage": {
+    "peakMemoryBytes": 108441600,
+    "wallSeconds": 10.6,
+    "cpuSeconds": 9.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 119.307,
+      "cpuSeconds": 119.231,
+      "cpuThrottledSeconds": 0.223,
+      "peakMemoryBytes": 2000162816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d7cb9838ae7245df33f111c56213e5748b1a2f095ee060cb4ca23703605517f9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-024648-vf-015-example-109-revisited-hex-todigit/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 59s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "clone",
+      "run": "mkdir -p verification/.work-109 && cd verification/.work-109 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 1.603,
+      "cpuSeconds": 0.653,
+      "cpuThrottledSeconds": 1.586,
+      "peakMemoryBytes": 30912512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-clone.log",
+        "lines": 5,
+        "bytes": 263,
+        "sha256": "42b50e2a8231d660e25c4bef0ae9ae1121790ee9ecec27fd4fbaa2a5bf299c64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Cloning into 'codec'...",
+        "Preparing worktree (detached HEAD 87f6aa28)",
+        "HEAD is now at 87f6aa28 Reject ambiguous GitIdentifiers tree entry names",
+        "Preparing worktree (detached HEAD 43a9aa66)",
+        "HEAD is now at 43a9aa66 Restrict Hex decoding to ASCII hexadecimal characters"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "compile",
+      "run": "mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+      "cwd": "verification/.work-109",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 7.013,
+      "cpuSeconds": 6.98,
+      "cpuThrottledSeconds": 10.244,
+      "peakMemoryBytes": 108441600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compile.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "old toDigit decodes the Arabic-Indic zero",
+      "run": "jvmcontract prove 'org.apache.commons.codec.binary.Hex#toDigit' --classes base-classes --assume 'ch == 1632' --assert 'result == 0' --timeout 300 --work work-old",
+      "cwd": "verification/.work-109",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.412,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 46604288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-old-todigit-decodes-the-arabic.log",
+        "lines": 3,
+        "bytes": 610,
+        "sha256": "5ece3963ddc9c9baaeaaf05c2bd9742a1fce1161ec8203ad304bfd877d97361d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ org.apache.commons.codec.binary.Hex#toDigit satisfies `result == 0` on every input where ch == 1632 (JBMC 6.11.0: 2 properties proved over ch: char × index: int in 0.5 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "org.apache.commons.codec.binary.Hex#toDigit satisfies `result == 0` on every input where ch == 1632 (JBMC 6.11.0: 2 properties proved over ch: char × index: int in 0.5 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: JBMC's symbolic execution of the proof enters 1 stub that its solver shows no path within the bounds and assumptions reaches, by the proof with an assertion of its own before each call (0.2 s, every one held, and every unwinding assertion), so no gap: java.lang.String.format(java.lang.String, ",
+        "✓ org.apache.commons.codec.binary.Hex#toDigit satisfies `result == 0` on every input where ch == 1632 (JBMC 6.11.0: 2 properties proved over ch: char × index: int in 0.5 s; loops unwound 16 times with unwinding assertions)",
+        "  not vacuous: toDigit(ch='٠', index=100000) reaches the calls"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "the change, found, its witness non-ASCII and replayed",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change --json > change.json; status=$?; python3 -c \"import json; o = json.load(open('change.json')); cx = o.get('counterexample') or {}; ch = [i['value'] for i in cx.get('inputs', []) if i['name'] == 'ch']; print('verdict', o['verdict'], 'input', cx.get('input'), 'before', cx.get('before'), 'after', cx.get('after'), 'replay', o.get('replay'), 'problem', o.get('problem')); assert o['verdict'] == 'violation', o['verdict']; assert (o.get('replay') or {}).get('reproduced'), o.get('replay'); assert ch and ch[0] > 127, ch\" && test $status -eq 1",
+      "cwd": "verification/.work-109",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.803,
+      "cpuSeconds": 0.601,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 78114816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-the-change-found-its-witness-n.log",
+        "lines": 1,
+        "bytes": 207,
+        "sha256": "d22f1cb3ebf4005913e8e656bbc34ebad0fe021434e43dbaf3494e354fd7c155",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "verdict violation input toDigit(ch='٧', index=-1) before 7 after <could not replay: <unsupported: String.format depends on the default locale>> replay {'by': 'interpreter', 'reproduced': True} problem None"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "nothing else changed on ASCII",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --unchanged-unless 'ch > 127' --timeout 600 --work work-ascii",
+      "cwd": "verification/.work-109",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.503,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 82026496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-nothing-else-changed-on-ascii.log",
+        "lines": 8,
+        "bytes": 3866,
+        "sha256": "44322f680693dee958c1ec3fe9c0d4517713e353f1dd31b96bfe6d13bc48daa1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 8,
+          "text": "✗ org.apache.commons.codec.binary.Hex#toDigit cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (throwing-initializer at before.org.apache.commons.codec.CharEncoding.<clinit>, throwing-initializer at before.org.apache.commons.codec.binary.Hex.<clinit>, throwing-initial",
+          "groups": [
+            "org.apache.commons.codec.binary.Hex#toDigit cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (throwing-initializer at before.org.apache.commons.codec.CharEncoding.<clinit>, throwing-initializer at before.org.apache.commons.codec.binary.Hex.<clinit>, throwing-initializer at org.apache.commons.codec.CharEncoding.<clinit>, throwing-initializer at org.apache.commons.codec.binary.Hex.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it"
+          ]
+        }
+      ],
+      "tail": [
+        "note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, work-ascii/jbmc-goto.txt):",
+        "  jbmc gap: jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-25.0.5: java.lang.String.format(java.lang.String, java.lang.Object[]) is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neith",
+        "note: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:",
+        "  jbmc defect: throwing-initializer at before.org.apache.commons.codec.CharEncoding.<clinit>: the initializer of before.org.apache.commons.codec.CharEncoding may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a N",
+        "  jbmc defect: throwing-initializer at before.org.apache.commons.codec.binary.Hex.<clinit>: the initializer of before.org.apache.commons.codec.binary.Hex may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoCla",
+        "  jbmc defect: throwing-initializer at org.apache.commons.codec.CharEncoding.<clinit>: the initializer of org.apache.commons.codec.CharEncoding may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFound",
+        "  jbmc defect: throwing-initializer at org.apache.commons.codec.binary.Hex.<clinit>: the initializer of org.apache.commons.codec.binary.Hex may throw java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundErro",
+        "✗ org.apache.commons.codec.binary.Hex#toDigit cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (throwing-initializer at before.org.apache.commons.codec.CharEncoding.<clinit>, throwing-initializer at before.org.apache.commons.codec.binary.Hex.<clinit>, throwing-initial"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-109/work-old/jbmc.log",
+      "change": "added",
+      "bytes": 9382,
+      "sha256": "d15a105d49eb9beacebd9a5e01a2ea67503081fcd20ccba6dfa7fd669730f171",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/BinaryDecoder.class",
+      "change": "added",
+      "bytes": 328,
+      "sha256": "f2bd2ecd9273dbe458fe05081fb23041a0d0d2e83eb35728996adc2b532c429b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/BinaryEncoder.class",
+      "change": "added",
+      "bytes": 328,
+      "sha256": "8311605a7d5dddacbd5a3b89bc1771ac238339b4cd65e9cb70d3e203cc1083ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/CharEncoding.class",
+      "change": "added",
+      "bytes": 927,
+      "sha256": "df0de19c70a1e9f586593a4a0ca1cbab1de7d21221a24f564884c6c2605c1e20",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Charsets.class",
+      "change": "added",
+      "bytes": 1363,
+      "sha256": "fbb418b948eba43eb7ac373f5beae38615ed28ede986760254758d6d0e2bee73",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/CodecPolicy.class",
+      "change": "added",
+      "bytes": 1213,
+      "sha256": "7724f388f2978ac07b0445615666f5709c9ec6c5af27509458ba99e001634c2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Decoder.class",
+      "change": "added",
+      "bytes": 301,
+      "sha256": "ececa499332067594ad6b62228c51286879fcc5d92b3416251e326d33197cd4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/DecoderException.class",
+      "change": "added",
+      "bytes": 1170,
+      "sha256": "5615c15c420dac64d4470ef933e2a1571482d361a2b629c6b7f27607f79b2ef1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Encoder.class",
+      "change": "added",
+      "bytes": 301,
+      "sha256": "8a7a828e7a50cd9ac81df18aced7d6cd1d9a306d537144153a72b066143e88ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/EncoderException.class",
+      "change": "added",
+      "bytes": 892,
+      "sha256": "9e5ada94f2d4ad0a7ece2c974ee5b981c02eb7d8c47b6b2d6d92e4484e68d309",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Resources.class",
+      "change": "added",
+      "bytes": 1332,
+      "sha256": "6dec1c7c0e6951e081bed6ada645d324973d14ecfc09fdd7dd01168104c7a767",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/StringDecoder.class",
+      "change": "added",
+      "bytes": 360,
+      "sha256": "ac2b4114e2f7ed1fd2bf089bb3e2e48601c17d56a1d5220207143d96d672a55d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/StringEncoder.class",
+      "change": "added",
+      "bytes": 360,
+      "sha256": "fb4cb0f040b3eb4a1637f97478f328d7e4f90dda5a27581b71058e6333d9fcb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/StringEncoderComparator.class",
+      "change": "added",
+      "bytes": 1681,
+      "sha256": "747852849bc86af5eec8642aca56b9c78d01ec7e930b182f9b33efc027b0646f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/AbstractBaseNCodecStreamBuilder.class",
+      "change": "added",
+      "bytes": 2065,
+      "sha256": "fb952b055e3a211e3b6ede34f560a1efefceb4c0d88b2168af5e35778c0a6a0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16$Builder.class",
+      "change": "added",
+      "bytes": 2227,
+      "sha256": "b5007a6239cdb287317697b24300ef104c32c7c26a77a39814d28ab8191a5b4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16.class",
+      "change": "added",
+      "bytes": 6979,
+      "sha256": "387ee72edcaa2c968e10734882472ec8706717e903a7f86a774584610247b3f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "c7b28ccd185b1ea228acf004b7d2cf0bc10fc0e7f6613660a0b66950a0cae164",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16InputStream.class",
+      "change": "added",
+      "bytes": 2747,
+      "sha256": "a6798be6c1dc8098cb1503092b9bfa0e6b48a6b0b7f000eb5ce41e21000a7d5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "eaf5752bb15dd7c54b920a468c456f4ea7d27486d8605d224b8db9f0814832ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream.class",
+      "change": "added",
+      "bytes": 2775,
+      "sha256": "2300c9f4e90c6b0b70b70b8c60cdc8df6f1ef50397e9c48208cde32e32121a9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32$Builder.class",
+      "change": "added",
+      "bytes": 2096,
+      "sha256": "eedbba34d34c52e64caa3161a6688ea2394e208fb942be19e142b5e91e011d75",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32.class",
+      "change": "added",
+      "bytes": 13015,
+      "sha256": "ef3a92e05670bbea95fcd57d82e2c8b6c35320ec6b3f2572d405b0212c53c808",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "10a3ae6748628e648eabc9492f6ca43ae0a352e74d0449bee01566be8f23020c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32InputStream.class",
+      "change": "added",
+      "bytes": 3480,
+      "sha256": "b0d91bb3124eed17419a7086a6f4d14ec6fc9e7f5524bc595c691abb345df326",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "e21c38e40f3d816f86cb672f773a1473dc64a100ad0ccad0268b61ace6080f79",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream.class",
+      "change": "added",
+      "bytes": 3503,
+      "sha256": "d26112a739f674b11f930e94d2beec85cff48560a71f70f83c37bd7345fb9ec6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45$Builder.class",
+      "change": "added",
+      "bytes": 3474,
+      "sha256": "619ed59c8c297b76695dedda4b6224156433986f2ef323c105f996dbe8db768d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45.class",
+      "change": "added",
+      "bytes": 6512,
+      "sha256": "089575661c61742b339d3712d4717bccfbf9253de864f588fc4e6427d28392ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "759227c559476031964e6fdc9333fe3fe56c3b1350ee150123d0338eee485fdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45InputStream.class",
+      "change": "added",
+      "bytes": 1599,
+      "sha256": "94f3c914d7f56085144bf0aa710e7d9b4afdcb4a627c3ac7acc2ce6600b28e96",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "52c67c8923f74248580551e61d5aba832a412ffc3a0526b0ac8fd26d45f5d64a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream.class",
+      "change": "added",
+      "bytes": 1637,
+      "sha256": "2345fa8ec41a924453a14b6d06cc18dce00c97f1ab2e4948fce8a0b2ee80131e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58$Builder.class",
+      "change": "added",
+      "bytes": 2745,
+      "sha256": "a0d5cc99c1e95db08eb1dc73cc7c867ba45cb75c0159450cb5f1b68e5a24f5d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58.class",
+      "change": "added",
+      "bytes": 9941,
+      "sha256": "409a88e87a95fcd100dc75c9d273064b0c2ad3b0436df1887669cebb9444bc48",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "188f716085375870b18f534dd90875c2466f04582486fede9854df1521e6d8f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58InputStream.class",
+      "change": "added",
+      "bytes": 1599,
+      "sha256": "1585837ff51ef3dded6be5c8e79f1ef0a3fd9c374bd87de9fe6fd6e388341254",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "3f1f1ccb92024754e03230e8238ebcacd3fa2ff947fa61183a8cbdeb0df5036a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream.class",
+      "change": "added",
+      "bytes": 1637,
+      "sha256": "7324c66fd24695c24e38aa57241907acbbc8e2937618cfb8c533c48ba0f5bedf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64$Builder.class",
+      "change": "added",
+      "bytes": 2628,
+      "sha256": "234669a68988c0a010b8b4d33e1083e4085f060502015677f0f96afb4c8d46f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64$DecodeTableFormat.class",
+      "change": "added",
+      "bytes": 1504,
+      "sha256": "a2dd7617faaa290f336946fe8588795a67f4bfe1c3705c730f7b369f78faccce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64.class",
+      "change": "added",
+      "bytes": 16701,
+      "sha256": "b0ef8cdb5b75003f6b3a4f2e4a8dfc9ef0e56bed747aa5c91cbcd21a7d84a441",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "85bef90b231bcbc91b85a7d55818caaaace147d38ffd572c6d7ab782491ce463",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64InputStream.class",
+      "change": "added",
+      "bytes": 3480,
+      "sha256": "118803933b0a16079bd1b371c63426fc7e7b54d32c856643cf692fd4385c8dea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "84a9e0af37ab3c731bdd673a7eeb0e7f50410cd9f33e7e148e45a38f38c76287",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream.class",
+      "change": "added",
+      "bytes": 3503,
+      "sha256": "5e40c5ec3e3181adc75d6cc4447db2782387de79316357538905266b30ff2bfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$AbstractBuilder.class",
+      "change": "added",
+      "bytes": 4601,
+      "sha256": "21c103bf2ef324c0f7ca2ff133032f3890584915d7a4050c99966cc4b2e16aef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$Context.class",
+      "change": "added",
+      "bytes": 1532,
+      "sha256": "9830b665ae666f45ad52a621e55d5b780c9956505a0f6be9ecbdd51760862975",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodec.class",
+      "change": "added",
+      "bytes": 12197,
+      "sha256": "e354ef442470cfb59aa6a59dc1240fb189c6bfea3abc52bc6fc574a027700b01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream$AbstracBuilder.class",
+      "change": "added",
+      "bytes": 1899,
+      "sha256": "2fa1cf63b9a6a907148720cded62c3016ae4bd849d603166fc7a2c123265b6f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream.class",
+      "change": "added",
+      "bytes": 5213,
+      "sha256": "c3420344e94993a2311084c396364355ef9918de818bdc727dbd01b6941b7671",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream$AbstractBuilder.class",
+      "change": "added",
+      "bytes": 1574,
+      "sha256": "fd7e1587b4cee64aee8ef5efb201f704dbbf940de80c0ffd95fc49510ed98a58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream.class",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "c50026973a828b0f0c6f0313576d0297414cff36f8def881945230ced85e05dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BinaryCodec.class",
+      "change": "added",
+      "bytes": 3539,
+      "sha256": "29dff476f19c26c4beceec0f251f9b12a0f0e26b1d12632954ad51aa5bc41ac5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/CharSequenceUtils.class",
+      "change": "added",
+      "bytes": 1282,
+      "sha256": "9a7213b745bb96c79539a3f8bf6253c374f80fde6fd853b89e3e825a5f5dd9f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Hex.class",
+      "change": "added",
+      "bytes": 7503,
+      "sha256": "026edc2e6215c61c3ee3538b0f9386a6f508cf4b3d3c966cf4d8b74d18e53ffb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/StringUtils.class",
+      "change": "added",
+      "bytes": 4677,
+      "sha256": "56e2523d08f7f531fc23f9ddb250c2a9e395261fed0d772064d2e431b7be5007",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/cli/Digest.class",
+      "change": "added",
+      "bytes": 5965,
+      "sha256": "f3a6eb663f15c165036d1ed2e818dcffabc1b3237e99d7c755aedef017ad2ebf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/B64.class",
+      "change": "added",
+      "bytes": 1687,
+      "sha256": "64a17caf9922e50a707b5e72a1564e3453b0e1f52d5be93f62ef84d91f8eeeb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3$ChunkState.class",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "129f718094e672a29554c248289b5b0e679accbcf8937a20761ff3f76ea37701",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3$EngineState.class",
+      "change": "added",
+      "bytes": 2793,
+      "sha256": "95aec24d0d0c1f7ae0793a4b7fde666dfa7c6f02a1aab09adf399ef0ee1635c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3$Output.class",
+      "change": "added",
+      "bytes": 1543,
+      "sha256": "f19b50be81636cdc6741985d85f31c2824ba09bdc78c1c372b9e000ad6d9fe01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3.class",
+      "change": "added",
+      "bytes": 7466,
+      "sha256": "5662309d3c6ccaff6c89448e2430ee5fa6af13b68d4b714bb2cc69a98b31ee6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Crc16$Builder.class",
+      "change": "added",
+      "bytes": 1659,
+      "sha256": "74af0b0b50befaf21492f8cd61ed5a7b823e5df00f4ec71f816dd25752b05e3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Crc16.class",
+      "change": "added",
+      "bytes": 14389,
+      "sha256": "35453a250fbcf85081f30ed61912f5515dc992c1871384bdbdf1a815bbe95891",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Crypt.class",
+      "change": "added",
+      "bytes": 1592,
+      "sha256": "97c18afbb149072ce79d2429eef07e11ade2f25d2f6df1baa50e3dfd7c326828",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/DigestUtils.class",
+      "change": "added",
+      "bytes": 17049,
+      "sha256": "08c10c9eed6bb7b569d4b9284543409fbe51e2ebafc9626fd365c9ad48172b6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$DirectoryEntry.class",
+      "change": "added",
+      "bytes": 3606,
+      "sha256": "f191407b494c7b343ee556a5ea3639e0fee698e8cf2061998d15f42620f4fb5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$FileMode.class",
+      "change": "added",
+      "bytes": 2385,
+      "sha256": "260906df66145ac9abc0b089447924af456e3a837a48faaded99da5f0f6db02a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder$BlobIdSupplier.class",
+      "change": "added",
+      "bytes": 543,
+      "sha256": "c936b8b4a2cbe2512ce4dbbd9dab160d7e745daaa3453611f879f0e6220a8528",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder.class",
+      "change": "added",
+      "bytes": 9753,
+      "sha256": "76e1953e04fec9117a8151e95723fbfe44c372a693b987b1456e905bf76d3b77",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers.class",
+      "change": "added",
+      "bytes": 3832,
+      "sha256": "e0f59b999b539c368642c57752a1c617b9b16880c6293b251796a07da1ce5910",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/HmacAlgorithms.class",
+      "change": "added",
+      "bytes": 1916,
+      "sha256": "fdef606a80bce4cb9a1de6f2f16f20baba51a9e76200a96fd3ea8a413ed4b37d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/HmacUtils.class",
+      "change": "added",
+      "bytes": 10826,
+      "sha256": "41e421a8b49d7fc8024af0fd80ed6e4a9e0d7b4d1cfac40ddecde6fbe866be06",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Md5Crypt.class",
+      "change": "added",
+      "bytes": 5422,
+      "sha256": "917a0117ec679af195dfc6a66e89bac7a33855f824f88c9c716746bbff6a72a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MessageDigestAlgorithms.class",
+      "change": "added",
+      "bytes": 1193,
+      "sha256": "b1c04d03df9edd1615e2999ef0de6721062198cc42ae1e2c5fde2f03c1e931ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash.class",
+      "change": "added",
+      "bytes": 764,
+      "sha256": "c03eb539bc28698f0701b5a8e97b441cd80c449ffcc92429ba5fde88dc219778",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash2.class",
+      "change": "added",
+      "bytes": 2725,
+      "sha256": "f4345059bbcc0f4a384fe089bd2e43e8732fe3aeaa8979986a1a42debaed618b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32.class",
+      "change": "added",
+      "bytes": 1216,
+      "sha256": "f53a55901d3001504b3c9dccd1daa2b071aeb5bcfdc9a7c7aa7b27820e763092",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32x86.class",
+      "change": "added",
+      "bytes": 3142,
+      "sha256": "dbfd2eecd0fa64886038e68fba2df03512031137db26291ddf1a1b639cffaaf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash3.class",
+      "change": "added",
+      "bytes": 7799,
+      "sha256": "a1672477b8dd8d21099fdfe5177f9e1487b1c0a438262983749b15f181e4314e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32.class",
+      "change": "added",
+      "bytes": 27926,
+      "sha256": "8ca0153d1035d19c652b7bc88b68af0282857a00e6ccb39e511ee26699fe9817",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32C.class",
+      "change": "added",
+      "bytes": 28234,
+      "sha256": "7b35078f6274dd794242a5786fe6a66860540b2ebf56436f993e7b833a5e05f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Sha2Crypt.class",
+      "change": "added",
+      "bytes": 6595,
+      "sha256": "9c5440cbe2c9f917c86d567a3e281f0c63a46c67b54baad7a22e7b6f30b4b1b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/UnixCrypt.class",
+      "change": "added",
+      "bytes": 16869,
+      "sha256": "0828a435b2524981503e26b30e9eb84f37b9b5a2aa2db820069036ec7214192c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/XXHash32.class",
+      "change": "added",
+      "bytes": 2950,
+      "sha256": "fa5e76d3fc43f39ff32b87f899a7c38cbbeb6e14a387e08aa9ebe354abad3a84",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/AbstractCaverphone.class",
+      "change": "added",
+      "bytes": 1165,
+      "sha256": "128da5ffbdb09653bba6fa90cba470da34c5ee7819a9b0c49fb730e8540a1bee",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Caverphone.class",
+      "change": "added",
+      "bytes": 1586,
+      "sha256": "c9d6185187b2a83cdc9a66863a20f53b9a3da23847c3dabcfb9bf164805934c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Caverphone1.class",
+      "change": "added",
+      "bytes": 3049,
+      "sha256": "07771b5b2487f9987a971c00651e9ede967b98c668f3d8425826794990ebf39d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Caverphone2.class",
+      "change": "added",
+      "bytes": 3182,
+      "sha256": "2ed3c777ea0ae2ecb0f7ba25da9d22dd4a7888954d00e3b3d02ab348e6a4b0db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneBuffer.class",
+      "change": "added",
+      "bytes": 1153,
+      "sha256": "94df91bef9b96fd815b8ab116f437540ee316d469091cd49f91e9cb591146ac2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneInputBuffer.class",
+      "change": "added",
+      "bytes": 1443,
+      "sha256": "2b6c5ebf10f0e95d05aa7b631533c975b39dc62e04f65edf1775ce2fcb58ad2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneOutputBuffer.class",
+      "change": "added",
+      "bytes": 1400,
+      "sha256": "d5f652404956c6cd1a1a76ba535d0cceb3313bf045883ecd6c8632ce772716db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic.class",
+      "change": "added",
+      "bytes": 4629,
+      "sha256": "aee57a57e394164750956b4f21853edf4470ca1803f6f7dbf030e314a6cd85dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Branch.class",
+      "change": "added",
+      "bytes": 2084,
+      "sha256": "483c54ccfdce9d039000379af564891782624675fdd811890c11090dc867eca9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Rule.class",
+      "change": "added",
+      "bytes": 2337,
+      "sha256": "dd02660a5f4ecafe8807c0b19b4b95e3d22203b43273320dc203b8173aea19dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex.class",
+      "change": "added",
+      "bytes": 11279,
+      "sha256": "a2a2b10393930f43f912f7e18b24317ae798eb91577be7ebbffd04f02678d0a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone$DoubleMetaphoneResult.class",
+      "change": "added",
+      "bytes": 2820,
+      "sha256": "616c487c68f1106e84f493bfc280eb165499d8cf1f15073584d374942f2e3591",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone.class",
+      "change": "added",
+      "bytes": 16262,
+      "sha256": "4fc02d16feb6ffe47b8d2de388116d381425fe9d49afdb63478bb102d8543691",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/MatchRatingApproachEncoder.class",
+      "change": "added",
+      "bytes": 6500,
+      "sha256": "35d698f3424a57813545d819fa1cb58d9146a6fea639e5548353643abe9ccbb0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Metaphone.class",
+      "change": "added",
+      "bytes": 5497,
+      "sha256": "85c6ed2aaa91a79c44e265fb23c4c43a576f90941132f078d9daca955c3a451e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Nysiis.class",
+      "change": "added",
+      "bytes": 4523,
+      "sha256": "ce3b599aa1275028d4fc4401b69fc2cc3ea23a2b4478304b4fead820ce599e35",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/RefinedSoundex.class",
+      "change": "added",
+      "bytes": 2840,
+      "sha256": "7647b3bea71fcfdeb52524280031f3a1e959bd3f2d7e26a6e6865329f463382a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Soundex.class",
+      "change": "added",
+      "bytes": 4308,
+      "sha256": "ac751504e8aa3e38debe5a9cd9fdc672257dbfc7989e385285bdaad29327cc88",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/SoundexUtils.class",
+      "change": "added",
+      "bytes": 2054,
+      "sha256": "0701d54409cbfbf268566ab3d413e282c3df23b582bf2c5c6f30fd0c152f1bdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder$Builder.class",
+      "change": "added",
+      "bytes": 1483,
+      "sha256": "d6d3de196283cb94e46e03f7db61eb98e2645888f526ca63b7d90af3d7e73aeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder.class",
+      "change": "added",
+      "bytes": 3778,
+      "sha256": "759857958ce48c4cda7bafda68f012216955e9364e9275f818f815be9e66352d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Lang$LangRule.class",
+      "change": "added",
+      "bytes": 1227,
+      "sha256": "846e508c9dca9a08fb8439791e3a2723ccbdac2e5062359c895353cf6944e1cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Lang.class",
+      "change": "added",
+      "bytes": 7600,
+      "sha256": "8879eb1f63bf99749e5567be80983560d1ef2878c6e5c206511e75799e4ee1e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$1.class",
+      "change": "added",
+      "bytes": 1576,
+      "sha256": "c8703f7c1b090d6ca05abbab96933b6891228ee48e18c16418eec95341e03bf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$2.class",
+      "change": "added",
+      "bytes": 1574,
+      "sha256": "86e8f904e0ccfd2bd8550d140da1fb1050a1688f9f69afed263130f13a0b609c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$LanguageSet.class",
+      "change": "added",
+      "bytes": 1501,
+      "sha256": "073e7f38fe43d746697447cbc4446377a977d64f6f9f0d250d37a6c185c1ec8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$SomeLanguages.class",
+      "change": "added",
+      "bytes": 4115,
+      "sha256": "753bb3a8c982233e1ac6fc41500db3e127d1e5f741ad10fbc58f0909824d9e80",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages.class",
+      "change": "added",
+      "bytes": 4145,
+      "sha256": "a356847732b8d5e6d10c7b7f95999bfaf036c4ef6145398b481db40bf2c31cb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/NameType.class",
+      "change": "added",
+      "bytes": 1567,
+      "sha256": "ec14f32e0291eb5c4aceb305bb365b7ace78253c9000cb836e04eb951a12aaeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$1.class",
+      "change": "added",
+      "bytes": 922,
+      "sha256": "0fdae0264e83a2eb92bbbbeb705a260621ff7b33b2827d9cc83e9b9677440f62",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$Builder.class",
+      "change": "added",
+      "bytes": 3229,
+      "sha256": "9b5c8eb7fab6729ddc3b70a9937cac7060d71c6e07e908cfc13488bf04833f90",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$PhonemeBuilder.class",
+      "change": "added",
+      "bytes": 5484,
+      "sha256": "ed175d87b2a41dc914ed1c08433752c31ed1aedabc36342263f7389be522480f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$RulesApplication.class",
+      "change": "added",
+      "bytes": 3458,
+      "sha256": "2e534644009ad05869c5673115a15298ae213b64c5c114e061534c8cc4d628ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine.class",
+      "change": "added",
+      "bytes": 15389,
+      "sha256": "78cfdefe2f0ed29667db1c08bd59f7a2ddcef6e7909ad0f8193bccf1d611d881",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/ResourceConstants.class",
+      "change": "added",
+      "bytes": 835,
+      "sha256": "dc9c807a05e06095b1cd029d1f3a3b018eb789cb95445eb221437654d8511d36",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$1.class",
+      "change": "added",
+      "bytes": 1972,
+      "sha256": "7c2c1f346327d98feb2301dbe88c0a12dc1aeb9b2824a63e324616d26a158120",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$2.class",
+      "change": "added",
+      "bytes": 1268,
+      "sha256": "0978bcf33047e1034e85cc1615ac3ba218722ab76fac4c5389ef76b4e2b63968",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$Phoneme.class",
+      "change": "added",
+      "bytes": 5155,
+      "sha256": "ed5d1ae4ec6b3e02f8a74e0c491924a0e058262ed8b04a54f5a2eaad4d695a59",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeExpr.class",
+      "change": "added",
+      "bytes": 933,
+      "sha256": "da8ff82bb12fa00ba1a3fc98597fe3a7501b0b6e0bae84be218bd5663bf75fc2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeList.class",
+      "change": "added",
+      "bytes": 1396,
+      "sha256": "0e01c236fdf40a289d8d0462ad41ceeb59fa1c82c493f485449f742695ecfb96",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$RPattern.class",
+      "change": "added",
+      "bytes": 343,
+      "sha256": "5bff61240692364c50d505c54ac52b461d4e4f69d51c89586e62c8cda6d5a51b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule.class",
+      "change": "added",
+      "bytes": 20081,
+      "sha256": "d58b92e528404354a8859dbddf24216cb48868f3255e955b3d1eb757ce0066ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/RuleType.class",
+      "change": "added",
+      "bytes": 1565,
+      "sha256": "a1170a9c78170987ed8ce434817737b395f7d1c754e4ea15caaa90aab56b24de",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/BCodec.class",
+      "change": "added",
+      "bytes": 5510,
+      "sha256": "933f5cfb0ba0d4b339c3eed3ab4f65881720b670c328ce57b34b01c9ca371bab",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/PercentCodec.class",
+      "change": "added",
+      "bytes": 5612,
+      "sha256": "aa5fed6f253bcb6e64659749355f6b3581c5d52dbfb80742e4d0998436112ba5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/QCodec.class",
+      "change": "added",
+      "bytes": 5387,
+      "sha256": "3930483d124f38e4c22e5d1be9bd918b65d6c25cc2100060919c51c640a5a81e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/QuotedPrintableCodec.class",
+      "change": "added",
+      "bytes": 7764,
+      "sha256": "2cc96c5b5ab66486983efa110aa826e0b0539c39517e334d3e817c778be988f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/RFC1522Codec.class",
+      "change": "added",
+      "bytes": 3957,
+      "sha256": "0abb4bbde9b1e28872be08eba90ec565307c164db1d88b5816d8549a24f939a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/URLCodec.class",
+      "change": "added",
+      "bytes": 5533,
+      "sha256": "6f91585525cd135febee19a0c1cb86b2a0a6b485c911bee5831ca47636be1580",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/Utils.class",
+      "change": "added",
+      "bytes": 1385,
+      "sha256": "aedec40673a9a425592b235d7b0ffeaea15cca0c4e20e46d7da517c889c3f0d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/harness/EquivalenceHarness.class",
+      "change": "added",
+      "bytes": 1685,
+      "sha256": "15a70db0b1c862673d52c3acdd081a8d0eac78c4b85a147968eddb8e9b87ab02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/harness/EquivalenceHarness.java",
+      "change": "added",
+      "bytes": 2454,
+      "sha256": "759c1fdc2de663e1b0a52d03608e0f2ef576dac9ac0e6b9064e67a9791e36718",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 939283,
+      "sha256": "6e37c4941a637132c1a026477b5e6d23c94ea5ccba458aabc192ac0c1cc8c138",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc-probes/before/org/apache/commons/codec/DecoderException.class",
+      "change": "added",
+      "bytes": 1272,
+      "sha256": "7922c7f2d5fd5c11518324a7d57c0d293d4dca0052afa719e8db46f6622c6dc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc-probes/jvmcontract/StubProbe.class",
+      "change": "added",
+      "bytes": 437,
+      "sha256": "2a7fa07382e086b7f1a68c76c4bcf613f04ae41b71d0013e40351a154062595a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc-probes/org/apache/commons/codec/DecoderException.class",
+      "change": "added",
+      "bytes": 1258,
+      "sha256": "83dfec1d019f7972cb3cb46e465c9c5451f4e01c41e232cbdd1524367c02350d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc-probes.txt",
+      "change": "added",
+      "bytes": 6689,
+      "sha256": "bb67794c7b2c606767453c1e880002018eec158e03562734fd0c178f27065e84",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc-symex.txt",
+      "change": "added",
+      "bytes": 927686,
+      "sha256": "d40f0bd0832703ccd6e8c48f8feecf9d731fd4eab8cf5e075946cd5e7a8d113e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jbmc.log",
+      "change": "added",
+      "bytes": 744013,
+      "sha256": "d722cedad755928c45a4c876c9153d3361001dd18e28c692f0d142ffb3deff64",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-change/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/BinaryDecoder.class",
+      "change": "added",
+      "bytes": 328,
+      "sha256": "f2bd2ecd9273dbe458fe05081fb23041a0d0d2e83eb35728996adc2b532c429b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/BinaryEncoder.class",
+      "change": "added",
+      "bytes": 328,
+      "sha256": "8311605a7d5dddacbd5a3b89bc1771ac238339b4cd65e9cb70d3e203cc1083ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/CharEncoding.class",
+      "change": "added",
+      "bytes": 927,
+      "sha256": "df0de19c70a1e9f586593a4a0ca1cbab1de7d21221a24f564884c6c2605c1e20",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Charsets.class",
+      "change": "added",
+      "bytes": 1363,
+      "sha256": "fbb418b948eba43eb7ac373f5beae38615ed28ede986760254758d6d0e2bee73",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/CodecPolicy.class",
+      "change": "added",
+      "bytes": 1213,
+      "sha256": "7724f388f2978ac07b0445615666f5709c9ec6c5af27509458ba99e001634c2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Decoder.class",
+      "change": "added",
+      "bytes": 301,
+      "sha256": "ececa499332067594ad6b62228c51286879fcc5d92b3416251e326d33197cd4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/DecoderException.class",
+      "change": "added",
+      "bytes": 1170,
+      "sha256": "5615c15c420dac64d4470ef933e2a1571482d361a2b629c6b7f27607f79b2ef1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Encoder.class",
+      "change": "added",
+      "bytes": 301,
+      "sha256": "8a7a828e7a50cd9ac81df18aced7d6cd1d9a306d537144153a72b066143e88ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/EncoderException.class",
+      "change": "added",
+      "bytes": 892,
+      "sha256": "9e5ada94f2d4ad0a7ece2c974ee5b981c02eb7d8c47b6b2d6d92e4484e68d309",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Resources.class",
+      "change": "added",
+      "bytes": 1332,
+      "sha256": "6dec1c7c0e6951e081bed6ada645d324973d14ecfc09fdd7dd01168104c7a767",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/StringDecoder.class",
+      "change": "added",
+      "bytes": 360,
+      "sha256": "ac2b4114e2f7ed1fd2bf089bb3e2e48601c17d56a1d5220207143d96d672a55d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/StringEncoder.class",
+      "change": "added",
+      "bytes": 360,
+      "sha256": "fb4cb0f040b3eb4a1637f97478f328d7e4f90dda5a27581b71058e6333d9fcb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/StringEncoderComparator.class",
+      "change": "added",
+      "bytes": 1681,
+      "sha256": "747852849bc86af5eec8642aca56b9c78d01ec7e930b182f9b33efc027b0646f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/AbstractBaseNCodecStreamBuilder.class",
+      "change": "added",
+      "bytes": 2065,
+      "sha256": "fb952b055e3a211e3b6ede34f560a1efefceb4c0d88b2168af5e35778c0a6a0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16$Builder.class",
+      "change": "added",
+      "bytes": 2227,
+      "sha256": "b5007a6239cdb287317697b24300ef104c32c7c26a77a39814d28ab8191a5b4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16.class",
+      "change": "added",
+      "bytes": 6979,
+      "sha256": "387ee72edcaa2c968e10734882472ec8706717e903a7f86a774584610247b3f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "c7b28ccd185b1ea228acf004b7d2cf0bc10fc0e7f6613660a0b66950a0cae164",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16InputStream.class",
+      "change": "added",
+      "bytes": 2747,
+      "sha256": "a6798be6c1dc8098cb1503092b9bfa0e6b48a6b0b7f000eb5ce41e21000a7d5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "eaf5752bb15dd7c54b920a468c456f4ea7d27486d8605d224b8db9f0814832ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream.class",
+      "change": "added",
+      "bytes": 2775,
+      "sha256": "2300c9f4e90c6b0b70b70b8c60cdc8df6f1ef50397e9c48208cde32e32121a9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32$Builder.class",
+      "change": "added",
+      "bytes": 2096,
+      "sha256": "eedbba34d34c52e64caa3161a6688ea2394e208fb942be19e142b5e91e011d75",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32.class",
+      "change": "added",
+      "bytes": 13015,
+      "sha256": "ef3a92e05670bbea95fcd57d82e2c8b6c35320ec6b3f2572d405b0212c53c808",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "10a3ae6748628e648eabc9492f6ca43ae0a352e74d0449bee01566be8f23020c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32InputStream.class",
+      "change": "added",
+      "bytes": 3480,
+      "sha256": "b0d91bb3124eed17419a7086a6f4d14ec6fc9e7f5524bc595c691abb345df326",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "e21c38e40f3d816f86cb672f773a1473dc64a100ad0ccad0268b61ace6080f79",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream.class",
+      "change": "added",
+      "bytes": 3503,
+      "sha256": "d26112a739f674b11f930e94d2beec85cff48560a71f70f83c37bd7345fb9ec6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45$Builder.class",
+      "change": "added",
+      "bytes": 3474,
+      "sha256": "619ed59c8c297b76695dedda4b6224156433986f2ef323c105f996dbe8db768d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45.class",
+      "change": "added",
+      "bytes": 6512,
+      "sha256": "089575661c61742b339d3712d4717bccfbf9253de864f588fc4e6427d28392ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "759227c559476031964e6fdc9333fe3fe56c3b1350ee150123d0338eee485fdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45InputStream.class",
+      "change": "added",
+      "bytes": 1599,
+      "sha256": "94f3c914d7f56085144bf0aa710e7d9b4afdcb4a627c3ac7acc2ce6600b28e96",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "52c67c8923f74248580551e61d5aba832a412ffc3a0526b0ac8fd26d45f5d64a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream.class",
+      "change": "added",
+      "bytes": 1637,
+      "sha256": "2345fa8ec41a924453a14b6d06cc18dce00c97f1ab2e4948fce8a0b2ee80131e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58$Builder.class",
+      "change": "added",
+      "bytes": 2745,
+      "sha256": "a0d5cc99c1e95db08eb1dc73cc7c867ba45cb75c0159450cb5f1b68e5a24f5d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58.class",
+      "change": "added",
+      "bytes": 9941,
+      "sha256": "409a88e87a95fcd100dc75c9d273064b0c2ad3b0436df1887669cebb9444bc48",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "188f716085375870b18f534dd90875c2466f04582486fede9854df1521e6d8f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58InputStream.class",
+      "change": "added",
+      "bytes": 1599,
+      "sha256": "1585837ff51ef3dded6be5c8e79f1ef0a3fd9c374bd87de9fe6fd6e388341254",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "3f1f1ccb92024754e03230e8238ebcacd3fa2ff947fa61183a8cbdeb0df5036a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream.class",
+      "change": "added",
+      "bytes": 1637,
+      "sha256": "7324c66fd24695c24e38aa57241907acbbc8e2937618cfb8c533c48ba0f5bedf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64$Builder.class",
+      "change": "added",
+      "bytes": 2628,
+      "sha256": "234669a68988c0a010b8b4d33e1083e4085f060502015677f0f96afb4c8d46f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64$DecodeTableFormat.class",
+      "change": "added",
+      "bytes": 1504,
+      "sha256": "a2dd7617faaa290f336946fe8588795a67f4bfe1c3705c730f7b369f78faccce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64.class",
+      "change": "added",
+      "bytes": 16701,
+      "sha256": "b0ef8cdb5b75003f6b3a4f2e4a8dfc9ef0e56bed747aa5c91cbcd21a7d84a441",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64InputStream$Builder.class",
+      "change": "added",
+      "bytes": 1544,
+      "sha256": "85bef90b231bcbc91b85a7d55818caaaace147d38ffd572c6d7ab782491ce463",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64InputStream.class",
+      "change": "added",
+      "bytes": 3480,
+      "sha256": "118803933b0a16079bd1b371c63426fc7e7b54d32c856643cf692fd4385c8dea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream$Builder.class",
+      "change": "added",
+      "bytes": 1668,
+      "sha256": "84a9e0af37ab3c731bdd673a7eeb0e7f50410cd9f33e7e148e45a38f38c76287",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream.class",
+      "change": "added",
+      "bytes": 3503,
+      "sha256": "5e40c5ec3e3181adc75d6cc4447db2782387de79316357538905266b30ff2bfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$AbstractBuilder.class",
+      "change": "added",
+      "bytes": 4601,
+      "sha256": "21c103bf2ef324c0f7ca2ff133032f3890584915d7a4050c99966cc4b2e16aef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$Context.class",
+      "change": "added",
+      "bytes": 1532,
+      "sha256": "9830b665ae666f45ad52a621e55d5b780c9956505a0f6be9ecbdd51760862975",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodec.class",
+      "change": "added",
+      "bytes": 12197,
+      "sha256": "e354ef442470cfb59aa6a59dc1240fb189c6bfea3abc52bc6fc574a027700b01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream$AbstracBuilder.class",
+      "change": "added",
+      "bytes": 1899,
+      "sha256": "2fa1cf63b9a6a907148720cded62c3016ae4bd849d603166fc7a2c123265b6f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream.class",
+      "change": "added",
+      "bytes": 5213,
+      "sha256": "c3420344e94993a2311084c396364355ef9918de818bdc727dbd01b6941b7671",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream$AbstractBuilder.class",
+      "change": "added",
+      "bytes": 1574,
+      "sha256": "fd7e1587b4cee64aee8ef5efb201f704dbbf940de80c0ffd95fc49510ed98a58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream.class",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "c50026973a828b0f0c6f0313576d0297414cff36f8def881945230ced85e05dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BinaryCodec.class",
+      "change": "added",
+      "bytes": 3539,
+      "sha256": "29dff476f19c26c4beceec0f251f9b12a0f0e26b1d12632954ad51aa5bc41ac5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/CharSequenceUtils.class",
+      "change": "added",
+      "bytes": 1282,
+      "sha256": "9a7213b745bb96c79539a3f8bf6253c374f80fde6fd853b89e3e825a5f5dd9f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Hex.class",
+      "change": "added",
+      "bytes": 7503,
+      "sha256": "026edc2e6215c61c3ee3538b0f9386a6f508cf4b3d3c966cf4d8b74d18e53ffb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/StringUtils.class",
+      "change": "added",
+      "bytes": 4677,
+      "sha256": "56e2523d08f7f531fc23f9ddb250c2a9e395261fed0d772064d2e431b7be5007",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/cli/Digest.class",
+      "change": "added",
+      "bytes": 5965,
+      "sha256": "f3a6eb663f15c165036d1ed2e818dcffabc1b3237e99d7c755aedef017ad2ebf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/B64.class",
+      "change": "added",
+      "bytes": 1687,
+      "sha256": "64a17caf9922e50a707b5e72a1564e3453b0e1f52d5be93f62ef84d91f8eeeb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3$ChunkState.class",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "129f718094e672a29554c248289b5b0e679accbcf8937a20761ff3f76ea37701",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3$EngineState.class",
+      "change": "added",
+      "bytes": 2793,
+      "sha256": "95aec24d0d0c1f7ae0793a4b7fde666dfa7c6f02a1aab09adf399ef0ee1635c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3$Output.class",
+      "change": "added",
+      "bytes": 1543,
+      "sha256": "f19b50be81636cdc6741985d85f31c2824ba09bdc78c1c372b9e000ad6d9fe01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3.class",
+      "change": "added",
+      "bytes": 7466,
+      "sha256": "5662309d3c6ccaff6c89448e2430ee5fa6af13b68d4b714bb2cc69a98b31ee6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Crc16$Builder.class",
+      "change": "added",
+      "bytes": 1659,
+      "sha256": "74af0b0b50befaf21492f8cd61ed5a7b823e5df00f4ec71f816dd25752b05e3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Crc16.class",
+      "change": "added",
+      "bytes": 14389,
+      "sha256": "35453a250fbcf85081f30ed61912f5515dc992c1871384bdbdf1a815bbe95891",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Crypt.class",
+      "change": "added",
+      "bytes": 1592,
+      "sha256": "97c18afbb149072ce79d2429eef07e11ade2f25d2f6df1baa50e3dfd7c326828",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/DigestUtils.class",
+      "change": "added",
+      "bytes": 17049,
+      "sha256": "08c10c9eed6bb7b569d4b9284543409fbe51e2ebafc9626fd365c9ad48172b6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$DirectoryEntry.class",
+      "change": "added",
+      "bytes": 3606,
+      "sha256": "f191407b494c7b343ee556a5ea3639e0fee698e8cf2061998d15f42620f4fb5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$FileMode.class",
+      "change": "added",
+      "bytes": 2385,
+      "sha256": "260906df66145ac9abc0b089447924af456e3a837a48faaded99da5f0f6db02a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder$BlobIdSupplier.class",
+      "change": "added",
+      "bytes": 543,
+      "sha256": "c936b8b4a2cbe2512ce4dbbd9dab160d7e745daaa3453611f879f0e6220a8528",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder.class",
+      "change": "added",
+      "bytes": 9753,
+      "sha256": "76e1953e04fec9117a8151e95723fbfe44c372a693b987b1456e905bf76d3b77",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers.class",
+      "change": "added",
+      "bytes": 3832,
+      "sha256": "e0f59b999b539c368642c57752a1c617b9b16880c6293b251796a07da1ce5910",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/HmacAlgorithms.class",
+      "change": "added",
+      "bytes": 1916,
+      "sha256": "fdef606a80bce4cb9a1de6f2f16f20baba51a9e76200a96fd3ea8a413ed4b37d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/HmacUtils.class",
+      "change": "added",
+      "bytes": 10826,
+      "sha256": "41e421a8b49d7fc8024af0fd80ed6e4a9e0d7b4d1cfac40ddecde6fbe866be06",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Md5Crypt.class",
+      "change": "added",
+      "bytes": 5422,
+      "sha256": "917a0117ec679af195dfc6a66e89bac7a33855f824f88c9c716746bbff6a72a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MessageDigestAlgorithms.class",
+      "change": "added",
+      "bytes": 1193,
+      "sha256": "b1c04d03df9edd1615e2999ef0de6721062198cc42ae1e2c5fde2f03c1e931ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash.class",
+      "change": "added",
+      "bytes": 764,
+      "sha256": "c03eb539bc28698f0701b5a8e97b441cd80c449ffcc92429ba5fde88dc219778",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash2.class",
+      "change": "added",
+      "bytes": 2725,
+      "sha256": "f4345059bbcc0f4a384fe089bd2e43e8732fe3aeaa8979986a1a42debaed618b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32.class",
+      "change": "added",
+      "bytes": 1216,
+      "sha256": "f53a55901d3001504b3c9dccd1daa2b071aeb5bcfdc9a7c7aa7b27820e763092",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32x86.class",
+      "change": "added",
+      "bytes": 3142,
+      "sha256": "dbfd2eecd0fa64886038e68fba2df03512031137db26291ddf1a1b639cffaaf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash3.class",
+      "change": "added",
+      "bytes": 7799,
+      "sha256": "a1672477b8dd8d21099fdfe5177f9e1487b1c0a438262983749b15f181e4314e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32.class",
+      "change": "added",
+      "bytes": 27926,
+      "sha256": "8ca0153d1035d19c652b7bc88b68af0282857a00e6ccb39e511ee26699fe9817",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32C.class",
+      "change": "added",
+      "bytes": 28234,
+      "sha256": "7b35078f6274dd794242a5786fe6a66860540b2ebf56436f993e7b833a5e05f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Sha2Crypt.class",
+      "change": "added",
+      "bytes": 6595,
+      "sha256": "9c5440cbe2c9f917c86d567a3e281f0c63a46c67b54baad7a22e7b6f30b4b1b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/UnixCrypt.class",
+      "change": "added",
+      "bytes": 16869,
+      "sha256": "0828a435b2524981503e26b30e9eb84f37b9b5a2aa2db820069036ec7214192c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/XXHash32.class",
+      "change": "added",
+      "bytes": 2950,
+      "sha256": "fa5e76d3fc43f39ff32b87f899a7c38cbbeb6e14a387e08aa9ebe354abad3a84",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/AbstractCaverphone.class",
+      "change": "added",
+      "bytes": 1165,
+      "sha256": "128da5ffbdb09653bba6fa90cba470da34c5ee7819a9b0c49fb730e8540a1bee",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Caverphone.class",
+      "change": "added",
+      "bytes": 1586,
+      "sha256": "c9d6185187b2a83cdc9a66863a20f53b9a3da23847c3dabcfb9bf164805934c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Caverphone1.class",
+      "change": "added",
+      "bytes": 3049,
+      "sha256": "07771b5b2487f9987a971c00651e9ede967b98c668f3d8425826794990ebf39d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Caverphone2.class",
+      "change": "added",
+      "bytes": 3182,
+      "sha256": "2ed3c777ea0ae2ecb0f7ba25da9d22dd4a7888954d00e3b3d02ab348e6a4b0db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneBuffer.class",
+      "change": "added",
+      "bytes": 1153,
+      "sha256": "94df91bef9b96fd815b8ab116f437540ee316d469091cd49f91e9cb591146ac2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneInputBuffer.class",
+      "change": "added",
+      "bytes": 1443,
+      "sha256": "2b6c5ebf10f0e95d05aa7b631533c975b39dc62e04f65edf1775ce2fcb58ad2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneOutputBuffer.class",
+      "change": "added",
+      "bytes": 1400,
+      "sha256": "d5f652404956c6cd1a1a76ba535d0cceb3313bf045883ecd6c8632ce772716db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic.class",
+      "change": "added",
+      "bytes": 4629,
+      "sha256": "aee57a57e394164750956b4f21853edf4470ca1803f6f7dbf030e314a6cd85dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Branch.class",
+      "change": "added",
+      "bytes": 2084,
+      "sha256": "483c54ccfdce9d039000379af564891782624675fdd811890c11090dc867eca9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Rule.class",
+      "change": "added",
+      "bytes": 2337,
+      "sha256": "dd02660a5f4ecafe8807c0b19b4b95e3d22203b43273320dc203b8173aea19dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex.class",
+      "change": "added",
+      "bytes": 11279,
+      "sha256": "a2a2b10393930f43f912f7e18b24317ae798eb91577be7ebbffd04f02678d0a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone$DoubleMetaphoneResult.class",
+      "change": "added",
+      "bytes": 2820,
+      "sha256": "616c487c68f1106e84f493bfc280eb165499d8cf1f15073584d374942f2e3591",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone.class",
+      "change": "added",
+      "bytes": 16262,
+      "sha256": "4fc02d16feb6ffe47b8d2de388116d381425fe9d49afdb63478bb102d8543691",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/MatchRatingApproachEncoder.class",
+      "change": "added",
+      "bytes": 6500,
+      "sha256": "35d698f3424a57813545d819fa1cb58d9146a6fea639e5548353643abe9ccbb0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Metaphone.class",
+      "change": "added",
+      "bytes": 5497,
+      "sha256": "85c6ed2aaa91a79c44e265fb23c4c43a576f90941132f078d9daca955c3a451e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Nysiis.class",
+      "change": "added",
+      "bytes": 4523,
+      "sha256": "ce3b599aa1275028d4fc4401b69fc2cc3ea23a2b4478304b4fead820ce599e35",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/RefinedSoundex.class",
+      "change": "added",
+      "bytes": 2840,
+      "sha256": "7647b3bea71fcfdeb52524280031f3a1e959bd3f2d7e26a6e6865329f463382a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Soundex.class",
+      "change": "added",
+      "bytes": 4308,
+      "sha256": "ac751504e8aa3e38debe5a9cd9fdc672257dbfc7989e385285bdaad29327cc88",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/SoundexUtils.class",
+      "change": "added",
+      "bytes": 2054,
+      "sha256": "0701d54409cbfbf268566ab3d413e282c3df23b582bf2c5c6f30fd0c152f1bdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder$Builder.class",
+      "change": "added",
+      "bytes": 1483,
+      "sha256": "d6d3de196283cb94e46e03f7db61eb98e2645888f526ca63b7d90af3d7e73aeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder.class",
+      "change": "added",
+      "bytes": 3778,
+      "sha256": "759857958ce48c4cda7bafda68f012216955e9364e9275f818f815be9e66352d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Lang$LangRule.class",
+      "change": "added",
+      "bytes": 1227,
+      "sha256": "846e508c9dca9a08fb8439791e3a2723ccbdac2e5062359c895353cf6944e1cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Lang.class",
+      "change": "added",
+      "bytes": 7600,
+      "sha256": "8879eb1f63bf99749e5567be80983560d1ef2878c6e5c206511e75799e4ee1e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$1.class",
+      "change": "added",
+      "bytes": 1576,
+      "sha256": "c8703f7c1b090d6ca05abbab96933b6891228ee48e18c16418eec95341e03bf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$2.class",
+      "change": "added",
+      "bytes": 1574,
+      "sha256": "86e8f904e0ccfd2bd8550d140da1fb1050a1688f9f69afed263130f13a0b609c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$LanguageSet.class",
+      "change": "added",
+      "bytes": 1501,
+      "sha256": "073e7f38fe43d746697447cbc4446377a977d64f6f9f0d250d37a6c185c1ec8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$SomeLanguages.class",
+      "change": "added",
+      "bytes": 4115,
+      "sha256": "753bb3a8c982233e1ac6fc41500db3e127d1e5f741ad10fbc58f0909824d9e80",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages.class",
+      "change": "added",
+      "bytes": 4145,
+      "sha256": "a356847732b8d5e6d10c7b7f95999bfaf036c4ef6145398b481db40bf2c31cb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/NameType.class",
+      "change": "added",
+      "bytes": 1567,
+      "sha256": "ec14f32e0291eb5c4aceb305bb365b7ace78253c9000cb836e04eb951a12aaeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$1.class",
+      "change": "added",
+      "bytes": 922,
+      "sha256": "0fdae0264e83a2eb92bbbbeb705a260621ff7b33b2827d9cc83e9b9677440f62",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$Builder.class",
+      "change": "added",
+      "bytes": 3229,
+      "sha256": "9b5c8eb7fab6729ddc3b70a9937cac7060d71c6e07e908cfc13488bf04833f90",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$PhonemeBuilder.class",
+      "change": "added",
+      "bytes": 5484,
+      "sha256": "ed175d87b2a41dc914ed1c08433752c31ed1aedabc36342263f7389be522480f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$RulesApplication.class",
+      "change": "added",
+      "bytes": 3458,
+      "sha256": "2e534644009ad05869c5673115a15298ae213b64c5c114e061534c8cc4d628ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine.class",
+      "change": "added",
+      "bytes": 15389,
+      "sha256": "78cfdefe2f0ed29667db1c08bd59f7a2ddcef6e7909ad0f8193bccf1d611d881",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/ResourceConstants.class",
+      "change": "added",
+      "bytes": 835,
+      "sha256": "dc9c807a05e06095b1cd029d1f3a3b018eb789cb95445eb221437654d8511d36",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$1.class",
+      "change": "added",
+      "bytes": 1972,
+      "sha256": "7c2c1f346327d98feb2301dbe88c0a12dc1aeb9b2824a63e324616d26a158120",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$2.class",
+      "change": "added",
+      "bytes": 1268,
+      "sha256": "0978bcf33047e1034e85cc1615ac3ba218722ab76fac4c5389ef76b4e2b63968",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$Phoneme.class",
+      "change": "added",
+      "bytes": 5155,
+      "sha256": "ed5d1ae4ec6b3e02f8a74e0c491924a0e058262ed8b04a54f5a2eaad4d695a59",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeExpr.class",
+      "change": "added",
+      "bytes": 933,
+      "sha256": "da8ff82bb12fa00ba1a3fc98597fe3a7501b0b6e0bae84be218bd5663bf75fc2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeList.class",
+      "change": "added",
+      "bytes": 1396,
+      "sha256": "0e01c236fdf40a289d8d0462ad41ceeb59fa1c82c493f485449f742695ecfb96",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$RPattern.class",
+      "change": "added",
+      "bytes": 343,
+      "sha256": "5bff61240692364c50d505c54ac52b461d4e4f69d51c89586e62c8cda6d5a51b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule.class",
+      "change": "added",
+      "bytes": 20081,
+      "sha256": "d58b92e528404354a8859dbddf24216cb48868f3255e955b3d1eb757ce0066ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/RuleType.class",
+      "change": "added",
+      "bytes": 1565,
+      "sha256": "a1170a9c78170987ed8ce434817737b395f7d1c754e4ea15caaa90aab56b24de",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/BCodec.class",
+      "change": "added",
+      "bytes": 5510,
+      "sha256": "933f5cfb0ba0d4b339c3eed3ab4f65881720b670c328ce57b34b01c9ca371bab",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/PercentCodec.class",
+      "change": "added",
+      "bytes": 5612,
+      "sha256": "aa5fed6f253bcb6e64659749355f6b3581c5d52dbfb80742e4d0998436112ba5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/QCodec.class",
+      "change": "added",
+      "bytes": 5387,
+      "sha256": "3930483d124f38e4c22e5d1be9bd918b65d6c25cc2100060919c51c640a5a81e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/QuotedPrintableCodec.class",
+      "change": "added",
+      "bytes": 7764,
+      "sha256": "2cc96c5b5ab66486983efa110aa826e0b0539c39517e334d3e817c778be988f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/RFC1522Codec.class",
+      "change": "added",
+      "bytes": 3957,
+      "sha256": "0abb4bbde9b1e28872be08eba90ec565307c164db1d88b5816d8549a24f939a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/URLCodec.class",
+      "change": "added",
+      "bytes": 5533,
+      "sha256": "6f91585525cd135febee19a0c1cb86b2a0a6b485c911bee5831ca47636be1580",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/Utils.class",
+      "change": "added",
+      "bytes": 1385,
+      "sha256": "aedec40673a9a425592b235d7b0ffeaea15cca0c4e20e46d7da517c889c3f0d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/harness/EquivalenceHarness.class",
+      "change": "added",
+      "bytes": 1701,
+      "sha256": "c8c4a1abbca2b0a501df59a8e0d71d7225c85ffa82dff7dcd41e13d628218253",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/harness/EquivalenceHarness.java",
+      "change": "added",
+      "bytes": 2532,
+      "sha256": "c7a517e027f461b39e7d78446de4d81dbe23ed42c2ed4dcab911a77c480fa74c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc-goto.txt",
+      "change": "added",
+      "bytes": 940465,
+      "sha256": "d2151fee6234ba016495252c8bd55d252a5ec116889b22ca98bb66bb027ba30c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc-probes/before/org/apache/commons/codec/DecoderException.class",
+      "change": "added",
+      "bytes": 1272,
+      "sha256": "7922c7f2d5fd5c11518324a7d57c0d293d4dca0052afa719e8db46f6622c6dc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc-probes/jvmcontract/StubProbe.class",
+      "change": "added",
+      "bytes": 437,
+      "sha256": "2a7fa07382e086b7f1a68c76c4bcf613f04ae41b71d0013e40351a154062595a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc-probes/org/apache/commons/codec/DecoderException.class",
+      "change": "added",
+      "bytes": 1258,
+      "sha256": "83dfec1d019f7972cb3cb46e465c9c5451f4e01c41e232cbdd1524367c02350d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc-probes.txt",
+      "change": "added",
+      "bytes": 6522,
+      "sha256": "82540779efb54c3d8e663577694af584d2c058a8103ba335d805bf32c9e83cc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc-symex.txt",
+      "change": "added",
+      "bytes": 971555,
+      "sha256": "62b6b143a8b9f1ab3a3d9f10ea1b3d3b2aa48487473bd57f61c6d7d107bfa15d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jbmc.log",
+      "change": "added",
+      "bytes": 12894,
+      "sha256": "84e17ee29d8f3edb91f1542dfe039e9cf12d6b16ac291eb58b96c6c0250af44d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jdk/java/lang/Byte.class",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "8f7b88b36af187b317b3bd9b2fabe9a59655536b77035abe0ea02deaea624910",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jdk/java/lang/Integer.class",
+      "change": "added",
+      "bytes": 15596,
+      "sha256": "4bda1092c3a194ee5ee33a2c3338a46e432cdb884f59f2ef546c20cb869e43b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jdk/java/lang/Long.class",
+      "change": "added",
+      "bytes": 16476,
+      "sha256": "ce816f57b74537ab2ffd13cd65bd6562dfb922fdf4db6e8c5a5384d37346bd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jdk/java/lang/Math.class",
+      "change": "added",
+      "bytes": 18139,
+      "sha256": "e1963b7b9d3ef80fd65cbccdce9d0f04ddc6c5fc967da07ab80603a835ec207c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jdk/java/lang/Short.class",
+      "change": "added",
+      "bytes": 5499,
+      "sha256": "cfd12a51834f0b9eabf440c4e92f05acaf3568e8856d577fb011400b0a79a121",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/jdk/java/lang/StrictMath.class",
+      "change": "added",
+      "bytes": 11807,
+      "sha256": "1ac1a6b0afecc58fc3bafdb7d37099a35f5c10da3084b934fa995855e26dc258",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/lang/Byte$ByteCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/lang/Character.class",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/lang/Enum.class",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/lang/Integer$IntegerCache.class",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/lang/Long$LongCache.class",
+      "change": "added",
+      "bytes": 490,
+      "sha256": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/lang/Short$ShortCache.class",
+      "change": "added",
+      "bytes": 498,
+      "sha256": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/nio/charset/Charset.class",
+      "change": "added",
+      "bytes": 3104,
+      "sha256": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/nio/charset/IllegalCharsetNameException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/nio/charset/StandardCharsets$Standard.class",
+      "change": "added",
+      "bytes": 528,
+      "sha256": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/nio/charset/StandardCharsets.class",
+      "change": "added",
+      "bytes": 992,
+      "sha256": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/nio/charset/UnsupportedCharsetException.class",
+      "change": "added",
+      "bytes": 704,
+      "sha256": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "change": "added",
+      "bytes": 4619,
+      "sha256": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$List12.class",
+      "change": "added",
+      "bytes": 2192,
+      "sha256": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$ListItr.class",
+      "change": "added",
+      "bytes": 1811,
+      "sha256": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$ListN.class",
+      "change": "added",
+      "bytes": 1934,
+      "sha256": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/util/ImmutableCollections.class",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/work-ascii/models/java/util/List.class",
+      "change": "added",
+      "bytes": 6117,
+      "sha256": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-109/change.json",
+      "change": "added",
+      "bytes": 10090,
+      "sha256": "929829eb2fcfceafa2fa5f2a27430e44fe41361f2c13980d2f2796c7f65478d7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T02:50:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/.work-109/work-old/jbmc.log",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/BinaryDecoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/BinaryEncoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/CharEncoding.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Charsets.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/CodecPolicy.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Decoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/DecoderException.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Encoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/EncoderException.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/Resources.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/StringDecoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/StringEncoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/StringEncoderComparator.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/AbstractBaseNCodecStreamBuilder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16InputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16InputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32InputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32InputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45InputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45InputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58InputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58InputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64$DecodeTableFormat.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64InputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64InputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$AbstractBuilder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$Context.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream$AbstracBuilder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream$AbstractBuilder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/BinaryCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/CharSequenceUtils.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/Hex.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/binary/StringUtils.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/cli/Digest.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/B64.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3$ChunkState.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3$EngineState.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3$Output.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Blake3.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Crc16$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Crc16.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Crypt.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/DigestUtils.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$DirectoryEntry.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$FileMode.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder$BlobIdSupplier.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/HmacAlgorithms.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/HmacUtils.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Md5Crypt.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MessageDigestAlgorithms.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash2.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32x86.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/MurmurHash3.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32C.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/Sha2Crypt.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/UnixCrypt.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/digest/XXHash32.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/AbstractCaverphone.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Caverphone.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Caverphone1.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Caverphone2.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneBuffer.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneInputBuffer.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneOutputBuffer.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/ColognePhonetic.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Branch.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Rule.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone$DoubleMetaphoneResult.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/MatchRatingApproachEncoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Metaphone.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Nysiis.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/RefinedSoundex.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/Soundex.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/SoundexUtils.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Lang$LangRule.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Lang.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$1.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$2.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$LanguageSet.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages$SomeLanguages.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Languages.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/NameType.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$1.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$Builder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$PhonemeBuilder.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$RulesApplication.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/ResourceConstants.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$1.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$2.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$Phoneme.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeExpr.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeList.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule$RPattern.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/Rule.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/language/bm/RuleType.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/BCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/PercentCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/QCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/QuotedPrintableCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/RFC1522Codec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/URLCodec.class",
+      "verification/.work-109/work-change/before-classes/before/org/apache/commons/codec/net/Utils.class",
+      "verification/.work-109/work-change/harness/EquivalenceHarness.class",
+      "verification/.work-109/work-change/harness/EquivalenceHarness.java",
+      "verification/.work-109/work-change/jbmc-goto.txt",
+      "verification/.work-109/work-change/jbmc-probes/before/org/apache/commons/codec/DecoderException.class",
+      "verification/.work-109/work-change/jbmc-probes/jvmcontract/StubProbe.class",
+      "verification/.work-109/work-change/jbmc-probes/org/apache/commons/codec/DecoderException.class",
+      "verification/.work-109/work-change/jbmc-probes.txt",
+      "verification/.work-109/work-change/jbmc-symex.txt",
+      "verification/.work-109/work-change/jbmc.log",
+      "verification/.work-109/work-change/jdk/java/lang/Byte.class",
+      "verification/.work-109/work-change/jdk/java/lang/Integer.class",
+      "verification/.work-109/work-change/jdk/java/lang/Long.class",
+      "verification/.work-109/work-change/jdk/java/lang/Math.class",
+      "verification/.work-109/work-change/jdk/java/lang/Short.class",
+      "verification/.work-109/work-change/jdk/java/lang/StrictMath.class",
+      "verification/.work-109/work-change/models/java/lang/Byte$ByteCache.class",
+      "verification/.work-109/work-change/models/java/lang/Character.class",
+      "verification/.work-109/work-change/models/java/lang/Enum.class",
+      "verification/.work-109/work-change/models/java/lang/Integer$IntegerCache.class",
+      "verification/.work-109/work-change/models/java/lang/Long$LongCache.class",
+      "verification/.work-109/work-change/models/java/lang/Short$ShortCache.class",
+      "verification/.work-109/work-change/models/java/nio/charset/Charset.class",
+      "verification/.work-109/work-change/models/java/nio/charset/IllegalCharsetNameException.class",
+      "verification/.work-109/work-change/models/java/nio/charset/StandardCharsets$Standard.class",
+      "verification/.work-109/work-change/models/java/nio/charset/StandardCharsets.class",
+      "verification/.work-109/work-change/models/java/nio/charset/UnsupportedCharsetException.class",
+      "verification/.work-109/work-change/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "verification/.work-109/work-change/models/java/util/ImmutableCollections$List12.class",
+      "verification/.work-109/work-change/models/java/util/ImmutableCollections$ListItr.class",
+      "verification/.work-109/work-change/models/java/util/ImmutableCollections$ListN.class",
+      "verification/.work-109/work-change/models/java/util/ImmutableCollections.class",
+      "verification/.work-109/work-change/models/java/util/List.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/BinaryDecoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/BinaryEncoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/CharEncoding.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Charsets.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/CodecPolicy.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Decoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/DecoderException.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Encoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/EncoderException.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/Resources.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/StringDecoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/StringEncoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/StringEncoderComparator.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/AbstractBaseNCodecStreamBuilder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16InputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16InputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base16OutputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32InputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32InputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base32OutputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45InputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45InputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base45OutputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58InputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58InputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base58OutputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64$DecodeTableFormat.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64InputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64InputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Base64OutputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$AbstractBuilder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodec$Context.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream$AbstracBuilder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecInputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream$AbstractBuilder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BaseNCodecOutputStream.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/BinaryCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/CharSequenceUtils.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/Hex.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/binary/StringUtils.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/cli/Digest.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/B64.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3$ChunkState.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3$EngineState.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3$Output.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Blake3.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Crc16$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Crc16.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Crypt.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/DigestUtils.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$DirectoryEntry.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$FileMode.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder$BlobIdSupplier.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers$TreeIdBuilder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/GitIdentifiers.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/HmacAlgorithms.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/HmacUtils.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Md5Crypt.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MessageDigestAlgorithms.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash2.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32x86.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/MurmurHash3.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/PureJavaCrc32C.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/Sha2Crypt.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/UnixCrypt.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/digest/XXHash32.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/AbstractCaverphone.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Caverphone.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Caverphone1.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Caverphone2.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneBuffer.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneInputBuffer.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic$CologneOutputBuffer.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/ColognePhonetic.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Branch.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex$Rule.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DaitchMokotoffSoundex.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone$DoubleMetaphoneResult.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/DoubleMetaphone.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/MatchRatingApproachEncoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Metaphone.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Nysiis.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/RefinedSoundex.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/Soundex.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/SoundexUtils.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/BeiderMorseEncoder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Lang$LangRule.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Lang.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$1.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$2.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$LanguageSet.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages$SomeLanguages.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Languages.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/NameType.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$1.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$Builder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$PhonemeBuilder.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine$RulesApplication.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/PhoneticEngine.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/ResourceConstants.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$1.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$2.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$Phoneme.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeExpr.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$PhonemeList.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule$RPattern.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/Rule.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/language/bm/RuleType.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/BCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/PercentCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/QCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/QuotedPrintableCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/RFC1522Codec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/URLCodec.class",
+      "verification/.work-109/work-ascii/before-classes/before/org/apache/commons/codec/net/Utils.class",
+      "verification/.work-109/work-ascii/harness/EquivalenceHarness.class",
+      "verification/.work-109/work-ascii/harness/EquivalenceHarness.java",
+      "verification/.work-109/work-ascii/jbmc-goto.txt",
+      "verification/.work-109/work-ascii/jbmc-probes/before/org/apache/commons/codec/DecoderException.class",
+      "verification/.work-109/work-ascii/jbmc-probes/jvmcontract/StubProbe.class",
+      "verification/.work-109/work-ascii/jbmc-probes/org/apache/commons/codec/DecoderException.class",
+      "verification/.work-109/work-ascii/jbmc-probes.txt",
+      "verification/.work-109/work-ascii/jbmc-symex.txt",
+      "verification/.work-109/work-ascii/jbmc.log",
+      "verification/.work-109/work-ascii/jdk/java/lang/Byte.class",
+      "verification/.work-109/work-ascii/jdk/java/lang/Integer.class",
+      "verification/.work-109/work-ascii/jdk/java/lang/Long.class",
+      "verification/.work-109/work-ascii/jdk/java/lang/Math.class",
+      "verification/.work-109/work-ascii/jdk/java/lang/Short.class",
+      "verification/.work-109/work-ascii/jdk/java/lang/StrictMath.class",
+      "verification/.work-109/work-ascii/models/java/lang/Byte$ByteCache.class",
+      "verification/.work-109/work-ascii/models/java/lang/Character.class",
+      "verification/.work-109/work-ascii/models/java/lang/Enum.class",
+      "verification/.work-109/work-ascii/models/java/lang/Integer$IntegerCache.class",
+      "verification/.work-109/work-ascii/models/java/lang/Long$LongCache.class",
+      "verification/.work-109/work-ascii/models/java/lang/Short$ShortCache.class",
+      "verification/.work-109/work-ascii/models/java/nio/charset/Charset.class",
+      "verification/.work-109/work-ascii/models/java/nio/charset/IllegalCharsetNameException.class",
+      "verification/.work-109/work-ascii/models/java/nio/charset/StandardCharsets$Standard.class",
+      "verification/.work-109/work-ascii/models/java/nio/charset/StandardCharsets.class",
+      "verification/.work-109/work-ascii/models/java/nio/charset/UnsupportedCharsetException.class",
+      "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$AbstractImmutableList.class",
+      "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$List12.class",
+      "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$ListItr.class",
+      "verification/.work-109/work-ascii/models/java/util/ImmutableCollections$ListN.class",
+      "verification/.work-109/work-ascii/models/java/util/ImmutableCollections.class",
+      "verification/.work-109/work-ascii/models/java/util/List.class",
+      "verification/.work-109/change.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 3908081,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "56846f87a08ad2f83ee4f33edfb177849225b76b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/56846f87a08ad2f83ee4f33edfb177849225b76b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-024648-vf-015-example-109-revisited-hex-todigit"
+}

@@ -2,6 +2,50 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-024648-vf-015-example-109-revisited-hex-todigit",
+      "title": "VF-015: example 109 revisited, Hex#toDigit's regression proof, after the equivalence harness catches checked exceptions; closes VF-015 when it passes",
+      "status": "failed",
+      "summary": "failed: 4 passed, 1 failed step(s) in 10.6s, peak 103.4 MiB (estimated 10m00s, 2.0 GiB); 336 output file(s) changed; signals: jvmcontract:holds×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (clone) was held back 1.6s by its 1-CPU quota in 1.6s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (compile) was held back 10.2s by its 1-CPU quota in 7.0s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 5 (nothing else changed on ASCII) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "109"
+        ],
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/witness.rs",
+          "llm-dlc/loops/application-core.md"
+        ],
+        "jobs": [
+          "20261108-011411-vf-015-example-109-revisited-hex-todigit",
+          "20261107-165827-example-109-revisited-hex-todigit-s-regr"
+        ]
+      },
+      "sourceCommit": "eea1a8a8a6992f04dff0c2ec75b4aaca4efb52e6",
+      "finishedAt": "2026-11-08T02:49:45+00:00",
+      "wallSeconds": 10.6,
+      "peakMemoryBytes": 108441600,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "as 20261107-165827, whose clone, compile and step 3 took about 10 s at 100 MiB peak; the preflight now adds a probe run of the proof's size (about 0.1 s in the step 1 experiment)"
+      },
+      "host": "vm-1",
+      "result": "20261108-024648-vf-015-example-109-revisited-hex-todigit/result.json"
+    },
+    {
       "id": "20261108-011441-stub-reachability-step-4-no-stub-a-proof",
       "title": "Stub reachability, step 4: no stub a proof enters is left out of JBMC's gaps: the gap tests and the conformance corpus under JBMC and auto",
       "status": "passed",

@@ -310,7 +310,7 @@ impl Entry<'_> {
                 }
             }
             if !calls.iter().any(|c| c.call == site.call) {
-                calls.push(ModeledCall { call: site.call.clone(), outcomes: vec!["returns".to_string()] });
+                calls.push(ModeledCall { call: site.call.clone(), outcomes: vec!["returns".to_string()], model: None });
             }
             if computed_target(&site.target) {
                 unresolved.push(format!("the target of {} in {}: computed at run time ({})", short_call(&site.call), site.in_method, site.target));

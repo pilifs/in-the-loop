@@ -12,6 +12,11 @@
 //! | [`CanonicalClaim`] | the prepared claim whose parts decide a result, and nothing that depends on the result | every stream; digested by [`cache`] |
 //! | [`Outcome`] | what a check established, with the observation accounting | [`heap`] |
 //!
+//! The application-core loop (`llm-dlc/loops/application-core.md`) extends it with four interfaces in [`plans`]: a
+//! construction plan (a [`Construction::Planned`] domain), a value domain and its witness encoding, a modelled call's
+//! [`plans::CallModel`] (on a [`ModeledCall`]), and a helper's summary. Its streams are the parts [`Part::Objects`],
+//! [`Part::Values`], [`Part::Environment`] and [`Part::Reuse`].
+//!
 //! Until a stream has done its part, its interface returns [`Unsupported`] naming the stream, and the integration
 //! contract's tests (`lib/tests/foundations.rs`) accept that and nothing else in its place.
 
@@ -19,6 +24,7 @@ pub mod align;
 pub mod cache;
 pub mod heap;
 pub mod observe;
+pub mod plans;
 
 use serde::{Deserialize, Serialize};
 
@@ -30,6 +36,11 @@ pub enum Part {
     Summaries,
     Observations,
     Alignment,
+    /// The application-core loop's streams (`llm-dlc/loops/application-core-STREAM.md`).
+    Objects,
+    Values,
+    Environment,
+    Reuse,
 }
 
 /// The named result of an interface whose stream hasn't done its part yet, or of a case its part doesn't support.
@@ -139,6 +150,10 @@ pub enum Construction {
     FieldByField,
     /// States constrained by invariants. Named, not built in this loop.
     Invariant { invariants: Vec<String> },
+    /// By a construction plan for each version: constructors or factories, shared nodes, bounded arrays and values,
+    /// and an optional short setup sequence ([`plans::ConstructionPlan`]). The objects stream's; until it builds it,
+    /// a check refuses it.
+    Planned { before: plans::ConstructionPlan, after: plans::ConstructionPlan },
 }
 
 /// One thing a comparison observes.
@@ -194,6 +209,10 @@ pub struct ModeledCall {
     pub call: String,
     /// The outcomes it may give: `returns`, or an exception class it may throw.
     pub outcomes: Vec<String>,
+    /// How it is modelled beyond those words: its result's key, coupling, results and bound
+    /// ([`plans::CallModel`]). The environment stream's; until it builds it, a check refuses it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<plans::CallModel>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

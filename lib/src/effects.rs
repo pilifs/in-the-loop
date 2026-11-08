@@ -417,6 +417,9 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         return Ok(unresolved(format!("{} has no counterpart in the new build", old.id)));
     }
     for c in environment.calls.iter() {
+        if c.model.is_some() {
+            return Err(Unsupported::new(Part::Environment, format!("a modelled call's model of its results ({}): the environment stream builds it (llm-dlc/loops/application-core-environment.md)", short(&c.call))));
+        }
         if let Some(o) = c.outcomes.iter().find(|o| *o != "returns") {
             return Err(unsupported(format!("a modeled outcome other than a normal return ({o} of {}): modeled failures come after the narrow case", short(&c.call))));
         }

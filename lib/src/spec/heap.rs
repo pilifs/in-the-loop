@@ -73,7 +73,8 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
     // The domain gate: a domain made otherwise than by constructors is refused here, and one whose constructors or
     // classes aren't the check's by `equivalence::run` once its layout is built ([`made_with`]), before any proof.
     if let Some(d) = claim.domain.as_ref().filter(|d| !matches!(d.made_by, super::Construction::Constructors { .. })) {
-        return Err(unsupported(unbuilt(&d.made_by)));
+        let part = if matches!(d.made_by, super::Construction::Planned { .. }) { Part::Objects } else { Part::Heap };
+        return Err(Unsupported::new(part, unbuilt(&d.made_by)));
     }
     let mut options = crate::equivalence::Options::new(before, after, subject);
     options.engine = crate::Engine::Native;
@@ -258,6 +259,7 @@ fn unbuilt(made_by: &super::Construction) -> String {
     match made_by {
         super::Construction::Constructors { .. } => unreachable!("constructors are built"),
         super::Construction::FieldByField => "the domain is made field by field, which includes states no constructor makes; only a domain made by constructors is built, and a check over constructor-made objects would be about other inputs than the claim's".into(),
+        super::Construction::Planned { .. } => "the domain is made by a construction plan, which the objects stream builds (llm-dlc/loops/application-core-objects.md); until it does, a check over the constructor domain would be about other inputs than the claim's".into(),
         super::Construction::Invariant { invariants } => format!("the domain is made of the states that satisfy the invariant{} {}, which no check builds; only a domain made by constructors is, and a check over constructor-made objects would be about other inputs than the claim's", if invariants.len() == 1 { "" } else { "s" }, invariants.join("; ")),
     }
 }

@@ -646,6 +646,26 @@ fn a_domain_made_otherwise_than_the_check_makes_its_inputs_is_refused_and_never_
     refused("a class left out", &|c: &mut CanonicalClaim| c.domain.as_mut().unwrap().classes.retain(|k| k != "shop.Money"), &["shop.Money"]);
 }
 
+/// A construction plan (Phase 0 step 2 of `llm-dlc/loops/application-core.md`) is the objects stream's: until it
+/// builds it, a claim made by one is refused by name, never run as the constructor domain.
+#[test]
+fn a_domain_made_by_a_construction_plan_is_refused_until_the_objects_stream_builds_it() {
+    use jvmcontract::spec::plans::{ConstructionPlan, Maker, Node, PlanBounds, PlanValue, Root};
+    let Some(before) = kernel_builds().map(|r| r.join("before")) else { return };
+    let quote = |descriptor: &str| ConstructionPlan {
+        nodes: vec![Node { id: 0, class: "shop.Quote".into(), maker: Maker::Constructor { descriptor: descriptor.into() }, args: vec![PlanValue::Leaf { path: "q.cents".into(), ty: "long".into() }, PlanValue::Leaf { path: "q.quantity".into(), ty: "int".into() }] }],
+        roots: vec![Root { name: "q".into(), value: PlanValue::Node { id: 0, nullable: false, same_as: Vec::new() } }],
+        setup: Vec::new(),
+        restrictions: Vec::new(),
+        bounds: PlanBounds { nodes: 1, max_array_length: 0, setup_calls: 0 },
+    };
+    let mut claim = kernel_claim("shop.Pricing#total", &[]);
+    claim.domain.as_mut().unwrap().made_by = jvmcontract::spec::Construction::Planned { before: quote("(JI)V"), after: quote("(JI)V") };
+    let gap = jvmcontract::spec::heap::check(&claim, &before, &before).expect_err("a planned domain isn't built yet");
+    assert_eq!(gap.part, jvmcontract::spec::Part::Objects, "{gap}");
+    assert!(gap.what.contains("construction plan"), "{gap}");
+}
+
 #[test]
 fn an_offset_total_is_refuted_under_the_correspondence_by_a_recipe_of_the_new_shape() {
     use jvmcontract::spec::{ObservationState, Verdict as V};
