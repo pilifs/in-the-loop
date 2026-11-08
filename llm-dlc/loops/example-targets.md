@@ -81,7 +81,7 @@ outside review's claims at `57f04e55`. **Recount again at application-core's fin
 | **No fix command; JBMC is the CLI default.** | `lib/src/main.rs`: `Equivalence` `:39-40`, `Prove` `:95-96`, no `fix`; `engine` defaults to `jbmc` (`:579-580`, `:718-719`, `:349`), `gaps` to `strict` (`:591-592`, `:730-731`). | Repair is composed in the target layer from separate tasks; native is always requested explicitly. |
 | **No external-target code yet, but the seam is planned.** | No `target.json`, `TaskPlan`, `PreparedTarget` or lock anywhere. `build-orchestration.md:599-604` defers "4c. External artifacts as inputs", with "whether dependencies may be downloaded" left to the user (`:90-91`). | This brief is 4c. The user settled downloads ([decision 1](#decisions)). |
 | **Example numbers are reserved only in briefs.** | `application-core.md:266-271` (230–279), `cleanup.md:154-158` (197–229). The highest folder is 196; 197–279 are unused. Nothing in `examples/README.md` or `tags.json`. | This brief reserves 280–329 ([Streams](#streams)). |
-| **The machine.** | Temurin JDK 25.0.5 (default) and 21.0.13, GraalVM 25, Maven 3.10.0 and Gradle 9.8.2 from sdkman, `/usr/bin/jbmc`. No `~/.m2`. Jobs have cloned from github.com (VF-015's job); nothing has used Maven Central. Jobs run in systemd user scopes with memory caps and no network restriction (`verification/README.md:201`). | JDKs 8, 11 and 17 are installed in Phase 0 ([decision 3](#decisions)). |
+| **The machine.** | Temurin JDKs from sdkman under `~/.sdkman/candidates/java/`: `25.0.5.0+8-tem` (the default, `Temurin-25.0.5+8`), `21.0.13.0+9-tem`, and, installed by the planning session on 2026-11-08, `17.0.21.0+9-tem` (`Temurin-17.0.21+9`), `11.0.33.0+10-tem` (`Temurin-11.0.33+10`) and `8.0.512.0+9-tem` (`1.8.0_512-b09`); also GraalVM CE 25, Maven 3.10.0, Gradle 9.8.2 and `/usr/bin/jbmc`. No `~/.m2`. Jobs have cloned from github.com (VF-015's job); nothing has used Maven Central. Jobs run in systemd user scopes with memory caps and no network restriction (`verification/README.md:201`). | Every JDK an upstream build of this portfolio needs is present ([decision 3](#decisions)), and none changes the default. |
 | **Application-core** delivers ordinary receivers, bounded Strings and lists, modelled dependency outcomes and reuse in this baseline's Phase 5. | `application-core.md` Progress; open findings VF-023 (JBMC `List.size` stub), VF-018, VF-015 (deferred by the user), VF-002, VF-020. | Probe its actual final revision. A registered flag or a test that accepts an unsupported hook is not proof support. |
 
 Side finding for the coordinator: `result.schema.json`'s `claim.inputs` is closed and has no `contracts` property, so an
@@ -104,6 +104,12 @@ The [standing rules](brief-template.md#standing-rules), the [timebox](brief-temp
 
 **Verification with the pipeline** ([decision 5](#decisions)), not `verification: separate`. Every job names the
 exact revision, task and claim, expected semantic verdict, process expectation, bounds, engine and resource estimate.
+
+**JDKs** ([decision 3](#decisions)). JDK 25 is the default, and the most relevant for Java development today: everything
+this wave writes (adapters, drivers, the targets modules, fixtures) targets it, and a revision's concrete controls run on
+it wherever its pinned artifacts do. An older JDK (8, 11, 17 or 21) is used where a revision's build or runtime needs
+it, never by default, and selected by its full path, not by changing sdkman's default. Each preparation and replay
+records the JDK it used, from its `release` file and `java -version`; a different JDK is a different identity.
 
 **Downloads** ([decision 1](#decisions)) are allowed in jobs and in loops, from `github.com` and Maven Central
 (`repo.maven.apache.org`) only, and only through hash-pinned acquisition: every fetched file's sha256 is recorded the
@@ -281,26 +287,23 @@ fork from it, so Phase 0 is its work, done before any fork ([decision 7](#decisi
 ## Phase 0: interfaces, hooks and fixtures
 
 The planning session, in the default workspace, one step per commit, each with its reproducer or test:
-1. **JDKs** ([decision 3](#decisions)): Temurin 8, 11 and 17 installed with sdkman beside 25 and 21, which stays the
-   repository default. Their exact versions and `java -version` output recorded where runtime reads toolchain
-   identities. No existing example changes JDK.
-2. **The sidecar schema**: `examples/schema/target.schema.json`, strict and versioned, and the one optional reference
+1. **The sidecar schema**: `examples/schema/target.schema.json`, strict and versioned, and the one optional reference
    from `example.schema.json` (allowed for `origin: real-world` only). A sidecar with an unknown field, a mutable
    revision, a path escape or a dependency cycle is refused, with tests.
-3. **The three interfaces** under `examples/tools/targets/`: `TaskPlan`, `PreparedTarget` and attempt ingestion, as
+2. **The three interfaces** under `examples/tools/targets/`: `TaskPlan`, `PreparedTarget` and attempt ingestion, as
    frozen types and functions whose implementations fail closed with a named unsupported result that the owning stream
    replaces.
-4. **The hooks**: `build.py --plan NNN --task T` and its real-world gate opened only for a sidecar example;
+3. **The hooks**: `build.py --plan NNN --task T` and its real-world gate opened only for a sidecar example;
    `pipeline.py submit --example NNN --task T` consuming the same plan; `render_index()` and `find.py` projections for
    family, role, readiness, claim status and gap; the result-schema extension points for dependency identities, task
    references and controlled evidence paths, format 2 kept and old receipts valid.
-5. **Fixtures**, deterministic and local, used by every stream's unit checks: a two-revision adapter fixture (two small
+4. **Fixtures**, deterministic and local, used by every stream's unit checks: a two-revision adapter fixture (two small
    JARs built from fixture sources, with an original-method call through an adapter), a malformed or incomplete result,
    and a deliberate capability refusal.
-6. **The integration contract**, `examples/tools/test_targets_contract.py`: one test per Tier A row that each stream's
+5. **The integration contract**, `examples/tools/test_targets_contract.py`: one test per Tier A row that each stream's
    work can reach on the fixtures, each either reaching its final outcome or stopping at the named unsupported result
    its stream hasn't replaced yet.
-7. **The numbers and names**: the ranges [below](#streams) recorded, and prerequisite 5.
+6. **The numbers and names**: the ranges [below](#streams) recorded, and prerequisite 5.
 
 ## Streams
 
@@ -394,7 +397,7 @@ fixtures and on existing receipts.
 
 | Phase | Criterion |
 |---|---|
-| 0 | A0: the sidecar, three interfaces, hooks, fixtures, contract test, JDKs, numbers and names committed before the fork |
+| 0 | A0: the sidecar, three interfaces, hooks, fixtures, contract test, numbers and names committed before the fork |
 | 1–4 | Each stream's own acceptance, in its brief, or its items deferred by the timebox with the finding |
 | 5 | Tier A passes on the merged revision; every Tier B row has its stated readiness; the gap inventory and the for-review list are complete |
 
@@ -424,8 +427,11 @@ Settled by the user on 2026-11-08:
    `build-orchestration.md`'s open question for this wave.
 2. **Four streams, and the case packets run in Phase 5**: the streams build against Phase 0's frozen interfaces and
    fixtures, and this brief's own loop runs the original-JVM replays and the calibration after the merge (gates A3–A5).
-3. **Older JDKs installed** (8, 11 and 17, Phase 0's step 1), so each revision is built with its own build tool and a
-   JDK it supports. The artifact routes are the outside plan's two: a published artifact, or a pinned upstream build.
+3. **Older JDKs installed**, so each revision is built with its own build tool and a JDK it supports: Temurin 8, 11 and
+   17, installed by the planning session on 2026-11-08 beside 21 and 25 ([Where it starts from](#where-it-starts-from)).
+   JDK 25 stays the default and the main target, as the most relevant for Java development today ([How to work through
+   it](#how-to-work-through-it)). The artifact routes are the outside plan's two: a published artifact, or a pinned
+   upstream build.
 4. **The archived registry** is supplied by the user, and committed with its sha256 checked (prerequisite 3).
 
 Proposed by the planning session on 2026-11-08, for the user:
@@ -446,7 +452,10 @@ Proposed by the planning session on 2026-11-08, for the user:
 ## Progress
 
 - Drafted 2026-11-08 by the planning session, from the outside plan, while application-core's Phase 5 was running. The
-  starting point was recounted at `210b9498`. The user settled decisions 1–4. Prerequisites 1–8 are still to do:
+  starting point was recounted at `210b9498`. The user settled decisions 1–4.
+- 2026-11-08, **the JDKs installed** by the planning session, at the user's request, out of Phase 0: Temurin 17, 11 and 8
+  with sdkman. sdkman made each the default as it installed, despite a declined prompt, so the default was set back to
+  `25.0.5.0+8-tem` at once (about two minutes; no job ran and no loop ran `java` meanwhile). Phase 0 has six steps left. Prerequisites 1–8 are still to do:
   application-core finishes first, and the names are registered in Phase 0, so nothing can launch this loop before it.
 - Status: blocked: application-core's finish, the archived registry from the user, Phase 0 by the planning session,
   and the user's decisions 5–12

@@ -26,7 +26,7 @@ the streams' work.
 
 | Gate | Required observation | Built by | Checked |
 |---|---|---|---|
-| A0 Shared contract | The strict sidecar schema, `TaskPlan`, `PreparedTarget`, attempt ingestion, hooks, fixtures, reserved numbers and JDKs committed before the fork | Phase 0 | Phase 0 |
+| A0 Shared contract | The strict sidecar schema, `TaskPlan`, `PreparedTarget`, attempt ingestion, hooks, fixtures and reserved numbers committed before the fork | Phase 0 | Phase 0 |
 | A1 Offline planning | Plan, lint, discovery and handoff inspection run with no network, build, solver or source mutation; unsupported requirements are visible | workflow | stream, then Phase 5 |
 | A2 Preparation integrity | Exact revisions, dependency and artifact hashes, JDK, adapter, classpath order and the original target's identity recorded; wrong bytes, shadowed classes and escaping paths refused | runtime | stream, then Phase 5 |
 | A3 Original negative replay | At least one seeded CVE's vulnerable/fixed pair materializes; its independent predicate observes the vulnerable violation, the fixed security response on the same trigger, and retained legitimate behaviour, on the original pinned libraries | negative's packet, runtime's path | Phase 5 |

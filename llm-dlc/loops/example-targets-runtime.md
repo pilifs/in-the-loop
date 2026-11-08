@@ -32,8 +32,8 @@ refuses real-world examples, and its claim record names dependencies as "declare
 them, for Gradle only (there is no Maven path); the verifier already generates harnesses, relocates the previous
 version's classes and records statements, so reuse it through the current commands; application-core's construction
 and value adapters still refuse what they don't support, so a Spring receiver or String isn't proof-ready because it
-compiles; a one-sided replay no longer counts as reproduced (`witness.rs:779-786`). Phase 0 installs JDKs 8, 11 and 17
-beside 25 and 21.
+compiles; a one-sided replay no longer counts as reproduced (`witness.rs:779-786`). Temurin JDKs 8, 11, 17, 21 and 25 are installed
+(25 the default and main target; the main brief's JDK rule).
 
 ## Your items
 
@@ -54,7 +54,7 @@ returns its stage, diagnostic and whatever artifacts exist, never an empty succe
 
 **Pinned upstream build** ([decision 3](example-targets.md#decisions)): fetch the exact commit into an isolated
 checkout, verify ancestry where asked, and run the recorded recipe with the revision's own build tool (its wrapper) and
-a JDK it supports, from the ones Phase 0 installed. Original sources stay untouched; adapters compile separately. Record
+a JDK it supports, selected by its full path under `~/.sdkman/candidates/java/`. Original sources stay untouched; adapters compile separately. Record
 the wrapper and build-tool version, the JDK identity, compiler flags, dependency resolution, resources, and the produced
 class and JAR hashes. A build-enabling patch is separate recorded bytes with a scope review, never hidden in the
 checkout. Upstream builds are jobs.
