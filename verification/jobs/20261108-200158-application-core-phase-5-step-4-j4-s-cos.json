@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-200158-application-core-phase-5-step-4-j4-s-cos",
+  "title": "application-core Phase 5 step 4: J4's cost report at the merged revision, all five cases with preparation, solving and replay apart",
+  "description": "J4 of llm-dlc/loops/application-core-acceptance.md, Phase 5 step 4 of llm-dlc/loops/application-core.md, at the commit that carries this job (the merged revision with every Phase 5 piece so far). The reuse stream ran this benchmark (lib/tests/preparation.rs, ignored inline) at its own commit 283aa75d in job 20261108-114325, which passed; its report lib/benchmark/preparation/j4.json stays as recorded. Since then the four streams merged and the library changed in 33 files of lib/src (compare --domains, String and list adapters, receivers with dependencies, literals by code units, and more); the benchmark changed by one line only (Options gained domains: Default::default()). This job runs the identical step on the merged revision and writes j4-merge.json and .md beside the stream's report. Cases on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191, and lib/tests/fixtures/preparation's overlays): a cold run of after, an unchanged rerun, an unrelated edit (a class nothing reaches), a safe helper rewrite (Pricing.discount), and the real defect offset cold and rerun; preparation, solving and replay (after the runs: the witness replayed, shrunk and run on a JVM) timed apart, medians of 7, release. Native engine only, the fixture's bounds (unwind 16, arrays up to 8); no JBMC. A debug smoke run inline (1 repeat, 61 s) passed with the stream's verdicts and cache outcomes.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:compare",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/preparation.rs",
+      "lib/tests/fixtures/preparation",
+      "llm-dlc/loops/application-core.md"
+    ]
+  },
+  "expected": "The step exits 0 (the process status), and the benchmark's assertions hold, which are its verdicts: every repeat and the process reach the same verdicts; under after, unrelated-edit and helper-rewrite the route POST /quotes and Pricing#total, #withQuantity and #discount verified, POST /quotes/text unresolved, Money#cents and Quote#quantity unchecked; under offset the route and total refuted; the reruns and the unrelated edit prove nothing again; in the helper rewrite total is proved again on a new proof of discount (a key other than the cold run's), the helper's own proof a miss, withQuantity an exact hit. The report has six scenarios. The figures are for these fixtures only.",
+  "submitted": {
+    "at": "2026-11-08T20:01:58+00:00",
+    "session": "6ca21bdf-4743-4500-90ea-7fe6280624b2",
+    "by": "claude-opus-5-5"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "job 20261108-114325 ran the same step in 3m37s at 1.7 GiB peak, its release build included"
+  },
+  "steps": [
+    {
+      "name": "J4 benchmark, release, 7 repeats",
+      "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/j4-merge.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-j4-merge.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/preparation/j4-merge.json",
+    "lib/benchmark/preparation/j4-merge.md"
+  ]
+}

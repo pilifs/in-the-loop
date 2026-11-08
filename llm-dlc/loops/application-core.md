@@ -1353,6 +1353,23 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     at its own commit, so this checks what holds at the merge before running anything new. Then step 5's for-review
     list, with the step 3 jobs and `20261108-195222` read once they are collected. The two allocation-bound decisions
     are still open.
+- 2026-11-08, **Phase 5 step 4: J4's cost report at the merged revision, as a job** (verification pending).
+  - **What holds of the reuse stream's figures**: its report (`lib/benchmark/preparation/j4.json`, job
+    `20261108-114325`, `tvrqpusw`) was taken at its own commit `283aa75d`. Since then the library changed in 33 files
+    of `lib/src`, and the benchmark by one line (`compare::Options` gained `domains`). So its figures are the stream's,
+    not the merge's. They stay as recorded.
+  - **The smoke run, inline** (debug, 1 repeat, 61 s, passed). It got the stream's verdicts and cache outcomes in all
+    six scenarios:
+    - `after`, the unrelated edit and the helper rewrite verify `POST /quotes`, `discount`, `total` and
+      `withQuantity`. `POST /quotes/text` is unresolved, and `Money#cents` and `Quote#quantity` unchecked;
+    - `offset` refutes the route and `total`;
+    - the reruns and the unrelated edit prove nothing again;
+    - the helper rewrite proves `total` again on a new proof of `discount`.
+  - **The job**: `20261108-200158-application-core-phase-5-step-4-j4-s-cos`, the stream's step unchanged (release,
+    7 repeats) at this commit. It writes `j4-merge.json` and `.md` beside the stream's report.
+  - **Next**: step 5's for-review list, with the pending jobs named. Read their results once they are collected: step
+    3's four, `20261108-195222` (finished, passed, not yet collected) and this one. Then J4's figures go into the
+    list. The two allocation-bound decisions are still open.
 - Status: working
 
 ## Loop settings
