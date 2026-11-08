@@ -449,6 +449,39 @@ measurement stays as recorded.
     cheaper meaningful refactor: a changed helper still proves.
   - **Next**: job `20261108-063259`'s figures, read into R3's record. R3 is then done, its outcome justified by both
     jobs. R4 is optional, and the only work of this stream's own left before J4 at the merge.
+- 2026-11-08, **R3 done: the cache's figures**, from job `20261108-063259` (passed at `3841df5e`, 3m22s, peak 1.7
+  GiB; its reports `lib/benchmark/preparation/shared-image.json` and `.md` are committed in the default workspace by
+  the runner, beside the first job's `preparation.*`, and reach this branch at the merge):
+  - **The same verdicts** as job `20261108-060410` in all four scenarios, in process and as a process: cold and the
+    rerun verify `POST /quotes`, `discount`, `total` and `withQuantity`; the defect refutes `POST /quotes` and
+    `total`; `POST /quotes/text` stays unresolved, `Money#cents` and `Quote#quantity` unsupported.
+  - **The open**: building the table (writing the index's copy included) 7.89 ms, against 6.26 ms for an open before;
+    an open that shares it 0.06 ms.
+  - **The runs**, medians of 7, before the cache → with it:
+
+    | Scenario | in process (ms) | as a process (ms) | before each proof (ms) | solving (ms) | after the runs (ms) |
+    |---|---|---|---|---|---|
+    | cold | 460.6 → 65.6 | 496.1 → 125.0 | 207.8 → 6.1 | 55.0 → 47.0 | 161.7 → 8.9 |
+    | unchanged rerun | 209.8 → 8.6 | 290.3 → 66.1 | 185.4 → 5.4 | 0 → 0 | 0 → 0 |
+    | defect, cold | 2217.2 → 1575.8 | 2215.9 → 1640.1 | 245.3 → 48.4 | 1723.0 → 1484.0 | 197.5 → 35.8 |
+    | defect, rerun | 265.3 → 31.9 | 491.1 → 106.4 | 222.5 → 27.3 | 0 → 0 | 0 → 0 |
+
+    "After the runs" (the witness replayed and run on a JVM, the statement) and part of "solving" fell too: those
+    steps build class paths with the JDK as well. As a process, about 37 ms of what is left is the binary's digest,
+    once per process.
+  - **Compilation, apart**: `javac` 395–404 ms per build and 602 ms for the Spring stand-ins, as before. With it, a
+    build's compilation is several times a whole `compare` rerun. The cut is to a rerun's preparation and to the
+    class paths a cold run builds, not to proving a change: the defect's solving is still 1.48 s.
+  - **R3's outcome**: one immutable product cached per process, keyed by all its input (the index's bytes),
+    justified by job `060410` and measured by job `063259`. `lib/README.md`'s paragraph now gives the figures.
+  - **Verified**: both jobs' reports read in full; the README change is prose only.
+  - **Found, for J4**: the benchmark has the contract's cold run, exact rerun and real defect, but not its unrelated
+    edit or safe rewrite of a helper. Without the helper rewrite it can't show helper evidence apart from exact hits
+    and preparation reuse, as this brief's Acceptance asks.
+  - **Next**: those two scenarios in `lib/tests/preparation.rs`. The first is an edit outside every claim's closure,
+    whose proofs should all be exact hits. The second is a rewrite of a helper that `compare` proves as a changed
+    helper and its callers reuse. Each is checked for its verdicts and cache outcomes inline in debug, then queued in
+    release, so that J4 at the merge runs the full set on the merged revision. R4 stays optional.
 - Status: working
 
 ## Loop settings
