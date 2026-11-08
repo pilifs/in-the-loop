@@ -240,7 +240,7 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
 /// The directory, under the run's, of the application classes it loads opened.
 const OPENED: &str = "opened";
 
-/// Writes into `out` an opened copy ([`crate::relocate::opened`]) of every application class the harness names and
+/// Writes into `out` an opened copy ([`crate::relocate::opened_with`]) of every application class the harness names and
 /// of each direct call's owner, as the first of `entries` that has it holds it, so that the harness, a class of
 /// the unnamed package, may read their fields and call their constructors on a JVM as it does in the checker,
 /// which doesn't check access: a record's fields are private, and a class's are often package-private. JDK
@@ -253,11 +253,37 @@ fn open_classes(out: &Path, harness_class: &str, calls: &[DirectCall], entries: 
     names.extend(calls.iter().map(|c| c.owner.clone()));
     names.sort();
     names.dedup();
+    // Every application class of the run, for whether a package-private instance method may be opened: not where
+    // a class of another package that extends its class declares the same method (`relocate::opened_with`).
+    let mut cp = crate::classpath::ClassPath::new();
+    for e in entries.iter().filter(|e| e.exists()) {
+        cp.add(e).map_err(|e| e.to_string())?;
+    }
+    let classes = cp.application_classes().unwrap_or_default();
+    let package = |n: &str| n.rsplit_once('/').map(|(p, _)| p.to_string()).unwrap_or_default();
+    let extends = |c: &crate::classfile::ClassFile, ancestor: &str| {
+        let mut at = c.super_class.clone();
+        let mut steps = 0;
+        while let Some(s) = at {
+            if s == ancestor {
+                return true;
+            }
+            steps += 1;
+            if steps > 64 {
+                return true; // a chain this long is no class path's: don't open
+            }
+            at = classes.get(&s).and_then(|x| x.super_class.clone());
+        }
+        false
+    };
     let mut wrote = false;
     for name in names.iter().filter(|n| n.as_str() != harness_class) {
         let Some(path) = find(name) else { continue };
         let bytes = std::fs::read(&path).map_err(|e| format!("cannot read {}: {e}", path.display()))?;
-        let opened = crate::relocate::opened(&bytes).map_err(|e| format!("cannot open {name} for the JVM run: {e}"))?;
+        let may_open = |m: &str, d: &str| {
+            !classes.values().any(|c| c.name != *name && package(&c.name) != package(name) && extends(c, name) && c.methods.iter().any(|x| x.name == m && x.descriptor == d && !x.is_static() && !x.is_private()))
+        };
+        let opened = crate::relocate::opened_with(&bytes, &may_open).map_err(|e| format!("cannot open {name} for the JVM run: {e}"))?;
         let target = out.join(format!("{name}.class"));
         if let Some(parent) = target.parent() {
             std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;

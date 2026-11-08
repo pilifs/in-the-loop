@@ -246,7 +246,9 @@ fn o1_an_ordinary_receiver_in_the_regression_and_property_checks() {
 /// code and quantities array, and `alias-to-copy`'s copy is refuted on identity alone.
 #[test]
 fn o2_an_array_valued_constructor_faithful_to_identity() {
-    claims("quote", "checked-claim", &[Part::Objects, Part::Values], spec::heap::check);
+    // The service's dependencies are passed null since the merge; the request's String code, an adapted value
+    // inside a node, is the values' refusal still (application-core.md's Progress).
+    claims("quote", "checked-claim", &[Part::Values], spec::heap::check);
 }
 
 /// O3: a defect only a history reaches. Under the constructor-only claim, `after-setup` is verified, labelled for
@@ -330,7 +332,8 @@ fn r1_the_native_property_cache() {
 /// `helper-extra-field`'s extra read refuted. Its reuse in a changed caller is J1's, at the merge.
 #[test]
 fn r2_a_heap_reading_helper_on_its_own() {
-    regressions("quote", "quotes.QuoteService#fee", &["objects", "reuse"]);
+    // The receiver's three dependencies are passed null since the merge, `fee` never reaching them: no refusal.
+    regressions("quote", "quotes.QuoteService#fee", &[]);
 }
 
 /// J3: semantic changes change the claim key: a setup call, a modelled outcome, a value bound. Until the reuse

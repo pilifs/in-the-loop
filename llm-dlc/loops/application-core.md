@@ -1205,6 +1205,68 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     dependency null and refused by name where the method's closure reaches it, so that `checked-claim` and `fee`
     reach their verdicts. The ignored test is un-ignored and goes in a job of its own. Then step 3's examples with
     `lib/tests/integration.rs`, J4 and the for-review list, with this job's results read once they are collected.
+- 2026-11-08, **step 2's job passed**: `20261108-180246-…` at `388dfe54`, 6 of 6 steps in 5m04s (peak 1.8 GiB),
+  recorded by the verification loop (`zutylomy`). J1 (its planned claims, `vip`, the invalidation, `fee`'s summary and
+  `units`' property cache), H, L and J2 reach their verdicts on the merged revision with no refusal accepted, and the
+  recording `jbmc` was never called. `basket-first-claim`'s `copied-first` was held to the allocation gate's outcome.
+- 2026-11-08, **Phase 5: a receiver whose constructor takes dependencies, each passed null** (verification pending),
+  so J1's R2 part reaches its verdicts on the quote family.
+  - **The reproducer**: step 2's ignored `j1_o2_and_r2_a_receiver_with_dependencies`. Its `fee` half, now
+    `j1_r2_a_receiver_with_dependencies`, failed before on "only a concrete class made by its constructor", and it is
+    un-ignored. So did `tests/application_core_objects.rs`'s `Timer#since`, whose clock it never reads.
+  - **The change**:
+    - A constructor argument of an application interface is a dependency, in the regression check (`made_of`) and in
+      a plan's node (`PlanValue::Dependency`, its path and class checked against the constructor). It is
+      `harness::RecordType::dependencies`, passed `null` by the harness, the interpreter's replay and the witness
+      (`new QuoteService(0, -100, null, null, null)`, typed as `null`). The domain names it (`clock: null, a dependency
+      of deps.Clock`). It is never an input object, a class of the claim, or a cache root.
+    - **Refused by name where reached**: before any helper proof, cache lookup or proof, `equivalence` and `prove`
+      walk each version's closure (`construction::dependency_reached`). A method that calls one on the interface, or
+      reads or writes a field of its type (a null test, a hand-off), refuses the target in that version's words. A
+      null stands for no object a run could have. Only the effect check answers a dependency, through its stubs.
+    - **Found on the way: a package-private target can't be replayed on a JVM.** `fee`'s refutation was found
+      (before 0, after -1), and then reported as the interpreter's error. The harness, in the unnamed package, got
+      `IllegalAccessError` in both versions, and the run read that as agreement: `relocate::opened` opens fields,
+      constructors and static methods only. `relocate::opened_with`, used by `jvm_witness`, now also makes public a
+      protected instance method, and a package-private one where no class of another package that extends its class
+      declares the same method, so no override changes (JVMS 5.4.5). One that might keep its access, and the access
+      error leaves the witness unreported, as before: a missing verdict, never a wrong one. `opened` itself is
+      unchanged.
+  - **Checks**:
+    - J1's R2 reaches `expected.json`'s eight verdicts with no refusal accepted: `after` and six defects verified, and
+      `helper-extra-field` refuted with its witness run on a JVM. Each rerun is the stored result under its key.
+    - The new `tests/dependencies.rs`, 3 tests:
+      - a package-private `Timer.since` rewrite proved with its clock null, and an off-by-one refuted and run on a
+        JVM, in the regression and in the property check;
+      - a call, a field test, a hand-off and an abstract class refused by name, and a plan's dependency path and
+        class checked;
+      - a cached proof reused exactly, a build that reaches the clock refused before the lookup, and an edit of the
+        constructor another key.
+    - `relocate`'s new unit test checks which instance methods `opened_with` opens.
+    - Two sabotages fail them: without the reachability check, the refusal and cache tests fail; with no
+      package-private method opened, the JVM run fails the refutation.
+    - The integration check passes: the contract 14 of 14, the unit tests 258, `compare` 1, `effects` 19,
+      `foundations` 5, and the Python suites. So do `application_core_joint`'s J1 and R2 (release), and every other
+      binary but `integration.rs` (JBMC): alignment 34, application_core_objects 22, compare_domains 3, conformance 10,
+      dependencies 3, environment 17, environment_quotes 4, environment_responses 8, heap 49, observations 12, reuse 12,
+      reuse_summaries 14, skill 1, string_literals 2, summaries 40, value_parameters 10, values 18.
+  - **The contract tightened**: R2's `fee` row accepts no refusal. O2's `checked-claim` accepts only the values'
+    refusal, which is its gap now.
+  - **The job**: `20261108-185910-application-core-phase-5-a-receiver-whos`. It runs J1's R2 and the dependency
+    tests, with the recording `jbmc` guard.
+  - **J1's O2 is still refused**, by the next gap: `checked-claim`'s request carries a String code. The heap check's
+    plan doesn't make an adapted value inside a node, and the regression check neither makes a String constructor
+    argument nor observes a String field (`fields_of`). The joint test's
+    `j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string` is ignored with that reason, and is its
+    reproducer.
+  - **For the for-review list**: the JVM run's opening of instance methods changes what any JVM replay can call, so
+    step 3's example reruns are at a revision that has it.
+  - **Docs**: `lib/README.md` (a new paragraph **A receiver with dependencies**; the receiver's and the plan's refusal
+    lists no longer name a dependency), the docs of `construction`, `relocate::opened_with` and `jvm_witness`.
+  - **Next**: a String inside an object for the regression and heap checks: the String adapter's value as a
+    constructor argument (a plan's adapted node argument, and `made_of`'s), and a String field compared by content.
+    Then `checked-claim` reaches its verdicts, and the ignored test goes in a job of its own. Then step 3's examples
+    with `lib/tests/integration.rs`, J4 and the for-review list.
 - Status: working
 
 ## Loop settings

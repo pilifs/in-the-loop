@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-185910-application-core-phase-5-a-receiver-whos",
+  "title": "application-core Phase 5: a receiver whose constructor takes dependencies, each passed null (J1's R2 on the quote family), on the own checker with no JBMC",
+  "description": "At the revision that commits this job (llm-dlc/loops/application-core.md, Phase 5, after step 2's joint acceptance found J1's O2 and R2 parts refused on the quote family). The regression check (equivalence, so also the heap check of a planned claim) and the property check now make a receiver whose constructor takes dependencies of application interfaces: each is passed null (harness::RecordType::dependencies), and the check holds only of a target that never reaches one: before any proof or cache lookup, each version's closure is walked (construction::dependency_reached) for a call on the interface or a read or write of a field of its type, and such a target is refused by name. The JVM witness run now also opens a protected instance method, and a package-private one where no class of another package extending its class declares the same method (relocate::opened_with), so that the harness in the unnamed package can call QuoteService.fee. Step 2 runs lib/tests/application_core_joint.rs's j1_r2_a_receiver_with_dependencies (acceptance rows J1 and R2): QuoteService#fee as a plain regression on every build of the frozen quote family, domain the constructor domain with the three dependencies null, bounds the default (--max-array-length 4, unwind 16), engine native, no refusal accepted: after and the six other defects verified, helper-extra-field refuted (violation) with its witness replayed on a JVM, each rerun under one proof cache the stored result under the same key, and every build whose verdict differs from after's another key. Step 3 runs lib/tests/dependencies.rs (3 tests): a rewrite of a package-private Timer.since proved with its clock null and an off-by-one refuted and run on a JVM, both in the regression and the property check; a call, a field test, a hand-off and an abstract class refused by name, with a plan's dependency path and class checked; and a cached proof reused exactly but never for a build that reaches the clock. Each step runs with a jbmc first on PATH that records being called, and the last step fails if it was. Expected verdicts as above; expected process status 0 for every step. checked-claim (J1's O2) is not in this job: the request's String code is still refused (an adapted value inside a node), the next piece of work.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "bmc:native"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/application_core_joint.rs",
+      "lib/tests/dependencies.rs",
+      "lib/src/construction.rs",
+      "lib/src/relocate.rs",
+      "llm-dlc/loops/application-core.md"
+    ]
+  },
+  "expected": "every step exits 0: j1_r2_a_receiver_with_dependencies and the 3 dependency tests pass, and the last step finds no call of jbmc",
+  "submitted": {
+    "at": "2026-11-08T18:59:10+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "inline release runs on this machine: j1_r2 about 6 s, dependencies 2 s; plus a release build of the two test binaries (about 3 min)"
+  },
+  "steps": [
+    {
+      "name": "build the tests and the recording jbmc",
+      "run": "cd lib && rm -rf target/deps-shim && mkdir -p target/deps-shim/bin && printf \"#!/bin/sh\\ntouch %s/target/deps-shim/jbmc-called\\nexit 127\\n\" \"$PWD\" > target/deps-shim/bin/jbmc && chmod +x target/deps-shim/bin/jbmc && cargo test --release --test application_core_joint --test dependencies --no-run",
+      "cwd": "."
+    },
+    {
+      "name": "J1 (R2): QuoteService#fee on a receiver with dependencies",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/deps-shim/bin:$PATH\" cargo test --release --test application_core_joint j1_r2_a_receiver_with_dependencies -- --exact --nocapture 2>&1 | tee target/deps-j1-r2.log",
+      "cwd": "."
+    },
+    {
+      "name": "the dependency tests",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/deps-shim/bin:$PATH\" cargo test --release --test dependencies -- --nocapture 2>&1 | tee target/deps-tests.log",
+      "cwd": "."
+    },
+    {
+      "name": "J2's guard: no check called jbmc",
+      "run": "cd lib && test ! -e target/deps-shim/jbmc-called && echo \"no check called jbmc\"",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

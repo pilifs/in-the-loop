@@ -406,6 +406,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let mut layout = if over_objects { harness::Layout::new(receiver, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
     layout.result_fields.0 = result_fields;
+    // A dependency the inputs' constructions pass null holds only where the target never reaches it.
+    if let Some(reached) = crate::construction::dependency_reached(&cp, &crate::classfile::MemberRef::new(&class_internal, &method_name, &method.descriptor), &layout.dependencies().1) {
+        return refuse(&mut out, line, format!("{reached}; a property check passes a dependency null, so it holds only of a target that never reaches one"));
+    }
     // The plan's setup sequence (O3): a history whose call throws reaches no state, and is outside the property.
     if let Some(p) = plan.filter(|p| !p.setup.is_empty()) {
         let calls = match crate::construction::setup_calls(&cp, p, &class_internal) {

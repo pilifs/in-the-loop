@@ -37,9 +37,10 @@ pub struct Plans {
 /// `values::ListAdapter`, V2), named as the root, never null, of objects of an application class made by its
 /// constructor, as the check makes a list parameter's elements: its domain resolved under this tool's list model
 /// (`values::resolve`, which refuses a claim stated under another model, JDK or a stronger level), and the same in
-/// both versions. What it doesn't make yet is refused by its stream's name, before any check: such a choice or
-/// sharing inside a nested object, a null array, a factory, a dependency (the objects stream's), an adapted String
-/// root, and an adapted value inside a node (the values stream's adapter).
+/// both versions. A node's argument may be a dependency, an application interface the check passes null
+/// (`node` checks the class, and the check that the target never reaches it, [`dependency_reached`]). What it
+/// doesn't make yet is refused by name, before any check: such a choice or sharing inside a nested object, a null
+/// array, a factory, an adapted String root, and an adapted value inside a node (the values stream's adapter).
 pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Result<(), Unsupported> {
     for (version, plan) in [("previous", before), ("new", after)] {
         if let Some(problem) = plan.shape_problem() {
@@ -178,7 +179,9 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
             crate::values::resolve(domain).map_err(|u| Unsupported::new(u.part, format!("the {version} version's {at} takes {path}: {}", u.what)))?;
             Err(Unsupported::new(Part::Values, format!("the {version} version's {at} takes {path}, an adapted value: the values stream builds it (llm-dlc/loops/application-core-values.md)")))
         }
-        PlanValue::Dependency { path, class } => Err(unbuilt(&format!("the {version} version's {at} takes {path}, a dependency of {class} the environment model stands for, and a construction with dependencies"))),
+        // Passed null; `node` checks it is an application interface the constructor takes, and the check that
+        // the target never reaches it (`dependency_reached`).
+        PlanValue::Dependency { .. } => Ok(()),
         PlanValue::Node { id, nullable, same_as } => {
             if *nullable || !same_as.is_empty() {
                 return Err(unbuilt(&format!("the {version} version's {at} takes node {id}, which may be null or one of several: a choice inside a nested object, where the harness chooses only among the roots, and a plan's nested choices")));
@@ -393,7 +396,8 @@ impl Flat {
 /// String model, never null), or a dependency of an application interface, passed null. The check's own bound
 /// makes the arrays and Strings, so a plan that bounds one otherwise is refused, never checked under another bound.
 /// An object inside another, a null or shared root, a factory and a setup sequence are refused by name: the
-/// regression check's plan makes those ([`check_plans`]), without dependencies.
+/// regression check's plan makes those ([`check_plans`]), its dependencies passed null too, for a target that never
+/// reaches one ([`dependency_reached`]).
 pub fn flat_roots(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, names: &[String], max_length: u32) -> Result<Vec<Flat>, Unsupported> {
     use crate::classfile::Type;
     let gap = |what: String| Unsupported::new(Part::Objects, format!("the plan, as the effect check makes it: {what}"));
@@ -529,9 +533,23 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
     within.push(class.clone());
     let mut params = Vec::new();
     let mut inner = Vec::new();
-    for ((pname, pt), arg) in names.iter().zip(&parsed.params).zip(&n.args) {
+    let mut dependencies = Vec::new();
+    for (i, ((pname, pt), arg)) in names.iter().zip(&parsed.params).zip(&n.args).enumerate() {
         let at = format!("{path}.{pname}");
         match arg {
+            PlanValue::Dependency { path: leaf, class: dep } => {
+                if leaf != &at {
+                    return Err(gap(format!("node {id}'s argument {pname} is the dependency {leaf}, which the check names {at}: a dependency is named by its path from the root")));
+                }
+                let internal = dep.replace('.', "/");
+                if *pt != crate::classfile::Type::Object(internal.clone()) {
+                    return Err(gap(format!("node {id}'s argument {pname} is the dependency {leaf}, a {dep}, and the constructor takes a {}", pt.java_name())));
+                }
+                if !cp.application(&internal).ok().flatten().is_some_and(|c| c.is_interface()) {
+                    return Err(gap(format!("the dependency {leaf}, a {dep}, is no application interface: a dependency is passed null, and an object it would need made is a node")));
+                }
+                dependencies.push(i);
+            }
             PlanValue::Leaf { path: leaf, ty } => {
                 if leaf != &at {
                     return Err(gap(format!("node {id}'s argument {pname} is the leaf {leaf}, which the check names {at}: a leaf is named by its path from the root")));
@@ -561,7 +579,7 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
     }
     within.pop();
     let fields = crate::equivalence::fields_of(cp, &class, &mut Vec::new()).map_err(|e| gap(format!("node {id}, a {}: {e}", n.class)))?.map_err(|g| gap(format!("node {id}, a {}: {g}", n.class)))?;
-    Ok(crate::harness::RecordType::made(&class, params, inner, fields))
+    Ok(crate::harness::RecordType::made_with_dependencies(&class, params, inner, dependencies, fields))
 }
 
 /// The setup sequence of `plan` (O3), on the receiver's class `class` (an internal name) of `cp`: each call's
@@ -626,10 +644,11 @@ pub(crate) fn side_effect(cp: &crate::classpath::ClassPath, class: &str, name: &
 /// The construction of an ordinary receiver (O1): `this`, an object of `class` (an internal name) made by its
 /// constructor, a named root, exactly as a parameter made by its constructor is (`equivalence::made_of`, step H2 of
 /// `llm-dlc/loops/foundations-heap.md`): the one constructor a caller can use, from primitive leaves and objects made
-/// so in turn, observed by its fields after the call. Asked where a regression or property check meets an instance
-/// method of a class that is not a record of primitive components. A class outside that is refused by name: a
-/// constructor argument the stream has yet to make (an array, a String, a dependency) says so, and what no plan of
-/// this wave makes (several constructors without a choice, a superclass, a cycle) is a boundary of its own.
+/// so in turn, and dependencies of application interfaces passed null, observed by its fields after the call. Asked
+/// where a regression or property check meets an instance method of a class that is not a record of primitive
+/// components. A class outside that is refused by name: a constructor argument not made yet (a String) says so,
+/// and what no plan of this wave makes (several constructors without a choice, a superclass, a cycle) is a boundary
+/// of its own.
 pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
     let java = class.replace('/', ".");
     match crate::equivalence::made_of(cp, class, &mut Vec::new()) {
@@ -640,6 +659,54 @@ pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::
         Ok(Err(gap)) => Err(Unsupported::new(Part::Objects, format!("the receiver, an object of {java} made by its constructor: {gap}"))),
         Err(e) => Err(Unsupported::new(Part::Objects, format!("the receiver, an object of {java}: {e}"))),
     }
+}
+
+/// Where the target `root`'s closure in `cp` reaches one of `dependencies` (each by its path, `this.rates`, and its
+/// interface, an internal name), the dependencies the check passes null ([`crate::harness::RecordType::dependencies`]):
+/// a method of the closure that reads or writes a field of the interface's type, or calls a method on it. A null
+/// dependency stands for no object a run could have, so a check that reaches one would compare what both versions do
+/// with null, a NullPointerException or a test of it, never what they do with the dependency. Only the effect check's
+/// planned harness answers calls on one, through the environment model's stubs (`effects::check_planned`). `None`
+/// where nothing reaches one; the refusal names the dependency and the method otherwise.
+pub fn dependency_reached(cp: &crate::classpath::ClassPath, root: &crate::classfile::MemberRef, dependencies: &[(String, String)]) -> Option<String> {
+    use crate::classfile::Insn;
+    if dependencies.is_empty() {
+        return None;
+    }
+    let closure = crate::closure::closure(cp, root, &crate::closure::Configuration::none());
+    let named = |class: &str| dependencies.iter().find(|(_, c)| c == class).map(|(p, c)| format!("the dependency {p}, a {}", c.replace('/', ".")));
+    let java = |id: &str| id.replace('/', ".");
+    for id in closure.parts.keys() {
+        if let Some(callee) = id.strip_prefix("dispatch ") {
+            if let Some(dep) = callee.split_once('.').and_then(|(owner, _)| named(owner)) {
+                return Some(format!("{} reaches a dependency: it calls {} on {dep}", java(&closure.root), java(callee)));
+            }
+            continue;
+        }
+        let Some(method) = id.strip_prefix("method ") else { continue };
+        let Some((owner, rest)) = method.split_once('.') else { continue };
+        let Some(open) = rest.find('(') else { continue };
+        let Some((class, m)) = cp.find_method(owner, &rest[..open], &rest[open..]) else { continue };
+        let Some(code) = &m.code else { continue };
+        let Ok(insns) = code.instructions() else { continue };
+        for (_, insn) in insns {
+            let (i, reads) = match insn {
+                Insn::GetField(i) | Insn::GetStatic(i) | Insn::PutField(i) | Insn::PutStatic(i) => (i, true),
+                Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => (i, false),
+                _ => continue,
+            };
+            let Ok(member) = class.pool.member(i) else { continue };
+            let found = if reads {
+                member.descriptor.strip_prefix('L').and_then(|d| d.strip_suffix(';')).and_then(named).map(|dep| format!("{} uses the field {}.{}, which holds {dep}", java(method), java(&member.owner), member.name))
+            } else {
+                named(&member.owner).map(|dep| format!("{} calls {}.{} on {dep}", java(method), java(&member.owner), member.name))
+            };
+            if let Some(found) = found {
+                return Some(format!("{} reaches a dependency: {found}", java(&closure.root)));
+            }
+        }
+    }
+    None
 }
 
 /// Reads `--plan FILE` of `equivalence` and `prove`: [`Plans`] as JSON (one plan for both versions of a property
@@ -685,8 +752,10 @@ mod tests {
         let mut doubled = plan(1);
         twice(&mut doubled);
         assert!(check_plans(&doubled, &doubled).unwrap_err().what.contains("one value at two paths"));
+        // A dependency is accepted by the shape: `node` checks its class against the constructor, and the check
+        // that the target never reaches it (`dependency_reached`, `tests/dependencies.rs`).
         let dependency = with_arg(PlanValue::Dependency { path: "m.rates".into(), class: "shop.Rates".into() });
-        assert!(check_plans(&dependency, &dependency).unwrap_err().what.contains("dependency"));
+        check_plans(&dependency, &dependency).unwrap();
         let mut factory = plan(1);
         factory.nodes[0].maker = Maker::Factory { method: "shop.Money#of(J)Lshop/Money;".into() };
         assert!(check_plans(&factory, &factory).unwrap_err().what.contains("factory"));

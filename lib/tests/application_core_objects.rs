@@ -139,20 +139,23 @@ fn o1_a_property_over_an_ordinary_receiver() {
     assert!(c.input.contains("this="), "the witness names its receiver: {}", c.input);
 }
 
-/// A receiver outside what a check makes is refused by name: a dependency among its constructor's arguments is
-/// the stream's to build, and several constructors are a choice no plain check makes.
+/// A receiver outside what a check makes is refused by name: a dependency among its constructor's arguments that
+/// the target reaches (one it never reaches is passed null since the merge, `tests/dependencies.rs`), and several
+/// constructors, a choice no plain check makes.
 #[test]
 fn o1_a_receiver_outside_the_construction_is_refused_by_name() {
     let dependency = compile("dependency", &[
         ("deps/Clock.java", "package deps;\npublic interface Clock { long now(); }\n"),
-        ("deps/Timer.java", "package deps;\npublic class Timer {\n    private final long start;\n    private final Clock clock;\n    public Timer(long start, Clock clock) { this.start = start; this.clock = clock; }\n    public long since(long t) { return t - start; }\n}\n"),
+        ("deps/Timer.java", "package deps;\npublic class Timer {\n    private final long start;\n    private final Clock clock;\n    public Timer(long start, Clock clock) { this.start = start; this.clock = clock; }\n    public long since(long t) { return t - start; }\n    public long elapsed() { return clock.now() - start; }\n}\n"),
     ]);
     let o = regression("dependency", &dependency, &dependency, "deps.Timer#since");
+    assert_eq!(o.verdict, Verdict::Verified, "a dependency the target never reaches is passed null: {}", o.output);
+    let o = regression("dependency", &dependency, &dependency, "deps.Timer#elapsed");
     assert_eq!(o.verdict, Verdict::Unverifiable);
     let problem = o.problem.unwrap();
-    assert!(problem.contains("the objects stream builds it") && problem.contains("deps.Clock is an interface"), "{problem}");
-    let o = prove("dependency", &dependency, "deps.Timer#since", None, "true");
-    assert!(o.problem.as_deref().unwrap_or_default().contains("the objects stream builds it"), "{}", o.output);
+    assert!(problem.contains("reaches a dependency") && problem.contains("this.clock, a deps.Clock"), "{problem}");
+    let o = prove("dependency", &dependency, "deps.Timer#elapsed", None, "true");
+    assert!(o.problem.as_deref().unwrap_or_default().contains("this.clock, a deps.Clock"), "{}", o.output);
 
     let several = counter("several", |s| s.replace("    /** Adds n steps", "    public Counter() {\n        this(1);\n    }\n\n    /** Adds n steps"));
     let o = regression("several", &several, &several, "counters.Counter#count");

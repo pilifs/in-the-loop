@@ -97,8 +97,12 @@ pub struct RecordType {
     /// The constructor's parameters, of primitive types or the classes of [`RecordType::inner`]; a record's are its
     /// components.
     pub params: Vec<(String, Type)>,
-    /// How each parameter of a class type is made, in order.
+    /// How each parameter of a class type is made, in order, a dependency's left out.
     pub inner: Vec<RecordType>,
+    /// The parameters (by index into [`RecordType::params`]) that are dependencies: each of an application
+    /// interface, passed null, so that the check holds only where the target never reaches one
+    /// (`construction::dependency_reached`). The quote family's service takes three (`Rates`, `Offers`, `Events`).
+    pub dependencies: Vec<usize>,
     /// What of the object is observed after the calls: none for a record, whose fields the method cannot change
     /// (its components are primitive); its instance fields, followed into the objects they refer to, for a class.
     pub fields: Option<Fields>,
@@ -512,22 +516,53 @@ pub fn is_leaf(t: &Type) -> bool {
 impl RecordType {
     /// A record of primitive components, made by its canonical constructor.
     pub fn record(class: &str, components: Vec<(String, Type)>) -> RecordType {
-        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), fields: None, corresponds: None }
+        RecordType { class: class.to_string(), params: components.clone(), components, inner: Vec::new(), dependencies: Vec::new(), fields: None, corresponds: None }
     }
 
     /// An object of the application class `class` made by its constructor of `params`, each parameter of a class
     /// type made as `inner` says in order, and observed by `fields`.
     pub fn made(class: &str, params: Vec<(String, Type)>, inner: Vec<RecordType>, fields: Fields) -> RecordType {
+        RecordType::made_with_dependencies(class, params, inner, Vec::new(), fields)
+    }
+
+    /// [`RecordType::made`], with the parameters at `dependencies` passed null ([`RecordType::dependencies`]).
+    pub fn made_with_dependencies(class: &str, params: Vec<(String, Type)>, inner: Vec<RecordType>, dependencies: Vec<usize>, fields: Fields) -> RecordType {
         let mut components = Vec::new();
         let mut nested = inner.iter();
-        for (name, t) in &params {
+        for (i, (name, t)) in params.iter().enumerate() {
             if is_leaf(t) {
                 components.push((name.clone(), t.clone()));
+            } else if dependencies.contains(&i) {
+                continue;
             } else if let Some(made) = nested.next() {
                 components.extend(made.components.iter().map(|(c, t)| (format!("{name}.{c}"), t.clone())));
             }
         }
-        RecordType { class: class.to_string(), components, params, inner, fields: Some(fields), corresponds: None }
+        RecordType { class: class.to_string(), components, params, inner, dependencies, fields: Some(fields), corresponds: None }
+    }
+
+    /// Whether its constructor's parameter `i` is a dependency, passed null.
+    pub fn is_dependency(&self, i: usize) -> bool {
+        self.dependencies.contains(&i)
+    }
+
+    /// Its dependencies and its inner objects', each by its path from `path` (`this.rates`) and its interface (an
+    /// internal name).
+    pub fn dependency_paths(&self, path: &str) -> Vec<(String, String)> {
+        let mut out = Vec::new();
+        let mut nested = self.inner.iter();
+        for (i, (name, t)) in self.params.iter().enumerate() {
+            match t {
+                Type::Object(class) if self.is_dependency(i) => out.push((format!("{path}.{name}"), class.clone())),
+                Type::Object(_) => {
+                    if let Some(inner) = nested.next() {
+                        out.extend(inner.dependency_paths(&format!("{path}.{name}")));
+                    }
+                }
+                _ => {}
+            }
+        }
+        out
     }
 
     /// Whether it is a class made by its constructor, rather than a record of primitive components.
@@ -571,11 +606,11 @@ impl RecordType {
     /// [`RecordType::constructor`] for the class under the package `prefix` (`before`), whose parameters of a class
     /// type are under it too.
     pub fn constructor_in(&self, prefix: Option<&str>) -> String {
-        let descriptor = |t: &Type| match (t, prefix) {
-            (Type::Object(name), Some(p)) if self.inner.iter().any(|r| r.class == *name) => format!("L{p}/{name};"),
+        let descriptor = |i: usize, t: &Type| match (t, prefix) {
+            (Type::Object(name), Some(p)) if self.is_dependency(i) || self.inner.iter().any(|r| r.class == *name) => format!("L{p}/{name};"),
             _ => t.descriptor(),
         };
-        format!("({})V", self.params.iter().map(|(_, t)| descriptor(t)).collect::<String>())
+        format!("({})V", self.params.iter().enumerate().map(|(i, (_, t))| descriptor(i, t)).collect::<String>())
     }
 
     /// Every constructor the harness calls to make it, this one's first, by owner and descriptor.
@@ -622,7 +657,9 @@ impl RecordType {
         let params = self
             .params
             .iter()
-            .map(|(n, t)| match t {
+            .enumerate()
+            .map(|(i, (n, t))| match t {
+                Type::Object(_) if self.is_dependency(i) => format!("{n}: null, a dependency of {}", t.java_name()),
                 Type::Object(_) => format!("{n}: {}", nested.next().map(RecordType::describe).unwrap_or_else(|| t.java_name())),
                 _ => format!("{n}: {}", t.java_name()),
             })
@@ -668,6 +705,7 @@ impl RecordType {
                     && self.params.iter().zip(&other.params).all(|((_, a), (_, b))| a == b)
                     && self.inner.len() == other.inner.len()
                     && self.inner.iter().zip(&other.inner).all(|(a, b)| a.same_shape(b))
+                    && self.dependencies == other.dependencies
             }
             _ => false,
         };
@@ -1312,6 +1350,19 @@ impl Layout {
                 Slot::Plain(_) => Vec::new(),
             })
             .collect()
+    }
+
+    /// The dependencies the inputs' constructions pass null ([`RecordType::dependencies`]), in the previous version
+    /// and in the new, each by its path (`this.rates`) and its interface, an internal name without the previous
+    /// version's `before/` prefix.
+    pub fn dependencies(&self) -> (Vec<(String, String)>, Vec<(String, String)>) {
+        let (mut before, mut after) = (Vec::new(), Vec::new());
+        for slot in self.records() {
+            let Slot::Record { name, record, before: old, .. } = slot else { continue };
+            after.extend(record.dependency_paths(name));
+            before.extend(old.as_ref().unwrap_or(record).dependency_paths(name));
+        }
+        (before, after)
     }
 
     /// The list parameters ([`Slot::List`]), in order.
@@ -3037,8 +3088,10 @@ fn emit_construct(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
     code.op_u16(0xbb, class); // new
     code.op(0x59); // dup
     let mut nested = record.inner.iter();
-    for (_, t) in &record.params {
-        if is_leaf(t) {
+    for (i, (_, t)) in record.params.iter().enumerate() {
+        if record.is_dependency(i) {
+            code.op(0x01); // aconst_null: a dependency, which the target never reaches
+        } else if is_leaf(t) {
             match leaves.next().expect("a leaf for each primitive argument") {
                 Leaf::Flat(leaf) => code.load(kind_of(t), params[leaf].slot),
                 // An expression over the new version's leaves (H5's rest), compiled over their locals; one that
@@ -3435,7 +3488,9 @@ fn construction_source_of(record: &RecordType, prefix: &str, leaves: &mut dyn It
     let args: Vec<String> = record
         .params
         .iter()
-        .map(|(_, t)| match t {
+        .enumerate()
+        .map(|(i, (_, t))| match t {
+            Type::Object(_) if record.is_dependency(i) => "null".to_string(),
             Type::Object(_) => nested.next().map(|r| construction_source_of(r, prefix, leaves)).unwrap_or_default(),
             _ => leaves.next().unwrap_or_default(),
         })

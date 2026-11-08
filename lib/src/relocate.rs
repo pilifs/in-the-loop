@@ -150,8 +150,23 @@ pub fn referenced_classes(bytes: &[u8]) -> Result<Vec<String>, Error> {
 /// made public. Nothing else changes. Field resolution, constructor calls and static calls don't depend on access
 /// (JVMS 5.4.3.2, 5.4.3.3), so a program that ran without an access error runs as it did; only reflection on the
 /// modifiers would tell. Instance methods keep their access, since it decides which methods override which (JVMS
-/// 5.4.5).
+/// 5.4.5); [`opened_with`] opens those it may.
 pub fn opened(bytes: &[u8]) -> Result<Vec<u8>, Error> {
+    open(bytes, None)
+}
+
+/// [`opened`], with also each protected instance method made public, and each package-private one for which
+/// `may_open(name, descriptor)` holds, which the caller says where no class of another package that extends this
+/// one declares a method of that name and descriptor: then making it public changes no override (JVMS 5.4.5: a
+/// subclass of the same package overrides a package-private method already, and a protected one is overridden from
+/// any package), so dispatch runs as it did. A harness in the unnamed package calls a package-private target so
+/// (`QuoteService.fee`, a helper of the quote family).
+pub fn opened_with(bytes: &[u8], may_open: &dyn Fn(&str, &str) -> bool) -> Result<Vec<u8>, Error> {
+    open(bytes, Some(may_open))
+}
+
+/// [`opened`], and with `instances` [`opened_with`].
+fn open(bytes: &[u8], instances: Option<&dyn Fn(&str, &str) -> bool>) -> Result<Vec<u8>, Error> {
     let pool = pool(bytes)?;
     let mut out = bytes.to_vec();
     let short = || Error::new("truncated class file");
@@ -169,7 +184,13 @@ pub fn opened(bytes: &[u8]) -> Result<Vec<u8>, Error> {
         for _ in 0..count {
             let access = u2(&out, pos)?;
             let name = pool.utf8.get(u2(&out, pos + 2)? as usize).cloned().flatten().unwrap_or_default();
-            let open = members == 0 || name == "<init>" || (access & flags::STATIC != 0 && name != "<clinit>");
+            let instance = access & (flags::STATIC | flags::PRIVATE) == 0 && name != "<init>" && name != "<clinit>";
+            let package_private = access & (flags::PUBLIC | flags::PROTECTED) == 0;
+            let descriptor = || pool.utf8.get(u2(&out, pos + 4).unwrap_or(0) as usize).cloned().flatten().unwrap_or_default();
+            let open = members == 0
+                || name == "<init>"
+                || (access & flags::STATIC != 0 && name != "<clinit>")
+                || (members == 1 && instance && instances.is_some_and(|may_open| !package_private || may_open(&name, &descriptor())));
             if open {
                 out[pos..pos + 2].copy_from_slice(&public(access).to_be_bytes());
             }
@@ -249,6 +270,37 @@ mod tests {
         assert_eq!(opened.pool.len(), original.pool.len());
         assert_eq!(opened.methods.iter().map(|m| m.code.as_ref().map(|c| c.bytes.clone())).collect::<Vec<_>>(), original.methods.iter().map(|m| m.code.as_ref().map(|c| c.bytes.clone())).collect::<Vec<_>>());
         assert!(referenced_classes(&bytes).unwrap().contains(&"shop/Money".to_string()));
+    }
+
+    /// `opened_with` opens a protected instance method always, a package-private one only where its caller says no
+    /// override changes (`may_open`), and never a private one, a constructor's access aside.
+    #[test]
+    fn an_instance_method_is_opened_only_where_no_override_changes() {
+        use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+        use crate::classfile::ClassFile;
+        let mut w = ClassWriter::new("quotes/QuoteService");
+        w.access = flags::SUPER;
+        let body = |access: u16, name: &str, descriptor: &str| {
+            let mut code = CodeBuilder::new();
+            code.max_locals = 2;
+            code.return_(None);
+            MethodWriter { access, name: name.into(), descriptor: descriptor.into(), code: Some(code) }
+        };
+        w.methods.push(body(0, "fee", "(I)V"));
+        w.methods.push(body(0, "kept", "(I)V"));
+        w.methods.push(body(flags::PROTECTED, "shown", "()V"));
+        w.methods.push(body(flags::PRIVATE, "own", "()V"));
+        let bytes = w.to_bytes();
+        let asked = std::cell::RefCell::new(Vec::new());
+        let opened = ClassFile::parse(&opened_with(&bytes, &|m, d| {
+            asked.borrow_mut().push(format!("{m}{d}"));
+            m == "fee"
+        }).unwrap()).unwrap();
+        let access: Vec<(&str, u16)> = opened.methods.iter().map(|m| (m.name.as_str(), m.access)).collect();
+        assert_eq!(access, [("fee", flags::PUBLIC), ("kept", 0), ("shown", flags::PUBLIC), ("own", flags::PRIVATE)]);
+        assert_eq!(*asked.borrow(), ["fee(I)V", "kept(I)V"], "only package-private methods are asked about, by descriptor");
+        let plain = ClassFile::parse(&super::opened(&bytes).unwrap()).unwrap();
+        assert_eq!(plain.methods.iter().map(|m| m.access).collect::<Vec<_>>(), [0, 0, flags::PROTECTED, flags::PRIVATE], "opened keeps every instance method's access");
     }
 
     /// A String constant with an isolated surrogate keeps its code units through the copy, as the JVM and JBMC then

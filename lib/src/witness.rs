@@ -184,7 +184,9 @@ fn recipe<'a>(record: &crate::harness::RecordType, leaves: &mut impl Iterator<It
     let args: Vec<String> = record
         .params
         .iter()
-        .map(|(_, t)| match t {
+        .enumerate()
+        .map(|(i, (_, t))| match t {
+            Type::Object(_) if record.is_dependency(i) => "null".to_string(),
             Type::Object(_) => nested.next().map(|r| recipe(r, leaves)).unwrap_or_default(),
             _ => leaves.next().cloned().unwrap_or_default(),
         })
@@ -363,7 +365,10 @@ fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argu
     let components = record
         .params
         .iter()
-        .map(|(c, t)| match t {
+        .enumerate()
+        .map(|(i, (c, t))| match t {
+            // A dependency, passed null: no input of the witness.
+            Type::Object(_) if record.is_dependency(i) => Typed { name: c.clone(), ty: t.java_name(), value: Some(serde_json::Value::Null), components: None, from: None },
             Type::Object(_) => match nested.next() {
                 Some(inner) => typed_made(c, inner, arguments, source, leaves),
                 None => Typed { name: c.clone(), ty: t.java_name(), value: None, components: None, from: None },
@@ -924,8 +929,10 @@ fn construct(m: &mut Machine, record: &crate::harness::RecordType, prefix: Optio
     };
     let mut nested = record.inner.iter();
     let mut args = Vec::new();
-    for (_, t) in &record.params {
-        if crate::harness::is_leaf(t) {
+    for (i, (_, t)) in record.params.iter().enumerate() {
+        if record.is_dependency(i) {
+            args.push(Value::Null);
+        } else if crate::harness::is_leaf(t) {
             args.push(match leaves.next().expect("a leaf for each primitive argument") {
                 crate::harness::Leaf::Flat(i) => flat[i],
                 // An expression over the new version's leaves (H5's rest), as the harness computes it; one that

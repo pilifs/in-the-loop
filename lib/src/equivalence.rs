@@ -850,9 +850,13 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
     within.push(name.to_string());
     let mut params = Vec::new();
     let mut inner = Vec::new();
-    for (n, pt) in names.iter().zip(&descriptor.params) {
+    let mut dependencies = Vec::new();
+    for (i, (n, pt)) in names.iter().zip(&descriptor.params).enumerate() {
         match pt {
             pt if harness::is_leaf(pt) => {}
+            // A dependency: an application interface, passed null. The check holds only where the target never
+            // reaches it (`construction::dependency_reached`), refused by name otherwise.
+            Type::Object(class) if cp.application(class)?.is_some_and(|c| c.is_interface()) => dependencies.push(i),
             Type::Object(class) if cp.application(class)?.is_some() => match made_of(cp, class, within)? {
                 Ok(r) => inner.push(r),
                 Err(gap) => {
@@ -862,7 +866,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
             },
             other => {
                 within.pop();
-                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives, arrays of integral or boolean elements, or objects made by their constructors", other.java_name())));
+                return Ok(Err(format!("the argument {n} of {java}'s constructor has type {}; a constructor's arguments must be primitives, arrays of integral or boolean elements, objects made by their constructors, or dependencies of an application interface, passed null", other.java_name())));
             }
         }
         params.push((n.clone(), pt.clone()));
@@ -870,7 +874,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
     let fields = fields_of(cp, name, &mut vec![]);
     within.pop();
     match fields? {
-        Ok(fields) => Ok(Ok(harness::RecordType::made(name, params, inner, fields))),
+        Ok(fields) => Ok(Ok(harness::RecordType::made_with_dependencies(name, params, inner, dependencies, fields))),
         Err(gap) => Ok(Err(gap)),
     }
 }
@@ -1505,6 +1509,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // here, before a helper's proof, the cache's lookup, or the check's own proof.
     if let Some(problem) = options.object_domain.as_ref().and_then(|d| crate::spec::heap::made_with(&layout, d)) {
         return refuse(&mut out, line, problem);
+    }
+    // A dependency the inputs' constructions pass null holds only where neither version's target reaches it.
+    let (before_dependencies, after_dependencies) = layout.dependencies();
+    for (version, cp, target, dependencies) in [
+        ("previous", &before_cp, MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &before_dependencies),
+        ("new", &after_cp, MemberRef::new(&class_internal, &method_name, &method.descriptor), &after_dependencies),
+    ] {
+        if let Some(reached) = crate::construction::dependency_reached(cp, &target, dependencies) {
+            return refuse(&mut out, line, format!("in the {version} version, {reached}; a regression check passes a dependency null, so it holds only of a target that never reaches one (the effect check answers one through the environment model's stubs)"));
+        }
     }
     let params = &layout.params;
     let flat_types = layout.types();

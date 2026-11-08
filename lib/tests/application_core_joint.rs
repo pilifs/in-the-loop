@@ -374,22 +374,30 @@ fn j1_the_quote_family_composes_the_four_streams() {
     assert!(other.reuse.is_none(), "another assertion is another claim: {}", other.output);
 }
 
-/// J1's O2 and R2 parts on the quote family: `checked` hands back the caller's own request, made by its plan with
-/// its code and quantities, and `alias-to-copy`'s copy is refuted on identity alone, under `checked-claim`; and the
-/// helper `fee` on its own, as a plain regression, `helper-extra-field`'s extra read refuted. Each rerun is the
+/// J1's R2 part on the quote family: the helper `fee` on its own, as a plain regression on a receiver made by its
+/// constructor, the service's three dependencies (interfaces `fee` never reaches) passed null; `helper-extra-field`'s
+/// extra read refuted, its witness run on a JVM, which calls the package-private helper. Each rerun is the stored
+/// result.
+///
+/// Found by the joint acceptance at the merge, refused then ("only a concrete class made by its constructor"), and
+/// so part of the job after its first (`20261108-180246-…`): its own job.
+#[test]
+fn j1_r2_a_receiver_with_dependencies() {
+    regression_family("J1 (R2)", "quote", "quotes.QuoteService#fee", None);
+}
+
+/// J1's O2 part on the quote family: `checked` hands back the caller's own request, made by its plan with its code
+/// and quantities, and `alias-to-copy`'s copy is refuted on identity alone, under `checked-claim`. Each rerun is the
 /// stored result.
 ///
-/// Found by the joint acceptance at the merge: both are refused, since the receiver's constructor takes the
-/// service's three dependencies, interfaces, which neither `checked` nor `fee` reaches. The heap check refuses "a
-/// construction with dependencies", and the regression check "only a concrete class made by its constructor"; only
-/// the effect check's planned harness makes such a receiver (each dependency null, reached only through the stubs).
-/// The integration contract accepted both refusals as the objects stream's. Ignored until the checks make such a
-/// receiver, the next piece of work of the brief's Progress, and not part of the job until then.
+/// The service's dependencies are passed null now, as for R2. The request's String code is still refused: the heap
+/// check's plan doesn't make an adapted value inside a node, and an object with a String field isn't observed by
+/// the regression check ("the values stream builds it"). Ignored until it is, the next piece of work of the brief's
+/// Progress, and not part of a job until then.
 #[test]
-#[ignore = "refused: no check but the effect check makes a receiver whose constructor takes dependencies (application-core.md's Progress)"]
-fn j1_o2_and_r2_a_receiver_with_dependencies() {
+#[ignore = "refused: the regression check doesn't make a String inside an object yet (application-core.md's Progress)"]
+fn j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string() {
     claim_family("J1 (O2)", "quote", "checked-claim", Check::Heap, None);
-    regression_family("J1 (R2)", "quote", "quotes.QuoteService#fee", None);
 }
 
 /// H: the throttle family. Right after the constructor, `after-setup` is verified, labelled for that domain only,
