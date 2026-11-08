@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 05:08 UTC |
-| Prompts | 1,612 |
-| Model calls | 16,024 |
-| Tool calls | 17,017 (307 failed) |
-| Compactions | 238 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 05:40 UTC |
+| Prompts | 1,618 |
+| Model calls | 16,076 |
+| Tool calls | 17,067 (309 failed) |
+| Compactions | 239 |
 | Subagents | 10 |
-| Tokens written | 17,572,354 |
-| Tokens read | 2,621,602,301 (97.9% from cache) |
-| Commits with a trace | 487 |
-| Log snapshots | 595 (1356.3 MB gzipped, 593 uploaded) |
+| Tokens written | 17,631,619 |
+| Tokens read | 2,627,739,258 (97.9% from cache) |
+| Commits with a trace | 488 |
+| Log snapshots | 596 (1357.1 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | open | 33 min | `claude-opus-5-5` | 10 | 94 | 96 | 1 | 2 | 230,173 | 2 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | open | 1 h 5 min | `claude-opus-5-5` | 16 | 146 | 146 | 3 | 3 | 230,173 | 3 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,17 +165,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 99,240 | 186 | 352,116 | 12,758,078 | 97.3% | 132 |
+| [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 158,505 | 294 | 512,348 | 18,734,695 | 97.3% | 121 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,887 | 87.5% | 65 |
-| `Read` | 788 | 4.6% | 34 |
+| `Bash` | 14,935 | 87.5% | 65 |
+| `Read` | 789 | 4.6% | 34 |
 | `Edit` | 649 | 3.8% | 34 |
 | `Write` | 410 | 2.4% | 30 |
-| `ToolSearch` | 99 | 0.6% | 25 |
+| `ToolSearch` | 100 | 0.6% | 26 |
 | `Monitor` | 65 | 0.4% | 22 |
 | `AskUserQuestion` | 30 | 0.2% | 9 |
 | `TaskStop` | 28 | 0.2% | 12 |
@@ -680,6 +680,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 485 | [`e09fe452`](https://github.com/pilifs/in-the-loop/commit/e09fe452fe38995b5daad72cd5e104471714bc62) | Stub reachability brief: step 4's expectation for VF-015 now names the failure the job actually hit | [`807d6ed2`](807d6ed2-a98d-4f93-8dbb-28d70736eff7/summary.md) ([log](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/0929f809f90a15030edc0fe0df686a12dc87107d041bb21d93c975435c3544df.jsonl.gz)) |
 | 486 | change `ulzwwxvs` | application-core environment E1: a consumed primitive return under a deterministic query model | [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) ([log](https://terminalvalue.net/raw-traces/73918f92-0381-4271-b3bb-48ca4e45803b/c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07.jsonl.gz)) |
 | 487 | change `rxsvwkos` | application-core environment E1: a declared nondeterministic operation under a per-call choice | [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) ([log](https://terminalvalue.net/raw-traces/73918f92-0381-4271-b3bb-48ca4e45803b/8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0.jsonl.gz)) |
+| 488 | change `xlxxtpul` | application-core environment E2: modelled failures, checked or not, under either coupling | [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) ([log](https://terminalvalue.net/raw-traces/73918f92-0381-4271-b3bb-48ca4e45803b/8bbc702d51817843c1e0cb06e01ea4d4b1b560d5f85511098470a23f266675a7.jsonl.gz)) |
 
 ## Logs
 
@@ -751,7 +752,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 2 | 0 | 1.0 MB | `8926442f1ec3`, not uploaded |
+| [`73918f92`](73918f92-0381-4271-b3bb-48ca4e45803b/summary.md) | 3 | 0 | 1.8 MB | `8bbc702d5181`, not uploaded |
 
 ## Session notes
 

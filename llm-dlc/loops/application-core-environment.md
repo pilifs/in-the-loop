@@ -215,6 +215,56 @@ entry points, not proof that a dependency's contract is right.
   - **Next**: E2's modelled failures. A `throws` result under either coupling, checked exceptions included, chosen
     beside the normal results (an outcome index in each entry). Then catch and propagation refuted where a catch
     goes missing, the exception class recorded, and an inspection of its message or cause refused.
+- 2026-11-08, **E2: modelled failures** (E2's own items; the contract's row E1 still waits on Q's integration):
+  - **The model** (`environment.rs`): a `CallModel` may list exception classes beside its one normal result,
+    checked ones included. A void call may be modelled by its failures alone.
+    - Refused by name: only failures, a class twice, and a `NullPointerException`, which the check can't tell from
+      a dependency left null.
+    - The call's `outcomes` may name the model's classes; another name is refused.
+  - **The encoding** (`effects.rs`): each table entry and the default also hold an outcome input
+    (`rates.rate[0].outcome`). `k` throws the `k`-th class; any other value gives the normal result.
+    - So the outcome is part of the same function of the key (and of its occurrence, under a choice) as the value,
+      for both builds alike. Complete and sound as in E1.
+    - The stub throws `new C()` through C's public constructor without arguments: its class, and no message,
+      cause or stack. A class without one, an abstract class or no Throwable is refused, in either build.
+    - What escapes the handler is its outcome by class: the model's classes join the log's exception list.
+    - The witness names each outcome (`(arg0=0) throws java.io.IOException`). The shrunk witness keeps the
+      failing choice, and the JVM replays it.
+  - **What is refused, never invented** (`effects::inspections`): every handler that may catch a modelled failure
+    (a catch of its class or a superclass, or a `finally`) is checked where it keeps what it caught.
+    - Each read of that local, within its scope, must rethrow it, test its class or test it for null.
+    - A call on it (`getMessage`, `getCause`, any other) or handing it on (a wrapper's cause, a field, a return)
+      is refused by name.
+    - Conservative: a try-with-resources' `addSuppressed` is refused too, and so is a catch of `Exception`
+      around code that never reaches the model.
+  - **Reproducers** (`tests/environment.rs`, now 16), on a fallible fixture: `int rate(int) throws IOException`,
+    and an unchecked `RateUnavailable`:
+    - a rewrite that keeps a catch of the checked failure is proved;
+    - refuted and replayed: a newly missing catch (`returns -1` against `throws java.io.IOException`), and the
+      failure's event dropped or sent on the wrong topic;
+    - a dropped retry is refuted under a per-call choice, whose second call is an occurrence of its own. Under a
+      query the retry can change nothing, and its removal proves;
+    - a retry loop that rethrows on the second failure is proved: a rethrow reads nothing;
+    - refused: a handler that reads the message, reads the cause, or wraps the failure; and
+      `UncheckedIOException`, which has no constructor without arguments;
+    - the cache test adds that a modelled failure, and another class of it, are claims of their own.
+  - **Found on the way, recorded for review**:
+    1. Both mistakes in my first reproducers were int overflows (`quantity * rates.rate(code)` against a `long`
+       product), and the check refuted them rightly. Nothing to fix.
+    2. **An interface request, for the objects stream** (owner of the replay plumbing). `jvm_witness::run`'s main
+       sets `max_stack = 16` and pushes every argument. A witness whose arguments need more words fails JVM
+       verification ("Stack size too large") and stays unresolved: sound, but no replayed refutation.
+       - Beside two int inputs, that is a table of long results past bound 2 (E1's `MAX_BOUND` of 8 is
+         encodable, but its refutations past that don't replay), or past bound 1 with failures.
+       - The fix is the operand stack sized from the parameters' widths, one line in a file this stream doesn't
+         own.
+       - Until then, the unresolved reason names the words needed, and the fallible fixture uses an int rate.
+  - **Passing inline**: every suite of `lib` (`environment` 16, `effects` 18, `application_core` 14,
+    `foundations` 5, `compare`, `integration` 65, `heap` 49, `observations` 12, `alignment` 34, `summaries` 40,
+    `conformance` 10, and the unit tests, 230).
+  - **Next**: E3, a nullable DTO response through the objects stream's construction plan. It needs that plan
+    integrated, so check whether the objects stream's commits are visible to this workspace first. If not,
+    the remaining work waits on the objects stream (and Q on the values stream's String adapter).
 - Status: working
 
 ## Loop settings

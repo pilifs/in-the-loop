@@ -45,10 +45,21 @@
 //! occurrence, and a key's occurrences up to n are all among them, so any function on the pairs is a table that
 //! lists each key's answers in the order of its occurrences. Sound: every table is such a function.
 //!
+//! **Modelled failures** ([`ModelledResult::Throws`]): a model may give, beside its one normal result, a bounded
+//! list of exception classes, checked ones (`java.io.IOException`) included. Each entry of the table, and the
+//! default, then also holds an outcome: 0 (or any value but those below) the normal result, `k` a throw of the
+//! `k`-th class. So which outcome a call gets is part of the same function of the key (and, under a per-call choice,
+//! of its occurrence) as its value, for both versions alike: a version that drops a catch, or emits on the wrong
+//! branch of one, is checked against the same failure. The exception is made by its class's constructor without
+//! arguments: it carries its class, and no message, cause or stack the dependency would give. So a caller that
+//! reads anything of a caught modelled exception but its class (its message, its cause, or by handing it to code
+//! that may) is refused by the effect check, never given an invented one. A call that returns nothing may be
+//! modelled this way too: its only choice is whether it fails.
+//!
 //! **What the key can be**, so far: a primitive integral or boolean argument (`arg0`). A String key needs the values
 //! stream's adapter, a field path (`arg1.code`) or an object's identity the objects stream's construction plan;
-//! both are refused by name until then. The result: one normal return of an integral or boolean primitive. A thrown
-//! result is E2's, a DTO E3's, and a value of an adapter's domain the values stream's.
+//! both are refused by name until then. The normal result: an integral or boolean primitive, or nothing beside a
+//! modelled failure. A DTO is E3's, and a value of an adapter's domain the values stream's.
 
 use std::path::Path;
 
@@ -67,8 +78,11 @@ pub struct Lowered {
     pub id: String,
     /// The key's components, in order: the call's parameter each is (0 for `arg0`), and its type.
     pub key: Vec<(usize, Type)>,
-    /// The type of the result.
+    /// The type of the normal result: an integral or boolean primitive, or void beside a modelled failure.
     pub ret: Type,
+    /// The exception classes a call may throw instead (internal names), in the model's order: the outcome `k`
+    /// throws the `k`-th, from 1.
+    pub throws: Vec<String>,
     /// The most calls of it one trace may make.
     pub bound: u32,
     /// A per-call choice ([`Occurrence::PerCall`]): each entry answers one call per trace, so a result is a function of
@@ -87,56 +101,100 @@ impl Lowered {
         self.key.iter().map(|(p, _)| format!("arg{p}")).collect()
     }
 
-    /// The check's inputs the table is: for each entry its key's components, then its result; then the default.
+    /// The answer's inputs, in order: its value, unless the call returns nothing, then its outcome, when the model
+    /// has failures.
+    fn answer_inputs(&self) -> Vec<Type> {
+        let mut out = Vec::new();
+        if self.ret != Type::Void {
+            out.push(self.ret.clone());
+        }
+        if !self.throws.is_empty() {
+            out.push(Type::Int);
+        }
+        out
+    }
+
+    /// The check's inputs the table is: for each entry its key's components, then its answer (value, outcome);
+    /// then the default answer.
     pub fn inputs(&self) -> Vec<Type> {
         let mut out = Vec::new();
         for _ in 0..self.entries() {
             out.extend(self.key.iter().map(|(_, t)| t.clone()));
-            out.push(self.ret.clone());
+            out.extend(self.answer_inputs());
         }
-        out.push(self.ret.clone());
+        out.extend(self.answer_inputs());
         out
     }
 
     /// The names of [`Lowered::inputs`], as a proof or a search names them: `rates.rate[0].arg0`, `rates.rate[0]`,
-    /// ..., `rates.rate.default`.
+    /// `rates.rate[0].outcome`, ..., `rates.rate.default`, `rates.rate.default.outcome`.
     pub fn input_names(&self) -> Vec<String> {
+        let answer = |at: String| {
+            let mut out = Vec::new();
+            if self.ret != Type::Void {
+                out.push(at.clone());
+            }
+            if !self.throws.is_empty() {
+                out.push(format!("{at}.outcome"));
+            }
+            out
+        };
         let mut out = Vec::new();
         for e in 0..self.entries() {
             out.extend(self.key_names().iter().map(|k| format!("{}[{e}].{k}", self.id)));
-            out.push(format!("{}[{e}]", self.id));
+            out.extend(answer(format!("{}[{e}]", self.id)));
         }
-        out.push(format!("{}.default", self.id));
+        out.extend(answer(format!("{}.default", self.id)));
         out
+    }
+
+    /// The class an outcome throws (internal name), or `None` for the normal result.
+    pub fn thrown(&self, outcome: i64) -> Option<&str> {
+        usize::try_from(outcome).ok().filter(|k| (1..=self.throws.len()).contains(k)).map(|k| self.throws[k - 1].as_str())
+    }
+
+    /// The outcomes, in words: `any long, or a throw of java.io.IOException (...)`; without `any`, as the codomain
+    /// of a function (`long, or a throw of ...`).
+    fn outcomes(&self, any: bool) -> String {
+        let normal = match (&self.ret, any) {
+            (Type::Void, _) => "a normal return".to_string(),
+            (t, true) => format!("any {}", t.java_name()),
+            (t, false) => t.java_name(),
+        };
+        if self.throws.is_empty() {
+            return normal;
+        }
+        let thrown: Vec<String> = self.throws.iter().map(|c| c.replace('/', ".")).collect();
+        format!("{normal}, or a throw of {} (made with no arguments: its class, and no message or cause)", thrown.join(" or "))
     }
 
     /// What the result rests on, in words.
     pub fn assumption(&self, call: &str) -> String {
-        let (id, key, ty, bound) = (&self.id, self.key_names().join(", "), self.ret.java_name(), self.bound);
+        let (id, key, ty, bound) = (&self.id, self.key_names().join(", "), self.outcomes(true), self.bound);
         if self.per_call {
-            format!("{call} is a generated stub in both builds, answering from the environment model {id}: a declared nondeterministic operation, chosen per call: any {ty} for each call, the same choice in both builds for the same ({key}) and the same occurrence of it in the trace, so calls with equal keys may get different results and calls with different keys are never coupled by position; at most {bound} calls of it in a trace, one more leaves the result unresolved")
+            format!("{call} is a generated stub in both builds, answering from the environment model {id}: a declared nondeterministic operation, chosen per call: {ty} for each call, the same choice in both builds for the same ({key}) and the same occurrence of it in the trace, so calls with equal keys may get different results and calls with different keys are never coupled by position; at most {bound} calls of it in a trace, one more leaves the result unresolved")
         } else {
-            format!("{call} is a generated stub in both builds, answering from the environment model {id}: a deterministic read-only query of one declared snapshot, the same function in both builds, of ({key}) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any {ty} for any key; at most {bound} calls of it in a trace, one more leaves the result unresolved")
+            format!("{call} is a generated stub in both builds, answering from the environment model {id}: a deterministic read-only query of one declared snapshot, the same function in both builds, of ({key}) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; {ty} for any key; at most {bound} calls of it in a trace, one more leaves the result unresolved")
         }
     }
 
     /// What a stub returns, in the effect-log plan's words.
     pub fn returns(&self) -> String {
-        let (id, key, ty) = (&self.id, self.key_names().join(", "), self.ret.java_name());
+        let (id, key, ty) = (&self.id, self.key_names().join(", "), self.outcomes(true));
         if self.per_call {
-            format!("any {ty} chosen per call, the same in both builds for the same ({key}) and occurrence of it ({id})")
+            format!("{ty}, chosen per call, the same in both builds for the same ({key}) and occurrence of it ({id})")
         } else {
-            format!("any {ty} that is a function of ({key}), the same in both builds ({id})")
+            format!("{ty}, as a function of ({key}), the same in both builds ({id})")
         }
     }
 
     /// The part of the domain the model's answers are, in words.
     pub fn domain(&self, call: &str) -> String {
-        let (id, key, ty, bound) = (&self.id, self.key_names().join(", "), self.ret.java_name(), self.bound);
+        let (id, key, bound) = (&self.id, self.key_names().join(", "), self.bound);
         if self.per_call {
-            format!("{call} ({id}): any {ty} per call, chosen alike for the same ({key}) and occurrence of it, within {bound} calls of it per trace")
+            format!("{call} ({id}): {} per call, chosen alike for the same ({key}) and occurrence of it, within {bound} calls of it per trace", self.outcomes(true))
         } else {
-            format!("{call} ({id}): any function of ({key}) to {ty}, within {bound} calls of it per trace")
+            format!("{call} ({id}): any function of ({key}) to {}, within {bound} calls of it per trace", self.outcomes(false))
         }
     }
 }
@@ -195,34 +253,52 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
         key.push((p, t.clone()));
     }
     let mut ret = None;
+    let mut throws: Vec<String> = Vec::new();
     for result in &model.results {
         match result {
-            ModelledResult::Throws { class } => return Err(refused(call, format!("a modelled failure (throws {class}): modelled failures are the environment stream's E2, not built yet"))),
+            ModelledResult::Throws { class } => {
+                let class = class.trim().replace('.', "/");
+                if class.is_empty() {
+                    return Err(refused(call, "a modelled failure with no class"));
+                }
+                if class == "java/lang/NullPointerException" {
+                    return Err(refused(call, "a modelled NullPointerException: the check can't tell it from a dependency left null, which marks the log unresolved"));
+                }
+                if throws.contains(&class) {
+                    return Err(refused(call, format!("the failure {} twice", class.replace('/', "."))));
+                }
+                throws.push(class);
+            }
             ModelledResult::Returns { value } => {
                 let t = match value {
-                    Returned::Primitive { ty } => ty,
-                    Returned::Void => return Err(refused(call, "a void result: a call that returns nothing needs no model of its results, its recording stub is the model")),
+                    Returned::Primitive { ty } => ty.as_str(),
+                    Returned::Void => "void",
                     Returned::Object { .. } => return Err(refused(call, "a DTO response made by a construction plan: the environment stream's E3, not built yet")),
                     Returned::Adapted { .. } => return Err(refused(call, "a value of an adapter's domain: it waits for the values stream's adapter")),
                 };
                 if ret.is_some() {
-                    return Err(refused(call, "two normal results: a call returns one type"));
+                    return Err(refused(call, "two normal results: a call returns one value of one type"));
                 }
-                if &descriptor.ret.java_name() != t {
+                if descriptor.ret.java_name() != t {
                     return Err(refused(call, format!("a result of type {t}, where the call returns {}", descriptor.ret.java_name())));
                 }
-                if !integral(&descriptor.ret) {
+                if !integral(&descriptor.ret) && descriptor.ret != Type::Void {
                     return Err(refused(call, format!("a result of type {t}: a modelled result is an integral or boolean primitive so far")));
                 }
                 ret = Some(descriptor.ret.clone());
             }
         }
     }
-    let Some(ret) = ret else { return Err(refused(call, "no permitted result")) };
-    if let Some(o) = call.outcomes.iter().find(|o| *o != "returns") {
-        return Err(refused(call, format!("the call's outcomes name {o}, which the model's results don't: a modelled failure is a result of the model (E2)")));
+    let Some(ret) = ret else {
+        return Err(refused(call, if throws.is_empty() { "no permitted result" } else { "only failures: a call that always fails isn't modelled; give it its normal result beside them" }));
+    };
+    if ret == Type::Void && throws.is_empty() {
+        return Err(refused(call, "a void result and no failure: a call that returns nothing and never fails needs no model of its results, its recording stub is the model"));
     }
-    Ok(Lowered { id: model.id.clone(), key, ret, bound: model.bound, per_call })
+    if let Some(o) = call.outcomes.iter().find(|o| *o != "returns" && !throws.contains(&o.replace('.', "/"))) {
+        return Err(refused(call, format!("the call's outcomes name {o}, which the model's results don't: a modelled failure is a result of the model")));
+    }
+    Ok(Lowered { id: model.id.clone(), key, ret, throws, bound: model.bound, per_call })
 }
 
 /// Checks that the effect check can make `call`'s stubs give the results `model` says, under its coupling and
@@ -309,6 +385,35 @@ mod tests {
         assert!(lowered.domain("Rates.rate").contains("any long per call, chosen alike for the same (arg0) and occurrence of it"));
     }
 
+    /// `Rates.rate` as a query that returns a long or throws one of `classes`.
+    fn failing(classes: &[&str]) -> CallModel {
+        let mut model = query(&["arg0"], "long", 2);
+        model.results.extend(classes.iter().map(|c| ModelledResult::Throws { class: c.to_string() }));
+        model
+    }
+
+    #[test]
+    fn a_modelled_failure_adds_an_outcome_to_each_entry_and_the_default() {
+        let model = failing(&["java.io.IOException", "shop/Unavailable"]);
+        let declared = ModeledCall { outcomes: vec!["returns".into(), "java.io.IOException".into()], ..call(RATE, &model) };
+        let lowered = lower(&declared, &model).unwrap();
+        assert_eq!(lowered.throws, ["java/io/IOException", "shop/Unavailable"]);
+        // Each entry: its key, its value, its outcome; then the default's value and outcome.
+        assert_eq!(lowered.inputs().len(), 4 * 3 + 2);
+        assert_eq!(lowered.input_names()[..3], ["rates[0].arg0", "rates[0]", "rates[0].outcome"]);
+        assert_eq!(lowered.input_names()[12..], ["rates.default", "rates.default.outcome"]);
+        assert_eq!((lowered.thrown(0), lowered.thrown(1), lowered.thrown(2), lowered.thrown(3), lowered.thrown(-1)), (None, Some("java/io/IOException"), Some("shop/Unavailable"), None, None));
+        let words = lowered.assumption("Rates.rate");
+        assert!(words.contains("any long, or a throw of java.io.IOException or shop.Unavailable (made with no arguments: its class, and no message or cause)"), "{words}");
+        // A call that returns nothing may be modelled by its failures alone: only the outcome is chosen.
+        let mut send = CallModel { results: vec![ModelledResult::Returns { value: Returned::Void }, ModelledResult::Throws { class: "java.io.IOException".into() }], ..query(&["arg0"], "void", 1) };
+        send.coupling = Coupling::Choice { policy: Occurrence::PerCall };
+        let lowered = lower(&call("shop/Events#send(I)V", &send), &send).unwrap();
+        assert_eq!(lowered.inputs(), [Type::Int, Type::Int, Type::Int, Type::Int, Type::Int]);
+        assert_eq!(lowered.input_names()[..2], ["rates[0].arg0", "rates[0].outcome"]);
+        assert!(lowered.returns().starts_with("a normal return, or a throw of java.io.IOException"), "{}", lowered.returns());
+    }
+
     #[test]
     fn what_the_check_does_not_encode_yet_is_refused_by_name() {
         let refusal = |c: &str, m: CallModel| lower(&call(c, &m), &m).unwrap_err();
@@ -316,7 +421,9 @@ mod tests {
         script.coupling = Coupling::Choice { policy: Occurrence::Script { results: vec![0, 0] } };
         let cases = [
             (refusal(RATE, script), "occurrence `script`"),
-            (refusal(RATE, CallModel { results: vec![ModelledResult::Throws { class: "shop.Unavailable".into() }], ..query(&["arg0"], "long", 1) }), "E2"),
+            (refusal(RATE, CallModel { results: vec![ModelledResult::Throws { class: "shop.Unavailable".into() }], ..query(&["arg0"], "long", 1) }), "only failures"),
+            (refusal(RATE, failing(&["java.lang.NullPointerException"])), "can't tell it from a dependency left null"),
+            (refusal(RATE, failing(&["shop.Unavailable", "shop/Unavailable"])), "twice"),
             (refusal(RATE, query(&["this"], "long", 1)), "the receiver's identity"),
             (refusal(RATE, query(&["arg0.code"], "long", 1)), "field path"),
             (refusal("shop/Rates#rate(Ljava/lang/String;)J", query(&["arg0"], "long", 1)), "values stream's adapter"),
@@ -333,8 +440,8 @@ mod tests {
             assert!(gap.what.contains(words) && gap.what.starts_with("a modelled call's model of its results ("), "{words}: {gap}");
         }
         let model = query(&["arg0"], "long", 1);
-        let failing = ModeledCall { outcomes: vec!["returns".into(), "shop.Unavailable".into()], ..call(RATE, &model) };
-        assert!(lower(&failing, &model).unwrap_err().what.contains("outcomes name shop.Unavailable"));
+        let undeclared = ModeledCall { outcomes: vec!["returns".into(), "shop.Unavailable".into()], ..call(RATE, &model) };
+        assert!(lower(&undeclared, &model).unwrap_err().what.contains("outcomes name shop.Unavailable"));
     }
 
     #[test]

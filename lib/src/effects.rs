@@ -23,8 +23,14 @@
 //!   model's owner that the analysis can't follow (an interface nothing implements) is the one the model answers;
 //!   every other call on that owner is a stub that marks the log.
 //! - **One environment for both.** The two builds get the same stubs, in the same order, from one model: the union
-//!   of the claim's and both specs' modeled calls. Every call returns normally, the only outcome the model allows
-//!   so far, and the result says so.
+//!   of the claim's and both specs' modeled calls. Every call returns normally, unless its model of its results
+//!   declares failures, and the result says which may fail.
+//! - **Modelled failures.** A model's failures are outcomes of its table's entries, beside the normal result: a
+//!   stub whose answer's outcome is `k` throws a new instance of the `k`-th class, checked or not, made by its
+//!   constructor without arguments. What escapes the handler is its outcome, by class, like any of its own
+//!   exceptions. A failure carries its class and nothing a dependency would give it, so a build whose handlers read
+//!   more of a caught one (its message, its cause, or by handing it on) is refused by name ([`Part::Environment`]).
+//!   A witness names each chosen outcome (`(arg0=3) throws java.io.IOException`), and the JVM replays it.
 //! - **The handler, made the same way.** A generated static method in the handler's package makes the handler with
 //!   its one constructor, every dependency `null` (reached only through the stubs; an application class among them
 //!   is refused, since it would be null too), calls it on the entry point's inputs, and returns the log: the outcome (a normal
@@ -152,7 +158,7 @@ impl Model {
     }
 
     /// The environment a witness chose, in words, from the values of [`Model::environment_inputs`]: each modelled
-    /// call's answers by key, then its default. A query's entry shadowed by an earlier one of the same key is left
+    /// call's answers by key (`gives 3`, `throws java.io.IOException`, `returns`), then its default. A query's entry shadowed by an earlier one of the same key is left
     /// out; a per-call choice lists a key's answers in the order of its occurrences.
     fn environment_words(&self, values: &[Argument]) -> String {
         let scalar = |a: Option<&Argument>, t: &Type| match (a, t) {
@@ -169,11 +175,31 @@ impl Model {
             let names = m.key_names();
             // Each key once, in the order of its first entry, with its answers.
             let mut answers: Vec<(Vec<String>, Vec<String>)> = Vec::new();
+            // An answer, from its value and its outcome: a throw of the outcome's class, or the value.
+            let give = |at: &mut usize| -> String {
+                let value = if m.ret == Type::Void {
+                    "returns".to_string()
+                } else {
+                    *at += 1;
+                    format!("gives {}", scalar(values.get(*at - 1), &m.ret))
+                };
+                if m.throws.is_empty() {
+                    return value;
+                }
+                *at += 1;
+                let outcome = match values.get(*at - 1) {
+                    Some(Argument::Scalar(Value::Int(v))) => i64::from(*v),
+                    _ => 0,
+                };
+                match m.thrown(outcome) {
+                    Some(class) => format!("throws {}", class.replace('/', ".")),
+                    None => value,
+                }
+            };
             for _ in 0..m.entries() {
                 let key: Vec<String> = m.key.iter().enumerate().map(|(c, (_, t))| scalar(values.get(at + c), t)).collect();
                 at += m.key.len();
-                let result = scalar(values.get(at), &m.ret);
-                at += 1;
+                let result = give(&mut at);
                 match answers.iter_mut().find(|(k, _)| *k == key) {
                     Some((_, rs)) => {
                         if m.per_call {
@@ -183,11 +209,10 @@ impl Model {
                     None => answers.push((key, vec![result])),
                 }
             }
-            let default = scalar(values.get(at), &m.ret);
-            at += 1;
-            let answers: Vec<String> = answers.iter().map(|(key, rs)| format!("({}) gives {}", names.iter().zip(key).map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join(", "), rs.join(", then "))).collect();
+            let default = give(&mut at);
+            let answers: Vec<String> = answers.iter().map(|(key, rs)| format!("({}) {}", names.iter().zip(key).map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join(", "), rs.join(", then "))).collect();
             let rest = if m.per_call { "any other key or later call of one" } else { "any other key" };
-            out.push(format!("{} ({}): {}, {rest} gives {default}", short(call), m.id, answers.join(", ")));
+            out.push(format!("{} ({}): {}, {rest} {default}", short(call), m.id, answers.join(", ")));
         }
         out.join("; ")
     }
@@ -227,9 +252,11 @@ fn assumptions(environment: &EnvironmentModel, handler: &str) -> Vec<String> {
             None => format!("{} is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit", short(&c.call)),
         })
         .collect();
-    let failures: Vec<&ModeledCall> = environment.calls.iter().filter(|c| c.outcomes.iter().any(|o| o != "returns")).collect();
-    if failures.is_empty() && !environment.calls.is_empty() {
+    let failing: Vec<String> = environment.calls.iter().filter(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()).is_some_and(|m| !m.throws.is_empty())).map(|c| short(&c.call)).collect();
+    if failing.is_empty() && !environment.calls.is_empty() {
         out.push("every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim".into());
+    } else if !failing.is_empty() {
+        out.push(format!("only {} may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally", failing.join(" and ")));
     }
     if !handler.is_empty() {
         out.push(format!("{handler} is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default"));
@@ -524,15 +551,27 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     for c in environment.calls.iter() {
         if let Some(model) = &c.model {
             crate::environment::check_model(c, model)?;
-        }
-        if let Some(o) = c.outcomes.iter().find(|o| *o != "returns") {
-            return Err(unsupported(format!("a modeled outcome other than a normal return ({o} of {}): modeled failures come after the narrow case", short(&c.call))));
+        } else if let Some(o) = c.outcomes.iter().find(|o| *o != "returns") {
+            return Err(unsupported(format!("a modeled outcome other than a normal return ({o} of {}) with no model of the call's results: a modelled failure is a result of its model (crate::environment)", short(&c.call))));
         }
     }
     let lowered = |call: &str| -> Option<crate::environment::Lowered> {
         let c = environment.calls.iter().find(|c| c.call == call)?;
         crate::environment::lower(c, c.model.as_ref()?).ok()
     };
+    // The modelled failures: each a Throwable both builds have, made by a constructor without arguments, and a
+    // caught one read for nothing but its class.
+    let thrown: Vec<String> = environment.calls.iter().filter_map(|c| lowered(&c.call)).flat_map(|m| m.throws).collect::<BTreeSet<_>>().into_iter().collect();
+    for class in &thrown {
+        for (cp, build) in [(&before_cp, "old"), (&after_cp, "new")] {
+            failure_class(cp, class).map_err(|why| Unsupported::new(Part::Environment, format!("the modelled failure {} in the {build} build: {why}", class.replace('/', "."))))?;
+        }
+    }
+    if !thrown.is_empty() {
+        for (dir, cp, build) in [(before, &before_cp, "old"), (after, &after_cp, "new")] {
+            inspections(dir, cp, &thrown).map_err(|why| Unsupported::new(Part::Environment, format!("the {build} build {why}")))?;
+        }
+    }
 
     // The model: the claim's calls, then any either spec has besides.
     let mut calls: Vec<String> = environment.calls.iter().map(|c| c.call.clone()).collect();
@@ -572,7 +611,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     }
     let mut exceptions: Vec<(usize, String)> = Vec::new();
     for (cp, local) in [(&before_cp, &before_local), (&after_cp, &after_local)] {
-        for name in local {
+        for name in local.iter().chain(&thrown) {
             if cp.superclasses(name).iter().any(|s| s == "java/lang/Throwable") && !exceptions.iter().any(|(_, n)| n == name) {
                 exceptions.push((cp.superclasses(name).len(), name.clone()));
             }
@@ -688,7 +727,12 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             ];
             let run = match crate::jvm_witness::run(&work.join("jvm"), crate::harness::CLASS, &new_version.params, &slots, &arguments, &calls, &entries) {
                 Ok(run) => run,
-                Err(e) => return Ok(Checked { proof, ..unresolved(format!("the witness {shown} could not be replayed on a JVM: {e}")) }),
+                Err(e) => {
+                    // The JVM runner's main passes the arguments on an operand stack of 16 words.
+                    let words: usize = new_version.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum();
+                    let why = if words > 16 { format!(" (its {words} words of arguments, the handler's and the environment's tables, are more than the JVM runner's 16: a smaller bound, or an int result, fits)") } else { String::new() };
+                    return Ok(Checked { proof, ..unresolved(format!("the witness {shown} could not be replayed on a JVM{why}: {e}")) });
+                }
             };
             let logs: Vec<Option<Vec<i64>>> = run.calls.iter().map(|r| r.result_array.as_ref().map(|a| a.iter().map(|v| match v { Value::Long(x) => *x, Value::Int(x) => i64::from(*x), _ => 0 }).collect())).collect();
             let (Some(Some(b)), Some(Some(a))) = (logs.first(), logs.get(1)) else {
@@ -747,6 +791,89 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             Ok(Checked { outcome: Outcome { verdict: Verdict::Refuted, domain, accounting, witness: Some(witness), problem: None }, reason: None, assumptions: assumed, proof, before: Some(tb), after: Some(ta), key, reuse })
         }
     }
+}
+
+/// Why `class` can't be a modelled failure in a build of class path `cp`, if it can't: it is a Throwable the build
+/// has, with a public constructor without arguments, the one its stub makes it with.
+fn failure_class(cp: &ClassPath, class: &str) -> Result<(), String> {
+    let file = cp.load(class).ok().flatten().map(|l| l.class).ok_or("no such class")?;
+    if !cp.superclasses(class).iter().any(|s| s == "java/lang/Throwable") {
+        return Err("it is no Throwable".into());
+    }
+    if file.is_interface() || file.access & flags::ABSTRACT != 0 {
+        return Err("it is abstract: a stub can't make one".into());
+    }
+    match file.methods.iter().find(|m| m.name == "<init>" && m.descriptor == "()V") {
+        Some(m) if m.is_public() => Ok(()),
+        _ => Err("it has no public constructor without arguments: the stub makes a failure with none, so that it carries no message or cause the dependency wouldn't give".into()),
+    }
+}
+
+/// Throwable's methods that read what a modelled failure doesn't carry: its message, cause, stack and suppressed
+/// exceptions, or a string of them.
+const INSPECTIONS: &[&str] = &["getMessage", "getLocalizedMessage", "getCause", "toString", "getStackTrace", "printStackTrace", "getSuppressed"];
+
+/// Why a build (its classes under `dir`, class path `cp`) reads more of a caught modelled failure (of the classes
+/// `thrown`) than its class, if it does. Every handler that may catch one (a catch of one of its classes or a
+/// superclass, or a `finally`) is checked where it keeps what it caught: each read of that local (within its scope,
+/// when the class says) must rethrow it, test its class or test it for null. Anything else, a call on it or handing
+/// it to a call, a field or a return, may read its message or cause, which the model doesn't give, and is refused,
+/// never answered with an invented one.
+fn inspections(dir: &Path, cp: &ClassPath, thrown: &[String]) -> Result<(), String> {
+    let catches = |catch: &Option<String>| match catch {
+        None => true,
+        Some(c) => thrown.iter().any(|t| t == c || cp.superclasses(t).contains(c)),
+    };
+    for (_, bytes) in class_files(dir).map_err(|e| format!("can't be read: {e}"))? {
+        let Ok(class) = ClassFile::parse(&bytes) else { continue };
+        for m in &class.methods {
+            let Some(code) = &m.code else { continue };
+            let handlers: Vec<_> = code.exception_table.iter().filter(|h| catches(&h.catch_type)).collect();
+            if handlers.is_empty() {
+                continue;
+            }
+            let insns = code.instructions().map_err(|e| format!("can't be read: {e}"))?;
+            let at = |pc: u32| insns.iter().position(|(p, _)| *p == pc);
+            let place = format!("{}.{}", class.name.replace('/', "."), m.name);
+            for h in handlers {
+                let caught = h.catch_type.as_deref().map(|c| c.replace('/', ".")).unwrap_or_else(|| "any throwable (a finally)".into());
+                let Some(start) = at(u32::from(h.handler_pc)) else { continue };
+                let slot = match &insns[start].1 {
+                    Insn::Pop => continue,
+                    Insn::Store(Kind::Ref, n) => *n,
+                    other => return Err(format!("catches {caught} in {place} and uses it at once ({other:?}): what it reads of a modelled failure isn't followed, so it is refused")),
+                };
+                // The local's scope: from its local variable entry when the class has one, else the whole method.
+                let after = insns.get(start + 1).map_or(u32::MAX, |(p, _)| *p);
+                let scope = code.local_variables.iter().find(|v| v.index == slot && u32::from(v.start_pc) <= after && after <= u32::from(v.start_pc) + u32::from(v.length)).map(|v| (u32::from(v.start_pc), u32::from(v.start_pc) + u32::from(v.length)));
+                for (k, (pc, insn)) in insns.iter().enumerate() {
+                    if *insn != Insn::Load(Kind::Ref, slot) || scope.is_some_and(|(from, to)| *pc < from || *pc >= to) {
+                        continue;
+                    }
+                    let next = insns.get(k + 1).map(|(_, i)| i);
+                    let fine = match next {
+                        Some(Insn::AThrow | Insn::InstanceOf(_) | Insn::IfNull(_) | Insn::IfNonNull(_)) => true,
+                        Some(Insn::InvokeVirtual(i)) => class.pool.member(*i).is_ok_and(|r| r.name == "getClass" && r.descriptor == "()Ljava/lang/Class;"),
+                        _ => false,
+                    };
+                    if fine {
+                        continue;
+                    }
+                    let what = match next {
+                        Some(Insn::InvokeVirtual(i) | Insn::InvokeInterface(i)) => match class.pool.member(*i) {
+                            Ok(r) if INSPECTIONS.contains(&r.name.as_str()) => format!("reads its {} ({}.{})", if r.name == "getCause" { "cause" } else if r.name.contains("Stack") { "stack" } else if r.name == "getSuppressed" { "suppressed exceptions" } else { "message" }, r.owner.replace('/', "."), r.name),
+                            Ok(r) => format!("calls {}.{} on it", r.owner.replace('/', "."), r.name),
+                            Err(_) => "calls a method on it".into(),
+                        },
+                        Some(other) => format!("hands it on ({other:?})"),
+                        None => "hands it on".into(),
+                    };
+                    return Err(format!("catches {caught} in {place} and {what}: a modelled failure carries its class and no message or cause, so reading any more of it is refused, never answered with an invented one"));
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 /// `text` with the generated method's parameter names (`arg0`, `arg1`) replaced by the entry point's inputs'.
@@ -1352,17 +1479,26 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
 }
 
 /// The static fields of the stubs class that hold call `i`'s table, in the order of
-/// [`crate::environment::Lowered::inputs`]: each entry's key components (`k{i}_{e}_{c}`) and result (`v{i}_{e}`),
-/// then the default (`d{i}`).
+/// [`crate::environment::Lowered::inputs`]: each entry's key components (`k{i}_{e}_{c}`), result (`v{i}_{e}`, unless
+/// the call returns nothing) and outcome (`o{i}_{e}`, when the model has failures), then the default's (`d{i}`,
+/// `od{i}`).
 fn table_fields(i: usize, m: &crate::environment::Lowered) -> Vec<(String, Type)> {
+    let answer = |out: &mut Vec<(String, Type)>, value: String, outcome: String| {
+        if m.ret != Type::Void {
+            out.push((value, m.ret.clone()));
+        }
+        if !m.throws.is_empty() {
+            out.push((outcome, Type::Int));
+        }
+    };
     let mut out = Vec::new();
     for e in 0..m.entries() {
         for (c, (_, t)) in m.key.iter().enumerate() {
             out.push((format!("k{i}_{e}_{c}"), t.clone()));
         }
-        out.push((format!("v{i}_{e}"), m.ret.clone()));
+        answer(&mut out, format!("v{i}_{e}"), format!("o{i}_{e}"));
     }
-    out.push((format!("d{i}"), m.ret.clone()));
+    answer(&mut out, format!("d{i}"), format!("od{i}"));
     out
 }
 
@@ -1373,8 +1509,10 @@ fn used_fields(i: usize, m: &crate::environment::Lowered) -> Vec<String> {
 }
 
 /// Answers a modelled call from its table: one more call than the model's bound marks the log past its bound;
-/// otherwise the result of the first entry whose key is the call's (for a per-call choice, the first such entry
-/// this trace hasn't used, which it then marks used), or the default. `slots` are the call's parameters'.
+/// otherwise the answer of the first entry whose key is the call's (for a per-call choice, the first such entry
+/// this trace hasn't used, which it then marks used), or the default. An answer whose outcome is `k` throws a new
+/// instance of the model's `k`-th failure, made by its constructor without arguments; any other outcome returns
+/// the answer's value. `slots` are the call's parameters'.
 fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m: &crate::environment::Lowered, slots: &[u16], params: &[Type]) {
     let calls_ref = w.pool.field_ref(stubs, &format!("c{i}"), "I");
     let u_ref = w.pool.field_ref(stubs, "U", "I");
@@ -1392,7 +1530,31 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
     code.iconst(1);
     code.op(0x60); // iadd
     code.op_u16(0xb3, calls_ref);
-    let ret = kind_of(&m.ret);
+    let ret = (m.ret != Type::Void).then(|| kind_of(&m.ret));
+    // The answer `value`/`outcome` names: its failures thrown by outcome, then its value returned.
+    let give = |code: &mut CodeBuilder, w: &mut ClassWriter, value: &str, outcome: &str| {
+        if !m.throws.is_empty() {
+            let o = w.pool.field_ref(stubs, outcome, "I");
+            for (k, class) in m.throws.iter().enumerate() {
+                let other = code.label();
+                code.op_u16(0xb2, o);
+                code.iconst(k as i32 + 1);
+                code.if_icmp(Cond::Ne, other);
+                let c = w.pool.class(class);
+                code.op_u16(0xbb, c); // new
+                code.op(0x59); // dup
+                let init = w.pool.method_ref(class, "<init>", "()V");
+                code.op_u16(0xb7, init);
+                code.op(0xbf); // athrow
+                code.bind(other);
+            }
+        }
+        if m.ret != Type::Void {
+            let v = w.pool.field_ref(stubs, value, &m.ret.descriptor());
+            code.op_u16(0xb2, v);
+        }
+        code.return_(ret);
+    };
     for e in 0..m.entries() {
         let next = code.label();
         let used = m.per_call.then(|| w.pool.field_ref(stubs, &format!("w{i}_{e}"), "I"));
@@ -1415,14 +1577,10 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
             code.iconst(1);
             code.op_u16(0xb3, used);
         }
-        let v = w.pool.field_ref(stubs, &format!("v{i}_{e}"), &m.ret.descriptor());
-        code.op_u16(0xb2, v);
-        code.return_(Some(ret));
+        give(code, w, &format!("v{i}_{e}"), &format!("o{i}_{e}"));
         code.bind(next);
     }
-    let d = w.pool.field_ref(stubs, &format!("d{i}"), &m.ret.descriptor());
-    code.op_u16(0xb2, d);
-    code.return_(Some(ret));
+    give(code, w, &format!("d{i}"), &format!("od{i}"));
 }
 
 /// Takes the leaf value on the stack into `value` (a long) and jumps to `store`: an integral value widened, a string

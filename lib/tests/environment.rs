@@ -5,6 +5,9 @@
 //! result is refuted with the environment that shows it, replayed on a JVM under the generated stubs, and calls are
 //! never coupled by their position. Under a per-call choice, both builds see one choice per key and occurrence of
 //! it: a second read of a key is an answer of its own, and the n-th reads of a key in the two builds correspond.
+//! E2: a model may also fail, with a checked or an unchecked exception chosen like a result, so a newly missing
+//! catch, an event on the wrong failure branch and a dropped retry are refuted and replayed, and a handler that
+//! reads more of a modelled failure than its class is refused.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -13,7 +16,7 @@ use std::sync::{Mutex, OnceLock};
 use jvmcontract::effects::{self, Checked};
 use jvmcontract::spec::observe::{self, EntryPointSpec};
 use jvmcontract::spec::plans::{CallModel, Coupling, ModelledResult, Occurrence, Returned};
-use jvmcontract::spec::{CanonicalClaim, ClaimBounds, ModeledCall, ObservationState, Verdict};
+use jvmcontract::spec::{CanonicalClaim, ClaimBounds, ModeledCall, ObservationState, Unsupported, Verdict};
 
 const RATE: &str = "rates/Rates#rate(I)J";
 const SEND: &str = "effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
@@ -47,8 +50,8 @@ fn javac(out: &Path, classpath: Option<&Path>, files: &[PathBuf]) {
 }
 
 /// The controller of every build: a rate the application's `Rates` returns for the request's code, and an event
-/// sent through Kafka; `body` is the handler's.
-fn controller(body: &str) -> String {
+/// sent through Kafka; `body` is the handler's, which declares `throws`.
+fn controller(body: &str, throws: &str) -> String {
     format!(
         r#"package rates;
 
@@ -68,7 +71,7 @@ public class PriceController {{
     }}
 
     @PostMapping("/price")
-    public long price(@RequestParam int code, @RequestParam int quantity) {{
+    public long price(@RequestParam int code, @RequestParam int quantity){throws} {{
 {body}
     }}
 }}
@@ -77,10 +80,22 @@ public class PriceController {{
 }
 
 const RATES: &str = "package rates;\n\n/** A read-only rate table: the dependency the environment models. */\npublic interface Rates {\n    long rate(int code);\n}\n";
+/// The rate table of the builds with modelled failures: a read that may fail with a checked exception. Its rate is
+/// an int, so that a table of four entries, each a key, a rate and an outcome, fits the JVM witness runner's 16
+/// words of arguments.
+const FALLIBLE_RATES: &str = "package rates;\n\n/** A read-only rate table that may fail. */\npublic interface Rates {\n    int rate(int code) throws java.io.IOException;\n}\n";
+/// An unchecked failure of the rate table, with a constructor without arguments and one with a message.
+const UNAVAILABLE: &str = "package rates;\n\npublic class RateUnavailable extends RuntimeException {\n    public RateUnavailable() {}\n\n    public RateUnavailable(String why) {\n        super(why);\n    }\n}\n";
 const EVENT: &str = "package rates;\n\n/** What the prices topic carries. */\npublic record PriceEvent(int code, long total) {}\n";
 
 /// `name`'s build, its handler `body`, compiled once. None without javac and java.
 fn build(name: &str, body: &str) -> Option<PathBuf> {
+    build_with(name, body, false)
+}
+
+/// `name`'s build, its handler `body`, compiled once; `fallible`, its `Rates.rate` may throw an `IOException`, the
+/// handler declares it, and the build has `RateUnavailable`.
+fn build_with(name: &str, body: &str, fallible: bool) -> Option<PathBuf> {
     static SPRING: OnceLock<Option<PathBuf>> = OnceLock::new();
     static BUILDING: Mutex<()> = Mutex::new(());
     let _one_at_a_time = BUILDING.lock().unwrap_or_else(|e| e.into_inner());
@@ -100,10 +115,15 @@ fn build(name: &str, body: &str) -> Option<PathBuf> {
     if !dir.exists() {
         let src = out.join("sources").join(name).join("rates");
         std::fs::create_dir_all(&src).unwrap();
-        std::fs::write(src.join("PriceController.java"), controller(body)).unwrap();
-        std::fs::write(src.join("Rates.java"), RATES).unwrap();
+        std::fs::write(src.join("PriceController.java"), controller(body, if fallible { " throws java.io.IOException" } else { "" })).unwrap();
+        std::fs::write(src.join("Rates.java"), if fallible { FALLIBLE_RATES } else { RATES }).unwrap();
         std::fs::write(src.join("PriceEvent.java"), EVENT).unwrap();
-        javac(&dir, Some(spring), &[src.join("PriceController.java"), src.join("Rates.java"), src.join("PriceEvent.java")]);
+        let mut files = vec![src.join("PriceController.java"), src.join("Rates.java"), src.join("PriceEvent.java")];
+        if fallible {
+            std::fs::write(src.join("RateUnavailable.java"), UNAVAILABLE).unwrap();
+            files.push(src.join("RateUnavailable.java"));
+        }
+        javac(&dir, Some(spring), &files);
     }
     Some(dir)
 }
@@ -248,7 +268,7 @@ fn without_a_model_a_used_result_is_never_proved() {
 }
 
 /// The model is in the proof's claim key: an unchanged rerun is an exact hit, a stored refutation is replayed on a
-/// JVM again, and another bound is a miss under another key.
+/// JVM again, and another bound, coupling, modelled failure or failure class is a miss under another key.
 #[test]
 fn the_environment_model_is_in_the_claim_key_of_the_cached_proof() {
     use jvmcontract::spec::cache::Reuse;
@@ -269,6 +289,19 @@ fn the_environment_model_is_in_the_claim_key_of_the_cached_proof() {
     let chosen = run(&a, &choice(1));
     assert_eq!(chosen.outcome.verdict, Verdict::Verified, "{chosen:?}");
     assert!(chosen.reuse.is_none() && chosen.key.as_ref().is_some_and(|k| *k != key && Some(k) != wider.key.as_ref()), "another coupling is another claim: {:?}", chosen.key);
+    // A failure the model may give, and which class it is, are claims of their own: the rate table's unchecked
+    // failure escapes both builds alike.
+    let throwing = |class: &str| {
+        let mut call = query(1);
+        call.model.as_mut().unwrap().results.push(ModelledResult::Throws { class: class.into() });
+        call
+    };
+    let failing = run(&a, &throwing("java.lang.IllegalStateException"));
+    assert_eq!(failing.outcome.verdict, Verdict::Verified, "{failing:?}");
+    let other = run(&a, &throwing("java.lang.IllegalArgumentException"));
+    assert_eq!(other.outcome.verdict, Verdict::Verified, "{other:?}");
+    let keys = [Some(key.clone()), wider.key.clone(), chosen.key.clone(), failing.key.clone(), other.key.clone()];
+    assert!(failing.reuse.is_none() && other.reuse.is_none() && keys.iter().all(Option::is_some) && keys.iter().collect::<std::collections::HashSet<_>>().len() == keys.len(), "a modelled failure, and another class of it, are other claims: {keys:?}");
     let refuted = run(&w, &query(1));
     assert_eq!(refuted.outcome.verdict, Verdict::Refuted, "{refuted:?}");
     let again = run(&w, &query(1));
@@ -347,4 +380,105 @@ fn under_a_per_call_choice_a_second_read_of_a_key_is_its_own_answer() {
     let second_minus_first = "        long first = rates.rate(code);\n        long second = rates.rate(code);\n        return second - first;";
     let Some(c) = check("choice-other-order", first_minus_second, second_minus_first, &choice(2)) else { return };
     assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+}
+
+/// `call`, of the fallible table's `int rate(int)`, that may also throw each of `classes`, which its outcomes name.
+fn failing(mut call: ModeledCall, classes: &[&str]) -> ModeledCall {
+    call.call = "rates/Rates#rate(I)I".into();
+    let model = call.model.as_mut().unwrap();
+    model.results = vec![ModelledResult::Returns { value: Returned::Primitive { ty: "int".into() } }];
+    model.results.extend(classes.iter().map(|c| ModelledResult::Throws { class: c.to_string() }));
+    call.outcomes.extend(classes.iter().map(|c| c.to_string()));
+    call
+}
+
+/// `before` checked against `after` in builds with modelled failures, or what the check refuses.
+fn check_failing(name: &str, before: &str, after: &str, model: &ModeledCall) -> Option<Result<Checked, Unsupported>> {
+    let b = build_with(&format!("{name}-before"), before, true)?;
+    let a = build_with(name, after, true)?;
+    Some(effects::check(&claim(&b, model), &spec(&b), &spec(&a), &b, &a))
+}
+
+/// A rate that may fail with an `IOException`, caught: a failures event and -1.
+const CATCHING: &str = "        long rate;\n        try {\n            rate = rates.rate(code);\n        } catch (java.io.IOException e) {\n            kafka.send(\"failures\", new PriceEvent(code, 0));\n            return -1;\n        }\n        long total = rate * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
+
+/// A checked failure of a query: the rewrite that keeps the catch proves; a newly missing catch, and the failure's
+/// event dropped or sent on the wrong topic, are each refuted under the environment that fails, and replayed.
+#[test]
+fn a_newly_missing_catch_of_a_modelled_failure_is_refuted_and_replayed() {
+    let io = failing(query(1), &["java.io.IOException"]);
+    let rewrite = "        try {\n            long total = (long) quantity * rates.rate(code);\n            if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n            return total;\n        } catch (java.io.IOException failure) {\n            kafka.send(\"failures\", new PriceEvent(code, 0));\n            return -1;\n        }";
+    let Some(c) = check_failing("io-rewrite", CATCHING, rewrite, &io) else { return };
+    let c = c.unwrap();
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "{c:?}");
+    assert_eq!(state(&c, "exception"), ObservationState::Preserved);
+    assert!(c.assumptions.iter().any(|a| a.contains("any int, or a throw of java.io.IOException (made with no arguments")), "{:?}", c.assumptions);
+    assert!(c.assumptions.iter().any(|a| a.starts_with("only Rates.rate may fail")), "{:?}", c.assumptions);
+    // The catch goes missing: the failure escapes the handler.
+    let missing = "        long total = rates.rate(code) * quantity;\n        if (total > 0) kafka.send(\"prices\", new PriceEvent(code, total));\n        return total;";
+    let Some(c) = check_failing("io-missing", CATCHING, missing, &io) else { return };
+    let c = c.unwrap();
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+    assert_eq!(state(&c, "exception"), ObservationState::Refuted);
+    let witness = c.outcome.witness.as_deref().unwrap();
+    assert!(witness.contains("throws java.io.IOException") && witness.contains("Replayed on a JVM"), "{witness}");
+    let (b, a) = (c.before.as_ref().unwrap(), c.after.as_ref().unwrap());
+    assert_eq!((b.outcome.as_str(), a.outcome.as_str()), ("returns -1", "throws java.io.IOException"), "{witness}");
+    assert_eq!(b.attempts.len(), 1, "the old build sent the failures event: {witness}");
+    // The catch sends its event on the wrong topic, or drops it.
+    for (name, catch) in [("io-wrong-topic", "kafka.send(\"prices\", new PriceEvent(code, 0));\n            "), ("io-dropped", "")] {
+        let after = CATCHING.replace("kafka.send(\"failures\", new PriceEvent(code, 0));\n            ", catch);
+        let Some(c) = check_failing(name, CATCHING, &after, &io) else { return };
+        let c = c.unwrap();
+        assert_eq!(c.outcome.verdict, Verdict::Refuted, "{name}: {c:?}");
+        assert_eq!(state(&c, SEND), ObservationState::Refuted, "{name}");
+        assert_eq!(state(&c, "result"), ObservationState::Unresolved, "{name}: both return -1, only the event differs");
+        assert!(c.outcome.witness.as_deref().unwrap().contains("throws java.io.IOException"), "{name}: {:?}", c.outcome.witness);
+    }
+}
+
+/// A retry of an unchecked failure, under a per-call choice: the second call is an occurrence of its own, so it may
+/// succeed, and a dropped retry is refuted. Under a query the dependency fails alike for a key, so the retry can
+/// change nothing and its removal proves: the declared coupling decides.
+#[test]
+fn a_dropped_retry_is_refuted_under_a_per_call_choice_and_proves_under_a_query() {
+    let retry = "        long rate;\n        try {\n            rate = rates.rate(code);\n        } catch (RateUnavailable e) {\n            rate = rates.rate(code);\n        }\n        return rate * quantity;";
+    let looped = "        long rate;\n        for (int attempt = 0; ; attempt++) {\n            try {\n                rate = rates.rate(code);\n                break;\n            } catch (RateUnavailable e) {\n                if (attempt == 1) throw e;\n            }\n        }\n        return quantity * rate;";
+    let unavailable = |call: ModeledCall| failing(call, &["rates.RateUnavailable"]);
+    let Some(c) = check_failing("retry-loop", retry, looped, &unavailable(choice(2))) else { return };
+    let c = c.unwrap();
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "a rethrow reads nothing of the failure: {c:?}");
+    let once = "        return (long) rates.rate(code) * quantity;";
+    let Some(c) = check_failing("retry-dropped", retry, once, &unavailable(choice(2))) else { return };
+    let c = c.unwrap();
+    assert_eq!(c.outcome.verdict, Verdict::Refuted, "{c:?}");
+    let witness = c.outcome.witness.as_deref().unwrap();
+    // The first call of the code fails, and the retry, its second occurrence, is answered.
+    assert!(witness.contains(") throws rates.RateUnavailable") && witness.contains("later call of one gives") && witness.contains("Replayed on a JVM"), "{witness}");
+    assert_eq!(c.before.as_ref().unwrap().kind, 0, "{witness}");
+    assert_eq!(c.after.as_ref().unwrap().outcome, "throws rates.RateUnavailable", "{witness}");
+    let Some(c) = check_failing("retry-dropped-query", retry, once, &unavailable(query(2))) else { return };
+    let c = c.unwrap();
+    assert_eq!(c.outcome.verdict, Verdict::Verified, "{:?}", c.outcome.witness);
+}
+
+/// A modelled failure carries its class and nothing else: a handler that reads its message or cause, or hands it
+/// on, is refused by name, and so is a failure its stub can't make without arguments.
+#[test]
+fn reading_more_of_a_modelled_failure_than_its_class_is_refused() {
+    let io = failing(query(1), &["java.io.IOException"]);
+    let cases = [
+        ("io-message", "return e.getMessage() == null ? -1 : -2;", "reads its message (java.io.IOException.getMessage)"),
+        ("io-cause", "return e.getCause() == null ? -1 : -2;", "reads its cause"),
+        ("io-wrapped", "throw new IllegalStateException(e);", "hands it on"),
+    ];
+    for (name, catch, says) in cases {
+        let after = CATCHING.replace("return -1;\n        }", &format!("{catch}\n        }}"));
+        let Some(r) = check_failing(name, CATCHING, &after, &io) else { return };
+        let gap = r.expect_err(name);
+        assert!(gap.what.starts_with("the new build catches java.io.IOException in rates.PriceController.price and ") && gap.what.contains(says) && gap.what.contains("never answered with an invented one"), "{name}: {gap}");
+    }
+    let Some(r) = check_failing("io-class", CATCHING, CATCHING, &failing(query(1), &["java.io.UncheckedIOException"])) else { return };
+    let gap = r.expect_err("UncheckedIOException has no constructor without arguments");
+    assert!(gap.what.contains("the modelled failure java.io.UncheckedIOException in the old build: it has no public constructor without arguments"), "{gap}");
 }

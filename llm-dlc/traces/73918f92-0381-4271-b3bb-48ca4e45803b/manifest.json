@@ -12,27 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.548Z",
-  "ended": "2026-11-08T05:08:20.999Z",
-  "duration_seconds": 2035,
+  "ended": "2026-11-08T05:40:01.539Z",
+  "duration_seconds": 3936,
   "stats": {
-    "turns": 10,
-    "api_calls": 94,
-    "tool_calls": 96,
-    "tool_errors": 1,
-    "compactions": 2,
+    "turns": 16,
+    "api_calls": 146,
+    "tool_calls": 146,
+    "tool_errors": 3,
+    "compactions": 3,
     "peak_context_tokens": 230173,
     "usage": {
-      "input_tokens": 186,
-      "output_tokens": 99240,
-      "cache_read_input_tokens": 12758078,
-      "cache_creation_input_tokens": 352116
+      "input_tokens": 294,
+      "output_tokens": 158505,
+      "cache_read_input_tokens": 18734695,
+      "cache_creation_input_tokens": 512348
     }
   },
   "tools": {
-    "Bash": 80,
-    "Read": 12,
+    "Bash": 128,
+    "Read": 13,
     "Edit": 2,
-    "Write": 2
+    "Write": 2,
+    "ToolSearch": 1
   },
   "files_touched": [
     "lib/src/environment.rs",
@@ -71,24 +72,38 @@
     {
       "index": 2,
       "started": "2026-11-08T04:54:18.673Z",
-      "ended": "2026-11-08T05:08:20.999Z",
-      "turns": 4,
-      "api_calls": 23,
+      "ended": "2026-11-08T05:08:44.292Z",
+      "turns": 5,
+      "api_calls": 26,
       "usage": {
-        "input_tokens": 46,
-        "output_tokens": 21276,
-        "cache_read_input_tokens": 1938456,
-        "cache_creation_input_tokens": 112334
+        "input_tokens": 52,
+        "output_tokens": 22639,
+        "cache_read_input_tokens": 2320564,
+        "cache_creation_input_tokens": 117181
       },
-      "peak_context_tokens": 125413
+      "peak_context_tokens": 130260
+    },
+    {
+      "index": 3,
+      "started": "2026-11-08T05:09:25.934Z",
+      "ended": "2026-11-08T05:40:01.539Z",
+      "turns": 5,
+      "api_calls": 49,
+      "usage": {
+        "input_tokens": 102,
+        "output_tokens": 57902,
+        "cache_read_input_tokens": 5594509,
+        "cache_creation_input_tokens": 155385
+      },
+      "peak_context_tokens": 168464
     }
   ],
   "log": {
-    "sha256": "8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0",
-    "bytes": 3242865,
-    "lines": 1124,
-    "gzip_bytes": 620833,
-    "path": "llm-dlc/traces/73918f92-0381-4271-b3bb-48ca4e45803b/logs/8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0.jsonl.gz"
+    "sha256": "8bbc702d51817843c1e0cb06e01ea4d4b1b560d5f85511098470a23f266675a7",
+    "bytes": 4729237,
+    "lines": 1720,
+    "gzip_bytes": 862828,
+    "path": "llm-dlc/traces/73918f92-0381-4271-b3bb-48ca4e45803b/logs/8bbc702d51817843c1e0cb06e01ea4d4b1b560d5f85511098470a23f266675a7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -107,6 +122,14 @@
       "summary": "application-core environment E1: a declared nondeterministic operation under a per-call choice",
       "body": "The environment stream's E1 now has its second coupling. A call model with coupling choice and the per-call occurrence policy makes a call's result a function of its key and of the occurrence of that key in the trace, the same function in both builds: a second read of a key is an answer of its own, the n-th reads of a key correspond across the builds, and different keys are never coupled by position. A finite script stays refused by name (the brief's optional work).\n\nEncoded in effects.rs as the query's symbolic table with each entry used once per trace: a call takes the first entry of its key the trace hasn't used, else the default. This is complete within the bound (any choice per key and occurrence is a table listing each key's answers in order) and sound (every table is such a function). The witness lists a key's answers in occurrence order and is replayed on the JVM under the generated stubs; the assumption, plan and domain name the policy.\n\nVerified inline: tests/environment.rs (13 tests) proves the rewrite and two always-different keys reordered under a choice, and refutes with replayed witnesses a wrong key, one read where the old build read twice (which the query proves), two reads of one key in the other order, and two possibly-equal keys swapped (witness code = quantity); another coupling is another cache key. Every lib suite passes (unit tests 229, effects 18, application_core 14, foundations 5, integration 65, and the rest). The README's Modelled results paragraph, this stream's addition, describes it. Rest of the brief unchanged and current.",
       "log_sha256": "8926442f1ec322361edc1514e594b63582a78442180614089298b51755044db0"
+    },
+    {
+      "change_id": "xlxxtpulwksxospuuptrynzyzkpzyklv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core environment E2: modelled failures, checked or not, under either coupling",
+      "body": "A dependency's model of its results (CallModel) may now list exception classes beside its one normal result, checked ones such as java.io.IOException included; a void call may be modelled by its failures alone. Each entry of the environment table, and its default, gains an outcome input: k throws a new instance of the k-th class (made by its public constructor without arguments: its class, no message, cause or stack), any other value gives the normal result. So which outcome a call gets is part of the same function of its key (and occurrence, under a per-call choice) as its value, for both builds, and the witness names it ('(arg0=0) throws java.io.IOException'); the shrunk witness keeps the failing choice and is replayed on the JVM. A handler of a modelled failure that reads more of it than its class (getMessage, getCause, any call on it, or handing it on as a wrapper's cause) is refused by name (effects::inspections), never answered with an invented message; a rethrow, a class test and a null test are accepted. A failure class without such a constructor, an abstract one, or a NullPointerException is refused.\n\nReproducers in lib/tests/environment.rs (now 16), on a fallible fixture: a rewrite keeping a catch of an IOException proves; a newly missing catch, and the failure's event dropped or sent on the wrong topic, are refuted and replayed; a dropped retry of an unchecked RateUnavailable is refuted under a per-call choice (the retry is an occurrence of its own) and proves under a query (the dependency fails alike for a key); a retry loop that rethrows proves; reading the message or cause, or wrapping the failure, is refused; another failure or failure class is another proof-cache key. Every lib suite passes inline (unit 230, environment 16, effects 18, integration 65, heap 49, alignment 34, summaries 40, observations 12, conformance 10, application_core 14, foundations 5, compare 1).\n\nFound, recorded under the brief's Progress as an interface request for the objects stream, which owns the replay plumbing: jvm_witness::run's main has max_stack = 16 and pushes every argument, so a witness whose generated method needs more argument words (beside two int inputs, a table of long results past bound 2, or past bound 1 with failures) fails JVM verification and stays unresolved, which is sound but not replayed. The unresolved reason now names the words needed, and the fallible fixture uses an int rate. The brief outside Progress is still accurate.",
+      "log_sha256": "8bbc702d51817843c1e0cb06e01ea4d4b1b560d5f85511098470a23f266675a7"
     }
   ],
   "logs": {
@@ -114,6 +137,12 @@
       "bytes": 3242865,
       "lines": 1124,
       "gzip_bytes": 620833,
+      "url": null
+    },
+    "8bbc702d51817843c1e0cb06e01ea4d4b1b560d5f85511098470a23f266675a7": {
+      "bytes": 4729237,
+      "lines": 1720,
+      "gzip_bytes": 862828,
       "url": null
     },
     "c7582d7129a1ce4549c1f180360685dfdea877d4f3bb7702d9f0b686ab717c07": {
