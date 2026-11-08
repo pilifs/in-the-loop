@@ -1655,19 +1655,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let shared_names = shared::names(&plan.callees);
     // The proof cache (`--cache`, [`crate::proof_cache`]), on the claim as prepared: a result stored for it is the
     // result, a refuted one once its witness reproduces again.
-    // A claim with a setup sequence (O3) is not cached yet: the claim key roots the target and the constructors,
-    // not the setup methods, so an edit of a setup method alone would reuse a stale result. Asked of the reuse
-    // stream under the objects stream's Progress.
-    let uncached;
-    let cache_options = if !layout.setup.is_empty() && options.cache.is_some() {
-        let _ = writeln!(out, "note: a claim with a setup sequence is not cached yet; its claim key would not root the setup calls");
-        uncached = Options { cache: None, ..options.clone() };
-        &uncached
-    } else {
-        options
-    };
+    // A claim with a setup sequence (O3) is cached as any other: the claim key roots the setup methods with the
+    // constructors (`Layout::construction_roots`), so an edit of a setup method alone is another claim.
     let (cache, hit) = crate::proof_cache::Regression {
-        options: cache_options,
+        options,
         before_cp: &shared_before_cp,
         after_cp: &shared_after_cp,
         before_target: MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor),

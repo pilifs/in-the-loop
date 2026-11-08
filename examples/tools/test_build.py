@@ -1629,6 +1629,25 @@ class WitnessTest(RunnerCase):
         with self.assertRaises(jsonschema.ValidationError):
             jsonschema.validate(bad, schema)
 
+    def test_a_witness_keeps_its_setup_calls_and_they_validate(self):
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        source = next(build.EXAMPLES.glob("128-*"))
+        recorded = build.result_format.load(source / "result.json")
+        setup = [{"method": "add", "descriptor": "(I)V", "arguments": [typed("n", "int", 4, "setup.0.n")]}]
+        call = {**BATCH_WITNESS["call"], "setup": setup}
+        out = equivalence_json(self.root, counterexample={**BATCH_WITNESS, "call": call})
+        result = self.run_runner(build.run_tool_equivalence, proc(1, out), example(), report="equivalence.sarif")
+        w = result["counterexamples"][0]["witness"]
+        self.assertEqual(w["call"]["setup"], setup)
+        self.assertNotIn("setup", w["previousCall"])
+        recorded["counterexamples"] = result["counterexamples"]
+        jsonschema.validate(recorded, schema)
+        bad = json.loads(json.dumps(recorded))
+        del bad["counterexamples"][0]["witness"]["call"]["setup"][0]["descriptor"]
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate(bad, schema)
+
 
 class SnapshotTest(unittest.TestCase):
     """Step 3c: a page renders the result as recorded and says whether it is still the current files' result: a stale

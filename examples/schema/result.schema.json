@@ -127,7 +127,21 @@
         "descriptor": { "type": "string", "description": "The method's descriptor, as in the class file." },
         "static": { "type": "boolean" },
         "receiver": { "$ref": "#/$defs/typedValue", "description": "An instance method's receiver: a record built by its canonical constructor from its components, or an object made by its constructor from its arguments." },
-        "arguments": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The arguments, in parameter order." }
+        "arguments": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The arguments, in parameter order." },
+        "setup": {
+          "description": "The setup sequence called on the receiver before the method, in order: the history the witness's state comes from. Absent without one.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["method", "descriptor", "arguments"],
+            "additionalProperties": false,
+            "properties": {
+              "method": { "type": "string" },
+              "descriptor": { "type": "string", "description": "The method's descriptor, as in the class file, the same in both versions." },
+              "arguments": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "Its arguments, each mapped to the input it is (`setup.0.n`)." }
+            }
+          }
+        }
       }
     },
     "witness": {

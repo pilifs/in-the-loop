@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "637cae8e-d166-477d-b0d2-51161e0c6d62",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T14:15:26.989Z",
+  "ended": "2026-11-08T14:39:04.744Z",
+  "duration_seconds": 1418,
+  "stats": {
+    "turns": 1,
+    "api_calls": 6,
+    "tool_calls": 8,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 36847,
+    "usage": {
+      "input_tokens": 12,
+      "output_tokens": 942,
+      "cache_read_input_tokens": 177050,
+      "cache_creation_input_tokens": 25463
+    }
+  },
+  "tools": {
+    "Bash": 7,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T14:15:26.989Z",
+      "ended": "2026-11-08T14:39:04.744Z",
+      "turns": 1,
+      "api_calls": 6,
+      "usage": {
+        "input_tokens": 12,
+        "output_tokens": 942,
+        "cache_read_input_tokens": 177050,
+        "cache_creation_input_tokens": 25463
+      },
+      "peak_context_tokens": 36847
+    }
+  ],
+  "log": {
+    "sha256": "826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601",
+    "bytes": 310606,
+    "lines": 67,
+    "gzip_bytes": 76827,
+    "path": "llm-dlc/traces/637cae8e-d166-477d-b0d2-51161e0c6d62/logs/826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wrpxlowuvyyozrtqyvpozqlrwvvwnpvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls",
+      "body": "Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.\n\nReproducer first: o2_a_setup_methods_edit_alone_is_another_claim_never_reused now also asks that exact reruns of the proof and the refutation are reused and that the typed calls list the history. It failed on the rerun with the guard in place, and with the guard dropped but the setup methods not rooted it failed on a stale hit (an edit of the setup method alone was answered by the stored proof). Verified: application_core_objects 22/22, build.py's new test_a_witness_keeps_its_setup_calls_and_they_validate, the integration check (contract 14/14, unit tests 254, compare, effects, foundations, Python suites), and every other test binary but integration.rs (JBMC).\n\nFound and recorded in Progress for item 6: property::run still refuses prove --cache --plan although the reuse stream's property key already reads the plan; lifting it needs an end-to-end test. Docs: lib/README.md's plan and claim-root paragraphs, proof_cache's module doc.",
+      "log_sha256": "826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601"
+    }
+  ],
+  "logs": {
+    "826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601": {
+      "bytes": 310606,
+      "lines": 67,
+      "gzip_bytes": 76827,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

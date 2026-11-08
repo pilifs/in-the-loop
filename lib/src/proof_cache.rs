@@ -17,9 +17,9 @@
 //! built from what the check is about: the preservation contract (the target and its parameters, derived by identity
 //! or by `--before-arguments`), the observations, the correspondence the flags state, the bounds, the assumptions
 //! (the statement's own, its domain, the shared callees, the harness's digest), each version's closure from the
-//! target and every constructor the harness calls to make its inputs (those of the objects an input is made from
-//! included), and the tools with every setting that can change
-//! a verdict. Only a check by the own checker (`--engine native`) is cacheable for now: JBMC's own identity is not
+//! target and every method the harness calls to make its inputs and the receiver's state (each object's constructors,
+//! those of the objects it is made from included, and a plan's setup calls: `harness::Layout::construction_roots`),
+//! and the tools with every setting that can change a verdict. Only a check by the own checker (`--engine native`) is cacheable for now: JBMC's own identity is not
 //! yet part of the key, so a claim JBMC may decide is uncacheable rather than keyed without it. The deadline is not
 //! in the claim: it decides only whether a verdict is reached, and an unresolved result is never stored.
 //!
@@ -54,7 +54,7 @@ use crate::classfile::{MemberRef, Type};
 use crate::classpath::ClassPath;
 use crate::digest::sha256_hex;
 use crate::equivalence::{Counterexample, Options, Outcome, Replay};
-use crate::harness::{self, BeforeMethod, Layout, Slot};
+use crate::harness::{self, BeforeMethod, Layout};
 use crate::jbmc::Argument;
 use crate::sarif::{self, Finding};
 use crate::spec::cache::{self, ClaimKey, ResultRecord, Reuse};
@@ -228,6 +228,16 @@ pub struct StoredCall {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub receiver: Option<StoredTyped>,
     pub arguments: Vec<StoredTyped>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub setup: Vec<StoredSetupCall>,
+}
+
+/// A [`witness::SetupCall`] as stored.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StoredSetupCall {
+    pub method: String,
+    pub descriptor: String,
+    pub arguments: Vec<StoredTyped>,
 }
 
 impl From<StoredTyped> for witness::Typed {
@@ -238,7 +248,17 @@ impl From<StoredTyped> for witness::Typed {
 
 impl From<StoredCall> for witness::Call {
     fn from(c: StoredCall) -> witness::Call {
-        witness::Call { class: c.class, class_file: c.class_file, classes: c.classes, method: c.method, descriptor: c.descriptor, is_static: c.is_static, receiver: c.receiver.map(Into::into), arguments: c.arguments.into_iter().map(Into::into).collect() }
+        witness::Call {
+            class: c.class,
+            class_file: c.class_file,
+            classes: c.classes,
+            method: c.method,
+            descriptor: c.descriptor,
+            is_static: c.is_static,
+            receiver: c.receiver.map(Into::into),
+            arguments: c.arguments.into_iter().map(Into::into).collect(),
+            setup: c.setup.into_iter().map(|s| witness::SetupCall { method: s.method, descriptor: s.descriptor, arguments: s.arguments.into_iter().map(Into::into).collect() }).collect(),
+        }
     }
 }
 
@@ -342,24 +362,12 @@ impl<'a> Regression<'a> {
         if o.engine != crate::Engine::Native {
             return Err(uncacheable("JBMC may decide it (--engine jbmc or auto), and JBMC's own identity is not yet part of the key; the cache is used with --engine native"));
         }
-        // Each version's roots: the method compared, and every constructor the harness calls to make its inputs, those
-        // of the objects an input is made from included (`RecordType::constructors`), not only the input's own.
-        let inits = |r: &harness::RecordType| -> Vec<MemberRef> {
-            r.constructors().iter().map(|(class, descriptor)| MemberRef::new(class.strip_prefix("before/").unwrap_or(class), "<init>", descriptor)).collect()
-        };
-        let mut after_roots = vec![self.target.clone()];
-        let mut before_roots = vec![self.before_target.clone()];
-        for slot in self.layout.records() {
-            if let Slot::Record { record, before, .. } = slot {
-                after_roots.extend(inits(record));
-                before_roots.extend(inits(before.as_ref().unwrap_or(record)));
-            }
-        }
-        if let Some(p) = self.previous {
-            for r in p.receiver.iter().chain(p.records.iter().flatten()) {
-                before_roots.extend(inits(r));
-            }
-        }
+        // Each version's roots: the method compared, then every method the harness calls to make its inputs and
+        // the receiver's state (`Layout::construction_roots`): each object's constructors, those of the objects it
+        // is made from included, and a plan's setup calls (O3), so that an edit of any of them alone is another claim.
+        let made = self.layout.construction_roots(self.previous);
+        let after_roots: Vec<MemberRef> = std::iter::once(self.target.clone()).chain(made.after).collect();
+        let before_roots: Vec<MemberRef> = std::iter::once(self.before_target.clone()).chain(made.before).collect();
         let digest = |cp: &ClassPath, roots: &[MemberRef]| -> Result<String, Unsupported> {
             let configuration = crate::closure::Configuration::read(cp, &[]).map_err(|e| uncacheable(format!("its configuration could not be read: {e}")))?;
             Ok(crate::closure::version_digest(cp, roots, &configuration))

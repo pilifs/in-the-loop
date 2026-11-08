@@ -238,6 +238,20 @@ pub struct Call {
     pub receiver: Option<Typed>,
     /// The arguments, in parameter order.
     pub arguments: Vec<Typed>,
+    /// The setup sequence called on the receiver before the method, in order (O3 of
+    /// `llm-dlc/loops/application-core-objects.md`): the history the witness's state comes from. Empty without one.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub setup: Vec<SetupCall>,
+}
+
+/// One call of a witness's setup sequence ([`crate::harness::Setup`]): a method of the receiver's class, its
+/// arguments typed and mapped to the inputs they are (`setup.0.n`).
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct SetupCall {
+    pub method: String,
+    /// Its descriptor, as in the class file, the same in both versions.
+    pub descriptor: String,
+    pub arguments: Vec<Typed>,
 }
 
 /// The method a [`Call`] calls, and in which classes.
@@ -330,6 +344,15 @@ pub fn typed_call(target: &Target, layout: &Layout, arguments: &[Argument], befo
         is_static: target.is_static,
         receiver: layout.receiver.as_ref().map(typed),
         arguments: layout.args.iter().map(typed).collect(),
+        setup: layout
+            .setup
+            .iter()
+            .map(|s| SetupCall {
+                method: s.method.clone(),
+                descriptor: s.descriptor.clone(),
+                arguments: s.args.iter().map(|i| typed(&Slot::Plain(*i))).collect(),
+            })
+            .collect(),
     }
 }
 

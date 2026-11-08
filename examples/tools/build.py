@@ -1634,7 +1634,8 @@ def typed_call(call, classes):
     return {"class": call["class"], "classFile": call["class_file"],
             "classFileSha256": file_digest(path) if path and path.is_file() else None, "classes": call["classes"],
             "method": call["method"], "descriptor": call["descriptor"], "static": call["static"],
-            **({"receiver": call["receiver"]} if call.get("receiver") else {}), "arguments": call["arguments"]}
+            **({"receiver": call["receiver"]} if call.get("receiver") else {}), "arguments": call["arguments"],
+            **({"setup": call["setup"]} if call.get("setup") else {})}
 
 
 def witness_record(c, classes):

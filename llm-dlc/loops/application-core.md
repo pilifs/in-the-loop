@@ -797,6 +797,35 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     unchanged. It closes VF-023 when it passes, and is VF-023's last attempt under the timebox.
   - **Docs**: `lib/README.md`'s `--confirm` paragraph, and the doc of `equivalence::confirm`.
   - **Next**: item 4, the cache's roots of a setup sequence. Then items 5–7.
+- 2026-11-08, **Phase 5 step 1, interface request 4 done: a regression claim with a setup sequence is cached, its
+  key rooting the setup methods**, and the typed witness carries the setup calls.
+  - **The reproducer**: `tests/application_core_objects.rs`'s
+    `o2_a_setup_methods_edit_alone_is_another_claim_never_reused` now also asks that the exact reruns of the proof and
+    of the refutation are reused, and that the witness's typed calls list the history. It failed before, on the
+    rerun ("note: a claim with a setup sequence is not cached yet"). With the guard dropped but the setup methods not
+    rooted, it failed on the stale hit: an edit of the setup method `add` alone was answered by the stored proof.
+  - **The change**:
+    - `proof_cache::Regression::claim` roots each version's closure at the target, then at
+      `Layout::construction_roots(previous)`: the constructors (the inner objects' included, as the reuse stream's
+      `qssovxor` already had them) and the setup calls, each once. The uncached guard for setup sequences in
+      `equivalence::run_check` is gone.
+    - `witness::Call` has a `setup` field: each setup call's method, descriptor and typed arguments, mapped to their
+      inputs (`setup.0.n`). Absent without a setup sequence. `proof_cache`'s stored call keeps it, so a reused
+      refutation's witness keeps its history. The result schema's `typedCall` registers it, and `build.py` keeps it.
+    - `application_core_objects`' `an_inner_objects_constructor_is_part_of_the_cached_claim` is un-ignored. It
+      passes, on the reuse stream's fix.
+  - **Checks**: `application_core_objects` 22 of 22. `build.py`'s new
+    `test_a_witness_keeps_its_setup_calls_and_they_validate` passes. The integration check passes (the contract 14 of
+    14). So do the other binaries but `integration.rs` (JBMC): alignment 34, conformance 10, environment 16, heap 49,
+    observations 12, reuse 11, reuse_summaries 14, skill 1, summaries 40, values 18, value_parameters 10.
+  - **Found, for item 6**: `property::run` still refuses `prove --cache --plan` ("the property claim's key does not
+    read the construction plan yet"). The reuse stream's property key reads the plan whole, with its makers and setup
+    calls among the roots (`reuse.rs`), but no test has run a planned property check under the cache end to end. So
+    lifting that guard needs a test of its own, an exact rerun reused and an edited setup method proved again.
+  - **Docs**: `lib/README.md`'s plan paragraph and "What makes the inputs is part of the claim", and the doc of
+    `proof_cache`.
+  - **Next**: item 5, E3 (a nullable DTO response made through the construction plan), then Q's E1 and E2 rows.
+    Then items 6–7.
 - Status: working
 
 ## Loop settings

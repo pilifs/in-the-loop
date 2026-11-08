@@ -209,13 +209,11 @@ fn o1_a_receivers_constructor_is_part_of_the_cached_claim() {
     assert!(other.reuse.is_none(), "another constructor of the receiver is another claim: {}", other.output);
 }
 
-/// The reproducer of a finding for the reuse stream (`proof_cache.rs` is its file): the regression cache's key
-/// roots each version's closure at a made object's own constructor, not at the inner objects' constructors, which
-/// the harness calls apart. A rewrite of `get` is verified and stored; a build that also changes `Inner`'s
-/// constructor, so that `get` gives one more, then reuses that proof. Ignored until the key covers every
-/// constructor the harness calls (`RecordType::constructors`); it must pass then.
+/// The regression cache's key roots each version's closure at every constructor the harness calls, the inner
+/// objects' included (`Layout::construction_roots`), not only a made object's own. A rewrite of `get` is verified
+/// and stored; a build that also changes `Inner`'s constructor, so that `get` gives one more, is another claim and
+/// refuted. It reused the stored proof before the reuse stream's fix (`qssovxor`).
 #[test]
-#[ignore = "an unsound cache hit: the reuse stream's fix in proof_cache.rs (the objects stream's Progress, 2026-11-08)"]
 fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-cache-inner");
     let _ = std::fs::remove_dir_all(&cache);
@@ -244,9 +242,9 @@ fn an_inner_objects_constructor_is_part_of_the_cached_claim() {
 
 /// O2's claim roots: a setup method is a root of the claim, as a constructor is. A rewrite of `count` after one
 /// `add` is verified under `--cache`; a build that changes only the setup method `add`, so that a history of
-/// `add(4)` counts one more, is another claim, never answered by the cache, and refuted with its history. It holds
-/// today because a claim with a setup sequence runs uncached; it must hold once the claim key roots the setup calls
-/// (`harness::Layout::construction_roots`, for the reuse stream's `proof_cache::Regression::claim`).
+/// `add(4)` counts one more, is another claim, never answered by the cache, and refuted with its history, which the
+/// typed witness carries. The exact reruns of both are answered by the cache: the claim key roots the setup calls
+/// (`harness::Layout::construction_roots`, in `proof_cache::Regression::claim`).
 #[test]
 fn o2_a_setup_methods_edit_alone_is_another_claim_never_reused() {
     let cache = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-cache-setup");
@@ -271,12 +269,25 @@ fn o2_a_setup_methods_edit_alone_is_another_claim_never_reused() {
     assert_eq!(cold.verdict, Verdict::Verified, "{}", cold.output);
     let rerun = run("roots-rerun", &after);
     assert_eq!(rerun.verdict, Verdict::Verified, "{}", rerun.output);
+    assert!(rerun.reuse.is_some(), "the exact rerun reuses the proof: {}", rerun.output);
     let o = run("roots-edited", &edited);
     assert!(o.reuse.is_none(), "another setup method is another claim: {}", o.output);
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let c = o.counterexample.as_ref().unwrap();
     assert!(c.input.contains("after the setup this.add(setup.0.n=4)"), "the whole history: {}", c.input);
     assert!(c.jvm.is_some(), "{}", o.output);
+    // The typed witness carries the history: each setup call, its arguments typed and mapped to the inputs.
+    let setup = |call: &jvmcontract::witness::Call| serde_json::to_value(&call.setup).unwrap();
+    let history = setup(&c.call);
+    assert_eq!(history[0]["method"], "add", "{history}");
+    assert_eq!(history[0]["arguments"][0]["value"], 4, "{history}");
+    assert_eq!(history[0]["arguments"][0]["from"], "setup.0.n", "{history}");
+    assert_eq!(setup(c.previous_call.as_ref().unwrap()), history);
+    // The refutation is reused once its witness reproduces, with the history it was stored with.
+    let again = run("roots-edited-again", &edited);
+    assert!(again.reuse.is_some(), "the exact rerun reuses the refutation: {}", again.output);
+    assert_eq!(again.verdict, Verdict::Violation, "{}", again.output);
+    assert_eq!(setup(&again.counterexample.as_ref().unwrap().call), history, "{}", again.output);
 }
 
 /// A build of the shared contract's throttle family (`tests/fixtures/application-core/throttle`): `before`,
