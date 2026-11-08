@@ -2,6 +2,80 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-011441-stub-reachability-step-4-no-stub-a-proof",
+      "title": "Stub reachability, step 4: no stub a proof enters is left out of JBMC's gaps: the gap tests and the conformance corpus under JBMC and auto",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 15m08s, peak 1.4 GiB (estimated 40m00s, 3.0 GiB); 1 output file(s) changed; signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jbmc:gaps"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "lib/src/shared.rs",
+          "lib/tests/integration.rs",
+          "lib/tests/conformance.rs"
+        ]
+      },
+      "sourceCommit": "1b376e0f1e77a855f783000598768d4704e6683a",
+      "finishedAt": "2026-11-08T01:34:50+00:00",
+      "wallSeconds": 908.0,
+      "peakMemoryBytes": 1555152896,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 2400.0,
+        "notes": "the corpus under JBMC and auto took 1388 s at 1.6 GiB peak in 20261107-222356 (with the auto --confirm test too); the probe adds at most one JBMC run per proof whose symbolic run enters a stub; the gap tests take a few minutes; release build first"
+      },
+      "host": "vm-1",
+      "result": "20261108-011441-stub-reachability-step-4-no-stub-a-proof/result.json"
+    },
+    {
+      "id": "20261108-011411-vf-015-example-109-revisited-hex-todigit",
+      "title": "VF-015: example 109 revisited, Hex#toDigit's regression proof, after the gap preflight asks JBMC's solver; closes VF-015 when it passes",
+      "status": "failed",
+      "summary": "failed: 4 passed, 1 failed step(s) in 12.6s, peak 102.0 MiB (estimated 10m00s, 2.0 GiB); 335 output file(s) changed; signals: jvmcontract:holds×1; jvmcontract:fails×1",
+      "attention": [
+        "step 1 (clone) was held back 2.4s by its 1-CPU quota in 2.0s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (compile) was held back 12.7s by its 1-CPU quota in 8.8s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 5 (nothing else changed on ASCII) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "109"
+        ],
+        "paths": [
+          "lib/models/java/lang/Character.java",
+          "lib/src/jbmc_gaps.rs"
+        ],
+        "jobs": [
+          "20261107-165827-example-109-revisited-hex-todigit-s-regr",
+          "20261107-233000-stub-reachability-step-1-can-jbmc-s-solv"
+        ]
+      },
+      "sourceCommit": "1b376e0f1e77a855f783000598768d4704e6683a",
+      "finishedAt": "2026-11-08T01:19:42+00:00",
+      "wallSeconds": 12.6,
+      "peakMemoryBytes": 106987520,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "as 20261107-165827, whose clone, compile and step 3 took about 10 s at 100 MiB peak; the preflight now adds a probe run of the proof's size (about 0.1 s in the step 1 experiment)"
+      },
+      "host": "vm-1",
+      "result": "20261108-011411-vf-015-example-109-revisited-hex-todigit/result.json"
+    },
+    {
       "id": "20261107-233000-stub-reachability-step-1-can-jbmc-s-solv",
       "title": "Stub reachability, step 1: can JBMC's solver show VF-015's String.format stub unentered (--cover location, or a probe assertion), and at what cost next to the proof",
       "status": "passed",

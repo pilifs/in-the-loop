@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "65b61440-529c-4851-a79f-71ca197aa91d",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-08T01:17:28.665Z",
+  "ended": "2026-11-08T01:38:04.705Z",
+  "duration_seconds": 1236,
+  "stats": {
+    "turns": 1,
+    "api_calls": 9,
+    "tool_calls": 10,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 41971,
+    "usage": {
+      "input_tokens": 18,
+      "output_tokens": 2708,
+      "cache_read_input_tokens": 283166,
+      "cache_creation_input_tokens": 28852
+    }
+  },
+  "tools": {
+    "Bash": 9,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T01:17:28.665Z",
+      "ended": "2026-11-08T01:38:04.705Z",
+      "turns": 1,
+      "api_calls": 9,
+      "usage": {
+        "input_tokens": 18,
+        "output_tokens": 2708,
+        "cache_read_input_tokens": 283166,
+        "cache_creation_input_tokens": 28852
+      },
+      "peak_context_tokens": 41971
+    }
+  ],
+  "log": {
+    "sha256": "6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318",
+    "bytes": 357001,
+    "lines": 82,
+    "gzip_bytes": 80976,
+    "path": "llm-dlc/traces/65b61440-529c-4851-a79f-71ca197aa91d/logs/6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "pktlkzsptxlsyuvtmtvuoosqozyqwpnu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: stub-reachability step 4 passed, VF-015 now fails at step 5 (ASCII equivalence)",
+      "body": "Ran the two pending jobs on vm-1 at 1b376e0f1e77. The stub-reachability step 4 job (gap tests and conformance corpus under JBMC and auto) passed in 15m. VF-015's job (example 109) passed steps 3 and 4 now that the gap preflight asks JBMC's solver, but step 5 (nothing else changed on ASCII) fails with an unexpected JBMC property (EquivalenceHarness.check.1) beside throwing-initializer notes; recorded in VF-015, which stays open. Collect applied one output.",
+      "log_sha256": "6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318"
+    }
+  ],
+  "logs": {
+    "6e2501c5be6b7ed1264675f174673c3a18001a6b5b67537bea4bf38b4a94a318": {
+      "bytes": 357001,
+      "lines": 82,
+      "gzip_bytes": 80976,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

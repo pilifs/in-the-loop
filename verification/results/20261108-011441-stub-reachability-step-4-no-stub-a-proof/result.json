@@ -1,0 +1,392 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-011441-stub-reachability-step-4-no-stub-a-proof",
+  "title": "Stub reachability, step 4: no stub a proof enters is left out of JBMC's gaps: the gap tests and the conformance corpus under JBMC and auto",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 15m08s, peak 1.4 GiB (estimated 40m00s, 3.0 GiB); 1 output file(s) changed; signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261108-011441-stub-reachability-step-4-no-stub-a-proof.json",
+    "sha256": "71381c355ad78b62ceb27ad57d526350f7e802c94ea57645ca1e3b89ba2d316b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-011441-stub-reachability-step-4-no-stub-a-proof",
+      "title": "Stub reachability, step 4: no stub a proof enters is left out of JBMC's gaps: the gap tests and the conformance corpus under JBMC and auto",
+      "description": "The JBMC gap preflight (lib/src/jbmc_gaps.rs) gained a third step: for the stubs its symbolic execution still enters, it runs the proof once more with a probe before each call site (a method of jvmcontract.StubProbe that fails an assertion behind CProver.nondetBoolean() and otherwise makes the call), and leaves a stub out of the gaps only when every probe and every unwinding assertion holds. This job guards that the step leaves out no stub a proof does enter. It runs, unchanged: the preflight's unit tests on the runner's JBMC (two of them run JBMC on lib/tests/fixtures/jbmc-paths/P.java); the gap tests in lib/tests/integration.rs, which expect JBMC's stubs of a throwing JDK constructor, a JDK mutator, monitors and unlinked invokedynamic calls to be refused by name under strict, assumed under assume, and handed to contracts under advised and --confirm; and the conformance corpus under --engine jbmc and auto (the_corpus_agrees_with_the_jvm_under_jbmc_and_auto), where a stub wrongly left out would show as a JBMC verdict the JVM refutes. From llm-dlc/loops/stub-reachability.md, step 4.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jbmc:gaps"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "lib/src/shared.rs",
+          "lib/tests/integration.rs",
+          "lib/tests/conformance.rs"
+        ]
+      },
+      "expected": "every step exits 0: the jbmc_gaps unit tests pass, the eight gap tests pass with the gaps they name, and the corpus test passes (each JBMC and auto verdict agrees with the JVM)",
+      "submitted": {
+        "at": "2026-11-08T01:14:41+00:00",
+        "session": "807d6ed2-a98d-4f93-8dbb-28d70736eff7",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "40m",
+        "memoryLimit": "3.5G",
+        "timeout": "2h",
+        "notes": "the corpus under JBMC and auto took 1388 s at 1.6 GiB peak in 20261107-222356 (with the auto --confirm test too); the probe adds at most one JBMC run per proof whose symbolic run enters a stub; the gap tests take a few minutes; release build first"
+      },
+      "steps": [
+        {
+          "name": "the gap preflight's unit tests, live ones included",
+          "run": "cd lib && cargo test --release --lib jbmc_gaps",
+          "cwd": "."
+        },
+        {
+          "name": "the gap tests under JBMC",
+          "run": "cd lib && cargo test --release --test integration -- jbmc_own_approximations_are_gaps_in_the_same_modes jbmc_applies_the_contracts_for_its_gaps advised_stops_before_solving_with_each_gap a_gap_is_refused_by_name_under_strict the_contract_library_closes_gaps_on_its_records a_contract_closes_its_gap_and_the_verdict_rests_on_it a_witness_through_contracts_is_run_on_a_jvm confirm_applies_the_own_checkers_contracts_for_jbmc",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-probe.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/conformance-jbmc-probe.log"
+      ]
+    }
+  },
+  "sourceCommit": "1b376e0f1e77a855f783000598768d4704e6683a",
+  "startedAt": "2026-11-08T01:19:42+00:00",
+  "finishedAt": "2026-11-08T01:34:50+00:00",
+  "wallSeconds": 908.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1048050,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 2400.0,
+    "notes": "the corpus under JBMC and auto took 1388 s at 1.6 GiB peak in 20261107-222356 (with the auto --confirm test too); the probe adds at most one JBMC run per proof whose symbolic run enters a stub; the gap tests take a few minutes; release build first"
+  },
+  "usage": {
+    "peakMemoryBytes": 1555152896,
+    "wallSeconds": 908.0,
+    "cpuSeconds": 994.1,
+    "memoryOfEstimate": 0.48,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the gap preflight's unit tests, live ones included",
+      "run": "cd lib && cargo test --release --lib jbmc_gaps",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 93.038,
+      "cpuSeconds": 128.288,
+      "cpuThrottledSeconds": 9.865,
+      "peakMemoryBytes": 1427234816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-gap-preflight-s-unit-tests.log",
+        "lines": 73,
+        "bytes": 3363,
+        "sha256": "d1060d681933dc5b3006e79c7bcc857704cf1fe64b28f5f84e912f618e563dbe",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 72,
+          "text": "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 201 filtered out; finished in 5.65s",
+          "groups": [
+            "ok",
+            "14",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling itoa v1.0.18",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-011441-stub-reachability-step-4-no-stub-a-proof/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 27s",
+        "     Running unittests src/lib.rs (target/release/deps/jvmcontract-e6f8b70cba5e6636)",
+        "",
+        "running 14 tests",
+        "test jbmc_gaps::tests::a_proof_through_a_defect_is_refused_under_every_mode_and_a_counterexample_is_left_to_the_replay ... ok",
+        "test jbmc_gaps::tests::a_probe_before_each_call_site_fails_on_a_branch_of_its_own_and_makes_the_call ... ok",
+        "test jbmc_gaps::tests::a_stub_behind_a_condition_only_the_solver_decides_is_no_gap ... ok",
+        "test jbmc_gaps::tests::a_stub_the_harness_reaches_is_a_gap_and_one_only_a_jdk_initializer_reaches_is_not ... ok",
+        "test jbmc_gaps::tests::a_stub_the_solver_shows_unreached_is_no_gap_and_the_note_says_why ... ok",
+        "test jbmc_gaps::tests::a_stub_whose_every_probe_holds_is_unreached_and_nothing_else_tells ... ok",
+        "test jbmc_gaps::tests::reads_jbmc_goto_program_as_functions_calls_and_bytecode_indices ... ok",
+        "test jbmc_gaps::tests::a_stub_on_no_path_the_proof_takes_is_no_gap ... ok",
+        "test jbmc_gaps::tests::the_functions_symbolic_execution_enters_are_read_by_the_listings_locations ... ok",
+        "test jbmc_gaps::tests::the_corpus_initializers_that_throw_are_named_in_jbmcs_own_listings ... ok",
+        "test jbmc_gaps::tests::the_preflight_names_a_class_initializer_that_throws_where_a_handler_tells_jbmc_from_the_jvm ... ok",
+        "test jbmc_gaps::tests::the_preflight_names_an_initializer_jbmc_runs_where_the_jvm_does_not ... ok",
+        "test jbmc_gaps::tests::the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm ... ok",
+        "test jbmc_gaps::tests::the_preflight_reads_jbmc_listing_by_instruction_index ... ok",
+        "",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 201 filtered out; finished in 5.65s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "the gap tests under JBMC",
+      "run": "cd lib && cargo test --release --test integration -- jbmc_own_approximations_are_gaps_in_the_same_modes jbmc_applies_the_contracts_for_its_gaps advised_stops_before_solving_with_each_gap a_gap_is_refused_by_name_under_strict the_contract_library_closes_gaps_on_its_records a_contract_closes_its_gap_and_the_verdict_rests_on_it a_witness_through_contracts_is_run_on_a_jvm confirm_applies_the_own_checkers_contracts_for_jbmc",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 126.747,
+      "cpuSeconds": 185.26,
+      "cpuThrottledSeconds": 15.28,
+      "peakMemoryBytes": 1555152896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-the-gap-tests-under-jbmc.log",
+        "lines": 16,
+        "bytes": 987,
+        "sha256": "27f5be1903c82ad78797ffbe7cb6f8cc7a61616fa810587d4d2bd5f891bd728b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 15,
+          "text": "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 19.25s",
+          "groups": [
+            "ok",
+            "8",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-011441-stub-reachability-step-4-no-stub-a-proof/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 47s",
+        "     Running tests/integration.rs (target/release/deps/integration-b75448fe8cc0be98)",
+        "",
+        "running 8 tests",
+        "test a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume ... ok",
+        "test a_witness_through_contracts_is_run_on_a_jvm ... ok",
+        "test a_contract_closes_its_gap_and_the_verdict_rests_on_it ... ok",
+        "test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok",
+        "test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok",
+        "test jbmc_applies_the_contracts_for_its_gaps ... ok",
+        "test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 19.25s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-probe.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 688.259,
+      "cpuSeconds": 680.599,
+      "cpuThrottledSeconds": 0.274,
+      "peakMemoryBytes": 926425088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-conformance-corpus-under-jbmc.log",
+        "lines": 344,
+        "bytes": 26009,
+        "sha256": "8c090d36bf93c20d0924931f16bb4bdc8df4b01d03ec91893234f4f8ec4e3779",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 343,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 656.22s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "leadingZeros     Jbmc/Strict Verified     assert (x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)",
+        "leadingZeros     Auto/Strict Verified     assert (x == 0 && result == 32) || (x != 0 && 0 <= result && result < 32 && (x >>> (31 - result)) == 1)",
+        "leadingZeros     Jbmc/Strict Violation    assert result < 32",
+        "leadingZeros     Auto/Strict Violation    assert result < 32",
+        "leadingZeros     Jbmc/Strict Violation    assume x > 0; assert (-1 >>> (result - 1)) == x - 1",
+        "leadingZeros     Auto/Strict Violation    assume x > 0; assert (-1 >>> (result - 1)) == x - 1",
+        "leadingZerosLong Jbmc/Strict Verified     assert (x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)",
+        "leadingZerosLong Auto/Strict Verified     assert (x == 0L && result == 64) || (x != 0L && 0 <= result && result < 64 && (x >>> (63 - result)) == 1L)",
+        "leadingZerosLong Jbmc/Strict Violation    assert result < 64",
+        "leadingZerosLong Auto/Strict Violation    assert result < 64",
+        "",
+        "84 cases, 166 claims (87 refuted on the JVM), 332 runs; the interpreter refuses firstByte([0]), listChange(7)",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 656.22s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/conformance-jbmc-probe.log",
+      "change": "added",
+      "bytes": 26009,
+      "sha256": "8c090d36bf93c20d0924931f16bb4bdc8df4b01d03ec91893234f4f8ec4e3779",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T01:37:45+00:00",
+    "applied": [
+      "lib/target/conformance-jbmc-probe.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
