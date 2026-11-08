@@ -479,6 +479,24 @@ through others: the checks in progress are a stack, and a helper on it stays as 
 example this way when its `approach.cache` says so, with a fresh cache under the build (the examples tagged
 [`proved-helpers`](../examples/README.md#tag-proved-helpers)).
 
+A **read-only heap helper** (the application-core loop's R2, [`reuse::footprint`](src/reuse/footprint.rs)) gets a
+summary of its own proof ([`reuse::summarize`](src/reuse.rs)), narrowly: an instance method, not overridden by any
+application class, whose code is total and read-only over primitive fields of its receiver and primitive arguments,
+with a primitive result. Its read footprint is established from its bytecode, not listed: the only reference it ever
+handles is its receiver, loaded only to read one of its fields at once, so its `getfield`s are all it reads of the
+heap, and since it writes nothing its outcome is a function of those fields' values and its arguments. A write, an
+allocation, an exception of its own, a static field, a call outside the application and the JDK's arithmetic
+classes, a call on an object, an override, recursion, a reference other than the receiver, an array, a division by
+anything but a non-zero constant, and floating point are each refused by name. The helper is then *lifted*: a static
+method of a class of its own whose parameters are its arguments and then the values of the fields either version
+reads, its code the helper's with each field read replaced by a parameter (tested against the helper on a JVM). The
+two versions' lifted helpers are proved by a regression check of their own under the cache, and the summary names
+that proof's key, the fields and arguments read, its domain (every value of them, whatever else a receiver holds),
+and the proofs it rests on. A helper whose versions differ, or whose two versions read fields the other's receiver
+doesn't declare alike (a change of layout, with no representation adapter established), has none.
+`tests/reuse_summaries.rs` holds these on the frozen quote fixture's `fee` and its `helper-extra-field` defect. A
+caller's use of a summary is the next step, and no check uses one yet.
+
 `impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
 invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as
 it is, with `previousSymbol` for a renamed method). A claim's code is what its key digests: the closures of the

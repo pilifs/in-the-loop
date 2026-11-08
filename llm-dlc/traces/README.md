@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 05:08 UTC |
-| Prompts | 1,617 |
-| Model calls | 16,027 |
-| Tool calls | 17,019 (306 failed) |
-| Compactions | 239 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 05:25 UTC |
+| Prompts | 1,622 |
+| Model calls | 16,077 |
+| Tool calls | 17,069 (307 failed) |
+| Compactions | 240 |
 | Subagents | 10 |
-| Tokens written | 17,557,091 |
-| Tokens read | 2,618,557,697 (97.9% from cache) |
-| Commits with a trace | 488 |
-| Log snapshots | 596 (1356.9 MB gzipped, 593 uploaded) |
+| Tokens written | 17,635,417 |
+| Tokens read | 2,624,823,052 (97.9% from cache) |
+| Commits with a trace | 489 |
+| Log snapshots | 597 (1357.9 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](aa238023-596d-49bd-8039-52502ec096fc/summary.md) | open | 33 min | `claude-opus-5-5` | 15 | 97 | 98 | 0 | 3 | 190,852 | 3 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](aa238023-596d-49bd-8039-52502ec096fc/summary.md) | open | 51 min | `claude-opus-5-5` | 20 | 147 | 148 | 1 | 4 | 197,070 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,17 +165,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) | 83,977 | 196 | 371,401 | 9,694,179 | 96.3% | 120 |
+| [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) | 162,303 | 298 | 563,016 | 15,767,817 | 96.6% | 101 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 14,888 | 87.5% | 65 |
-| `Read` | 785 | 4.6% | 34 |
-| `Edit` | 649 | 3.8% | 34 |
-| `Write` | 410 | 2.4% | 30 |
-| `ToolSearch` | 100 | 0.6% | 26 |
+| `Bash` | 14,929 | 87.5% | 65 |
+| `Read` | 787 | 4.6% | 34 |
+| `Edit` | 651 | 3.8% | 34 |
+| `Write` | 412 | 2.4% | 30 |
+| `ToolSearch` | 101 | 0.6% | 26 |
 | `Monitor` | 65 | 0.4% | 22 |
 | `AskUserQuestion` | 30 | 0.2% | 9 |
 | `TaskStop` | 28 | 0.2% | 12 |
@@ -183,10 +183,10 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | `Agent` | 10 | 0.1% | 5 |
 | `ScheduleWakeup` | 8 | 0.0% | 2 |
 | `Skill` | 7 | 0.0% | 4 |
-| `SendMessage` | 5 | 0.0% | 3 |
+| `SendMessage` | 6 | 0.0% | 3 |
 | `bash` | 4 | 0.0% | 4 |
+| `ListAgents` | 2 | 0.0% | 1 |
 | `WebSearch` | 2 | 0.0% | 1 |
-| `ListAgents` | 1 | 0.0% | 1 |
 
 ## Commits
 
@@ -682,6 +682,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 486 | change `sktkmnpn` | application-core reuse R1: the native property cache, a property projection of the canonical claim in the existing proof store | [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) ([log](https://terminalvalue.net/raw-traces/aa238023-596d-49bd-8039-52502ec096fc/e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20.jsonl.gz)) |
 | 487 | change `mslqzrpr` | application-core reuse J3: a planned domain's plans and a modelled call's model in the claim key, digested whole as their strict types | [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) ([log](https://terminalvalue.net/raw-traces/aa238023-596d-49bd-8039-52502ec096fc/bc9aa0450064232ed23f89ed22d9561a4991a0e835a1a07e8cff7c606c44b87c.jsonl.gz)) |
 | 488 | change `qssovxor` | application-core reuse: a regression claim's closure rooted at every constructor its harness calls, an inner object's included | [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) ([log](https://terminalvalue.net/raw-traces/aa238023-596d-49bd-8039-52502ec096fc/76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1.jsonl.gz)) |
+| 489 | change `wqlynuot` | application-core reuse R2: a read-only helper's footprint proved from its bytecode, lifted over it, and summarized from a proof of its own | [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) ([log](https://terminalvalue.net/raw-traces/aa238023-596d-49bd-8039-52502ec096fc/6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7.jsonl.gz)) |
 
 ## Logs
 
@@ -753,7 +754,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) | 3 | 0 | 1.6 MB | `76a89868444d`, not uploaded |
+| [`aa238023`](aa238023-596d-49bd-8039-52502ec096fc/summary.md) | 4 | 0 | 2.6 MB | `6b3ea33ae1ea`, not uploaded |
 
 ## Session notes
 

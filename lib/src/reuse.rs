@@ -31,7 +31,12 @@
 //! and its proof line; no checker runs. A refuted hit is used only once its witness fails the stored harness again
 //! on the current classes; otherwise it is a miss, and the check runs and stores its own result in its place.
 //!
-//! Until the stream builds R2, [`summaries`] offers none: a caller keeps the helper's body.
+//! **Read-only heap helpers** (R2) are summarized from a proof of their own: [`footprint`] establishes a helper's read
+//! footprint from its bytecode and lifts it over that footprint, and [`summarize`] proves the two versions' lifted
+//! helpers equal and gives the [`Summary`] naming that proof. No caller applies one yet: [`summaries`] offers none,
+//! and a caller keeps the helper's body. The proof is of the lifted function, positional in the fields' values; which
+//! field is which parameter is the summary's `reads`, established again from each version's bytecode whenever a
+//! summary is made, so a claim that uses one has to carry the summary, not only its proof's key.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -557,6 +562,102 @@ fn store(dir: &Path, options: &Options, outcome: &Outcome) -> Result<(), String>
         provenance: format!("jvmcontract {} ({}), prove --engine native, at {}, on {}", env!("CARGO_PKG_VERSION"), crate::proof_cache::binary().get(..19).unwrap_or("unknown binary"), crate::proof_cache::utc_now(), options.classes.iter().map(|c| c.display().to_string()).collect::<Vec<_>>().join(", ")),
     };
     cache::store_detail(dir, &record, Some(detail)).map_err(|u| u.what)
+}
+
+pub mod footprint;
+
+/// R2: the summary of the read-only helper `helper` (an instance method, as a call names it, declared by the same
+/// class in both versions of `options`), from a proof of its own: each version's footprint is established
+/// ([`footprint::footprint`]), both are lifted over the fields either reads ([`footprint::lift`]), and the two lifted
+/// helpers are proved to have the same result on every input under `options`' cache, engine, bounds and tools
+/// ([`crate::proof_cache::lifted_proof`]), worked on under `work`. The summary names that proof's claim key, the
+/// fields and arguments it reads, the proofs it rests on, and the domain it holds over: every value of those fields
+/// and arguments, on any receiver of the class, whatever else it holds. It needs no alias or null fact: only the
+/// receiver is dereferenced, and a call on `null` throws before the helper runs.
+///
+/// Refused, by name: a helper either version doesn't establish a footprint for; a field one version reads that the
+/// other's receiver doesn't declare alike (a change of layout, for which no representation adapter is established);
+/// and a lifted proof that isn't a verified one in the cache, a refutation included (the summary is then not there,
+/// and a caller keeps the helper's body).
+pub fn summarize(options: &crate::equivalence::Options, helper: &MemberRef, work: &Path) -> Result<Summary, Unsupported> {
+    let refuse = |why: String| Unsupported::new(Part::Reuse, format!("{} has no read-only summary: {why}", footprint::helper_name(helper)));
+    let class_path = |dir: &Path| -> Result<ClassPath, Unsupported> {
+        let mut cp = ClassPath::new();
+        cp.add(dir).map_err(|e| refuse(e.to_string()))?;
+        for entry in options.classpath.iter().filter(|e| e.exists()) {
+            cp.add(entry).map_err(|e| refuse(e.to_string()))?;
+        }
+        Ok(cp.with_default_jdk())
+    };
+    let (before_cp, after_cp) = (class_path(&options.before)?, class_path(&options.after)?);
+    let before = footprint::footprint(&before_cp, helper)?;
+    let after = footprint::footprint(&after_cp, helper)?;
+    if before.helper != after.helper {
+        return Err(refuse(format!("{} declares it before, {} after", before.helper.owner.replace('/', "."), after.helper.owner.replace('/', "."))));
+    }
+    let mut fields = before.fields.clone();
+    fields.extend(after.fields.iter().filter(|f| !before.fields.contains(f)).cloned());
+    fields.sort();
+    for (version, cp) in [("before", &before_cp), ("after", &after_cp)] {
+        for f in &fields {
+            let instance = cp.resolve_field(&after.helper.owner, &f.name, &f.descriptor).filter(|d| *d == f.declared_by).and_then(|d| cp.load(&d).ok().flatten()).is_some_and(|l| l.class.fields.iter().any(|g| g.name == f.name && g.descriptor == f.descriptor && !g.is_static()));
+            if !instance {
+                return Err(refuse(format!(
+                    "the version {version}'s receiver has no instance field {}.{} of type {} for the other version's read: its layout changed, and no representation adapter is established",
+                    f.declared_by.replace('/', "."),
+                    f.name,
+                    f.ty().java_name()
+                )));
+            }
+        }
+    }
+    let lifted_before = footprint::lift(&before_cp, &before, &fields)?;
+    let lifted_after = footprint::lift(&after_cp, &after, &fields)?;
+    let dir = work.join(format!("summary-{}-{}", helper.owner.replace('/', "."), helper.name));
+    let _ = std::fs::remove_dir_all(&dir);
+    for (from, to, lifted) in [(&options.before, dir.join("before"), &lifted_before), (&options.after, dir.join("after"), &lifted_after)] {
+        copy_tree(from, &to).and_then(|_| {
+            let file = to.join(format!("{}.class", lifted.method.owner));
+            std::fs::create_dir_all(file.parent().expect("a class file has a directory"))?;
+            std::fs::write(file, &lifted.bytes)
+        })
+        .map_err(|e| refuse(format!("its lifted classes can't be written: {e}")))?;
+    }
+    let (key, outcome) = crate::proof_cache::lifted_proof(options, &lifted_after.target(), &dir.join("before"), &dir.join("after"), &dir.join("proof")).map_err(&refuse)?;
+    let depends_on = outcome.stated.iter().flat_map(|s| &s.assumptions).filter(|a| a.kind == crate::statement::AssumptionKind::Callee).filter_map(|a| a.id.clone()).collect();
+    let read = |fp: &footprint::Footprint| fp.fields.iter().map(|f| f.name.as_str()).collect::<Vec<_>>().join(", ");
+    Ok(Summary {
+        helper: footprint::helper_name(&after.helper),
+        proof: key.0,
+        reads: footprint::Footprint::reads(&fields, &after.params),
+        facts: Vec::new(),
+        domain: format!(
+            "every value of the fields it reads ({}) and of its arguments, on any receiver of {} whatever else it holds; read before: {}; read after: {}",
+            if fields.is_empty() { "none".to_string() } else { fields.iter().map(|f| format!("this.{}", f.name)).collect::<Vec<_>>().join(", ") },
+            after.helper.owner.replace('/', "."),
+            if before.fields.is_empty() { "no field".to_string() } else { read(&before) },
+            if after.fields.is_empty() { "no field".to_string() } else { read(&after) },
+        ),
+        bounds: ClaimBounds { unwind: options.unwind, max_array_length: options.max_array_length },
+        relation: crate::spec::plans::OutcomeRelation::Equal,
+        effects: crate::spec::plans::Effects::ReadOnly,
+        depends_on,
+    })
+}
+
+/// Copies the files under `from` into `to`, keeping their paths.
+fn copy_tree(from: &Path, to: &Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(to)?;
+    for entry in std::fs::read_dir(from)? {
+        let entry = entry?;
+        let target = to.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            copy_tree(&entry.path(), &target)?;
+        } else {
+            std::fs::copy(entry.path(), target)?;
+        }
+    }
+    Ok(())
 }
 
 /// The summaries of `helper` (`pkg.Class#name(descriptor)`) a caller may apply, each still to be discharged at the

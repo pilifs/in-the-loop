@@ -738,6 +738,48 @@ impl<'a> Helpers<'a> {
     }
 }
 
+/// R2: the regression proof of a read-only helper lifted over its footprint ([`crate::reuse::footprint::lift`]): the
+/// check of `target` in `before` and `after` (each a version's classes with its lifted helper), under the caller's
+/// cache, engine, bounds and tools, but over the helper's own inputs, as a changed helper's proof is ([`Helpers`]).
+/// Gives the claim key it was proved under and its outcome, or why there is no proof to use: no cache, another
+/// engine, a proof it would rest on, a result other than verified, or one not stored.
+pub fn lifted_proof(options: &Options, target: &str, before: &Path, after: &Path, work: &Path) -> Result<(ClaimKey, Outcome), String> {
+    if options.cache.is_none() || options.engine != crate::Engine::Native {
+        return Err("a helper's summary is proved only under the proof cache and the own checker (--cache, --engine native)".into());
+    }
+    let caller = options.target.clone();
+    let names = |t: &String| t == target;
+    if names(&caller) || PROVING.with(|p| p.borrow().iter().any(names)) {
+        return Err("its proof would rest on the proof it is used in".into());
+    }
+    let mut helper = options.clone();
+    helper.before = before.to_path_buf();
+    helper.after = after.to_path_buf();
+    helper.target = target.to_string();
+    helper.before_target = None;
+    helper.before_arguments = None;
+    helper.results_agree_when = None;
+    helper.correspondence = None;
+    helper.nullable = Vec::new();
+    helper.may_alias = Vec::new();
+    helper.unchanged_unless = None;
+    helper.object_domain = None;
+    helper.plan = None;
+    helper.report = None;
+    helper.confirm = false;
+    helper.work = Some(work.to_path_buf());
+    PROVING.with(|p| p.borrow_mut().push(caller));
+    let outcome = crate::equivalence::run(&helper);
+    PROVING.with(|p| p.borrow_mut().pop());
+    let outcome = outcome.map_err(|e| format!("its check failed: {e}"))?;
+    applicable(&outcome)?;
+    let key = KEYS.with(|k| k.borrow().iter().rev().find(|(t, _)| t == target).map(|(_, key)| key.clone())).ok_or("its claim has no key")?;
+    match cache::lookup(options.cache.as_ref().expect("checked"), &key) {
+        Ok(Some(r)) if r.outcome.verdict == crate::spec::Verdict::Verified => Ok((key, outcome)),
+        _ => Err(format!("its proof is not in the proof cache (claim {})", key.0)),
+    }
+}
+
 /// Whether a helper's own check is a proof one stub may stand on at every call: verified, over every execution
 /// within its bounds, and resting on nothing that narrows its inputs (only the checker's own assumptions, and the
 /// proofs of the helpers it shared in turn).

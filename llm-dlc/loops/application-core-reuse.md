@@ -232,6 +232,57 @@ measurement stays as recorded.
     listed, and its summary as the `spec::plans::Summary` applicability record. Then applicability at the call site,
     the adversarial cases, and reuse in a changed caller, whose claim carries the summaries it used with their keys
     (J3's helper assumptions).
+- 2026-11-08, **R2, first part: a read-only helper's footprint, proved, and its summary from a proof of its own**, in
+  `lib/src/reuse/footprint.rs` (a submodule of `reuse.rs`, so no shared file changed), `reuse::summarize` and
+  `proof_cache::lifted_proof`:
+  - **The footprint** (`footprint::footprint`) is established from the bytecode, not listed. The helper is an
+    instance method that no application class overrides, with primitive parameters and a primitive result. The only
+    reference it may handle is its receiver, loaded only by an `aload_0` that a `getfield` of a primitive field
+    consumes at once. Its static callees are walked under the same rules with no reference at all. So its
+    `getfield`s are all it reads of the heap, and since it writes nothing, its outcome is a function of those fields'
+    values and its arguments. Each exclusion of the brief is refused by name: a write, an allocation, an exception of
+    its own, a static field, an external call, a call on an object, an override, recursion, an escaping or other
+    reference, and an array. So are a division by anything but a non-zero constant (not total), a switch, and
+    floating point.
+  - **The explicit representation adapter** (`footprint::lift`): the helper as a static method of a class of its
+    own, `quotes/QuoteService$Footprint$fee`. Its parameters are the helper's arguments, then the values of the fields
+    either version reads (their union). Its code is the helper's, with each field read replaced by a parameter. It is
+    tested against the helper on a real JVM over 560 cases, lifted over one field more than it reads.
+  - **The summary** (`reuse::summarize`): the two versions' lifted helpers are proved by a regression check of their
+    own, under the caller's cache, engine and bounds, in the proof stack that keeps dependency proofs acyclic. The
+    `spec::plans::Summary` names:
+    - that proof's claim key;
+    - `reads` (`this.feeCents`, `arg0`);
+    - the domain: every value of those fields, on any receiver, whatever else it holds;
+    - relation `equal`, effects `read-only`, and the helper proofs it rests on.
+
+    No summary is given for a helper whose versions differ (`helper-extra-field`: lifted over the fee and the floor,
+    refuted), or for versions that read fields the other's receiver doesn't declare alike (a change of layout, with no
+    adapter established).
+  - **Verified inline**, in a new `tests/reuse_summaries.rs` (5 tests):
+    - `fee` reads `feeCents`, before and after, and the defect also reads `floorCents`;
+    - 17 helpers outside the category are each refused in the words of their case;
+    - the JVM conformance of the lifting;
+    - `fee`'s summary, with its proof verified in the cache, and an exact rerun giving the same summary, nothing new
+      stored;
+    - the extra read and the layout change have no summary.
+
+    Also passing: the 231 unit tests, `reuse` (11), `application_core` (14), `summaries`, `compare`, `heap`,
+    `effects` and `foundations`.
+  - **Found, for the claim key**: the lifted proof is of a function positional in the fields' values. Its key doesn't
+    name which field is which parameter. That mapping is the summary's `reads`, established again from each version's
+    bytecode every time. So a caller's claim has to carry the whole summary, not only its proof's key: that is the
+    next part.
+  - **The contract's R2 row** still stops at the objects stream's refusal (`construction::receiver`), because it
+    checks `fee` through the plain regression entry point. A summary doesn't need that, and isn't that row's path
+    until the merge.
+  - **Next**: applicability at the call site and reuse in a changed caller. Under `--cache` and the own checker,
+    `shared::plan_with` takes, for an instance call on a helper with a summary, a per-version adapter that reads the
+    footprint from the actual receiver at each call and calls the new version's lifted helper. That adapter is
+    reached through the receiver's own class, since a private field can't be read from another class. The caller's
+    claim then carries each summary it used, with its key. After that come the adversarial cases at a caller: a read
+    field mutated between two calls, a precondition holding at one call and not the next, an alias, and a
+    constructor-domain summary offered at a state a history reached.
 - Status: working
 
 ## Loop settings

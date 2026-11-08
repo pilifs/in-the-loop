@@ -12,34 +12,37 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T05:08:14.644Z",
-  "duration_seconds": 2029,
+  "ended": "2026-11-08T05:25:39.733Z",
+  "duration_seconds": 3074,
   "stats": {
-    "turns": 15,
-    "api_calls": 97,
-    "tool_calls": 98,
-    "tool_errors": 0,
-    "compactions": 3,
-    "peak_context_tokens": 190852,
+    "turns": 20,
+    "api_calls": 147,
+    "tool_calls": 148,
+    "tool_errors": 1,
+    "compactions": 4,
+    "peak_context_tokens": 197070,
     "usage": {
-      "input_tokens": 196,
-      "output_tokens": 83977,
-      "cache_read_input_tokens": 9694179,
-      "cache_creation_input_tokens": 371401
+      "input_tokens": 298,
+      "output_tokens": 162303,
+      "cache_read_input_tokens": 15767817,
+      "cache_creation_input_tokens": 563016
     }
   },
   "tools": {
-    "Bash": 81,
-    "Read": 9,
-    "Edit": 2,
-    "SendMessage": 2,
-    "Write": 2,
-    "ListAgents": 1,
-    "ToolSearch": 1
+    "Bash": 122,
+    "Read": 11,
+    "Edit": 4,
+    "Write": 4,
+    "SendMessage": 3,
+    "ListAgents": 2,
+    "ToolSearch": 2
   },
   "files_touched": [
+    "lib/src/proof_cache.rs",
     "lib/src/reuse.rs",
+    "lib/src/reuse/footprint.rs",
     "lib/tests/reuse.rs",
+    "lib/tests/reuse_summaries.rs",
     "llm-dlc/loops/application-core-reuse.md"
   ],
   "context_windows": [
@@ -88,24 +91,38 @@
     {
       "index": 3,
       "started": "2026-11-08T04:53:43.897Z",
-      "ended": "2026-11-08T05:08:14.644Z",
-      "turns": 4,
-      "api_calls": 22,
+      "ended": "2026-11-08T05:08:47.725Z",
+      "turns": 5,
+      "api_calls": 28,
       "usage": {
-        "input_tokens": 44,
-        "output_tokens": 10953,
-        "cache_read_input_tokens": 1473992,
-        "cache_creation_input_tokens": 74865
+        "input_tokens": 58,
+        "output_tokens": 12888,
+        "cache_read_input_tokens": 2022156,
+        "cache_creation_input_tokens": 82489
       },
-      "peak_context_tokens": 87944
+      "peak_context_tokens": 95568
+    },
+    {
+      "index": 4,
+      "started": "2026-11-08T05:09:17.148Z",
+      "ended": "2026-11-08T05:25:39.733Z",
+      "turns": 4,
+      "api_calls": 44,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 76391,
+        "cache_read_input_tokens": 5525474,
+        "cache_creation_input_tokens": 183991
+      },
+      "peak_context_tokens": 197070
     }
   ],
   "log": {
-    "sha256": "76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1",
-    "bytes": 3560994,
-    "lines": 1176,
-    "gzip_bytes": 768523,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1.jsonl.gz"
+    "sha256": "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7",
+    "bytes": 5038890,
+    "lines": 1725,
+    "gzip_bytes": 1040469,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -132,9 +149,23 @@
       "summary": "application-core reuse: a regression claim's closure rooted at every constructor its harness calls, an inner object's included",
       "body": "proof_cache::Regression::claim rooted each version's closure at a made object's own constructor only, not at the constructors of the objects it is made from, which the harness calls too. So a build that changed only an inner constructor reused another build's verified result: get(new Wrap(new Inner(v), k)), whose Inner constructor stores v + 1 in one build, reused a rewrite's proof though get returns one more. The objects stream found it (their ignored test an_inner_objects_constructor_is_part_of_the_cached_claim). The claim now roots both versions, and a previous version's receiver and records, at every constructor RecordType::constructors lists.\n\nReproducer first: tests/reuse.rs's an_inner_objects_constructor_in_either_version_is_part_of_a_regression_claim failed before the fix with an exact hit on the changed build. It now checks that a rewrite is verified and reused on an unchanged rerun, and that a change to the inner constructor after, and then before, misses the cache and is refuted. Also fixed: tests/reuse.rs compiled each build into a shared directory it removed first, so parallel tests could remove each other's classes. Each build is now compiled once per run. Verified inline: tests/reuse.rs (11 tests, three runs), the 230 unit tests, and the application_core, compare, effects, foundations, heap, observations and summaries suites. The proof_cache module doc and lib/README.md say which constructors are roots.",
       "log_sha256": "76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1"
+    },
+    {
+      "change_id": "wqlynuotqzutqswtxnuyqyypkvusnwyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse R2: a read-only helper's footprint proved from its bytecode, lifted over it, and summarized from a proof of its own",
+      "body": "R2's first part, in lib/src/reuse/footprint.rs (a submodule of reuse.rs, so no shared file changed), reuse::summarize and proof_cache::lifted_proof. footprint::footprint establishes a heap helper's read footprint from its bytecode rather than listing likely reads. The helper is an instance method no application class overrides, with primitive parameters and result. The only reference it handles is its receiver, loaded only to read a primitive field at once, and its static callees are walked under the same rules with no reference at all. So its getfields are all it reads of the heap, and since it writes nothing its outcome is a function of those fields' values and its arguments. The brief's exclusions (a write, an allocation, an exception of its own, a static field, an external call, a call on an object, an override, recursion, an escaping reference, an array) are each refused by name, and so are a division by anything but a non-zero constant, a switch and floating point.\n\nfootprint::lift is the explicit representation adapter: the helper as a static method of its own class over its arguments and then the values of the fields either version reads, with each field read replaced by a parameter. reuse::summarize proves the two versions' lifted helpers equal by a regression check of their own, under the caller's cache, engine and bounds and in the proof stack that keeps dependency proofs acyclic. It gives a spec::plans::Summary naming the proof's claim key, the fields and arguments read, the domain (every value of them, whatever else a receiver holds), and the proofs it rests on. A helper whose versions differ, or whose versions read fields the other's receiver doesn't declare alike, has none. No caller applies a summary yet; that, with the caller's claim carrying the summaries it used, is the next part.\n\nVerified inline with a new tests/reuse_summaries.rs (5 tests): the frozen quote fixture's fee reads feeCents before and after, and its helper-extra-field defect also reads floorCents; 17 helpers outside the category are each refused in the words of their case; the lifting agrees with the helper on a real JVM over 560 cases, lifted over one field more than it reads; fee's summary has its proof verified in the cache, and an exact rerun gives the same summary with nothing new stored; the extra read and a layout change get no summary. The 231 unit tests, tests/reuse.rs (11), application_core (14), summaries, compare, heap, effects and foundations pass. Found: the lifted proof is positional in the fields' values, so a caller's claim must carry the whole summary (its reads), not only the proof's key; this is recorded under Progress for the next part. The contract's R2 row still stops at the objects stream's receiver refusal, as it checks fee through the plain regression entry point.",
+      "log_sha256": "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7"
     }
   ],
   "logs": {
+    "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7": {
+      "bytes": 5038890,
+      "lines": 1725,
+      "gzip_bytes": 1040469,
+      "url": null
+    },
     "76a89868444d0ef14c44507dd64f5cdb99d29e1b5d5e25cdc61e787a4c0658f1": {
       "bytes": 3560994,
       "lines": 1176,
