@@ -12,20 +12,20 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-08T19:54:03.056Z",
-  "ended": "2026-11-08T20:07:42.143Z",
-  "duration_seconds": 819,
+  "ended": "2026-11-08T20:07:57.326Z",
+  "duration_seconds": 834,
   "stats": {
     "turns": 1,
-    "api_calls": 9,
+    "api_calls": 10,
     "tool_calls": 9,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 36254,
+    "peak_context_tokens": 37319,
     "usage": {
-      "input_tokens": 18,
-      "output_tokens": 1640,
-      "cache_read_input_tokens": 255376,
-      "cache_creation_input_tokens": 24870
+      "input_tokens": 20,
+      "output_tokens": 2191,
+      "cache_read_input_tokens": 291628,
+      "cache_creation_input_tokens": 25935
     }
   },
   "tools": {
@@ -36,24 +36,24 @@
     {
       "index": 0,
       "started": "2026-11-08T19:54:03.056Z",
-      "ended": "2026-11-08T20:07:42.143Z",
+      "ended": "2026-11-08T20:07:57.326Z",
       "turns": 1,
-      "api_calls": 9,
+      "api_calls": 10,
       "usage": {
-        "input_tokens": 18,
-        "output_tokens": 1640,
-        "cache_read_input_tokens": 255376,
-        "cache_creation_input_tokens": 24870
+        "input_tokens": 20,
+        "output_tokens": 2191,
+        "cache_read_input_tokens": 291628,
+        "cache_creation_input_tokens": 25935
       },
-      "peak_context_tokens": 36254
+      "peak_context_tokens": 37319
     }
   ],
   "log": {
-    "sha256": "8a96c17a541810153001bf1e78d2e1135a4adabdcdb8868883005e64f124b4ff",
-    "bytes": 326429,
-    "lines": 80,
-    "gzip_bytes": 74417,
-    "path": "llm-dlc/traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/logs/8a96c17a541810153001bf1e78d2e1135a4adabdcdb8868883005e64f124b4ff.jsonl.gz"
+    "sha256": "891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2",
+    "bytes": 337013,
+    "lines": 86,
+    "gzip_bytes": 76271,
+    "path": "llm-dlc/traces/50cf0225-8012-4dbb-beb4-05ddf8f97f8d/logs/891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -80,9 +80,23 @@
       "summary": "Record verification results: application-core Phase 5 String-in-object, step 3 rerun and step 4 J4 jobs passed",
       "body": "Collected 6 jobs, all passed: the String-inside-an-object job (4 steps, no JBMC), step 3 reruns of Crosscut 150-152/160-161, Deliveries 170-172 and Shop 190-196 (each example with its recorded verdict, 51 outputs applied), lib/tests/integration.rs with JBMC tests, and J4's cost report (2 outputs applied). No conflicts, no verdicts needing a person; estimates were generous (actual 14s-4m against 10-15m).",
       "log_sha256": "8a96c17a541810153001bf1e78d2e1135a4adabdcdb8868883005e64f124b4ff"
+    },
+    {
+      "change_id": "zpsmsyypvnoouvpnzllrryxsurxkqvkk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 5: the for-review list, every row's state on the merged revision, waiting on six jobs",
+      "body": "The brief's Progress gets Phase 5's for-review list. Each mandatory row (G0, O1-O3, V1, V2, E1, E2, R1, R2, J1-J4) and the stream items V3, E3 and R3 is named with the jobs that closed it. G0, O1, O3, V1, E1, E2, R1, R2, J2 and J3 pass, as do V3, E3 and R3. O2 and V2 are partial: one case each (checked-claim's alias-to-copy, basket-first-claim's copied-first) is held to the allocation gate's unresolved outcome until the user decides the claim's bound. That leaves J1 partial too. J4 passes on the reuse stream's report (job 20261108-114325), and its rerun at the merged revision is still running. The list also names the timebox's deferrals (none; VF-015's step 5 deferred by the user), the cases still refused by name, what the streams and Phase 5 found for review, the optional work left out, and the pending jobs.\n\nHow it was checked: step 3's four jobs and the String-inside-an-object job have finished and passed but aren't collected. Their result.json and logs were read from the runner's state, and their example results compared with the recorded ones. All 15 examples keep their conclusions (190 and 195 verified, 191-194 violation, 196 unverifiable; 150, 152 and 160 verified, 151 and 161 violation; 170 verified, 171 and 172 violation), and lib/tests/integration.rs passed 65 of 65. One part changed in 190-196: shop.Quote#quantity is still unverifiable, now because its receiver is made differently in the two versions, where before it was refused as an instance method. The examples' notes are updated once the job is collected, so that the collected README and the notes agree.\n\nStatus: waiting on jobs 20261108-195222-application-core-phase-5-a-string-inside, 20261108-195650-application-core-phase-5-step-3-{shop-s-e,crosscut,deliveri}, 20261108-195703-application-core-phase-5-step-3-lib-test and 20261108-200158-application-core-phase-5-step-4-j4-s-cos.\n\nOut of date in the brief, outside Progress: Phase 0's step 1 says the claim key covers the label. That holds of spec::cache::key, but not of the regression key a heap check's proof is reused under. The acceptance contract's mandatory rows don't include V3, E3 and R3, which the brief's Done when names per stream. The list covers both.",
+      "log_sha256": "891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2"
     }
   ],
   "logs": {
+    "891faee1ddfbd25a889b6ddaf8f4b0817a50340b1d8e9e095518e2761c3d6be2": {
+      "bytes": 337013,
+      "lines": 86,
+      "gzip_bytes": 76271,
+      "url": null
+    },
     "8a96c17a541810153001bf1e78d2e1135a4adabdcdb8868883005e64f124b4ff": {
       "bytes": 326429,
       "lines": 80,
