@@ -383,8 +383,10 @@ pub(crate) struct ConfirmContracts<'a> {
 /// A refutation is a disagreement, unless JBMC's preflight finds a construct the harness reaches that JBMC runs
 /// otherwise than the JVM ([`crate::jbmc_gaps::Defect`]) and its witness does not reproduce in the interpreter
 /// (`reproduces`, the caller's replay of it in the harness): then the refutation is the defect's, as a proof
-/// through one is refused, and JBMC gives no verdict. The own checker's proof stands, not confirmed. A witness that
-/// reproduces is a disagreement whatever JBMC reaches.
+/// through one is refused, and JBMC gives no verdict. The own checker's proof stands, not confirmed. So it is with a
+/// refutation through a stub the preflight finds (a gap, [`crate::jbmc_gaps::Found::records`]) whose witness does not
+/// reproduce: a stub returns any value of its type, so the refutation is that value, as a proof through one confirms
+/// nothing under strict (VF-023). A witness that reproduces is a disagreement whatever JBMC reaches.
 pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<ConfirmContracts<'_>>, reproduces: &dyn Fn(&JbmcResult) -> Result<Option<bool>, Error>) -> Result<(Confirmation, Option<JbmcResult>), Error> {
     let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.jbmc && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
     let (assumed, contracted) = (approximated(false), approximated(true));
@@ -434,14 +436,24 @@ pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<Conf
         Verdict::Violation => {
             let pre = crate::jbmc_gaps::preflight(&run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
             let defects = pre.found.as_ref().map(|f| f.defects.as_slice()).unwrap_or_default();
-            if !defects.is_empty() && reproduces(&result)? == Some(false) {
-                let n = defects.len();
+            let stubs = pre.found.as_ref().map(|f| f.records.as_slice()).unwrap_or_default();
+            if (!defects.is_empty() || !stubs.is_empty()) && reproduces(&result)? == Some(false) {
+                let mut why = Vec::new();
+                if !defects.is_empty() {
+                    let n = defects.len();
+                    why.push(format!("on the way it runs {n} construct{} otherwise than the JVM: {}", if n == 1 { "" } else { "s" }, defects.iter().map(crate::jbmc_gaps::Defect::line).collect::<Vec<_>>().join("; ")));
+                }
+                if !stubs.is_empty() {
+                    let n = stubs.len();
+                    why.push(format!(
+                        "it reaches {n} construct{} it approximates without implementing, whose value{} may be one the JDK's call never gives: {}",
+                        if n == 1 { "" } else { "s" },
+                        if n == 1 { "" } else { "s" },
+                        stubs.iter().map(crate::bmc::gaps::GapRecord::line).collect::<Vec<_>>().join("; ")
+                    ));
+                }
                 confirmation.status = Confirmed::NoVerdict;
-                confirmation.reason = Some(format!(
-                    "its counterexample does not reproduce in the interpreter, and on the way it runs {n} construct{} otherwise than the JVM: {}",
-                    if n == 1 { "" } else { "s" },
-                    defects.iter().map(crate::jbmc_gaps::Defect::line).collect::<Vec<_>>().join("; ")
-                ));
+                confirmation.reason = Some(format!("its counterexample does not reproduce in the interpreter, and {}", why.join("; and ")));
                 return Ok((confirmation, None));
             }
             confirmation.status = Confirmed::Disagreed;

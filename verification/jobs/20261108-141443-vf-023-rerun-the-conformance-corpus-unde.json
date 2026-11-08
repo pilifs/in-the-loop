@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261108-141443-vf-023-rerun-the-conformance-corpus-unde",
+  "title": "VF-023 rerun: the conformance corpus under auto --confirm, now that a JBMC refutation through a stub that doesn't reproduce is no verdict (closes VF-023 when it passes)",
+  "description": "application-core merge loop (llm-dlc/loops/application-core.md, Phase 5 step 1, interface request 3), at the commit that submits this job; acceptance row V2 (the list model under --confirm). VF-023: job 20261108-070211's step 2 failed with 8 disagreements, all listSizes and listChange under --gaps strict and assume: the own checker proves them, JBMC 6.11.0 refutes them through its stub of java.util.List.size()/isEmpty() (located by jobs 20261108-091002 and 093809), and the interpreter replays the witness as holding. The change: equivalence::confirm now treats a JBMC refutation whose witness doesn't reproduce in the interpreter and whose preflight finds a stub (a gap record) as Confirmed::NoVerdict naming the stubs, as it already did for a JBMC defect; the own checker's proof stands, not confirmed. A witness that reproduces is still a disagreement. Reproducer: lib/tests/values.rs confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict, un-ignored, passes inline and fails with the rule removed. This job reruns the old job's step 2 unchanged. Domain and bounds: the corpus's (int parameters, the claims' assumptions, unwind 16). Engine: native via auto, JBMC confirming. Expected verdict: listSizes and listChange Verified with confirmation NoVerdict (not Disagreed); no other case changes. Expected process status: exit 0. matchesExpected is the test passing. This is VF-023's second attempt and its last under the timebox.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "bmc:native",
+    "B11"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/equivalence.rs",
+      "lib/tests/conformance.rs",
+      "lib/tests/values.rs"
+    ]
+  },
+  "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_auto_confirm passes, with no disagreement on listSizes or listChange",
+  "submitted": {
+    "at": "2026-11-08T14:14:43+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "javac",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "memoryLimit": "3.5G",
+    "timeout": "75m",
+    "notes": "step 2 of 20261108-070211 took 1249 s, peak 1.7 GiB"
+  },
+  "steps": [
+    {
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/target/conformance-confirm.log"
+  ]
+}

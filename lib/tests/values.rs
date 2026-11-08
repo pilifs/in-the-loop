@@ -1268,7 +1268,6 @@ fn stand_in_jbmc(dir: &Path) -> PathBuf {
 /// be no verdict too, the proof standing as the own checker's alone, not "the engines disagree". JBMC is a stand-in
 /// here, answering with the refutation the real one gives (`n=1`) over a program that reaches the stub.
 #[test]
-#[ignore = "VF-023: fails until the merge makes a JBMC refutation through a stub that doesn't reproduce no verdict in equivalence::confirm"]
 fn confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict() {
     let Some(classes) = compiled() else { return };
     let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("values-confirm-stub");

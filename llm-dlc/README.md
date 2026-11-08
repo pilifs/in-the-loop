@@ -159,7 +159,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1 | 1 | ended |
 | 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 7 | 23 | ended |
-| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 27 | 24 | open |
+| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 32 | 25 | open |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](traces/682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 1 | 1 | ended |
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 1 | 1 | ended |
 | 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 1 | 1 | ended |

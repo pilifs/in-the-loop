@@ -783,6 +783,20 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Docs**: `lib/README.md`'s claim-key paragraph, the doc of `spec::cache` and of `environment`.
   - **Next**: item 3, VF-023's rule in `equivalence::confirm`, with values' ignored reproducer un-ignored, and job
     `20261108-070211-…`'s step 2 rerun unchanged. Then items 4–7.
+- 2026-11-08, **Phase 5 step 1, interface request 3 (VF-023's rule): a JBMC refutation through a stub that doesn't
+  reproduce is no verdict** under `--confirm` (verification pending).
+  - **The reproducer**: values' `confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict`
+    (`tests/values.rs`), un-ignored. It passes now, and fails with the rule taken out ("the engines disagree").
+  - **The change**: in `equivalence::confirm`'s `Verdict::Violation` arm, a refutation whose witness the interpreter
+    doesn't reproduce and whose preflight finds a stub (a gap record) is `Confirmed::NoVerdict`, the reason naming
+    each stub, as a defect already made it. The own checker's proof stands, not confirmed. A witness that reproduces
+    is still a disagreement, and a preflight that can't read the program leaves it one too.
+  - **Checks**: `conformance` 10 (`confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker` still gets its
+    disagreement, whose stand-in program reaches no stub), `values` 18, and the integration check passes.
+  - **The job**: `20261108-141443-vf-023-rerun-the-conformance-corpus-unde`, job `20261108-070211-…`'s step 2
+    unchanged. It closes VF-023 when it passes, and is VF-023's last attempt under the timebox.
+  - **Docs**: `lib/README.md`'s `--confirm` paragraph, and the doc of `equivalence::confirm`.
+  - **Next**: item 4, the cache's roots of a setup sequence. Then items 5–7.
 - Status: working
 
 ## Loop settings
