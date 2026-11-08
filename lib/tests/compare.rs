@@ -16,7 +16,7 @@ use jvmcontract::spec::{ClaimBounds, Correspondence, Evidence, HintContent, Inte
 use serde_json::Value;
 
 fn run(after: &str, cache: &std::path::Path) -> Report {
-    let options = Options { before: build("before").to_path_buf(), after: build(after).to_path_buf(), cache: Some(cache.to_path_buf()), bounds: ClaimBounds { unwind: 16, max_array_length: 8 } };
+    let options = Options { before: build("before").to_path_buf(), after: build(after).to_path_buf(), cache: Some(cache.to_path_buf()), bounds: ClaimBounds { unwind: 16, max_array_length: 8 }, environment: Vec::new() };
     compare::run(&options).unwrap_or_else(|u| panic!("compare before {after}: {u}"))
 }
 

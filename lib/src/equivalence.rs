@@ -141,6 +141,9 @@ pub struct Options {
     /// before any proof or cache lookup, unless it makes its inputs with exactly the domain's constructors and
     /// classes (`spec::heap::made_with`).
     pub object_domain: Option<crate::spec::ObjectDomain>,
+    /// The construction plans of `--plan FILE` ([`crate::construction::Plans`]): the objects stream's. Until it
+    /// builds them, a check given them is refused.
+    pub plan: Option<crate::construction::Plans>,
     /// The builds `before` and `after` were made from, when they are copies of them (the effect-trace proof's
     /// rewritten builds, [`crate::effects`]): the run a stored result's provenance names. None names `before` and
     /// `after` themselves.
@@ -184,6 +187,7 @@ impl Options {
             nullable: Vec::new(),
             may_alias: Vec::new(),
             object_domain: None,
+            plan: None,
             copied_from: None,
         }
     }
@@ -506,6 +510,18 @@ fn declared_checked(options: &Options, versions: [(&crate::classfile::ClassFile,
     }
     found.sort_by(|a, b| b.0.cmp(&a.0).then(a.1.class.cmp(&b.1.class)));
     Ok(found.into_iter().map(|(_, c)| c).collect())
+}
+
+/// For a String or List parameter, the values stream's refusal (`values::adapter`), to add to the check's: empty
+/// for any other type. Once the stream builds an adapter, it is what takes the parameter instead.
+pub(crate) fn adapted_refusal(t: &Type, max_length: u32) -> String {
+    if !crate::values::is_adapted(t) {
+        return String::new();
+    }
+    match crate::values::adapter(t, max_length) {
+        Err(u) => format!(" ({})", u.what),
+        Ok(_) => " (a value adapter is built for it, but this check doesn't take one yet)".to_string(),
+    }
 }
 
 pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
@@ -891,6 +907,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
         return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
     }
+    if let Some(plans) = &options.plan {
+        if let Err(u) = crate::construction::check_plans(&plans.before, &plans.after) {
+            return refuse(&mut out, 1, u.what);
+        }
+        return refuse(&mut out, 1, "a construction plan is checked, but the regression check doesn't make its inputs by one yet".into());
+    }
 
     // 1. Both versions in one program: the old one relocated into the package "before".
     let before_dir = work.join("before-classes");
@@ -921,7 +943,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     } else {
         match record_of(&after_cp, &receiver_type)? {
             Some(r) => Some(r),
-            None => return refuse(&mut out, line, format!("{} is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are", method_name)),
+            None => match crate::construction::receiver(&class_internal) {
+                Ok(r) => Some(r),
+                Err(u) => return refuse(&mut out, line, format!("{} is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are ({})", method_name, u.what)),
+            },
         }
     };
     let mut records = Vec::new();
@@ -931,7 +956,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}, which is outside the objects a regression check makes: {gap}", t.java_name())),
         };
         if !t.is_primitive() && harness::expr::element_ty(t).is_none() && record.is_none() {
-            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.", t.java_name()));
+            let adapted = adapted_refusal(t, options.max_array_length);
+            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{adapted}", t.java_name()));
         }
         records.push(record);
     }

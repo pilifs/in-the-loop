@@ -273,7 +273,10 @@ pub fn findings(checks: &[EntryCheck], sources: &[PathBuf], base: Option<&Path>)
 /// ([`claim_for`]). An entry point with no counterpart is unresolved; one the narrow case can't model is reported
 /// as unsupported, and the others are still checked. With `cache`, each proof runs under the proof cache
 /// ([`check_with`]).
-pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds, cache: Option<&Path>) -> Result<Vec<EntryCheck>, Unsupported> {
+pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds, cache: Option<&Path>, environment: &[ModeledCall]) -> Result<Vec<EntryCheck>, Unsupported> {
+    // The modelled calls a person declares (`--environment`): the environment stream's (E1–E3). Until it builds
+    // their models, they are refused before any entry point is checked.
+    crate::environment::declared(environment)?;
     let old = crate::spec::observe::entry_points(before)?;
     let new = crate::spec::observe::entry_points(after)?;
     for id in only {
@@ -417,8 +420,8 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         return Ok(unresolved(format!("{} has no counterpart in the new build", old.id)));
     }
     for c in environment.calls.iter() {
-        if c.model.is_some() {
-            return Err(Unsupported::new(Part::Environment, format!("a modelled call's model of its results ({}): the environment stream builds it (llm-dlc/loops/application-core-environment.md)", short(&c.call))));
+        if let Some(model) = &c.model {
+            crate::environment::check_model(c, model)?;
         }
         if let Some(o) = c.outcomes.iter().find(|o| *o != "returns") {
             return Err(unsupported(format!("a modeled outcome other than a normal return ({o} of {}): modeled failures come after the narrow case", short(&c.call))));

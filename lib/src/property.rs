@@ -102,6 +102,13 @@ pub struct Options {
     /// Pairs of array parameters that may be one array (`--may-alias a,b`), closed under transitivity: any two of
     /// a group may be; every other parameter is an array of its own. Only the own checker takes such a domain.
     pub may_alias: Vec<(String, String)>,
+    /// A local proof cache directory (`prove --cache`): the reuse stream's property projection of the claim (R1 of
+    /// `llm-dlc/loops/application-core-reuse.md`), through `reuse::property_lookup` and `reuse::property_store`.
+    /// Until the stream builds it, a check given one is refused.
+    pub cache: Option<PathBuf>,
+    /// The construction plan of `prove --plan FILE` (its `after`): the objects stream's. Until it builds it, a check
+    /// given one is refused.
+    pub plan: Option<crate::construction::Plans>,
 }
 
 impl Options {
@@ -135,6 +142,8 @@ impl Options {
             confirm: false,
             nullable: Vec::new(),
             may_alias: Vec::new(),
+            cache: None,
+            plan: None,
         }
     }
 }
@@ -218,7 +227,27 @@ pub const WIDENED_DOMAIN: &str = "widened-domain";
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
     crate::phases::begin();
+    // The proof cache, the reuse stream's (R1): a stored result for the same property claim is the result, and a
+    // verified or refuted one is stored. Until the stream builds it, `--cache` is refused, never ignored.
+    if options.cache.is_some() {
+        match crate::reuse::property_lookup(options) {
+            Err(u) => {
+                crate::phases::end(0.0);
+                return Err(Error::new(u.to_string()));
+            }
+            Ok(Some(hit)) => {
+                crate::phases::end(0.0);
+                return Ok(hit);
+            }
+            Ok(None) => {}
+        }
+    }
     let outcome = run_check(options);
+    if let (Some(_), Ok(o)) = (&options.cache, &outcome) {
+        if matches!(o.verdict, crate::Verdict::Verified | crate::Verdict::Violation) {
+            crate::reuse::property_store(options, o).map_err(|u| Error::new(u.to_string()))?;
+        }
+    }
     let runs = outcome.as_ref().ok().and_then(|o| o.search.as_ref()).map(|s| s.runs.iter().map(|r| r.seconds).sum()).unwrap_or(0.0);
     let check = crate::phases::end(runs);
     let mut outcome = outcome?;
@@ -272,6 +301,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
         return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
     }
+    if let Some(plans) = &options.plan {
+        if let Err(u) = crate::construction::check_plans(&plans.before, &plans.after) {
+            return refuse(&mut out, 1, u.what);
+        }
+        return refuse(&mut out, 1, "a construction plan is checked, but the property check doesn't make its inputs by one yet".into());
+    }
 
     // 1. The method.
     let mut cp = ClassPath::new();
@@ -289,7 +324,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let line = method.first_line().map(u32::from).unwrap_or(1);
     if !method.is_static() {
-        return refuse(&mut out, line, "only static methods are supported".into());
+        // An ordinary receiver is the objects stream's (O1): until it builds one, the check is refused.
+        if let Err(u) = crate::construction::receiver(&class_internal) {
+            return refuse(&mut out, line, format!("only static methods are supported ({})", u.what));
+        }
+        return refuse(&mut out, line, "an instance method's receiver is made, but the property check doesn't take it yet".into());
     }
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
@@ -303,7 +342,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         let made = match t {
             Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::made_of(&cp, class, &mut Vec::new())?,
-            _ => return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.", t.java_name())),
+            _ => return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{}", t.java_name(), crate::equivalence::adapted_refusal(t, options.max_array_length))),
         };
         match made {
             Ok(record) => records.push(Some((record, None))),

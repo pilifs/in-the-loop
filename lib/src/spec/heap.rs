@@ -73,8 +73,10 @@ pub fn check_with(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Op
     // The domain gate: a domain made otherwise than by constructors is refused here, and one whose constructors or
     // classes aren't the check's by `equivalence::run` once its layout is built ([`made_with`]), before any proof.
     if let Some(d) = claim.domain.as_ref().filter(|d| !matches!(d.made_by, super::Construction::Constructors { .. })) {
-        let part = if matches!(d.made_by, super::Construction::Planned { .. }) { Part::Objects } else { Part::Heap };
-        return Err(Unsupported::new(part, unbuilt(&d.made_by)));
+        if let super::Construction::Planned { before, after } = &d.made_by {
+            crate::construction::check_plans(before, after)?;
+        }
+        return Err(unsupported(unbuilt(&d.made_by)));
     }
     let mut options = crate::equivalence::Options::new(before, after, subject);
     options.engine = crate::Engine::Native;

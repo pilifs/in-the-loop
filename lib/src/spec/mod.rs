@@ -471,6 +471,14 @@ pub struct StatementSpec {
     pub observations: Vec<Observation>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub correspondence: Option<Correspondence>,
+    /// The environment the check ran the versions in, its modelled calls' models included (the environment
+    /// stream's), so that a result under generated stubs says so.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub environment: Option<EnvironmentModel>,
+    /// The helpers' summaries the check applied in place of their bodies (the reuse stream's), each with the proof
+    /// it rests on.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub summaries: Vec<plans::Summary>,
 }
 
 #[cfg(test)]

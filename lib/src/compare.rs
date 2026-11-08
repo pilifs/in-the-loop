@@ -41,6 +41,9 @@ pub struct Options {
     /// runs them without it.
     pub cache: Option<PathBuf>,
     pub bounds: ClaimBounds,
+    /// The modelled calls a person declares (`compare --environment`), each with its model: the environment
+    /// stream's ([`crate::environment::declared`]), refused until it builds them.
+    pub environment: Vec<crate::spec::ModeledCall>,
 }
 
 /// The categories of a person's decisions, every one counted, so that effort can't hide by moving category.
@@ -118,7 +121,7 @@ pub fn run(options: &Options) -> Result<Report, Unsupported> {
     let old = crate::spec::observe::entry_points(before)?;
     let new = crate::spec::observe::entry_points(after)?;
     let obligations = crate::spec::observe::compare(&old, &new)?;
-    let entries = crate::effects::check_builds(before, after, &[], None, options.bounds.clone(), options.cache.as_deref())?;
+    let entries = crate::effects::check_builds(before, after, &[], None, options.bounds.clone(), options.cache.as_deref(), &options.environment)?;
     let handlers: Vec<&str> = old.iter().chain(new.iter()).map(|s| s.handler.as_str()).collect();
 
     let load = |dir: &Path| Build::load(dir).map_err(|e| unsupported(format!("reading the build {}: {e}", dir.display())));

@@ -33,6 +33,8 @@ pub mod classpath;
 pub mod closure;
 pub mod compare;
 pub mod config;
+/// The objects stream's module of `llm-dlc/loops/application-core.md`.
+pub mod construction;
 pub mod failures;
 pub mod contract_library;
 pub mod contract_proving;
@@ -40,12 +42,16 @@ pub mod contract_testing;
 pub mod gap_contracts;
 pub mod activation;
 pub mod validation;
+/// The values stream's module of `llm-dlc/loops/application-core.md`.
+pub mod values;
 pub mod contract;
 pub mod deadline;
 pub mod details;
 pub mod digest;
 pub mod domain;
 pub mod effects;
+/// The environment stream's module of `llm-dlc/loops/application-core.md`.
+pub mod environment;
 pub mod equivalence;
 pub mod harness;
 pub mod impact;
@@ -62,6 +68,8 @@ pub mod proof_cache;
 pub mod property;
 pub mod purity;
 pub mod relocate;
+/// The reuse stream's module of `llm-dlc/loops/application-core.md`.
+pub mod reuse;
 pub mod sarif;
 pub mod shared;
 pub mod shrink;

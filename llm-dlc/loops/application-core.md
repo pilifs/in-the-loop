@@ -442,6 +442,19 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     the heap check (`Part::Objects`) and a call's model by the effect check (`Part::Environment`), tested in
     `tests/heap.rs` and `tests/effects.rs`. Neither is in the claim key's known fields yet, so such a claim is
     uncacheable until the reuse stream registers them.
+  - **Step 3, the hooks**: the streams' modules `lib/src/construction.rs` (objects), `values.rs`, `environment.rs`
+    and `reuse.rs`, registered in `lib.rs`, each returning `Unsupported` naming its stream until it builds its
+    part. Their call sites are in place:
+    - the domain gate asks `construction::check_plans` for a planned domain;
+    - an instance method asks `construction::receiver` (`equivalence` and `property`);
+    - a String or List parameter asks `values::adapter`;
+    - a call's model asks `environment::check_model`;
+    - `prove --cache` asks `reuse::property_lookup`, then `property_store`.
+
+    The flags `--plan FILE` (`equivalence`, `prove`), `--environment FILE` (`effects`, `compare`, through
+    `effects::check_builds` and `compare::Options::environment`) and `prove --cache` load into the checks'
+    options, and the checks refuse what they don't take yet. `StatementSpec` carries the environment and the
+    summaries a check used.
 - Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings

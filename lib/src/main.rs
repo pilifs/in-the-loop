@@ -192,6 +192,10 @@ enum Command {
         /// rewritten builds' closures, recording stubs included) and stored once decided. Local; never commit it.
         #[arg(long)]
         cache: Option<PathBuf>,
+        /// The modelled calls a person declares, as JSON (a list of `ModeledCall`, each with its `model`): the
+        /// environment stream's (llm-dlc/loops/application-core-environment.md). Refused until it builds them.
+        #[arg(long)]
+        environment: Option<PathBuf>,
         /// Print JSON (one check per entry point, with its outcome, assumptions and traces) instead of text.
         #[arg(long)]
         json: bool,
@@ -225,6 +229,10 @@ enum Command {
         /// The longest array a proof considers.
         #[arg(long, default_value_t = 8)]
         max_array_length: u32,
+        /// The modelled calls a person declares, as JSON (a list of `ModeledCall`, each with its `model`): the
+        /// environment stream's (llm-dlc/loops/application-core-environment.md). Refused until it builds them.
+        #[arg(long)]
+        environment: Option<PathBuf>,
         /// Print the report as JSON instead of text.
         #[arg(long)]
         json: bool,
@@ -501,6 +509,11 @@ struct EquivalenceArgs {
     /// parameter is an object of its own.
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
+    /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, the objects stream's
+    /// `construction::Plans` of llm-dlc/loops/application-core.md): the receiver, parameters, shared objects,
+    /// bounded arrays and setup calls the check makes its inputs by. Refused until that stream builds it.
+    #[arg(long)]
+    plan: Option<PathBuf>,
     /// Further class path entries (PATH-separated or repeatable).
     #[arg(long = "classpath")]
     classpath: Vec<String>,
@@ -643,6 +656,15 @@ struct ProveArgs {
     /// takes arrays that may be one.
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
+    /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, the objects stream's
+    /// `construction::Plans` of llm-dlc/loops/application-core.md): the receiver, parameters, shared objects,
+    /// bounded arrays and setup calls the check makes its inputs by. Refused until that stream builds it.
+    #[arg(long)]
+    plan: Option<PathBuf>,
+    /// A local proof cache directory, never committed: the reuse stream's property projection of the claim
+    /// (llm-dlc/loops/application-core-reuse.md, R1). Refused until that stream builds it.
+    #[arg(long)]
+    cache: Option<PathBuf>,
     /// A working directory for the harness and JBMC logs (a temporary one by default).
     #[arg(long)]
     work: Option<PathBuf>,
@@ -825,6 +847,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             options.nullable = args.nullable.clone();
             options.may_alias = args.may_alias.iter().map(|pair| pair.split_once(',').map(|(a, b)| (a.trim().to_string(), b.trim().to_string())).ok_or_else(|| Error::new(format!("--may-alias {pair}: give two parameters, `a,b`")))).collect::<Result<_, _>>()?;
+            options.plan = args.plan.as_deref().map(jvmcontract::construction::load).transpose().map_err(|u| Error::new(u.to_string()))?;
             options.cache = args.cache;
             let outcome = equivalence::run(&options)?;
             if args.json {
@@ -882,6 +905,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.confirm = confirm_option(args.confirm, options.engine)?;
                 options.nullable = args.nullable.clone();
                 options.may_alias = args.may_alias.iter().map(|pair| pair.split_once(',').map(|(a, b)| (a.trim().to_string(), b.trim().to_string())).ok_or_else(|| Error::new(format!("--may-alias {pair}: give two parameters, `a,b`")))).collect::<Result<_, _>>()?;
+                options.plan = args.plan.as_deref().map(jvmcontract::construction::load).transpose().map_err(|u| Error::new(u.to_string()))?;
+                options.cache = args.cache.clone();
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
@@ -994,9 +1019,10 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(0)
         }
-        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, cache, json, report, sources, base } => {
+        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, cache, environment, json, report, sources, base } => {
             let bounds = jvmcontract::spec::ClaimBounds { unwind, max_array_length };
-            let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds, cache.as_deref()).map_err(|u| Error::new(u.to_string()))?;
+            let environment = environment.as_deref().map(jvmcontract::environment::load).transpose().map_err(|u| Error::new(u.to_string()))?.unwrap_or_default();
+            let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds, cache.as_deref(), &environment).map_err(|u| Error::new(u.to_string()))?;
             if let Some(report) = &report {
                 jvmcontract::sarif::write(&report.join("effects.sarif"), &jvmcontract::effects::findings(&checks, &sources, base.as_deref()))?;
             }
@@ -1008,8 +1034,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let all = checks.iter().all(|c| c.checked.as_ref().is_some_and(|k| k.outcome.verdict == jvmcontract::spec::Verdict::Verified));
             Ok(if all { 0 } else { 1 })
         }
-        Command::Compare { before, after, cache, unwind, max_array_length, json, report: report_dir, sources, base } => {
-            let options = jvmcontract::compare::Options { before, after, cache, bounds: jvmcontract::spec::ClaimBounds { unwind, max_array_length } };
+        Command::Compare { before, after, cache, unwind, max_array_length, environment, json, report: report_dir, sources, base } => {
+            let environment = environment.as_deref().map(jvmcontract::environment::load).transpose().map_err(|u| Error::new(u.to_string()))?.unwrap_or_default();
+            let options = jvmcontract::compare::Options { before, after, cache, bounds: jvmcontract::spec::ClaimBounds { unwind, max_array_length }, environment };
             let report = jvmcontract::compare::run(&options).map_err(|u| Error::new(u.to_string()))?;
             if let Some(dir) = &report_dir {
                 jvmcontract::sarif::write(&dir.join("compare.sarif"), &jvmcontract::compare::findings(&report, &sources, base.as_deref()))?;
