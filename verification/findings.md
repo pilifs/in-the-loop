@@ -45,6 +45,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   `List12` with its elements). Probes that never call `size()` (`oneAssumed`, `oneMadeFirst`, `oneThenSwitch`) are
   proved in 0.1-0.2 s. So the disagreement is the stub, not a wrong list model; the tool already notes the gap, but under
   `--engine auto --confirm` it still reports "the engines disagree, neither verdict stands" for the own checker's proof.
+- **Update 2026-11-08** (job `20261108-093809-vf-023-s-third-probe-does-the-model-java`, at `b5fd6e150444`, passed in
+  6.4 s: it only runs probes, so it does not close this entry): re-declaring `size()`/`isEmpty()`/`iterator()` in the
+  model `java.util.List` (the "declared" variant) does **not** fix it. Outcomes are identical to the as-is model:
+  `corpusSizes`, `corpusChange`, `oneOrTwo`, `oneOrThree`, `emptyOrOne` are each still refuted (0 proved, 1 not) and
+  `oneAssumed` still proved, in both variants. The refuted ones still dispatch through the `List.size()` stub (call to
+  `java.util.List.size` as a fallback branch beside the `ListN` and `List12` branches), so JBMC's stub free value remains
+  the cause. Next idea for the values stream: make the stub unreachable (an exhaustive dispatch with no fallback branch),
+  or treat a gap-only refutation that the interpreter replays as holding as "not a verdict" under `--confirm` instead of
+  a disagreement.
 - **Needs**: the values stream (application-core-values V2) decides whether the JBMC list model (or the witness
   replay) is at fault and fixes it, or marks these two cases as expected disagreements with a stated reason; then
   resubmits the job. I did not change the job.

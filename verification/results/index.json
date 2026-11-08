@@ -2,6 +2,39 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261108-093809-vf-023-s-third-probe-does-the-model-java",
+      "title": "VF-023's third probe: does the model java.util.List re-declaring Collection's methods fix JBMC's dispatch of size() on a choice of two lists",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 6.4s, peak 69.1 MiB (estimated 10m00s, 1.5 GiB); 416 output file(s) changed; signals: jvmcontract:fails×10; jvmcontract:holds×2",
+      "attention": [
+        "step 1 (VF-023 third probe under JBMC) was held back 4.1s by its 1-CPU quota in 6.4s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "verification/triage/vf023-dispatch.sh",
+          "lib/models/java/util/List.java",
+          "lib/tests/conformance/conformance/Conformance.java",
+          "llm-dlc/loops/application-core-values.md"
+        ]
+      },
+      "sourceCommit": "b5fd6e15044484187a5ebc18016eb24af933bcab",
+      "finishedAt": "2026-11-08T09:42:13+00:00",
+      "wallSeconds": 6.4,
+      "peakMemoryBytes": 72404992,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1610612736,
+        "durationSeconds": 600.0,
+        "notes": "twelve JBMC runs over methods of a few lines: the second probe's nine took 5.8 s in all"
+      },
+      "host": "vm-1",
+      "result": "20261108-093809-vf-023-s-third-probe-does-the-model-java/result.json"
+    },
+    {
       "id": "20261108-091002-vf-023-s-second-probe-which-ingredient-o",
       "title": "VF-023's second probe: which ingredient of the corpus's listSizes and listChange makes JBMC refute a one-element list's size",
       "status": "passed",

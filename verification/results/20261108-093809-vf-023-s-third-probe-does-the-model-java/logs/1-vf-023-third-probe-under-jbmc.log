@@ -1,0 +1,260 @@
+on the JVM:
+n=0: oneOrTwo 2, oneOrThree 3, emptyOrOne 0, oneAssumed 1
+n=1: oneOrTwo 1, oneOrThree 1, emptyOrOne 1, oneAssumed 1
+n=2: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1
+n=3: oneOrTwo 2, oneOrThree 3, emptyOrOne 1, oneAssumed 1
+the declared variant's List (javap):
+  public abstract int size();
+  public abstract boolean isEmpty();
+  public abstract java.util.Iterator<E> iterator();
+== as-is
+-- as-is corpusSizes: conformance.Conformance#listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: jvmcontract exit 1 in 271 ms
+note: JBMC reaches 2 constructs it approximates (its stubs and unlinked call sites, lib/target/vf023-dispatch/work-as-is-corpusSizes/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.isEmpty()Z@jdk-25.0.5: java.util.List.isEmpty() is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at conformance.Conformance.listSizes:194
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at conformance.Conformance.listSizes:194
+✗ conformance.Conformance#listSizes cannot be verified: JBMC's counterexample listSizes(n=1) does not reproduce: the method returns 10 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.isEmpty()Z@jdk-25.0.5, jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+  the dispatch in java::conformance.Conformance.listSizes:(I)I (jbmc-goto.txt):
+  conformance.Conformance.listSizes(int) /* java::conformance.Conformance.listSizes:(I)I */
+  13: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 14
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 16
+  CALL java::java.util.List.size:()I(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*))
+  ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp8 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  14: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  15: ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp8 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  16: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  17: ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp8 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+  19: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 20
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 22
+  CALL java::java.util.List.isEmpty:()Z(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*))
+  ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp9 := java::java.util.List.isEmpty:()Z#return_value
+  DEAD java::java.util.List.isEmpty:()Z#return_value
+  20: CALL java::java.util.ImmutableCollections$ListN.isEmpty:()Z(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  21: ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp9 := java::java.util.ImmutableCollections$ListN.isEmpty:()Z#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.isEmpty:()Z#return_value
+  22: CALL java::java.util.ImmutableCollections$List12.isEmpty:()Z(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp9 := java::java.util.ImmutableCollections$List12.isEmpty:()Z#return_value
+  DEAD java::java.util.ImmutableCollections$List12.isEmpty:()Z#return_value
+  END_FUNCTION
+-- as-is corpusChange: conformance.Conformance#listChange [assume n == 0 || n == 8; assert result == 1]: jvmcontract exit 1 in 393 ms
+note: JBMC's symbolic execution of the proof enters 6 stubs that its solver shows no path within the bounds and assumptions reaches, by the proof with an assertion of its own before each call (0.1 s, every one held, and every unwinding assertion), so no gaps: java.util.Iterator.remove(), java.util.List.add(java.lang.Object), java.util.List.addAll(java.util.Collection), java.util.List.clear(), java.util.List.iterator(), java.util.List.remove(java.lang.Object)
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-dispatch/work-as-is-corpusChange/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at conformance.Conformance.listChange:217
+✗ conformance.Conformance#listChange cannot be verified: JBMC's counterexample listChange(n=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+  the dispatch in java::conformance.Conformance.listChange:(I)I (jbmc-goto.txt):
+  conformance.Conformance.listChange(int) /* java::conformance.Conformance.listChange:(I)I */
+  20: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  25: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  30: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  35: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  40: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  45: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  50: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  54: IF "java::java.util.ImmutableCollections$ListItr" = *java::conformance.Conformance.listChange:(I)I::return_tmp14.@class_identifier THEN GOTO 55
+  58: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 59
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 61
+  CALL java::java.util.List.size:()I(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*))
+  ASSIGN java::conformance.Conformance.listChange:(I)I::return_tmp15 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  59: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  60: ASSIGN java::conformance.Conformance.listChange:(I)I::return_tmp15 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  61: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  62: ASSIGN java::conformance.Conformance.listChange:(I)I::return_tmp15 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+  END_FUNCTION
+-- as-is oneOrTwo: probe.Choice#oneOrTwo [assume n >= 1 && n <= 2; assert result == n]: jvmcontract exit 1 in 228 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-dispatch/work-as-is-oneOrTwo/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.oneOrTwo:12
+✗ probe.Choice#oneOrTwo cannot be verified: JBMC's counterexample oneOrTwo(n=1) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+  the dispatch in java::probe.Choice.oneOrTwo:(I)I (jbmc-goto.txt):
+  probe.Choice.oneOrTwo(int) /* java::probe.Choice.oneOrTwo:(I)I */
+  8: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 9
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 11
+  CALL java::java.util.List.size:()I(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*))
+  ASSIGN java::probe.Choice.oneOrTwo:(I)I::return_tmp5 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  9: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  10: ASSIGN java::probe.Choice.oneOrTwo:(I)I::return_tmp5 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  11: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  12: ASSIGN java::probe.Choice.oneOrTwo:(I)I::return_tmp5 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+-- as-is oneOrThree: probe.Choice#oneOrThree [assume n >= 1 && n <= 3; assert (n != 1 || result == 1) && (n == 1 || result == 3)]: jvmcontract exit 1 in 250 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-dispatch/work-as-is-oneOrThree/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.oneOrThree:18
+✗ probe.Choice#oneOrThree cannot be verified: JBMC's counterexample oneOrThree(n=1) does not reproduce: the method returns 1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+  the dispatch in java::probe.Choice.oneOrThree:(I)I (jbmc-goto.txt):
+  probe.Choice.oneOrThree(int) /* java::probe.Choice.oneOrThree:(I)I */
+  9: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 10
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 12
+  CALL java::java.util.List.size:()I(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*))
+  ASSIGN java::probe.Choice.oneOrThree:(I)I::return_tmp6 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  10: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  11: ASSIGN java::probe.Choice.oneOrThree:(I)I::return_tmp6 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  12: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  13: ASSIGN java::probe.Choice.oneOrThree:(I)I::return_tmp6 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+-- as-is emptyOrOne: probe.Choice#emptyOrOne [assume n >= 0 && n <= 1; assert result == n]: jvmcontract exit 1 in 231 ms
+note: JBMC reaches 1 construct it approximates (its stubs and unlinked call sites, lib/target/vf023-dispatch/work-as-is-emptyOrOne/jbmc-goto.txt):
+  jbmc gap: jdk-primitive-method:java.util.List.size()I@jdk-25.0.5: java.util.List.size() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at probe.Choice.emptyOrOne:24
+✗ probe.Choice#emptyOrOne cannot be verified: JBMC's counterexample emptyOrOne(n=0) does not reproduce: the method returns 0 in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.util.List.size()I@jdk-25.0.5): a stub returns any value of its type, which may be one the JDK's call never returns
+  the dispatch in java::probe.Choice.emptyOrOne:(I)I (jbmc-goto.txt):
+  probe.Choice.emptyOrOne(int) /* java::probe.Choice.emptyOrOne:(I)I */
+  7: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 8
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 10
+  CALL java::java.util.List.size:()I(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*))
+  ASSIGN java::probe.Choice.emptyOrOne:(I)I::return_tmp4 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  8: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  9: ASSIGN java::probe.Choice.emptyOrOne:(I)I::return_tmp4 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  10: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  11: ASSIGN java::probe.Choice.emptyOrOne:(I)I::return_tmp4 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+-- as-is oneAssumed: probe.Choice#oneAssumed [assume n >= 1 && n <= 3; assert result == 1]: jvmcontract exit 0 in 169 ms
+note: JBMC's call graph reaches 1 stub that its symbolic execution of the proof (0.0 s, nothing solved) never enters, on no path within the bounds, so no gap: java.util.List.size()
+✓ probe.Choice#oneAssumed satisfies `result == 1` on every input where n >= 1 && n <= 3 (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)
+  the dispatch in java::probe.Choice.oneAssumed:(I)I (jbmc-goto.txt):
+  probe.Choice.oneAssumed(int) /* java::probe.Choice.oneAssumed:(I)I */
+  3: IF "java::java.util.ImmutableCollections$ListN" = *java::probe.Choice.oneAssumed:(I)I::return_tmp1.@java.lang.Object.@class_identifier THEN GOTO 4
+  IF "java::java.util.ImmutableCollections$List12" = *java::probe.Choice.oneAssumed:(I)I::return_tmp1.@java.lang.Object.@class_identifier THEN GOTO 6
+  CALL java::java.util.List.size:()I(java::probe.Choice.oneAssumed:(I)I::return_tmp1)
+  ASSIGN java::probe.Choice.oneAssumed:(I)I::return_tmp2 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  4: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(java::probe.Choice.oneAssumed:(I)I::return_tmp1, struct java::java.util.ImmutableCollections$ListN*))
+  5: ASSIGN java::probe.Choice.oneAssumed:(I)I::return_tmp2 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  6: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(java::probe.Choice.oneAssumed:(I)I::return_tmp1, struct java::java.util.ImmutableCollections$List12*))
+  7: ASSIGN java::probe.Choice.oneAssumed:(I)I::return_tmp2 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+== declared
+-- declared corpusSizes: conformance.Conformance#listSizes [assume n >= 1 && n <= 3; assert result == n * 10]: jvmcontract exit 1 in 210 ms
+✗ Property of conformance.Conformance#listSizes violated: `result == n * 10` where n >= 1 && n <= 3:
+  the dispatch in java::conformance.Conformance.listSizes:(I)I (jbmc-goto.txt):
+  conformance.Conformance.listSizes(int) /* java::conformance.Conformance.listSizes:(I)I */
+  13: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 14
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 16
+  CALL java::java.util.List.size:()I(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*))
+  ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp8 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  14: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  15: ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp8 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  16: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  17: ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp8 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+  19: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 20
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 22
+  CALL java::java.util.List.isEmpty:()Z(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*))
+  ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp9 := java::java.util.List.isEmpty:()Z#return_value
+  DEAD java::java.util.List.isEmpty:()Z#return_value
+  20: CALL java::java.util.ImmutableCollections$ListN.isEmpty:()Z(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  21: ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp9 := java::java.util.ImmutableCollections$ListN.isEmpty:()Z#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.isEmpty:()Z#return_value
+  22: CALL java::java.util.ImmutableCollections$List12.isEmpty:()Z(cast(cast(java::conformance.Conformance.listSizes:(I)I::65::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  ASSIGN java::conformance.Conformance.listSizes:(I)I::return_tmp9 := java::java.util.ImmutableCollections$List12.isEmpty:()Z#return_value
+  DEAD java::java.util.ImmutableCollections$List12.isEmpty:()Z#return_value
+  END_FUNCTION
+-- declared corpusChange: conformance.Conformance#listChange [assume n == 0 || n == 8; assert result == 1]: jvmcontract exit 1 in 391 ms
+note: JBMC's symbolic execution of the proof enters 1 stub that its solver shows no path within the bounds and assumptions reaches, by the proof with an assertion of its own before each call (0.1 s, every one held, and every unwinding assertion), so no gap: java.util.Iterator.remove()
+✗ Property of conformance.Conformance#listChange violated: `result == 1` where n == 0 || n == 8:
+  the dispatch in java::conformance.Conformance.listChange:(I)I (jbmc-goto.txt):
+  conformance.Conformance.listChange(int) /* java::conformance.Conformance.listChange:(I)I */
+  20: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  25: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  30: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  35: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  40: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  45: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  50: IF ("java::java.util.ImmutableCollections$AbstractImmutableList" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier ∨ "java::java.util.Im
+  54: IF "java::java.util.ImmutableCollections$ListItr" = *(cast(java::conformance.Conformance.listChange:(I)I::return_tmp14, struct java::java.util.Iterator*)).@class_identifier THEN GOTO 55
+  58: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 59
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 61
+  CALL java::java.util.List.size:()I(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*))
+  ASSIGN java::conformance.Conformance.listChange:(I)I::return_tmp15 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  59: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  60: ASSIGN java::conformance.Conformance.listChange:(I)I::return_tmp15 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  61: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::conformance.Conformance.listChange:(I)I::43::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  62: ASSIGN java::conformance.Conformance.listChange:(I)I::return_tmp15 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+  END_FUNCTION
+-- declared oneOrTwo: probe.Choice#oneOrTwo [assume n >= 1 && n <= 2; assert result == n]: jvmcontract exit 1 in 156 ms
+✗ Property of probe.Choice#oneOrTwo violated: `result == n` where n >= 1 && n <= 2:
+  the dispatch in java::probe.Choice.oneOrTwo:(I)I (jbmc-goto.txt):
+  probe.Choice.oneOrTwo(int) /* java::probe.Choice.oneOrTwo:(I)I */
+  8: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 9
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 11
+  CALL java::java.util.List.size:()I(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*))
+  ASSIGN java::probe.Choice.oneOrTwo:(I)I::return_tmp5 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  9: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  10: ASSIGN java::probe.Choice.oneOrTwo:(I)I::return_tmp5 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  11: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::probe.Choice.oneOrTwo:(I)I::33::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  12: ASSIGN java::probe.Choice.oneOrTwo:(I)I::return_tmp5 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+-- declared oneOrThree: probe.Choice#oneOrThree [assume n >= 1 && n <= 3; assert (n != 1 || result == 1) && (n == 1 || result == 3)]: jvmcontract exit 1 in 155 ms
+✗ Property of probe.Choice#oneOrThree violated: `(n != 1 || result == 1) && (n == 1 || result == 3)` where n >= 1 && n <= 3:
+  the dispatch in java::probe.Choice.oneOrThree:(I)I (jbmc-goto.txt):
+  probe.Choice.oneOrThree(int) /* java::probe.Choice.oneOrThree:(I)I */
+  9: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 10
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 12
+  CALL java::java.util.List.size:()I(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*))
+  ASSIGN java::probe.Choice.oneOrThree:(I)I::return_tmp6 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  10: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  11: ASSIGN java::probe.Choice.oneOrThree:(I)I::return_tmp6 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  12: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::probe.Choice.oneOrThree:(I)I::42::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  13: ASSIGN java::probe.Choice.oneOrThree:(I)I::return_tmp6 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+-- declared emptyOrOne: probe.Choice#emptyOrOne [assume n >= 0 && n <= 1; assert result == n]: jvmcontract exit 1 in 155 ms
+✗ Property of probe.Choice#emptyOrOne violated: `result == n` where n >= 0 && n <= 1:
+  the dispatch in java::probe.Choice.emptyOrOne:(I)I (jbmc-goto.txt):
+  probe.Choice.emptyOrOne(int) /* java::probe.Choice.emptyOrOne:(I)I */
+  7: IF "java::java.util.ImmutableCollections$ListN" = *(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 8
+  IF "java::java.util.ImmutableCollections$List12" = *(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*)).@java.lang.Object.@class_identifier THEN GOTO 10
+  CALL java::java.util.List.size:()I(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*))
+  ASSIGN java::probe.Choice.emptyOrOne:(I)I::return_tmp4 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  8: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$ListN*))
+  9: ASSIGN java::probe.Choice.emptyOrOne:(I)I::return_tmp4 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  10: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(cast(java::probe.Choice.emptyOrOne:(I)I::22::l, struct java::java.util.List*), struct java::java.util.ImmutableCollections$List12*))
+  11: ASSIGN java::probe.Choice.emptyOrOne:(I)I::return_tmp4 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+-- declared oneAssumed: probe.Choice#oneAssumed [assume n >= 1 && n <= 3; assert result == 1]: jvmcontract exit 0 in 147 ms
+✓ probe.Choice#oneAssumed satisfies `result == 1` on every input where n >= 1 && n <= 3 (JBMC 6.11.0: 2 properties proved over n: int in 0.1 s; loops unwound 16 times with unwinding assertions)
+  the dispatch in java::probe.Choice.oneAssumed:(I)I (jbmc-goto.txt):
+  probe.Choice.oneAssumed(int) /* java::probe.Choice.oneAssumed:(I)I */
+  3: IF "java::java.util.ImmutableCollections$ListN" = *java::probe.Choice.oneAssumed:(I)I::return_tmp1.@java.lang.Object.@class_identifier THEN GOTO 4
+  IF "java::java.util.ImmutableCollections$List12" = *java::probe.Choice.oneAssumed:(I)I::return_tmp1.@java.lang.Object.@class_identifier THEN GOTO 6
+  CALL java::java.util.List.size:()I(java::probe.Choice.oneAssumed:(I)I::return_tmp1)
+  ASSIGN java::probe.Choice.oneAssumed:(I)I::return_tmp2 := java::java.util.List.size:()I#return_value
+  DEAD java::java.util.List.size:()I#return_value
+  4: CALL java::java.util.ImmutableCollections$ListN.size:()I(cast(java::probe.Choice.oneAssumed:(I)I::return_tmp1, struct java::java.util.ImmutableCollections$ListN*))
+  5: ASSIGN java::probe.Choice.oneAssumed:(I)I::return_tmp2 := java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$ListN.size:()I#return_value
+  6: CALL java::java.util.ImmutableCollections$List12.size:()I(cast(java::probe.Choice.oneAssumed:(I)I::return_tmp1, struct java::java.util.ImmutableCollections$List12*))
+  7: ASSIGN java::probe.Choice.oneAssumed:(I)I::return_tmp2 := java::java.util.ImmutableCollections$List12.size:()I#return_value
+  DEAD java::java.util.ImmutableCollections$List12.size:()I#return_value
+== outcomes
+as-is-corpusChange: 0 proved, 1 not
+as-is-corpusSizes: 0 proved, 1 not
+as-is-emptyOrOne: 0 proved, 1 not
+as-is-oneAssumed: 1 proved, 0 not
+as-is-oneOrThree: 0 proved, 1 not
+as-is-oneOrTwo: 0 proved, 1 not
+declared-corpusChange: 0 proved, 1 not
+declared-corpusSizes: 0 proved, 1 not
+declared-emptyOrOne: 0 proved, 1 not
+declared-oneAssumed: 1 proved, 0 not
+declared-oneOrThree: 0 proved, 1 not
+declared-oneOrTwo: 0 proved, 1 not
