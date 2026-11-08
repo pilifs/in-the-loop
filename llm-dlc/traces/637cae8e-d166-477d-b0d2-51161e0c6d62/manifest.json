@@ -61,7 +61,7 @@
     {
       "change_id": "wrpxlowuvyyozrtqyvpozqlrwvvwnpvs",
       "commit_id": "abe67ebd3d0a7e69f25bfad1e00461f056691d09",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core Phase 5 step 1: a regression claim with a setup sequence is cached, its key rooting the setup methods, and the typed witness carries the setup calls",
       "body": "Interface request 4 of the merge. proof_cache::Regression::claim now roots each version's closure at the target and at harness::Layout::construction_roots (every constructor, inner objects' included, then the plan's setup calls), and equivalence::run_check no longer runs a claim with a setup sequence uncached. witness::Call gains a setup field (each setup call's method, descriptor and typed arguments mapped to their inputs, e.g. setup.0.n), kept in the cache's stored call so a reused refutation keeps its history; the result schema's typedCall registers it and build.py passes it through. The objects stream's an_inner_objects_constructor_is_part_of_the_cached_claim is un-ignored and passes on the reuse stream's earlier fix.\n\nReproducer first: o2_a_setup_methods_edit_alone_is_another_claim_never_reused now also asks that exact reruns of the proof and the refutation are reused and that the typed calls list the history. It failed on the rerun with the guard in place, and with the guard dropped but the setup methods not rooted it failed on a stale hit (an edit of the setup method alone was answered by the stored proof). Verified: application_core_objects 22/22, build.py's new test_a_witness_keeps_its_setup_calls_and_they_validate, the integration check (contract 14/14, unit tests 254, compare, effects, foundations, Python suites), and every other test binary but integration.rs (JBMC).\n\nFound and recorded in Progress for item 6: property::run still refuses prove --cache --plan although the reuse stream's property key already reads the plan; lifting it needs an end-to-end test. Docs: lib/README.md's plan and claim-root paragraphs, proof_cache's module doc.",
       "log_sha256": "826d59331b8424f65444616bfe0dbcde1a894a152d21a928805ec558e5756601"
@@ -69,15 +69,15 @@
     {
       "change_id": "pszyvtwkuqoovtwotnznuyrnvyxkknop",
       "commit_id": "208527000fbff46af2c20e6bec2854c72e95f444",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for the VF-023 rerun; VF-023 closed",
       "body": "Job 20261108-141443 (the conformance corpus under auto --confirm, at 13f3e9a0dac8) passed in 23m18s, peak 1.8 GiB, so VF-023 is closed in verification/findings.md. Its only output, lib/target/conformance-confirm.log, was not applied because the file changed since the job's commit; it is a log, so no rerun.",
       "log_sha256": "e07c5bd8029f23c8086432fe39be11a183261f5518ad918123f24f25f155e6c2"
     },
     {
       "change_id": "tyxwvqsoqryyopqpmrqowpopuzlsylly",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "71aeecde09fa87db4ab6f0b9b444bac4f6e33d61",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "a63a17ed656faae8a19a9824ae3ad6b6fcf32f190801c4e99f7ac586b310ee00"

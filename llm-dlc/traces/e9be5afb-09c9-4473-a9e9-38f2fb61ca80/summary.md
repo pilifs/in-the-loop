@@ -286,7 +286,7 @@ Verified: the new lib/tests/compare_domains.rs (3 tests: after-setup verified ov
 
 ### Record session traces
 
-change `tyxwvqsoqryy` · [log `8eb05e296a25`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6.jsonl.gz)
+[`71aeecde09fa`](https://github.com/pilifs/in-the-loop/commit/71aeecde09fa87db4ab6f0b9b444bac4f6e33d61) · [log `8eb05e296a25`](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/8eb05e296a25581c1dcd6b09b80617979ab79bf0cd844140925aae6c4ae11ac6.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

@@ -26,7 +26,7 @@ Collected job 20261108-093809 (VF-023 third probe, passed in 6.4 s). Re-declarin
 
 ### Record session traces
 
-change `tyxwvqsoqryy` · [log `001bb75a2eb3`](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/001bb75a2eb37abca06a53c8f630feefe59cea0ec7d733419420d23dba7dac20.jsonl.gz)
+[`71aeecde09fa`](https://github.com/pilifs/in-the-loop/commit/71aeecde09fa87db4ab6f0b9b444bac4f6e33d61) · [log `001bb75a2eb3`](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/001bb75a2eb37abca06a53c8f630feefe59cea0ec7d733419420d23dba7dac20.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

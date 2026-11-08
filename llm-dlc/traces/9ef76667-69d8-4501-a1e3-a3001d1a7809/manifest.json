@@ -63,7 +63,7 @@
     {
       "change_id": "lslwokrrkrvluvmtnztsyxzkuulvkysl",
       "commit_id": "67fc0cbcb73bc2b2cd4ab7677a99baaedac30da5",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for application-core values V2 step 1 (corpus under auto --confirm failed, VF-023)",
       "body": "One job collected, run on vm-1: the conformance corpus under --engine jbmc and auto passed; under auto --confirm it failed with 8 disagreements on the listSizes and listChange models (the own checker proves them, JBMC refutes them with a witness the interpreter says holds). Recorded as VF-023 for the values stream; nothing resubmitted.",
       "log_sha256": "b64906715e25693b7efe697a61922e126540adb0442427750efbcdb61daa4d69"
@@ -71,7 +71,7 @@
     {
       "change_id": "qvqznktyyuwxuovtqqmwwplzkyxtnmxu",
       "commit_id": "56d6c3cbd3b948dc11fc953fa4b4da86b5a5b2de",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification result for application-core objects O2 integration tests (passed, closes VF-022)",
       "body": "Job 20261108-072230-application-core-objects-o2-lib-tests-in passed on vm-1 in 1m38s: the integration tests pass with the record test's construction assertion updated. VF-022 is closed in verification/findings.md.",
       "log_sha256": "f28153f3e55c1f33b9e9e35cd561d41aa3ec32e19cb47be27e5be19ec0c71ad6"
@@ -79,7 +79,7 @@
     {
       "change_id": "zlsywslwkmpmmxnvqltovnvvlontwzmx",
       "commit_id": "d3739c98afd5b653de4d3ef93778c46c9f887e96",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification result for application-core objects O2 replay job (passed)",
       "body": "Job 20261108-074116-application-core-objects-o2-a-replay-tha passed on vm-1 in 1m41s (4 steps: integration tests under JBMC and the example 109 step 4 replay on a JVM). It does not run VF-015's step 5, so no findings entry changes.",
       "log_sha256": "81c5b3f0d8bc8ca9661e3c9332662a7bd956d8b14efe738644d1186f22aa4d2a"
@@ -87,7 +87,7 @@
     {
       "change_id": "nkqoklwqvpntvsuqwpopkwktzyuknxms",
       "commit_id": "aa7fd2c989a2e831a5fc738236481360e4e29ad9",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core objects O2: the record test of lib/tests/integration.rs asserts the two construction regions that compare admission, closing VF-022 when its job passes (verification pending)",
       "body": "Jobs 20261108-063512-… and 20261108-064305-… both failed on one test only, a_method_of_a_record_is_proved_on_its_components, whose verdict, domain and 'behaves as before' held: it asserted the statement text of the single construction region that O2's comparison of constructor admission (d7330651) replaced with one region per version. The assertion now names the new text, copied from those jobs' logs: each version's record in its own try, an input both reject skipped, one only one rejects an AssertionError. The first job's 20 example steps had passed with their expected verdicts, and the second job's shrunk witnesses held. One stale expectation reached by two jobs of two different steps, not two failures of one item. Verified: the test file compiles; the text matches the harness's emission (harness/mod.rs) and its unit tests. JBMC runs it, so it is queued.\n\nJob 20261108-072230-application-core-objects-o2-lib-tests-in: lib/tests/integration.rs under JBMC, 65 of 65 expected.",
       "log_sha256": "dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc"
@@ -95,7 +95,7 @@
     {
       "change_id": "nqpqroqpsysxppkqvvtvnkqylmptounp",
       "commit_id": "6b4f47cafd3105332a5cfd854956578d3331ebff",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core objects O2: a replay that cannot run one version reproduces nothing, and its witness is run on a JVM (verification pending)",
       "body": "The main brief's Phase 0 finding on VF-015's step 4: a regression witness whose new version the interpreter could not replay ('String.format depends on the default locale') was reported refuted and replay.reproduced true, an unknown outcome counting as a difference. A native reproducer (tests/application_core_objects.rs, o2_a_replay_that_cannot_run_one_version_is_no_reproduction, failing before) shows it twice under --gaps assume: a new version that throws with a message from String.formatted, refuted by the interpreter's half a replay; and a false refutation, where the checker's approximation of a formatted string's toString (a new object) took a path the JVM never takes (the JVM's String.toString returns the string itself), reported reproduced with after '<could not replay: ...>'. The property check had the same hole.\n\nNow witness::differences names no difference where either replay could not run its version, and equivalence and prove run such a witness on a JVM, with or without contracts (before, only a witness through a contract was): a violation where the harness fails there (replay.by jvm, the differences the JVM's own, from each version run alone for static methods of plain parameters, otherwise none, which leaves a heap claim unresolved); unverifiable where the JVM finds the versions agreeing, the property holding, or cannot run it. unreproduced_cause names the gaps assumed under --gaps assume, and the proof line no longer mentions contracts a run did not apply. lib/README.md has a paragraph for it.\n\nVerified inline (native, no JBMC): the reproducer (regression and property, each a real throw refuted on a JVM and a false refutation now unverifiable), the witness unit test a_replay_that_could_not_run_one_version_differs_in_nothing, the lib tests (230), 21 passing and 1 ignored in the stream's file, and the suites heap, foundations, compare, effects, observations, alignment, summaries, conformance and skill. application_core passes except O3, which still waits on the frozen throttle claims' allocation bound (the coordinator's).\n\nJob 20261108-074116-application-core-objects-o2-a-replay-tha: lib/tests/integration.rs under JBMC (65 of 65), and VF-015's step 4 on example 109 made stricter: the change found, replayed on a JVM, the new outcome the JVM's DecoderException, differs exactly [exception]. It does not close VF-015, whose step 5 the user deferred. Job 20261108-072230-... (VF-022) is still pending.",
       "log_sha256": "dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc"
@@ -103,7 +103,7 @@
     {
       "change_id": "qxpvnsmlnxpoyqklkwxnwnyslsqwyrrw",
       "commit_id": "67a3c0247079877093dc30782ed77a667b586a4d",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core values V2 step 2: the list value adapter, its domain and model digest, the harness's Java, witness reader, encoding and rebuilding",
       "body": "values::ListAdapter is the value adapter for one bounded immutable-list family: lists List.of makes over at most max_length (up to 10) objects of one application class, null among them where the domain says so. Its domain is the shared ValueDomain of kind list, with the model's evidence (values::list_model: the list models with the SHA-256 of their bytecode, values::list_model_digest, so that a change in a model changes the evidence's identity; level tested on JDK 25.0.5; what it leaves out). Since the own checker runs the list models (V2 step 1), a list needs no symbolic form: a harness makes one as an application would, by List.of over max_length objects it made by the construction plan, from int choices the checker is free in (ListAdapter::choices, admitted, java): null, the length, and for each element after the first which made object it is, so that every pattern of duplicates and aliases is a choice. ListAdapter::read gives the witness's list as the plan's nodes in order; encode and rebuild go between it and the interpreter's list through values::Nodes (ValueAdapter's methods now take the run's plan objects; a String ignores them), rebuilding by the interpreter's own List.of. A list outside the family, longer than the bound, holding an object the plan didn't make, or a list of Strings, is refused by name, never cut or copied in.\n\nVerified by five unit tests in values.rs and a new end-to-end test in lib/tests/values.rs, which generates a harness-shaped class from the adapter's own Java over the basket's kernels, runs the own checker on it (merging from the start and never), proves total, first (identity), clearAll and a nullable total, and refutes a skipped duplicate, a reordering, a copy for the element, an alias between mutable elements and a nullable domain's null. Each witness is read through the adapter and replayed on the JVM and, through the adapter's rebuilt lists, in the interpreter, which must observe the difference; each rebuilt list encodes back as its witness. Sabotaging the adapter's picks makes the test fail. The whole lib suite passes. Evidence level tested; no job.\n\nvalues::adapter still refuses a list parameter by name: making it in a harness and rebuilding it in the replay is the objects stream's wiring, recorded under the brief's Progress as an interface request, with two points for the merge (a bound for String elements in the shared ElementKind, and the frozen basket claims' model evidence, level modelled, differing from the adapter's).",
       "log_sha256": "dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc"
@@ -111,7 +111,7 @@
     {
       "change_id": "soumrxslpponpyytruotswwsyllzzxpm",
       "commit_id": "264c04174455011c3135a876ce51068fe03e98fc",
-      "immutable": false,
+      "immutable": true,
       "summary": "application-core values V3 step 1: an evidence record per modelled String and list operation, checked against boundary cases on the JVM, the interpreter and the own checker",
       "body": "values::OPERATIONS holds one record (values::OperationEvidence) for each of the 14 operations the values models implement: for Strings the literal, the compiler's concatenation, length, isEmpty, charAt, equals and startsWith; for lists List.of's fixed forms, copyOf, size, isEmpty, get, the iterator's path, and the changes the lists refuse. Each record has its model family, what implements it in the own checker, the interpreter and for JBMC, the JDK it was sampled on (25.0.5), the inputs it admits, the exceptions it was seen to throw, what it leaves out, and its level, which is tested and never proved.\n\nThe new fixture lib/tests/fixtures/values/values/Operations.java has 86 boundary cases. lib/tests/values.rs runs each one on the JVM, in the interpreter, and in the own checker through a generated method that asserts the JVM's outcome: a String by its code units, an exception by its exact class. The test fails unless all three agree, unless the exceptions each record's cases throw are exactly the ones it lists, and unless every String method the checker models on content has a record. All three engines agreed on every case. Three sabotages each fail the test: a missing exception in a record, 42 wrong expected values, and the wrong exception class for a List12's get. The whole lib suite passes. Strict gap detection and the bound sweep are next.",
       "log_sha256": "dc3ff007446d004b13dcf0a4d61eb10becdbe739f0cfcde6c9e93d53e18b50bc"

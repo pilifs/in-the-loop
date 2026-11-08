@@ -26,7 +26,7 @@ The diagnosis probes (one- and two-element List.of, with and without the static 
 
 ### Record session traces
 
-change `tyxwvqsoqryy` · [log `f30ef695d4d7`](https://terminalvalue.net/raw-traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/f30ef695d4d7f8721f5c602866decff865327edca4846ca83394f2f7799f4627.jsonl.gz)
+[`71aeecde09fa`](https://github.com/pilifs/in-the-loop/commit/71aeecde09fa87db4ab6f0b9b444bac4f6e33d61) · [log `f30ef695d4d7`](https://terminalvalue.net/raw-traces/e0747cf5-ca8d-4647-a377-63e2a73ee3a9/f30ef695d4d7f8721f5c602866decff865327edca4846ca83394f2f7799f4627.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

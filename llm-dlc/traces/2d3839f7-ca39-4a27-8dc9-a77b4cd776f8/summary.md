@@ -26,7 +26,7 @@ Job 20261108-185910 (J1's R2 on the quote family with a receiver whose construct
 
 ### Record session traces
 
-change `tyxwvqsoqryy` · [log `f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz)
+[`71aeecde09fa`](https://github.com/pilifs/in-the-loop/commit/71aeecde09fa87db4ab6f0b9b444bac4f6e33d61) · [log `f1da3f8e92de`](https://terminalvalue.net/raw-traces/2d3839f7-ca39-4a27-8dc9-a77b4cd776f8/f1da3f8e92def160dd8cafc891f3b4775490c997174ecf0c0bc6a59ef847eea6.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

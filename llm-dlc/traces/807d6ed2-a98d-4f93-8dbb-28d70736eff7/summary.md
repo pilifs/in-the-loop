@@ -104,7 +104,7 @@ It goes in Phase 0, not a stream: the fix is in harness/, the objects stream's f
 
 ### Record session traces
 
-change `tyxwvqsoqryy` · [log `5aea06ef7ffd`](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/5aea06ef7ffd1d41926450fcbb4e81a320e769b3ed0039af2bc3e65bf18abb53.jsonl.gz)
+[`71aeecde09fa`](https://github.com/pilifs/in-the-loop/commit/71aeecde09fa87db4ab6f0b9b444bac4f6e33d61) · [log `5aea06ef7ffd`](https://terminalvalue.net/raw-traces/807d6ed2-a98d-4f93-8dbb-28d70736eff7/5aea06ef7ffd1d41926450fcbb4e81a320e769b3ed0039af2bc3e65bf18abb53.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
