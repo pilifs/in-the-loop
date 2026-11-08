@@ -47,7 +47,7 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
-//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
+//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an index that is not a constant splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
@@ -367,7 +367,7 @@ fn cell_width(element: &Type) -> usize {
 ///
 /// A reference whose target is known is `R`, the fast path every reference took before symbolic ones: nothing
 /// about it is a formula. A `C` is made only where paths that differ in a reference merge ([`Engine::absorb`]),
-/// or where a read through a `C` gives references ([`Engine::get_field`]).
+/// or where a read through a `C` gives references ([`Engine::get_field`]); a field or an array's cell may then hold one.
 #[derive(Debug, Clone)]
 enum Val {
     I(Bits),
@@ -401,9 +401,10 @@ impl Val {
 ///
 /// `if_acmp`, `ifnull`, `ifnonnull` and `instanceof` on one are formulas over the guards, `getfield` reads each
 /// candidate's field and chooses among the values by the guards, and `putfield` writes each candidate's field
-/// under its guard ([`Engine::put_field`]). Every other instruction that needs to know the object (a call on it,
-/// an array instruction, `checkcast`, `athrow`, a monitor) splits the path per option first
-/// ([`Engine::concrete_ref`]), the reference then known on each.
+/// under its guard ([`Engine::put_field`]); an `aastore` stores one into a cell as it is when every candidate is of
+/// the element type, and an `aaload` gives the one a cell holds. Every other instruction that needs to know the
+/// object (a call on it, an array instruction on it, `checkcast`, `athrow`, a monitor) splits the path per option
+/// first ([`Engine::concrete_ref`]), the reference then known on each.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Choice(Vec<(Lit, Option<usize>)>);
 
@@ -467,15 +468,16 @@ impl Obj {
 /// An array: its length, and a cell for every index it may have (as many as its length can be). An array of
 /// primitives has `cells`, each as wide as [`cell_width`] says: a read at a symbolic index is a choice among them,
 /// and a write updates each under the condition that the index is its own. An array of references has `refs`,
-/// the object in each cell or null, and no `cells`: a reference is not a choice among bits, so an index into one
-/// is made a constant first, the path split per cell ([`Engine::concrete_index`]). An index at or beyond the
-/// length is out of bounds whatever its cell holds.
+/// a reference in each cell (an object or null, or a symbolic reference, [`Choice`], as a field may hold), and no
+/// `cells`: a reference is not a choice among bits, so an index into one is made a constant first, the path split
+/// per cell ([`Engine::concrete_index`]). An index at or beyond the length is out of bounds whatever its cell
+/// holds.
 #[derive(Debug, Clone)]
 struct Array {
     element: Type,
     length: Bits,
     cells: Vec<Bits>,
-    refs: Vec<Option<usize>>,
+    refs: Vec<Val>,
 }
 
 /// Whether an array of `element`s holds references.
@@ -643,6 +645,9 @@ fn substitute(path: &mut Path, choice: &Rc<Choice>, target: Option<usize>) {
     path.statics.values_mut().for_each(fix);
     for o in &mut path.objects {
         o.fields.values_mut().for_each(fix);
+        if let Some(array) = &mut o.array {
+            array.refs.iter_mut().for_each(fix);
+        }
     }
 }
 
@@ -654,7 +659,7 @@ fn mergeable(a: &Val, b: &Val) -> bool {
 
 /// Whether two paths at the same join point have states of one shape, so that they can be merged: the same
 /// slots and objects, each object of the same class with the same fields (the paths differ only in bits and in
-/// which objects references denote). The cells of arrays of references must be the same objects.
+/// which objects references denote), an array's cells of references among them.
 fn same_shape(a: &Path, b: &Path) -> bool {
     let slots = |x: &Option<Val>, y: &Option<Val>| match (x, y) {
         (None, None) => true,
@@ -676,7 +681,7 @@ fn same_shape(a: &Path, b: &Path) -> bool {
                 && o.fields.iter().zip(&q.fields).all(|((k, x), (l, y))| k == l && mergeable(x, y))
                 && match (&o.array, &q.array) {
                     (None, None) => true,
-                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len() && x.refs == y.refs,
+                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len() && x.refs.len() == y.refs.len(),
                     _ => false,
                 }
         })
@@ -1575,6 +1580,9 @@ impl<'a> Engine<'a> {
                         *c = self.b.ite_bits(takes_into, c, d);
                     }
                 }
+                for (c, d) in x.refs.iter_mut().zip(&y.refs) {
+                    choose(&mut self.b, c, d);
+                }
             }
         }
         // The paths may be at different iterations of a loop (one left an earlier loop sooner); the merged path
@@ -1701,21 +1709,31 @@ impl<'a> Engine<'a> {
                 if !holds_references(&array.element) {
                     return unsupported(format!("an aaload from a {}[]", array.element.java_name()));
                 }
-                let Some(value) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).and_then(|k| array.refs.get(k).copied()) else {
+                let Some(value) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).and_then(|k| array.refs.get(k).cloned()) else {
                     // No cell there: out of bounds whatever the length.
                     return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
                 };
                 let in_bounds = self.b.ult(&index, &array.length);
-                self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", Val::R(value))
+                self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", value)
             }
             Insn::ArrayStore(ArrayKind::Ref) => {
-                if let Some(step) = self.concrete_ref(path, 2).or_else(|| self.concrete_ref(path, 0)) {
+                // A symbolic value is stored as it is, as `putfield` stores one, when every object it may be is of
+                // the element type; otherwise the path is split per object, so that the one that isn't throws.
+                if let Some(step) = self.concrete_ref(path, 2) {
                     return step;
+                }
+                if !self.stores_without_check(path) {
+                    if let Some(step) = self.concrete_ref(path, 0) {
+                        return step;
+                    }
                 }
                 if let Some(step) = self.concrete_index(path, 1) {
                     return step;
                 }
-                let value = self.pop_ref(path)?;
+                let value = self.pop(path)?;
+                if value.options().is_none() {
+                    return unsupported(format!("an aastore of {value:?}, not a reference"));
+                }
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
                     Ok(o) => o,
@@ -1728,8 +1746,10 @@ impl<'a> Engine<'a> {
                 let Some(cell) = self.b.constant_value(&index).and_then(|k| usize::try_from(k).ok()).filter(|&k| k < array.refs.len()) else {
                     return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
                 };
-                if value.is_some_and(|v| !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element))) {
-                    return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[value.expect("an object")].class.replace('/', "."), array.element.java_name()));
+                if let Val::R(Some(v)) = value {
+                    if !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element)) {
+                        return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[v].class.replace('/', "."), array.element.java_name()));
+                    }
                 }
                 let in_bounds = self.b.ult(&index, &array.length);
                 self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
@@ -1825,7 +1845,7 @@ impl<'a> Engine<'a> {
                 let negative = self.b.negative(&count);
                 self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
                     let class = Type::Array(Box::new(element.clone())).descriptor();
-                    path.objects.push(Obj { array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![None; cells] }), ..Obj::new(&class) });
+                    path.objects.push(Obj { array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![Val::R(None); cells] }), ..Obj::new(&class) });
                     let o = path.objects.len() - 1;
                     engine.push(path, Val::R(Some(o)));
                     engine.advance(path);
@@ -1920,6 +1940,17 @@ impl<'a> Engine<'a> {
             }
         }
         self.raise(path, "java/lang/ArrayIndexOutOfBoundsException")
+    }
+
+    /// Whether an `aastore`'s value, on top of the stack, is a symbolic reference every object of which is of the
+    /// element type of the array below it (a known one): stored as it is, it can't throw `ArrayStoreException`.
+    fn stores_without_check(&self, path: &Path) -> bool {
+        let stack = &path.frames.last().expect("a frame").stack;
+        let n = stack.len();
+        let (Some(Val::C(choice)), Some(Val::R(Some(o)))) = (stack.last(), n.checked_sub(3).map(|i| &stack[i])) else { return false };
+        let Some(array) = path.objects[*o].as_array().filter(|a| holds_references(&a.element)) else { return false };
+        let element = class_of(&array.element);
+        choice.0.iter().all(|(_, t)| t.is_none_or(|v| self.cp.is_subtype(&path.objects[v].class, &element)))
     }
 
     /// Splits the path per option of the symbolic reference `depth` values below the top of the stack, if it is one

@@ -519,6 +519,26 @@ fn the_own_checker_runs_the_immutable_list_models_and_keeps_order_duplicates_and
     assert_eq!(distinct[1], 0, "elements 0 and 1 one line: {distinct:?}");
 }
 
+/// An array's cell holds a symbolic reference as a field does: stored as it is when every object it may be is of the
+/// array's element type, so that `List.of`'s varargs array over a harness's picks costs no split per pick (each pick
+/// had split the path per object it may be, `n!` paths for `n` elements: the list sweep's cliff past five lines). The
+/// reference read back is the one stored (proved), a claim that it is the first line is refuted where it is the
+/// second, and a store the JVM refuses (`ArrayStoreException`, a String into a `Line[]`) is still refused by name
+/// under both search orders, never stored.
+#[test]
+fn an_array_cell_holds_a_symbolic_reference_of_its_element_type() {
+    let Some(cp) = checker_classes() else { return };
+    list_verified(&cp, "cellKeepsTheReference");
+    let first = list_refuted(&cp, "cellHoldsTheFirst");
+    assert_ne!(first[0], 0, "the second line: {first:?}");
+    for merge_after in [0, u64::MAX] {
+        let out = list_checked(&cp, "cellOfAnotherClass", merge_after);
+        assert_eq!(out.verdict, Verdict::Unverifiable, "merging after {merge_after}");
+        let problem = out.problem.unwrap_or_default();
+        assert!(problem.contains("an aastore of a java.lang.String into a values.Lists$Line[] (ArrayStoreException)"), "merging after {merge_after}: {problem}");
+    }
+}
+
 /// The models' other behaviour the kernels may reach, as the JDK's: `size`, `isEmpty` and the iterator (each
 /// element in order, then `NoSuchElementException`); `get` out of range an `IndexOutOfBoundsException` from a list
 /// of one or two and an `ArrayIndexOutOfBoundsException` from any other, a claim that they are one class refuted;
@@ -1076,9 +1096,12 @@ fn sweep_lists(lengths: &[u32]) {
 }
 
 /// The sweep: a String check proved and its defect refuted at bounds 1 to 64 (the content cap) under both search
-/// orders, and the basket's total and its defect over lists of 1 to 5 lines, each with its time printed. A verdict
-/// that changes with the bound (beyond the defect needing an input long enough) fails. Lists of 6 to 10 lines are
-/// [`the_list_sweep_past_five_lines`], ignored: the cliff the sweep found.
+/// orders, and the basket's total and its defect over lists of 1 to 10 lines (the adapter's bound,
+/// [`jvmcontract::values::MAX_LIST_LENGTH`]), each with its time printed. A verdict that changes with the bound
+/// (beyond the defect needing an input long enough) fails, and so does a check that doesn't finish within its time
+/// limit. The list sweep had a cliff past five lines: each pick split the path per object at `List.of`'s varargs
+/// array, `n!` paths, and 7 lines didn't finish. Since an array's cell holds a symbolic reference
+/// ([`an_array_cell_holds_a_symbolic_reference_of_its_element_type`]), 10 lines take 908 paths and about 12 s.
 #[test]
 fn a_tiny_sweep_over_the_string_and_list_bounds() {
     let Some(cp) = checker_classes() else { return };
@@ -1097,16 +1120,5 @@ fn a_tiny_sweep_over_the_string_and_list_bounds() {
             }
         }
     }
-    sweep_lists(&[1, 2, 3, 4, 5]);
-}
-
-/// The list sweep's cliff, a reproducer: lists of 6, 7, 8 and 10 lines, inside the adapter's bound
-/// ([`jvmcontract::values::MAX_LIST_LENGTH`]). The adapter's picks (each element any made object so far) are `n!`
-/// patterns, each pick a chain of conditionals, and the paths grow with them, merging from the start: 90 for 4
-/// lines, 345 for 5, 1,833 for 6 (40 s a check in the dev profile, 4 s in release), and 7 doesn't finish within the
-/// time limit. It fails today, and is too slow for the suite at 6.
-#[test]
-#[ignore = "the list sweep's cliff past five lines (llm-dlc/loops/application-core-values.md, Progress): fails today"]
-fn the_list_sweep_past_five_lines() {
-    sweep_lists(&[6, 7, 8, 10]);
+    sweep_lists(SWEPT_LENGTHS);
 }

@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T09:10:15.516Z",
-  "duration_seconds": 16550,
+  "ended": "2026-11-08T09:32:28.727Z",
+  "duration_seconds": 17883,
   "stats": {
-    "turns": 56,
-    "api_calls": 524,
-    "tool_calls": 519,
+    "turns": 61,
+    "api_calls": 564,
+    "tool_calls": 557,
     "tool_errors": 9,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 1070,
-      "output_tokens": 444358,
-      "cache_read_input_tokens": 68891946,
-      "cache_creation_input_tokens": 1628692
+      "input_tokens": 1150,
+      "output_tokens": 468154,
+      "cache_read_input_tokens": 72306399,
+      "cache_creation_input_tokens": 1741741
     }
   },
   "tools": {
-    "Bash": 474,
+    "Bash": 512,
     "Read": 22,
     "Write": 8,
     "Edit": 7,
@@ -194,24 +194,38 @@
     {
       "index": 10,
       "started": "2026-11-08T09:06:42.516Z",
-      "ended": "2026-11-08T09:10:15.516Z",
-      "turns": 4,
-      "api_calls": 27,
+      "ended": "2026-11-08T09:10:42.377Z",
+      "turns": 5,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 54,
-        "output_tokens": 17846,
-        "cache_read_input_tokens": 2458166,
-        "cache_creation_input_tokens": 107917
+        "input_tokens": 60,
+        "output_tokens": 18866,
+        "cache_read_input_tokens": 2823726,
+        "cache_creation_input_tokens": 110776
       },
-      "peak_context_tokens": 120996
+      "peak_context_tokens": 123855
+    },
+    {
+      "index": 11,
+      "started": "2026-11-08T09:11:17.180Z",
+      "ended": "2026-11-08T09:32:28.727Z",
+      "turns": 4,
+      "api_calls": 37,
+      "usage": {
+        "input_tokens": 74,
+        "output_tokens": 22776,
+        "cache_read_input_tokens": 3048893,
+        "cache_creation_input_tokens": 110190
+      },
+      "peak_context_tokens": 123269
     }
   ],
   "log": {
-    "sha256": "8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4",
-    "bytes": 15637685,
-    "lines": 5728,
-    "gzip_bytes": 2997233,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4.jsonl.gz"
+    "sha256": "248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a",
+    "bytes": 16838255,
+    "lines": 6177,
+    "gzip_bytes": 3216613,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -294,6 +308,14 @@
       "summary": "application-core values: VF-023's second probe, nine JBMC proofs that isolate which ingredient of listSizes and listChange makes JBMC refute a one-element list's size (verification pending)",
       "body": "The first probe showed JBMC proving a one-element List.of's size alone, so class initialization order is not VF-023's cause. verification/triage/vf023-choice.sh now runs the corpus's own two claims under JBMC alone, which must reproduce the refutation, then seven reductions, one ingredient each: a choice between two List12s, a List12 or a ListN, EMPTY_LIST or a List12, the assumption alone, objects made first, listChange's choice without its switch, and its switch without the choice. For each refutation it keeps JBMC's failed property and the trace steps that touch the lists. Checked inline: the script's JVM part (every claim holds for n from -2 to 12, and listSizes(1..3) and listChange(0, 8) give 10 20 30 and 1 1), its trace extractor on a made-up JBMC log, and the own checker proving all nine claims. Nothing in the models changes before the result.",
       "log_sha256": "8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4"
+    },
+    {
+      "change_id": "omwqtummzxyupuyrrzqtwtsspvnnyqqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values: the list cliff past five lines fixed, an array's cell holds a symbolic reference of its element type, so List.of's varargs array no longer splits a path per pick",
+      "body": "The tiny bound sweep found that the own checker couldn't check lists of 7 or more lines within its time limit (6 took 4 s, 1,833 paths). The cause was not the list adapter's encoding but the checker's aastore. List.of of three or more elements builds a varargs array, and an array's cell could hold only a known object, so storing each pick (a symbolic reference among the made objects) split the path per object it may be: n! paths for n elements. Now a cell of an array of references holds a symbolic reference as a field does (bmc::Array::refs holds Vals), stored as it is when every object it may be is of the array's element type. Any other store still splits per object, so a store the JVM refuses with ArrayStoreException is refused by name as before. Merging chooses between two paths' cells, and a path that takes one option of a reference substitutes it in cells too.\n\nThe ignored reproducer the_list_sweep_past_five_lines (6, 7, 8 and 10 lines) passed: 6 lines in 0.03 s, 7 in 1.4 s, 8 in 2.7 s, 10 in 12.8 s (908 paths, release, merging from the start), so the suite's sweep in lib/tests/values.rs now covers every length up to the adapter's bound of 10 and the ignored test is gone. A new test, an_array_cell_holds_a_symbolic_reference_of_its_element_type, checks three new checks in lib/tests/fixtures/values/values/Lists.java: a reference read back from a cell is the one stored (proved), a claim that it is the first line is refuted and replayed on the JVM and in the interpreter, and a choice between a Line and a String stored into a Line[] is refused naming the ArrayStoreException, under both search orders. Verified by the whole library suite in the dev profile, 15 suites all passing (the release build of the unit tests is killed for memory in the 4 GB scope while linking with LTO). values::LIST_MODEL is not bumped: what the checker computes is unchanged, only how many paths it takes. lib/README.md's description of the checker's fragment ('cells hold objects or null') is a shared page and is left for the merge, recorded under the brief's Progress. No job: no JBMC, and the sweep runs in 36 s inline.",
+      "log_sha256": "248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a"
     }
   ],
   "logs": {
@@ -307,6 +329,12 @@
       "bytes": 7487314,
       "lines": 3026,
       "gzip_bytes": 1297867,
+      "url": null
+    },
+    "248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a": {
+      "bytes": 16838255,
+      "lines": 6177,
+      "gzip_bytes": 3216613,
       "url": null
     },
     "259a3bdd8bb19321b486bd4fb72313e74efd4bece411929980f7db24e8751ad7": {

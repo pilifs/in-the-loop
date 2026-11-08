@@ -511,10 +511,32 @@ just to bring a gap count down.
   For each refutation it keeps JBMC's failed property and trace steps. On the JVM every claim holds, and the own
   checker proves all nine (both checked inline). Nothing is changed before its result, and the timebox attempt left
   goes to a fix the trace supports.
-- **Next**: VF-023's second probe's result, when it comes. Meanwhile the list encoding past five lines, with
-  `the_list_sweep_past_five_lines` as its reproducer, or the bound brought down to what is decided. Then the cache
-  invalidation of the models' and domains' identities (R1's projection, with the reuse stream), and V3's wiring of
-  model identity into claims.
+- 2026-11-08, **the list cliff past five lines, fixed** (this commit). The cause wasn't the adapter's encoding but
+  the own checker's `aastore`. `List.of` of three or more elements builds a varargs array, and an array's cell could
+  hold only a known object, so storing a pick (a symbolic reference, one of the made objects) split the path per
+  object it may be: `1 * 2 * ... * n` paths, `n!`. Now a cell holds a symbolic reference as a field does
+  (`bmc::Array::refs` holds `Val`s), stored as it is when every object it may be is of the array's element type. Any
+  other store still splits per object, so one the JVM refuses (`ArrayStoreException`) is refused by name as before.
+  Merging chooses between two paths' cells, and a path that takes one option substitutes it in the cells too.
+  - **The reproducer** `the_list_sweep_past_five_lines` (6, 7, 8 and 10 lines) passed: 6 lines in 0.03 s (was 4 s), 7
+    in 1.4 s (didn't finish), 8 in 2.7 s, 10 in 12.8 s (908 paths; release, merging from the start). The solver is
+    now the cost. The suite's sweep covers every length up to the bound (`SWEPT_LENGTHS`), so the ignored test is
+    gone; `tests/values.rs` takes 36 s in the dev profile.
+  - **A new test**, `an_array_cell_holds_a_symbolic_reference_of_its_element_type`, over three checks added to
+    `Lists.java`: the reference read back from a cell is the one stored (proved); "it is the first line" is refuted
+    where it is the second, replayed on the JVM and in the interpreter; and a choice between a `Line` and a String
+    stored into a `Line[]` is still refused by name, naming the `ArrayStoreException`, under both search orders.
+  - **Verified** by the whole library suite in the dev profile (15 suites, all passing; the release build of the
+    unit tests runs out of the 4 GB scope when linking with LTO, so the dev profile it is).
+  - `values::LIST_MODEL` is not bumped: what the checker computes for a list is unchanged, only how many paths it
+    takes. No `MAX_LIST_LENGTH` change: 10 stays the bound.
+  - **For the merge (a docs request)**: `lib/README.md`'s paragraph on the own checker's fragment says that arrays of
+    references' "cells hold objects or `null`". It should say that a cell may hold a symbolic reference of the
+    element type. It is a shared page, so I didn't edit it.
+  - No job: the sweep is 36 s inline and runs no JBMC.
+- **Next**: VF-023's second probe's result, when it comes (job `20261108-091002-…`). Meanwhile, the tests that the
+  cached evidence a change of model or domain identity affects is invalidated (R1's projection, with the reuse stream).
+  Then V3's wiring of model identity into claims.
 - Status: working
 
 ## Loop settings

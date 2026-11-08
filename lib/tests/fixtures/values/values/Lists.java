@@ -384,4 +384,47 @@ public final class Lists {
             throw new AssertionError();
         }
     }
+
+    /**
+     * An array cell holds the reference stored into it, which may be one of two lines by c, as List.of's varargs
+     * array holds a harness's picks: read back, it is that line, and the other cell is still null.
+     */
+    public static void cellKeepsTheReference(int c, int u) {
+        Line a = new Line(u, 1);
+        Line b = new Line(u, 2);
+        Line picked = c == 0 ? a : b;
+        Object[] cells = new Object[2];
+        cells[1] = picked;
+        if (cells[1] != picked || cells[0] != null || ((Line) cells[1]).quantity != (c == 0 ? 1 : 2)) {
+            throw new AssertionError();
+        }
+    }
+
+    /** Refuted where c isn't 0: the cell holds the second line, not the first. */
+    public static void cellHoldsTheFirst(int c, int u) {
+        Line a = new Line(u, 1);
+        Line b = new Line(u, 2);
+        Object[] cells = new Object[1];
+        cells[0] = c == 0 ? a : b;
+        if (cells[0] != a) {
+            throw new AssertionError();
+        }
+    }
+
+    /**
+     * A store the JVM refuses where c isn't 0: a String into a Line[], an ArrayStoreException. The checker refuses
+     * it by name; it doesn't store the String, nor take the store for a Line's.
+     */
+    public static void cellOfAnotherClass(int c) {
+        Object[] cells = new Line[1];
+        Object picked = c == 0 ? (Object) new Line(1, 1) : "not a line";
+        try {
+            cells[0] = picked;
+        } catch (ArrayStoreException e) {
+            return;
+        }
+        if (cells[0] != picked) {
+            throw new AssertionError();
+        }
+    }
 }

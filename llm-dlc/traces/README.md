@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 09:10 UTC |
-| Prompts | 1,658 |
-| Model calls | 16,454 |
-| Tool calls | 17,440 (315 failed) |
-| Compactions | 246 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 09:32 UTC |
+| Prompts | 1,663 |
+| Model calls | 16,494 |
+| Tool calls | 17,478 (315 failed) |
+| Compactions | 247 |
 | Subagents | 10 |
-| Tokens written | 17,917,472 |
-| Tokens read | 2,679,013,629 (97.9% from cache) |
-| Commits with a trace | 495 |
-| Log snapshots | 603 (1372.4 MB gzipped, 593 uploaded) |
+| Tokens written | 17,941,268 |
+| Tokens read | 2,682,541,211 (97.9% from cache) |
+| Commits with a trace | 496 |
+| Log snapshots | 604 (1375.7 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 4 h 35 min | `claude-opus-5-5` | 56 | 524 | 519 | 9 | 10 | 253,307 | 10 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 4 h 58 min | `claude-opus-5-5` | 61 | 564 | 557 | 9 | 11 | 253,307 | 11 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,15 +165,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 444,358 | 1,070 | 1,628,692 | 68,891,946 | 97.7% | 159 |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 468,154 | 1,150 | 1,741,741 | 72,306,399 | 97.6% | 158 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 15,281 | 87.6% | 65 |
+| `Bash` | 15,319 | 87.6% | 65 |
 | `Read` | 798 | 4.6% | 34 |
-| `Edit` | 654 | 3.8% | 34 |
+| `Edit` | 654 | 3.7% | 34 |
 | `Write` | 416 | 2.4% | 30 |
 | `ToolSearch` | 103 | 0.6% | 26 |
 | `Monitor` | 68 | 0.4% | 23 |
@@ -688,6 +688,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 493 | change `kppwkynq` | application-core values: VF-023's diagnosis, why JBMC refutes that a one-element List.of has size 1 (verification pending) | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/099124816d67e356d5f731fa3b2b1b760222040cb41c31e379968d699d668a39.jsonl.gz)) |
 | 494 | change `zlrzlymu` | application-core values: the tiny bound sweep finds no String cliff up to 64 units and a list cliff at 6 to 7 elements; VF-023's probes refute the class-initialization guess | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/259a3bdd8bb19321b486bd4fb72313e74efd4bece411929980f7db24e8751ad7.jsonl.gz)) |
 | 495 | change `uqrrztvw` | application-core values: VF-023's second probe, nine JBMC proofs that isolate which ingredient of listSizes and listChange makes JBMC refute a one-element list's size (verification pending) | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/8940c509e81e12a8f357072fbc4ae2d7835a2c77ebedcaa94ad404ac7df31dd4.jsonl.gz)) |
+| 496 | change `omwqtumm` | application-core values: the list cliff past five lines fixed, an array's cell holds a symbolic reference of its element type, so List.of's varargs array no longer splits a path per pick | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/248b68703b8f8b596d7af8415bae90560224f568c682b629ffb1ca58f525e70a.jsonl.gz)) |
 
 ## Logs
 
@@ -759,7 +760,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 10 | 0 | 17.2 MB | `8940c509e81e`, not uploaded |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 11 | 0 | 20.4 MB | `248b68703b8f`, not uploaded |
 
 ## Session notes
 
