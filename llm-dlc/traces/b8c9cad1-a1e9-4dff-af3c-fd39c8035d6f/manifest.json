@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T07:22:32.265Z",
-  "duration_seconds": 10087,
+  "ended": "2026-11-08T07:39:48.659Z",
+  "duration_seconds": 11123,
   "stats": {
-    "turns": 31,
-    "api_calls": 324,
-    "tool_calls": 319,
+    "turns": 36,
+    "api_calls": 354,
+    "tool_calls": 349,
     "tool_errors": 5,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 662,
-      "output_tokens": 280277,
-      "cache_read_input_tokens": 45730539,
-      "cache_creation_input_tokens": 944832
+      "input_tokens": 722,
+      "output_tokens": 314933,
+      "cache_read_input_tokens": 48707600,
+      "cache_creation_input_tokens": 1068131
     }
   },
   "tools": {
-    "Bash": 298,
-    "Read": 7,
+    "Bash": 324,
+    "Read": 10,
+    "Write": 5,
     "Edit": 4,
-    "Write": 4,
     "Monitor": 3,
     "ToolSearch": 3
   },
@@ -42,6 +42,7 @@
     "lib/src/values.rs",
     "lib/tests/fixtures/values/values/Checks.java",
     "lib/tests/fixtures/values/values/Lists.java",
+    "lib/tests/fixtures/values/values/Operations.java",
     "lib/tests/values.rs",
     "llm-dlc/loops/application-core-values.md"
   ],
@@ -119,24 +120,38 @@
     {
       "index": 5,
       "started": "2026-11-08T07:03:49.786Z",
-      "ended": "2026-11-08T07:22:32.265Z",
-      "turns": 4,
-      "api_calls": 38,
+      "ended": "2026-11-08T07:22:57.173Z",
+      "turns": 5,
+      "api_calls": 41,
       "usage": {
-        "input_tokens": 76,
-        "output_tokens": 47158,
-        "cache_read_input_tokens": 3856573,
-        "cache_creation_input_tokens": 144694
+        "input_tokens": 82,
+        "output_tokens": 48614,
+        "cache_read_input_tokens": 4333827,
+        "cache_creation_input_tokens": 148638
       },
-      "peak_context_tokens": 157773
+      "peak_context_tokens": 161717
+    },
+    {
+      "index": 6,
+      "started": "2026-11-08T07:23:48.251Z",
+      "ended": "2026-11-08T07:39:48.659Z",
+      "turns": 4,
+      "api_calls": 27,
+      "usage": {
+        "input_tokens": 54,
+        "output_tokens": 33200,
+        "cache_read_input_tokens": 2499807,
+        "cache_creation_input_tokens": 119355
+      },
+      "peak_context_tokens": 132434
     }
   ],
   "log": {
-    "sha256": "367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff",
-    "bytes": 8892036,
-    "lines": 3518,
-    "gzip_bytes": 1570882,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff.jsonl.gz"
+    "sha256": "6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37",
+    "bytes": 10154916,
+    "lines": 3900,
+    "gzip_bytes": 1846248,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -179,6 +194,14 @@
       "summary": "application-core values V2 step 2: the list value adapter, its domain and model digest, the harness's Java, witness reader, encoding and rebuilding",
       "body": "values::ListAdapter is the value adapter for one bounded immutable-list family: lists List.of makes over at most max_length (up to 10) objects of one application class, null among them where the domain says so. Its domain is the shared ValueDomain of kind list, with the model's evidence (values::list_model: the list models with the SHA-256 of their bytecode, values::list_model_digest, so that a change in a model changes the evidence's identity; level tested on JDK 25.0.5; what it leaves out). Since the own checker runs the list models (V2 step 1), a list needs no symbolic form: a harness makes one as an application would, by List.of over max_length objects it made by the construction plan, from int choices the checker is free in (ListAdapter::choices, admitted, java): null, the length, and for each element after the first which made object it is, so that every pattern of duplicates and aliases is a choice. ListAdapter::read gives the witness's list as the plan's nodes in order; encode and rebuild go between it and the interpreter's list through values::Nodes (ValueAdapter's methods now take the run's plan objects; a String ignores them), rebuilding by the interpreter's own List.of. A list outside the family, longer than the bound, holding an object the plan didn't make, or a list of Strings, is refused by name, never cut or copied in.\n\nVerified by five unit tests in values.rs and a new end-to-end test in lib/tests/values.rs, which generates a harness-shaped class from the adapter's own Java over the basket's kernels, runs the own checker on it (merging from the start and never), proves total, first (identity), clearAll and a nullable total, and refutes a skipped duplicate, a reordering, a copy for the element, an alias between mutable elements and a nullable domain's null. Each witness is read through the adapter and replayed on the JVM and, through the adapter's rebuilt lists, in the interpreter, which must observe the difference; each rebuilt list encodes back as its witness. Sabotaging the adapter's picks makes the test fail. The whole lib suite passes. Evidence level tested; no job.\n\nvalues::adapter still refuses a list parameter by name: making it in a harness and rebuilding it in the replay is the objects stream's wiring, recorded under the brief's Progress as an interface request, with two points for the merge (a bound for String elements in the shared ElementKind, and the frozen basket claims' model evidence, level modelled, differing from the adapter's).",
       "log_sha256": "367614d26edfe8c8d2e7915909a5ffe5bef6e4af67ad23f8fe113f27cf180cff"
+    },
+    {
+      "change_id": "soumrxslpponpyytruotswwsyllzzxpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values V3 step 1: an evidence record per modelled String and list operation, checked against boundary cases on the JVM, the interpreter and the own checker",
+      "body": "values::OPERATIONS holds one record (values::OperationEvidence) for each of the 14 operations the values models implement: for Strings the literal, the compiler's concatenation, length, isEmpty, charAt, equals and startsWith; for lists List.of's fixed forms, copyOf, size, isEmpty, get, the iterator's path, and the changes the lists refuse. Each record has its model family, what implements it in the own checker, the interpreter and for JBMC, the JDK it was sampled on (25.0.5), the inputs it admits, the exceptions it was seen to throw, what it leaves out, and its level, which is tested and never proved.\n\nThe new fixture lib/tests/fixtures/values/values/Operations.java has 86 boundary cases. lib/tests/values.rs runs each one on the JVM, in the interpreter, and in the own checker through a generated method that asserts the JVM's outcome: a String by its code units, an exception by its exact class. The test fails unless all three agree, unless the exceptions each record's cases throw are exactly the ones it lists, and unless every String method the checker models on content has a record. All three engines agreed on every case. Three sabotages each fail the test: a missing exception in a record, 42 wrong expected values, and the wrong exception class for a List12's get. The whole lib suite passes. Strict gap detection and the bound sweep are next.",
+      "log_sha256": "6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37"
     }
   ],
   "logs": {
@@ -192,6 +215,12 @@
       "bytes": 8892036,
       "lines": 3518,
       "gzip_bytes": 1570882,
+      "url": null
+    },
+    "6a3c9bc013b339f246b4ed7a0529e3546b851612c35dd22c95773ce48fcaaf37": {
+      "bytes": 10154916,
+      "lines": 3900,
+      "gzip_bytes": 1846248,
       "url": null
     },
     "b4891f44f07816f6eb12d1e8f801be6cae6c4e790986af5778936ff4ff956dae": {

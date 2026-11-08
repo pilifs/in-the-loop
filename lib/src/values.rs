@@ -33,6 +33,11 @@
 //! A list outside the family (an `ArrayList`), longer than the bound, or with an element the plan didn't make, is
 //! refused by each, never cut or copied into the family.
 //!
+//! **Each modelled operation** has a record of its own in [`OPERATIONS`] ([`OperationEvidence`]): what implements it
+//! in each engine, the JDK it was sampled on, the inputs it admits, the exceptions it was seen to throw, what it
+//! leaves out and its level (`tested`), with the boundary cases that sample it (`lib/tests/values.rs` runs them on
+//! the JVM, in the interpreter and in the own checker, and checks the record's exceptions against them).
+//!
 //! Until a check takes an adapter's values (its harness declares the parameter, gives the checker the bound or the
 //! choices, and rebuilds the witness through the adapter's `read` and [`ValueAdapter::rebuild`]), [`adapter`]
 //! refuses, naming the values stream, and every call site keeps refusing the value it would have handled.
@@ -453,10 +458,231 @@ impl ValueAdapter for ListAdapter {
     }
 }
 
+/// Which of the values models an operation belongs to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Family {
+    /// [`string_model`].
+    String,
+    /// [`list_model`].
+    List,
+}
+
+/// The evidence of one modelled operation (V3): what implements it in each engine, the JDK it was sampled on, the
+/// inputs it admits, the exceptions it was seen to throw, what it leaves out, and its level. `sampled_by` names the
+/// boundary cases of `lib/tests/fixtures/values/values/Operations.java` that sample it; `lib/tests/values.rs` runs
+/// each on the JVM, in the interpreter and in the own checker, which must agree, and checks that the exceptions they
+/// throw are exactly `throws`. Sampled conformance is `tested`, never `proved`.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct OperationEvidence {
+    /// The operation, as the bytecode names it: `owner.name(descriptor)`, or the instruction.
+    pub operation: &'static str,
+    pub family: Family,
+    /// What implements it: in the own checker, in the interpreter (the replay), and for JBMC.
+    pub source: &'static str,
+    pub admits: &'static str,
+    /// The exceptions it was seen to throw on the JVM, by class, each sampled by a case; nothing else is.
+    pub throws: &'static [&'static str],
+    pub leaves_out: &'static [&'static str],
+    pub level: EvidenceLevel,
+    /// The methods of `values.Operations` whose cases sample it.
+    pub sampled_by: &'static [&'static str],
+}
+
+impl OperationEvidence {
+    /// The JDK it was sampled on.
+    pub fn jdk(&self) -> &'static str {
+        match self.family {
+            Family::String => STRING_MODEL_JDK,
+            Family::List => LIST_MODEL_JDK,
+        }
+    }
+
+    /// The model it is part of, whose identity a claim's key carries.
+    pub fn model(&self) -> ModelEvidence {
+        match self.family {
+            Family::String => string_model(),
+            Family::List => list_model(),
+        }
+    }
+}
+
+const NPE: &str = "java.lang.NullPointerException";
+const STRING_SOURCE: &str = "the own checker: bmc::Engine::string_method on the String's content; the interpreter: interp::JStr; JBMC: its own String model, not this one";
+const LIST_SOURCE: &str = "the list models' bytecode (lib/models/java/util/List.java, ImmutableCollections.java), run by the own checker and JBMC; the interpreter: interp::ImmutableList";
+
+/// Every operation of the values models, with its evidence. An operation not here is outside the models: a named
+/// gap where a check reaches it.
+pub const OPERATIONS: &[OperationEvidence] = &[
+    OperationEvidence {
+        operation: "ldc of a java.lang.String constant",
+        family: Family::String,
+        source: "the own checker: bmc::Engine's literal, one interned object with its content; the interpreter: interp::Machine's literal",
+        admits: "a literal's code units as the class reader decodes them: NUL and well-formed surrogate pairs kept",
+        throws: &[],
+        leaves_out: &["a literal with an isolated surrogate in its source, which the class reader decodes as U+FFFD (classfile::decode_modified_utf8) for every engine alike: an interface request for the merge"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["literalUnit", "literalInterned"],
+    },
+    OperationEvidence {
+        operation: "invokedynamic makeConcatWithConstants (java.lang.invoke.StringConcatFactory)",
+        family: Family::String,
+        source: "the own checker: bmc::Engine::concatenation; the interpreter: its string concatenation over interp::JStr",
+        admits: "Strings, null (as \"null\"), chars and the recipe's constants, in order",
+        throws: &[],
+        leaves_out: &[
+            "the content of a number, a boolean or an object made into a String: the result has none, and asking for it ends the path with no verdict",
+            "the content of a result that could pass bmc::MAX_STRING_CONTENT code units: a named limit, never a truncated String",
+        ],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["concatenated", "withChar"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.length()I",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "a String with content: a parameter up to its bound, a literal, a concatenation within the cap",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["length"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.isEmpty()Z",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "a String with content",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["isEmpty"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.charAt(I)C",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "a String with content and any int index",
+        throws: &["java.lang.StringIndexOutOfBoundsException", NPE],
+        leaves_out: &["the exception's message"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["charAt"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.equals(Ljava/lang/Object;)Z",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "a String with content, and as the argument the same object, null, an object of another class, or a String with content",
+        throws: &[NPE],
+        leaves_out: &["a String argument with no content (a number made into a String), which is a named gap"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["equalsContent", "equalsItself", "equalsAnotherClass", "equalNotSame"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.startsWith(Ljava/lang/String;)Z",
+        family: Family::String,
+        source: STRING_SOURCE,
+        admits: "a String with content, and a String with content or null as the prefix",
+        throws: &[NPE],
+        leaves_out: &["startsWith(String, int)"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["startsWith"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.of: its fixed forms, () to (E, E, E, E, E, E, E, E, E, E)",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "0 to 10 elements, any two of which may be one object; the elements are the objects given, never copies",
+        throws: &[NPE],
+        leaves_out: &[
+            "the array form List.of(E...), for more than 10 elements",
+            "the identity of a list beyond the pinned JDK's: List.of() is the one empty list, and any other a fresh list, as JDK 25.0.5 makes them",
+        ],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["ofWithNull", "ofKeepsDuplicates", "elementsAreTheObjects", "emptyIsShared", "otherwiseFresh"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "a list of the family, which it returns itself, or null",
+        throws: &[NPE],
+        leaves_out: &["every other Collection: copyOf of one (an ArrayList) reaches its JDK calls, named gaps"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["copyOfIsTheList"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.size()I",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "a list of the family",
+        throws: &[],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["size"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.isEmpty()Z",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "a list of the family",
+        throws: &[],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["isEmptyList"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.get(I)Ljava/lang/Object;",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "a list of the family and any int index",
+        throws: &["java.lang.IndexOutOfBoundsException", "java.lang.ArrayIndexOutOfBoundsException"],
+        leaves_out: &["the exception's message", "the interpreter's getClass of a list of one or two, which names ListN (the replay's, not the checker's)"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["get"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.iterator()Ljava/util/Iterator; with Iterator.hasNext()Z and next()Ljava/lang/Object;",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "a list of the family: the enhanced for's path",
+        throws: &["java.util.NoSuchElementException"],
+        leaves_out: &["listIterator, forEach and the other ways of walking a list"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["iterated", "nextPastTheEnd"],
+    },
+    OperationEvidence {
+        operation: "java.util.List's changes: add(Ljava/lang/Object;)Z, set(ILjava/lang/Object;)Ljava/lang/Object;, remove(I)Ljava/lang/Object;, clear()V, Iterator.remove()V",
+        family: Family::List,
+        source: LIST_SOURCE,
+        admits: "a list of the family, empty included: each change is refused",
+        throws: &["java.lang.UnsupportedOperationException"],
+        leaves_out: &["the other changes (addAll, removeIf, sort and the like), which the models refuse as written but no case samples"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["add", "set", "removeAt", "clear", "iteratorRemove"],
+    },
+];
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::classpath::ClassPath;
+
+    #[test]
+    fn each_operation_has_one_record_of_its_family_tested_never_proved_and_serialized_with_its_cases() {
+        let mut names: Vec<&str> = OPERATIONS.iter().map(|r| r.operation).collect();
+        names.sort();
+        names.dedup();
+        assert_eq!(names.len(), OPERATIONS.len(), "one record per operation");
+        for record in OPERATIONS {
+            assert_eq!(record.level, EvidenceLevel::Tested, "{}", record.operation);
+            assert_eq!(record.model().jdk, record.jdk());
+            let json = serde_json::to_value(record).unwrap();
+            assert_eq!(json["level"], "tested");
+            assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
+        }
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 7);
+        assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
+    }
 
     #[test]
     fn a_string_and_a_list_are_refused_by_name_until_a_check_takes_one() {

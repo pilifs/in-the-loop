@@ -368,10 +368,42 @@ just to bring a gap count down.
     identity of an empty list") differs from the adapter's (`tested`, and the one empty list is modelled, as
     `List.of()` gives it). The claims are frozen, so a gate that compares them with the adapter's domain should
     take the adapter's evidence as the record, or the claims' as the weaker statement; for the main loop to settle.
-- **Next**: V3 step 1, the evidence records: one record per modelled operation (the String methods and
-  concatenation, the list factories, `size`, `isEmpty`, `get` and the iterator), each with its source and JDK
-  identity, the inputs it admits, the exceptions it was seen to throw, what it leaves out and its level, checked
-  against the conformance cases that sample it; then the strict gap detection and the tiny bound sweep.
+- 2026-11-08, **V3 step 1, the evidence records** (this commit), `values::OPERATIONS` in `lib/src/values.rs`:
+  - **The records**: one `values::OperationEvidence` per modelled operation, 14 in all. For Strings: the literal,
+    the compiler's concatenation, `length`, `isEmpty`, `charAt`, `equals` and `startsWith`. For lists: `List.of`'s
+    fixed forms, `copyOf`, `size`, `isEmpty`, `get`, the iterator's path, and the changes the lists refuse (`add`,
+    `set`, `remove(int)`, `clear`, `Iterator.remove`). Each has its family (`string_model` or `list_model`, whose
+    identity a claim key will carry), what implements it in the own checker, the interpreter and for JBMC, the JDK
+    (25.0.5), the inputs it admits, the exceptions it was seen to throw, what it leaves out, its level (`tested`), and
+    the boundary cases that sample it.
+  - **The boundary cases**: `tests/fixtures/values/values/Operations.java`, 86 cases covering:
+    - empty, one, the most and past the end (`get` on lists of 1, 2, 3 and 10);
+    - null where an operation takes it, and isolated surrogates, a pair and NUL as content;
+    - duplicates and aliases as elements, the one empty list, and fresh lists otherwise.
+
+    Strings are made at run time, never as literals with isolated surrogates, which the class reader decodes lossily.
+  - **The check**: `tests/values.rs`'s `every_modelled_operation_has_a_record_…` runs every case on the JVM and in the
+    interpreter, and in the own checker through a generated method per case that asserts the JVM's outcome. A String
+    is checked by its code units, an exception by its exact class (an `IndexOutOfBoundsException` is told from its
+    subclasses). Each generated method must be proved. The test also fails unless:
+    - the exceptions a record's cases throw on the JVM are exactly the ones the record lists;
+    - each case belongs to exactly one record;
+    - every String method of the JDK's class that `bmc::models_string_method` accepts has a record;
+    - each record's JDK is the one the cases run on.
+
+    There was nothing to reproduce: before, the evidence was one record per model (`string_model`, `list_model`),
+    which said nothing of an operation's inputs or exceptions. All three engines agreed on every case, the first run
+    included. Each sabotage below fails the test:
+    - dropping `StringIndexOutOfBoundsException` from `charAt`'s record;
+    - expecting another int or boolean from 42 cases;
+    - expecting `ArrayIndexOutOfBoundsException` from a `List12`'s `get` (the checker's
+      `IndexOutOfBoundsException` then leaves the generated check).
+
+    No job: seconds, inline. The whole lib suite passes.
+- **Next**: V3 step 2, the strict gap detection: an operation outside the models (a String method other than the
+  five, a list method no record samples) is a named gap under the strict engine, and workloads without Strings keep
+  their results. Then the tiny bound sweep, and the cache invalidation of the models' and domains' identities (R1's
+  projection, with the reuse stream).
 - Status: working
 
 ## Loop settings

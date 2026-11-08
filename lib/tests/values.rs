@@ -714,3 +714,219 @@ fn the_list_adapter_makes_reads_and_rebuilds_lists_that_keep_order_duplicates_an
     let (none, _) = adapted_refuted(&cp, &classes, by("neverNull"));
     assert_eq!(none, WitnessValue::Null);
 }
+
+// The evidence records of the modelled operations (V3 step 1, `values::OPERATIONS`), checked against the boundary
+// cases of `values.Operations` that sample them, on the JVM, in the interpreter and in the own checker.
+
+const OPS: &str = "values.Operations";
+const C: i32 = 0x41;
+
+/// The boundary cases of every modelled operation: empty, one, the most, past the end; null where an operation
+/// takes it; isolated surrogates, a pair and NUL as content; duplicates and aliases as elements.
+const OPERATION_CASES: &[Case] = &[
+    case(OPS, "literalUnit", &[0]),
+    case(OPS, "literalUnit", &[1]),
+    case(OPS, "literalUnit", &[2]),
+    case(OPS, "literalUnit", &[3]),
+    case(OPS, "literalInterned", &[]),
+    case(OPS, "concatenated", &[0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "concatenated", &[-1, 0, 0, 0, 2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "concatenated", &[3, HIGH, 0, LOW, -1, 0, 0, 0]),
+    case(OPS, "withChar", &[2, C, LOW, 0, HIGH]),
+    case(OPS, "withChar", &[-1, 0, 0, 0, 0]),
+    case(OPS, "length", &[0, 0, 0, 0]),
+    case(OPS, "length", &[2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "length", &[3, HIGH, 0, LOW]),
+    case(OPS, "length", &[-1, 0, 0, 0]),
+    case(OPS, "isEmpty", &[0, 0, 0, 0]),
+    case(OPS, "isEmpty", &[1, 0, 0, 0]),
+    case(OPS, "isEmpty", &[-1, 0, 0, 0]),
+    case(OPS, "charAt", &[3, HIGH, 0, LOW, 0]),
+    case(OPS, "charAt", &[3, HIGH, 0, LOW, 2]),
+    case(OPS, "charAt", &[3, HIGH, 0, LOW, 3]),
+    case(OPS, "charAt", &[3, HIGH, 0, LOW, -1]),
+    case(OPS, "charAt", &[0, 0, 0, 0, 0]),
+    case(OPS, "charAt", &[-1, 0, 0, 0, 0]),
+    case(OPS, "equalsContent", &[2, SMILE.0, SMILE.1, 0, 2, SMILE.0, SMILE.1, 0]),
+    case(OPS, "equalsContent", &[1, HIGH, 0, 0, 1, FFFD, 0, 0]),
+    case(OPS, "equalsContent", &[1, HIGH, 0, 0, 1, LOW, 0, 0]),
+    case(OPS, "equalsContent", &[1, C, 0, 0, 2, C, 0, 0]),
+    case(OPS, "equalsContent", &[0, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "equalsContent", &[1, 0, 0, 0, -1, 0, 0, 0]),
+    case(OPS, "equalsContent", &[-1, 0, 0, 0, 1, 0, 0, 0]),
+    case(OPS, "equalsItself", &[1, HIGH, 0, 0]),
+    case(OPS, "equalsAnotherClass", &[0, 0, 0, 0]),
+    case(OPS, "equalNotSame", &[2, HIGH, 0, 0]),
+    case(OPS, "equalNotSame", &[0, 0, 0, 0]),
+    case(OPS, "startsWith", &[2, SMILE.0, SMILE.1, 0, 1, SMILE.0, 0, 0]),
+    case(OPS, "startsWith", &[2, SMILE.0, SMILE.1, 0, 1, SMILE.1, 0, 0]),
+    case(OPS, "startsWith", &[1, C, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "startsWith", &[1, C, 0, 0, 2, C, C, 0]),
+    case(OPS, "startsWith", &[1, C, 0, 0, -1, 0, 0, 0]),
+    case(OPS, "startsWith", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "ofWithNull", &[1, 0]),
+    case(OPS, "ofWithNull", &[2, 1]),
+    case(OPS, "ofWithNull", &[3, 2]),
+    case(OPS, "ofWithNull", &[2, 2]),
+    case(OPS, "ofKeepsDuplicates", &[7]),
+    case(OPS, "elementsAreTheObjects", &[5]),
+    case(OPS, "emptyIsShared", &[]),
+    case(OPS, "otherwiseFresh", &[1]),
+    case(OPS, "otherwiseFresh", &[3]),
+    case(OPS, "copyOfIsTheList", &[0]),
+    case(OPS, "copyOfIsTheList", &[2]),
+    case(OPS, "copyOfIsTheList", &[3]),
+    case(OPS, "copyOfIsTheList", &[-1]),
+    case(OPS, "size", &[0]),
+    case(OPS, "size", &[1]),
+    case(OPS, "size", &[2]),
+    case(OPS, "size", &[3]),
+    case(OPS, "size", &[10]),
+    case(OPS, "isEmptyList", &[0]),
+    case(OPS, "isEmptyList", &[1]),
+    case(OPS, "get", &[1, 0]),
+    case(OPS, "get", &[1, 1]),
+    case(OPS, "get", &[2, 1]),
+    case(OPS, "get", &[2, -1]),
+    case(OPS, "get", &[3, 2]),
+    case(OPS, "get", &[3, 3]),
+    case(OPS, "get", &[10, 9]),
+    case(OPS, "get", &[10, 10]),
+    case(OPS, "get", &[0, 0]),
+    case(OPS, "iterated", &[0]),
+    case(OPS, "iterated", &[2]),
+    case(OPS, "iterated", &[3]),
+    case(OPS, "nextPastTheEnd", &[0, 0]),
+    case(OPS, "nextPastTheEnd", &[0, 1]),
+    case(OPS, "nextPastTheEnd", &[2, 2]),
+    case(OPS, "nextPastTheEnd", &[2, 3]),
+    case(OPS, "nextPastTheEnd", &[3, 1]),
+    case(OPS, "add", &[0]),
+    case(OPS, "add", &[3]),
+    case(OPS, "set", &[1, 0]),
+    case(OPS, "set", &[1, 5]),
+    case(OPS, "removeAt", &[2, 0]),
+    case(OPS, "clear", &[0]),
+    case(OPS, "clear", &[2]),
+    case(OPS, "iteratorRemove", &[1]),
+    case(OPS, "iteratorRemove", &[3]),
+];
+
+/// Exceptions a case may throw, each after the ones of them that are its subclasses, so that a generated check
+/// catches exactly the JVM's class.
+const SUBCLASSES: &[(&str, &[&str])] = &[("java.lang.IndexOutOfBoundsException", &["java.lang.StringIndexOutOfBoundsException", "java.lang.ArrayIndexOutOfBoundsException"])];
+
+/// A method of `values.Sampled` per case, which throws an AssertionError unless the case gives what the JVM gave,
+/// for the own checker: a String result by its length and code units, an exception by its exact class.
+fn sampled_checks(fixtures: &Path, cp: &ClassPath, cases: &[Case], jvm: &[String]) -> PathBuf {
+    let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("values-sampled");
+    let _ = std::fs::remove_dir_all(&out);
+    std::fs::create_dir_all(out.join("src/values")).unwrap();
+    let class = cp.application("values/Operations").unwrap().unwrap();
+    let mut java = String::from("package values;\n\n/** Generated by lib/tests/values.rs: each method fails unless its case of Operations gives the JVM's outcome. */\nfinal class Sampled {\n    private Sampled() {\n    }\n");
+    for (i, (case, expected)) in cases.iter().zip(jvm).enumerate() {
+        let method = class.methods.iter().find(|m| m.name == case.method && MethodDescriptor::parse(&m.descriptor).unwrap().params.len() == case.args.len()).unwrap();
+        let ret = MethodDescriptor::parse(&method.descriptor).unwrap().ret;
+        let call = format!("Operations.{}({})", case.method, case.args.iter().map(|a| a.to_string()).collect::<Vec<_>>().join(", "));
+        let fail = "throw new AssertionError();";
+        let body = match expected.split_once(' ').unwrap_or((expected, "")) {
+            ("throws", class) => {
+                let subs = SUBCLASSES.iter().find(|(c, _)| *c == class).map(|(_, s)| *s).unwrap_or(&[]);
+                let mut b = format!("try {{\n            {call};\n        }}");
+                for sub in subs {
+                    b.push_str(&format!(" catch ({sub} e) {{\n            {fail}\n        }}"));
+                }
+                b.push_str(&format!(" catch ({class} e) {{\n            return;\n        }}\n        {fail}"));
+                b
+            }
+            ("int", n) => format!("if ({call} != {n}) {{\n            {fail}\n        }}"),
+            ("bool", "true") => format!("if (!{call}) {{\n            {fail}\n        }}"),
+            ("bool", "false") => format!("if ({call}) {{\n            {fail}\n        }}"),
+            ("null", _) => format!("if ({call} != null) {{\n            {fail}\n        }}"),
+            ("str", units) => {
+                assert_eq!(ret, Type::Object("java/lang/String".into()));
+                let units: Vec<&str> = units.split_whitespace().collect();
+                let each: String = units.iter().enumerate().map(|(k, u)| format!(" || r.charAt({k}) != 0x{u}")).collect();
+                format!("String r = {call};\n        if (r == null || r.length() != {}{each}) {{\n            {fail}\n        }}", units.len())
+            }
+            other => panic!("{other:?}"),
+        };
+        java.push_str(&format!("\n    /** {}{:?}: {expected} */\n    static void c{i}() {{\n        {body}\n    }}\n", case.method, case.args));
+    }
+    java.push_str("}\n");
+    let source = out.join("src/values/Sampled.java");
+    std::fs::write(&source, java).unwrap();
+    let status = Command::new("javac").args(["-g", "-proc:none", "-cp"]).arg(fixtures).arg("-d").arg(out.join("classes")).arg(&source).status().expect("javac runs");
+    assert!(status.success(), "the sampled checks compile");
+    out.join("classes")
+}
+
+/// Every modelled operation has an evidence record, and each record holds against the cases that sample it: each
+/// case gives the JVM's outcome in the interpreter and in the own checker, and the exceptions its cases throw on
+/// the JVM are exactly the record's `throws`. Before, the models' evidence was one record per model
+/// (`values::string_model`, `values::list_model`), saying nothing of an operation's inputs or exceptions.
+#[test]
+fn every_modelled_operation_has_a_record_its_boundary_cases_hold_on_the_jvm_the_interpreter_and_the_checker() {
+    use jvmcontract::spec::plans::EvidenceLevel;
+    use jvmcontract::values::{Family, OPERATIONS};
+    // The records' own consistency: each samples methods that have cases, each case's method is one record's,
+    // sampled conformance is never more than `tested`, and the JDK is the one the cases run on.
+    for record in OPERATIONS {
+        assert!(!record.sampled_by.is_empty(), "{}", record.operation);
+        assert_eq!(record.level, EvidenceLevel::Tested, "{}", record.operation);
+        for method in record.sampled_by {
+            assert!(OPERATION_CASES.iter().any(|c| c.method == *method), "{}: no case of {method}", record.operation);
+        }
+        assert_eq!(record.model().level, EvidenceLevel::Tested);
+    }
+    for case in OPERATION_CASES {
+        assert_eq!(OPERATIONS.iter().filter(|r| r.sampled_by.contains(&case.method)).count(), 1, "{}: one record samples it", case.method);
+    }
+    // Every String method the own checker models on content has a record, and every record of one is modelled.
+    let string_records: Vec<(&str, &str)> = OPERATIONS
+        .iter()
+        .filter_map(|r| r.operation.strip_prefix("java.lang.String."))
+        .map(|m| m.split_at(m.find('(').unwrap()))
+        .collect();
+    for (name, descriptor) in &string_records {
+        assert!(bmc::models_string_method("java/lang/String", name, descriptor), "{name}{descriptor}");
+    }
+    let Some(cp) = checker_classes() else { return };
+    let string = cp.load("java/lang/String").unwrap().expect("the JDK's String").class;
+    let modelled: Vec<String> = string.methods.iter().filter(|m| bmc::models_string_method("java/lang/String", &m.name, &m.descriptor)).map(|m| format!("{}{}", m.name, m.descriptor)).collect();
+    assert_eq!(modelled.len(), string_records.len(), "a record for each of {modelled:?}");
+    for record in OPERATIONS {
+        assert_eq!(Some(record.jdk().to_string()), bmc::gaps::jdk_release(), "{}: sampled on the JDK the cases run on", record.operation);
+        assert!(matches!(record.family, Family::String | Family::List));
+    }
+
+    // The interpreter gives the JVM's outcome on every case.
+    conforms(OPERATION_CASES);
+    let fixtures = compiled().unwrap();
+    let jvm = on_jvm(fixtures, OPERATION_CASES);
+
+    // The exceptions each record's cases throw on the JVM are exactly the ones it lists.
+    for record in OPERATIONS {
+        let mut seen: Vec<&str> = OPERATION_CASES.iter().zip(&jvm).filter(|(c, _)| record.sampled_by.contains(&c.method)).filter_map(|(_, o)| o.strip_prefix("throws ")).collect();
+        seen.sort();
+        seen.dedup();
+        let mut listed = record.throws.to_vec();
+        listed.sort();
+        assert_eq!(seen, listed, "{}: the exceptions its cases throw on the JVM", record.operation);
+    }
+
+    // The own checker reaches the JVM's outcome on every case: each generated check is proved.
+    let sampled = sampled_checks(fixtures, &cp, OPERATION_CASES, &jvm);
+    let mut with = ClassPath::new();
+    with.add(&sampled).unwrap();
+    with.add(fixtures).unwrap();
+    let with = with.with_default_jdk();
+    let mut wrong = Vec::new();
+    for (i, (case, expected)) in OPERATION_CASES.iter().zip(&jvm).enumerate() {
+        let out = bmc::check(&with, "values/Sampled", &format!("c{i}"), &Options::default()).unwrap();
+        if out.verdict != Verdict::Verified {
+            wrong.push(format!("{}{:?} (the JVM: {expected}): {:?} {:?}", case.method, case.args, out.verdict, out.problem));
+        }
+    }
+    assert!(wrong.is_empty(), "the own checker differs from the JVM:\n{}", wrong.join("\n"));
+}
