@@ -1230,3 +1230,63 @@ fn a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects() {
     assert!(strings > 0 && lists > 0, "{strings} String and {lists} list domains in {names:?}");
     eprintln!("{} claims, {strings} String and {lists} list domains resolved", names.len());
 }
+
+/// A stand-in for JBMC in `dir`: `--version` is 6.11.0, the goto listing (`--show-goto-functions`) is `goto.txt`,
+/// and every other run answers with `answer.txt`, or `answer.json` under `--json-ui`.
+fn stand_in_jbmc(dir: &Path) -> PathBuf {
+    let _ = std::fs::remove_dir_all(dir);
+    std::fs::create_dir_all(dir).unwrap();
+    let script = dir.join("jbmc");
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) cat \"$d/goto.txt\"; exit 0;; esac\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
+    script
+}
+
+/// VF-023's tool side, a reproducer for the merge's change to `equivalence::confirm` (the objects stream's file;
+/// the interface request in `llm-dlc/loops/application-core-values.md`). Stock JBMC 6.11.0 refutes the size of a
+/// list that is one of two (`Choice.oneOrTwo`, job `20261108-093809-…`): its program dispatches `size()` by class,
+/// with `java.util.List.size()`'s stub as the fallback, and on a reference to one of two objects it takes the wrong
+/// branch. The own checker proves the claim, and the interpreter replays JBMC's witness as holding. A JBMC proof
+/// through a stub confirms nothing under strict (`jbmc_gaps::hold`), and a JBMC refutation through a construct it
+/// runs otherwise than the JVM that doesn't reproduce is no verdict (`confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict`
+/// in `tests/conformance.rs`). A refutation through a stub that doesn't reproduce is a stub's value, so it should
+/// be no verdict too, the proof standing as the own checker's alone, not "the engines disagree". JBMC is a stand-in
+/// here, answering with the refutation the real one gives (`n=1`) over a program that reaches the stub.
+#[test]
+#[ignore = "VF-023: fails until the merge makes a JBMC refutation through a stub that doesn't reproduce no verdict in equivalence::confirm"]
+fn confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict() {
+    let Some(classes) = compiled() else { return };
+    let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("values-confirm-stub");
+    let jbmc = stand_in_jbmc(&dir);
+    let harness = jvmcontract::harness::PROPERTY_CLASS;
+    let program = format!(
+        "{harness}.check(int) /* java::{harness}.check:(I)V */\n        // 1 file {harness}.java line 1 function java::{harness}.check:(I)V bytecode-index 1\n     1: CALL java::values.Choice.oneOrTwo:(I)I(java::{harness}.check:(I)V::arg0i)\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nvalues.Choice.oneOrTwo(int) /* java::values.Choice.oneOrTwo:(I)I */\n        // 2 file values/Choice.java line 17 function java::values.Choice.oneOrTwo:(I)I bytecode-index 30\n     2: CALL java::java.util.List.size:()I(java::values.Choice.oneOrTwo:(I)I::33::l)\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\njava.util.List.size() /* java::java.util.List.size:()I */\n        // 3 no location\n        SKIP\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"
+    );
+    std::fs::write(dir.join("goto.txt"), program).unwrap();
+    // JBMC's refutation of the harness's assertion with n=1, as `--json-ui` and as text.
+    let bits = format!("{:032b}", 1u32);
+    let trace = format!("{{\"stepType\": \"input\", \"inputID\": \"arg0i\", \"values\": [{{\"binary\": \"{bits}\", \"data\": \"1\", \"name\": \"integer\", \"type\": \"int\", \"width\": 32}}]}}");
+    let mut results = vec![format!("{{\"property\": \"java::{harness}.check:(I)V.assertion.1\", \"status\": \"FAILURE\", \"trace\": [{trace}]}}")];
+    results.extend((2..=5).map(|n| format!("{{\"property\": \"java::{harness}.check:(I)V.assertion.{n}\", \"status\": \"SUCCESS\"}}")));
+    let json = format!(
+        "[\n  {{\n    \"program\": \"JBMC 6.11.0 (cbmc-6.11.0)\"\n  }},\n  {{\n    \"messageText\": \"JBMC version 6.11.0 (cbmc-6.11.0) 64-bit\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  }},\n  {{\n    \"result\": [{}]\n  }},\n  {{\n    \"cProverStatus\": \"failure\"\n  }}\n]\n",
+        results.join(", ")
+    );
+    std::fs::write(dir.join("answer.json"), json).unwrap();
+    std::fs::write(dir.join("answer.txt"), format!("JBMC version 6.11.0 (cbmc-6.11.0)\n[{harness}.check:(I)V.assertion.1] line 1 assertion at file {harness}.java line 1 function java::{harness}.check:(I)V bytecode-index 9: FAILURE\n  INPUT arg0a: 1\n** 1 of 5 failed (2 iterations)\nVERIFICATION FAILED\n")).unwrap();
+
+    let mut options = jvmcontract::property::Options::new(&[classes.to_path_buf()], "values.Choice#oneOrTwo");
+    options.assume = Some("n >= 1 && n <= 2".into());
+    options.assert = Some("result == n".into());
+    options.engine = jvmcontract::Engine::Auto;
+    options.confirm = true;
+    options.jbmc = jbmc.display().to_string();
+    options.work = Some(dir.join("work"));
+    let outcome = jvmcontract::property::run(&options).unwrap();
+    let confirmation = outcome.search.as_ref().and_then(|s| s.confirmation.as_ref()).expect("a confirmation");
+    assert!(!outcome.output.contains("the engines disagree"), "a stub's value is no refutation: {}", outcome.output);
+    assert_eq!(confirmation.status, jvmcontract::equivalence::Confirmed::NoVerdict, "{}", outcome.output);
+    assert_eq!(outcome.verdict, Verdict::Verified, "the own checker's proof stands, not confirmed: {}", outcome.output);
+    assert!(outcome.output.contains("  not confirmed: JBMC 6.11.0 gave no verdict") && outcome.output.contains("java.util.List.size()"), "{}", outcome.output);
+}

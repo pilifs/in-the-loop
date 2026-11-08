@@ -622,8 +622,40 @@ just to bring a gap count down.
   - **Not covered**: a change of a snapshot rule. A witness's encoding (`WitnessValue`) is in no claim, so nothing
     invalidates on it. It moves with the adapters' code, which `STRING_MODEL` and `LIST_MODEL` name, and should be
     bumped with them.
-- **Next**: decide VF-023's last attempt or its deferral (above). Then V1's and V2's rows, which wait on the objects
-  stream's wiring (the interface requests above), and this step's request for the merge.
+- 2026-11-08, **VF-023 decided: no fix in this stream's files; the tool's side is a request for the merge, with its
+  reproducer** (this commit):
+  - **The single-class model is refuted by the evidence already in hand**, so the attempt left isn't spent on it.
+    `oneOrTwo` chooses between two `List12`s, one class, and JBMC refutes it all the same (second and third probes).
+    The verification loop's triage of the third probe reads the same: the refuted probes dispatch to the fallback,
+    `java.util.List.size()`'s stub. No change to `lib/models` can take that fallback out of JBMC's dispatch. A default
+    method in the model `List` would reach every List class JBMC has no bytecode for. It isn't the JDK's either.
+  - **The cause is JBMC's**: on a reference to one of two objects, its dispatch takes a branch the class identifier
+    rules out. That is external JBMC work, deferred by the main brief (no JBMC fork). The tool's outcome is sound:
+    `--confirm` gives neither verdict, never a wrong one.
+  - **What would close the entry is in the objects stream's `equivalence::confirm`**: a JBMC refutation that doesn't
+    reproduce, and whose program reaches a stub (the preflight's gaps), is no verdict. The proof then stands as the
+    own checker's alone. This is the rule `confirm` already applies to a refutation through a `jbmc_gaps::Defect`,
+    and the one `jbmc_gaps::hold` applies to a JBMC proof through a stub. `--engine jbmc` says the same of such a
+    witness: "cannot be verified … probably goes through what JBMC approximates".
+  - **The reproducer**, `tests/values.rs`'s
+    `confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict`, `#[ignore]`d. It runs a
+    new fixture, `values.Choice#oneOrTwo`, under `--engine auto --confirm`. The JBMC is a stand-in, whose program
+    reaches the stub and whose answer is the real one's (`n=1`). Today it fails with the corpus's message ("the engines
+    disagree … where the harness holds"). With the rule patched into `confirm` (eleven lines, in the working copy
+    only, then reverted) it passes: the proof stands, not confirmed, naming `java.util.List.size()`. The values suite
+    passes (16 tests, the reproducer ignored).
+  - **VF-023 waits for the merge**: one failure, and no fix attempted, so the timebox doesn't end it. It closes when
+    job `20261108-070211-…`'s step 2, rerun unchanged after that change, passes. V2's row doesn't depend on it, since
+    the own checker decides the list claims with JBMC unavailable (J2).
+- **Interface request, for the merge** (the objects stream's `equivalence.rs`): in `confirm`'s `Verdict::Violation`
+  arm, after the defects check, take a refutation whose counterexample doesn't reproduce (`reproduces(&result)? ==
+  Some(false)`) and whose preflight found a stub (`pre.found`'s records, monitor and `invokedynamic` gaps apart) as
+  `Confirmed::NoVerdict`, naming the stubs. Then un-ignore the reproducer above.
+- **Next**: the snapshot rule's identity, the one change the acceptance names that V3 step 3 left uncovered. A test
+  in `tests/values.rs` would pin the adapters' witness encoding of fixed Strings and lists to a recorded digest,
+  next to `STRING_MODEL` and `LIST_MODEL`, so that changing the encoding without bumping them fails. Then V1's and
+  V2's rows, which wait on the objects stream's wiring (the interface requests above), and the requests for the
+  merge.
 - Status: working
 
 ## Loop settings
