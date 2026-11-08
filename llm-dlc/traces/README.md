@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 65, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 10:05 UTC |
-| Prompts | 1,678 |
-| Model calls | 16,613 |
-| Tool calls | 17,596 (316 failed) |
-| Compactions | 250 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 10:19 UTC |
+| Prompts | 1,684 |
+| Model calls | 16,649 |
+| Tool calls | 17,630 (317 failed) |
+| Compactions | 251 |
 | Subagents | 10 |
-| Tokens written | 18,035,470 |
-| Tokens read | 2,695,378,355 (97.9% from cache) |
-| Commits with a trace | 499 |
-| Log snapshots | 607 (1386.9 MB gzipped, 593 uploaded) |
+| Tokens written | 18,062,695 |
+| Tokens read | 2,699,438,173 (97.9% from cache) |
+| Commits with a trace | 500 |
+| Log snapshots | 608 (1391.2 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -91,7 +91,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-07 23:23 UTC | [0a31eedb-0668-4cb5-8ee4-63d018293f2f](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | ended | 1 h 32 min | `claude-sonnet-5-5` | 1 | 28 | 28 | 1 | 0 | 63,870 | 3 |
 | 2026-11-08 01:17 UTC | [65b61440-529c-4851-a79f-71ca197aa91d](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | ended | 20 min | `claude-sonnet-5-5` | 1 | 10 | 10 | 1 | 0 | 43,478 | 2 |
 | 2026-11-08 02:47 UTC | [4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 14 | 14 | 2 | 0 | 44,935 | 3 |
-| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 5 h 30 min | `claude-opus-5-5` | 76 | 683 | 675 | 10 | 14 | 253,307 | 14 |
+| 2026-11-08 04:34 UTC | [Multi agent feature stream run](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | open | 5 h 45 min | `claude-opus-5-5` | 82 | 719 | 709 | 11 | 15 | 253,307 | 15 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -165,17 +165,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 9,145 | 56 | 52,486 | 1,114,800 | 95.5% | 128 |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 3,388 | 20 | 30,359 | 325,135 | 91.5% | 105 |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3,803 | 28 | 33,551 | 506,294 | 93.8% | 142 |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 562,356 | 1,388 | 2,148,657 | 84,736,389 | 97.5% | 155 |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 589,581 | 1,464 | 2,282,853 | 88,661,935 | 97.5% | 154 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 15,422 | 87.6% | 65 |
-| `Read` | 808 | 4.6% | 34 |
-| `Edit` | 658 | 3.7% | 34 |
+| `Bash` | 15,450 | 87.6% | 65 |
+| `Read` | 812 | 4.6% | 34 |
+| `Edit` | 659 | 3.7% | 34 |
 | `Write` | 417 | 2.4% | 30 |
-| `ToolSearch` | 103 | 0.6% | 26 |
+| `ToolSearch` | 104 | 0.6% | 26 |
 | `Monitor` | 68 | 0.4% | 23 |
 | `AskUserQuestion` | 30 | 0.2% | 9 |
 | `TaskStop` | 29 | 0.2% | 13 |
@@ -692,6 +692,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 497 | change `nptumypy` | application-core values: VF-023's second probe names the ingredient, a choice between two lists; its third probe tests whether the model List re-declaring Collection's methods fixes JBMC's dispatch of size() (verification pending) | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/c464f6f5331484d62e82b4fd58207a36cf6e0ae6a8052c30aba2676ad57665af.jsonl.gz)) |
 | 498 | change `zsuwqnsm` | application-core values V3 step 3: a claim's String and list domains are resolved under this tool's models, so a change of model identity or bound changes exactly the claims it affects; VF-023's third probe refutes the declaration hypothesis | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/86296bcd01576699a1e635b76da237e4d69c1dd4940b2dac6937d1c08ca90155.jsonl.gz)) |
 | 499 | change `rtlrnzsv` | application-core values: VF-023 decided, no fix in the values stream's files; a reproducer for the merge's change to equivalence::confirm, which would take a JBMC refutation through a stub that doesn't reproduce for no verdict | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/0b02f64230798a3b226a7668bda8f679db07376241deb35aa025ed6859e542e1.jsonl.gz)) |
+| 500 | change `pymxzpyu` | application-core values V3 step 4: a snapshot rule is part of its model's identity, so a change of how Strings or lists are read, encoded or rebuilt changes exactly the claims over that family | [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) ([log](https://terminalvalue.net/raw-traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/261f4665094a7f2fb09e6c2d533fb9c3960faaceaa536282c5c59cfb720dd7f7.jsonl.gz)) |
 
 ## Logs
 
@@ -763,7 +764,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0a31eedb`](0a31eedb-0668-4cb5-8ee4-63d018293f2f/summary.md) | 3 | 3 | 0.3 MB | [`e37af19c4509`](https://terminalvalue.net/raw-traces/0a31eedb-0668-4cb5-8ee4-63d018293f2f/e37af19c4509e8e8bcdf326797b750b559c168bf462c8e428750995eaa19b24f.jsonl.gz) |
 | [`65b61440`](65b61440-529c-4851-a79f-71ca197aa91d/summary.md) | 2 | 2 | 0.2 MB | [`57de71ff276e`](https://terminalvalue.net/raw-traces/65b61440-529c-4851-a79f-71ca197aa91d/57de71ff276ec9bd66aac2fea70aa88ea20d7274a983508b6755c6ab9b9ed3c8.jsonl.gz) |
 | [`4c7f9b72`](4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/summary.md) | 3 | 3 | 0.3 MB | [`81e4c148e6d4`](https://terminalvalue.net/raw-traces/4c7f9b72-66a3-4ccc-8c6f-fa8e15716d38/81e4c148e6d4675da182940f0a3346ba85fd3e0a9b32ca040a93a3b10c3b309f.jsonl.gz) |
-| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 14 | 0 | 31.7 MB | `0b02f6423079`, not uploaded |
+| [`b8c9cad1`](b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/summary.md) | 15 | 0 | 35.9 MB | `261f4665094a`, not uploaded |
 
 ## Session notes
 

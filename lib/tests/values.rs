@@ -1169,11 +1169,13 @@ fn shorter(claim: &serde_json::Value) -> serde_json::Value {
     out
 }
 
-/// The acceptance's "changing a String or list bound or a model's semantics invalidates the cached evidence it
-/// affects", on the frozen claims of `tests/fixtures/application-core/golden/`: each claim's value domains resolved
-/// under this tool's models carry their identity (the list model's with its bytecode's digest), so a change of the
-/// list model changes exactly the claims over a list, a change of the String model exactly those over a String,
-/// and a lower bound every claim with a value domain. "Changes" is checked on the claim the key digests whole (the
+/// The acceptance's "changing a String or list bound, a model's semantics or a snapshot rule invalidates the cached
+/// evidence it affects", on the frozen claims of `tests/fixtures/application-core/golden/`: each claim's value
+/// domains resolved under this tool's models carry their identity (the list model's with its bytecode's digest, and
+/// each with its snapshot rule's, `values::STRING_SNAPSHOT` and `values::LIST_SNAPSHOT`, which the values unit test
+/// `the_snapshot_rules_are_pinned_to_the_digests_the_models_identities_carry` holds to the adapters' encoding), so
+/// a change of the list model or its snapshot rule changes exactly the claims over a list, a change of the String
+/// model or its snapshot rule exactly those over a String, and a lower bound every claim with a value domain. "Changes" is checked on the claim the key digests whole (the
 /// reuse stream's projection), and on the key itself: two claims never get one key, and until the projection knows
 /// a planned domain, such a claim is uncacheable by the key's own refusal, never keyed without its domains.
 #[test]
@@ -1186,6 +1188,11 @@ fn a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects() {
     let mut string_changed = current.clone();
     string_changed.string.source = values::STRING_MODEL.replace("model 1", "model 2");
     assert_ne!(string_changed.string, current.string, "the String model's identity names its version");
+    let mut list_snapshot = current.clone();
+    list_snapshot.list.source = current.list.source.replace(values::LIST_SNAPSHOT, &"0".repeat(64));
+    let mut string_snapshot = current.clone();
+    string_snapshot.string.source = current.string.source.replace(values::STRING_SNAPSHOT, &"0".repeat(64));
+    assert!(list_snapshot.list != current.list && string_snapshot.string != current.string, "each identity carries its snapshot rule's digest");
     let differs = |what: &str, a: &serde_json::Value, b: &serde_json::Value| {
         assert_ne!(spec::cache::canonical(a), spec::cache::canonical(b), "{what}: the same claim");
         let (a, b): (CanonicalClaim, CanonicalClaim) = (serde_json::from_value(a.clone()).unwrap(), serde_json::from_value(b.clone()).unwrap());
@@ -1210,8 +1217,15 @@ fn a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects() {
         assert!(!text.contains(values::STATED_STRING_MODEL) && !text.contains(values::STATED_LIST_MODEL), "{name}: a stated model left in");
         assert_eq!(text.contains(values::STRING_MODEL), s > 0, "{name}: the String model's identity");
         assert_eq!(text.contains(&values::list_model_digest()), l > 0, "{name}: the list models' digest");
+        assert_eq!(text.contains(values::STRING_SNAPSHOT), s > 0, "{name}: the String snapshot rule's digest");
+        assert_eq!(text.contains(values::LIST_SNAPSHOT), l > 0, "{name}: the list snapshot rule's digest");
         // A change of a model reaches the claims over its family, and no other.
-        for (what, changed, affected) in [("the list model", &list_changed, l > 0), ("the String model", &string_changed, s > 0)] {
+        for (what, changed, affected) in [
+            ("the list model", &list_changed, l > 0),
+            ("the String model", &string_changed, s > 0),
+            ("the list snapshot rule", &list_snapshot, l > 0),
+            ("the String snapshot rule", &string_snapshot, s > 0),
+        ] {
             let after = resolved_claim(&claim, changed).unwrap().0;
             if affected {
                 differs(&format!("{name}, {what} changed"), &resolved, &after);

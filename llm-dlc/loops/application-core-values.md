@@ -651,12 +651,53 @@ just to bring a gap count down.
   arm, after the defects check, take a refutation whose counterexample doesn't reproduce (`reproduces(&result)? ==
   Some(false)`) and whose preflight found a stub (`pre.found`'s records, monitor and `invokedynamic` gaps apart) as
   `Confirmed::NoVerdict`, naming the stubs. Then un-ignore the reproducer above.
-- **Next**: the snapshot rule's identity, the one change the acceptance names that V3 step 3 left uncovered. A test
-  in `tests/values.rs` would pin the adapters' witness encoding of fixed Strings and lists to a recorded digest,
-  next to `STRING_MODEL` and `LIST_MODEL`, so that changing the encoding without bumping them fails. Then V1's and
-  V2's rows, which wait on the objects stream's wiring (the interface requests above), and the requests for the
-  merge.
-- Status: working
+- 2026-11-08, **V3 step 4, a snapshot rule is part of its model's identity** (this commit), `values::STRING_SNAPSHOT`
+  and `values::LIST_SNAPSHOT` in `lib/src/values.rs`. It covers the one change the acceptance names that step 3 left
+  uncovered.
+  - **The hole**: a witness's encoding (`WitnessValue`, the form a cached refutation's witness and a snapshot hold) was
+    in no claim. A change of how an adapter reads, encodes or rebuilds its values changed no key, unless someone
+    remembered to bump `STRING_MODEL` or `LIST_MODEL`.
+  - **The change**: each family's snapshot rule has a recorded digest, and it is part of the model's identity
+    (`string_model`'s source ends in `snapshot sha256 …`, and `list_model`'s, after the bytecode's digest). The digest
+    is the SHA-256 of what the adapter does on fixed samples, one line each:
+    - for Strings, `read` from the checker's raw witness (units, null, the same object as an earlier slot, and
+      refusals: too long, not a code unit, absent), `encode` and `rebuild` of the empty String, NUL, isolated
+      surrogates and a pair (the rebuilt class, and a fresh object each time), and null under both nullabilities;
+    - for lists, the harness's `choices`, `admitted` and `java`, `read` of 19 choice vectors (null, duplicates,
+      aliases, picks past the length, and each out-of-domain choice), and `encode` and `rebuild` of lists of 0 to 3
+      nodes (the rebuilt class, `List12` or `ListN`, and the one empty list), with each refusal.
+
+    A refusal counts as one, not by its wording. The witnesses are in the shared `WitnessValue`'s serialized form, so a
+    change to that form changes both digests.
+  - **Checks**:
+    - The unit test `the_snapshot_rules_are_pinned_to_the_digests_the_models_identities_carry` fails, printing every
+      line and the new digest, unless the recorded digests are what the adapters do. Recording a new one is the bump,
+      so a rule can't change under an old identity.
+    - Two sabotages fail it: a String cut to the bound where it was refused, and a list pick counted from the other
+      end.
+    - `tests/values.rs`'s `a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects` now also changes
+      each snapshot digest. Over the 8 frozen claims, a list rule change reaches exactly the basket claims, and a
+      String rule change exactly Q's. The canonical claim and `spec::cache::key` both change, and a stale resolved
+      claim is refused.
+    - Three resolve unit tests that stated `STRING_MODEL` alone now state the model's full source.
+    - The whole lib suite passes in the dev profile (15 suites).
+  - No job: seconds, inline. Evidence level unchanged (`tested`).
+- **Next**: nothing left needs only this stream's work. V1–V3 are built and checked on this branch. What remains
+  needs another stream or the merge, each recorded above:
+  - V1's and V2's rows wait on the objects stream's wiring of a String and a list parameter (the two interface
+    requests to it). Then `values::adapter` returns the adapters, one line here.
+  - V3's claim identity reaches the checks once `values::resolve` is called in `construction::check_plans` and before
+    `proof_cache` digests a claim (a request for the merge).
+  - VF-023 closes once the merge gives `equivalence::confirm` its stub rule, and job `20261108-070211-…`'s step 2 is
+    rerun unchanged.
+  - The other merge requests: the class reader's lossy `CONSTANT_Utf8`, `ElementKind::String`'s bound, and the
+    `lib/README.md` sentence on array cells.
+
+  The optional String or list method is not taken, since no fixture needs one. The interpreter's `Character`
+  classification (found at the audit) stays on the for-review list.
+- Status: blocked: what is left needs the objects stream (the String and list parameter wiring for V1's and V2's
+  rows) and the merge (`values::resolve` in the checks, `equivalence::confirm`'s stub rule for VF-023), as recorded
+  above
 
 ## Loop settings
 

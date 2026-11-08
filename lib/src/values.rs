@@ -43,6 +43,11 @@
 //! (or of the list models' bytecode) changes the claim of every check over that family, and no other. A claim stated
 //! under another model, JDK, or a level its model doesn't have is refused by name.
 //!
+//! **A snapshot rule** (how an adapter reads, encodes and rebuilds its values, the witness a cached refutation
+//! holds) is part of its model's identity too: a digest of what the adapter does on fixed samples
+//! ([`STRING_SNAPSHOT`], [`LIST_SNAPSHOT`]), which a unit test holds to the code. A change of the rule fails it until
+//! the new digest is recorded, and recording it changes the claims over that family, as a model change does.
+//!
 //! Until a check takes an adapter's values (its harness declares the parameter, gives the checker the bound or the
 //! choices, and rebuilds the witness through the adapter's `read` and [`ValueAdapter::rebuild`]), [`adapter`]
 //! refuses, naming the values stream, and every call site keeps refusing the value it would have handled.
@@ -130,11 +135,20 @@ pub const STRING_MODEL: &str = "jvmcontract String model 1: lib/src/bmc (Engine:
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
 
+/// The String snapshot rule's digest: how [`StringAdapter`] reads a String out of the own checker's witness
+/// (`read`), encodes one for a result, field or payload snapshot or a witness (`encode`, and the shared
+/// `WitnessValue`'s serialized form), and rebuilds one for a replay (`rebuild`), over fixed samples (the unit test
+/// `the_snapshot_rules_are_pinned_to_the_digests_the_models_identities_carry`). It is part of the String model's
+/// identity ([`string_model`]'s source), so a claim's key and its cached evidence move with the rule: a change of
+/// the rule fails that test until its new digest is recorded here, which changes the key of every claim over a String
+/// and of no other.
+pub const STRING_SNAPSHOT: &str = "81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01";
+
 /// The evidence of the String model: what it is, the JDK it was sampled on, its level (`tested`: sampled JVM
 /// conformance and replayed witnesses, not a proof), and what it leaves out.
 pub fn string_model() -> ModelEvidence {
     ModelEvidence {
-        source: STRING_MODEL.into(),
+        source: format!("{STRING_MODEL}; snapshot sha256 {STRING_SNAPSHOT}"),
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
@@ -263,12 +277,18 @@ pub fn list_model_digest() -> String {
     crate::digest::sha256_hex(&bytes)
 }
 
+/// The list snapshot rule's digest, as [`STRING_SNAPSHOT`] is the String's: how [`ListAdapter`] names a harness's
+/// choices and makes a list from them (`choices`, `admitted`, `java`), reads a list out of the checker's witness
+/// (`read`), encodes one as the plan's nodes (`encode`) and rebuilds it for a replay (`rebuild`: its class, and the
+/// one empty list). Part of the list model's identity ([`list_model`]'s source), beside the bytecode's digest.
+pub const LIST_SNAPSHOT: &str = "57eb1647b41b037fe7a23e18551b4467dbb2b8f363dee9fa5f71297ba94c0fc5";
+
 /// The evidence of the list model: what it is (with its bytecode's digest), the JDK it follows, its level
 /// (`tested`: the models are the JDK's lists written out by hand, sampled by JVM conformance and replayed witnesses,
 /// not a proof), and what it leaves out.
 pub fn list_model() -> ModelEvidence {
     ModelEvidence {
-        source: format!("{LIST_MODEL}; models sha256 {}", list_model_digest()),
+        source: format!("{LIST_MODEL}; models sha256 {}; snapshot sha256 {LIST_SNAPSHOT}", list_model_digest()),
         jdk: LIST_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
@@ -1080,16 +1100,138 @@ mod tests {
         let mut jdk = stated(ValueKind::String, 3, STATED_STRING_MODEL, EvidenceLevel::Tested);
         jdk.model.jdk = "21.0.2".into();
         refused(jdk, "sampled on JDK 25.0.5");
-        refused(stated(ValueKind::String, 3, STRING_MODEL, EvidenceLevel::Proved), "never borrows a stronger level");
+        refused(stated(ValueKind::String, 3, &string_model().source, EvidenceLevel::Proved), "never borrows a stronger level");
         let mut proved = ValueModels::current();
         proved.string.level = EvidenceLevel::Modelled;
-        assert!(proved.resolve(&stated(ValueKind::String, 3, STRING_MODEL, EvidenceLevel::Tested)).unwrap_err().what.contains("stated as Tested"));
+        assert!(proved.resolve(&stated(ValueKind::String, 3, &string_model().source, EvidenceLevel::Tested)).unwrap_err().what.contains("stated as Tested"));
         // Weaker levels are the claim's to state; the model's evidence is what the domain carries.
         for level in [EvidenceLevel::Implemented, EvidenceLevel::Modelled, EvidenceLevel::Trusted, EvidenceLevel::Tested] {
-            assert_eq!(resolve(&stated(ValueKind::String, 3, STRING_MODEL, level)).unwrap().model.level, EvidenceLevel::Tested);
+            assert_eq!(resolve(&stated(ValueKind::String, 3, &string_model().source, level)).unwrap().model.level, EvidenceLevel::Tested);
         }
         // What the adapters refuse.
         refused(stated(ValueKind::List { element: ElementKind::String }, 3, STATED_LIST_MODEL, EvidenceLevel::Tested), "a list of Strings");
         refused(stated(list, MAX_LIST_LENGTH + 1, STATED_LIST_MODEL, EvidenceLevel::Tested), "array form is outside the family");
+    }
+
+    /// What a family's snapshot rule does on fixed samples, one line each: every way a value goes between the
+    /// interpreter, a snapshot, the own checker's witness and a replay ([`STRING_SNAPSHOT`], [`LIST_SNAPSHOT`]). A
+    /// refusal is recorded as one, not by its wording, so that only a change of what is encoded changes the digest.
+    fn snapshot_lines(family: Family) -> Vec<String> {
+        let cp = ClassPath::new().with_default_jdk();
+        let mut m = Machine::new(&cp);
+        let json = |w: &WitnessValue| serde_json::to_string(w).unwrap();
+        let shown = |r: Result<WitnessValue, Unsupported>| r.map_or("refused".to_string(), |w| json(&w));
+        let mut out = Vec::new();
+        match family {
+            Family::String => {
+                let a = StringAdapter::new(4, true);
+                let strict = StringAdapter::new(4, false);
+                let nodes = Nodes::new();
+                let raw: BTreeMap<u32, Option<Vec<String>>> = [
+                    (0, Some(vec!["65".to_string(), "0".into()])),
+                    (1, None),
+                    (2, Some(vec!["55357".into(), "56832".into()])),
+                    (3, Some(vec![])),
+                    (5, Some(vec!["56320".into()])),
+                    (6, Some(vec!["1".into(); 5])),
+                    (7, Some(vec!["65536".into()])),
+                    (8, Some(vec!["-1".into()])),
+                ]
+                .into_iter()
+                .collect();
+                let same = BTreeMap::from([(4, 0)]);
+                for slot in 0..10 {
+                    for (adapter, label) in [(&a, "nullable"), (&strict, "not nullable")] {
+                        let read = match adapter.read(&raw, &same, slot) {
+                            Ok(Witnessed::Value(w)) => json(&w),
+                            Ok(Witnessed::SameAs(first)) => format!("the same object as slot {first}"),
+                            Err(_) => "refused".into(),
+                        };
+                        out.push(format!("read slot {slot}, {label}: {read}"));
+                    }
+                }
+                for units in [vec![], vec![0x41, 0], vec![0xD800], vec![0xD83D, 0xDE00], vec![0xDC00, 0x41, 0xD800, 0], vec![0x41; 5]] {
+                    let v = m.new_string(JStr::from_units(units.clone()));
+                    out.push(format!("encode {units:?}: {}", shown(a.encode(&m, v, &nodes))));
+                    let w = WitnessValue::String { units: units.clone() };
+                    match (a.rebuild(&mut m, &w, &nodes), a.rebuild(&mut m, &w, &nodes)) {
+                        (Ok(first), Ok(second)) => {
+                            let Value::Ref(r) = first else { panic!("a rebuilt String is a reference") };
+                            out.push(format!("rebuild {units:?}: a {}, encoded {}, a fresh object each time: {}", m.class_of(r), shown(a.encode(&m, first, &nodes)), first != second));
+                        }
+                        _ => out.push(format!("rebuild {units:?}: refused")),
+                    }
+                }
+                for (adapter, label) in [(&a, "nullable"), (&strict, "not nullable")] {
+                    let rebuilt = adapter.rebuild(&mut m, &WitnessValue::Null, &nodes).map_or("refused".to_string(), |v| format!("{v:?}"));
+                    out.push(format!("null, {label}: encoded {}, rebuilt {rebuilt}", shown(adapter.encode(&m, Value::Null, &nodes))));
+                }
+                out.push(format!("rebuild a list's witness: {}", a.rebuild(&mut m, &WitnessValue::List { elements: vec![] }, &nodes).map_or("refused", |_| "taken")));
+            }
+            Family::List => {
+                let a = ListAdapter::new(line(), 3, true).unwrap();
+                let strict = ListAdapter::new(line(), 1, false).unwrap();
+                let made = ["m0".to_string(), "m1".into(), "m2".into()];
+                out.push(format!("choices: {:?}; {:?}", a.choices("l"), strict.choices("l")));
+                out.push(format!("admitted: {}; {}", a.admitted("l"), strict.admitted("l")));
+                out.push(format!("java:\n{}{}", a.java("l", "t", "p.C", &made).unwrap(), strict.java("l", "t", "p.C", &made[..1]).unwrap()));
+                let ids = [7, 8, 9];
+                for choices in [[1, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 1, 2], [0, 2, 0, 0], [0, 2, 1, 0], [0, 3, 0, 0], [0, 3, 1, 0], [0, 3, 0, 2], [0, 3, 1, 1], [0, 3, 1, 2], [2, 0, 0, 0], [0, 4, 0, 0], [0, -1, 0, 0], [0, 2, 2, 0], [0, 3, 0, 3]] {
+                    out.push(format!("read {choices:?}: {}", shown(a.read(&choices, &ids))));
+                }
+                for choices in [[0], [1], [2]] {
+                    out.push(format!("read {choices:?}, not nullable: {}", shown(strict.read(&choices, &ids[..1]))));
+                }
+                let mut nodes = Nodes::new();
+                for id in ids {
+                    let o = m.new_string(JStr::from_units(vec![id as u16]));
+                    nodes.insert(id, o);
+                }
+                let node = |id| WitnessValue::Node { id };
+                for list in [vec![], vec![7], vec![7, 7], vec![8, 7], vec![7, 8, 7], vec![9, 8, 7], vec![7; 4], vec![6]] {
+                    let objects = list.iter().map(|&id| nodes.get(id).unwrap_or(Value::Null)).collect::<Vec<_>>();
+                    if !objects.contains(&Value::Null) {
+                        let v = m.immutable_list(objects);
+                        out.push(format!("encode {list:?}: {}", shown(a.encode(&m, v, &nodes))));
+                    }
+                    let w = WitnessValue::List { elements: list.iter().map(|&id| node(id)).collect() };
+                    match (a.rebuild(&mut m, &w, &nodes), a.rebuild(&mut m, &w, &nodes)) {
+                        (Ok(first), Ok(second)) => {
+                            let Value::Ref(r) = first else { panic!("a rebuilt list is a reference") };
+                            out.push(format!("rebuild {list:?}: a {} ({:?}), encoded {}, one object both times: {}", m.class_of(r), m.immutable_list_kind(r), shown(a.encode(&m, first, &nodes)), first == second));
+                        }
+                        _ => out.push(format!("rebuild {list:?}: refused")),
+                    }
+                }
+                let o = nodes.get(7).unwrap();
+                let mutable = Value::Ref(m.alloc_native(Native::List { elements: vec![o], mutable: true }));
+                out.push(format!("encode a mutable list: {}", shown(a.encode(&m, mutable, &nodes))));
+                let stranger = m.new_string(JStr::from_units(vec![1]));
+                let with_stranger = m.immutable_list(vec![stranger]);
+                out.push(format!("encode a list of an object the plan didn't make: {}", shown(a.encode(&m, with_stranger, &nodes))));
+                out.push(format!("rebuild a String's witness as an element: {}", a.rebuild(&mut m, &WitnessValue::List { elements: vec![WitnessValue::String { units: vec![] }] }, &nodes).map_or("refused", |_| "taken")));
+                for (adapter, label) in [(&a, "nullable"), (&strict, "not nullable")] {
+                    let rebuilt = adapter.rebuild(&mut m, &WitnessValue::Null, &nodes).map_or("refused".to_string(), |v| format!("{v:?}"));
+                    out.push(format!("null, {label}: encoded {}, rebuilt {rebuilt}", shown(adapter.encode(&m, Value::Null, &nodes))));
+                }
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn the_snapshot_rules_are_pinned_to_the_digests_the_models_identities_carry() {
+        for (family, recorded, name) in [(Family::String, STRING_SNAPSHOT, "STRING_SNAPSHOT"), (Family::List, LIST_SNAPSHOT, "LIST_SNAPSHOT")] {
+            let lines = snapshot_lines(family).join("\n");
+            let digest = crate::digest::sha256_hex(lines.as_bytes());
+            assert_eq!(
+                digest, recorded,
+                "the {family:?} snapshot rule gives other witnesses than the one recorded: if that is meant, record {digest} as values::{name}, which changes the {family:?} model's identity and with it the key of every claim over one. What it gives now:\n{lines}"
+            );
+        }
+        // Each digest is in its model's identity, so the claims a rule reaches (and only they) are resolved anew.
+        assert!(string_model().source.ends_with(&format!("; snapshot sha256 {STRING_SNAPSHOT}")), "{}", string_model().source);
+        assert!(list_model().source.ends_with(&format!("; snapshot sha256 {LIST_SNAPSHOT}")), "{}", list_model().source);
+        assert!(!list_model().source.contains(STRING_SNAPSHOT) && !string_model().source.contains(LIST_SNAPSHOT));
     }
 }
