@@ -265,7 +265,33 @@ entry points, not proof that a dependency's contract is right.
   - **Next**: E3, a nullable DTO response through the objects stream's construction plan. It needs that plan
     integrated, so check whether the objects stream's commits are visible to this workspace first. If not,
     the remaining work waits on the objects stream (and Q on the values stream's String adapter).
-- Status: working
+- 2026-11-08, rerun (after `wvournln`, the loop's stop fix copied here): **E3 checked, and it waits on the merge**.
+  - **The objects stream's construction plan isn't in this branch.** It's built on that stream's branch:
+    `construction::root`, `check_plans`, and receivers and parameters made by a plan (`skvmtlxn`, `xnwtzpsz`,
+    `rukolrmu`, `zuwkutws` and later). None of its commits is an ancestor of this stream's `@`. Here,
+    `construction.rs` is still Phase 0's hook, returning `Unsupported` for objects. The main brief allows
+    integration only by the merge, never by edits across branches.
+  - **What E3 needs from it.** The shared type is ready: `Returned::Object { plan, nullable, identity }` in
+    `spec/plans.rs`, with `Identity::{Fresh, Stable}`. `environment::lower` refuses it by name ("a DTO response
+    made by a construction plan: the environment stream's E3, not built yet").
+    - The classpath check of the DTO's plan comes from the objects stream: one constructor, primitive arguments,
+      no superclass and no cycle. After the merge, `environment.rs` will take it through `construction`.
+    - The stubs will make the response by the plan's constructor descriptor, from inputs of the table (a null
+      flag, then the leaves). A fresh identity makes an object per call; a stable one keeps an object per entry.
+    - Unmodelled methods and fields of the DTO are refused by an inspection, like E2's of a caught failure.
+    - Writing that now would mean writing the classpath check here: the object builder of the environment's own
+      that E3 forbids.
+  - **The integration check** (11:33): the four streams conflict only in `llm-dlc/README.md`, `llm-dlc/index.json`,
+    `llm-dlc/traces/README.md` and `llm-dlc/traces/metrics.json`, which are generated files or the coordinator's.
+    None is a file this stream owns, so it has nothing to fix here. The coordinator settles them at the merge.
+  - No open entry of `verification/findings.md` is in this stream's files. This run has no job pending.
+  - **Left for the merge, in order**:
+    1. E3 through the merged construction plan, with the identity policy in the claim, the nullable branch
+       replayed, and unmodelled methods, fields and cycles refused.
+    2. Q's E1 and E2 rows through `environment::check`, with the values stream's String adapter for its code.
+    3. The interface requests above: `main.rs`, `compare.rs`, `lib/README.md`, and the objects stream's
+       `jvm_witness` `max_stack`.
+- Status: blocked: E3 and Q's E1/E2 rows wait on the merge of the objects stream's construction plan (and of the values stream's String adapter for Q); E1's and E2's own items are done
 
 ## Loop settings
 
