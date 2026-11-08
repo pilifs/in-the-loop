@@ -28,10 +28,10 @@
     }
   },
   "attempt": {
-    "id": "20261107T215328Z-882f9feb",
+    "id": "20261108T200113Z-91fa50b9",
     "claim": "7f8e12fd189a27b5",
-    "startedAt": "2026-11-07T21:53:28+00:00",
-    "seconds": 4.2,
+    "startedAt": "2026-11-08T20:01:13+00:00",
+    "seconds": 2.2,
     "engine": "native",
     "options": [
       "--cache",
@@ -40,7 +40,7 @@
     "tools": {
       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
       "javac": "javac 25.0.5",
-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
+      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
     },
     "bytecode": {
       "before": {
@@ -53,9 +53,9 @@
       }
     },
     "pipeline": {
-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
+      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
+      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
     },
     "execution": {
       "status": "completed",
@@ -80,7 +80,7 @@
         "name": "javac shop stubs",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.7,
+        "seconds": 0.4,
         "stdout": "logs/02-javac-shop-stubs.stdout",
         "stderr": "logs/02-javac-shop-stubs.stderr"
       },
@@ -88,7 +88,7 @@
         "name": "javac patched shop main",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.7,
+        "seconds": 0.4,
         "stdout": "logs/03-javac-patched-shop-main.stdout",
         "stderr": "logs/03-javac-patched-shop-main.stderr"
       },
@@ -96,7 +96,7 @@
         "name": "javac patched shop tests",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.9,
+        "seconds": 0.5,
         "stdout": "logs/04-javac-patched-shop-tests.stdout",
         "stderr": "logs/04-javac-patched-shop-tests.stderr"
       },
@@ -104,7 +104,7 @@
         "name": "the shop tests",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.1,
+        "seconds": 0.0,
         "stdout": "logs/05-the-shop-tests.stdout",
         "stderr": "logs/05-the-shop-tests.stderr"
       },
@@ -112,7 +112,7 @@
         "name": "javac shop stubs",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.6,
+        "seconds": 0.3,
         "stdout": "logs/06-javac-shop-stubs.stdout",
         "stderr": "logs/06-javac-shop-stubs.stderr"
       },
@@ -120,7 +120,7 @@
         "name": "javac unpatched shop main",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.8,
+        "seconds": 0.4,
         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
       },
@@ -128,7 +128,7 @@
         "name": "jvmcontract compare",
         "status": "exited",
         "exitCode": 1,
-        "seconds": 0.3,
+        "seconds": 0.1,
         "stdout": "logs/08-jvmcontract-compare.stdout",
         "stderr": "logs/08-jvmcontract-compare.stderr"
       },
@@ -157,11 +157,11 @@
         "stderr": "logs/11-version-of-javac.stderr"
       }
     ],
-    "workspace": ".build-py/examples-_0kujdf1/attempts/196/attempt-5p4oa4o_"
+    "workspace": ".build-py/examples-fq9j25jd/attempts/196/attempt-gzx78nqu"
   },
   "conclusion": {
     "claim": "7f8e12fd189a27b5",
-    "attempt": "20261107T215328Z-882f9feb",
+    "attempt": "20261108T200113Z-91fa50b9",
     "status": "unresolved",
     "vacuous": false,
     "expectation": "yes",
@@ -268,7 +268,7 @@
           "subject": "shop.Quote#quantity",
           "symbol": "shop.Quote#quantity",
           "verdict": "unverifiable",
-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
+          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
           "reused": false,
           "callees": []
         }
@@ -326,8 +326,8 @@
       },
       {
         "path": "verifier-output.txt",
-        "sha256": "de19c7b7642b361403bce42a3010a9ee95fa84e99e583d86da46c31a6535fcd8",
-        "bytes": 6580
+        "sha256": "5ee03d0c6e0b96a131de20eb237411cab5fcb4cb41c9719c5cd480922c26ec34",
+        "bytes": 6786
       }
     ]
   }

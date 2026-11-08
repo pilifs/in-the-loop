@@ -1,0 +1,1625 @@
+--- a/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md
++++ b/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md
+@@ -156,7 +156,7 @@
+ | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -198,9 +198,9 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: reused from the proof cache (claim sha256:2745ff1837465d10677f6aa14153b4f1d6e441d7099e8867e63ddbb60c8926a7, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:52:50Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions.
+-
+-This page renders attempt `20261107T215246Z-f6a51786` at claim `84e0cefa8773f7c4`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: reused from the proof cache (claim sha256:edc0c2b64c3f34280dc4bc3322f3c8dfe223133ffe8ffd1a18a610ae475ef401, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:00:47Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions.
++
++This page renders attempt `20261108T200045Z-5a5bfe2b` at claim `84e0cefa8773f7c4`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -233,16 +233,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json
++++ b/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215246Z-f6a51786",
++    "id": "20261108T200045Z-5a5bfe2b",
+     "claim": "84e0cefa8773f7c4",
+-    "startedAt": "2026-11-07T21:52:46+00:00",
+-    "seconds": 4.9,
++    "startedAt": "2026-11-08T20:00:45+00:00",
++    "seconds": 2.2,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.3,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.1,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -104,7 +104,7 @@
+         "name": "the shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/05-the-shop-tests.stdout",
+         "stderr": "logs/05-the-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.5,
++        "seconds": 0.1,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -157,11 +157,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-7oakjyzj/attempts/190/attempt-f876whlp"
++    "workspace": ".build-py/examples-36898evp/attempts/190/attempt-o3obpe86"
+   },
+   "conclusion": {
+     "claim": "84e0cefa8773f7c4",
+-    "attempt": "20261107T215246Z-f6a51786",
++    "attempt": "20261108T200045Z-5a5bfe2b",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -191,7 +191,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "reused from the proof cache (claim sha256:2745ff1837465d10677f6aa14153b4f1d6e441d7099e8867e63ddbb60c8926a7, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:52:50Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions",
++    "proof": "reused from the proof cache (claim sha256:edc0c2b64c3f34280dc4bc3322f3c8dfe223133ffe8ffd1a18a610ae475ef401, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:00:47Z, on copies of before/classes and examples/apps/shop/build/main): jvmcontract's own checker (CaDiCaL): 1 properties proved over cents: long × quantity: int in 0.1 s; loops unwound 16 times with unwinding assertions",
+     "problem": null,
+     "statement": null,
+     "trace": null,
+@@ -268,7 +268,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -303,8 +303,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "50deb1fc25ac29161e73842ffeb7191f3ca48fd0c20f5df26d6cd21cb1dde1e9",
+-        "bytes": 5950
++        "sha256": "abc0fc09626716bd837286f853bff8407995885cfea9803c1198e4cd0d1e2232",
++        "bytes": 6156
+       }
+     ]
+   }
+--- a/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt
++++ b/examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt
+@@ -26,16 +26,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md
+@@ -163,7 +163,7 @@
+ | `shop.Pricing#total` | kernel | refuted | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -204,7 +204,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T215253Z-abddd4b2` at claim `425c9099c70d895d`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200049Z-d6aab482` at claim `425c9099c70d895d`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -215,7 +215,7 @@
+ 
+ POST /quotes: refuted
+   observations: result refuted, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -238,17 +238,17 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: refuted
+-  correspondence (inferred, proposed; refuted for sha256:85836ed5dcf6e6481e4d6590608105256c5e460e51c5a748ed645cb09c3e53e7): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; refuted for sha256:95712a26f3503e565459a16d183a21b138d771312217110c58c70151533db561): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result refuted, exception unresolved
+   witness: total(q=new Quote(new Money(0), 1)): before, 0; after, 1
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 2 verified, 1 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+@@ -334,7 +334,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.json
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215253Z-abddd4b2",
++    "id": "20261108T200049Z-d6aab482",
+     "claim": "425c9099c70d895d",
+-    "startedAt": "2026-11-07T21:52:53+00:00",
+-    "seconds": 6.5,
++    "startedAt": "2026-11-08T20:00:49+00:00",
++    "seconds": 3.8,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.4,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -104,7 +104,7 @@
+         "name": "the shop tests",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/05-the-shop-tests.stdout",
+         "stderr": "logs/05-the-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 2.2,
++        "seconds": 1.8,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-h2m2tp12/attempts/191/attempt-qs038lj_"
++    "workspace": ".build-py/examples-56avcn9a/attempts/191/attempt-0znbuk7h"
+   },
+   "conclusion": {
+     "claim": "425c9099c70d895d",
+-    "attempt": "20261107T215253Z-abddd4b2",
++    "attempt": "20261108T200049Z-d6aab482",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -282,7 +282,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -312,13 +312,13 @@
+     "artifacts": [
+       {
+         "path": "result.sarif",
+-        "sha256": "c09ac843080f9e33cb9b6dd29237df2997cb1091d53f342a001ee200ab8a9529",
++        "sha256": "85a3f4aa67ae6b2e62192ef98210a55b24745a9b9136263d6a332d01c883c12e",
+         "bytes": 3741
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "b896cc6d250d8b738281e32da5c3b08f94828d32f3f0015e659008c1423895d9",
+-        "bytes": 6341
++        "sha256": "e5bf82bc94c0e35647ff5b5b1e32d26e82f6c0ca227deb21adfa913d92f9f459",
++        "bytes": 6547
+       }
+     ]
+   }
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.sarif
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.sarif
+@@ -64,7 +64,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/verifier-output.txt
++++ b/examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/verifier-output.txt
+@@ -4,7 +4,7 @@
+ 
+ POST /quotes: refuted
+   observations: result refuted, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /quotes on cents=0, quantity=1: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts KafkaTemplate.send(topic="quotes", data.total=1, data.quantity=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=0, quantity=6), shrunk to the input above in 5 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -27,17 +27,17 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: refuted
+-  correspondence (inferred, proposed; refuted for sha256:85836ed5dcf6e6481e4d6590608105256c5e460e51c5a748ed645cb09c3e53e7): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; refuted for sha256:95712a26f3503e565459a16d183a21b138d771312217110c58c70151533db561): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result refuted, exception unresolved
+   witness: total(q=new Quote(new Money(0), 1)): before, 0; after, 1
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 2 verified, 1 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md
++++ b/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md
+@@ -194,7 +194,7 @@
+ | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | refuted | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -236,7 +236,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T215301Z-461041c6` at claim `0bdc5b62767fa0c6`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200055Z-ce5cd94b` at claim `0bdc5b62767fa0c6`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -269,17 +269,17 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: refuted
+-  correspondence (inferred, proposed; refuted for sha256:b8d0f4e806590aae7cfe2b73976ed7f08de6f527292c4c375121db4833dd060d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; refuted for sha256:de7f797a59bcf4a29790feb07b2ca81c0d9b469dcf0ad11a3465d61b89eac82d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result unresolved, exception unresolved, identity:result==q refuted
+   witness: withQuantity(q=new Quote(new Money(0), 1), quantity=0): before, Quote{cents=0, quantity=0}, leaving q=Quote{cents=0, quantity=0}, with result == q; after, Quote{amount=Money{cents=0}, quantity=0}, leaving q=Quote{amount=Money{cents=0}, quantity=0}
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 2 verified, 1 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/result.json
++++ b/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215301Z-461041c6",
++    "id": "20261108T200055Z-ce5cd94b",
+     "claim": "0bdc5b62767fa0c6",
+-    "startedAt": "2026-11-07T21:53:01+00:00",
+-    "seconds": 4.7,
++    "startedAt": "2026-11-08T20:00:55+00:00",
++    "seconds": 2.2,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.5,
++        "seconds": 0.2,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-hhd6i4wp/attempts/192/attempt-pl2tpit7"
++    "workspace": ".build-py/examples-5vpkim8m/attempts/192/attempt-qwa7cs9o"
+   },
+   "conclusion": {
+     "claim": "0bdc5b62767fa0c6",
+-    "attempt": "20261107T215301Z-461041c6",
++    "attempt": "20261108T200055Z-ce5cd94b",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -277,7 +277,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -312,8 +312,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "fafe676c04fff0dad35e5b53498a695b13ce24ffba80603348699001734f85cb",
+-        "bytes": 6092
++        "sha256": "96ac68db6231afd5b65d05c5272f6f92222e961e8b5cf6a47833ea0abc393ac7",
++        "bytes": 6298
+       }
+     ]
+   }
+--- a/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/verifier-output.txt
++++ b/examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/verifier-output.txt
+@@ -26,17 +26,17 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: refuted
+-  correspondence (inferred, proposed; refuted for sha256:b8d0f4e806590aae7cfe2b73976ed7f08de6f527292c4c375121db4833dd060d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; refuted for sha256:de7f797a59bcf4a29790feb07b2ca81c0d9b469dcf0ad11a3465d61b89eac82d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result unresolved, exception unresolved, identity:result==q refuted
+   witness: withQuantity(q=new Quote(new Money(0), 1), quantity=0): before, Quote{cents=0, quantity=0}, leaving q=Quote{cents=0, quantity=0}, with result == q; after, Quote{amount=Money{cents=0}, quantity=0}, leaving q=Quote{amount=Money{cents=0}, quantity=0}
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 2 verified, 1 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md
+@@ -161,7 +161,7 @@
+ | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -202,9 +202,9 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: reused from the proof cache (claim sha256:97e9847fa2781f7fa984347aa6898182175b0a1e3a015946efe3ef5160341eb4, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:12Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
+-
+-This page renders attempt `20261107T215308Z-be37c839` at claim `510031c58e443bcc`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: reused from the proof cache (claim sha256:56ce0b91cf60777b3d391e52bb2e54f47fe871903fe60b3901b2c4d6c089547c, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:01:02Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
++
++This page renders attempt `20261108T200059Z-ea9f2fc5` at claim `510031c58e443bcc`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -215,7 +215,7 @@
+ 
+ POST /quotes: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -238,16 +238,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+@@ -333,7 +333,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.json
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215308Z-be37c839",
++    "id": "20261108T200059Z-ea9f2fc5",
+     "claim": "510031c58e443bcc",
+-    "startedAt": "2026-11-07T21:53:08+00:00",
+-    "seconds": 4.7,
++    "startedAt": "2026-11-08T20:00:59+00:00",
++    "seconds": 2.4,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.3,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.5,
++        "seconds": 0.2,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-3elk0rk2/attempts/193/attempt-yrht_u0y"
++    "workspace": ".build-py/examples-rxhkjtw8/attempts/193/attempt-1jr6o1ax"
+   },
+   "conclusion": {
+     "claim": "510031c58e443bcc",
+-    "attempt": "20261107T215308Z-be37c839",
++    "attempt": "20261108T200059Z-ea9f2fc5",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -197,7 +197,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "reused from the proof cache (claim sha256:97e9847fa2781f7fa984347aa6898182175b0a1e3a015946efe3ef5160341eb4, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:12Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
++    "proof": "reused from the proof cache (claim sha256:56ce0b91cf60777b3d391e52bb2e54f47fe871903fe60b3901b2c4d6c089547c, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:01:02Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
+     "problem": null,
+     "statement": null,
+     "trace": null,
+@@ -277,7 +277,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -307,13 +307,13 @@
+     "artifacts": [
+       {
+         "path": "result.sarif",
+-        "sha256": "22aab5251ba1325c89e2cfd8ce40a2f8582bb0720b0662a3956dc034e4521e14",
++        "sha256": "6ffebedc03d1c2e06095570ac01a8a8f7ccb223e23a98ffd812ac660deaa7b10",
+         "bytes": 3100
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "6de2b33568516dfff927ed47e5f5709a3cc8d65c8a221abf203b006df90487c5",
+-        "bytes": 6422
++        "sha256": "392e5e023b224fca0c028dae48f0e6d9e9e22129979f1d6d9fcd8af7a4ef215b",
++        "bytes": 6628
+       }
+     ]
+   }
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.sarif
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.sarif
+@@ -64,7 +64,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/verifier-output.txt
++++ b/examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/verifier-output.txt
+@@ -4,7 +4,7 @@
+ 
+ POST /quotes: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -27,16 +27,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md
+@@ -167,7 +167,7 @@
+ | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -208,9 +208,9 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: reused from the proof cache (claim sha256:b3e1850b1bdf48689034a8f7ac7785ad3e5c4f82f093b7c4f2c90f6ba1a959bc, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:19Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
+-
+-This page renders attempt `20261107T215315Z-0e258e02` at claim `6f022296e888596a`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: reused from the proof cache (claim sha256:a643e7a2185c1df23c9cfd62c6eee4f6751ce6780870b940e104b598b6c7e7fb, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:01:06Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
++
++This page renders attempt `20261108T200104Z-181dab2b` at claim `6f022296e888596a`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -221,7 +221,7 @@
+ 
+ POST /quotes: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10), then KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10), then KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -244,16 +244,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+@@ -339,7 +339,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10), then KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10), then KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215315Z-0e258e02",
++    "id": "20261108T200104Z-181dab2b",
+     "claim": "6f022296e888596a",
+-    "startedAt": "2026-11-07T21:53:15+00:00",
+-    "seconds": 4.7,
++    "startedAt": "2026-11-08T20:01:04+00:00",
++    "seconds": 2.4,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -104,7 +104,7 @@
+         "name": "the shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.0,
++        "seconds": 0.1,
+         "stdout": "logs/05-the-shop-tests.stdout",
+         "stderr": "logs/05-the-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.5,
++        "seconds": 0.2,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.2,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-kx_wrdvz/attempts/194/attempt-2ot8cdwi"
++    "workspace": ".build-py/examples-dwcfdpvo/attempts/194/attempt-fwx34kbm"
+   },
+   "conclusion": {
+     "claim": "6f022296e888596a",
+-    "attempt": "20261107T215315Z-0e258e02",
++    "attempt": "20261108T200104Z-181dab2b",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -197,7 +197,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "reused from the proof cache (claim sha256:b3e1850b1bdf48689034a8f7ac7785ad3e5c4f82f093b7c4f2c90f6ba1a959bc, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:19Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
++    "proof": "reused from the proof cache (claim sha256:a643e7a2185c1df23c9cfd62c6eee4f6751ce6780870b940e104b598b6c7e7fb, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:01:06Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
+     "problem": null,
+     "statement": null,
+     "trace": null,
+@@ -277,7 +277,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -307,13 +307,13 @@
+     "artifacts": [
+       {
+         "path": "result.sarif",
+-        "sha256": "b2604f2ded7d166d1a4cc307add1021387b295d11fa35a293cdc5b80ccf75614",
++        "sha256": "31c11cdb56dc968f34d509c8e9fd1d4c28aa50430cf652e36b404644ffcb2bf3",
+         "bytes": 3223
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "b634275f16a4be220f766237527f7f2a37881001e323e5ffa001866d4af0ec6d",
+-        "bytes": 6523
++        "sha256": "8ac4e4fc1181bf4bef3c738b54b034b8989c305bca195cd6891faac65c2046ac",
++        "bytes": 6729
+       }
+     ]
+   }
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.sarif
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.sarif
+@@ -64,7 +64,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10), then KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10), then KafkaTemplate.send(topic=\"quotes\", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt
++++ b/examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt
+@@ -4,7 +4,7 @@
+ 
+ POST /quotes: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10), then KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /quotes on cents=1, quantity=10: the old build returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10); the new one returns 9 and attempts KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10), then KafkaTemplate.send(topic="quotes", data.total=9, data.quantity=10). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as observe(cents=20, quantity=20), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
+   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -27,16 +27,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md
++++ b/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md
+@@ -161,7 +161,7 @@
+ | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -203,7 +203,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T215322Z-741a2975` at claim `760ab91febc74e46`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200108Z-e82e2e6b` at claim `760ab91febc74e46`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -236,16 +236,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:4ff37cdbf556bec7ce11be330b2da7392b0c850d2b8a014339ddbd338a464f88): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:7117107718090f1cdd7450b913c5c08eea0bd364f05b71b6ed208916397ee879): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/result.json
++++ b/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215322Z-741a2975",
++    "id": "20261108T200108Z-e82e2e6b",
+     "claim": "760ab91febc74e46",
+-    "startedAt": "2026-11-07T21:53:22+00:00",
+-    "seconds": 4.6,
++    "startedAt": "2026-11-08T20:01:08+00:00",
++    "seconds": 2.3,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.4,
++        "seconds": 0.1,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -136,7 +136,7 @@
+         "name": "jvmcontract compare --json, rerun on the same cache",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stdout",
+         "stderr": "logs/09-jvmcontract-compare-json-rerun-on-the-same-cache.stderr"
+       },
+@@ -152,16 +152,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-4oo0moes/attempts/195/attempt-emmqaw4u"
++    "workspace": ".build-py/examples-wlx63ula/attempts/195/attempt-crg1qst_"
+   },
+   "conclusion": {
+     "claim": "760ab91febc74e46",
+-    "attempt": "20261107T215322Z-741a2975",
++    "attempt": "20261108T200108Z-e82e2e6b",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -268,7 +268,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -303,8 +303,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "2b163907016b62de997090efbfc9892a5d91007cd1b23aa334439eccd7325b3f",
+-        "bytes": 5950
++        "sha256": "d63fb07456d4455d8021c9ec21d2012ab35412bdf224888f93d3782f75521756",
++        "bytes": 6156
+       }
+     ]
+   }
+--- a/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/verifier-output.txt
++++ b/examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/verifier-output.txt
+@@ -26,16 +26,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:4ff37cdbf556bec7ce11be330b2da7392b0c850d2b8a014339ddbd338a464f88): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:7117107718090f1cdd7450b913c5c08eea0bd364f05b71b6ed208916397ee879): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 8 (7 preserved, 1 unresolved)
+--- a/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md
++++ b/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md
+@@ -163,7 +163,7 @@
+ | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
+ | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
+ | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
+-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
++| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
+ 
+ Obligations, one per observation of an old entry point: 4 new, 3 preserved, 4 removed, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
+ 
+@@ -209,7 +209,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261107T215328Z-882f9feb` at claim `7f8e12fd189a27b5`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200113Z-91fa50b9` at claim `7f8e12fd189a27b5`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -242,16 +242,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 12 (4 new, 3 preserved, 4 removed, 1 unresolved)
+--- a/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/result.json
++++ b/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215328Z-882f9feb",
++    "id": "20261108T200113Z-91fa50b9",
+     "claim": "7f8e12fd189a27b5",
+-    "startedAt": "2026-11-07T21:53:28+00:00",
+-    "seconds": 4.2,
++    "startedAt": "2026-11-08T20:01:13+00:00",
++    "seconds": 2.2,
+     "engine": "native",
+     "options": [
+       "--cache",
+@@ -40,7 +40,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -53,9 +53,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-shop-s-examples-190-196-re",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-shop-s-examples-190-196-re"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-shop-s-e"
+     },
+     "execution": {
+       "status": "completed",
+@@ -80,7 +80,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/02-javac-shop-stubs.stdout",
+         "stderr": "logs/02-javac-shop-stubs.stderr"
+       },
+@@ -88,7 +88,7 @@
+         "name": "javac patched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/03-javac-patched-shop-main.stdout",
+         "stderr": "logs/03-javac-patched-shop-main.stderr"
+       },
+@@ -96,7 +96,7 @@
+         "name": "javac patched shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-shop-tests.stdout",
+         "stderr": "logs/04-javac-patched-shop-tests.stderr"
+       },
+@@ -104,7 +104,7 @@
+         "name": "the shop tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/05-the-shop-tests.stdout",
+         "stderr": "logs/05-the-shop-tests.stderr"
+       },
+@@ -112,7 +112,7 @@
+         "name": "javac shop stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-shop-stubs.stdout",
+         "stderr": "logs/06-javac-shop-stubs.stderr"
+       },
+@@ -120,7 +120,7 @@
+         "name": "javac unpatched shop main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.8,
++        "seconds": 0.4,
+         "stdout": "logs/07-javac-unpatched-shop-main.stdout",
+         "stderr": "logs/07-javac-unpatched-shop-main.stderr"
+       },
+@@ -128,7 +128,7 @@
+         "name": "jvmcontract compare",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.3,
++        "seconds": 0.1,
+         "stdout": "logs/08-jvmcontract-compare.stdout",
+         "stderr": "logs/08-jvmcontract-compare.stderr"
+       },
+@@ -157,11 +157,11 @@
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-_0kujdf1/attempts/196/attempt-5p4oa4o_"
++    "workspace": ".build-py/examples-fq9j25jd/attempts/196/attempt-gzx78nqu"
+   },
+   "conclusion": {
+     "claim": "7f8e12fd189a27b5",
+-    "attempt": "20261107T215328Z-882f9feb",
++    "attempt": "20261108T200113Z-91fa50b9",
+     "status": "unresolved",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -268,7 +268,7 @@
+           "subject": "shop.Quote#quantity",
+           "symbol": "shop.Quote#quantity",
+           "verdict": "unverifiable",
+-          "why": "quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are",
++          "why": "the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet",
+           "reused": false,
+           "callees": []
+         }
+@@ -326,8 +326,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "de19c7b7642b361403bce42a3010a9ee95fa84e99e583d86da46c31a6535fcd8",
+-        "bytes": 6580
++        "sha256": "5ee03d0c6e0b96a131de20eb237411cab5fcb4cb41c9719c5cd480922c26ec34",
++        "bytes": 6786
+       }
+     ]
+   }
+--- a/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/verifier-output.txt
++++ b/examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/verifier-output.txt
+@@ -26,16 +26,16 @@
+   observations: result preserved, exception preserved
+   domain: gross: long × quantity: int
+ shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
++  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+   observations: result preserved, exception preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
+-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
++  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
+ shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
+-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
++  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+   observations: result preserved, exception preserved, identity:result==q preserved
+   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
+ shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
+-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
++shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
+ 
+ kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
+ obligations: 12 (4 new, 3 preserved, 4 removed, 1 unresolved)

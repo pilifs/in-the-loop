@@ -1,0 +1,233 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-200158-application-core-phase-5-step-4-j4-s-cos",
+  "title": "application-core Phase 5 step 4: J4's cost report at the merged revision, all five cases with preparation, solving and replay apart",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m43s, peak 1.9 GiB (estimated 15m00s, 3.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+  "attention": [
+    "step 1 (J4 benchmark, release, 7 repeats) was held back 4m50s by its 2-CPU quota in 3m43s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-200158-application-core-phase-5-step-4-j4-s-cos.json",
+    "sha256": "0a92b0898a5d760717428c8121f1de26426b13af3ea0a170c06635748a98f72b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-200158-application-core-phase-5-step-4-j4-s-cos",
+      "title": "application-core Phase 5 step 4: J4's cost report at the merged revision, all five cases with preparation, solving and replay apart",
+      "description": "J4 of llm-dlc/loops/application-core-acceptance.md, Phase 5 step 4 of llm-dlc/loops/application-core.md, at the commit that carries this job (the merged revision with every Phase 5 piece so far). The reuse stream ran this benchmark (lib/tests/preparation.rs, ignored inline) at its own commit 283aa75d in job 20261108-114325, which passed; its report lib/benchmark/preparation/j4.json stays as recorded. Since then the four streams merged and the library changed in 33 files of lib/src (compare --domains, String and list adapters, receivers with dependencies, literals by code units, and more); the benchmark changed by one line only (Options gained domains: Default::default()). This job runs the identical step on the merged revision and writes j4-merge.json and .md beside the stream's report. Cases on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191, and lib/tests/fixtures/preparation's overlays): a cold run of after, an unchanged rerun, an unrelated edit (a class nothing reaches), a safe helper rewrite (Pricing.discount), and the real defect offset cold and rerun; preparation, solving and replay (after the runs: the witness replayed, shrunk and run on a JVM) timed apart, medians of 7, release. Native engine only, the fixture's bounds (unwind 16, arrays up to 8); no JBMC. A debug smoke run inline (1 repeat, 61 s) passed with the stream's verdicts and cache outcomes.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:compare",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/preparation.rs",
+          "lib/tests/fixtures/preparation",
+          "llm-dlc/loops/application-core.md"
+        ]
+      },
+      "expected": "The step exits 0 (the process status), and the benchmark's assertions hold, which are its verdicts: every repeat and the process reach the same verdicts; under after, unrelated-edit and helper-rewrite the route POST /quotes and Pricing#total, #withQuantity and #discount verified, POST /quotes/text unresolved, Money#cents and Quote#quantity unchecked; under offset the route and total refuted; the reruns and the unrelated edit prove nothing again; in the helper rewrite total is proved again on a new proof of discount (a key other than the cold run's), the helper's own proof a miss, withQuantity an exact hit. The report has six scenarios. The figures are for these fixtures only.",
+      "submitted": {
+        "at": "2026-11-08T20:01:58+00:00",
+        "session": "6ca21bdf-4743-4500-90ea-7fe6280624b2",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "job 20261108-114325 ran the same step in 3m37s at 1.7 GiB peak, its release build included"
+      },
+      "steps": [
+        {
+          "name": "J4 benchmark, release, 7 repeats",
+          "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/j4-merge.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-j4-merge.log",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/preparation/j4-merge.json",
+        "lib/benchmark/preparation/j4-merge.md"
+      ]
+    }
+  },
+  "sourceCommit": "9a1b3b3a447ebb2cad33ac1a890ee00e3b9a8932",
+  "startedAt": "2026-11-08T20:03:44+00:00",
+  "finishedAt": "2026-11-08T20:07:29+00:00",
+  "wallSeconds": 225.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2996250,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "job 20261108-114325 ran the same step in 3m37s at 1.7 GiB peak, its release build included"
+  },
+  "usage": {
+    "peakMemoryBytes": 2004959232,
+    "wallSeconds": 223.8,
+    "cpuSeconds": 330.4,
+    "memoryOfEstimate": 0.62,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "J4 benchmark, release, 7 repeats",
+      "run": "set -o pipefail; cd lib && mkdir -p target benchmark/preparation && PREPARATION_REPEATS=7 PREPARATION_REPORT=benchmark/preparation/j4-merge.json cargo test --release --test preparation -- --ignored --nocapture 2>&1 | tee target/preparation-j4-merge.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 223.803,
+      "cpuSeconds": 330.427,
+      "cpuThrottledSeconds": 290.532,
+      "peakMemoryBytes": 2004959232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-j4-benchmark-release-7-repeats.log",
+        "lines": 261,
+        "bytes": 11642,
+        "sha256": "2d1f681c4716b1386abdf40952fb596d372f085870a9544630e2709a451eefe5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 260,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 46.73s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "| checker runs: decoding classes and methods (loading, lowering) | 0.0 |",
+        "| checker runs: exploring, encoding and solving | 1350.0 |",
+        "| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 35.2 |",
+        "| store: writing the result, a refutation's witness replayed first | 1.7 |",
+        "| replay of a stored or new witness (inside lookup and store) | 0.9 |",
+        "| outside every proof: compare's own steps after the last proof | 0.8 |",
+        "",
+        "### defect, rerun (`offset`, from the cache the same build's run left)",
+        "",
+        "5 proofs, 5 exact hits, 0 proved; in process 51.6 ms, as a process 106.6 ms (medians of 7)",
+        "",
+        "| Subject | Reached | On the helper proofs |",
+        "|---|---|---|",
+        "| POST /quotes | exact hit |  |",
+        "| POST /quotes/text | unchecked |  |",
+        "| shop.Pricing#discount | exact hit |  |",
+        "| shop.Pricing#total | exact hit | Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade |",
+        "| shop.Pricing#withQuantity | exact hit |  |",
+        "| shop.Money#cents | unchecked |  |",
+        "| shop.Quote#quantity | unchecked |  |",
+        "",
+        "| Stage | ms |",
+        "|---|---|",
+        "| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 47.2 |",
+        "| plan: both versions' reach and closures compared | 0.5 |",
+        "| key: the claim and its digest | 1.3 |",
+        "| key's closures: both versions' closures digested | 1.1 |",
+        "| lookup: reading the store | 0.2 |",
+        "| checker runs: decoding classes and methods (loading, lowering) | 0.0 |",
+        "| checker runs: exploring, encoding and solving | 0.0 |",
+        "| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |",
+        "| store: writing the result, a refutation's witness replayed first | 0.0 |",
+        "| replay of a stored or new witness (inside lookup and store) | 0.7 |",
+        "| outside every proof: compare's own steps after the last proof | 0.8 |",
+        "",
+        "written to benchmark/preparation/j4-merge.json and benchmark/preparation/j4-merge.md",
+        "test where_a_compare_runs_time_goes_stage_by_stage ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 46.73s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/preparation/j4-merge.json",
+      "change": "added",
+      "bytes": 37910,
+      "sha256": "b0caa08414350b0fbc095d02958be94e30d354f6b7c5786441a0ff6fb2821a7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/preparation/j4-merge.md",
+      "change": "added",
+      "bytes": 9544,
+      "sha256": "4b1c9ceb959052356a066434974804e457185939b7a63227bea3cdbdb81b8627",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T20:07:36+00:00",
+    "applied": [
+      "lib/benchmark/preparation/j4-merge.json",
+      "lib/benchmark/preparation/j4-merge.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

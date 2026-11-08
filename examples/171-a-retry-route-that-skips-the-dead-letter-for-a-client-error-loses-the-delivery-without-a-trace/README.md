@@ -161,14 +161,14 @@ Dead-letter what is given up, whatever the reason: keep the shortcut if the poli
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
 
-This page renders attempt `20261107T215253Z-cd4384bb` at claim `80e0489a725654a4`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261108T200050Z-61535825` at claim `80e0489a725654a4`, in pipeline job `20261108-195650-application-core-phase-5-step-3-deliveri`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
 POST /deliveries/failures: refuted
   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
-  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
   search: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int
   domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
@@ -250,7 +250,7 @@ POST /deliveries/failures: refuted
           "ruleId": "effects-changed",
           "level": "error",
           "message": {
-            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
           },
           "locations": [
             {

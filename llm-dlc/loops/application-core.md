@@ -1370,7 +1370,145 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Next**: step 5's for-review list, with the pending jobs named. Read their results once they are collected: step
     3's four, `20261108-195222` (finished, passed, not yet collected) and this one. Then J4's figures go into the
     list. The two allocation-bound decisions are still open.
-- Status: working
+- 2026-11-08, **Phase 5 step 5: the for-review list**, at `loozqmzm` (`9a1b3b3a`). Five of the six jobs it names have
+  finished, all passed, and wait for the verification loop to collect them. Their results are read here from its
+  runner's state: their `result.json`, logs and output files. J4's rerun is still running.
+  - **Step 3's examples kept their expected outcomes**. All four jobs ran at `c1bc0820`:
+    - shop `20261108-195650-…-shop-s-e`, 31 s: 190 and 195 verified, 191–194 violation, 196 unverifiable;
+    - crosscut `-crosscut`, 21 s: 150, 152 and 160 verified, 151 and 161 violation;
+    - deliveries `-deliveri`, 14 s: 170 verified, 171 and 172 violation;
+    - `20261108-195703-…-lib-test`, 2m19s: `lib/tests/integration.rs` 65 of 65, JBMC's tests included.
+
+    Compared with the recorded results, each conclusion is unchanged. Only some wording, claim digests and timings
+    differ:
+    - the constructor assumption now says "an input both versions' constructors reject", step 5's rule since item 7;
+    - `lastAfter`'s helper claim has a new key.
+
+    One part changed, in all seven shop examples. `shop.Quote#quantity` is still unverifiable, now for a different
+    reason: "the receiver is made differently in the two versions" (`Quote(long, int)` before, `Quote(Money, int)`
+    now). It was refused as an instance method before. Each example's note "What stays unresolved in every example of
+    the set" names the old reason. It is updated once the job is collected, so that the collected README and the
+    note agree.
+  - **The rows on the merged revision** (the contract's mandatory rows, then the stream items V3, E3 and R3):
+    - **G0, passes.**
+      - Phase 0's gate refuses every unread option, with its reproducers. The contract's G0 verifies the kernel's
+        own claim and refuses each unsupported policy.
+      - The cleanup merge's reruns passed (`20261107-215001-…`, four jobs), and step 3 reran them at the merged
+        revision.
+      - The integration check passed on the merge.
+      - VF-015's job `20261108-024648-…` failed at step 5 (a JBMC class-initializer guard, not the harness fix), and
+        the user deferred it.
+    - **O1, passes.**
+      - The objects stream's job `20261108-045000-…`.
+      - Step 2's job `20261108-180246-…`: H's `allows` as a regression and as a property, verified and refuted with
+        replay, no refusal accepted.
+    - **O2, partial: one case waits on the user.**
+      - The stream's jobs `20261108-072230-…` and `-074116-…`.
+      - On the quote family: J1's O2 (`checked-claim`) in job `20261108-195222-…`, finished and passed, not yet
+        collected.
+      - Every build reaches `expected.json`'s verdict but `alias-to-copy`. That one is held to the allocation gate's
+        unresolved outcome until the user decides `checked-claim`'s bound (1 or 3; see that entry).
+    - **O3, passes.** Step 2's job, H: both frozen throttle claims, under the user's bound of 1. The setup-domain
+      refutation is replayed with its whole history, and the constructor-only claim is labelled so.
+    - **V1, passes.** Step 2's job, J1's `Codes#vip`: the rewrite proved, `wrong-prefix` refuted on content and run
+      on a JVM. Also job `20261108-195222-…`'s String-inside-an-object tests.
+    - **V2, partial: one case waits on the user.**
+      - Step 2's job, L: `basket-total-claim`, `basket-clear-claim`, and `total` and `clearAll` within 3.
+      - `basket-first-claim`'s `copied-first` is held to the gate's unresolved outcome until the user decides its
+        bound (0 or 2).
+      - Unsupported implementations are refused by name (`tests/value_parameters.rs`).
+    - **E1 and E2, pass.** Step 2's job, J1: `quote-claim`'s and `offer-claim`'s sixteen verdicts through the
+      planned effect check, under one declared environment. The DTO is made by the shared construction plan.
+    - **R1, passes.** Step 2's job: the contract's R1, and J1's `units` property under the cache, with an exact rerun
+      reused.
+    - **R2, passes.** Step 2's job (J1's `fee` summary), and job `20261108-185910-…`: `fee` on every quote build,
+      with a receiver whose dependencies are null.
+    - **J1, partial**, by O2's one case. Every other part reaches its verdicts on the real combined revision, with
+      no adapter written by hand. Each verified result has every observation of its claim preserved (step 2's job,
+      `20261108-185910-…`, `20261108-195222-…`).
+    - **J2, passes.** In step 2's job and the two after it, every step ran with a recording `jbmc` first on `PATH`,
+      and it was never called. `--confirm` is explicit: `allows` is unconfirmed ("jbmc is not installed"), and the
+      String and list claims are not asked.
+    - **J3, passes.**
+      - The reuse stream's key over the new claim parts (`tests/reuse.rs`, in the contract).
+      - Step 2's job's three kinds of invalidation, each another key, checked again: a modelled outcome less, a
+        smaller list bound, and another assertion.
+      - Each build whose verdict differs from `after`'s gets another key.
+    - **J4, passes on the reuse stream's evidence; the merge's rerun is running.**
+      - The stream's report, job `20261108-114325-…` at its `283aa75d`, has all five cases, with preparation,
+        solving and replay timed apart, and R3's reuse.
+      - Since then the library changed in 33 files. The inline smoke run at this revision got the same verdicts and
+        cache outcomes.
+      - Job `20261108-200158-…` reruns it unchanged, writing `j4-merge.*`. Its figures go here once it is collected.
+    - **V3, passes.** It ran inline only: `tests/values.rs`, the evidence records, and value domains resolved before
+      the key.
+      - VF-023 was closed by job `20261108-141443-…`, its last attempt.
+      - The values stream's three VF-023 probe jobs passed.
+    - **E3, passes.** Inline, `tests/environment_responses.rs` 8 of 8. On Q, `offer-claim`'s nullable `Offer` is in
+      step 2's job.
+    - **R3, done** with a justified outcome: the JDK image's class table shared within the process. Jobs
+      `20261108-060410-…` and `-063259-…`.
+  - **Deferred by the timebox**: none, in any stream or in Phase 5. **Deferred by the user**: VF-015's step 5.
+  - **For the user**: the allocation bounds of `basket-first-claim` (0 or 2) and `checked-claim` (1 or 3). Each
+    decides one case of V2 and O2, and nothing else waits on it.
+  - **Unsupported, refused by name**. Each was recorded in its piece above.
+    - Strings:
+      - a String parameter or field in a property check, which has no String terms;
+      - a String result;
+      - a String plan root;
+      - a null String;
+      - a list of Strings (its domain can state the bound, but nothing makes one);
+      - string concatenation at a route (`POST /quotes/text` in 190–196);
+      - JBMC on a String or list claim (`--engine jbmc` refused, `--confirm` not asked).
+    - Lists:
+      - a raw list, a wildcard's or a type variable's;
+      - elements made from arrays or objects;
+      - a list with `--before-target`, `--before-arguments`, `--results-agree-when` or a correspondence;
+      - `--nullable` or `--may-alias` of a list;
+      - a list inside a node, or as a property check's parameter.
+
+      Every made object is constructed whether the list holds it or not, which is sound but stricter.
+    - Objects:
+      - a result the check doesn't follow (`Object`, an interface);
+      - a receiver made differently in the two versions (`Quote#quantity`);
+      - a method of a class the old build lacks (`Money#cents`);
+      - a dependency the method's closure reaches, and an abstract class as a dependency;
+      - array fields in property expressions;
+      - a package-private method that an override in another package might change, whose JVM replay is left
+        unreported.
+    - Environment:
+      - a DTO with a method, an object or static field, `hashCode` on it, or a field written;
+      - a planned subject with an object inside another, a null or shared root, a factory, a setup sequence, a
+        correspondence, or an observation other than the result, the exception and the effects;
+      - a `double` result.
+  - **Found, for review**:
+    - The merge entry's list stands (the static-field writes, `Character` classification, the surrogate render, the
+      `List12` name, `List.of(E...)`'s evidence record, the checker's time limit, an unreplayable property witness,
+      `bmc::bits`' timing flake, the coupling-dependent reordering, the array helper's out-of-bounds outcome,
+      `jimage.rs`'s ownership, a route's effect proof not using helper evidence).
+    - Phase 5 added:
+      - The heap check's proof cache keys the harness, not the domain's label or bounds. Phase 0's "the claim key
+        covers the label" holds of `spec::cache::key` only.
+      - A planned subject runs no boundary walk.
+      - A constructor's exception counts as the outcome.
+      - The frozen claim's relative payload paths are read from the call's one argument.
+      - The JVM run opens instance methods (`relocate::opened_with`).
+      - `tests/reuse.rs` asserts the frozen key for two resolved evidence records.
+      - `Money#cents` and `Quote#quantity` are unchecked in J4's scenarios, for the reasons above.
+  - **Optional, left out**: reuse's R4 (the local write summary); objects' factory routes and reference arrays;
+    values' extra String or list method; environment's clock and response script.
+  - **Pending jobs**:
+    - finished and passed, not yet collected: `20261108-195222-application-core-phase-5-a-string-inside`, and
+      `20261108-195650-application-core-phase-5-step-3-shop-s-e`, `-crosscut`, `-deliveri`,
+      `20261108-195703-application-core-phase-5-step-3-lib-test`;
+    - running: `20261108-200158-application-core-phase-5-step-4-j4-s-cos`.
+  - **Next**, once they are collected:
+    - update the seven shop examples' note on `Quote#quantity`;
+    - read job `20261108-200158-…`'s figures into J4's row, comparing them with the stream's.
+
+    Then Phase 5's criterion is met, apart from the two user decisions, which leave O2, V2 and J1 partial with
+    their evidence.
+- Status: waiting on jobs 20261108-195222-application-core-phase-5-a-string-inside 20261108-195650-application-core-phase-5-step-3-shop-s-e 20261108-195650-application-core-phase-5-step-3-crosscut 20261108-195650-application-core-phase-5-step-3-deliveri 20261108-195703-application-core-phase-5-step-3-lib-test 20261108-200158-application-core-phase-5-step-4-j4-s-cos
 
 ## Loop settings
 

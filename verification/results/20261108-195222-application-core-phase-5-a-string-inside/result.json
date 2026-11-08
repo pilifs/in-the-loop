@@ -1,0 +1,384 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-195222-application-core-phase-5-a-string-inside",
+  "title": "application-core Phase 5: a String inside an object (J1's O2, checked-claim on the quote family), on the own checker with no JBMC",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 3m27s, peak 2.3 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "step 1 (build the tests and the recording jbmc) was held back 5m37s by its 2-CPU quota in 3m16s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (the String-inside-an-object tests) was held back 4.8s by its 2-CPU quota in 3.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-195222-application-core-phase-5-a-string-inside.json",
+    "sha256": "d0509bd41725675a205a09801c9edc3192cd36ffd9e649295e05515f211a6062",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-195222-application-core-phase-5-a-string-inside",
+      "title": "application-core Phase 5: a String inside an object (J1's O2, checked-claim on the quote family), on the own checker with no JBMC",
+      "description": "At the revision that commits this job (llm-dlc/loops/application-core.md, Phase 5, after the receiver-with-dependencies piece left J1's O2 part refused on the request's String code). The regression check (equivalence, so also the heap check of a planned claim) now makes a constructor's String argument as a leaf of its construction (harness::is_leaf; a plan's adapted String inside a node), a value of the String adapter of at most the check's bound of code units, never null, and compares a String field by content (harness::FieldKind::String, String.equals), never by identity. Step 2 runs lib/tests/application_core_joint.rs's j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string (acceptance rows J1 and O2): the frozen checked-claim (QuoteService#checked, domain planned: the service with three null dependencies and the request made from a String code of at most 4 code units and an int array of at most 4, allocations bounded at 1, unwind 16), engine native, every build of the quote family, no refusal accepted: after and six defects verified with every observation preserved, each rerun under one proof cache the stored result under the same key; alias-to-copy held to the allocation gate's outcome (unresolved: its code may make 3 objects, more than the frozen bound of 1), a user decision recorded in the brief's Progress; and under a bound of 3, after verified and alias-to-copy refuted (violation) on identity:result==request with its witness run on a JVM. Step 3 runs lib/tests/object_strings.rs (3 tests): four rewrites over Strings inside objects proved, three defects refuted and run on a JVM; the property check, --engine jbmc and plans with a String bounded otherwise, nullable, misnamed or a list inside a node refused by name; an exact rerun reused but not under another bound or after an edit of the constructor taking the String. Each step runs with a jbmc first on PATH that records being called, and the last step fails if it was. Expected process status 0 for every step.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "bmc:native"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/application_core_joint.rs",
+          "lib/tests/object_strings.rs",
+          "lib/src/harness/mod.rs",
+          "lib/src/construction.rs",
+          "llm-dlc/loops/application-core.md"
+        ]
+      },
+      "expected": "every step exits 0: j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string and the 3 object_strings tests pass, and the last step finds no call of jbmc",
+      "submitted": {
+        "at": "2026-11-08T19:52:22+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "inline release runs on this machine: j1_o2 about 7 s, object_strings 2 s; plus a release build of the two test binaries (about 3 min)"
+      },
+      "steps": [
+        {
+          "name": "build the tests and the recording jbmc",
+          "run": "cd lib && rm -rf target/strings-shim && mkdir -p target/strings-shim/bin && printf \"#!/bin/sh\\ntouch %s/target/strings-shim/jbmc-called\\nexit 127\\n\" \"$PWD\" > target/strings-shim/bin/jbmc && chmod +x target/strings-shim/bin/jbmc && cargo test --release --test application_core_joint --test object_strings --no-run",
+          "cwd": "."
+        },
+        {
+          "name": "J1 (O2): checked-claim with the request's String code",
+          "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/strings-shim/bin:$PATH\" cargo test --release --test application_core_joint j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string -- --exact --nocapture 2>&1 | tee target/strings-j1-o2.log",
+          "cwd": "."
+        },
+        {
+          "name": "the String-inside-an-object tests",
+          "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/strings-shim/bin:$PATH\" cargo test --release --test object_strings -- --nocapture 2>&1 | tee target/strings-tests.log",
+          "cwd": "."
+        },
+        {
+          "name": "J2's guard: no check called jbmc",
+          "run": "cd lib && test ! -e target/strings-shim/jbmc-called && echo \"no check called jbmc\"",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4d6c62796ce186d2fa4c28415f2ebbb788570625",
+  "startedAt": "2026-11-08T19:54:19+00:00",
+  "finishedAt": "2026-11-08T19:57:48+00:00",
+  "wallSeconds": 209.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2930552,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "inline release runs on this machine: j1_o2 about 7 s, object_strings 2 s; plus a release build of the two test binaries (about 3 min)"
+  },
+  "usage": {
+    "peakMemoryBytes": 2486874112,
+    "wallSeconds": 207.7,
+    "cpuSeconds": 324.6,
+    "memoryOfEstimate": 0.77,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "build the tests and the recording jbmc",
+      "run": "cd lib && rm -rf target/strings-shim && mkdir -p target/strings-shim/bin && printf \"#!/bin/sh\\ntouch %s/target/strings-shim/jbmc-called\\nexit 127\\n\" \"$PWD\" > target/strings-shim/bin/jbmc && chmod +x target/strings-shim/bin/jbmc && cargo test --release --test application_core_joint --test object_strings --no-run",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 196.903,
+      "cpuSeconds": 304.71,
+      "cpuThrottledSeconds": 337.664,
+      "peakMemoryBytes": 2486874112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-the-tests-and-the-record.log",
+        "lines": 55,
+        "bytes": 1954,
+        "sha256": "11cd924f4e9d665fea0ee9d45e0453fbb510b34c4801e1f75717c590f956a10f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling zmij v1.0.23",
+        "   Compiling anstream v1.0.0",
+        "   Compiling heck v0.5.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling serde v1.0.229",
+        "   Compiling syn v3.0.9",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling cc v1.10.0",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling itoa v1.0.18",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling psm v0.1.32",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261108-195222-application-core-phase-5-a-string-inside/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 16s",
+        "  Executable tests/application_core_joint.rs (target/release/deps/application_core_joint-907f1f6d45e95eba)",
+        "  Executable tests/object_strings.rs (target/release/deps/object_strings-47f1de8ddf9b1b22)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "J1 (O2): checked-claim with the request's String code",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/strings-shim/bin:$PATH\" cargo test --release --test application_core_joint j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string -- --exact --nocapture 2>&1 | tee target/strings-j1-o2.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 7.015,
+      "cpuSeconds": 13.218,
+      "cpuThrottledSeconds": 0.754,
+      "peakMemoryBytes": 84148224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-j1-o2-checked-claim-with-the-r.log",
+        "lines": 26,
+        "bytes": 30309,
+        "sha256": "426eaa5b2c48a8404910582d087087a2f739ef8dc0b88946dd6b210f15ab74fd",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 25,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 6.93s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.03s",
+        "     Running tests/application_core_joint.rs (target/release/deps/application_core_joint-907f1f6d45e95eba)",
+        "",
+        "running 1 test",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"after\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their constructors",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"after\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their constructors",
+        "evidence: {\"accounting\":[[\"result\",\"unresolved\"],[\"exception\",\"unresolved\"],[\"identity:result==request\",\"unresolved\"],[\"field:request.quantities\",\"unresolved\"]],\"assumptions\":[],\"build\":\"alias-to-copy\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their ",
+        "evidence: {\"accounting\":[[\"result\",\"unresolved\"],[\"exception\",\"unresolved\"],[\"identity:result==request\",\"unresolved\"],[\"field:request.quantities\",\"unresolved\"]],\"assumptions\":[],\"build\":\"alias-to-copy\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their ",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"helper-extra-field\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"helper-extra-field\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"ignored-rate\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their const",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"ignored-rate\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their const",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"missing-catch\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their cons",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"missing-catch\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their cons",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"wrong-branch-event\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"wrong-branch-event\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"wrong-prefix\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their const",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"wrong-prefix\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their const",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"wrong-query-key\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their co",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"wrong-query-key\",\"claim\":\"checked-claim\",\"domain\":\"as the quote claim's (the service and the request made by their co",
+        "evidence: {\"accounting\":[[\"result\",\"preserved\"],[\"exception\",\"preserved\"],[\"identity:result==request\",\"preserved\"],[\"field:request.quantities\",\"preserved\"]],\"assumptions\":[],\"build\":\"after\",\"claim\":\"checked-claim, allocations 3\",\"domain\":\"as the quote claim's (the service and the request made by the",
+        "evidence: {\"accounting\":[[\"result\",\"unresolved\"],[\"exception\",\"unresolved\"],[\"identity:result==request\",\"refuted\"],[\"field:request.quantities\",\"unresolved\"]],\"assumptions\":[],\"build\":\"alias-to-copy\",\"claim\":\"checked-claim, allocations 3\",\"domain\":\"as the quote claim's (the service and the request ma",
+        "test j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 6.93s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "the String-inside-an-object tests",
+      "run": "set -o pipefail; cd lib && PATH=\"$PWD/target/strings-shim/bin:$PATH\" cargo test --release --test object_strings -- --nocapture 2>&1 | tee target/strings-tests.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 3.609,
+      "cpuSeconds": 6.709,
+      "cpuThrottledSeconds": 4.824,
+      "peakMemoryBytes": 145965056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-string-inside-an-object-te.log",
+        "lines": 10,
+        "bytes": 541,
+        "sha256": "8c8b9a21a53d33d0830a3b0330c7e80daf7f3248594a154b64074a118eb8fce0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 9,
+          "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.36s",
+          "groups": [
+            "ok",
+            "3",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.02s",
+        "     Running tests/object_strings.rs (target/release/deps/object_strings-47f1de8ddf9b1b22)",
+        "",
+        "running 3 tests",
+        "test a_cached_proof_over_a_string_inside_an_object_is_tied_to_its_bound_and_its_constructor ... ok",
+        "test a_string_inside_an_object_is_a_leaf_and_a_string_field_is_compared_by_content ... ok",
+        "test a_string_inside_an_object_outside_the_regression_check_is_refused_by_name ... ok",
+        "",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.36s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "J2's guard: no check called jbmc",
+      "run": "cd lib && test ! -e target/strings-shim/jbmc-called && echo \"no check called jbmc\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.007,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2211840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-j2-s-guard-no-check-called-jbm.log",
+        "lines": 1,
+        "bytes": 21,
+        "sha256": "2bff207a1f248378fde4c862d7b3babc56fc4a668b3b03822bae89862c74285a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "no check called jbmc"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T20:07:36+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

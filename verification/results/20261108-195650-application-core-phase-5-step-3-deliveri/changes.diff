@@ -1,0 +1,496 @@
+--- a/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md
++++ b/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/README.md
+@@ -151,7 +151,7 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over status: int × idempotent: boolean × attempts: int in 0.0 s; loops unwound 16 times with unwinding assertions.
+ 
+-This page renders attempt `20261107T215246Z-0a267420` at claim `e5539e714f9cf51b`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200045Z-122f9409` at claim `e5539e714f9cf51b`, in pipeline job `20261108-195650-application-core-phase-5-step-3-deliveri`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json
++++ b/examples/170-a-retry-route-refactored-with-its-retry-policy-proved-to-send-what-it-sent/result.json
+@@ -28,16 +28,16 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215246Z-0a267420",
++    "id": "20261108T200045Z-122f9409",
+     "claim": "e5539e714f9cf51b",
+-    "startedAt": "2026-11-07T21:52:46+00:00",
+-    "seconds": 5.4,
++    "startedAt": "2026-11-08T20:00:45+00:00",
++    "seconds": 2.8,
+     "engine": "native",
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -50,9 +50,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-deliveri",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-deliveri"
+     },
+     "execution": {
+       "status": "completed",
+@@ -77,7 +77,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/02-javac-deliveries-stubs.stdout",
+         "stderr": "logs/02-javac-deliveries-stubs.stderr"
+       },
+@@ -85,7 +85,7 @@
+         "name": "javac patched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-deliveries-main.stdout",
+         "stderr": "logs/03-javac-patched-deliveries-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.6,
+         "stdout": "logs/04-javac-patched-deliveries-tests.stdout",
+         "stderr": "logs/04-javac-patched-deliveries-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-deliveries-stubs.stdout",
+         "stderr": "logs/06-javac-deliveries-stubs.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "javac unpatched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.4,
++        "seconds": 0.7,
+         "stdout": "logs/07-javac-unpatched-deliveries-main.stdout",
+         "stderr": "logs/07-javac-unpatched-deliveries-main.stderr"
+       },
+@@ -125,7 +125,7 @@
+         "name": "jvmcontract effects",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/08-jvmcontract-effects.stdout",
+         "stderr": "logs/08-jvmcontract-effects.stderr"
+       },
+@@ -133,7 +133,7 @@
+         "name": "jvmcontract effects --json",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/09-jvmcontract-effects-json.stdout",
+         "stderr": "logs/09-jvmcontract-effects-json.stderr"
+       },
+@@ -149,16 +149,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-7u5snkng/attempts/170/attempt-ucwzn74u"
++    "workspace": ".build-py/examples-sdm_56vy/attempts/170/attempt-9lmu100g"
+   },
+   "conclusion": {
+     "claim": "e5539e714f9cf51b",
+-    "attempt": "20261107T215246Z-0a267420",
++    "attempt": "20261108T200045Z-122f9409",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+--- a/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md
++++ b/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/README.md
+@@ -161,14 +161,14 @@
+ 
+ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
+ 
+-This page renders attempt `20261107T215253Z-cd4384bb` at claim `80e0489a725654a4`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200050Z-61535825` at claim `80e0489a725654a4`, in pipeline job `20261108-195650-application-core-phase-5-step-3-deliveri`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ POST /deliveries/failures: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int
+   domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -250,7 +250,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json
++++ b/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.json
+@@ -28,16 +28,16 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215253Z-cd4384bb",
++    "id": "20261108T200050Z-61535825",
+     "claim": "80e0489a725654a4",
+-    "startedAt": "2026-11-07T21:52:53+00:00",
+-    "seconds": 5.4,
++    "startedAt": "2026-11-08T20:00:50+00:00",
++    "seconds": 2.8,
+     "engine": "native",
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -50,9 +50,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-deliveri",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-deliveri"
+     },
+     "execution": {
+       "status": "completed",
+@@ -77,7 +77,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.3,
+         "stdout": "logs/02-javac-deliveries-stubs.stdout",
+         "stderr": "logs/02-javac-deliveries-stubs.stderr"
+       },
+@@ -85,7 +85,7 @@
+         "name": "javac patched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.4,
++        "seconds": 0.8,
+         "stdout": "logs/03-javac-patched-deliveries-main.stdout",
+         "stderr": "logs/03-javac-patched-deliveries-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.9,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-deliveries-tests.stdout",
+         "stderr": "logs/04-javac-patched-deliveries-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.6,
++        "seconds": 0.3,
+         "stdout": "logs/06-javac-deliveries-stubs.stdout",
+         "stderr": "logs/06-javac-deliveries-stubs.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "javac unpatched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.4,
++        "seconds": 0.7,
+         "stdout": "logs/07-javac-unpatched-deliveries-main.stdout",
+         "stderr": "logs/07-javac-unpatched-deliveries-main.stderr"
+       },
+@@ -125,7 +125,7 @@
+         "name": "jvmcontract effects",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-jvmcontract-effects.stdout",
+         "stderr": "logs/08-jvmcontract-effects.stderr"
+       },
+@@ -149,16 +149,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-69zos4rr/attempts/171/attempt-3urbxw0p"
++    "workspace": ".build-py/examples-3tidwgjh/attempts/171/attempt-llaaz7ra"
+   },
+   "conclusion": {
+     "claim": "80e0489a725654a4",
+-    "attempt": "20261107T215253Z-cd4384bb",
++    "attempt": "20261108T200050Z-61535825",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -216,12 +216,12 @@
+     "artifacts": [
+       {
+         "path": "result.sarif",
+-        "sha256": "80e35352137f633165dcc25c14063d380b925250e9513c1f0541b949d63c113f",
++        "sha256": "74304ef587c40aee0576a90d6656a1745caa86ba81a7393ef12664a5f57f6288",
+         "bytes": 3267
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "52b557f50f3ee8bad85ac5cf913506d1d28907a3e93942300a8d9e84b3e09896",
++        "sha256": "b5627a72470d54b5c105c1d521c4da4f4c039baa339fe86edd6f953b311fae51",
+         "bytes": 1914
+       }
+     ]
+--- a/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.sarif
++++ b/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/result.sarif
+@@ -64,7 +64,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/verifier-output.txt
++++ b/examples/171-a-retry-route-that-skips-the-dead-letter-for-a-client-error-loses-the-delivery-without-a-trace/verifier-output.txt
+@@ -1,6 +1,6 @@
+ POST /deliveries/failures: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /deliveries/failures on status=400, idempotent=false, attempts=0: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=400, data.attempts=0, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000] as observe(status=416, idempotent=true, attempts=0), shrunk to the input above in 27 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int
+   domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+--- a/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/README.md
++++ b/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/README.md
+@@ -158,14 +158,14 @@
+ 
+ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as observe(status=20, idempotent=true, attempts=20), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int.
+ 
+-This page renders attempt `20261107T215301Z-855f3916` at claim `00652edb34f94096`, in pipeline job `20261107-215001-cleanup-merge-deliveries-examples-170-17`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200055Z-6a3490fa` at claim `00652edb34f94096`, in pipeline job `20261108-195650-application-core-phase-5-step-3-deliveri`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ POST /deliveries/failures: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as observe(status=20, idempotent=true, attempts=20), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int
+   domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
+@@ -247,7 +247,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.json
++++ b/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.json
+@@ -28,16 +28,16 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215301Z-855f3916",
++    "id": "20261108T200055Z-6a3490fa",
+     "claim": "00652edb34f94096",
+-    "startedAt": "2026-11-07T21:53:01+00:00",
+-    "seconds": 5.7,
++    "startedAt": "2026-11-08T20:00:55+00:00",
++    "seconds": 2.7,
+     "engine": "native",
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -50,9 +50,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-deliveries-examples-170-17",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-deliveries-examples-170-17"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-deliveri",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-deliveri"
+     },
+     "execution": {
+       "status": "completed",
+@@ -77,7 +77,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.3,
+         "stdout": "logs/02-javac-deliveries-stubs.stdout",
+         "stderr": "logs/02-javac-deliveries-stubs.stderr"
+       },
+@@ -85,7 +85,7 @@
+         "name": "javac patched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.4,
++        "seconds": 0.7,
+         "stdout": "logs/03-javac-patched-deliveries-main.stdout",
+         "stderr": "logs/03-javac-patched-deliveries-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.0,
++        "seconds": 0.5,
+         "stdout": "logs/04-javac-patched-deliveries-tests.stdout",
+         "stderr": "logs/04-javac-patched-deliveries-tests.stderr"
+       },
+@@ -101,7 +101,7 @@
+         "name": "the deliveries tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/05-the-deliveries-tests.stdout",
+         "stderr": "logs/05-the-deliveries-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac deliveries stubs",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.7,
++        "seconds": 0.4,
+         "stdout": "logs/06-javac-deliveries-stubs.stdout",
+         "stderr": "logs/06-javac-deliveries-stubs.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "javac unpatched deliveries main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.5,
++        "seconds": 0.7,
+         "stdout": "logs/07-javac-unpatched-deliveries-main.stdout",
+         "stderr": "logs/07-javac-unpatched-deliveries-main.stderr"
+       },
+@@ -125,7 +125,7 @@
+         "name": "jvmcontract effects",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-jvmcontract-effects.stdout",
+         "stderr": "logs/08-jvmcontract-effects.stderr"
+       },
+@@ -133,7 +133,7 @@
+         "name": "jvmcontract effects --json",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/09-jvmcontract-effects-json.stdout",
+         "stderr": "logs/09-jvmcontract-effects-json.stderr"
+       },
+@@ -149,16 +149,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/11-version-of-javac.stdout",
+         "stderr": "logs/11-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-5enjumgc/attempts/172/attempt-r4nxyu8t"
++    "workspace": ".build-py/examples-ump5nfy4/attempts/172/attempt-n4knfx_2"
+   },
+   "conclusion": {
+     "claim": "00652edb34f94096",
+-    "attempt": "20261107T215301Z-855f3916",
++    "attempt": "20261108T200055Z-6a3490fa",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -216,12 +216,12 @@
+     "artifacts": [
+       {
+         "path": "result.sarif",
+-        "sha256": "976e01916709b5495a92749dc7ed0a307b47321f003622d2d0c9a19f13a3a3dc",
++        "sha256": "0bd45fc7dbef47e6f6b3c64763b8b6916cd3891af0e99e1f5a8e66638b5ea1de",
+         "bytes": 3571
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "4128f17a2f9d6d9e4314492ad6a348efc09bfdd0732ab77f5e153be409f80838",
++        "sha256": "0b9da6e23dc8f3fa8c54d5eb70e8504884a239be256bd2d673d3d27d8f623e9a",
+         "bytes": 2204
+       }
+     ]
+--- a/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.sarif
++++ b/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/result.sarif
+@@ -64,7 +64,7 @@
+           "ruleId": "effects-changed",
+           "level": "error",
+           "message": {
+-            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
++            "text": "POST /deliveries/failures no longer preserves its trace of modeled boundary calls: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic=\"delivery-dead-letters\", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+           },
+           "locations": [
+             {
+--- a/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/verifier-output.txt
++++ b/examples/172-a-retry-route-that-dead-letters-a-delivery-out-of-attempts-dead-letters-it-twice/verifier-output.txt
+@@ -1,6 +1,6 @@
+ POST /deliveries/failures: refuted
+   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
+-  witness: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
++  witness: POST /deliveries/failures on status=0, idempotent=false, attempts=5: the old build returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered); the new one returns 200 and attempts KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered), then KafkaTemplate.send(topic="delivery-dead-letters", data.status=0, data.attempts=5, data.attempt=absent, data.class=net.terminalvalue.deliveries.DeadLettered). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+   search: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as observe(status=20, idempotent=true, attempts=20), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempts: int
+   domain: status: int × idempotent: boolean × attempts: int (the request's inputs, the same in both builds)
+   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit

@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-195703-application-core-phase-5-step-3-lib-test",
+  "title": "application-core Phase 5 step 3: lib/tests/integration.rs at the merged revision, JBMC's tests included",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m19s, peak 2.2 GiB (estimated 15m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "step 1 (integration tests) was held back 2m58s by its 2-CPU quota in 2m19s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261108-195703-application-core-phase-5-step-3-lib-test.json",
+    "sha256": "ee3d46ed1525df6c339792c4e5657e0ad3e87bf8b620e105dd76dfca1e3cb1fa",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-195703-application-core-phase-5-step-3-lib-test",
+      "title": "application-core Phase 5 step 3: lib/tests/integration.rs at the merged revision, JBMC's tests included",
+      "description": "Runs lib/tests/integration.rs as it is (65 tests, none ignored), several of which run JBMC (stock jbmc, --engine jbmc or auto, with --confirm) and replay witnesses on a JVM. Nothing has run these tests on the merged code of the four application-core streams and Phase 5's interface requests: the merge's and every later cycle's inline checks ran every other test binary, but not this one, whose tests run JBMC. It last passed at the cleanup merge (job 20261107-215001-cleanup-merge-lib-tests-integration-rs-a, 64 tests). Since then: the checked-exception harness test (Phase 0 step 7, VF-015) was added, and the String parameter test now expects --engine jbmc refused by name (it never reaches JBMC). The code is this job's commit (application-core Phase 5 step 3), whose parent is 4d6c6279 (yrlkzqvw, a String inside an object); it descends from c99d01a3 (szqvvxuv), whose relocate::opened_with opens package-private and protected instance methods for the JVM run of a witness. Domains, engines and bounds are each test's own. Expected: every test passes and cargo exits 0. Acceptance: llm-dlc/loops/application-core.md, Phase 5 step 3 (the existing examples and lib/tests/integration.rs keep their expected outcomes); a JBMC timeout here would be VF-018's kind, which doesn't block native feature work.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "native:probes"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/integration.rs"
+        ]
+      },
+      "expected": "cargo test --test integration exits 0: 65 passed, 0 failed",
+      "submitted": {
+        "at": "2026-11-08T19:57:03+00:00"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "as job 20261107-215001-cleanup-merge-lib-tests-integration-rs-a: 159 s with a clean debug build of lib's tests at 4 jobs; inline here the test binary compiled in 5 s on a warm target"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
+  "startedAt": "2026-11-08T20:00:59+00:00",
+  "finishedAt": "2026-11-08T20:03:20+00:00",
+  "wallSeconds": 141.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2956244,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "as job 20261107-215001-cleanup-merge-lib-tests-integration-rs-a: 159 s with a clean debug build of lib's tests at 4 jobs; inline here the test binary compiled in 5 s on a warm target"
+  },
+  "usage": {
+    "peakMemoryBytes": 2314448896,
+    "wallSeconds": 139.7,
+    "cpuSeconds": 255.2,
+    "memoryOfEstimate": 0.72,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "cd lib && CARGO_BUILD_JOBS=4 cargo test --test integration",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 139.741,
+      "cpuSeconds": 255.234,
+      "cpuThrottledSeconds": 178.427,
+      "peakMemoryBytes": 2314448896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 124,
+        "bytes": 6591,
+        "sha256": "27750c69a22a501b9d5e39e0fb9d025a2931a28c8b8087d68676b60a7dd14c67",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 123,
+          "text": "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 82.44s",
+          "groups": [
+            "ok",
+            "65",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "test a_target_identical_in_both_versions_needs_no_proof ... ok",
+        "test a_witness_through_contracts_is_run_on_a_jvm ... ok",
+        "test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok",
+        "test an_overloaded_method_is_named_by_its_parameter_types ... ok",
+        "test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok",
+        "test arrays_are_quantified_over_and_witnessed ... ok",
+        "test capability_contracts_list_each_entry_point_with_its_call_site ... ok",
+        "test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok",
+        "test details_print_the_statement_and_where_the_time_went ... ok",
+        "test draws_the_state_machine_of_a_contract ... ok",
+        "test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok",
+        "test generates_the_tla_operator_the_python_generator_wrote ... ok",
+        "test generalized_quantifiers_fold_and_counterexamples_shrink ... ok",
+        "test impure_or_unbounded_methods_are_refused_with_the_reason ... ok",
+        "test identity_and_initialization_agree_with_the_jvm ... ok",
+        "test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok",
+        "test jbmc_applies_the_contracts_for_its_gaps ... ok",
+        "test old_reads_an_array_as_the_call_received_it ... ok",
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test relocation_renames_the_class_and_its_references ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test results_of_two_types_need_a_relation ... ok",
+        "test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_gap_scan_gives_each_class_initializer_a_shape ... ok",
+        "test the_gap_scan_names_what_the_own_checker_approximates ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok",
+        "test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 82.44s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-08T20:07:36+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

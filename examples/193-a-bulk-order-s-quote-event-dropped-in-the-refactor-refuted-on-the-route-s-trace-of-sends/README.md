@@ -161,7 +161,7 @@ Every part the run checked, nothing written by hand (the entry points under thei
 | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
 | `shop.Pricing#withQuantity` | kernel | verified | an exact hit |  |
 | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
+| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
 
 Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
 
@@ -202,9 +202,9 @@ Send the event for every positive total, as before.
 
 ## Evidence
 
-How the verdict was reached: reused from the proof cache (claim sha256:97e9847fa2781f7fa984347aa6898182175b0a1e3a015946efe3ef5160341eb4, jvmcontract 0.1.0 (sha256:8eebb4e87301), --engine native, at 2026-11-07T21:53:12Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
+How the verdict was reached: reused from the proof cache (claim sha256:56ce0b91cf60777b3d391e52bb2e54f47fe871903fe60b3901b2c4d6c089547c, jvmcontract 0.1.0 (sha256:7462d0c9f8f1), --engine native, at 2026-11-08T20:01:02Z, on copies of before/classes and examples/apps/shop/build/main): found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int.
 
-This page renders attempt `20261107T215308Z-be37c839` at claim `510031c58e443bcc`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261108T200059Z-ea9f2fc5` at claim `510031c58e443bcc`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -215,7 +215,7 @@ The entry points (no mapping: their inputs are anchored by the observation specs
 
 POST /quotes: refuted
   observations: result unresolved, exception unresolved, status unresolved, KafkaTemplate.send refuted
-  witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
+  witness: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic="quotes", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure
   search: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as observe(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int
   domain: cents: long × quantity: int (the request's inputs, the same in both builds)
   assumes: KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit
@@ -238,16 +238,16 @@ shop.Pricing#discount: verified
   observations: result preserved, exception preserved
   domain: gross: long × quantity: int
 shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
   observations: result preserved, exception preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
 shop.Pricing#withQuantity: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:1736b19a0aecef5ff9cea5e2ed1e9cc0f34a0e5a04636a87826427837e6f6a58): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  correspondence (inferred, proposed; proved for sha256:e12bc8de75689c424907ebabf243108d96ce2eecaa9e68855831d8313342f96f): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
   observations: result preserved, exception preserved, identity:result==q preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
 shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
+shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
 
 kernel: 3 verified, 0 refuted, 0 unresolved, 2 unsupported
 obligations: 8 (7 preserved, 1 unresolved)
@@ -333,7 +333,7 @@ assumed, not decided by anyone:
           "ruleId": "effects-changed",
           "level": "error",
           "message": {
-            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (recording stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+            "text": "POST /quotes no longer preserves its trace of modeled boundary calls: POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
           },
           "locations": [
             {

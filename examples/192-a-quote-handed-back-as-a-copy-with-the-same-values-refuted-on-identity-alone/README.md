@@ -194,7 +194,7 @@ Every part the run checked, nothing written by hand (the entry points under thei
 | `shop.Pricing#total` | kernel | verified | an exact hit; `Pricing.discount` proved on its own and taken as one function |  |
 | `shop.Pricing#withQuantity` | kernel | refuted | an exact hit |  |
 | `shop.Money#cents (was shop.Quote#cents)` | kernel | unresolved | not a proof | `class not found in the previous version: shop.Money` |
-| `shop.Quote#quantity` | kernel | unresolved | not a proof | `quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` |
+| `shop.Quote#quantity` | kernel | unresolved | not a proof | `the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet` |
 
 Obligations, one per observation of an old entry point: 7 preserved, 1 unresolved. Decisions a person made, by category: approved exclusion 0, domain restriction 0, environment assumption 0, mapping 0, observation change 0.
 
@@ -236,7 +236,7 @@ Hand back `q`, as before, or make the copy the intended change and tell its call
 
 ## Evidence
 
-This page renders attempt `20261107T215301Z-461041c6` at claim `0bdc5b62767fa0c6`, in pipeline job `20261107-215001-cleanup-merge-shop-s-examples-190-196-re`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261108T200055Z-ce5cd94b` at claim `0bdc5b62767fa0c6`, in pipeline job `20261108-195650-application-core-phase-5-step-3-shop-s-e`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -269,17 +269,17 @@ shop.Pricing#discount: verified
   observations: result preserved, exception preserved
   domain: gross: long × quantity: int
 shop.Pricing#total: verified (no external contract anchors its inputs: the relation is proved, and whether it is the intended one is unconfirmed)
-  correspondence (inferred, proposed; proved for sha256:d3a7e0cb868b9fe237bf8074e0ec90a621287ddd562b3cf231772c2fffb54d02): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
+  correspondence (inferred, proposed; proved for sha256:10339b886fd7616deb54aecdf97735e95386b0f22cd00c25618b7eb63c3886c1): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity
   observations: result preserved, exception preserved
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them
-  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:84931373bdc5e04078dc780c20ab66e996e96793e65499a0c6a58deae7f9ac59), one function in both versions
+  reused: Pricing.discount, changed, proved equivalent by a check of its own (sha256:753cc362d8aafc348de2bd17ea57e924847d9c0c90633c7bfd207b06e83a2fea), one function in both versions
 shop.Pricing#withQuantity: refuted
-  correspondence (inferred, proposed; refuted for sha256:b8d0f4e806590aae7cfe2b73976ed7f08de6f527292c4c375121db4833dd060d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
+  correspondence (inferred, proposed; refuted for sha256:de7f797a59bcf4a29790feb07b2ca81c0d9b469dcf0ad11a3465d61b89eac82d): old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity, old.quantity == new.quantity
   observations: result unresolved, exception unresolved, identity:result==q refuted
   witness: withQuantity(q=new Quote(new Money(0), 1), quantity=0): before, Quote{cents=0, quantity=0}, leaving q=Quote{cents=0, quantity=0}, with result == q; after, Quote{amount=Money{cents=0}, quantity=0}, leaving q=Quote{amount=Money{cents=0}, quantity=0}
   domain: q: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts; in the previous version, a Quote made by its constructor, Quote(cents: long, quantity: int), from the new q's amount.cents and quantity as the correspondence's input equations say (old.q.cents == new.q.amount.cents, old.q.quantity == new.q.quantity), and satisfying them × quantity: int
 shop.Money#cents (was shop.Quote#cents): unsupported: class not found in the previous version: shop.Money
-shop.Quote#quantity: unsupported: quantity is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are
+shop.Quote#quantity: unsupported: the receiver is made differently in the two versions: this: a Quote made by its constructor, Quote(cents: long, quantity: int), from any arguments it accepts before, this: a Quote made by its constructor, Quote(amount: Money(cents: long), quantity: int), from any arguments it accepts now; a receiver of another construction or other fields is not supported yet
 
 kernel: 2 verified, 1 refuted, 0 unresolved, 2 unsupported
 obligations: 8 (7 preserved, 1 unresolved)

@@ -1,0 +1,865 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
+  "title": "application-core Phase 5 step 3: Shop's examples 190-196 rerun at the merged revision, each with its recorded verdict",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 31.5s, peak 127.0 MiB (estimated 12m00s, 1.0 GiB); 24 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261108-195650-application-core-phase-5-step-3-shop-s-e.json",
+    "sha256": "153d3449adf3f47f7f0f42bda3aaed4eaa56563c2cabb944f6e7ceeca4f6c8af",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261108-195650-application-core-phase-5-step-3-shop-s-e",
+      "title": "application-core Phase 5 step 3: Shop's examples 190-196 rerun at the merged revision, each with its recorded verdict",
+      "description": "build.py on examples 190 to 196 (a quote's amount made a value object; jvmcontract compare on the shop app, engine native, under a fresh proof cache in build/proof-cache, the verdict read from the rerun; the domains and bounds are each example's own, as build.py runs it). Expected: 190 verified, 191 violation, 192 violation, 193 violation, 194 violation, 195 verified, 196 unverifiable, each step printing 'as expected' and exiting 0. The code is this job's commit (application-core Phase 5 step 3), whose parent is 4d6c6279 (yrlkzqvw, a String inside an object); it descends from c99d01a3 (szqvvxuv), whose relocate::opened_with opens package-private and protected instance methods for the JVM run of a witness, so every JVM replay here runs with it, as the brief's Progress asks. The streams widened what compare's kernel claims check (instance methods on constructor-made receivers, Strings, receivers with dependencies), so a part of a run other than the subject may now be checked where the examples' notes say it stays unresolved; the subject's verdict is what must hold. Every step runs even if one fails. Acceptance: llm-dlc/loops/application-core.md, Phase 5 step 3 (the existing examples keep their expected outcomes, part of Phase 5's done-when criterion), after the merge of the four application-core streams (loxnvssx) and Phase 5's interface requests. Each example last passed at the cleanup merge (job 20261107-215001-...); no example's files changed since, only the checker, the result schema and build.py.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:compare",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "190",
+          "191",
+          "192",
+          "193",
+          "194",
+          "195",
+          "196"
+        ]
+      },
+      "expected": "example 190 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 191 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 192 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 193 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 194 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 195 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 196 gives its expected verdict, unverifiable: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-08T19:56:50+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "12m",
+        "notes": "as job 20261107-215001-cleanup-merge-shop-s-examples-190-196-re: 48.7 s and 145 MiB for all seven at 1 CPU, held back by its quota (a JVM needs 2); a release build of jvmcontract if the runner has none at this lib/ tree"
+      },
+      "steps": [
+        {
+          "name": "example 190 (B9)",
+          "run": "python3 examples/tools/build.py 190",
+          "cwd": "."
+        },
+        {
+          "name": "example 191 (B9)",
+          "run": "python3 examples/tools/build.py 191",
+          "cwd": "."
+        },
+        {
+          "name": "example 192 (B9)",
+          "run": "python3 examples/tools/build.py 192",
+          "cwd": "."
+        },
+        {
+          "name": "example 193 (B9)",
+          "run": "python3 examples/tools/build.py 193",
+          "cwd": "."
+        },
+        {
+          "name": "example 194 (B9)",
+          "run": "python3 examples/tools/build.py 194",
+          "cwd": "."
+        },
+        {
+          "name": "example 195 (B9)",
+          "run": "python3 examples/tools/build.py 195",
+          "cwd": "."
+        },
+        {
+          "name": "example 196 (B9)",
+          "run": "python3 examples/tools/build.py 196",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written",
+        "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it",
+        "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone",
+        "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends",
+        "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order",
+        "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes",
+        "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried"
+      ]
+    }
+  },
+  "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
+  "startedAt": "2026-11-08T20:00:44+00:00",
+  "finishedAt": "2026-11-08T20:01:17+00:00",
+  "wallSeconds": 33.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2956244,
+    "workers": 3,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 8589934592,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 2880.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 720.0,
+    "notes": "as job 20261107-215001-cleanup-merge-shop-s-examples-190-196-re: 48.7 s and 145 MiB for all seven at 1 CPU, held back by its quota (a JVM needs 2); a release build of jvmcontract if the runner has none at this lib/ tree"
+  },
+  "usage": {
+    "peakMemoryBytes": 133148672,
+    "wallSeconds": 31.5,
+    "cpuSeconds": 43.6,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 190 (B9)",
+      "run": "python3 examples/tools/build.py 190",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 4.208,
+      "cpuSeconds": 5.856,
+      "cpuThrottledSeconds": 0.242,
+      "peakMemoryBytes": 89849856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-190-b9.log",
+        "lines": 24,
+        "bytes": 1031,
+        "sha256": "14cdee24af0f1e50d91516dfb201d7e7fa3a3d0c48372da67b07635d52ccb4da",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)",
+          "groups": [
+            "190",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.1 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 191 (B9)",
+      "run": "python3 examples/tools/build.py 191",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 5.816,
+      "cpuSeconds": 7.393,
+      "cpuThrottledSeconds": 0.235,
+      "peakMemoryBytes": 133148672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-191-b9.log",
+        "lines": 24,
+        "bytes": 1028,
+        "sha256": "1bbec1d759bca0befac9599dabb8f72e04e88d684c626852f6a5058da95e83f3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: violation (as expected)",
+          "groups": [
+            "191",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.4 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 1, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 1.8 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 192 (B9)",
+      "run": "python3 examples/tools/build.py 192",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 4.213,
+      "cpuSeconds": 5.935,
+      "cpuThrottledSeconds": 0.215,
+      "peakMemoryBytes": 96456704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-192-b9.log",
+        "lines": 24,
+        "bytes": 988,
+        "sha256": "5d49b2caae106782ae451b5780748490fd1fddb5f33ef45add15d3ac79f4ca5e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: violation (as expected)",
+          "groups": [
+            "192",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.2 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 193 (B9)",
+      "run": "python3 examples/tools/build.py 193",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 4.414,
+      "cpuSeconds": 6.25,
+      "cpuThrottledSeconds": 0.223,
+      "peakMemoryBytes": 91643904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-193-b9.log",
+        "lines": 24,
+        "bytes": 1012,
+        "sha256": "fecd276c79c5526ff312924ef89b1c7effe5193c2dc837352da60b43b4b3694d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: violation (as expected)",
+          "groups": [
+            "193",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.2 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 194 (B9)",
+      "run": "python3 examples/tools/build.py 194",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 4.41,
+      "cpuSeconds": 6.221,
+      "cpuThrottledSeconds": 0.31,
+      "peakMemoryBytes": 89882624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-194-b9.log",
+        "lines": 24,
+        "bytes": 998,
+        "sha256": "c43cbb30f072dc2d32a5729f31b064157a640e43943cff94312a21b7a12087df",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)",
+          "groups": [
+            "194",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.1 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.2 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 195 (B9)",
+      "run": "python3 examples/tools/build.py 195",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 4.207,
+      "cpuSeconds": 6.003,
+      "cpuThrottledSeconds": 0.276,
+      "peakMemoryBytes": 88453120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-195-b9.log",
+        "lines": 24,
+        "bytes": 1033,
+        "sha256": "6fa372f0ee042221035c1ae225dd93c780e96f7ec23fd3f3e26315a86bbabe79",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: verified (as expected)",
+          "groups": [
+            "195",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.1 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 196 (B9)",
+      "run": "python3 examples/tools/build.py 196",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 4.207,
+      "cpuSeconds": 5.913,
+      "cpuThrottledSeconds": 0.24,
+      "peakMemoryBytes": 96903168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-196-b9.log",
+        "lines": 24,
+        "bytes": 1029,
+        "sha256": "2ca844eae27751afc44ca685af2779264e9625a922331b139c6d4912885326db",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 24,
+          "text": "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: unverifiable (as expected)",
+          "groups": [
+            "196",
+            "unverifiable"
+          ]
+        }
+      ],
+      "tail": [
+        "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.4 s",
+        "  · javac patched shop main",
+        "  · javac patched shop main: exited 0, 0.4 s",
+        "  · javac patched shop tests",
+        "  · javac patched shop tests: exited 0, 0.5 s",
+        "  · the shop tests",
+        "  · the shop tests: exited 0, 0.0 s",
+        "  · javac shop stubs",
+        "  · javac shop stubs: exited 0, 0.3 s",
+        "  · javac unpatched shop main",
+        "  · javac unpatched shop main: exited 0, 0.4 s",
+        "  · jvmcontract compare",
+        "  · jvmcontract compare: exited 1, 0.1 s",
+        "  · jvmcontract compare --json, rerun on the same cache",
+        "  · jvmcontract compare --json, rerun on the same cache: exited 1, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried: unverifiable (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md",
+      "change": "modified",
+      "bytes": 25039,
+      "sha256": "1077cd2c71734b4c68e368ccb651d4cb7c49f7e74b7950e9ca314a764baa28e0",
+      "sourceSha256": "8312c0c6566d7ca334216eda33ae7dc5b1bb89b4bb209b613114ce3b1ccb9db2"
+    },
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json",
+      "change": "modified",
+      "bytes": 11982,
+      "sha256": "75482456a2d011933f9370ca3948d646079c16fe51932be5ad50bee1b7796658",
+      "sourceSha256": "4a6fbd1f0ab23d5e82ee654d1ae720a914deda08b06374b30cb1634277c3191b"
+    },
+    {
+      "path": "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6156,
+      "sha256": "abc0fc09626716bd837286f853bff8407995885cfea9803c1198e4cd0d1e2232",
+      "sourceSha256": "50deb1fc25ac29161e73842ffeb7191f3ca48fd0c20f5df26d6cd21cb1dde1e9"
+    },
+    {
+      "path": "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md",
+      "change": "modified",
+      "bytes": 25135,
+      "sha256": "2a69cab45e13d0017c0f26cb95484c7a24462e9b21286da30edd54fe923661e8",
+      "sourceSha256": "5d4d5a614252044ed25e11e080bc1a81e7c669213002714349fb86288d45f814"
+    },
+    {
+      "path": "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.json",
+      "change": "modified",
+      "bytes": 11923,
+      "sha256": "afe981e5de98be4ac4637b31958f380ef8241435aae3a9363c2b36f28be7f69c",
+      "sourceSha256": "c1f724184709a1a16fadb271bf2f55c7b3c239c57ad84c90df9e610da128f786"
+    },
+    {
+      "path": "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.sarif",
+      "change": "modified",
+      "bytes": 3741,
+      "sha256": "85a3f4aa67ae6b2e62192ef98210a55b24745a9b9136263d6a332d01c883c12e",
+      "sourceSha256": "c09ac843080f9e33cb9b6dd29237df2997cb1091d53f342a001ee200ab8a9529"
+    },
+    {
+      "path": "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6547,
+      "sha256": "e5bf82bc94c0e35647ff5b5b1e32d26e82f6c0ca227deb21adfa913d92f9f459",
+      "sourceSha256": "b896cc6d250d8b738281e32da5c3b08f94828d32f3f0015e659008c1423895d9"
+    },
+    {
+      "path": "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md",
+      "change": "modified",
+      "bytes": 25749,
+      "sha256": "95a8e1ecb6897ce8ca1a2d2425be14528e1b5831b37f3d375a8fe728129faf95",
+      "sourceSha256": "b4036add150f8e2c5f00af503d68f38db5ebbd359b7c878a1d43fc5170b7bd96"
+    },
+    {
+      "path": "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/result.json",
+      "change": "modified",
+      "bytes": 12630,
+      "sha256": "ab6158791a2b8eb470f81ce7b04ca4d67c670f61c4d65a9bc73b427c05d58de4",
+      "sourceSha256": "d15738b854d0139ab583102ddfea36e1974889190ce4348975508b190f3b16bf"
+    },
+    {
+      "path": "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6298,
+      "sha256": "96ac68db6231afd5b65d05c5272f6f92222e961e8b5cf6a47833ea0abc393ac7",
+      "sourceSha256": "fafe676c04fff0dad35e5b53498a695b13ce24ffba80603348699001734f85cb"
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md",
+      "change": "modified",
+      "bytes": 24550,
+      "sha256": "86df16756f6b33c4188655b4e5deb1d49b13173b289e3bf0ad933f5d22854f64",
+      "sourceSha256": "0c4be8c8de1c6553100de670d810500e660e92386f3ec9e10b2b2ddc279bd318"
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.json",
+      "change": "modified",
+      "bytes": 12300,
+      "sha256": "419277690c04ae8e51565d92b5b9a0ea87f70fdd79c0d1e1152c271b607ed7d2",
+      "sourceSha256": "2d293209d129bd3e5398b2c8851b0061a0599a30d7307bb7f299cc66d3cba36e"
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.sarif",
+      "change": "modified",
+      "bytes": 3100,
+      "sha256": "6ffebedc03d1c2e06095570ac01a8a8f7ccb223e23a98ffd812ac660deaa7b10",
+      "sourceSha256": "22aab5251ba1325c89e2cfd8ce40a2f8582bb0720b0662a3956dc034e4521e14"
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6628,
+      "sha256": "392e5e023b224fca0c028dae48f0e6d9e9e22129979f1d6d9fcd8af7a4ef215b",
+      "sourceSha256": "6de2b33568516dfff927ed47e5f5709a3cc8d65c8a221abf203b006df90487c5"
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md",
+      "change": "modified",
+      "bytes": 24912,
+      "sha256": "383e1d3c35efdee64debd65ccdb68b610fe8237ca3328ce05e84758bb1da1329",
+      "sourceSha256": "235bca1cf251ba5c93480c3c2711e04e01e04a01f90d5d714306865b6941d864"
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json",
+      "change": "modified",
+      "bytes": 12498,
+      "sha256": "9b6b63cf45519e6143a9f29c7f226f49d3040c1fc61f806b8032c0ff320c940a",
+      "sourceSha256": "44585811b29833386c66545aae54b5dc135d9909814a259ac1f1ac938fe6da51"
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.sarif",
+      "change": "modified",
+      "bytes": 3223,
+      "sha256": "31c11cdb56dc968f34d509c8e9fd1d4c28aa50430cf652e36b404644ffcb2bf3",
+      "sourceSha256": "b2604f2ded7d166d1a4cc307add1021387b295d11fa35a293cdc5b80ccf75614"
+    },
+    {
+      "path": "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6729,
+      "sha256": "8ac4e4fc1181bf4bef3c738b54b034b8989c305bca195cd6891faac65c2046ac",
+      "sourceSha256": "b634275f16a4be220f766237527f7f2a37881001e323e5ffa001866d4af0ec6d"
+    },
+    {
+      "path": "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md",
+      "change": "modified",
+      "bytes": 22877,
+      "sha256": "8fe8775292a111a9a5a3b099d5c5da71478c4f8c5dcb259b53ae23ea59d15f2a",
+      "sourceSha256": "0a9465f8c65a7f4fb9c3eec46dd94a667b844f12a7801e852d16c6261a2f64fb"
+    },
+    {
+      "path": "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/result.json",
+      "change": "modified",
+      "bytes": 11599,
+      "sha256": "728ad008cacd5a064c27e6779a6762b6a2500ac4b0ecd27ee62eab815eb3bd0c",
+      "sourceSha256": "816dc988dfa08c09ad2edc1890f6b585d7b0485593be24aab978f72d15459591"
+    },
+    {
+      "path": "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6156,
+      "sha256": "d63fb07456d4455d8021c9ec21d2012ab35412bdf224888f93d3782f75521756",
+      "sourceSha256": "2b163907016b62de997090efbfc9892a5d91007cd1b23aa334439eccd7325b3f"
+    },
+    {
+      "path": "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md",
+      "change": "modified",
+      "bytes": 23869,
+      "sha256": "87a5de97f78abdd2f055bd10e0be43c44b2e8071090e7fb6869b77588ac6c0e2",
+      "sourceSha256": "bd2879d9595b2d0395ef45558329fa3cb280a60e65ae8fa84ddb710ecbc76be3"
+    },
+    {
+      "path": "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/result.json",
+      "change": "modified",
+      "bytes": 12837,
+      "sha256": "71265bed48f1666eed126fe191b100be30dae20ac905267b5aa025b5ca644327",
+      "sourceSha256": "b89a438c905f2edf66c59fed1ed515674623621a09df98f1f80f48924be34c4b"
+    },
+    {
+      "path": "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6786,
+      "sha256": "5ee03d0c6e0b96a131de20eb237411cab5fcb4cb41c9719c5cd480922c26ec34",
+      "sourceSha256": "de19c7b7642b361403bce42a3010a9ee95fa84e99e583d86da46c31a6535fcd8"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-08T20:07:36+00:00",
+    "applied": [
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/README.md",
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/result.json",
+      "examples/190-a-quote-s-amount-made-a-value-object-proved-at-its-route-and-in-its-kernel-with-no-mapping-written/verifier-output.txt",
+      "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/README.md",
+      "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.json",
+      "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/result.sarif",
+      "examples/191-a-cent-too-much-per-item-refuted-at-the-route-and-in-the-kernel-no-inferred-mapping-absorbing-it/verifier-output.txt",
+      "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/README.md",
+      "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/result.json",
+      "examples/192-a-quote-handed-back-as-a-copy-with-the-same-values-refuted-on-identity-alone/verifier-output.txt",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/README.md",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.json",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/result.sarif",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/verifier-output.txt",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/README.md",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.json",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/result.sarif",
+      "examples/194-a-bulk-order-s-quote-event-sent-twice-refuted-on-the-route-s-trace-in-exact-order/verifier-output.txt",
+      "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/README.md",
+      "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/result.json",
+      "examples/195-a-total-wrong-only-for-a-quote-no-constructor-makes-proved-only-on-the-quotes-the-constructor-makes/verifier-output.txt",
+      "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/README.md",
+      "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/result.json",
+      "examples/196-a-route-renamed-in-the-refactor-left-unresolved-with-a-question-for-each-observation-it-carried/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d2f544412cacc1ad9beddf8922590cbd2d7ac3a8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d2f544412cacc1ad9beddf8922590cbd2d7ac3a8/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,1201 @@
+--- a/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/README.md
++++ b/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/README.md
+@@ -107,16 +107,16 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions.
+ 
+-**What the verdict is about.** For every input in `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean`, each object (throttle) made by its constructor from primitives and objects made so in turn, assuming either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on the fields they leave in `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true).
+-
+-This page renders attempt `20261107T215246Z-1c3bf83b` at claim `5186d1a2455567c1`, in pipeline job `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++**What the verdict is about.** For every input in `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean`, each object (throttle) made by its constructor from primitives and objects made so in turn, assuming either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones (made by how the harness builds the statement); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on the fields they leave in `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true).
++
++This page renders attempt `20261108T200023Z-bc88a332` at claim `5186d1a2455567c1`, in pipeline job `20261108-195650-application-core-phase-5-step-3-crosscut`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ ✓ net.terminalvalue.crosscut.retry.RetryThrottling#recorded behaves as before on every input of constructor-made objects (jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)
+   not vacuous: recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true) reaches the calls
+-  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it
++  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones
+ ```
+ 
+ </details>
+@@ -127,9 +127,13 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(int throttle_limits_maxTokens, int throttle_limits_tokenRatioMilli, boolean failed) {
+-        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+-        before.net.terminalvalue.crosscut.retry.Throttle throttle_before; net.terminalvalue.crosscut.retry.Throttle throttle_after;
+-        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { return; }
++        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.
++        before.net.terminalvalue.crosscut.retry.Throttle throttle_before = null; net.terminalvalue.crosscut.retry.Throttle throttle_after = null;
++        boolean rejectedAfter = false, rejectedBefore = false;
++        try { throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedAfter = true; }
++        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedBefore = true; }
++        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input
++        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept
+         boolean a = false;
+         int ea = 0;
+         try { a = before.net.terminalvalue.crosscut.retry.RetryThrottling.recorded(throttle_before, failed); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
+--- a/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/result.json
++++ b/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215246Z-1c3bf83b",
++    "id": "20261108T200023Z-bc88a332",
+     "claim": "5186d1a2455567c1",
+-    "startedAt": "2026-11-07T21:52:46+00:00",
+-    "seconds": 4.4,
++    "startedAt": "2026-11-08T20:00:23+00:00",
++    "seconds": 2.2,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -42,7 +42,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -55,9 +55,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-crosscut-s-examples-150-15"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-crosscut",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-crosscut"
+     },
+     "execution": {
+       "status": "completed",
+@@ -82,7 +82,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.6,
++        "seconds": 0.7,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -90,7 +90,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.7,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -106,7 +106,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.6,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -130,16 +130,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-a1f847jp/attempts/150/attempt-gp5j6rn5"
++    "workspace": ".build-py/examples-2wpuah5_/attempts/150/attempt-2fnrbm5i"
+   },
+   "conclusion": {
+     "claim": "5186d1a2455567c1",
+-    "attempt": "20261107T215246Z-1c3bf83b",
++    "attempt": "20261108T200023Z-bc88a332",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -183,7 +183,7 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.037,
++      "seconds": 0.015,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -195,15 +195,15 @@
+           "purpose": "proof",
+           "stage": null,
+           "budgetSeconds": 600.0,
+-          "seconds": 0.015,
++          "seconds": 0.013,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+-            "symbolic": 0.001,
+-            "encoding": 0.004,
+-            "solving": 0.01,
++            "symbolic": 0.0,
++            "encoding": 0.003,
++            "solving": 0.009,
+             "trace": 0.0,
+             "other": 0.0
+           },
+@@ -216,7 +216,7 @@
+           "checker": "native",
+           "purpose": "probe",
+           "stage": null,
+-          "budgetSeconds": 599.963,
++          "budgetSeconds": 599.985,
+           "seconds": 0.001,
+           "ended": "violation",
+           "ending": "counterexample",
+@@ -239,19 +239,19 @@
+         "paths": 7,
+         "merges": 0,
+         "solverCalls": 16,
+-        "solvingSeconds": 0.010123417,
++        "solvingSeconds": 0.009352039,
+         "gatesEvaluated": 3498,
+-        "evaluatingSeconds": 7.6585e-05,
++        "evaluatingSeconds": 6.1696e-05,
+         "divisions": 1,
+         "divisionsBuilt": 1,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 7146,
+         "clauses": 24575,
+-        "seconds": 0.01534495,
+-        "loadingSeconds": 0.000377629,
+-        "decodingSeconds": 3.6211e-05,
+-        "encodingSeconds": 0.004197688,
++        "seconds": 0.0134726,
++        "loadingSeconds": 0.000251974,
++        "decodingSeconds": 2.6471e-05,
++        "encodingSeconds": 0.003349679,
+         "witnessSeconds": 0.0
+       },
+       "gapMode": "strict"
+@@ -287,7 +287,7 @@
+       "assumptions": [
+         {
+           "kind": "constructible",
+-          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it",
++          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones",
+           "basis": "harness"
+         },
+         {
+@@ -351,13 +351,13 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "453464553c6dbe62296769a4773cc6804e2dac0b79b0bc710e766c1297200df3",
+-        "bytes": 3364
++        "sha256": "0f0146ab63e3d954ed4bd42746865a85c15b8101fb9317b6db9fd245bf678db3",
++        "bytes": 3825
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "c23400027cf7b9e7caf69e8223680ab91e9e3f0a8299059aae552e30c9503de5",
+-        "bytes": 835
++        "sha256": "8ffb3cf16071ee98f30b43b870215b9860c2275d9f2de3d4f2f097c8c24f5ad2",
++        "bytes": 901
+       }
+     ]
+   }
+--- a/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/statement.java
++++ b/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/statement.java
+@@ -1,9 +1,13 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(int throttle_limits_maxTokens, int throttle_limits_tokenRatioMilli, boolean failed) {
+-        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+-        before.net.terminalvalue.crosscut.retry.Throttle throttle_before; net.terminalvalue.crosscut.retry.Throttle throttle_after;
+-        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { return; }
++        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.
++        before.net.terminalvalue.crosscut.retry.Throttle throttle_before = null; net.terminalvalue.crosscut.retry.Throttle throttle_after = null;
++        boolean rejectedAfter = false, rejectedBefore = false;
++        try { throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedAfter = true; }
++        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedBefore = true; }
++        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input
++        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept
+         boolean a = false;
+         int ea = 0;
+         try { a = before.net.terminalvalue.crosscut.retry.RetryThrottling.recorded(throttle_before, failed); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
+--- a/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/verifier-output.txt
++++ b/examples/150-a-retry-throttle-rewritten-with-min-and-max-proved-equal-on-every-throttle-its-constructor-makes/verifier-output.txt
+@@ -1,3 +1,3 @@
+ ✓ net.terminalvalue.crosscut.retry.RetryThrottling#recorded behaves as before on every input of constructor-made objects (jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)
+   not vacuous: recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true) reaches the calls
+-  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it
++  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones
+--- a/examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/README.md
++++ b/examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/README.md
+@@ -99,9 +99,9 @@
+ 
+ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as reconfigured(throttle=new Throttle(new ThrottleLimits(20, 20)), limits=ThrottleLimits[maxTokens=20, tokenRatioMilli=20]), shrunk to the input above in 55 interpreter runs, replayed in the interpreter and run on a JVM (JDK 25.0.5), where the harness fails on it too; domain throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int).
+ 
+-**What the verdict is about.** For every input in `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)`, each object (throttle) made by its constructor from primitives and objects made so in turn, each record (limits) built from its components through its canonical constructor, assuming either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); either version's constructor ThrottleLimits(maxTokens: int, tokenRatioMilli: int) accepts the components of limits: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, a Throttle compared field by field (limits.maxTokens, limits.tokenRatioMilli, milliTokens), two nulls agreeing, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on the fields they leave in `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`; and on the identity relations `result == throttle` and `result.limits == throttle.limits`, each holding in one version iff it holds in the other. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
+-
+-This page renders attempt `20261107T215252Z-96af230c` at claim `5ba7f71fbb0d72d6`, in pipeline job `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++**What the verdict is about.** For every input in `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)`, each object (throttle) made by its constructor from primitives and objects made so in turn, each record (limits) built from its components through its canonical constructor, assuming either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones (made by how the harness builds the statement); either version's constructor ThrottleLimits(maxTokens: int, tokenRatioMilli: int) accepts the components of limits: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the records both versions can build, and that they can build the same ones (made by how the harness builds the statement); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, a Throttle compared field by field (limits.maxTokens, limits.tokenRatioMilli, milliTokens), two nulls agreeing, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on the fields they leave in `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`; and on the identity relations `result == throttle` and `result.limits == throttle.limits`, each holding in one version iff it holds in the other. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
++
++This page renders attempt `20261108T200027Z-f3f9794f` at claim `5ba7f71fbb0d72d6`, in pipeline job `20261108-195650-application-core-phase-5-step-3-crosscut`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -123,11 +123,14 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(int throttle_limits_maxTokens, int throttle_limits_tokenRatioMilli, int limits_maxTokens, int limits_tokenRatioMilli) {
+-        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+-        before.net.terminalvalue.crosscut.retry.Throttle throttle_before; net.terminalvalue.crosscut.retry.Throttle throttle_after;
+-        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { return; }
+-        before.net.terminalvalue.crosscut.retry.ThrottleLimits limits_before; net.terminalvalue.crosscut.retry.ThrottleLimits limits_after;
+-        try { limits_before = new before.net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); limits_after = new net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); } catch (Throwable t) { return; }
++        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.
++        before.net.terminalvalue.crosscut.retry.Throttle throttle_before = null; net.terminalvalue.crosscut.retry.Throttle throttle_after = null;
++        before.net.terminalvalue.crosscut.retry.ThrottleLimits limits_before = null; net.terminalvalue.crosscut.retry.ThrottleLimits limits_after = null;
++        boolean rejectedAfter = false, rejectedBefore = false;
++        try { throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); limits_after = new net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); } catch (Throwable t) { rejectedAfter = true; }
++        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); limits_before = new before.net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); } catch (Throwable t) { rejectedBefore = true; }
++        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input
++        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept
+         before.net.terminalvalue.crosscut.retry.Throttle a = null;
+         int ea = 0;
+         try { a = before.net.terminalvalue.crosscut.retry.RetryThrottling.reconfigured(throttle_before, limits_before); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
+--- a/examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/result.json
++++ b/examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215252Z-96af230c",
++    "id": "20261108T200027Z-f3f9794f",
+     "claim": "5ba7f71fbb0d72d6",
+-    "startedAt": "2026-11-07T21:52:52+00:00",
+-    "seconds": 4.2,
++    "startedAt": "2026-11-08T20:00:27+00:00",
++    "seconds": 2.0,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -42,7 +42,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -55,9 +55,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-crosscut-s-examples-150-15"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-crosscut",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-crosscut"
+     },
+     "execution": {
+       "status": "completed",
+@@ -82,7 +82,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.6,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -90,7 +90,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.6,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -106,7 +106,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.4,
++        "seconds": 0.6,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -114,7 +114,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -130,16 +130,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-87klcht_/attempts/151/attempt-ozkb09ey"
++    "workspace": ".build-py/examples-sbisv3ct/attempts/151/attempt-ohdmn9o3"
+   },
+   "conclusion": {
+     "claim": "5ba7f71fbb0d72d6",
+-    "attempt": "20261107T215252Z-96af230c",
++    "attempt": "20261108T200027Z-f3f9794f",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -343,7 +343,7 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.028,
++      "seconds": 0.005,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -355,14 +355,14 @@
+           "purpose": "proof",
+           "stage": null,
+           "budgetSeconds": 600.0,
+-          "seconds": 0.004,
++          "seconds": 0.003,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+             "symbolic": 0.001,
+-            "encoding": 0.002,
++            "encoding": 0.001,
+             "solving": 0.001,
+             "trace": 0.0,
+             "other": 0.0
+@@ -377,20 +377,20 @@
+         "paths": 9,
+         "merges": 0,
+         "solverCalls": 12,
+-        "solvingSeconds": 0.000783257,
++        "solvingSeconds": 0.000684112,
+         "gatesEvaluated": 205,
+-        "evaluatingSeconds": 1.7871e-05,
++        "evaluatingSeconds": 1.5691e-05,
+         "divisions": 0,
+         "divisionsBuilt": 0,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 2228,
+         "clauses": 7198,
+-        "seconds": 0.003918464,
+-        "loadingSeconds": 0.000408215,
+-        "decodingSeconds": 5.2017e-05,
+-        "encodingSeconds": 0.00200709,
+-        "witnessSeconds": 1.6461e-05
++        "seconds": 0.003236568,
++        "loadingSeconds": 0.000270523,
++        "decodingSeconds": 3.9916e-05,
++        "encodingSeconds": 0.001496289,
++        "witnessSeconds": 2.6129e-05
+       },
+       "gapMode": "strict"
+     },
+@@ -429,12 +429,12 @@
+       "assumptions": [
+         {
+           "kind": "constructible",
+-          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it",
++          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones",
+           "basis": "harness"
+         },
+         {
+           "kind": "constructible",
+-          "text": "either version's constructor ThrottleLimits(maxTokens: int, tokenRatioMilli: int) accepts the components of limits: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it",
++          "text": "either version's constructor ThrottleLimits(maxTokens: int, tokenRatioMilli: int) accepts the components of limits: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the records both versions can build, and that they can build the same ones",
+           "basis": "harness"
+         },
+         {
+@@ -499,8 +499,8 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "92696601b495e892a826a7ff8e7c0f9d2f13af7098615fff3070caa99aebc662",
+-        "bytes": 4265
++        "sha256": "5d1e7d2d57d588a10b2539ed514e9afa7a8f5a93be2c49c49d1aac260b0b6ebc",
++        "bytes": 4692
+       },
+       {
+         "path": "verifier-output.txt",
+--- a/examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/statement.java
++++ b/examples/151-a-throttle-kept-across-a-config-update-turned-into-a-copy-loses-the-failures-of-the-calls-in-flight/statement.java
+@@ -1,11 +1,14 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(int throttle_limits_maxTokens, int throttle_limits_tokenRatioMilli, int limits_maxTokens, int limits_tokenRatioMilli) {
+-        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+-        before.net.terminalvalue.crosscut.retry.Throttle throttle_before; net.terminalvalue.crosscut.retry.Throttle throttle_after;
+-        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { return; }
+-        before.net.terminalvalue.crosscut.retry.ThrottleLimits limits_before; net.terminalvalue.crosscut.retry.ThrottleLimits limits_after;
+-        try { limits_before = new before.net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); limits_after = new net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); } catch (Throwable t) { return; }
++        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.
++        before.net.terminalvalue.crosscut.retry.Throttle throttle_before = null; net.terminalvalue.crosscut.retry.Throttle throttle_after = null;
++        before.net.terminalvalue.crosscut.retry.ThrottleLimits limits_before = null; net.terminalvalue.crosscut.retry.ThrottleLimits limits_after = null;
++        boolean rejectedAfter = false, rejectedBefore = false;
++        try { throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); limits_after = new net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); } catch (Throwable t) { rejectedAfter = true; }
++        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); limits_before = new before.net.terminalvalue.crosscut.retry.ThrottleLimits(limits_maxTokens, limits_tokenRatioMilli); } catch (Throwable t) { rejectedBefore = true; }
++        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input
++        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept
+         before.net.terminalvalue.crosscut.retry.Throttle a = null;
+         int ea = 0;
+         try { a = before.net.terminalvalue.crosscut.retry.RetryThrottling.reconfigured(throttle_before, limits_before); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
+--- a/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/README.md
++++ b/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/README.md
+@@ -106,16 +106,16 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions.
+ 
+-**What the verdict is about.** For every input in `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean`, each object (throttle) made by its constructor from primitives and objects made so in turn, assuming either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on the fields they leave in `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true).
+-
+-This page renders attempt `20261107T215259Z-20a93cd7` at claim `7392cc738a99fa23`, in pipeline job `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++**What the verdict is about.** For every input in `throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean`, each object (throttle) made by its constructor from primitives and objects made so in turn, assuming either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones (made by how the harness builds the statement); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on the fields they leave in `throttle: limits.maxTokens, limits.tokenRatioMilli, milliTokens`. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true).
++
++This page renders attempt `20261108T200031Z-06e59324` at claim `7392cc738a99fa23`, in pipeline job `20261108-195650-application-core-phase-5-step-3-crosscut`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ ✓ net.terminalvalue.crosscut.retry.RetryThrottling#recorded behaves as before on every input of constructor-made objects (jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)
+   not vacuous: recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true) reaches the calls
+-  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it
++  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones
+ ```
+ 
+ </details>
+@@ -126,9 +126,13 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(int throttle_limits_maxTokens, int throttle_limits_tokenRatioMilli, boolean failed) {
+-        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+-        before.net.terminalvalue.crosscut.retry.Throttle throttle_before; net.terminalvalue.crosscut.retry.Throttle throttle_after;
+-        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { return; }
++        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.
++        before.net.terminalvalue.crosscut.retry.Throttle throttle_before = null; net.terminalvalue.crosscut.retry.Throttle throttle_after = null;
++        boolean rejectedAfter = false, rejectedBefore = false;
++        try { throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedAfter = true; }
++        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedBefore = true; }
++        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input
++        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept
+         boolean a = false;
+         int ea = 0;
+         try { a = before.net.terminalvalue.crosscut.retry.RetryThrottling.recorded(throttle_before, failed); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
+--- a/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.json
++++ b/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/result.json
+@@ -28,10 +28,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215259Z-20a93cd7",
++    "id": "20261108T200031Z-06e59324",
+     "claim": "7392cc738a99fa23",
+-    "startedAt": "2026-11-07T21:52:59+00:00",
+-    "seconds": 4.1,
++    "startedAt": "2026-11-08T20:00:31+00:00",
++    "seconds": 2.0,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -42,7 +42,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -55,9 +55,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-crosscut-s-examples-150-15"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-crosscut",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-crosscut"
+     },
+     "execution": {
+       "status": "completed",
+@@ -82,7 +82,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 0.6,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -90,7 +90,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.6,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -106,7 +106,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.7,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -114,7 +114,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.1,
++        "seconds": 0.0,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -130,16 +130,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-s84fuso9/attempts/152/attempt-c1ghawjb"
++    "workspace": ".build-py/examples-ewit0mpk/attempts/152/attempt-6v46tzav"
+   },
+   "conclusion": {
+     "claim": "7392cc738a99fa23",
+-    "attempt": "20261107T215259Z-20a93cd7",
++    "attempt": "20261108T200031Z-06e59324",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -183,7 +183,7 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.034,
++      "seconds": 0.014,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -195,14 +195,14 @@
+           "purpose": "proof",
+           "stage": null,
+           "budgetSeconds": 600.0,
+-          "seconds": 0.014,
++          "seconds": 0.013,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+             "symbolic": 0.001,
+-            "encoding": 0.004,
++            "encoding": 0.003,
+             "solving": 0.009,
+             "trace": 0.0,
+             "other": 0.0
+@@ -216,7 +216,7 @@
+           "checker": "native",
+           "purpose": "probe",
+           "stage": null,
+-          "budgetSeconds": 599.966,
++          "budgetSeconds": 599.986,
+           "seconds": 0.001,
+           "ended": "violation",
+           "ending": "counterexample",
+@@ -239,19 +239,19 @@
+         "paths": 7,
+         "merges": 0,
+         "solverCalls": 16,
+-        "solvingSeconds": 0.009421615,
++        "solvingSeconds": 0.009172473,
+         "gatesEvaluated": 3318,
+-        "evaluatingSeconds": 8.6723e-05,
++        "evaluatingSeconds": 6.7681e-05,
+         "divisions": 1,
+         "divisionsBuilt": 1,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 6965,
+         "clauses": 23912,
+-        "seconds": 0.014330843,
+-        "loadingSeconds": 0.000320593,
+-        "decodingSeconds": 3.4172e-05,
+-        "encodingSeconds": 0.00392364,
++        "seconds": 0.013225734,
++        "loadingSeconds": 0.000252979,
++        "decodingSeconds": 2.6119e-05,
++        "encodingSeconds": 0.003270617,
+         "witnessSeconds": 0.0
+       },
+       "gapMode": "strict"
+@@ -287,7 +287,7 @@
+       "assumptions": [
+         {
+           "kind": "constructible",
+-          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it",
++          "text": "either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones",
+           "basis": "harness"
+         },
+         {
+@@ -351,13 +351,13 @@
+       },
+       {
+         "path": "statement.java",
+-        "sha256": "453464553c6dbe62296769a4773cc6804e2dac0b79b0bc710e766c1297200df3",
+-        "bytes": 3364
++        "sha256": "0f0146ab63e3d954ed4bd42746865a85c15b8101fb9317b6db9fd245bf678db3",
++        "bytes": 3825
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "c23400027cf7b9e7caf69e8223680ab91e9e3f0a8299059aae552e30c9503de5",
+-        "bytes": 835
++        "sha256": "8ffb3cf16071ee98f30b43b870215b9860c2275d9f2de3d4f2f097c8c24f5ad2",
++        "bytes": 901
+       }
+     ]
+   }
+--- a/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/statement.java
++++ b/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/statement.java
+@@ -1,9 +1,13 @@
+ /** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */
+ public final class EquivalenceHarness {
+     public static void check(int throttle_limits_maxTokens, int throttle_limits_tokenRatioMilli, boolean failed) {
+-        // The records and objects, from their components, in both versions; an input a constructor rejects is outside the statement.
+-        before.net.terminalvalue.crosscut.retry.Throttle throttle_before; net.terminalvalue.crosscut.retry.Throttle throttle_after;
+-        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { return; }
++        // The records and objects, from their components, in both versions: an input both versions' constructors reject is outside the statement, and one only one version's reject is a difference.
++        before.net.terminalvalue.crosscut.retry.Throttle throttle_before = null; net.terminalvalue.crosscut.retry.Throttle throttle_after = null;
++        boolean rejectedAfter = false, rejectedBefore = false;
++        try { throttle_after = new net.terminalvalue.crosscut.retry.Throttle(new net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedAfter = true; }
++        try { throttle_before = new before.net.terminalvalue.crosscut.retry.Throttle(new before.net.terminalvalue.crosscut.retry.ThrottleLimits(throttle_limits_maxTokens, throttle_limits_tokenRatioMilli)); } catch (Throwable t) { rejectedBefore = true; }
++        if (rejectedAfter && rejectedBefore) { return; } // both versions' constructors reject the input
++        if (rejectedAfter || rejectedBefore) { throw new AssertionError(); } // one version's constructors reject what the other's accept
+         boolean a = false;
+         int ea = 0;
+         try { a = before.net.terminalvalue.crosscut.retry.RetryThrottling.recorded(throttle_before, failed); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; }
+--- a/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/verifier-output.txt
++++ b/examples/152-a-throttle-that-drops-its-floor-at-zero-is-proved-only-on-full-throttles-where-it-cannot-differ/verifier-output.txt
+@@ -1,3 +1,3 @@
+ ✓ net.terminalvalue.crosscut.retry.RetryThrottling#recorded behaves as before on every input of constructor-made objects (jvmcontract's own checker (CaDiCaL): 1 properties proved over throttle: a Throttle made by its constructor, Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)), from any arguments it accepts × failed: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)
+   not vacuous: recorded(throttle=new Throttle(new ThrottleLimits(20, 20)), failed=true) reaches the calls
+-  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input it rejects is skipped, so the statement is about the objects both versions can build, and whether the constructors accept the same inputs is not part of it
++  constructors: either version's constructor Throttle(limits: ThrottleLimits(maxTokens: int, tokenRatioMilli: int)) accepts the arguments of throttle: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones
+--- a/examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/README.md
++++ b/examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/README.md
+@@ -80,7 +80,7 @@
+ 
+ The changed helpers, each checked before the caller (`--cache`):
+ 
+-- `TokenBucket.lastAfter` changed, and was proved first, as a check of its own: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e). The caller's proof took it as one function in both versions, and its statement names that proof among its assumptions.
++- `TokenBucket.lastAfter` changed, and was proved first, as a check of its own: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8). The caller's proof took it as one function in both versions, and its statement names that proof among its assumptions.
+ 
+ ## Would the existing tests have caught it?
+ 
+@@ -111,21 +111,21 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e), and taken as one function in both.
+-
+-**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain (a changed helper's own regression proof, made by the tool's own checker before the caller's and kept in its proof cache); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
+-
+-This page renders attempt `20261107T215305Z-2c0cf986` at claim `6fc5e1efc8eeeddb`, in pipeline job `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8), and taken as one function in both.
++
++**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain (a changed helper's own regression proof, made by the tool's own checker before the caller's and kept in its proof cache); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
++
++This page renders attempt `20261108T200035Z-3d00b93b` at claim `6fc5e1efc8eeeddb`, in pipeline job `20261108-195650-application-core-phase-5-step-3-crosscut`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-note: TokenBucket.lastAfter's own check took 0.303 s
+-note: TokenBucket.lastAfter, changed: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e); one function in both versions
+-note: the proof cache has no result for this claim (sha256:33c9376d7ffbda65ac1ba5f767ed57237700ba6ef5b8d581256392a29b643cab); proving
++note: TokenBucket.lastAfter's own check took 0.230 s
++note: TokenBucket.lastAfter, changed: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8); one function in both versions
++note: the proof cache has no result for this claim (sha256:a824401b851ad3a7520f5781779131772682493f11dd213d2de70786b818f976); proving
+ note: the proof cache took 0.000 s to compute this claim's key (both versions' closures, the harness's digest and the tools') and 0.000 s to look it up
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e), and taken as one function in both)
+-note: stored in the proof cache as claim sha256:33c9376d7ffbda65ac1ba5f767ed57237700ba6ef5b8d581256392a29b643cab
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8), and taken as one function in both)
++note: stored in the proof cache as claim sha256:a824401b851ad3a7520f5781779131772682493f11dd213d2de70786b818f976
+ ```
+ 
+ </details>
+--- a/examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/result.json
++++ b/examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/result.json
+@@ -29,10 +29,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215305Z-2c0cf986",
++    "id": "20261108T200035Z-3d00b93b",
+     "claim": "6fc5e1efc8eeeddb",
+-    "startedAt": "2026-11-07T21:53:05+00:00",
+-    "seconds": 4.3,
++    "startedAt": "2026-11-08T20:00:35+00:00",
++    "seconds": 2.5,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -45,7 +45,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -58,9 +58,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-crosscut-s-examples-150-15"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-crosscut",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-crosscut"
+     },
+     "execution": {
+       "status": "completed",
+@@ -85,7 +85,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.7,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -93,7 +93,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.2,
++        "seconds": 0.7,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -109,7 +109,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.8,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -117,7 +117,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.4,
++        "seconds": 0.3,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -133,16 +133,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-43g1y_mr/attempts/160/attempt-nxbgikab"
++    "workspace": ".build-py/examples-fzpftrlj/attempts/160/attempt-xjt_ua5g"
+   },
+   "conclusion": {
+     "claim": "6fc5e1efc8eeeddb",
+-    "attempt": "20261107T215305Z-2c0cf986",
++    "attempt": "20261108T200035Z-3d00b93b",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -172,7 +172,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e), and taken as one function in both",
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8), and taken as one function in both",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -186,7 +186,7 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.025,
++      "seconds": 0.005,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+@@ -194,21 +194,21 @@
+       "sharedCallees": [
+         "TokenBucket.lastAfter"
+       ],
+-      "deadlineSeconds": 599.696839933,
++      "deadlineSeconds": 599.76980599,
+       "runs": [
+         {
+           "checker": "native",
+           "purpose": "proof",
+           "stage": null,
+-          "budgetSeconds": 599.696,
+-          "seconds": 0.003,
++          "budgetSeconds": 599.769,
++          "seconds": 0.004,
+           "ended": "verified",
+           "ending": "verified",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+             "symbolic": 0.0,
+-            "encoding": 0.002,
++            "encoding": 0.003,
+             "solving": 0.0,
+             "trace": 0.0,
+             "other": 0.0
+@@ -223,19 +223,19 @@
+         "paths": 3,
+         "merges": 0,
+         "solverCalls": 2,
+-        "solvingSeconds": 0.000369521,
++        "solvingSeconds": 0.000458848,
+         "gatesEvaluated": 1015,
+-        "evaluatingSeconds": 1.5949e-05,
++        "evaluatingSeconds": 1.9608e-05,
+         "divisions": 1,
+         "divisionsBuilt": 0,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 6045,
+         "clauses": 19114,
+-        "seconds": 0.003298273,
+-        "loadingSeconds": 0.000271692,
+-        "decodingSeconds": 2.0048e-05,
+-        "encodingSeconds": 0.002376549,
++        "seconds": 0.003630443,
++        "loadingSeconds": 0.000230866,
++        "decodingSeconds": 1.5029e-05,
++        "encodingSeconds": 0.002700496,
+         "witnessSeconds": 0.0
+       },
+       "gapMode": "strict"
+@@ -281,9 +281,9 @@
+       "assumptions": [
+         {
+           "kind": "callee",
+-          "text": "TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain",
++          "text": "TokenBucket.lastAfter(long, long, long, long, long), changed, is one function in both versions: a regression proof of its own (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8) shows its two versions give the same result or throw the same exception on every input of its parameter types, so every call in either version is in that proof's domain",
+           "basis": "proved",
+-          "id": "sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e"
++          "id": "sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8"
+         },
+         {
+           "kind": "initialization",
+@@ -335,7 +335,7 @@
+       {
+         "callee": "TokenBucket.lastAfter",
+         "shared": true,
+-        "note": "its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e); one function in both versions"
++        "note": "its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8); one function in both versions"
+       }
+     ],
+     "replay": null
+@@ -354,7 +354,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "6001d1b03fa44783e220202cb656eea109c182dc4e5b8fc695e9e8c9a5832bf4",
++        "sha256": "a4abe361f5d22c70334e46c94b39c08c6e895bc777d62755c49f0ba1d105fa0c",
+         "bytes": 1243
+       }
+     ]
+--- a/examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/verifier-output.txt
++++ b/examples/160-a-refill-helper-rewritten-as-whole-periods-proved-once-and-one-function-in-its-caller/verifier-output.txt
+@@ -1,6 +1,6 @@
+-note: TokenBucket.lastAfter's own check took 0.303 s
+-note: TokenBucket.lastAfter, changed: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e); one function in both versions
+-note: the proof cache has no result for this claim (sha256:33c9376d7ffbda65ac1ba5f767ed57237700ba6ef5b8d581256392a29b643cab); proving
++note: TokenBucket.lastAfter's own check took 0.230 s
++note: TokenBucket.lastAfter, changed: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8); one function in both versions
++note: the proof cache has no result for this claim (sha256:a824401b851ad3a7520f5781779131772682493f11dd213d2de70786b818f976); proving
+ note: the proof cache took 0.000 s to compute this claim's key (both versions' closures, the harness's digest and the tools') and 0.000 s to look it up
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:4a6fc5dfefcdf9f776bfdb4c07f27c8cb0be09ef0eb78ad35f1f31ab1eadab3e), and taken as one function in both)
+-note: stored in the proof cache as claim sha256:33c9376d7ffbda65ac1ba5f767ed57237700ba6ef5b8d581256392a29b643cab
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.0 s; loops unwound 16 times with unwinding assertions; TokenBucket.lastAfter changed, its two versions proved to have the same outcome on every input (claim sha256:5978cb6479a51e623abcd5d3577fad7261215a81793383dfb19d91afddd9c9f8), and taken as one function in both)
++note: stored in the proof cache as claim sha256:a824401b851ad3a7520f5781779131772682493f11dd213d2de70786b818f976
+--- a/examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/README.md
++++ b/examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/README.md
+@@ -120,27 +120,27 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
++How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
+ 
+ **What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 17 models of JDK classes (`sha256:94d88f1eba1010b636526723c1ac63793fefa0f6d6cd628953b3e423fa2b89a1`) and the classes of JDK 25.0.5.
+ 
+-This page renders attempt `20261107T215311Z-3b95d0d9` at claim `3d3ef9120b641e17`, in pipeline job `20261107-215001-cleanup-merge-crosscut-s-examples-150-15`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261108T200039Z-6ce0487a` at claim `3d3ef9120b641e17`, in pipeline job `20261108-195650-application-core-phase-5-step-3-crosscut`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-note: TokenBucket.lastAfter's own check took 0.226 s
++note: TokenBucket.lastAfter's own check took 0.132 s
+ note: TokenBucket.lastAfter, changed, stays as written in both versions: its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)
+-note: the proof cache has no result for this claim (sha256:c8506152342bf5f54fdb41ac5fea27931813316de35d05d2b3bc43aa9e918f78); proving
++note: the proof cache has no result for this claim (sha256:98669535006b97dee4b9f53cac166e8740480a2154b6f1db95a1e25b03d1caf5); proving
+ note: the proof cache took 0.000 s to compute this claim's key (both versions' closures, the harness's digest and the tools') and 0.000 s to look it up
+ ✗ Behaviour of net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken changed outside the intended inputs (!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)):
+   nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1)
+     before: 2
+     after:  1
+-  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
++  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+-note: stored in the proof cache as claim sha256:c8506152342bf5f54fdb41ac5fea27931813316de35d05d2b3bc43aa9e918f78
++note: stored in the proof cache as claim sha256:98669535006b97dee4b9f53cac166e8740480a2154b6f1db95a1e25b03d1caf5
+ ```
+ 
+ </details>
+--- a/examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/result.json
++++ b/examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/result.json
+@@ -30,10 +30,10 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261107T215311Z-3b95d0d9",
++    "id": "20261108T200039Z-6ce0487a",
+     "claim": "3d3ef9120b641e17",
+-    "startedAt": "2026-11-07T21:53:11+00:00",
+-    "seconds": 4.5,
++    "startedAt": "2026-11-08T20:00:39+00:00",
++    "seconds": 2.2,
+     "engine": "native",
+     "options": [
+       "--engine",
+@@ -46,7 +46,7 @@
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "8eebb4e87301563d3024b4a65b1c1b432cf454db3fd5936f9e13ad54854e4b20"
++      "jvmcontract": "7462d0c9f8f1270418b2abf2b03f073c57f7818d691b0c311b442be20cddf8ea"
+     },
+     "bytecode": {
+       "before": {
+@@ -59,9 +59,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261107-215001-cleanup-merge-crosscut-s-examples-150-15",
+-      "sourceCommit": "b6cc7ceb0c964db736ca5a441c221d502c8e609e",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261107-215001-cleanup-merge-crosscut-s-examples-150-15"
++      "jobId": "20261108-195650-application-core-phase-5-step-3-crosscut",
++      "sourceCommit": "c1bc082027f95211b173e88c7c65191d009bcf4a",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261108-195650-application-core-phase-5-step-3-crosscut"
+     },
+     "execution": {
+       "status": "completed",
+@@ -86,7 +86,7 @@
+         "name": "javac patched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.6,
+         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+       },
+@@ -94,7 +94,7 @@
+         "name": "javac patched crosscut tests",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.3,
++        "seconds": 0.6,
+         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+       },
+@@ -110,7 +110,7 @@
+         "name": "javac unpatched crosscut main",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 1.4,
++        "seconds": 0.7,
+         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+       },
+@@ -118,7 +118,7 @@
+         "name": "jvmcontract equivalence",
+         "status": "exited",
+         "exitCode": 1,
+-        "seconds": 0.3,
++        "seconds": 0.2,
+         "stdout": "logs/06-jvmcontract-equivalence.stdout",
+         "stderr": "logs/06-jvmcontract-equivalence.stderr"
+       },
+@@ -134,16 +134,16 @@
+         "name": "version of javac",
+         "status": "exited",
+         "exitCode": 0,
+-        "seconds": 0.2,
++        "seconds": 0.1,
+         "stdout": "logs/08-version-of-javac.stdout",
+         "stderr": "logs/08-version-of-javac.stderr"
+       }
+     ],
+-    "workspace": ".build-py/examples-tgnwj40q/attempts/161/attempt-1jk2gs0x"
++    "workspace": ".build-py/examples-p316gcgw/attempts/161/attempt-ty9szdrj"
+   },
+   "conclusion": {
+     "claim": "3d3ef9120b641e17",
+-    "attempt": "20261107T215311Z-3b95d0d9",
++    "attempt": "20261108T200039Z-6ce0487a",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+@@ -319,7 +319,7 @@
+     "purityViolations": [],
+     "trustedCalls": [],
+     "contractDiff": null,
+-    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+     "problem": null,
+     "statement": "statement.java",
+     "trace": null,
+@@ -333,27 +333,27 @@
+     "search": {
+       "engine": "native",
+       "checker": "jvmcontract's own checker (CaDiCaL)",
+-      "seconds": 0.055,
++      "seconds": 0.029,
+       "properties": 1,
+       "unwind": 16,
+       "maxArrayLength": 8,
+       "stage": "[0:20]",
+-      "deadlineSeconds": 599.774161102,
++      "deadlineSeconds": 599.868341363,
+       "runs": [
+         {
+           "checker": "native",
+           "purpose": "proof",
+           "stage": null,
+-          "budgetSeconds": 599.774,
+-          "seconds": 0.033,
++          "budgetSeconds": 599.868,
++          "seconds": 0.026,
+           "ended": "violation",
+           "ending": "counterexample",
+           "phases": {
+             "loading": 0.0,
+             "lowering": 0.0,
+             "symbolic": 0.001,
+-            "encoding": 0.015,
+-            "solving": 0.017,
++            "encoding": 0.014,
++            "solving": 0.011,
+             "trace": 0.0,
+             "other": 0.0
+           },
+@@ -367,20 +367,20 @@
+         "paths": 1,
+         "merges": 0,
+         "solverCalls": 14,
+-        "solvingSeconds": 0.016939857,
++        "solvingSeconds": 0.011044469,
+         "gatesEvaluated": 4323,
+-        "evaluatingSeconds": 6.1124e-05,
++        "evaluatingSeconds": 5.2267e-05,
+         "divisions": 2,
+         "divisionsBuilt": 1,
+         "multiplications": 0,
+         "multiplicationsBuilt": 0,
+         "variables": 36411,
+         "clauses": 124811,
+-        "seconds": 0.033196162,
+-        "loadingSeconds": 0.000306684,
+-        "decodingSeconds": 2.2902e-05,
+-        "encodingSeconds": 0.015267223,
+-        "witnessSeconds": 5.7977e-05
++        "seconds": 0.026227534,
++        "loadingSeconds": 0.00025978,
++        "decodingSeconds": 1.9346e-05,
++        "encodingSeconds": 0.014339341,
++        "witnessSeconds": 5.3571e-05
+       },
+       "gapMode": "strict"
+     },
+@@ -495,7 +495,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "08c1132e071e8db5b8991fd949a9749a2403ad1714c58dba1f77dc1ffaadc1ff",
++        "sha256": "0000f8fd7c4b812d2105a0670dfe69c585a62d1b781051ed200e591e32486d0c",
+         "bytes": 1546
+       }
+     ]
+--- a/examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/verifier-output.txt
++++ b/examples/161-a-refill-helper-aligned-to-the-clock-s-grid-refuted-alone-and-its-caller-sends-a-client-back-early/verifier-output.txt
+@@ -1,12 +1,12 @@
+-note: TokenBucket.lastAfter's own check took 0.226 s
++note: TokenBucket.lastAfter's own check took 0.132 s
+ note: TokenBucket.lastAfter, changed, stays as written in both versions: its two versions differ, at lastAfter(tokens=0, lastNanos=1, nowNanos=0, periodNanos=2, capacity=0)
+-note: the proof cache has no result for this claim (sha256:c8506152342bf5f54fdb41ac5fea27931813316de35d05d2b3bc43aa9e918f78); proving
++note: the proof cache has no result for this claim (sha256:98669535006b97dee4b9f53cac166e8740480a2154b6f1db95a1e25b03d1caf5); proving
+ note: the proof cache took 0.000 s to compute this claim's key (both versions' closures, the harness's digest and the tools') and 0.000 s to look it up
+ ✗ Behaviour of net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken changed outside the intended inputs (!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)):
+   nanosUntilToken(tokens=0, lastNanos=1, nowNanos=1, periodNanos=2, capacity=1)
+     before: 2
+     after:  1
+-  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
++  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as nanosUntilToken(tokens=0, lastNanos=16, nowNanos=20, periodNanos=20, capacity=20), shrunk to the input above in 49 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+-note: stored in the proof cache as claim sha256:c8506152342bf5f54fdb41ac5fea27931813316de35d05d2b3bc43aa9e918f78
++note: stored in the proof cache as claim sha256:98669535006b97dee4b9f53cac166e8740480a2154b6f1db95a1e25b03d1caf5

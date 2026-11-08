@@ -1,0 +1,1662 @@
+--- /dev/null
++++ b/lib/benchmark/preparation/j4-merge.json
+@@ -0,0 +1,1456 @@
++{
++  "compilation_ms": [
++    {
++      "build": "the Spring stand-ins",
++      "ms": 569.233
++    },
++    {
++      "build": "before",
++      "ms": 358.173
++    },
++    {
++      "build": "after",
++      "ms": 375.101
++    },
++    {
++      "build": "offset",
++      "ms": 370.794
++    },
++    {
++      "build": "unrelated-edit",
++      "ms": 377.941
++    },
++    {
++      "build": "helper-rewrite",
++      "ms": 381.467
++    }
++  ],
++  "jvmcontract": "0.1.0",
++  "profile": "release",
++  "repeats": 7,
++  "scenarios": [
++    {
++      "after": "after",
++      "evidence": [
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "POST /quotes"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "POST /quotes/text"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "shop.Pricing#discount"
++        },
++        {
++          "helper_proofs": [
++            "Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade"
++          ],
++          "reached": "proved",
++          "subject": "shop.Pricing#total"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "shop.Pricing#withQuantity"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Money#cents"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Quote#quantity"
++        }
++      ],
++      "from": "an empty proof cache",
++      "hits": 0,
++      "in_process_ms": 62.934,
++      "in_process_ms_each": [
++        67.509,
++        62.179,
++        62.576,
++        63.59,
++        62.934,
++        62.907,
++        63.583
++      ],
++      "process_ms": 119.311,
++      "process_ms_each": [
++        133.441,
++        118.796,
++        119.311,
++        120.684,
++        116.845,
++        119.908,
++        119.01
++      ],
++      "proofs": 5,
++      "proved": 5,
++      "scenario": "cold",
++      "stages_ms": [
++        {
++          "ms": 6.202,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.487,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.134,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.089,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.031,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 44.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 9.178,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.494,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.0,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 0.786,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 42.977,
++          "before_ms": 3.066,
++          "cache": "miss",
++          "closures_ms": 0.725,
++          "helpers_ms": 0.239,
++          "inside": null,
++          "key_ms": 0.935,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.003,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.29,
++          "replay_ms": 0.0,
++          "runs_ms": 39.0,
++          "store_ms": 0.169,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 1.867,
++          "before_ms": 1.235,
++          "cache": "miss",
++          "closures_ms": 0.092,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.32,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.007,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.038,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.082,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 4.461,
++          "before_ms": 0.681,
++          "cache": "miss",
++          "closures_ms": 0.175,
++          "helpers_ms": 2.75,
++          "inside": null,
++          "key_ms": 0.405,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.008,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.106,
++          "replay_ms": 0.0,
++          "runs_ms": 2.0,
++          "store_ms": 0.09,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 1.787,
++          "before_ms": 0.49,
++          "cache": "miss",
++          "closures_ms": 0.056,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.288,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.008,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.023,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.094,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 1.56,
++          "before_ms": 0.73,
++          "cache": "miss",
++          "closures_ms": 0.111,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.338,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.005,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.026,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.076,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Verified"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "after",
++      "evidence": [
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "POST /quotes"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "POST /quotes/text"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#discount"
++        },
++        {
++          "helper_proofs": [
++            "Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade"
++          ],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#total"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#withQuantity"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Money#cents"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Quote#quantity"
++        }
++      ],
++      "from": "the cache the same build's run left",
++      "hits": 5,
++      "in_process_ms": 9.195,
++      "in_process_ms_each": [
++        10.479,
++        9.095,
++        9.195,
++        9.137,
++        9.186,
++        9.331,
++        9.409
++      ],
++      "process_ms": 63.172,
++      "process_ms_each": [
++        64.13,
++        64.179,
++        62.958,
++        63.172,
++        63.131,
++        63.054,
++        63.607
++      ],
++      "proofs": 5,
++      "proved": 0,
++      "scenario": "unchanged rerun",
++      "stages_ms": [
++        {
++          "ms": 5.747,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.478,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.106,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.051,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.128,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 0.0,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.0,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.0,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 0.716,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 2.898,
++          "cache": "hit",
++          "closures_ms": 0.641,
++          "helpers_ms": 0.274,
++          "inside": null,
++          "key_ms": 0.868,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.028,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.335,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.887,
++          "cache": "hit",
++          "closures_ms": 0.077,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.29,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.022,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.027,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.667,
++          "cache": "hit",
++          "closures_ms": 0.199,
++          "helpers_ms": 0.852,
++          "inside": null,
++          "key_ms": 0.417,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.024,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.109,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.493,
++          "cache": "hit",
++          "closures_ms": 0.05,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.276,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.027,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.02,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.713,
++          "cache": "hit",
++          "closures_ms": 0.085,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.307,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.024,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.031,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Verified"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "unrelated-edit",
++      "evidence": [
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "POST /quotes"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "POST /quotes/text"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#discount"
++        },
++        {
++          "helper_proofs": [
++            "Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade"
++          ],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#total"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#withQuantity"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Money#cents"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Quote#quantity"
++        }
++      ],
++      "from": "a copy of the cache a cold run of `after` left",
++      "hits": 5,
++      "in_process_ms": 9.337,
++      "in_process_ms_each": [
++        10.248,
++        9.336,
++        9.247,
++        9.251,
++        9.355,
++        9.337,
++        9.341
++      ],
++      "process_ms": 62.927,
++      "process_ms_each": [
++        62.927,
++        63.627,
++        62.79,
++        61.762,
++        63.277,
++        62.446,
++        63.405
++      ],
++      "proofs": 5,
++      "proved": 0,
++      "scenario": "unrelated edit",
++      "stages_ms": [
++        {
++          "ms": 5.894,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.48,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.092,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.054,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.138,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 0.0,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.0,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.0,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 0.702,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 2.979,
++          "cache": "hit",
++          "closures_ms": 0.693,
++          "helpers_ms": 0.25,
++          "inside": null,
++          "key_ms": 0.909,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.025,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.312,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.93,
++          "cache": "hit",
++          "closures_ms": 0.056,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.267,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.024,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.027,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.711,
++          "cache": "hit",
++          "closures_ms": 0.169,
++          "helpers_ms": 0.887,
++          "inside": null,
++          "key_ms": 0.379,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.019,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.09,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.522,
++          "cache": "hit",
++          "closures_ms": 0.054,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.273,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.029,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.027,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.753,
++          "cache": "hit",
++          "closures_ms": 0.083,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.319,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.031,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.024,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Verified"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "helper-rewrite",
++      "evidence": [
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "POST /quotes"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "POST /quotes/text"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "shop.Pricing#discount"
++        },
++        {
++          "helper_proofs": [
++            "Pricing.discount sha256:27742bcf676d8eb3941e3ec75e40b61744745c9b6c3315241609e8d90a4b1cc5"
++          ],
++          "reached": "proved",
++          "subject": "shop.Pricing#total"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#withQuantity"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Money#cents"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Quote#quantity"
++        }
++      ],
++      "from": "a copy of the cache a cold run of `after` left",
++      "hits": 1,
++      "in_process_ms": 71.144,
++      "in_process_ms_each": [
++        71.655,
++        70.995,
++        71.046,
++        71.144,
++        69.976,
++        71.382,
++        72.874
++      ],
++      "process_ms": 126.546,
++      "process_ms_each": [
++        125.937,
++        125.364,
++        126.546,
++        123.486,
++        131.354,
++        128.802,
++        127.626
++      ],
++      "proofs": 5,
++      "proved": 4,
++      "scenario": "safe helper rewrite",
++      "stages_ms": [
++        {
++          "ms": 6.411,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.521,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.159,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.16,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.08,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 52.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 8.629,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.426,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.0,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 0.784,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 43.807,
++          "before_ms": 3.04,
++          "cache": "miss",
++          "closures_ms": 0.739,
++          "helpers_ms": 0.256,
++          "inside": null,
++          "key_ms": 0.952,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.006,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.29,
++          "replay_ms": 0.0,
++          "runs_ms": 40.0,
++          "store_ms": 0.149,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 1.846,
++          "before_ms": 1.313,
++          "cache": "miss",
++          "closures_ms": 0.073,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.313,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.009,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.042,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.085,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 13.176,
++          "before_ms": 0.671,
++          "cache": "miss",
++          "closures_ms": 0.236,
++          "helpers_ms": 2.771,
++          "inside": null,
++          "key_ms": 0.471,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.008,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.109,
++          "replay_ms": 0.0,
++          "runs_ms": 10.0,
++          "store_ms": 0.1,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 1.801,
++          "before_ms": 0.528,
++          "cache": "miss",
++          "closures_ms": 0.057,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.285,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.009,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.025,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.071,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.834,
++          "cache": "hit",
++          "closures_ms": 0.091,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.323,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.049,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.029,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Verified"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "offset",
++      "evidence": [
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "POST /quotes"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "POST /quotes/text"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "shop.Pricing#discount"
++        },
++        {
++          "helper_proofs": [
++            "Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade"
++          ],
++          "reached": "proved",
++          "subject": "shop.Pricing#total"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "proved",
++          "subject": "shop.Pricing#withQuantity"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Money#cents"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Quote#quantity"
++        }
++      ],
++      "from": "an empty proof cache",
++      "hits": 0,
++      "in_process_ms": 1439.189,
++      "in_process_ms_each": [
++        1483.427,
++        1439.189,
++        1422.82,
++        1419.052,
++        1413.344,
++        1440.444,
++        1479.126
++      ],
++      "process_ms": 1500.554,
++      "process_ms_each": [
++        1487.694,
++        1520.67,
++        1482.247,
++        1492.157,
++        1505.451,
++        1500.554,
++        1534.056
++      ],
++      "proofs": 5,
++      "proved": 5,
++      "scenario": "defect, cold",
++      "stages_ms": [
++        {
++          "ms": 48.672,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.512,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.247,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.183,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.0,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 1350.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 35.228,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 1.734,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.88,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 0.821,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 78.773,
++          "before_ms": 3.025,
++          "cache": "miss",
++          "closures_ms": 0.747,
++          "helpers_ms": 0.251,
++          "inside": null,
++          "key_ms": 0.966,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.003,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.295,
++          "replay_ms": 0.36,
++          "runs_ms": 74.0,
++          "store_ms": 0.614,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 2.129,
++          "before_ms": 43.155,
++          "cache": "miss",
++          "closures_ms": 0.084,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.387,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.012,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.053,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.186,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 1300.382,
++          "before_ms": 0.709,
++          "cache": "miss",
++          "closures_ms": 0.185,
++          "helpers_ms": 2.921,
++          "inside": null,
++          "key_ms": 0.438,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.008,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.097,
++          "replay_ms": 0.52,
++          "runs_ms": 1274.0,
++          "store_ms": 0.773,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 1.928,
++          "before_ms": 0.529,
++          "cache": "miss",
++          "closures_ms": 0.06,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.284,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.006,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.028,
++          "replay_ms": 0.0,
++          "runs_ms": 1.0,
++          "store_ms": 0.089,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 1.783,
++          "before_ms": 1.167,
++          "cache": "miss",
++          "closures_ms": 0.107,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.379,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.009,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.034,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.088,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Refuted"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Refuted"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    },
++    {
++      "after": "offset",
++      "evidence": [
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "POST /quotes"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "POST /quotes/text"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#discount"
++        },
++        {
++          "helper_proofs": [
++            "Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade"
++          ],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#total"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "exact hit",
++          "subject": "shop.Pricing#withQuantity"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Money#cents"
++        },
++        {
++          "helper_proofs": [],
++          "reached": "unchecked",
++          "subject": "shop.Quote#quantity"
++        }
++      ],
++      "from": "the cache the same build's run left",
++      "hits": 5,
++      "in_process_ms": 51.602,
++      "in_process_ms_each": [
++        54.826,
++        32.5,
++        32.405,
++        32.338,
++        51.602,
++        52.792,
++        52.687
++      ],
++      "process_ms": 106.587,
++      "process_ms_each": [
++        109.304,
++        107.724,
++        105.484,
++        106.587,
++        105.402,
++        107.44,
++        106.468
++      ],
++      "proofs": 5,
++      "proved": 0,
++      "scenario": "defect, rerun",
++      "stages_ms": [
++        {
++          "ms": 47.219,
++          "stage": "before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs"
++        },
++        {
++          "ms": 0.54,
++          "stage": "plan: both versions' reach and closures compared"
++        },
++        {
++          "ms": 1.297,
++          "stage": "key: the claim and its digest"
++        },
++        {
++          "ms": 1.137,
++          "stage": "key's closures: both versions' closures digested"
++        },
++        {
++          "ms": 0.241,
++          "stage": "lookup: reading the store"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: decoding classes and methods (loading, lowering)"
++        },
++        {
++          "ms": 0.0,
++          "stage": "checker runs: exploring, encoding and solving"
++        },
++        {
++          "ms": 0.0,
++          "stage": "after the runs: the witness replayed, shrunk and run on a JVM, the statement"
++        },
++        {
++          "ms": 0.0,
++          "stage": "store: writing the result, a refutation's witness replayed first"
++        },
++        {
++          "ms": 0.688,
++          "stage": "replay of a stored or new witness (inside lookup and store)"
++        },
++        {
++          "ms": 0.782,
++          "stage": "outside every proof: compare's own steps after the last proof"
++        }
++      ],
++      "typical_run_proofs": [
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 3.182,
++          "cache": "hit",
++          "closures_ms": 0.686,
++          "helpers_ms": 0.325,
++          "inside": null,
++          "key_ms": 0.923,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.467,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.296,
++          "replay_ms": 0.417,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.JvmcontractEffects#observe(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 42.026,
++          "cache": "hit",
++          "closures_ms": 0.069,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.312,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.03,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.032,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.715,
++          "cache": "hit",
++          "closures_ms": 0.165,
++          "helpers_ms": 0.934,
++          "inside": null,
++          "key_ms": 0.399,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.33,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.098,
++          "replay_ms": 0.275,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#total(shop.Quote)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.541,
++          "cache": "hit",
++          "closures_ms": 0.075,
++          "helpers_ms": 0.0,
++          "inside": 2,
++          "key_ms": 0.302,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.026,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.027,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#discount(long, int)"
++        },
++        {
++          "after_lookup_ms": 0.0,
++          "before_ms": 0.755,
++          "cache": "hit",
++          "closures_ms": 0.088,
++          "helpers_ms": 0.0,
++          "inside": null,
++          "key_ms": 0.327,
++          "loading_ms": 0.0,
++          "lookup_ms": 0.032,
++          "lowering_ms": 0.0,
++          "plan_ms": 0.025,
++          "replay_ms": 0.0,
++          "runs_ms": 0.0,
++          "store_ms": 0.0,
++          "target": "shop.Pricing#withQuantity(shop.Quote, int)"
++        }
++      ],
++      "verdicts": [
++        [
++          "POST /quotes",
++          "Refuted"
++        ],
++        [
++          "POST /quotes/text",
++          "Unresolved"
++        ],
++        [
++          "shop.Pricing#discount",
++          "Verified"
++        ],
++        [
++          "shop.Pricing#total",
++          "Refuted"
++        ],
++        [
++          "shop.Pricing#withQuantity",
++          "Verified"
++        ],
++        [
++          "shop.Money#cents",
++          "unsupported"
++        ],
++        [
++          "shop.Quote#quantity",
++          "unsupported"
++        ]
++      ]
++    }
++  ],
++  "units_ms": [
++    {
++      "ms": 0.028,
++      "stage": "decoding every class file of the old build (4 files, 4988 bytes)"
++    },
++    {
++      "ms": 0.14,
++      "stage": "relocating the old build into package before/ (each proof does once)"
++    },
++    {
++      "ms": 0.079,
++      "stage": "loading both builds for alignment (compare does once)"
++    },
++    {
++      "ms": 0.197,
++      "stage": "aligning the two builds (compare does once)"
++    },
++    {
++      "ms": 0.993,
++      "stage": "reading both builds' entry points' observation specs (compare does once)"
++    },
++    {
++      "ms": 7.703,
++      "stage": "opening the JDK's image the first time in a process, its table of classes built, writing the copy of its index included (each open did before R3's cache)"
++    },
++    {
++      "ms": 0.068,
++      "stage": "opening the JDK's image again, its table shared (each class path with the JDK does: several per proof)"
++    },
++    {
++      "ms": 0.27,
++      "stage": "writing the models' 17 class files into a work directory (each proof does once, after its lookup)"
++    },
++    {
++      "ms": 0.085,
++      "stage": "the models' digest (each claim key takes it)"
++    },
++    {
++      "ms": 38.34,
++      "stage": "the binary's digest (13683856 bytes; once per process)"
++    }
++  ],
++  "what": "R3 and J4 of llm-dlc/loops/application-core-reuse.md: a small compare run's time by stage, on the joint example's builds (lib/tests/fixtures/foundations, examples 190 and 191) and two edits of after (lib/tests/fixtures/preparation), for these fixtures only"
++}
+\ No newline at end of file
+--- /dev/null
++++ b/lib/benchmark/preparation/j4-merge.md
+@@ -0,0 +1,199 @@
++# R3 and J4: a small compare run's time by stage
++
++The joint example's builds (examples 190, 191) and two edits of `after` (`lib/tests/fixtures/preparation`), medians of 7 repeats, a release build; for these fixtures only.
++
++## Compilation (javac)
++
++| Build | ms |
++|---|---|
++| the Spring stand-ins | 569.2 |
++| before | 358.2 |
++| after | 375.1 |
++| offset | 370.8 |
++| unrelated-edit | 377.9 |
++| helper-rewrite | 381.5 |
++
++## Repeated stages, one by one
++
++| Stage | ms |
++|---|---|
++| decoding every class file of the old build (4 files, 4988 bytes) | 0.03 |
++| relocating the old build into package before/ (each proof does once) | 0.14 |
++| loading both builds for alignment (compare does once) | 0.08 |
++| aligning the two builds (compare does once) | 0.20 |
++| reading both builds' entry points' observation specs (compare does once) | 0.99 |
++| opening the JDK's image the first time in a process, its table of classes built, writing the copy of its index included (each open did before R3's cache) | 7.70 |
++| opening the JDK's image again, its table shared (each class path with the JDK does: several per proof) | 0.07 |
++| writing the models' 17 class files into a work directory (each proof does once, after its lookup) | 0.27 |
++| the models' digest (each claim key takes it) | 0.09 |
++| the binary's digest (13683856 bytes; once per process) | 38.34 |
++
++## The runs
++
++### cold (`after`, from an empty proof cache)
++
++5 proofs, 0 exact hits, 5 proved; in process 62.9 ms, as a process 119.3 ms (medians of 7)
++
++| Subject | Reached | On the helper proofs |
++|---|---|---|
++| POST /quotes | proved |  |
++| POST /quotes/text | unchecked |  |
++| shop.Pricing#discount | proved |  |
++| shop.Pricing#total | proved | Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade |
++| shop.Pricing#withQuantity | proved |  |
++| shop.Money#cents | unchecked |  |
++| shop.Quote#quantity | unchecked |  |
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 6.2 |
++| plan: both versions' reach and closures compared | 0.5 |
++| key: the claim and its digest | 1.1 |
++| key's closures: both versions' closures digested | 1.1 |
++| lookup: reading the store | 0.0 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 44.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 9.2 |
++| store: writing the result, a refutation's witness replayed first | 0.5 |
++| replay of a stored or new witness (inside lookup and store) | 0.0 |
++| outside every proof: compare's own steps after the last proof | 0.8 |
++
++### unchanged rerun (`after`, from the cache the same build's run left)
++
++5 proofs, 5 exact hits, 0 proved; in process 9.2 ms, as a process 63.2 ms (medians of 7)
++
++| Subject | Reached | On the helper proofs |
++|---|---|---|
++| POST /quotes | exact hit |  |
++| POST /quotes/text | unchecked |  |
++| shop.Pricing#discount | exact hit |  |
++| shop.Pricing#total | exact hit | Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade |
++| shop.Pricing#withQuantity | exact hit |  |
++| shop.Money#cents | unchecked |  |
++| shop.Quote#quantity | unchecked |  |
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 5.7 |
++| plan: both versions' reach and closures compared | 0.5 |
++| key: the claim and its digest | 1.1 |
++| key's closures: both versions' closures digested | 1.1 |
++| lookup: reading the store | 0.1 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 0.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
++| store: writing the result, a refutation's witness replayed first | 0.0 |
++| replay of a stored or new witness (inside lookup and store) | 0.0 |
++| outside every proof: compare's own steps after the last proof | 0.7 |
++
++### unrelated edit (`unrelated-edit`, from a copy of the cache a cold run of `after` left)
++
++5 proofs, 5 exact hits, 0 proved; in process 9.3 ms, as a process 62.9 ms (medians of 7)
++
++| Subject | Reached | On the helper proofs |
++|---|---|---|
++| POST /quotes | exact hit |  |
++| POST /quotes/text | unchecked |  |
++| shop.Pricing#discount | exact hit |  |
++| shop.Pricing#total | exact hit | Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade |
++| shop.Pricing#withQuantity | exact hit |  |
++| shop.Money#cents | unchecked |  |
++| shop.Quote#quantity | unchecked |  |
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 5.9 |
++| plan: both versions' reach and closures compared | 0.5 |
++| key: the claim and its digest | 1.1 |
++| key's closures: both versions' closures digested | 1.1 |
++| lookup: reading the store | 0.1 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 0.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
++| store: writing the result, a refutation's witness replayed first | 0.0 |
++| replay of a stored or new witness (inside lookup and store) | 0.0 |
++| outside every proof: compare's own steps after the last proof | 0.7 |
++
++### safe helper rewrite (`helper-rewrite`, from a copy of the cache a cold run of `after` left)
++
++5 proofs, 1 exact hits, 4 proved; in process 71.1 ms, as a process 126.5 ms (medians of 7)
++
++| Subject | Reached | On the helper proofs |
++|---|---|---|
++| POST /quotes | proved |  |
++| POST /quotes/text | unchecked |  |
++| shop.Pricing#discount | proved |  |
++| shop.Pricing#total | proved | Pricing.discount sha256:27742bcf676d8eb3941e3ec75e40b61744745c9b6c3315241609e8d90a4b1cc5 |
++| shop.Pricing#withQuantity | exact hit |  |
++| shop.Money#cents | unchecked |  |
++| shop.Quote#quantity | unchecked |  |
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 6.4 |
++| plan: both versions' reach and closures compared | 0.5 |
++| key: the claim and its digest | 1.2 |
++| key's closures: both versions' closures digested | 1.2 |
++| lookup: reading the store | 0.1 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 52.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 8.6 |
++| store: writing the result, a refutation's witness replayed first | 0.4 |
++| replay of a stored or new witness (inside lookup and store) | 0.0 |
++| outside every proof: compare's own steps after the last proof | 0.8 |
++
++### defect, cold (`offset`, from an empty proof cache)
++
++5 proofs, 0 exact hits, 5 proved; in process 1439.2 ms, as a process 1500.6 ms (medians of 7)
++
++| Subject | Reached | On the helper proofs |
++|---|---|---|
++| POST /quotes | proved |  |
++| POST /quotes/text | unchecked |  |
++| shop.Pricing#discount | proved |  |
++| shop.Pricing#total | proved | Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade |
++| shop.Pricing#withQuantity | proved |  |
++| shop.Money#cents | unchecked |  |
++| shop.Quote#quantity | unchecked |  |
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 48.7 |
++| plan: both versions' reach and closures compared | 0.5 |
++| key: the claim and its digest | 1.2 |
++| key's closures: both versions' closures digested | 1.2 |
++| lookup: reading the store | 0.0 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 1350.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 35.2 |
++| store: writing the result, a refutation's witness replayed first | 1.7 |
++| replay of a stored or new witness (inside lookup and store) | 0.9 |
++| outside every proof: compare's own steps after the last proof | 0.8 |
++
++### defect, rerun (`offset`, from the cache the same build's run left)
++
++5 proofs, 5 exact hits, 0 proved; in process 51.6 ms, as a process 106.6 ms (medians of 7)
++
++| Subject | Reached | On the helper proofs |
++|---|---|---|
++| POST /quotes | exact hit |  |
++| POST /quotes/text | unchecked |  |
++| shop.Pricing#discount | exact hit |  |
++| shop.Pricing#total | exact hit | Pricing.discount sha256:1ac7558b1eb3740fcf9b33b0cbe9820064479918fbc7ea97c7c758d585187ade |
++| shop.Pricing#withQuantity | exact hit |  |
++| shop.Money#cents | unchecked |  |
++| shop.Quote#quantity | unchecked |  |
++
++| Stage | ms |
++|---|---|
++| before each proof: relocating, decoding the target's classes, the layout, the harness, and the caller's steps between proofs | 47.2 |
++| plan: both versions' reach and closures compared | 0.5 |
++| key: the claim and its digest | 1.3 |
++| key's closures: both versions' closures digested | 1.1 |
++| lookup: reading the store | 0.2 |
++| checker runs: decoding classes and methods (loading, lowering) | 0.0 |
++| checker runs: exploring, encoding and solving | 0.0 |
++| after the runs: the witness replayed, shrunk and run on a JVM, the statement | 0.0 |
++| store: writing the result, a refutation's witness replayed first | 0.0 |
++| replay of a stored or new witness (inside lookup and store) | 0.7 |
++| outside every proof: compare's own steps after the last proof | 0.8 |
