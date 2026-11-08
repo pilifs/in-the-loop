@@ -479,7 +479,38 @@ Never relax the interface to unblock it.
   - `lib/README.md`: a paragraph **A replay that cannot run a version reproduces nothing**.
   - **Next**: O2's String adapter waits for the merge (values' `nlkuyptr`). Optional: array fields in property
     expressions. Everything else left waits on jobs, another stream or the coordinator (see the entries above).
-- Status: working
+- 2026-11-08, **the rerun after the loop-tooling fix (`umqkzwlp`): the last jobs recorded, and why this stream
+  stops.** The integration report is 11:33's, at this stream's `ba15f2e5`: the four `@-` conflict only in `sync.py`'s
+  generated files (`llm-dlc/README.md`, `index.json`, `traces/README.md`, `traces/metrics.json`), for the merge.
+  - **Job** `20261108-074116-application-core-objects-o2-a-replay-tha` **passed** at `b38e213b7d01`: the JBMC
+    integration tests 65 of 65, and VF-015's step 4 on example 109 refuted with `ch > 127`, replayed on a JVM
+    (`replay.by` `jvm`, `reproduced: true`), the new outcome the JVM's `DecoderException`, no `could not replay`,
+    `differs` `exception`. It doesn't close VF-015, whose step 5 the user deferred.
+  - **Job** `20261108-072230-application-core-objects-o2-lib-tests-in` **passed** at `ac38d9c636f9` (65 of 65), and
+    the verification loop closed VF-022 with it.
+  - Every job of this stream is collected: `20261108-045000-…` passed; `20261108-063512-…` and `20261108-064305-…`
+    failed on VF-022's stale assertion only, fixed and passed in `20261108-072230-…`.
+  - **Rechecked inline** at `ba15f2e5`: `tests/application_core.rs` 13 of 14, O3 failing as before, on the frozen
+    throttle claims' allocation bound ("the previous version's code may make 1 objects in one call, more than the
+    claim's allocation bound of 0").
+  - **The open findings**: VF-023 (JBMC's `List.size()` stub under `--confirm`) is the values stream's; none is in
+    this stream's files.
+  - **State of the rows**:
+    - **O1** passes inline (the contract's O1, and the stream's tests), with JBMC job `20261108-045000-…` passed.
+      Left out: a factory route (optional), and `compare` with a plan per subject (an interface request to the
+      coordinator, second entry).
+    - **O2** passes inline (the contract's O2), all five negative controls in, shrinking and replay checked, jobs
+      passed. Left: the String adapter, which waits for the merge (values' `nlkuyptr`).
+    - **O3** is implemented and refuted with the whole history on a JVM, under the frozen claims with only their
+      allocation bound at 1. The contract's O3 fails until the coordinator or the user decides the fixture's bound
+      (the second entry). A stream doesn't relax a frozen expectation.
+  - **Optional, not taken**: array fields in property expressions (`this.data`, refused by name in
+    `harness/expr.rs`), and the brief's optional factory route or reference arrays. They are left out so they don't
+    delay the merge.
+  - **For the merge** (the entries above): un-ignore `an_inner_objects_constructor_is_part_of_the_cached_claim`; once
+    reuse roots `Regression::claim` at `construction_roots`, drop the uncached guard for setup sequences in
+    `equivalence.rs`; `lib/README.md`'s Limits line and the old "either version rejects" sentence.
+- Status: blocked: O2's String adapter waits for the merge (values' `nlkuyptr`), and O3's contract row on a decision about the frozen throttle claims' allocation bound of 0
 
 ## Loop settings
 
