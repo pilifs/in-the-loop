@@ -313,7 +313,7 @@ fn split_top_level(text: &str) -> Vec<String> {
 }
 
 /// `2026-11-07T12:00:00Z`, now.
-fn utc_now() -> String {
+pub fn utc_now() -> String {
     let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs() as i64).unwrap_or(0);
     let (days, rest) = (secs.div_euclid(86_400), secs.rem_euclid(86_400));
     // Howard Hinnant's civil_from_days.

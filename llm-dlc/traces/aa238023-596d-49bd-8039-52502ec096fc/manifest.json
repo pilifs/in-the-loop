@@ -1,0 +1,100 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "aa238023-596d-49bd-8039-52502ec096fc",
+  "status": "open",
+  "title": "Multi agent feature stream run",
+  "first_prompt": "This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.\n\n<system-reminder>\n<tools-used-before-summary>Ag",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-08T04:34:25.544Z",
+  "ended": "2026-11-08T04:46:00.487Z",
+  "duration_seconds": 695,
+  "stats": {
+    "turns": 5,
+    "api_calls": 45,
+    "tool_calls": 46,
+    "tool_errors": 0,
+    "compactions": 1,
+    "peak_context_tokens": 188336,
+    "usage": {
+      "input_tokens": 88,
+      "output_tokens": 51967,
+      "cache_read_input_tokens": 5499537,
+      "cache_creation_input_tokens": 196321
+    }
+  },
+  "tools": {
+    "Bash": 40,
+    "Read": 3,
+    "Write": 2,
+    "Edit": 1
+  },
+  "files_touched": [
+    "lib/src/reuse.rs",
+    "lib/tests/reuse.rs",
+    "llm-dlc/loops/application-core-reuse.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-08T04:34:25.544Z",
+      "ended": "2026-11-08T04:34:25.546Z",
+      "turns": 0,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
+    },
+    {
+      "index": 1,
+      "started": "2026-11-08T04:34:21.844Z",
+      "ended": "2026-11-08T04:46:00.487Z",
+      "turns": 5,
+      "api_calls": 45,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 51967,
+        "cache_read_input_tokens": 5499537,
+        "cache_creation_input_tokens": 196321
+      },
+      "peak_context_tokens": 188336
+    }
+  ],
+  "log": {
+    "sha256": "e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20",
+    "bytes": 1531760,
+    "lines": 516,
+    "gzip_bytes": 314565,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "sktkmnpnoqsvppmtzowlrsruzzozwrvu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse R1: the native property cache, a property projection of the canonical claim in the existing proof store",
+      "body": "prove --cache DIR now keeps a property check's verified and refuted results in the regression proofs' store (lib/src/reuse.rs), keyed by the same canonical claim digest. The claim projects the target's parameters, the closure of the target and of every constructor its inputs, result and declared exceptions are made with, the assumption, assertion, throws clauses, the meaning of \\old, the null and alias choices, any construction plan, the bounds and the checker's settings. A first assumption marks it a property claim, so it never shares a key with a regression claim of the same target. Every field of property::Options is named in the projection; an unknown one, or an engine other than the own checker, refuses the check under --cache instead of keying without it. A verified hit gives back the stored outcome and statement, marked as reused. A refutation is stored with the harness it was found in, and reused only once its witness fails that harness again on the current classes. Nothing unresolved is stored.\n\nVerified inline: lib/tests/reuse.rs (7 tests, on the frozen quote fixture and small builds, native engine, no JBMC): exact hits of both kinds, a stale stored witness proved again, an input's changed constructor invalidating the proof of an unchanged method (the test fails with the constructor roots taken out), a key per assertion, assumption, throws clause, domain, bound and plan history, none for an unrelated change. The contract's R1 now verifies cold and on the rerun; 230 unit tests, tests/application_core.rs and tests/summaries.rs pass, clippy is clean. Interface requests for property.rs and main.rs are under the stream brief's Progress.",
+      "log_sha256": "e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20"
+    }
+  ],
+  "logs": {
+    "e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20": {
+      "bytes": 1531760,
+      "lines": 516,
+      "gzip_bytes": 314565,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

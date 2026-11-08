@@ -156,6 +156,38 @@ measurement stays as recorded.
 
 - Not started. Forks after the main brief's [launch prerequisites](application-core.md#launch-prerequisites),
   Phase 0 included.
+- 2026-11-08, **R1, the native property cache**, in `lib/src/reuse.rs`:
+  - **The claim**: `reuse::property_claim` keeps property results in the regression store
+    (`spec::cache`), under the same digest. It projects:
+    - the target's parameters by name and type;
+    - the closure of the target and of every constructor its object inputs, its result and its declared
+      exceptions are made with, recursively, plus a plan's makers and setup calls;
+    - as assumptions: a first one that it is a property claim (`PROPERTY_CLAIM`), then the assumption, the
+      assertion, the throws clauses, the meaning of `\old`, the null and alias choices and the construction plan
+      whole;
+    - the bounds, and the tools with every checker setting.
+  - **Every field of `property::Options` is named** in `PROPERTY_OPTIONS`. A field the list doesn't know refuses
+    the check under `--cache`, read from the options' `Debug`, so another stream's new field is never silently left
+    out of the key. `--engine jbmc` and `auto` are refused too.
+  - **Lookup and store**: the lookup comes before anything is prepared. A verified hit gives back the stored outcome
+    and statement, marked as reused. A refutation is stored with its harness (the key determines it), and only if
+    its witness fails that harness in the interpreter. A refuted hit is used only once its witness fails the stored
+    harness again on the current classes; otherwise the check proves again. Nothing unresolved is stored.
+  - **Verified inline**: `lib/tests/reuse.rs`, 7 tests: a verified and a refuted exact hit, a stale witness proved
+    again, a changed constructor of an input invalidating a proof of an unchanged method (it fails when the
+    constructor roots are taken out), a key per assertion, assumption, throws clause, domain, bound, model, gap
+    mode, target and plan history (constructor-only and setup are two keys), none for an unrelated change, and no
+    key shared with the target's regression claim in one cache. The contract's R1 now reaches `verified`, cold and
+    rerun. 230 unit tests, the contract and `summaries.rs` pass.
+  - **Interface requests for the merge** (files not this stream's):
+    - `property.rs` (objects): `reuse::property_store` should take `&mut Outcome`, so that its note ("stored as
+      claim K", or why not) goes in the output; it is on the standard error for now. `property::Outcome` should get
+      a `reuse` field (`spec::cache::Reuse`), so that `--json` carries the reuse as data, not only in `output` and
+      `proof`.
+    - `main.rs` (shared): the doc of `prove --cache` still says "Refused until that stream builds it", and so does
+      the comment at the hook in `property::run`.
+  - **Next**: J3, registering the streams' new claim fields (a planned domain's plans, a call's model) in
+    `spec::cache::KNOWN`, with their invalidation tests. Then R2.
 - Status: working
 
 ## Loop settings
