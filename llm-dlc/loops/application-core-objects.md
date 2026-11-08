@@ -353,6 +353,43 @@ Never relax the interface to unblock it.
     overrides that sentence, which a stream doesn't rewrite.
   - **Next**: a shrinking check that a shrunk recipe is still legal and still reproduces the same failure; then the
     claim roots of constructors and setup methods (with reuse). O2's five negative controls are done.
+- 2026-11-08, **O2's shrinking: a shrunk witness is the same failure as the one found.**
+  - **The integration report** is now 06:36's, at this stream's `d7330651`: the merge conflicts only in `sync.py`'s
+    generated files (`llm-dlc/README.md`, `index.json`, `traces/README.md`, `traces/metrics.json`), for the merge.
+    `lib/README.md` no longer conflicts.
+  - **Job** `20261108-045000-…` (O1's) **passed** at `4e5450111c3f`: `lib/tests/integration.rs` under JBMC, and
+    examples 190–196 as expected.
+  - **The reproducer**: the shrinker's oracle was the harness alone, which takes any failure. A receiver's field
+    found to differ at `add(this=new Counter(20), n=4)` (the new `add` adds one more per call from step 3) shrank
+    to `add(this=new Counter(1), n=0)`, where only the new constructor rejects the step: another difference, on the
+    `exception`, reported as the input found shrunk. In `prove`, a violated assertion at `new Counter(20)` shrank
+    into an `IllegalStateException` thrown at step 2.
+  - **What**: `witness::shrink_in_harness_keeping` takes a `same` predicate, asked only of a candidate the harness
+    refutes. The regression check's: the two versions' replays disagree, in exactly the observations the input
+    found differs in (`Replays::differs`). The property check's: the same throws clause applies, and the method
+    throws the same exception class or returns normally, as on the input found. The unchecked
+    `witness::shrink_in_harness`, which nothing called, is gone.
+  - **Legality** needed no new check, and the doc says why: a candidate is the harness's own input, so it has the
+    harness's domain (scope, assumptions, the constructors' admission compared or skipped), keeps a plan's choice
+    flags as found (`Layout::flags`; a shared node has no flag), and is never a longer array or a null one. It is
+    accepted only after it is replayed.
+  - **Verified inline** (native, no JBMC): `tests/application_core_objects.rs`'s
+    `o2_a_shrunk_witness_reproduces_the_same_failure`, failing before in both halves, now shrinks to
+    `new Counter(3)` with the same `field:this` difference (run on a JVM), and in `prove` to `new Counter(3)` on a
+    normal return (run on a JVM). 19 pass and 1 ignored there. The suites `heap`, `foundations`, `compare`,
+    `effects`, `observations`, `alignment`, `summaries`, `conformance` and `skill` pass; `application_core` passes
+    except O3, the fixture's allocation bound (the second entry). The lib tests pass but one, below.
+  - **Found, for the values stream** (`bmc/bits.rs` is its file): the timing test
+    `the_encoding_estimate_does_not_count_a_large_circuit_many_times_over` failed once in the full lib run (227 of
+    228) while the inline suites of other streams loaded the machine, and passed alone three times out of three. It
+    compares the encoding's estimated time with wall-clock time, so it is load-dependent. Not changed here.
+  - **Job** `20261108-064305-application-core-objects-o2-a-shrunk-wit` (pending): `lib/tests/integration.rs` under
+    JBMC, whose tests assert particular shrunk witnesses (an empty array, two overflowing elements, the even cluster
+    nearest zero). Examples compare verdicts, not witnesses, so none is rerun. Job `20261108-063512-…` is still
+    pending too.
+  - `lib/README.md`: a paragraph **A shrunk witness is the same failure**.
+  - **Next**: the claim roots of constructors and setup methods, for reuse. O2's String adapter waits for the merge
+    (values' `nlkuyptr` is on its branch).
 - Status: working
 
 ## Loop settings

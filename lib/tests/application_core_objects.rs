@@ -828,3 +828,61 @@ fn o2_a_narrower_new_constructor_under_an_anchored_domain_is_never_silently_inte
     let r = heap::check(&claim, &throttle_before, &throttle_in("narrowed-throttle-after", "after")).unwrap_or_else(|u| panic!("{u}"));
     assert_eq!(r.verdict, Claimed::Verified, "{r:?}");
 }
+
+/// O2's shrinking: a shrunk witness is the same failure as the one found, never another the shrinker slid into.
+/// Here the new constructor rejects step 1, which the previous version admits (a difference on the exception), and
+/// the new `add` adds one more per call from step 3 (a difference on the receiver's field). A witness found at a
+/// large step shrinks towards zero, and from step 3 the next candidate is step 1: under the harness alone that is
+/// a counterexample too, of the other difference.
+#[test]
+fn o2_a_shrunk_witness_reproduces_the_same_failure() {
+    let before = counter("same-failure-before", |s| s.to_string());
+    let after = counter("same-failure-after", |s| s.replace("if (step < 1) {", "if (step < 2) {").replace("count += n * step;", "count += step >= 3 ? n * step + n : n * step;"));
+    let run = |name: &str, shrink: bool| {
+        let mut options = equivalence::Options::new(&before, &after, "counters.Counter#add");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.shrink = shrink;
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        equivalence::run(&options).unwrap()
+    };
+    let unshrunk = run("same-failure-unshrunk", false);
+    assert_eq!(unshrunk.verdict, Verdict::Violation, "{}", unshrunk.output);
+    let found = unshrunk.counterexample.as_ref().unwrap();
+    assert!(!found.differs.iter().any(|d| d == "exception"), "the premise: the input found differs on the field, not the admission: {}", found.input);
+    let o = run("same-failure", true);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert_eq!(c.found.as_deref(), Some(found.input.as_str()), "{}", o.output);
+    assert!(c.jvm.is_some(), "the shrunk witness is run on a JVM: {}", o.output);
+    assert_eq!(c.differs, found.differs, "the shrunk witness {} is another failure than the one found, {}: {}", c.input, found.input, o.output);
+    assert!(c.input.contains("new Counter(3)"), "shrunk as far as the same failure goes: {}", c.input);
+
+    // The property check: `add` throws at step 2, and adds one more per call from step 3. A violation of the
+    // assertion found at a large step shrinks to step 3, never into the exception at step 2.
+    let classes = counter("same-failure-property", |s| s.replace("count += n * step;", "if (step == 2) {\n            throw new IllegalStateException(\"two\");\n        }\n        count += step >= 3 ? n * step + n : n * step;"));
+    let property = |name: &str, shrink: bool| {
+        let mut options = property::Options::new(&[classes.clone()], "counters.Counter#add");
+        options.engine = jvmcontract::Engine::Native;
+        options.jbmc = NO_JBMC.into();
+        options.assume = Some("n >= 0 && n <= 4".into());
+        options.assert = Some("this.count == n * this.step".into());
+        options.shrink = shrink;
+        let work = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-objects-work").join(name);
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    let unshrunk = property("same-failure-property-unshrunk", false);
+    assert_eq!(unshrunk.verdict, Verdict::Violation, "{}", unshrunk.output);
+    let found = unshrunk.counterexample.as_ref().unwrap();
+    assert!(!found.outcome.contains("throws"), "the premise: the input found violates the assertion on a normal return: {}", found.outcome);
+    let o = property("same-failure-property", true);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let c = o.counterexample.as_ref().unwrap();
+    assert!(!c.outcome.contains("throws") && c.input.contains("new Counter(3)"), "the same failure, shrunk: {} {}", c.input, c.outcome);
+    assert_eq!(c.found.as_deref(), Some(found.input.as_str()), "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| r.by == "jvm" && r.reproduced), "{}", o.output);
+}

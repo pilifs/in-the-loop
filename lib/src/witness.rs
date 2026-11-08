@@ -828,17 +828,23 @@ pub const SHRINK_BUDGET: u32 = 4000;
 /// the interpreter, refutes the statement on an input exactly when it throws `AssertionError` on it (the scope or
 /// assumption is part of the harness, so an input outside it passes). An input the interpreter cannot run is not
 /// accepted.
-pub fn shrink_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
-    shrink_in_harness_keeping(cp, harness_class, types, found, &[])
+///
+/// It keeps the flat parameters `kept` as found, a choice's flags (step H2, [`crate::harness::Layout::flags`]),
+/// so that shrinking never makes two objects one or one object two. A
+/// candidate the harness refutes is accepted only where `same` says it is the same failure as the input found
+/// (O2 of `llm-dlc/loops/application-core-objects.md`): the regression check's replay differs in the same
+/// observations, the property check's fails in the same way. The harness alone would take any failure, and a
+/// witness of one difference could shrink into a witness of another, a constructor's narrower admission say,
+/// reported as the input found shrunk.
+///
+/// So a shrunk recipe is legal and reproduces the failure: every candidate is the harness's own input, with the
+/// harness's domain (its scope, its assumptions, its constructors' admission) and the plan's choices as found, no
+/// longer array than found and no null where there was none, and it is accepted only after it is replayed.
+pub fn shrink_in_harness_keeping(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize], same: impl FnMut(&[Argument]) -> bool) -> Shrunk {
+    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found, kept, same))
 }
 
-/// [`shrink_in_harness`], keeping the flat parameters `kept` as found: a choice's flags (step H2,
-/// [`crate::harness::Layout::flags`]), so that shrinking never makes two objects one or one object two.
-pub fn shrink_in_harness_keeping(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
-    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found, kept))
-}
-
-fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize]) -> Shrunk {
+fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>, kept: &[usize], mut same: impl FnMut(&[Argument]) -> bool) -> Shrunk {
     let mut m = Machine::new(cp);
     m.monitor = false;
     let original = found.clone();
@@ -846,7 +852,10 @@ fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type]
         if kept.iter().any(|&i| arguments.get(i) != original.get(i)) {
             return Some(false);
         }
-        fails_in(&mut m, harness_class, types, arguments)
+        match fails_in(&mut m, harness_class, types, arguments) {
+            Some(true) => Some(same(arguments)),
+            other => other,
+        }
     };
     // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
     if fails(&found) != Some(true) {

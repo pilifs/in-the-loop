@@ -915,7 +915,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // The interpreter is the shrinker's oracle, and it cannot run a witness only a JVM could.
             // It changes the leaves alone, never a choice's flag, so that it never merges or splits objects.
             if options.shrink && on_jvm.is_none() {
-                let shrunk = witness::shrink_in_harness_keeping(&harness_cp, harness::PROPERTY_CLASS, &entry_types, found.clone(), &layout.flags());
+                // A candidate is the same failure where it fails in the same way as the input found (O2): the same
+                // throws clause applying, and the same exception or a normal return, never another kind of failure.
+                let failure = (applying(&found), replayed.thrown.clone());
+                let same = |candidate: &[Argument]| (applying(candidate), replay_on(candidate).thrown) == failure;
+                let shrunk = witness::shrink_in_harness_keeping(&harness_cp, harness::PROPERTY_CLASS, &entry_types, found.clone(), &layout.flags(), same);
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;
             }

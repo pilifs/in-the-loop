@@ -2164,7 +2164,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // The interpreter is the shrinker's oracle, and it cannot run a witness only a JVM could.
             if options.shrink && on_jvm.is_none() {
                 let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?;
-                let shrunk = witness::shrink_in_harness_keeping(&harness_cp, harness::CLASS, &flat_types, found.clone(), &layout.flags());
+                // A candidate is the same failure where its replay differs in the same observations as the input
+                // found's (O2): never a witness of another difference, a narrower constructor's say.
+                let same = |candidate: &[Argument]| {
+                    let r = replay_both(candidate);
+                    !r.agree && r.differs == replays.differs
+                };
+                let shrunk = witness::shrink_in_harness_keeping(&harness_cp, harness::CLASS, &flat_types, found.clone(), &layout.flags(), same);
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;
             }
