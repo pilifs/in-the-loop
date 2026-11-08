@@ -521,6 +521,15 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   objects `umqkzwlp`, environment `wvournln`, reuse `ropyotpk`): a stop that leaves a status `working` now gets a
   turn to set it, and `run-streams.sh` reruns such a stop instead of counting it done. The user restarted
   `run-streams.sh`, which reruns the three streams, then this loop. O3's allocation bound still needs the user.
+- 2026-11-08, **O3's allocation bound, decided by the user**: the frozen throttle claims
+  (`golden/throttle-constructed-claim.json`, `golden/throttle-setup-claim.json`) are bounded at 1 allocation in
+  each version, not 0: `allows` makes the `IllegalArgumentException` it throws, which the gate counts, as
+  `checked-claim`'s bound of 1 already counts its own. The bound covers the target call only; setup calls are
+  bounded by the plan's `setup_calls` and their outcomes are compared, so the gate stays as it is. `expected.json`
+  is unchanged. Applied on the objects branch (`tzsluzns`), where the contract test passes 14 of 14; the merge
+  takes it as a deliberate change to a frozen fixture, not a stream relaxing one. Also: `feature-loop.sh` now
+  reads a stream's own brief, not the default workspace's copy (`unwrvwqw`); the reuse stream, already running,
+  keeps the old reading until it stops.
 - Status: working
 
 ## Loop settings
