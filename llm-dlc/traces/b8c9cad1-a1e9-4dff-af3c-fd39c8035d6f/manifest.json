@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.535Z",
-  "ended": "2026-11-08T08:16:29.861Z",
-  "duration_seconds": 13324,
+  "ended": "2026-11-08T08:23:11.154Z",
+  "duration_seconds": 13726,
   "stats": {
-    "turns": 41,
-    "api_calls": 415,
-    "tool_calls": 410,
-    "tool_errors": 5,
-    "compactions": 7,
+    "turns": 46,
+    "api_calls": 457,
+    "tool_calls": 453,
+    "tool_errors": 7,
+    "compactions": 8,
     "peak_context_tokens": 253307,
     "usage": {
-      "input_tokens": 846,
-      "output_tokens": 370292,
-      "cache_read_input_tokens": 57767647,
-      "cache_creation_input_tokens": 1267512
+      "input_tokens": 932,
+      "output_tokens": 399058,
+      "cache_read_input_tokens": 62337706,
+      "cache_creation_input_tokens": 1397833
     }
   },
   "tools": {
-    "Bash": 381,
-    "Read": 13,
-    "Write": 6,
-    "Edit": 4,
+    "Bash": 419,
+    "Read": 16,
+    "Write": 7,
+    "Edit": 5,
     "Monitor": 3,
     "ToolSearch": 3
   },
@@ -45,7 +45,8 @@
     "lib/tests/fixtures/values/values/Operations.java",
     "lib/tests/fixtures/values/values/Outside.java",
     "lib/tests/values.rs",
-    "llm-dlc/loops/application-core-values.md"
+    "llm-dlc/loops/application-core-values.md",
+    "verification/triage/vf023.sh"
   ],
   "context_windows": [
     {
@@ -149,24 +150,38 @@
     {
       "index": 7,
       "started": "2026-11-08T07:40:59.527Z",
-      "ended": "2026-11-08T08:16:29.861Z",
-      "turns": 4,
-      "api_calls": 58,
+      "ended": "2026-11-08T08:16:55.521Z",
+      "turns": 5,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 116,
-        "output_tokens": 54125,
-        "cache_read_input_tokens": 8660319,
-        "cache_creation_input_tokens": 196799
+        "input_tokens": 124,
+        "output_tokens": 55782,
+        "cache_read_input_tokens": 9296121,
+        "cache_creation_input_tokens": 201627
       },
-      "peak_context_tokens": 209878
+      "peak_context_tokens": 214708
+    },
+    {
+      "index": 8,
+      "started": "2026-11-08T08:17:36.390Z",
+      "ended": "2026-11-08T08:23:11.154Z",
+      "turns": 4,
+      "api_calls": 39,
+      "usage": {
+        "input_tokens": 78,
+        "output_tokens": 27109,
+        "cache_read_input_tokens": 3934257,
+        "cache_creation_input_tokens": 125493
+      },
+      "peak_context_tokens": 138572
     }
   ],
   "log": {
-    "sha256": "c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152",
-    "bytes": 12019508,
-    "lines": 4555,
-    "gzip_bytes": 2200545,
-    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152.jsonl.gz"
+    "sha256": "099124816d67e356d5f731fa3b2b1b760222040cb41c31e379968d699d668a39",
+    "bytes": 13207157,
+    "lines": 4985,
+    "gzip_bytes": 2452328,
+    "path": "llm-dlc/traces/b8c9cad1-a1e9-4dff-af3c-fd39c8035d6f/logs/099124816d67e356d5f731fa3b2b1b760222040cb41c31e379968d699d668a39.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -225,9 +240,23 @@
       "summary": "application-core values V3 step 2: an operation outside the values models is a named gap under strict, never a verdict",
       "body": "V3's strict gap detection. String methods other than the five the own checker models on content were already named gaps; list methods were not. Since V2 step 1 the checker ran every method the immutable-list models implement, so claims over a list's equals, hashCode, toArray, addAll, remove(Object), sort and List.of's array form were proved on bytecode no evidence record samples, and contains/indexOf stopped at a gap inside the models rather than at the call. Each record of values::OPERATIONS now names its calls (OperationEvidence::calls). A call from outside the list models into them that no list record names (values::samples_list_call) is the JDK call it names, for the engine and the gap scan alike (bmc::gaps::outside_the_list_records): a gap of its kind, or a refusal for toArray's array result. The models' calls among themselves are unchanged. values::LIST_MODEL goes to 2, since the checker's list semantics changed. The engine's table, the scan's module docs, lib/models/README.md and lib/README.md say so.\n\nReproducer: lib/tests/values.rs's an_operation_outside_the_values_models_is_a_named_gap_under_strict runs 20 harness-shaped checks (tests/fixtures/values/values/Outside.java), each reaching one such operation with a claim the JVM upholds. Each must end, merging from the start and never, with no verdict and its gap named, and the scan must report the same gap without walking the models' unsampled methods. Before the fix, 37 of its 60 checks failed. A unit test holds each record's calls to the models and to the String methods the checker models. Removing the rule from the engine's dispatch fails the test (20 operations), and so does removing it from the scan's walk (11).\n\nWorkloads without Strings keep their results. The whole lib suite passes, and the benchmark's Python tests pass. Only four list claims of the conformance corpus change: they reach List.of's array form, and go back to the U they had before this stream (listNull's proof, both of listCopySame's, listOfArray's refutation). lib/benchmark/conformance.json is re-blessed. One corpus assertion is narrowed to a single named claim with its exact gaps (ADVISED_ON_EXCLUDED_PATHS). Strict still proves listChange under n == 0 || n == 8, since the engine prunes the paths to remove(Object) and addAll. --gaps advised decides from the static scan and stops on those two gaps: the scan's documented imprecision, not a wrong verdict. Evidence level unchanged (tested). No job: seconds, inline. Found, for review: the corpus samples the array form on the JVM, but no record does; a record would bring those four claims back if a fixture needed it.",
       "log_sha256": "c47a95d8b2098c50e2f404b770fec054faafca949ab553931b658fa264916152"
+    },
+    {
+      "change_id": "kppwkynqoklxomwyupzvkvxvlxxsytuo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core values: VF-023's diagnosis, why JBMC refutes that a one-element List.of has size 1 (verification pending)",
+      "body": "V2 step 1's job 20261108-070211-… failed at its auto --confirm step (VF-023 in verification/findings.md). JBMC 6.11.0 refutes the corpus's listSizes(n=1) and listChange(n=0), which the own checker proves and the JVM, the interpreter and lib/models' lists run on a JVM all hold, so JBMC's verdict is the wrong one. Both witnesses are a one-element List.of. Its List12 keeps the static sentinel ImmutableCollections.EMPTY as its second element, and size() compares against it. Every other list claim JBMC decides agrees with the JVM. Nothing is changed before the cause is shown: the item has one timebox attempt left.\n\nJob 20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that runs verification/triage/vf023.sh: three property proofs under JBMC alone with their logs kept. They are a one-element list's size, the same after List.of() has initialized ImmutableCollections, and a two-element control (1, 1 and 2 on the JVM, checked inline). The script extracts the trace's assignments to EMPTY, e1 and the class-initialization flags. The stream brief's Progress records the triage and the next step.",
+      "log_sha256": "099124816d67e356d5f731fa3b2b1b760222040cb41c31e379968d699d668a39"
     }
   ],
   "logs": {
+    "099124816d67e356d5f731fa3b2b1b760222040cb41c31e379968d699d668a39": {
+      "bytes": 13207157,
+      "lines": 4985,
+      "gzip_bytes": 2452328,
+      "url": null
+    },
     "1f1361f8a1d23edd39733d20208c0700d941530f2b677947e506bd2306ad4548": {
       "bytes": 7487314,
       "lines": 3026,

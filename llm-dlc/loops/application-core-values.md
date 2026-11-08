@@ -437,9 +437,37 @@ just to bring a gap count down.
     `the_models_only_jbmc_runs_agree_with_the_jvm`), but by no record. If a fixture needs it, a record with boundary
     cases in `Operations.java` would bring those four claims back. That is the optional "one list method", and no
     fixture needs it now.
+- 2026-11-08, **VF-023, V2 step 1's job failed** (`20261108-070211-…`, at `1fd39455`; triaged by the verification
+  loop in `verification/findings.md`). This is the first failure on V2's confirmation, so one timebox attempt is
+  left.
+  - **What failed**: step 1 (the corpus under `jbmc` and `auto`) passed. Step 2 (`auto --confirm`) failed with 8
+    disagreements, all from two claims under strict and assume: `listSizes [n >= 1 && n <= 3; result == n * 10]` and
+    `listChange [n == 0 || n == 8; result == 1]`. The own checker proves both, and JBMC 6.11.0 refutes them with
+    `listSizes(n=1)` and `listChange(n=0)`, which the interpreter, the JVM and the models run on a JVM all hold. So
+    JBMC is wrong, not the checker.
+  - **What it narrows to**: JBMC is also `Unverifiable` on both under `--engine jbmc`, before and after this stream,
+    a refutation the JVM doesn't reproduce. Both witnesses are a one-element `List.of`, whose `List12` keeps the static
+    sentinel `ImmutableCollections.EMPTY` as its second element, with `size()` being `e1 != EMPTY ? 2 : 1`. JBMC gets
+    every list claim right that doesn't ask a one-element list's size: a two-element `List12`'s size (`listNull`), a
+    one-element one's `get(0)` (`listGet`), and `EMPTY_LIST`'s identity (`listCopySame`). `listIterate`, whose
+    iterator asks for the size, is `Unverifiable` under JBMC too. So JBMC sees `e1 != EMPTY` where the JVM doesn't. My
+    guess is that the constructor's read of `EMPTY` comes before `ImmutableCollections`' initializer, but that is
+    a guess.
+  - **The diagnosis, a job** (`20261108-082244-vf-023-s-diagnosis-why-jbmc-refutes-that`, this commit): the triage
+    script `verification/triage/vf023.sh` runs three probes under JBMC alone and keeps their traces' assignments to
+    `EMPTY`, `e1` and the initialization flags:
+    - `one`, the case reduced;
+    - `oneAfterInit`, with `List.of()` first, so that the class is initialized before the constructor runs;
+    - `two`, the control.
+
+    On the JVM they give 1, 1 and 2 (checked inline). Nothing is changed before its result: the attempt left goes to
+    a fix the trace supports. That might be a sentinel the model needn't read from a static (`List12` rejects a null
+    element, so a null `e1` can mean one element), with `values::LIST_MODEL` and its digest bumped, or a reason
+    recorded for leaving it.
 - **Next**: the tiny bound sweep (a String's bound and a list's length, for an encoding cliff: a few sizes of one
-  check each, timed inline if seconds, a job otherwise). Then the cache invalidation of the models' and domains'
-  identities (R1's projection, with the reuse stream), and V3's wiring of model identity into claims.
+  check each, timed inline if seconds, a job otherwise), while the VF-023 job runs. Then the cache invalidation of
+  the models' and domains' identities (R1's projection, with the reuse stream), and V3's wiring of model identity
+  into claims.
 - Status: working
 
 ## Loop settings
