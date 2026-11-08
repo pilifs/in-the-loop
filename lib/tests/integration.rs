@@ -823,13 +823,15 @@ fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
     assert!(scoped.output.contains("on every input where !((\\exists int i; 0 <= i && i < a.length; a[i] != v))"), "{}", scoped.output);
 }
 
+/// A String parameter is the own checker's alone (`tests/value_parameters.rs` checks it there): under JBMC, whose
+/// Strings are its own model, it is refused by name, never checked as another claim.
 #[test]
-fn a_reference_parameter_is_refused_by_the_symbolic_verifier() {
+fn a_string_parameter_is_refused_under_jbmc() {
     let with_string = PRICING_BEFORE.replace("long priceCents, int seats", "String code, int seats").replace("priceCents < 0 || ", "").replace("Math.multiplyExact(priceCents, seats)", "seats");
     let Some(classes) = compile_pricing("string", &with_string) else { return };
     let outcome = equivalence_run(&classes, &classes, None, "string");
     assert_eq!(outcome.verdict, Verdict::Unverifiable);
-    assert!(outcome.output.contains("cannot be verified: parameter code has type java.lang.String"), "{}", outcome.output);
+    assert!(outcome.output.contains("cannot be verified: total takes a String, which the tool's own checker takes under the stated bound of 8 code units (--engine native or auto)"), "{}", outcome.output);
 }
 
 fn prove(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str) -> Option<property::Outcome> {

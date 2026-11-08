@@ -132,12 +132,15 @@ pub struct JbmcResult {
     pub profile: crate::phases::Profile,
 }
 
-/// An argument of a counterexample: a primitive, an array of primitives, `null`, or the same object as an earlier
-/// argument (by its index), which a replay passes again rather than a copy of it.
+/// An argument of a counterexample: a primitive, an array of primitives, a String's UTF-16 code units, `null`, or
+/// the same object as an earlier argument (by its index), which a replay passes again rather than a copy of it.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Argument {
     Scalar(Value),
     Array(Vec<Value>),
+    /// A `java.lang.String`, as its code units: any of them, an isolated surrogate included
+    /// ([`crate::values::StringAdapter`]). A replay makes it a fresh String of these units.
+    String(Vec<u16>),
     Null,
     Same(usize),
 }
@@ -150,17 +153,25 @@ impl JbmcResult {
         self.verdict == Verdict::Unverifiable && self.ending == Ending::Timeout
     }
 
-    /// The counterexample's arguments, in parameter order, arrays included.
+    /// The counterexample's arguments, in parameter order, arrays and Strings included. A String is read as the own
+    /// checker writes it, by [`crate::values::string_units`]: JBMC's are never read here, since a check with a
+    /// String parameter doesn't ask JBMC.
     pub fn arguments(&self, params: &[Type]) -> Result<Vec<Argument>, Error> {
         let mut out = Vec::new();
         let mut slot = 0;
         let mut index_of: BTreeMap<u32, usize> = BTreeMap::new();
         for t in params {
             index_of.insert(slot, out.len());
+            let string = crate::values::is_string(t);
             out.push(match t {
-                Type::Array(_) if self.raw_same.contains_key(&slot) => match index_of.get(&self.raw_same[&slot]) {
+                _ if (string || matches!(t, Type::Array(_))) && self.raw_same.contains_key(&slot) => match index_of.get(&self.raw_same[&slot]) {
                     Some(&earlier) => Argument::Same(earlier),
                     None => return Err(Error::new(format!("the counterexample's parameter in slot {slot} is the same array as one in slot {}, which is no earlier parameter", self.raw_same[&slot]))),
+                },
+                _ if string => match self.raw_arrays.get(&slot) {
+                    Some(Some(raw)) => Argument::String(crate::values::string_units(raw).map_err(|e| Error::new(format!("the counterexample's String in slot {slot}: {e}")))?),
+                    Some(None) => Argument::Null,
+                    None => return Err(Error::new(format!("the counterexample has no String in slot {slot}"))),
                 },
                 Type::Array(element) => match self.raw_arrays.get(&slot) {
                     Some(Some(raw)) => Argument::Array(raw.iter().map(|r| parse_value(element, r)).collect::<Result<Vec<_>, _>>()?),

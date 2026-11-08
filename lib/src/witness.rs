@@ -16,22 +16,42 @@ use crate::jbmc::Argument;
 use crate::shrink::{self, Shrunk};
 use crate::Error;
 
-/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`; the same object as argument `i`
-/// is `@i` (by name in [`call`]).
+/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `"VI\u0000"`, `null`; the same object as
+/// argument `i` is `@i` (by name in [`call`]).
 pub fn argument(argument: &Argument, t: &Type) -> String {
     match (argument, t) {
         (Argument::Scalar(v), _) => render::witness(*v, t),
         (Argument::Array(data), Type::Array(element)) => array(data, element),
         (Argument::Array(_), _) => "<array>".into(),
+        (Argument::String(units), _) => string_literal(units),
         (Argument::Null, _) => "null".into(),
         (Argument::Same(i), _) => format!("@{i}"),
     }
 }
 
+/// A String's code units as a Java literal: printable ASCII as itself, every other unit (an isolated surrogate
+/// included) as its `\uXXXX` escape, so that the text names every unit exactly.
+pub fn string_literal(units: &[u16]) -> String {
+    let mut out = String::from("\"");
+    for &u in units {
+        match u {
+            0x22 => out.push_str("\\\""),
+            0x5c => out.push_str("\\\\"),
+            0x20..=0x7e => out.push(char::from(u as u8)),
+            _ => out.push_str(&format!("\\u{u:04x}")),
+        }
+    }
+    out.push('"');
+    out
+}
+
 /// An argument as [`call`] shows it among `names`: the same object as an earlier argument by that one's name.
 fn shown(argument: &Argument, t: &Type, names: &[&str]) -> String {
     match argument {
-        Argument::Same(i) => names.get(*i).map(|n| format!("the same array as {n}")).unwrap_or_else(|| format!("@{i}")),
+        Argument::Same(i) => {
+            let what = if crate::values::is_string(t) { "String" } else { "array" };
+            names.get(*i).map(|n| format!("the same {what} as {n}")).unwrap_or_else(|| format!("@{i}"))
+        }
         other => self::argument(other, t),
     }
 }
@@ -51,6 +71,8 @@ pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16,
                 arrays.push((p.slot, data(p.slot, d)));
                 Value::Ref(k as Ref + 1)
             }
+            // A String is a reference of its own, which no expression reads into.
+            Argument::String(_) => Value::Ref(k as Ref + 1),
             Argument::Null => Value::Null,
             Argument::Same(i) => {
                 if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
@@ -196,10 +218,12 @@ pub fn exact(v: Value, t: &Type) -> serde_json::Value {
     }
 }
 
-/// The exact value of an argument: a primitive, an array of them, null, or `{"same": i}`.
+/// The exact value of an argument: a primitive, an array of them, a String as the shared witness form holds it
+/// (`{"kind": "string", "units": [86, 73]}`, `spec::plans::WitnessValue`), null, or `{"same": i}`.
 pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
     match (argument, t) {
         (Argument::Same(i), _) => serde_json::json!({ "same": i }),
+        (Argument::String(units), _) => serde_json::to_value(crate::spec::plans::WitnessValue::String { units: units.clone() }).unwrap_or_default(),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
         (Argument::Array(data), _) => serde_json::Value::Array(data.iter().map(|v| exact(*v, &Type::Int)).collect()),
@@ -393,6 +417,7 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
             Argument::Scalar(v) => *v,
             Argument::Null => Value::Null,
             Argument::Same(i) => values.get(*i).copied().unwrap_or(Value::Null),
+            Argument::String(units) => crate::values::new_string(m, units),
             Argument::Array(data) => {
                 let element = match t {
                     Type::Array(e) => (**e).clone(),

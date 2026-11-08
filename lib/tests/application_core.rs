@@ -256,7 +256,8 @@ fn o3_a_defect_only_a_history_reaches() {
 /// a shorter prefix refuted on a replayed witness.
 #[test]
 fn v1_a_symbolic_string_crosses_the_proof_boundary() {
-    regressions("quote", "quotes.Codes#vip", &["values"]);
+    // Wired at the merge (Phase 5 step 1): no stream's refusal is accepted any more.
+    regressions("quote", "quotes.Codes#vip", &[]);
 }
 
 /// V2: a bounded immutable list as input: order, duplicates and identity kept.

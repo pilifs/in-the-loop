@@ -48,9 +48,12 @@
 //! ([`STRING_SNAPSHOT`], [`LIST_SNAPSHOT`]), which a unit test holds to the code. A change of the rule fails it until
 //! the new digest is recorded, and recording it changes the claims over that family, as a model change does.
 //!
-//! Until a check takes an adapter's values (its harness declares the parameter, gives the checker the bound or the
-//! choices, and rebuilds the witness through the adapter's `read` and [`ValueAdapter::rebuild`]), [`adapter`]
-//! refuses, naming the values stream, and every call site keeps refusing the value it would have handled.
+//! **Where checks take them.** A regression check takes a String parameter (Phase 5 of
+//! `llm-dlc/loops/application-core.md`): its harness passes the parameter to both versions as the one String it
+//! is, the own checker makes it of at most the bound's code units ([`StringAdapter::bound`]), the witness is read
+//! by the rule [`StringAdapter::read`] applies ([`string_units`]) and rebuilt for a replay by the one
+//! [`ValueAdapter::rebuild`] applies ([`new_string`]), and the statement states the bound and the model. Until a
+//! check takes a list, [`adapter`] refuses one, naming the values stream, and every call site keeps refusing it.
 
 use std::collections::BTreeMap;
 
@@ -103,14 +106,12 @@ impl Nodes {
 /// elements or code units, if a check can take it. Asked where a check meets a `String` or a `List`; its refusal
 /// is added to the check's.
 ///
-/// Both adapters are built ([`StringAdapter`], [`ListAdapter`]), but no check's harness declares a String or list
-/// parameter, makes it from the adapter's bound or choices, or rebuilds its witness yet: that wiring is in the
-/// checks' harness and replay (interface requests of the values stream to the objects stream), so the hook still
-/// refuses them, rather than let a check say it has an adapter it can't use.
+/// A String's is the [`StringAdapter`], not nullable, as an array parameter of a regression check isn't null. A
+/// list's is built ([`ListAdapter`]), but no check's harness makes a list from the adapter's choices or rebuilds its
+/// witness yet, so the hook still refuses one, rather than let a check say it has an adapter it can't use.
 pub fn adapter(ty: &Type, max_length: u32) -> Result<Box<dyn ValueAdapter>, Unsupported> {
-    let _ = max_length;
-    if matches!(ty, Type::Object(name) if name == STRING) {
-        return Err(Unsupported::new(Part::Values, "a java.lang.String in this check: its value adapter is built (values::StringAdapter), and the values stream builds it into the checks once their harness declares a String parameter, passes its bound to the own checker (bmc::Parameters::max_string_length) and rebuilds its witness in the replay (llm-dlc/loops/application-core-values.md)"));
+    if is_string(ty) {
+        return Ok(Box::new(StringAdapter::new(max_length, false)));
     }
     if matches!(ty, Type::Object(name) if name == LIST) {
         return Err(Unsupported::new(Part::Values, "a java.util.List in this check: its value adapter is built (values::ListAdapter, an immutable list of List.of over the plan's objects), and the values stream builds it into the checks once their harness makes the list from the adapter's choices (ListAdapter::java) and rebuilds its witness in the replay (llm-dlc/loops/application-core-values.md)"));
@@ -118,10 +119,28 @@ pub fn adapter(ty: &Type, max_length: u32) -> Result<Box<dyn ValueAdapter>, Unsu
     Err(Unsupported::new(Part::Values, format!("a value adapter for {}: the values stream builds it (llm-dlc/loops/application-core-values.md)", ty.java_name())))
 }
 
+/// Whether `ty` is `java.lang.String`.
+pub fn is_string(ty: &Type) -> bool {
+    matches!(ty, Type::Object(name) if name == STRING)
+}
+
+/// A String's code units as the own checker's witness spells them, one decimal number each: the rule
+/// [`StringAdapter::read`] and the checks' witness reader ([`crate::jbmc::JbmcResult::arguments`]) share, so the
+/// snapshot digest covers both. Refused, never mended, when one isn't a code unit.
+pub fn string_units(raw: &[String]) -> Result<Vec<u16>, String> {
+    raw.iter().map(|u| u.parse::<u16>().map_err(|_| format!("{u:?} is not a code unit"))).collect()
+}
+
+/// A fresh String of `units` on `machine`: how [`ValueAdapter::rebuild`] and a check's replay make a witness's
+/// String, a new object each time, as `new String(char[])` makes one on the JVM.
+pub fn new_string(machine: &mut Machine<'_>, units: &[u16]) -> Value {
+    machine.new_string(JStr::from_units(units.to_vec()))
+}
+
 /// Whether `ty` is one the values stream's adapters are for: a String, or a `java.util.List`. Every other type is
 /// another stream's or unsupported, and [`adapter`] isn't asked.
 pub fn is_adapted(ty: &Type) -> bool {
-    matches!(ty, Type::Object(name) if name == STRING || name == LIST)
+    is_string(ty) || matches!(ty, Type::Object(name) if name == LIST)
 }
 
 const STRING: &str = "java/lang/String";
@@ -201,7 +220,7 @@ impl StringAdapter {
             Some(None) if self.domain.nullable => Ok(Witnessed::Value(WitnessValue::Null)),
             Some(None) => Err(gap("null, outside a domain that isn't nullable".into())),
             Some(Some(raw)) => {
-                let units = raw.iter().map(|u| u.parse::<u16>().map_err(|_| gap(format!("{u:?} is not a code unit")))).collect::<Result<Vec<u16>, _>>()?;
+                let units = string_units(raw).map_err(gap)?;
                 self.within(units.len()).map_err(gap)?;
                 Ok(Witnessed::Value(WitnessValue::String { units }))
             }
@@ -244,7 +263,7 @@ impl ValueAdapter for StringAdapter {
             WitnessValue::Null => Err(gap("null, outside a domain that isn't nullable".into())),
             WitnessValue::String { units } => {
                 self.within(units.len()).map_err(gap)?;
-                Ok(machine.new_string(JStr::from_units(units.clone())))
+                Ok(new_string(machine, units))
             }
             other => Err(gap(format!("{other:?}, not a String's"))),
         }
@@ -868,19 +887,21 @@ mod tests {
     }
 
     #[test]
-    fn a_string_and_a_list_are_refused_by_name_until_a_check_takes_one() {
-        for name in ["java/lang/String", "java/util/List"] {
-            let ty = Type::Object(name.into());
-            assert!(is_adapted(&ty));
-            let gap = adapter(&ty, 8).err().expect("no check takes one yet");
-            assert_eq!(gap.part, Part::Values);
-            assert!(gap.what.contains("the values stream builds it"), "{gap}");
-        }
-        let list = adapter(&Type::Object(LIST.into()), 8).err().unwrap();
+    fn a_string_has_its_adapter_and_a_list_is_refused_by_name_until_a_check_takes_one() {
+        let string = adapter(&Type::Object(STRING.into()), 8).expect("a regression check takes a String");
+        let d = string.domain();
+        assert_eq!((d.kind.clone(), d.nullable, d.max_length), (ValueKind::String, false, 8));
+        assert_eq!(d.model, string_model());
+        let ty = Type::Object(LIST.into());
+        assert!(is_adapted(&ty));
+        let list = adapter(&ty, 8).err().expect("no check takes a list yet");
+        assert_eq!(list.part, Part::Values);
+        assert!(list.what.contains("the values stream builds it"), "{list}");
         assert!(list.what.contains("values::ListAdapter") && list.what.contains("ListAdapter::java"), "{list}");
-        let string = adapter(&Type::Object(STRING.into()), 8).err().unwrap();
-        assert!(string.what.contains("values::StringAdapter") && string.what.contains("max_string_length"), "{string}");
+        assert!(is_adapted(&Type::Object(STRING.into())) && is_string(&Type::Object(STRING.into())));
         assert!(!is_adapted(&Type::Int) && !is_adapted(&Type::Object("shop/Quote".into())));
+        assert_eq!(string_units(&["86".into(), "55296".into()]), Ok(vec![86, 0xd800]));
+        assert!(string_units(&["65536".into()]).is_err() && string_units(&["-1".into()]).is_err());
     }
 
     #[test]

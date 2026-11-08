@@ -12,29 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T10:22:28.912Z",
-  "ended": "2026-11-08T12:09:58.903Z",
-  "duration_seconds": 6450,
+  "ended": "2026-11-08T12:36:00.474Z",
+  "duration_seconds": 8012,
   "stats": {
-    "turns": 7,
-    "api_calls": 63,
-    "tool_calls": 64,
-    "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 173146,
+    "turns": 12,
+    "api_calls": 164,
+    "tool_calls": 167,
+    "tool_errors": 1,
+    "compactions": 2,
+    "peak_context_tokens": 223597,
     "usage": {
-      "input_tokens": 126,
-      "output_tokens": 30801,
-      "cache_read_input_tokens": 5709930,
-      "cache_creation_input_tokens": 239996
+      "input_tokens": 328,
+      "output_tokens": 90908,
+      "cache_read_input_tokens": 21531531,
+      "cache_creation_input_tokens": 456463
     }
   },
   "tools": {
-    "Bash": 51,
-    "Read": 8,
-    "Edit": 5
+    "Bash": 149,
+    "Read": 10,
+    "Edit": 7,
+    "Write": 1
   },
   "files_touched": [
-    "llm-dlc/loops/application-core.md"
+    "lib/tests/value_parameters.rs",
+    "llm-dlc/loops/application-core.md",
+    "~/.claude/projects/-home-user-code-in-the-loop/memory/application-core-loop-draft.md"
   ],
   "context_windows": [
     {
@@ -54,24 +57,38 @@
     {
       "index": 1,
       "started": "2026-11-08T10:25:23.904Z",
-      "ended": "2026-11-08T12:09:58.903Z",
-      "turns": 5,
-      "api_calls": 45,
+      "ended": "2026-11-08T12:11:03.453Z",
+      "turns": 6,
+      "api_calls": 49,
       "usage": {
-        "input_tokens": 90,
-        "output_tokens": 22290,
-        "cache_read_input_tokens": 4787093,
-        "cache_creation_input_tokens": 179706
+        "input_tokens": 98,
+        "output_tokens": 24105,
+        "cache_read_input_tokens": 5489456,
+        "cache_creation_input_tokens": 185655
       },
-      "peak_context_tokens": 173146
+      "peak_context_tokens": 179095
+    },
+    {
+      "index": 2,
+      "started": "2026-11-08T12:11:52.929Z",
+      "ended": "2026-11-08T12:36:00.474Z",
+      "turns": 4,
+      "api_calls": 97,
+      "usage": {
+        "input_tokens": 194,
+        "output_tokens": 58292,
+        "cache_read_input_tokens": 15119238,
+        "cache_creation_input_tokens": 210518
+      },
+      "peak_context_tokens": 223597
     }
   ],
   "log": {
-    "sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229",
-    "bytes": 2185440,
-    "lines": 606,
-    "gzip_bytes": 505282,
-    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz"
+    "sha256": "4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c",
+    "bytes": 4385326,
+    "lines": 1494,
+    "gzip_bytes": 868432,
+    "path": "llm-dlc/traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/logs/4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -84,7 +101,55 @@
       "log_sha256": "3ece423b8d7dff4f86d5e6d9ed15e06a39344be7f0174dffe541ff1efe1004cf"
     },
     {
-      "change_id": "wvournlnxotvokqkuonrpnutwwtnowpu",
+      "change_id": "kppsnzynkzypkvmxlwvuvuvozooyuotq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done",
+      "body": "On 2026-11-08 three application-core streams (objects, environment, reuse) ended with their briefs still at 'Status: working'. Each session decided 'LOOP: stop' in feature-loop.sh's decision turn and wrote the status it meant there ('waiting on jobs ...', 'blocked: ...'), but that turn may not edit or commit, and the cycle before it was never asked to keep the status line current. feature-loop.sh then exited 0, and run-streams.sh counted a clean stop with no status as done, so objects and reuse were never rerun when their jobs came back, and the merge loop refused the reconcile.\n\nfeature-loop.sh: the cycle instruction now asks the session to keep a brief's '- Status:' line current in each commit; the decision turn is told a status is never its last line; and when the session decides to stop while the status still says working, one more turn before the compact sets the status the brief's Loop until gives and commits it. If that leaves the status working or uncommitted, the loop ends with exit 1, as needing attention. run-streams.sh: a clean stop whose status is neither done, blocked nor waiting on jobs is now run once more, like a failure, and counts as blocked the second time.\n\nVerified with bash -n on both scripts and a stubbed test of brief_status, has_status and close_status: a stop with status working that the session fixes and commits (ok), one it leaves alone (failed), one edited but not committed (failed), an already blocked status and a brief with no status line (no turn). The stream workspaces run their own copy of feature-loop.sh, so the same file is committed in each before the rerun.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "yymlmpzwmxqzwwqqmuxvwvslmqptnmvn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core: status back to working, for the rerun of the three unfinished streams",
+      "body": "The reconcile stopped blocked because objects, environment and reuse ended with 'Status: working'. The cause was the loop tooling, fixed in kppsnzyn and committed unchanged in each of the three stream workspaces (umqkzwlp, wvournln, ropyotpk), since each stream runs its own copy of feature-loop.sh. Progress records the cause and the rerun, and its status is working again, so run-streams.sh reruns those three (values is blocked and stays finished) and then this loop. O3's frozen allocation bound still waits on the user. Verified by reading the brief's status with run-streams.sh's own status_of.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "unwrvwqwzxqqvqlvklqrmwumsvlzlvny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "feature-loop.sh finds a brief in its own workspace first, so a stream reads and is pointed at its own copy",
+      "body": "run-streams.sh starts each stream's copy of feature-loop.sh with the default workspace as its current directory, and feature-loop.sh looked a relative brief up from there first. Every stream therefore ran with the default workspace's copy of its brief: the cycle instruction pointed the session at it, the brief-changed check hashed it, and since kppsnzyn close_status read its status from it. No stream edits that copy, so its Progress is the launch-time one. In this morning's rerun the objects and environment sessions set their status in their own copies; close_status read 'working' in the default copy, asked for an extra turn, and ended the loops as needing attention, with exit 1. run-streams.sh reads each stream's own copy, so both still came out blocked. The objects session diagnosed this in its run summary.\n\nA relative brief is now looked up under the script's own repo first and then from the caller's directory, and named relative to the repo as before. Verified by running the resolution with the objects workspace as the root and the default workspace as the current directory (it gives the workspace's own llm-dlc/loops/application-core-objects.md), with the default workspace as the root, and with an absolute path. The file was replaced by rename, since run-streams.sh is running. The reuse stream, still running, keeps the old behaviour until it stops, and the stream workspaces' copies get this change at the merge.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "yzpxsrytnwppowmykuwotwnnwkownqkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core: the user's decision on O3's allocation bound, recorded for the reconcile",
+      "body": "The objects stream was blocked on the frozen throttle claims' allocation bound of 0, which the gate's count of the IllegalArgumentException Throttle#allows throws exceeds. The user decided that both claims are bounded at 1 in each version (checked-claim already counts its thrown exception as 1), and that the bound covers the target call only, not setup calls. The change was made on the objects branch as tzsluzns, verified there with tests/application_core.rs 14 of 14. The main brief's Progress records it so the reconcile takes the fixture change as deliberate, and notes the brief-path fix in unwrvwqw. Status stays working; no code changed in this commit.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "tvwtmzkxrvukuwqlyzrlyyykzyxzxlwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification result for application-core reuse J4 (passed)",
+      "body": "The J4 job (the small compare run's cost report with all five cases) ran on this machine: 1 step passed in 3m37s, peak 1.7 GiB (estimated 15m, 3.0 GiB). collect applied its two outputs, lib/benchmark/preparation/j4.json and j4.md. No verdicts, errors or findings; no findings.md changes.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "kyqtplrynzqvuyztwpzrurttpqyssmsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the values stream's last turns recorded on its branch, after its last commit, before the merge.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "umqkzwlpoxvzspykpltpprkokyurlppl",
       "commit_id": null,
       "immutable": false,
       "summary": "Loops record why they stop (the default workspace's kppsnzyn, copied here for the rerun)",
@@ -92,19 +157,27 @@
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
-      "change_id": "qrsyvrmkklskpmxxllksyqplukvwusts",
+      "change_id": "lolztnxspztyvutxktwxmkozpqumquun",
       "commit_id": null,
       "immutable": false,
-      "summary": "application-core environment: E3 waits on the merge of the objects stream's construction plan, status blocked",
-      "body": "This stream was rerun after the loop's stop fix was copied in as wvournln. Its Progress named E3 next: a nullable DTO response through the objects stream's common construction plan. The cycle checked whether that plan is visible here. It isn't: the plan exists only on the objects stream's branch (construction::root, check_plans, and receivers and parameters made by a plan), none of those commits is an ancestor of this stream's working copy, and here construction.rs is still Phase 0's hook, which refuses by name. The main brief allows integration only through the merge. Writing the DTO's classpath check here would be the object builder of the environment's own that E3 forbids. The shared type is already in place (Returned::Object with Identity::Fresh or Stable in spec/plans.rs), so the Progress entry records the plan for after the merge: the stubs make the response by the plan's constructor from table inputs, a fresh identity gives an object per call and a stable one an object per entry, and an inspection refuses unmodelled methods and fields, as E2's does for a caught failure. The 11:33 integration report shows conflicts only in generated or coordinator files (llm-dlc/README.md, index.json, traces/README.md, traces/metrics.json), none of them this stream's. No open finding is in this stream's files, and this run has no job pending. E1's and E2's own items are done, so the status is now blocked on the merge (and on the values stream's String adapter for the Q rows). Only the brief's Progress section changed, so there is nothing to test.",
+      "summary": "application-core objects: O2's last jobs recorded as passed, and the stream's status set to blocked on the merge and on O3's frozen allocation bound",
+      "body": "Progress only. Job 20261108-074116-application-core-objects-o2-a-replay-tha passed at b38e213b7d01: lib/tests/integration.rs under JBMC 65 of 65, and VF-015's step 4 on example 109 refuted with a char above 127 and replayed on a JVM, the new outcome the JVM's DecoderException with no 'could not replay', differs exactly [exception]. It does not close VF-015, whose step 5 the user deferred. Job 20261108-072230-... passed earlier and closed VF-022. Every job of this stream is now collected.\n\nRechecked inline at ba15f2e5 (the loop-tooling commit umqkzwlp): tests/application_core.rs gives 13 of 14, O3 failing as before on the frozen throttle claims' allocation bound of 0 ('the previous version's code may make 1 objects in one call'). The entry states each row: O1 and O2 pass inline with their JBMC jobs passed; O2's String adapter waits for the merge (values' nlkuyptr); O3 is implemented and refuted with the whole history replayed on a JVM under the claims with only their bound at 1, and the contract's O3 waits on the user's or coordinator's decision about the fixture. The optional work (array fields in property expressions, a factory route, reference arrays) is left out so as not to delay the merge. The status line is now 'blocked: ...' on one line, as feature-loop.sh reads only the line itself. The open finding VF-023 is the values stream's. The rest of the brief is current.",
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
-      "change_id": "krwlnoopzlqpvvwunqxxsxwvxwpmpuvs",
+      "change_id": "tzsluznsqozxskyvunttnuqryknystkm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core objects O3: the frozen throttle claims bound allocations at 1, the user's decision, so the contract's O3 passes",
+      "body": "The frozen throttle claims (throttle-constructed-claim, throttle-setup-claim) said allocations 0 in both versions, but Throttle#allows makes the IllegalArgumentException it throws for negative units. The domain gate counts every allocation on any path, so the contract's O3 came out unresolved instead of expected.json's verdicts. Phase 0 already counted such a throw in checked-claim (bound 1), so the user decided the 0 was a slip: both claims are now bounded at 1 in each version, and expected.json is unchanged. The user also decided that the bound covers the target call only: setup calls are bounded by the plan's setup_calls and their outcomes are compared, so their allocations aren't counted, and the gate stays as it is.\n\nThe stream's test helper throttle_claim, which raised the bound to 1 to work around the fixture, now asserts it instead. Verified inline: tests/application_core.rs 14 of 14 (13 before, O3 failing), tests/application_core_objects.rs 21 passed and 1 ignored (the cache test that waits on the reuse stream, as before). The brief's Progress records the decision, and the status is blocked only on O2's String adapter, which waits for the merge. Made by the user's session from the default workspace while this stream's loop was stopped.",
+      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "qqywzsvytvyktqwqypznnvkvyuumvvmq",
       "commit_id": null,
       "immutable": false,
       "summary": "Record session traces",
-      "body": "The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the environment stream's last turns recorded on its branch, after its last commit, before the merge.",
+      "body": "The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the objects stream's last turns, after its last commit tzsluzns, recorded on its branch before the merge. The stream ended blocked: O2's String adapter waits for the merge of the values stream's nlkuyptr.",
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
@@ -148,7 +221,7 @@
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
-      "change_id": "umqkzwlpoxvzspykpltpprkokyurlppl",
+      "change_id": "wvournlnxotvokqkuonrpnutwwtnowpu",
       "commit_id": null,
       "immutable": false,
       "summary": "Loops record why they stop (the default workspace's kppsnzyn, copied here for the rerun)",
@@ -156,75 +229,19 @@
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
-      "change_id": "lolztnxspztyvutxktwxmkozpqumquun",
+      "change_id": "qrsyvrmkklskpmxxllksyqplukvwusts",
       "commit_id": null,
       "immutable": false,
-      "summary": "application-core objects: O2's last jobs recorded as passed, and the stream's status set to blocked on the merge and on O3's frozen allocation bound",
-      "body": "Progress only. Job 20261108-074116-application-core-objects-o2-a-replay-tha passed at b38e213b7d01: lib/tests/integration.rs under JBMC 65 of 65, and VF-015's step 4 on example 109 refuted with a char above 127 and replayed on a JVM, the new outcome the JVM's DecoderException with no 'could not replay', differs exactly [exception]. It does not close VF-015, whose step 5 the user deferred. Job 20261108-072230-... passed earlier and closed VF-022. Every job of this stream is now collected.\n\nRechecked inline at ba15f2e5 (the loop-tooling commit umqkzwlp): tests/application_core.rs gives 13 of 14, O3 failing as before on the frozen throttle claims' allocation bound of 0 ('the previous version's code may make 1 objects in one call'). The entry states each row: O1 and O2 pass inline with their JBMC jobs passed; O2's String adapter waits for the merge (values' nlkuyptr); O3 is implemented and refuted with the whole history replayed on a JVM under the claims with only their bound at 1, and the contract's O3 waits on the user's or coordinator's decision about the fixture. The optional work (array fields in property expressions, a factory route, reference arrays) is left out so as not to delay the merge. The status line is now 'blocked: ...' on one line, as feature-loop.sh reads only the line itself. The open finding VF-023 is the values stream's. The rest of the brief is current.",
+      "summary": "application-core environment: E3 waits on the merge of the objects stream's construction plan, status blocked",
+      "body": "This stream was rerun after the loop's stop fix was copied in as wvournln. Its Progress named E3 next: a nullable DTO response through the objects stream's common construction plan. The cycle checked whether that plan is visible here. It isn't: the plan exists only on the objects stream's branch (construction::root, check_plans, and receivers and parameters made by a plan), none of those commits is an ancestor of this stream's working copy, and here construction.rs is still Phase 0's hook, which refuses by name. The main brief allows integration only through the merge. Writing the DTO's classpath check here would be the object builder of the environment's own that E3 forbids. The shared type is already in place (Returned::Object with Identity::Fresh or Stable in spec/plans.rs), so the Progress entry records the plan for after the merge: the stubs make the response by the plan's constructor from table inputs, a fresh identity gives an object per call and a stable one an object per entry, and an inspection refuses unmodelled methods and fields, as E2's does for a caught failure. The 11:33 integration report shows conflicts only in generated or coordinator files (llm-dlc/README.md, index.json, traces/README.md, traces/metrics.json), none of them this stream's. No open finding is in this stream's files, and this run has no job pending. E1's and E2's own items are done, so the status is now blocked on the merge (and on the values stream's String adapter for the Q rows). Only the brief's Progress section changed, so there is nothing to test.",
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
-      "change_id": "tzsluznsqozxskyvunttnuqryknystkm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "application-core objects O3: the frozen throttle claims bound allocations at 1, the user's decision, so the contract's O3 passes",
-      "body": "The frozen throttle claims (throttle-constructed-claim, throttle-setup-claim) said allocations 0 in both versions, but Throttle#allows makes the IllegalArgumentException it throws for negative units. The domain gate counts every allocation on any path, so the contract's O3 came out unresolved instead of expected.json's verdicts. Phase 0 already counted such a throw in checked-claim (bound 1), so the user decided the 0 was a slip: both claims are now bounded at 1 in each version, and expected.json is unchanged. The user also decided that the bound covers the target call only: setup calls are bounded by the plan's setup_calls and their outcomes are compared, so their allocations aren't counted, and the gate stays as it is.\n\nThe stream's test helper throttle_claim, which raised the bound to 1 to work around the fixture, now asserts it instead. Verified inline: tests/application_core.rs 14 of 14 (13 before, O3 failing), tests/application_core_objects.rs 21 passed and 1 ignored (the cache test that waits on the reuse stream, as before). The brief's Progress records the decision, and the status is blocked only on O2's String adapter, which waits for the merge. Made by the user's session from the default workspace while this stream's loop was stopped.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "qqywzsvytvyktqwqypznnvkvyuumvvmq",
+      "change_id": "krwlnoopzlqpvvwunqxxsxwvxwpmpuvs",
       "commit_id": null,
       "immutable": false,
       "summary": "Record session traces",
-      "body": "The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the objects stream's last turns, after its last commit tzsluzns, recorded on its branch before the merge. The stream ended blocked: O2's String adapter waits for the merge of the values stream's nlkuyptr.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "kyqtplrynzqvuyztwpzrurttpqyssmsy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record session traces",
-      "body": "The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the values stream's last turns recorded on its branch, after its last commit, before the merge.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "kppsnzynkzypkvmxlwvuvuvozooyuotq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done",
-      "body": "On 2026-11-08 three application-core streams (objects, environment, reuse) ended with their briefs still at 'Status: working'. Each session decided 'LOOP: stop' in feature-loop.sh's decision turn and wrote the status it meant there ('waiting on jobs ...', 'blocked: ...'), but that turn may not edit or commit, and the cycle before it was never asked to keep the status line current. feature-loop.sh then exited 0, and run-streams.sh counted a clean stop with no status as done, so objects and reuse were never rerun when their jobs came back, and the merge loop refused the reconcile.\n\nfeature-loop.sh: the cycle instruction now asks the session to keep a brief's '- Status:' line current in each commit; the decision turn is told a status is never its last line; and when the session decides to stop while the status still says working, one more turn before the compact sets the status the brief's Loop until gives and commits it. If that leaves the status working or uncommitted, the loop ends with exit 1, as needing attention. run-streams.sh: a clean stop whose status is neither done, blocked nor waiting on jobs is now run once more, like a failure, and counts as blocked the second time.\n\nVerified with bash -n on both scripts and a stubbed test of brief_status, has_status and close_status: a stop with status working that the session fixes and commits (ok), one it leaves alone (failed), one edited but not committed (failed), an already blocked status and a brief with no status line (no turn). The stream workspaces run their own copy of feature-loop.sh, so the same file is committed in each before the rerun.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "yymlmpzwmxqzwwqqmuxvwvslmqptnmvn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "application-core: status back to working, for the rerun of the three unfinished streams",
-      "body": "The reconcile stopped blocked because objects, environment and reuse ended with 'Status: working'. The cause was the loop tooling, fixed in kppsnzyn and committed unchanged in each of the three stream workspaces (umqkzwlp, wvournln, ropyotpk), since each stream runs its own copy of feature-loop.sh. Progress records the cause and the rerun, and its status is working again, so run-streams.sh reruns those three (values is blocked and stays finished) and then this loop. O3's frozen allocation bound still waits on the user. Verified by reading the brief's status with run-streams.sh's own status_of.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "unwrvwqwzxqqvqlvklqrmwumsvlzlvny",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "feature-loop.sh finds a brief in its own workspace first, so a stream reads and is pointed at its own copy",
-      "body": "run-streams.sh starts each stream's copy of feature-loop.sh with the default workspace as its current directory, and feature-loop.sh looked a relative brief up from there first. Every stream therefore ran with the default workspace's copy of its brief: the cycle instruction pointed the session at it, the brief-changed check hashed it, and since kppsnzyn close_status read its status from it. No stream edits that copy, so its Progress is the launch-time one. In this morning's rerun the objects and environment sessions set their status in their own copies; close_status read 'working' in the default copy, asked for an extra turn, and ended the loops as needing attention, with exit 1. run-streams.sh reads each stream's own copy, so both still came out blocked. The objects session diagnosed this in its run summary.\n\nA relative brief is now looked up under the script's own repo first and then from the caller's directory, and named relative to the repo as before. Verified by running the resolution with the objects workspace as the root and the default workspace as the current directory (it gives the workspace's own llm-dlc/loops/application-core-objects.md), with the default workspace as the root, and with an absolute path. The file was replaced by rename, since run-streams.sh is running. The reuse stream, still running, keeps the old behaviour until it stops, and the stream workspaces' copies get this change at the merge.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "yzpxsrytnwppowmykuwotwnnwkownqkr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "application-core: the user's decision on O3's allocation bound, recorded for the reconcile",
-      "body": "The objects stream was blocked on the frozen throttle claims' allocation bound of 0, which the gate's count of the IllegalArgumentException Throttle#allows throws exceeds. The user decided that both claims are bounded at 1 in each version (checked-claim already counts its thrown exception as 1), and that the bound covers the target call only, not setup calls. The change was made on the objects branch as tzsluzns, verified there with tests/application_core.rs 14 of 14. The main brief's Progress records it so the reconcile takes the fixture change as deliberate, and notes the brief-path fix in unwrvwqw. Status stays working; no code changed in this commit.",
-      "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
-    },
-    {
-      "change_id": "tvwtmzkxrvukuwqlyzrlyyykzyxzxlwz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification result for application-core reuse J4 (passed)",
-      "body": "The J4 job (the small compare run's cost report with all five cases) ran on this machine: 1 step passed in 3m37s, peak 1.7 GiB (estimated 15m, 3.0 GiB). collect applied its two outputs, lib/benchmark/preparation/j4.json and j4.md. No verdicts, errors or findings; no findings.md changes.",
+      "body": "The application-core reconcile (llm-dlc/loops/application-core.md, step 3): the environment stream's last turns recorded on its branch, after its last commit, before the merge.",
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
     },
     {
@@ -234,6 +251,14 @@
       "summary": "Merge the four application-core streams: objects, values, environment and reuse",
       "body": "The reconcile of llm-dlc/loops/application-core.md (Phase 5, step 1). All four streams had finished: objects, values and environment blocked on work only the merge makes possible, and reuse done. No stream loop or integration check was running, and no verification job was pending. Each stream's last turns were recorded on its branch (Record session traces: objects qqywzsvy, values kyqtplry, environment krwlnoop, reuse yxlnwoss), and their 46 logs not yet in the default workspace were copied in. The four branches were then merged with the default line's tvwtmzkx. The workspaces application-core-objects, -values, -environment, -reuse and -integration are forgotten; their directories stay on disk for the user to delete.\n\nConflicts: only the generated llm-dlc/README.md session table, llm-dlc/index.json, llm-dlc/traces/README.md and llm-dlc/traces/metrics.json. The default line's side was taken, and this commit regenerates them. The files that more than one line changed merged cleanly: lib/README.md (each stream's paragraphs, in places of their own), lib/tests/conformance.rs, and feature-loop.sh and run-streams.sh, where the same stop-status fix was committed on each line.\n\nVerified inline on the merge: the integration check (application-core-integration.sh) passes: the contract lib/tests/application_core.rs 14 of 14, the library's unit tests (254), foundations, compare and effects, and the build.py, review, run-record and performance suites. Every other test binary but integration.rs, whose tests run JBMC, also passes: alignment 34, application_core_objects 21, conformance 10, environment 16, heap 49, observations 12, reuse 11, reuse_summaries 14, skill 1, summaries 40 and values 16 (JBMC tests and two reproducers that wait on interface requests are ignored, as on the branches). So does every Python suite. The contract accepts a stream's named refusal as passing, so it doesn't yet say which rows reach their verdicts; Phase 5's for-review list has to.\n\nThe brief's Progress folds the streams' work. The timebox deferred nothing. The interface requests that waited for the merge are listed in order: the String and list parameter wiring that V1, V2 and O2 wait on; values::resolve in the checks; equivalence::confirm's stub rule for VF-023; the cache's roots of a setup sequence; the environment stream's E3 and Q's rows; smaller requests; and the lib/README.md sentences the streams couldn't rewrite. The streams' findings for review are listed too. Next: those requests, one per cycle with its reproducer, then Phase 5's joint acceptance as jobs.\n\nOut of date in the rest of the brief: Where it starts from describes the state before the streams.",
       "log_sha256": "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229"
+    },
+    {
+      "change_id": "lznmnzxvqurunuuwkumxywoxomnwxzkk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 5 step 1: a String parameter of a regression check, so the contract's V1 row reaches its verdicts",
+      "body": "The values stream's interface request for V1, applied at the merge. values::adapter now gives the regression check the String adapter (at most --max-array-length code units, never null). equivalence passes the bound to the own checker, reads the witness's String as a new jbmc::Argument::String by the adapter's own rule (values::string_units), rebuilds it for the replay by rebuild's rule (values::new_string), shrinks it, renders it as an escaped Java literal, and also runs it on a JVM as new String(char[]). The statement states a ParameterKind::Value with its bound, Bounds::max_value_length and Models::values, and the regression cache's claim key covers the bound and the String model's identity. JBMC is refused under --engine jbmc and not asked under --confirm, since its Strings are its own model.\n\nVerified inline: the contract's V1 row now accepts no stream's refusal (it failed before) and passes, with Codes#vip's rewrite proved and wrong-prefix refuted on vip(\"VI\"), replayed in the interpreter and on JDK 25.0.5. The new lib/tests/value_parameters.rs has 4 tests: the correct case and the defect, an isolated surrogate crossing to the JVM unit for unit (a sabotage of the JVM's units fails it), the named refusals, and a cached proof reused exactly and proved again under another bound. The integration check passes (contract 14/14, 254 unit tests), as does every other test binary but integration.rs, whose String test now expects the JBMC refusal and was run inline. Still refused by name: a String in a property check, a String result (Objects.equals is a gap), a String plan root, a null String. The list half of the request is next.",
+      "log_sha256": "4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c"
     }
   ],
   "logs": {
@@ -241,6 +266,12 @@
       "bytes": 566559,
       "lines": 143,
       "gzip_bytes": 137395,
+      "url": null
+    },
+    "4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c": {
+      "bytes": 4385326,
+      "lines": 1494,
+      "gzip_bytes": 868432,
       "url": null
     },
     "82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229": {

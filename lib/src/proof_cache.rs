@@ -287,6 +287,11 @@ pub fn witness_arguments(types: &[Type], witness: &str) -> Option<Vec<Argument>>
         // A null argument is stored as `"value": null`, which reads back as no value.
         .map(|(input, t)| match (t, input.value.as_ref().unwrap_or(&Value::Null)) {
             (Type::Array(_), Value::Null) => Some(Argument::Null),
+            (t, Value::Null) if crate::values::is_string(t) => Some(Argument::Null),
+            (t, v) if crate::values::is_string(t) => match serde_json::from_value(v.clone()).ok()? {
+                crate::spec::plans::WitnessValue::String { units } => Some(Argument::String(units)),
+                _ => None,
+            },
             (Type::Array(element), Value::Array(items)) => items.iter().map(|x| scalar(x, element)).collect::<Option<Vec<_>>>().map(Argument::Array),
             (_, v) => scalar(v, t).map(Argument::Scalar),
         })
@@ -383,6 +388,11 @@ impl<'a> Regression<'a> {
         }
         let mut assumptions: Vec<String> = self.assumptions.iter().map(json).collect();
         assumptions.push(format!("domain: {}", json(self.domain)));
+        // A String parameter's model (the values stream's, its snapshot rule included): a change of it is a
+        // different claim. Its bound is the domain's.
+        if self.domain.parameters.iter().any(|p| p.kind == crate::statement::ParameterKind::Value && p.ty == "java.lang.String") {
+            assumptions.push(format!("value model: {}", json(&crate::values::string_model())));
+        }
         assumptions.push(format!("observed: {}", json(self.observations)));
         assumptions.push(format!("before target: {}", self.options.before_target.as_deref().unwrap_or("the target's")));
         // The heap stream's options, named although the harness and the domain already carry what they change: a

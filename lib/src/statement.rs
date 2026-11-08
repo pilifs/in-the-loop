@@ -394,12 +394,14 @@ pub fn plain_domain_of(params: &[Param], max_array_length: u32, nullable: &[Stri
 
 fn parameter(p: &Param, max_array_length: u32) -> Parameter {
     let array = matches!(p.ty, Type::Array(_));
+    // A String is a value of the values stream's adapter, of at most the check's bound in code units.
+    let value = crate::values::is_string(&p.ty);
     Parameter {
         name: p.name.clone(),
         ty: p.ty.java_name(),
-        kind: if array { ParameterKind::Array } else { ParameterKind::Primitive },
+        kind: if array { ParameterKind::Array } else if value { ParameterKind::Value } else { ParameterKind::Primitive },
         null: false,
-        max_length: array.then_some(max_array_length),
+        max_length: (array || value).then_some(max_array_length),
         components: Vec::new(),
     }
 }
@@ -407,6 +409,11 @@ fn parameter(p: &Param, max_array_length: u32) -> Parameter {
 impl Domain {
     pub fn has_arrays(&self) -> bool {
         self.parameters.iter().any(|p| p.kind == ParameterKind::Array)
+    }
+
+    /// The bound of its value parameters (a String's code units), when it has any.
+    pub fn max_value_length(&self) -> Option<u32> {
+        self.parameters.iter().filter(|p| p.kind == ParameterKind::Value).filter_map(|p| p.max_length).max()
     }
 }
 
@@ -620,7 +627,7 @@ pub fn scan_checker() -> Checker {
 
 /// The bounds of a run of a checker.
 pub fn bounds(unwind: Option<u32>, domain: &Domain, max_array_length: u32, complete: bool) -> Bounds {
-    Bounds { unwind, max_array_length: domain.has_arrays().then_some(max_array_length), complete, max_value_length: None, setup_calls: None, trace_bound: None }
+    Bounds { unwind, max_array_length: domain.has_arrays().then_some(max_array_length), complete, max_value_length: domain.max_value_length(), setup_calls: None, trace_bound: None }
 }
 
 #[cfg(test)]

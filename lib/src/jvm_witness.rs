@@ -69,6 +69,10 @@ pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], argum
 
 fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
     for t in types {
+        // A String is passed as a new String of the witness's code units ([`push`]).
+        if crate::values::is_string(t) {
+            continue;
+        }
         let element = match t {
             Type::Array(e) => e.as_ref(),
             other => other,
@@ -457,10 +461,20 @@ fn pass(arguments: &[Argument], types: &[Type], locals: &[Option<u16>], code: &m
     }
 }
 
-/// Pushes an argument: a constant, a new array of constants, or null.
+/// Pushes an argument: a constant, a new array of constants, a new String of its code units
+/// (`new String(char[])`, a fresh object as the interpreter's replay makes, [`crate::values::new_string`]), or null.
 fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter) {
     match (a, t) {
         (Argument::Scalar(v), t) => push_scalar(*v, t, code, writer),
+        (Argument::String(units), _) => {
+            let string = writer.pool.class("java/lang/String");
+            let init = writer.pool.method_ref("java/lang/String", "<init>", "([C)V");
+            code.op_u16(0xbb, string); // new
+            code.op(0x59); // dup
+            let chars = Argument::Array(units.iter().map(|u| Value::Int(i32::from(*u))).collect());
+            push(&chars, &Type::Array(Box::new(Type::Char)), code, writer);
+            code.op_u16(0xb7, init); // invokespecial
+        }
         (Argument::Array(items), Type::Array(element)) => {
             code.iconst(items.len() as i32);
             let (atype, store) = match element.as_ref() {

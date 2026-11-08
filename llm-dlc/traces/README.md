@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 79, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-08 12:09 UTC |
-| Prompts | 1,870 |
-| Model calls | 18,125 |
-| Tool calls | 19,085 (334 failed) |
-| Compactions | 282 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-08 12:36 UTC |
+| Prompts | 1,875 |
+| Model calls | 18,226 |
+| Tool calls | 19,188 (335 failed) |
+| Compactions | 283 |
 | Subagents | 10 |
-| Tokens written | 19,205,001 |
-| Tokens read | 2,875,958,089 (97.9% from cache) |
-| Commits with a trace | 551 |
-| Log snapshots | 669 (1451.7 MB gzipped, 593 uploaded) |
+| Tokens written | 19,265,108 |
+| Tokens read | 2,891,996,359 (97.9% from cache) |
+| Commits with a trace | 552 |
+| Log snapshots | 670 (1452.5 MB gzipped, 593 uploaded) |
 
 ## Sessions
 
@@ -103,8 +103,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-08 08:23 UTC | [e0747cf5-ca8d-4647-a377-63e2a73ee3a9](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 11 | 12 | 1 | 0 | 43,133 | 1 |
 | 2026-11-08 09:11 UTC | [912944aa-e446-4fd1-9f75-d064ada9f8d8](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 1 | 7 | 8 | 0 | 0 | 44,014 | 1 |
 | 2026-11-08 09:39 UTC | [682fe237-e5f3-49f3-9994-944ecc1d3855](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 10 | 9 | 0 | 0 | 43,064 | 1 |
-| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 1 h 47 min | `claude-opus-5-5` | 7 | 63 | 64 | 0 | 1 | 173,146 | 20 |
-| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | open | 37 min | `claude-opus-5-5` | 4 | 70 | 67 | 2 | 0 | 163,888 | 20 |
+| 2026-11-08 10:22 UTC | [6ca21bdf-4743-4500-90ea-7fe6280624b2](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | open | 2 h 13 min | `claude-opus-5-5` | 12 | 164 | 167 | 1 | 2 | 223,597 | 21 |
+| 2026-11-08 11:26 UTC | [Application-core feature streams exiting early](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | ended | 37 min | `claude-opus-5-5` | 4 | 70 | 67 | 2 | 0 | 163,888 | 20 |
 | 2026-11-08 11:45 UTC | [62cecb04-4e17-4d66-b137-718cbe3a0eec](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 1 | 8 | 8 | 1 | 0 | 36,274 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -191,7 +191,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 3,056 | 22 | 30,014 | 369,948 | 92.5% | 131 |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2,917 | 14 | 30,895 | 214,765 | 87.4% | 84 |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 3,151 | 20 | 29,945 | 311,967 | 91.2% | 109 |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 30,801 | 126 | 239,996 | 5,709,930 | 96.0% | 193 |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 90,908 | 328 | 456,463 | 21,531,531 | 97.9% | 242 |
 | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 48,984 | 146 | 136,361 | 7,756,464 | 98.3% | 161 |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 1,755 | 16 | 24,890 | 230,901 | 90.3% | 146 |
 
@@ -199,10 +199,10 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 16,728 | 87.6% | 79 |
-| `Read` | 897 | 4.7% | 39 |
-| `Edit` | 710 | 3.7% | 39 |
-| `Write` | 426 | 2.2% | 33 |
+| `Bash` | 16,826 | 87.7% | 79 |
+| `Read` | 899 | 4.7% | 39 |
+| `Edit` | 712 | 3.7% | 39 |
+| `Write` | 427 | 2.2% | 34 |
 | `ToolSearch` | 112 | 0.6% | 30 |
 | `Monitor` | 80 | 0.4% | 29 |
 | `AskUserQuestion` | 31 | 0.2% | 10 |
@@ -764,15 +764,16 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 540 | change `movksozl` | Record verification result for application-core values VF-023 second probe (passed) | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) ([log](https://terminalvalue.net/raw-traces/912944aa-e446-4fd1-9f75-d064ada9f8d8/b86b486a2c582f2429c8cd3fc726f0ad869d303c98d8e4252887e181bd6c0b2d.jsonl.gz)) |
 | 541 | change `ntyolumk` | Record verification result for application-core values VF-023 third probe (passed) | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) ([log](https://terminalvalue.net/raw-traces/682fe237-e5f3-49f3-9994-944ecc1d3855/4abf970fd7600ab7dcbd3ef94e0b9290b181d4ef02695afaf210dd76ae15d4ed.jsonl.gz)) |
 | 542 | change `ozlqzqow` | application-core: the reconcile's first check, three streams not finished (blocked) | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/3ece423b8d7dff4f86d5e6d9ed15e06a39344be7f0174dffe541ff1efe1004cf.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/65fa9163f1ce8ef94e73d64cf80c78ca1ff80e5b4652d56f10353c4237c1409c.jsonl.gz)) |
-| 543 | change `krwlnoop` | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
-| 544 | change `qqywzsvy` | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
-| 545 | change `kyqtplry` | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
-| 546 | change `kppsnzyn` | Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz)) |
-| 547 | change `yymlmpzw` | application-core: status back to working, for the rerun of the three unfinished streams | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a9d699c703217048e09e4d9aecb6b92996b78fc18e97441d628da415ccff2b91.jsonl.gz)) |
-| 548 | change `unwrvwqw` | feature-loop.sh finds a brief in its own workspace first, so a stream reads and is pointed at its own copy | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz)) |
-| 549 | change `yzpxsryt` | application-core: the user's decision on O3's allocation bound, recorded for the reconcile | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/dda83c2c01d8e0a919e874d436ce0f546b5d9998150c155aea157a57c6e3c5bb.jsonl.gz)) |
-| 550 | change `tvwtmzkx` | Record verification result for application-core reuse J4 (passed) | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313.jsonl.gz)), [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) ([log](https://terminalvalue.net/raw-traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/974b445298eb2bf72e6ef68b1ca45f896bf733553a1c8fbebab958c5e181108c.jsonl.gz)) |
+| 543 | change `kppsnzyn` | Loops record why they stop: a stop that leaves a brief's status working gets a turn to set it, and run-streams.sh no longer counts it as done | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/bf3ed266eb837309000a993b4a220cf0d056fc361da3b2f51cf7a73527ad07c2.jsonl.gz)) |
+| 544 | change `yymlmpzw` | application-core: status back to working, for the rerun of the three unfinished streams | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/a9d699c703217048e09e4d9aecb6b92996b78fc18e97441d628da415ccff2b91.jsonl.gz)) |
+| 545 | change `unwrvwqw` | feature-loop.sh finds a brief in its own workspace first, so a stream reads and is pointed at its own copy | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/4b7b18b3c08d2fdb5e14e88536370bcba974c50ff5bb4a4f4457f2d8f45300e7.jsonl.gz)) |
+| 546 | change `yzpxsryt` | application-core: the user's decision on O3's allocation bound, recorded for the reconcile | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/dda83c2c01d8e0a919e874d436ce0f546b5d9998150c155aea157a57c6e3c5bb.jsonl.gz)) |
+| 547 | change `tvwtmzkx` | Record verification result for application-core reuse J4 (passed) | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/09758f891502304ba5b5b76c8d038dc98bbe2f4a4b8afa9e954d7dcc29bc9313.jsonl.gz)), [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) ([log](https://terminalvalue.net/raw-traces/62cecb04-4e17-4d66-b137-718cbe3a0eec/974b445298eb2bf72e6ef68b1ca45f896bf733553a1c8fbebab958c5e181108c.jsonl.gz)) |
+| 548 | change `kyqtplry` | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
+| 549 | change `qqywzsvy` | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
+| 550 | change `krwlnoop` | Record session traces | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
 | 551 | change `loxnvssx` | Merge the four application-core streams: objects, values, environment and reuse | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/82eac365fc0fafac541556b750371f2b23b156295cc2f538e498e66b76471229.jsonl.gz)), [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) ([log](https://terminalvalue.net/raw-traces/e9be5afb-09c9-4473-a9e9-38f2fb61ca80/be5a7220b6c069a14f4c2522abb8afe9e6f16648af81f5df6091d720ae4fa6f7.jsonl.gz)) |
+| 552 | change `lznmnzxv` | application-core Phase 5 step 1: a String parameter of a regression check, so the contract's V1 row reaches its verdicts | [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) ([log](https://terminalvalue.net/raw-traces/6ca21bdf-4743-4500-90ea-7fe6280624b2/4a43ba14077c61c4654810e3abf7d702942445553c9990b4d00b844a12cb621c.jsonl.gz)) |
 
 ## Logs
 
@@ -856,7 +857,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e0747cf5`](e0747cf5-ca8d-4647-a377-63e2a73ee3a9/summary.md) | 2 | 0 | 0.2 MB | `f30ef695d4d7`, not uploaded |
 | [`912944aa`](912944aa-e446-4fd1-9f75-d064ada9f8d8/summary.md) | 2 | 0 | 0.2 MB | `9171325d7b0a`, not uploaded |
 | [`682fe237`](682fe237-e5f3-49f3-9994-944ecc1d3855/summary.md) | 2 | 0 | 0.2 MB | `001bb75a2eb3`, not uploaded |
-| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 2 | 0 | 0.6 MB | `82eac365fc0f`, not uploaded |
+| [`6ca21bdf`](6ca21bdf-4743-4500-90ea-7fe6280624b2/summary.md) | 3 | 0 | 1.5 MB | `4a43ba14077c`, not uploaded |
 | [`e9be5afb`](e9be5afb-09c9-4473-a9e9-38f2fb61ca80/summary.md) | 7 | 0 | 1.5 MB | `be5a7220b6c0`, not uploaded |
 | [`62cecb04`](62cecb04-4e17-4d66-b137-718cbe3a0eec/summary.md) | 2 | 0 | 0.2 MB | `677ec8afc6b4`, not uploaded |
 

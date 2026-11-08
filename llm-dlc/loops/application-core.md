@@ -604,6 +604,44 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
   - **Next**: Phase 5 step 1's interface requests, in the order above, each a cycle with its reproducer. Then step
     2's joint acceptance as jobs, and step 3's examples with `lib/tests/integration.rs` (JBMC) at the merged
     revision.
+- 2026-11-08, **Phase 5 step 1, interface request 1 (its String half): a String parameter of a regression check**,
+  for V1. The list half is the next cycle.
+  - **The reproducer**: the contract's V1 row accepted the values stream's refusal. It now accepts none
+    (`regressions("quote", "quotes.Codes#vip", &[])`), and it failed before the wiring.
+  - **The wiring**:
+    - `values::adapter` gives the regression check the String adapter: at most `--max-array-length` code units, and
+      never null, as an array parameter isn't.
+    - The harness passes the one String to both versions, and the own checker makes it under that bound
+      (`bmc::Parameters::max_string_length`, in the proof and in the vacuity probe).
+    - The witness is a new `jbmc::Argument::String`. It is read and rebuilt by the rules the adapter's `read` and
+      `rebuild` apply (`values::string_units`, `values::new_string`), so the snapshot digest covers the checks too;
+      the digest is unchanged.
+    - It is shrunk by dropping a unit, or by making one that isn't printable ASCII an `a`, each candidate replayed
+      before it is taken. It is rendered as a Java literal, with every other unit escaped.
+    - It is also run on a JVM, as `new String(char[])`, since the interpreter's String is a model.
+    - The statement states the parameter as `ParameterKind::Value` with its bound, `Bounds::max_value_length` and
+      `Models::values`. The cache's claim key covers the bound and the String model's identity, and a stored witness
+      reads back.
+    - JBMC is not asked: `--engine jbmc` is refused by name, and `--confirm` records `not-asked`.
+  - **Checks**:
+    - The contract passes 14 of 14, and V1 reaches its verdicts: the rewrite is proved, and `wrong-prefix` is
+      refuted on `vip("VI")`, replayed in the interpreter and on JDK 25.0.5.
+    - The new `tests/value_parameters.rs` (4 tests):
+      - the correct case and the defect, with the statement;
+      - an isolated surrogate, `"\udbff"`, crossing to the JVM unit for unit. Shifting the units the JVM run passes
+        fails it;
+      - the named refusals;
+      - a cached proof reused exactly, and proved again under another bound.
+    - `integration.rs`'s String test now expects the JBMC refusal (run inline: it never reaches JBMC).
+    - The integration check passes, and so does every other test binary but `integration.rs`. No recorded example
+      result named the old refusal.
+  - **Still refused by name** (for the for-review list):
+    - a String parameter of a property check, since the expressions have no String terms;
+    - a String result, since the harness compares it with `Objects.equals`, a gap the own checker refuses;
+    - a String plan root, and a null String.
+  - **Docs**: `lib/README.md` (the String adapter's paragraph), `--max-array-length`'s help, and the schema's
+    description of a witness value (`{"kind": "string", "units": [...]}`).
+  - **Next**: item 1's list half (V2's rows, the basket's regressions and planned claims), then items 2–7.
 - Status: working
 
 ## Loop settings

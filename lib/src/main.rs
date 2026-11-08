@@ -530,7 +530,9 @@ struct EquivalenceArgs {
     /// Loop unwinding bound for JBMC.
     #[arg(long, default_value_t = 16)]
     unwind: u32,
-    /// The longest array an array parameter is given; the copying and comparing loops must fit the unwinding bound.
+    /// The longest array an array parameter is given, and the most code units a String parameter has (checked by the
+    /// tool's own checker only, a stated bound of the claim); the copying and comparing loops must fit the unwinding
+    /// bound.
     #[arg(long, default_value_t = 8)]
     max_array_length: u32,
     /// Prove each callee as written, instead of taking a callee unchanged in both versions as one function in both,

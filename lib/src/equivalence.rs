@@ -1003,7 +1003,21 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
     };
     let mut records = Vec::new();
+    // A String parameter is a value of the values stream's adapter (`values::StringAdapter`): of at most
+    // --max-array-length code units, never null, the one object both versions are passed.
+    let mut strings: Option<Box<dyn crate::values::ValueAdapter>> = None;
     for (name, t) in names.iter().zip(&descriptor.params) {
+        if crate::values::is_string(t) {
+            match crate::values::adapter(t, options.max_array_length) {
+                Ok(a) => strings = Some(a),
+                Err(u) => return refuse(&mut out, line, format!("parameter {name} has type {}: {}", t.java_name(), u.what)),
+            }
+            if plan.is_some_and(|p| p.after.roots.iter().any(|r| r.name == *name)) {
+                return refuse(&mut out, line, format!("the plan has a root {name}, a String parameter, which is a value of its own and no node of a plan"));
+            }
+            records.push(None);
+            continue;
+        }
         let record = match plan {
             Some(p) => match planned(&after_cp, &p.after, name) {
                 Ok(Some(crate::construction::Rooted::Object(r))) if Type::Object(r.class.clone()) == *t => Some(r),
@@ -1025,6 +1039,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         records.push(record);
     }
+    // JBMC models Strings its own way, and its witness's String isn't read, so it can't check this claim: the own
+    // checker decides it, and JBMC is neither the fallback nor the confirmation.
+    if strings.is_some() && options.engine == crate::Engine::Jbmc {
+        return refuse(&mut out, line, format!("{method_name} takes a String, which the tool's own checker takes under the stated bound of {} code units (--engine native or auto); JBMC's Strings are its own model, not this one, so --engine jbmc wouldn't check the same claim", options.max_array_length));
+    }
+    let mut checker_parameters = crate::bmc::Parameters::default();
+    if let Some(a) = &strings {
+        checker_parameters.max_string_length = Some(a.domain().max_length);
+    }
+    let checker_parameters = checker_parameters;
     if let Some(extra) = plan.and_then(|p| p.after.roots.iter().find(|r| r.name != "this" && !names.contains(&r.name))) {
         return refuse(&mut out, line, format!("the plan's root {} is no parameter of {method_name}, whose parameters are {}", extra.name, names.join(", ")));
     }
@@ -1477,7 +1501,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
         observations: observations.clone(),
         bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
-        models: crate::statement::models(options.models && last.is_some()),
+        models: crate::statement::Models { values: strings.iter().map(|a| a.domain().model.clone()).collect(), ..crate::statement::models(options.models && last.is_some()) },
         checker: crate::statement::checker(search, options.sat_solver.as_deref(), || crate::jbmc::sat(&options.jbmc, options.sat_solver.as_deref(), options.refine_strings)),
         gap_mode: last.and_then(|l| l.gap_mode),
         confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
@@ -1618,11 +1642,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &crate::bmc::Parameters::default(), &work)?;
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &checker_parameters, &work)?;
         runs.push(Run::of(&result, "proof", budget));
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) {
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) || strings.is_some() {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                let _ = writeln!(out, "{}", NOT_JBMC);
+                if refuses_gaps(&result) || strings.is_none() {
+                    let _ = writeln!(out, "{}", NOT_JBMC);
+                } else {
+                    let _ = writeln!(out, "note: the tool's own checker gave no verdict, and JBMC is not asked: it takes a String parameter, which JBMC models its own way");
+                }
             }
             stages.clear();
             last = Some(result);
@@ -1965,8 +1993,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let contracts = ConfirmContracts { setting: &gap_setting, rewrite, cp: &contract_cp, dir: work.join("jbmc-confirm-contracts") };
         let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
         let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &r.arguments(&flat_types)?)) };
-        let (c, refuting) = confirm(&last, &run, Some(contracts), &reproduces)?;
-        (Some(c), refuting)
+        if strings.is_some() {
+            let reason = "a String parameter: JBMC's Strings are its own model, not the own checker's bounded one, and its witness's String isn't read, so it wouldn't check the same claim".to_string();
+            (Some(Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }), None)
+        } else {
+            let (c, refuting) = confirm(&last, &run, Some(contracts), &reproduces)?;
+            (Some(c), refuting)
+        }
     } else {
         (None, None)
     };
@@ -2073,7 +2106,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
-                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &crate::bmc::Parameters::default(), &work, &ways.join(" or "), &render, &mut search)?;
+                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &checker_parameters, &work, &ways.join(" or "), &render, &mut search)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
             } else {
@@ -2199,10 +2232,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // A witness over objects, or one the versions differ on in a field or an identity relation, is run on a
             // JVM as well as in the interpreter (step H4 of `llm-dlc/loops/foundations-heap.md`): the harness on the
             // input, which makes its objects from the same leaves, with the same identities, as in the interpreter,
-            // loading the application's classes opened so that it may read their fields. The JVM is the reference:
-            // where its harness finds the versions agreeing, the interpreter was wrong and nothing is reported.
+            // loading the application's classes opened so that it may read their fields. A witness with a String is
+            // run there too (V1 of `llm-dlc/loops/application-core-acceptance.md`): the interpreter's String is the
+            // values stream's model, sampled against the JVM, not proved. The JVM is the reference: where its harness
+            // finds the versions agreeing, the interpreter was wrong and nothing is reported.
             let mut jvm_note = None;
-            if on_jvm.is_none() && observes_objects(&layout, &differs) {
+            if on_jvm.is_none() && (observes_objects(&layout, &differs) || strings.is_some()) {
                 let mut entries = vec![harness_dir.clone(), options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
                 let slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();

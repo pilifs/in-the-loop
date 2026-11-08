@@ -1306,7 +1306,11 @@ impl Layout {
             .map(|s| match s {
                 Slot::Plain(i) => {
                     let p = &self.params[*i];
-                    (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
+                    if crate::values::is_string(&p.ty) {
+                        (string_part(&p.name, max_array_length), false)
+                    } else {
+                        (format!("{}: {}", p.name, p.ty.java_name()), matches!(p.ty, Type::Array(_)))
+                    }
                 }
                 // A plan's node at two roots (O2): the earlier root's object, which its own part describes.
                 Slot::Record { name, .. } if self.choice(name).is_some_and(|c| c.always.is_some()) => (format!("{name}: the same object as {}", self.choice(name).and_then(|c| c.always.clone()).unwrap_or_default()), false),
@@ -1315,6 +1319,9 @@ impl Layout {
             })
             .collect();
         let mut text = domain(parts, max_array_length);
+        if self.params.iter().filter(|p| crate::values::is_string(&p.ty)).count() > 1 {
+            text = format!("{text}; no two the same String object");
+        }
         if !self.setup.is_empty() {
             let calls = self.setup_text(&|i| self.params[i].name.clone());
             let args: Vec<String> = self.setup.iter().flat_map(|s| &s.args).map(|i| format!("{}: {}", self.params[*i].name, self.params[*i].ty.java_name())).collect();
@@ -1365,6 +1372,12 @@ fn arrays_of(record: &RecordType, max_array_length: u32) -> String {
 /// the same array`, since both engines give each array parameter an array of its own (JBMC under
 /// `--java-assume-inputs-non-null`). A claim the JVM refutes only with a null or a shared array is outside the
 /// domain, and the domain says so (step 1d of `llm-dlc/loops/sound-verdicts.md`).
+/// A String parameter's part of a domain: `code: String of ≤ 8 code units, not null`, any UTF-16 code units
+/// (`values::StringAdapter`'s domain, its bound the check's).
+pub fn string_part(name: &str, max_length: u32) -> String {
+    format!("{name}: String of ≤ {max_length} code units, not null")
+}
+
 pub fn domain(parts: Vec<(String, bool)>, max_array_length: u32) -> String {
     let arrays = parts.iter().filter(|(_, array)| *array).count();
     let joined = parts

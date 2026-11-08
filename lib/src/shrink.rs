@@ -41,9 +41,9 @@ pub fn shrink(types: &[Type], arguments: Vec<Argument>, budget: u32, mut fails: 
     Shrunk { arguments: current, runs }
 }
 
-/// The inputs one step smaller than `current`: shorter arrays first (one array at a time, then the same index
-/// dropped from every array, for parallel arrays whose lengths an assumption ties together), then smaller
-/// scalars, then smaller elements.
+/// The inputs one step smaller than `current`: shorter arrays first (one array at a time), then shorter or plainer
+/// Strings, then the same index dropped from every array (for parallel arrays whose lengths an assumption ties
+/// together), then smaller scalars, then smaller elements.
 fn candidates(types: &[Type], current: &[Argument]) -> Vec<Vec<Argument>> {
     let mut out = Vec::new();
     let with = |i: usize, a: Argument| {
@@ -59,6 +59,24 @@ fn candidates(types: &[Type], current: &[Argument]) -> Vec<Vec<Argument>> {
                 let mut shorter = data.clone();
                 shorter.remove(j);
                 out.push(with(i, Argument::Array(shorter)));
+            }
+        }
+    }
+    // A String one unit shorter, then with a unit that isn't printable ASCII made `a`: each step shortens it or
+    // leaves one unit fewer to escape, so a witness reads as text where the difference allows.
+    for (i, argument) in current.iter().enumerate() {
+        if let Argument::String(units) = argument {
+            for j in 0..units.len() {
+                let mut shorter = units.clone();
+                shorter.remove(j);
+                out.push(with(i, Argument::String(shorter)));
+            }
+            for (j, u) in units.iter().enumerate() {
+                if !(0x20..=0x7e).contains(u) {
+                    let mut plain = units.clone();
+                    plain[j] = u16::from(b'a');
+                    out.push(with(i, Argument::String(plain)));
+                }
             }
         }
     }
