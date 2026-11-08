@@ -1,0 +1,157 @@
+{
+  "$comment": "The verdict each build of the application-core fixtures must reach under each frozen claim (golden/NAME.json), by family and claim, every build named. 'after' is the correct refactor; every other build is a defect overlaid on it (FAMILY/defects/NAME). A refutation names the observation its replayed witness must differ in. A defect verified under a claim doesn't reach that claim's subject, or only outside its domain. Rows: llm-dlc/loops/application-core-acceptance.md. Fixed in Phase 0, before any stream forked: a stream doesn't change what a case must reach.",
+  "quote": {
+    "quote-claim": {
+      "after": "verified",
+      "alias-to-copy": "verified",
+      "helper-extra-field": [
+        "refuted",
+        "result"
+      ],
+      "ignored-rate": [
+        "refuted",
+        "result"
+      ],
+      "missing-catch": [
+        "refuted",
+        "exception"
+      ],
+      "wrong-branch-event": [
+        "refuted",
+        "effect:quotes/Events#send(Lquotes/QuoteEvent;)V"
+      ],
+      "wrong-prefix": [
+        "refuted",
+        "result"
+      ],
+      "wrong-query-key": [
+        "refuted",
+        "result"
+      ]
+    },
+    "offer-claim": {
+      "after": "verified",
+      "alias-to-copy": "verified",
+      "helper-extra-field": [
+        "refuted",
+        "result"
+      ],
+      "ignored-rate": "verified",
+      "missing-catch": "verified",
+      "wrong-branch-event": "verified",
+      "wrong-prefix": "verified",
+      "wrong-query-key": "verified"
+    },
+    "checked-claim": {
+      "after": "verified",
+      "alias-to-copy": [
+        "refuted",
+        "identity:result==request"
+      ],
+      "helper-extra-field": "verified",
+      "ignored-rate": "verified",
+      "missing-catch": "verified",
+      "wrong-branch-event": "verified",
+      "wrong-prefix": "verified",
+      "wrong-query-key": "verified"
+    }
+  },
+  "throttle": {
+    "throttle-constructed-claim": {
+      "after": "verified",
+      "after-setup": "verified",
+      "one-short": [
+        "refuted",
+        "result"
+      ]
+    },
+    "throttle-setup-claim": {
+      "after": "verified",
+      "after-setup": [
+        "refuted",
+        "result"
+      ],
+      "one-short": [
+        "refuted",
+        "result"
+      ]
+    }
+  },
+  "basket": {
+    "basket-total-claim": {
+      "after": "verified",
+      "alias-blind": "verified",
+      "copied-first": "verified",
+      "duplicate-skipped": [
+        "refuted",
+        "result"
+      ],
+      "last-not-first": "verified"
+    },
+    "basket-first-claim": {
+      "after": "verified",
+      "alias-blind": "verified",
+      "copied-first": [
+        "refuted",
+        "identity:result==lines[0]"
+      ],
+      "duplicate-skipped": "verified",
+      "last-not-first": [
+        "refuted",
+        "result"
+      ]
+    },
+    "basket-clear-claim": {
+      "after": "verified",
+      "alias-blind": [
+        "refuted",
+        "result"
+      ],
+      "copied-first": "verified",
+      "duplicate-skipped": "verified",
+      "last-not-first": "verified"
+    }
+  },
+  "regressions": {
+    "$comment": "Plain regression checks of one method between before and each build, with no claim file (jvmcontract equivalence, the native engine): 'verified' or 'violation'. They are the unit-level paths of rows O1 (an ordinary receiver), V1 (a String parameter), V2 (a list parameter) and R2 (the helper on its own).",
+    "quotes.Codes#vip": {
+      "after": "verified",
+      "alias-to-copy": "verified",
+      "helper-extra-field": "verified",
+      "ignored-rate": "verified",
+      "missing-catch": "verified",
+      "wrong-branch-event": "verified",
+      "wrong-prefix": "violation",
+      "wrong-query-key": "verified"
+    },
+    "quotes.QuoteService#fee": {
+      "after": "verified",
+      "alias-to-copy": "verified",
+      "helper-extra-field": "violation",
+      "ignored-rate": "verified",
+      "missing-catch": "verified",
+      "wrong-branch-event": "verified",
+      "wrong-prefix": "verified",
+      "wrong-query-key": "verified"
+    },
+    "throttle.Throttle#allows": {
+      "after": "verified",
+      "after-setup": "verified",
+      "one-short": "violation"
+    },
+    "basket.Basket#total": {
+      "after": "verified",
+      "alias-blind": "verified",
+      "copied-first": "verified",
+      "duplicate-skipped": "violation",
+      "last-not-first": "verified"
+    },
+    "basket.Basket#clearAll": {
+      "after": "verified",
+      "alias-blind": "violation",
+      "copied-first": "verified",
+      "duplicate-skipped": "verified",
+      "last-not-first": "verified"
+    }
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "contract": {
+    "subject": "quotes.QuoteService#quote",
+    "inputs": [
+      {
+        "name": "this",
+        "type": "quotes.QuoteService",
+        "derivation": {
+          "kind": "identity"
+        }
+      },
+      {
+        "name": "request",
+        "type": "quotes.QuoteRequest",
+        "derivation": {
+          "kind": "identity"
+        }
+      }
+    ],
+    "required": [
+      "result",
+      "exception",
+      "effect:quotes/Events#send(Lquotes/QuoteEvent;)V"
+    ]
+  },
+  "closures": {
+    "before": "computed by cache::key",
+    "after": "computed by cache::key"
+  },
+  "domain": {
+    "classes": [
+      "quotes.QuoteRequest",
+      "quotes.QuoteService"
+    ],
+    "bounds": {
+      "before": {
+        "input_objects": 2,
+        "allocations": 1
+      },
+      "after": {
+        "input_objects": 2,
+        "allocations": 1
+      }
+    },
+    "nullable": [],
+    "may_alias": [],
+    "made_by": {
+      "kind": "planned",
+      "before": {
+        "nodes": [
+          {
+            "id": 0,
+            "class": "quotes.QuoteService",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(JJLquotes/Rates;Lquotes/Offers;Lquotes/Events;)V"
+            },
+            "args": [
+              {
+                "kind": "leaf",
+                "path": "this.feeCents",
+                "type": "long"
+              },
+              {
+                "kind": "leaf",
+                "path": "this.floorCents",
+                "type": "long"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.rates",
+                "class": "quotes.Rates"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.offers",
+                "class": "quotes.Offers"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.events",
+                "class": "quotes.Events"
+              }
+            ]
+          },
+          {
+            "id": 1,
+            "class": "quotes.QuoteRequest",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(Ljava/lang/String;[I)V"
+            },
+            "args": [
+              {
+                "kind": "adapted",
+                "path": "request.code",
+                "domain": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "nullable": false,
+                  "max_length": 4,
+                  "model": {
+                    "source": "the values stream's String model",
+                    "jdk": "computed by cache::key",
+                    "level": "modelled"
+                  }
+                }
+              },
+              {
+                "kind": "array",
+                "path": "request.quantities",
+                "element": "int",
+                "max_length": 4
+              }
+            ]
+          }
+        ],
+        "roots": [
+          {
+            "name": "this",
+            "value": {
+              "kind": "node",
+              "id": 0
+            }
+          },
+          {
+            "name": "request",
+            "value": {
+              "kind": "node",
+              "id": 1
+            }
+          }
+        ],
+        "restrictions": [
+          "the service and the request made by their constructors; the dependencies are the environment model's stubs"
+        ],
+        "bounds": {
+          "nodes": 2,
+          "max_array_length": 4,
+          "setup_calls": 0
+        }
+      },
+      "after": {
+        "nodes": [
+          {
+            "id": 0,
+            "class": "quotes.QuoteService",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(JJLquotes/Rates;Lquotes/Offers;Lquotes/Events;)V"
+            },
+            "args": [
+              {
+                "kind": "leaf",
+                "path": "this.feeCents",
+                "type": "long"
+              },
+              {
+                "kind": "leaf",
+                "path": "this.floorCents",
+                "type": "long"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.rates",
+                "class": "quotes.Rates"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.offers",
+                "class": "quotes.Offers"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.events",
+                "class": "quotes.Events"
+              }
+            ]
+          },
+          {
+            "id": 1,
+            "class": "quotes.QuoteRequest",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(Ljava/lang/String;[I)V"
+            },
+            "args": [
+              {
+                "kind": "adapted",
+                "path": "request.code",
+                "domain": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "nullable": false,
+                  "max_length": 4,
+                  "model": {
+                    "source": "the values stream's String model",
+                    "jdk": "computed by cache::key",
+                    "level": "modelled"
+                  }
+                }
+              },
+              {
+                "kind": "array",
+                "path": "request.quantities",
+                "element": "int",
+                "max_length": 4
+              }
+            ]
+          }
+        ],
+        "roots": [
+          {
+            "name": "this",
+            "value": {
+              "kind": "node",
+              "id": 0
+            }
+          },
+          {
+            "name": "request",
+            "value": {
+              "kind": "node",
+              "id": 1
+            }
+          }
+        ],
+        "restrictions": [
+          "the service and the request made by their constructors; the dependencies are the environment model's stubs"
+        ],
+        "bounds": {
+          "nodes": 2,
+          "max_array_length": 4,
+          "setup_calls": 0
+        }
+      }
+    },
+    "label": "this: a QuoteService made by its constructor from any fee and floor, its dependencies the environment model's stubs; request: a QuoteRequest made by its constructor from a code of at most 4 UTF-16 code units and at most 4 quantities"
+  },
+  "observations": [
+    {
+      "kind": "result"
+    },
+    {
+      "kind": "exception"
+    },
+    {
+      "kind": "effect",
+      "call": "quotes/Events#send(Lquotes/QuoteEvent;)V",
+      "payload": [
+        "code",
+        "amountCents"
+      ]
+    }
+  ],
+  "bounds": {
+    "unwind": 16,
+    "max_array_length": 4
+  },
+  "assumptions": [],
+  "tools": {
+    "models": "computed by cache::key",
+    "jdk": "computed by cache::key",
+    "checker": "native strict",
+    "binary": "computed by cache::key"
+  },
+  "environment": {
+    "calls": [
+      {
+        "call": "quotes/Rates#rate(Ljava/lang/String;)J",
+        "outcomes": [
+          "returns",
+          "quotes.RateUnavailable"
+        ],
+        "model": {
+          "id": "rates.rate",
+          "key": [
+            "arg0"
+          ],
+          "coupling": {
+            "kind": "query"
+          },
+          "results": [
+            {
+              "kind": "returns",
+              "value": {
+                "kind": "primitive",
+                "type": "long"
+              }
+            },
+            {
+              "kind": "throws",
+              "class": "quotes.RateUnavailable"
+            }
+          ],
+          "bound": 1
+        }
+      },
+      {
+        "call": "quotes/Events#send(Lquotes/QuoteEvent;)V",
+        "outcomes": [
+          "returns"
+        ]
+      }
+    ],
+    "trace_bound": 2,
+    "order": "exact"
+  }
+}

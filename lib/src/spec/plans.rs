@@ -89,7 +89,7 @@ pub enum PlanValue {
         path: String,
         element: String,
         max_length: u32,
-        #[serde(default)]
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         nullable: bool,
     },
     /// A value of an adapter's domain (a String, a list), at `path`.
@@ -416,7 +416,7 @@ mod tests {
             "roots": [
                 {"name": "this", "value": {"kind": "node", "id": 2}},
                 {"name": "q", "value": {"kind": "node", "id": 1, "nullable": true}},
-                {"name": "counts", "value": {"kind": "array", "path": "counts", "element": "int", "max_length": 4, "nullable": false}},
+                {"name": "counts", "value": {"kind": "array", "path": "counts", "element": "int", "max_length": 4}},
                 {"name": "code", "value": {"kind": "adapted", "path": "code", "domain": {"kind": {"kind": "string"}, "nullable": false, "max_length": 8, "model": evidence()}}}
             ],
             "setup": [{"method": "raise(J)V", "args": [{"kind": "leaf", "path": "setup.0.by", "type": "long"}]}],

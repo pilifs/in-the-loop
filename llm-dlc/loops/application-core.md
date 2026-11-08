@@ -455,6 +455,14 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     `effects::check_builds` and `compare::Options::environment`) and `prove --cache` load into the checks'
     options, and the checks refuse what they don't take yet. `StatementSpec` carries the environment and the
     summaries a check used.
+  - **Step 5, the frozen fixtures**, in `lib/tests/fixtures/application-core/` (its README): Q, the quote service
+    (`quotes`: a receiver with a fee policy, a rate query that may throw the checked `RateUnavailable`, a nullable
+    `Offer`, one event, the helper `fee`, and `Codes.vip`), with seven defects; H, the throttle, with `after-setup`
+    (a defect only a setup call reaches) and `one-short`; L, the basket over an immutable list, with four defects.
+    Eight frozen claims with planned domains, and `golden/expected.json` naming every build's verdict under every
+    claim and under five plain regression checks. On JDK 25.0.5, `after` agrees with `before` on every case of the
+    grids (30,240, 315 and 43), and each defect differs exactly in the methods its expectations name
+    (`Conformance.java`). `tests/application_core.rs` starts with their round trips and compilation.
 - Status: blocked: Phase 0, by the planning session, before the fork
 
 ## Loop settings

@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-07T18:55:51.567Z",
-  "ended": "2026-11-08T03:04:13.097Z",
-  "duration_seconds": 29302,
+  "ended": "2026-11-08T03:06:08.464Z",
+  "duration_seconds": 29417,
   "stats": {
     "turns": 22,
-    "api_calls": 343,
-    "tool_calls": 365,
+    "api_calls": 349,
+    "tool_calls": 371,
     "tool_errors": 3,
     "compactions": 1,
-    "peak_context_tokens": 431504,
+    "peak_context_tokens": 445720,
     "usage": {
-      "input_tokens": 714,
-      "output_tokens": 345046,
-      "cache_read_input_tokens": 80771753,
-      "cache_creation_input_tokens": 1100563
+      "input_tokens": 726,
+      "output_tokens": 351039,
+      "cache_read_input_tokens": 83391855,
+      "cache_creation_input_tokens": 1114779
     }
   },
   "tools": {
-    "Bash": 316,
+    "Bash": 322,
     "Write": 24,
     "Edit": 18,
     "ToolSearch": 3,
@@ -87,24 +87,24 @@
     {
       "index": 1,
       "started": "2026-11-08T02:14:46.238Z",
-      "ended": "2026-11-08T03:04:13.097Z",
+      "ended": "2026-11-08T03:06:08.464Z",
       "turns": 4,
-      "api_calls": 199,
+      "api_calls": 205,
       "usage": {
-        "input_tokens": 398,
-        "output_tokens": 199618,
-        "cache_read_input_tokens": 50501478,
-        "cache_creation_input_tokens": 402007
+        "input_tokens": 410,
+        "output_tokens": 205611,
+        "cache_read_input_tokens": 53121580,
+        "cache_creation_input_tokens": 416223
       },
-      "peak_context_tokens": 431504
+      "peak_context_tokens": 445720
     }
   ],
   "log": {
-    "sha256": "1c58ba96bbb2a2c722719cf8c5f8f5df98f30c4f1e42d6a617749a25ed6a2ed7",
-    "bytes": 7939764,
-    "lines": 3063,
-    "gzip_bytes": 1300472,
-    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/1c58ba96bbb2a2c722719cf8c5f8f5df98f30c4f1e42d6a617749a25ed6a2ed7.jsonl.gz"
+    "sha256": "1b066d2fdc7f8a6905b7563527eca33674eb59ff635de967aadf5892339af857",
+    "bytes": 8125400,
+    "lines": 3126,
+    "gzip_bytes": 1330080,
+    "path": "llm-dlc/traces/3da21514-fe46-49d5-8200-08d3cf89ea17/logs/1b066d2fdc7f8a6905b7563527eca33674eb59ff635de967aadf5892339af857.jsonl.gz"
   },
   "subagents": [
     {
@@ -359,6 +359,14 @@
       "summary": "application-core Phase 0 step 3: each stream's module registered, with its call sites in the shared files",
       "body": "So that no stream edits a shared file to begin, each of the four streams of llm-dlc/loops/application-core.md has a module of its own, registered in lib.rs: construction.rs (objects: check_plans for a planned domain, receiver for an ordinary receiver, load for --plan FILE), values.rs (the ValueAdapter trait, adapter for a String or List, is_adapted), environment.rs (check_model for a call's model, declared and load for --environment FILE) and reuse.rs (property_lookup and property_store for prove --cache, summaries for a helper). Each returns Unsupported naming its stream until the stream builds its part. The call sites are in place: the domain gate (spec::heap), the instance-method refusals of equivalence and property, their String and List parameter refusals (which add the values stream's words), the effect check for a call's model, property::run under --cache. The CLI flags --plan (equivalence, prove), --environment (effects, compare, through effects::check_builds and compare::Options::environment) and prove --cache load into the checks' options, and the checks refuse what they don't take yet, never ignore it. StatementSpec carries the environment and the summaries a check used.",
       "log_sha256": "1c58ba96bbb2a2c722719cf8c5f8f5df98f30c4f1e42d6a617749a25ed6a2ed7"
+    },
+    {
+      "change_id": "lypmmukzrnnkmlurxtqywuypozxykznu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core Phase 0 step 5: the frozen fixtures Q, H and L, with their claims and every case's verdict",
+      "body": "The acceptance contract's three fixture families, frozen before any stream forks, in lib/tests/fixtures/application-core/ (its README says what each does and why). Q (package quotes): QuoteService, an ordinary receiver with a fee policy, asks the Rates query for a code's rate (which may throw the checked RateUnavailable), adds the helper fee(lines) that reads the receiver's policy, takes a tenth off a VIP code (Codes.vip), and announces a positive quote on Events; offerQuote uses a nullable Offer DTO; checked hands back the caller's request. Its refactor keeps the external meaning, and its seven defects are a wrong query key, an ignored rate, a missing catch, an event on the wrong branch, a shorter VIP prefix, a helper reading another field, and a copy in place of the caller's object. H: a Throttle whose after-setup defect only a setup call reaches, and one-short, wrong from construction. L: Basket's total, first and clearAll over an immutable list, with a skipped duplicate, the last for the first, a copied first, and an alias-blind clear.\n\ngolden/ holds eight canonical claims with planned domains (construction plans with dependencies, a String code of at most 4 units, quantities of at most 4, the environment model of Rates.rate, Offers.find and Events.send, the two throttle domains, the list of at most 3 lines) and expected.json, every build's verdict under every claim and under five plain regression checks (rows O1, V1, V2, R2). Checked on JDK 25.0.5 with the fixture's Conformance.java, which loads each build in its own class loader with the same dependency stubs: after agrees with before on every case of the grids (30,240, 315 and 43), and each defect differs exactly in the methods its expectations name. tests/application_core.rs starts with the claims' round trips and every build compiling; spec::plans now leaves out an array's false nullability, as a node's.",
+      "log_sha256": "1b066d2fdc7f8a6905b7563527eca33674eb59ff635de967aadf5892339af857"
     }
   ],
   "logs": {
@@ -372,6 +380,12 @@
       "bytes": 3605288,
       "lines": 1197,
       "gzip_bytes": 672153,
+      "url": null
+    },
+    "1b066d2fdc7f8a6905b7563527eca33674eb59ff635de967aadf5892339af857": {
+      "bytes": 8125400,
+      "lines": 3126,
+      "gzip_bytes": 1330080,
       "url": null
     },
     "1c58ba96bbb2a2c722719cf8c5f8f5df98f30c4f1e42d6a617749a25ed6a2ed7": {

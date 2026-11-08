@@ -1,0 +1,330 @@
+{
+  "contract": {
+    "subject": "quotes.QuoteService#offerQuote",
+    "inputs": [
+      {
+        "name": "this",
+        "type": "quotes.QuoteService",
+        "derivation": {
+          "kind": "identity"
+        }
+      },
+      {
+        "name": "request",
+        "type": "quotes.QuoteRequest",
+        "derivation": {
+          "kind": "identity"
+        }
+      }
+    ],
+    "required": [
+      "result",
+      "exception"
+    ]
+  },
+  "closures": {
+    "before": "computed by cache::key",
+    "after": "computed by cache::key"
+  },
+  "domain": {
+    "classes": [
+      "quotes.QuoteRequest",
+      "quotes.QuoteService"
+    ],
+    "bounds": {
+      "before": {
+        "input_objects": 2,
+        "allocations": 0
+      },
+      "after": {
+        "input_objects": 2,
+        "allocations": 0
+      }
+    },
+    "nullable": [],
+    "may_alias": [],
+    "made_by": {
+      "kind": "planned",
+      "before": {
+        "nodes": [
+          {
+            "id": 0,
+            "class": "quotes.QuoteService",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(JJLquotes/Rates;Lquotes/Offers;Lquotes/Events;)V"
+            },
+            "args": [
+              {
+                "kind": "leaf",
+                "path": "this.feeCents",
+                "type": "long"
+              },
+              {
+                "kind": "leaf",
+                "path": "this.floorCents",
+                "type": "long"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.rates",
+                "class": "quotes.Rates"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.offers",
+                "class": "quotes.Offers"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.events",
+                "class": "quotes.Events"
+              }
+            ]
+          },
+          {
+            "id": 1,
+            "class": "quotes.QuoteRequest",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(Ljava/lang/String;[I)V"
+            },
+            "args": [
+              {
+                "kind": "adapted",
+                "path": "request.code",
+                "domain": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "nullable": false,
+                  "max_length": 4,
+                  "model": {
+                    "source": "the values stream's String model",
+                    "jdk": "computed by cache::key",
+                    "level": "modelled"
+                  }
+                }
+              },
+              {
+                "kind": "array",
+                "path": "request.quantities",
+                "element": "int",
+                "max_length": 4
+              }
+            ]
+          }
+        ],
+        "roots": [
+          {
+            "name": "this",
+            "value": {
+              "kind": "node",
+              "id": 0
+            }
+          },
+          {
+            "name": "request",
+            "value": {
+              "kind": "node",
+              "id": 1
+            }
+          }
+        ],
+        "restrictions": [
+          "the service and the request made by their constructors; the dependencies are the environment model's stubs"
+        ],
+        "bounds": {
+          "nodes": 2,
+          "max_array_length": 4,
+          "setup_calls": 0
+        }
+      },
+      "after": {
+        "nodes": [
+          {
+            "id": 0,
+            "class": "quotes.QuoteService",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(JJLquotes/Rates;Lquotes/Offers;Lquotes/Events;)V"
+            },
+            "args": [
+              {
+                "kind": "leaf",
+                "path": "this.feeCents",
+                "type": "long"
+              },
+              {
+                "kind": "leaf",
+                "path": "this.floorCents",
+                "type": "long"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.rates",
+                "class": "quotes.Rates"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.offers",
+                "class": "quotes.Offers"
+              },
+              {
+                "kind": "dependency",
+                "path": "this.events",
+                "class": "quotes.Events"
+              }
+            ]
+          },
+          {
+            "id": 1,
+            "class": "quotes.QuoteRequest",
+            "maker": {
+              "kind": "constructor",
+              "descriptor": "(Ljava/lang/String;[I)V"
+            },
+            "args": [
+              {
+                "kind": "adapted",
+                "path": "request.code",
+                "domain": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "nullable": false,
+                  "max_length": 4,
+                  "model": {
+                    "source": "the values stream's String model",
+                    "jdk": "computed by cache::key",
+                    "level": "modelled"
+                  }
+                }
+              },
+              {
+                "kind": "array",
+                "path": "request.quantities",
+                "element": "int",
+                "max_length": 4
+              }
+            ]
+          }
+        ],
+        "roots": [
+          {
+            "name": "this",
+            "value": {
+              "kind": "node",
+              "id": 0
+            }
+          },
+          {
+            "name": "request",
+            "value": {
+              "kind": "node",
+              "id": 1
+            }
+          }
+        ],
+        "restrictions": [
+          "the service and the request made by their constructors; the dependencies are the environment model's stubs"
+        ],
+        "bounds": {
+          "nodes": 2,
+          "max_array_length": 4,
+          "setup_calls": 0
+        }
+      }
+    },
+    "label": "as the quote claim's, with the standing offer a fresh Offer made by its constructor, or null"
+  },
+  "observations": [
+    {
+      "kind": "result"
+    },
+    {
+      "kind": "exception"
+    }
+  ],
+  "bounds": {
+    "unwind": 16,
+    "max_array_length": 4
+  },
+  "assumptions": [],
+  "tools": {
+    "models": "computed by cache::key",
+    "jdk": "computed by cache::key",
+    "checker": "native strict",
+    "binary": "computed by cache::key"
+  },
+  "environment": {
+    "calls": [
+      {
+        "call": "quotes/Offers#find(Ljava/lang/String;)Lquotes/Offer;",
+        "outcomes": [
+          "returns"
+        ],
+        "model": {
+          "id": "offers.find",
+          "key": [
+            "arg0"
+          ],
+          "coupling": {
+            "kind": "query"
+          },
+          "results": [
+            {
+              "kind": "returns",
+              "value": {
+                "kind": "object",
+                "plan": {
+                  "nodes": [
+                    {
+                      "id": 0,
+                      "class": "quotes.Offer",
+                      "maker": {
+                        "kind": "constructor",
+                        "descriptor": "(JI)V"
+                      },
+                      "args": [
+                        {
+                          "kind": "leaf",
+                          "path": "result.unitCents",
+                          "type": "long"
+                        },
+                        {
+                          "kind": "leaf",
+                          "path": "result.minimumUnits",
+                          "type": "int"
+                        }
+                      ]
+                    }
+                  ],
+                  "roots": [
+                    {
+                      "name": "result",
+                      "value": {
+                        "kind": "node",
+                        "id": 0
+                      }
+                    }
+                  ],
+                  "bounds": {
+                    "nodes": 1,
+                    "max_array_length": 0,
+                    "setup_calls": 0
+                  }
+                },
+                "nullable": true,
+                "identity": "fresh"
+              }
+            }
+          ],
+          "bound": 1
+        }
+      }
+    ],
+    "trace_bound": 1,
+    "order": "exact"
+  }
+}

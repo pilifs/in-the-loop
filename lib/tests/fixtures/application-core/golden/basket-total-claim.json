@@ -1,0 +1,140 @@
+{
+  "contract": {
+    "subject": "basket.Basket#total",
+    "inputs": [
+      {
+        "name": "lines",
+        "type": "java.util.List",
+        "derivation": {
+          "kind": "identity"
+        }
+      }
+    ],
+    "required": [
+      "result",
+      "exception"
+    ]
+  },
+  "closures": {
+    "before": "computed by cache::key",
+    "after": "computed by cache::key"
+  },
+  "domain": {
+    "classes": [
+      "basket.Line"
+    ],
+    "bounds": {
+      "before": {
+        "input_objects": 4,
+        "allocations": 0
+      },
+      "after": {
+        "input_objects": 4,
+        "allocations": 0
+      }
+    },
+    "nullable": [],
+    "may_alias": [],
+    "made_by": {
+      "kind": "planned",
+      "before": {
+        "nodes": [],
+        "roots": [
+          {
+            "name": "lines",
+            "value": {
+              "kind": "adapted",
+              "path": "lines",
+              "domain": {
+                "kind": {
+                  "kind": "list",
+                  "element": {
+                    "kind": "object",
+                    "class": "basket.Line"
+                  }
+                },
+                "nullable": false,
+                "max_length": 3,
+                "model": {
+                  "source": "the values stream's List.of/List.copyOf model",
+                  "jdk": "computed by cache::key",
+                  "level": "modelled",
+                  "leaves_out": [
+                    "the identity of an empty list"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "restrictions": [
+          "lines: an immutable list (List.of, List.copyOf) of at most 3 lines made by their constructor, any two of which may be one object"
+        ],
+        "bounds": {
+          "nodes": 3,
+          "max_array_length": 0,
+          "setup_calls": 0
+        }
+      },
+      "after": {
+        "nodes": [],
+        "roots": [
+          {
+            "name": "lines",
+            "value": {
+              "kind": "adapted",
+              "path": "lines",
+              "domain": {
+                "kind": {
+                  "kind": "list",
+                  "element": {
+                    "kind": "object",
+                    "class": "basket.Line"
+                  }
+                },
+                "nullable": false,
+                "max_length": 3,
+                "model": {
+                  "source": "the values stream's List.of/List.copyOf model",
+                  "jdk": "computed by cache::key",
+                  "level": "modelled",
+                  "leaves_out": [
+                    "the identity of an empty list"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "restrictions": [
+          "lines: an immutable list (List.of, List.copyOf) of at most 3 lines made by their constructor, any two of which may be one object"
+        ],
+        "bounds": {
+          "nodes": 3,
+          "max_array_length": 0,
+          "setup_calls": 0
+        }
+      }
+    },
+    "label": "lines: an immutable list (List.of, List.copyOf) of at most 3 lines made by their constructor, any two of which may be one object"
+  },
+  "observations": [
+    {
+      "kind": "result"
+    },
+    {
+      "kind": "exception"
+    }
+  ],
+  "bounds": {
+    "unwind": 16,
+    "max_array_length": 4
+  },
+  "assumptions": [],
+  "tools": {
+    "models": "computed by cache::key",
+    "jdk": "computed by cache::key",
+    "checker": "native strict",
+    "binary": "computed by cache::key"
+  }
+}
