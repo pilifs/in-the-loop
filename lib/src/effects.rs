@@ -28,6 +28,13 @@
 //!   (`gives a new Offer(unitCents=3, minimumUnits=1)`, `gives null`), and the JVM replays it under the same stubs.
 //!   The class is checked by the objects stream's construction plan in both builds, and a build that uses a response
 //!   beyond reading its fields is refused by name ([`crate::environment::check_response`]).
+//! - **A method made by its plan** ([`check_planned`], the quote family's E1 and E2 rows). An ordinary method's
+//!   claim, its receiver and parameters made by its planned domain ([`crate::construction::flat_roots`]), is
+//!   checked the same way: the generated method takes the plan's flat inputs (a String among them, the values
+//!   stream's), makes each root by its constructor with every dependency null, and calls the method, a
+//!   constructor's exception being the outcome as the call's is. A payload String is snapshotted by its content
+//!   (its length, then its code units), and a modelled call's String key compared by content, each within the
+//!   claim's String bound; past it, the log is unresolved.
 //! - **One environment for both.** The two builds get the same stubs, in the same order, from one model: the union
 //!   of the claim's and both specs' modeled calls. Every call returns normally, unless its model of its results
 //!   declares failures, and the result says which may fail.
@@ -83,10 +90,11 @@ const UNMODELED: i64 = 8;
 const NULL_THROWN: i64 = 16;
 const PAST_MODEL_BOUND: i64 = 32;
 const UNMADE_RESPONSE: i64 = 64;
+const KEY_PAST_BOUND: i64 = 128;
 /// The unresolved mark's bits, below the build's tag, which sits above them (`tag * TAG`) so that the two builds'
 /// marks differ and neither reads as a bit it didn't set.
-const MARK_BITS: i64 = 0x7f;
-const TAG: i64 = 128;
+const MARK_BITS: i64 = 0xff;
+const TAG: i64 = 256;
 
 /// What a check of an entry point established, with what it rests on and what each build did on a witness.
 #[derive(Debug, Clone, Serialize)]
@@ -151,12 +159,30 @@ struct Model {
     /// For each call, its model's table when its results are modelled ([`crate::environment::Lowered`]): the
     /// stub answers from it, and the table is among the check's inputs, the same for both builds.
     models: Vec<Option<crate::environment::Lowered>>,
+    /// The check's String bound in code units (the claim's `max_array_length`): the longest String key a modelled
+    /// call's table holds, and under `content`, the longest payload String a snapshot holds.
+    string_bound: usize,
+    /// Whether a payload String is snapshotted by its content (a planned subject, whose Strings are inputs), rather
+    /// than as the literal it is.
+    content: bool,
 }
 
 impl Model {
-    /// The log words per attempt: the call (with the snapshot's null bits), then one per payload path.
+    /// The most payload paths one call snapshots.
+    fn paths(&self) -> usize {
+        self.observed.iter().flatten().map(Vec::len).max().unwrap_or(0)
+    }
+
+    /// The log words per attempt: the call (with the snapshot's null bits), then one per payload path; under
+    /// `content`, then a block of `string_bound` words per path, which holds a String path's code units (its own
+    /// word holding its length).
     fn width(&self) -> usize {
-        1 + self.observed.iter().flatten().map(Vec::len).max().unwrap_or(0)
+        1 + self.paths() + if self.content { self.paths() * self.string_bound } else { 0 }
+    }
+
+    /// The word of attempt `at`'s log where path `j`'s String block starts, under `content`.
+    fn block(&self, j: usize) -> usize {
+        1 + self.paths() + j * self.string_bound
     }
 
     /// The check's inputs after the handler's: every modelled call's table, in call order.
@@ -173,6 +199,7 @@ impl Model {
             (Some(Argument::Scalar(Value::Int(v))), Type::Char) => format!("{:?}", char::from_u32(*v as u32 & 0xffff).unwrap_or('?')),
             (Some(Argument::Scalar(Value::Long(v))), _) => v.to_string(),
             (Some(Argument::Scalar(Value::Int(v))), _) => v.to_string(),
+            (Some(Argument::String(units)), _) => crate::witness::string_literal(units),
             _ => "?".into(),
         };
         let mut at = 0;
@@ -322,9 +349,178 @@ pub fn check(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec,
 /// mapping) is worked out again on every run, hit or not, and a stored refutation is replayed on a JVM as a new one is.
 pub fn check_with(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
     let work = crate::tla::tempfile_path("jvmcontract-effects");
-    let checked = check_in(&work, claim, old, new, before, after, cache);
+    let checked = check_in(&work, claim, old, new, before, after, cache, None);
     let _ = std::fs::remove_dir_all(&work);
     checked
+}
+
+/// The effect check of a claim about an ordinary method (`pkg.Class#method`, the quote family's E1 and E2 rows of
+/// `llm-dlc/loops/application-core-acceptance.md`), whose receiver and parameters its planned domain makes
+/// ([`crate::construction::flat_roots`]: each by its constructor from flat inputs, a String among them of the
+/// values stream's adapter, and each dependency null, reached only through the environment model's stubs). The
+/// entry method takes the plan's flat inputs and the environment's tables, makes the roots, calls the method, and
+/// returns its log, which [`check_with`]'s check compares as it does a handler's: the outcome by class, the result,
+/// and the attempts at the observed calls in order, each payload String snapshotted by its content within the
+/// claim's String bound. A String key of a modelled call is compared by its content too. A payload path of a call
+/// that takes one argument is read from that argument (`code` of `send(QuoteEvent event)` is `event.code`).
+///
+/// The domain is enforced as the regression check's gate does: its classes are the plan's, its nullable and
+/// may-alias choices are the plan's own (none, here), and a version whose plan makes more input objects than its
+/// bound, or whose code may make more objects in one call than its allocation bound, leaves the result unresolved.
+/// What the plan doesn't make here (an object inside another, a null or shared root, a factory, a setup sequence,
+/// a String or array bound other than the claim's) is refused by name. Under the proof cache when `cache` is given,
+/// as [`check_with`] is.
+pub fn check_planned(claim: &CanonicalClaim, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
+    let work = crate::tla::tempfile_path("jvmcontract-effects");
+    let checked = check_planned_in(&work, claim, before, after, cache);
+    let _ = std::fs::remove_dir_all(&work);
+    checked
+}
+
+fn check_planned_in(work: &Path, claim: &CanonicalClaim, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
+    let gap = |what: String| Unsupported::new(Part::Environment, what);
+    let subject = &claim.contract.subject;
+    let (class_dotted, method_name) = subject.split_once('#').ok_or_else(|| gap(format!("{subject} is not a method, pkg.Class#method")))?;
+    let class_name = class_dotted.replace('.', "/");
+    let Some(environment) = claim.environment.as_ref() else {
+        return Err(gap(format!("a claim of {subject} without an environment model: a regression claim, which spec::heap checks")));
+    };
+    let Some(domain) = claim.domain.as_ref() else { return Err(gap(format!("a claim of {subject} without a domain: the effect check makes a method's inputs by a construction plan"))) };
+    let crate::spec::Construction::Planned { before: plan_before, after: plan_after } = &domain.made_by else {
+        return Err(gap(format!("a domain made {}: the effect check makes a method's inputs by a construction plan", match &domain.made_by {
+            crate::spec::Construction::Constructors { .. } => "by the constructors a regression check finds",
+            crate::spec::Construction::FieldByField => "field by field",
+            crate::spec::Construction::Invariant { .. } => "of invariants",
+            crate::spec::Construction::Planned { .. } => "by a plan",
+        })));
+    };
+    if !domain.nullable.is_empty() || !domain.may_alias.is_empty() {
+        return Err(Unsupported::new(Part::Objects, "a planned domain's nullable and may_alias: the plan's nodes say which inputs may be null or one object"));
+    }
+    if claim.correspondence.is_some() {
+        return Err(gap("a correspondence in an effect claim: both builds are given the same inputs and the same environment".into()));
+    }
+    if !matches!(claim.tools.checker.as_str(), "native strict" | "native") {
+        return Err(gap(format!("the checker {}: the effect check runs on the own checker", claim.tools.checker)));
+    }
+    if let Some(o) = claim.observations.iter().find(|o| !matches!(o, Observation::Result | Observation::Exception | Observation::Effect { .. })) {
+        return Err(gap(format!("the observation {}: the effect check compares the outcome, the result and the attempts at the observed calls", o.id())));
+    }
+    let (before_cp, _) = class_path(before)?;
+    let (after_cp, _) = class_path(after)?;
+    let bound = claim.bounds.max_array_length;
+    // Each build's method, its inputs' names (`this` first), and its roots as the plan makes them.
+    let roots = |cp: &ClassPath, plan: &crate::spec::plans::ConstructionPlan, build: &str| -> Result<Vec<crate::construction::Flat>, Unsupported> {
+        let class = cp.application(&class_name).ok().flatten().ok_or_else(|| gap(format!("the {build} build has no class {class_dotted}")))?;
+        let candidates: Vec<_> = class.methods.iter().filter(|m| m.name == method_name && !m.is_synthetic() && !m.is_bridge()).collect();
+        let [method] = candidates.as_slice() else { return Err(gap(format!("{subject} names {} methods in the {build} build", candidates.len()))) };
+        let names: Vec<String> = (!method.is_static()).then(|| "this".to_string()).into_iter().chain(method.parameter_names(&class.pool)).collect();
+        crate::construction::flat_roots(cp, plan, &names, bound).map_err(|u| Unsupported::new(u.part, format!("the {build} build: {}", u.what)))
+    };
+    let made_before = roots(&before_cp, plan_before, "old")?;
+    let made_after = roots(&after_cp, plan_after, "new")?;
+    let inputs = |made: &[crate::construction::Flat]| made.iter().flat_map(|r| r.inputs().map(|(p, t)| (p.to_string(), t.clone()))).collect::<Vec<_>>();
+    if inputs(&made_before) != inputs(&made_after) {
+        let words = |made: &[crate::construction::Flat]| inputs(made).iter().map(|(p, t)| format!("{p}: {}", t.java_name())).collect::<Vec<_>>().join(", ");
+        return Err(Unsupported::new(Part::Objects, format!("the plans' inputs differ: ({}) before, ({}) now; both builds are given the same inputs", words(&made_before), words(&made_after))));
+    }
+    // The domain gate: its classes are the ones the plans make.
+    let made_classes: BTreeSet<String> = made_before.iter().chain(&made_after).map(|r| r.class.replace('/', ".")).collect();
+    let stated: BTreeSet<String> = domain.classes.iter().cloned().collect();
+    if made_classes != stated {
+        return Err(gap(format!("the domain's classes ({}) aren't the ones its plans make ({})", stated.into_iter().collect::<Vec<_>>().join(", "), made_classes.into_iter().collect::<Vec<_>>().join(", "))));
+    }
+    let required = claim.contract.required.clone();
+    let restrictions = if plan_after.restrictions.is_empty() { String::new() } else { format!(" ({})", plan_after.restrictions.join("; ")) };
+    let flat = inputs(&made_after);
+    let models: Vec<String> = environment.calls.iter().filter_map(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok()).map(|m| m.domain(&short(&c.call)))).collect();
+    let mut words = format!("{}{restrictions}: {}", domain.label, flat.iter().map(|(p, t)| format!("{p}: {}", t.java_name())).collect::<Vec<_>>().join(" × "));
+    if !models.is_empty() {
+        words.push_str(&format!(" × the environment's answers, one for both builds: {}", models.join("; ")));
+    }
+    let unresolved = |problem: String| Checked {
+        outcome: Outcome { verdict: Verdict::Unresolved, domain: words.clone(), accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: None, problem: Some(problem.clone()) },
+        reason: Some(problem),
+        assumptions: Vec::new(),
+        proof: None,
+        before: None,
+        after: None,
+        key: None,
+        reuse: None,
+    };
+    // The domain's bounds, as the regression check's gate counts them: the input objects the plan makes, and what
+    // each version's code makes in one call.
+    for (version, build, made, bounds) in [("previous", before, &made_before, &domain.bounds.before), ("new", after, &made_after, &domain.bounds.after)] {
+        if made.len() as u32 > bounds.input_objects {
+            return Ok(unresolved(format!("the {version} version's inputs are made of {} objects, more than the claim's bound of {}: the check would be about inputs outside the claim", made.len(), bounds.input_objects)));
+        }
+        let problem = match crate::spec::heap::allocations(build, subject) {
+            Ok(Some(n)) if n <= bounds.allocations => continue,
+            Ok(Some(n)) => format!("the {version} version's code may make {n} objects in one call, more than the claim's allocation bound of {}: the check would be about calls outside the claim", bounds.allocations),
+            Ok(None) => format!("the {version} version's code makes objects in a loop or a recursion, which no number bounds, and the claim's allocation bound is {}: the check would be about calls outside the claim", bounds.allocations),
+            Err(e) => format!("the {version} version's allocations could not be counted against the claim's allocation bound of {}: {e}", bounds.allocations),
+        };
+        return Ok(unresolved(problem));
+    }
+    // The observed calls' payload paths, each from a parameter of the call: a path of a call of one argument that
+    // names none is read from that argument.
+    let parameter_names = |call: &str| -> Vec<String> {
+        let Some((owner, name, d)) = split_call(call) else { return Vec::new() };
+        let count = MethodDescriptor::parse(&d).map(|d| d.params.len()).unwrap_or(0);
+        let named = [&after_cp, &before_cp].into_iter().find_map(|cp| cp.application(&owner).ok().flatten().and_then(|c| c.method(&name, &d).map(|m| m.parameter_names(&c.pool))));
+        named.filter(|n| n.len() == count).unwrap_or_else(|| (0..count).map(|i| format!("arg{i}")).collect())
+    };
+    let observations: Vec<Observation> = claim.observations.iter().map(|o| match o {
+        Observation::Effect { call, payload } => {
+            let names = parameter_names(call);
+            let payload = payload.iter().map(|p| {
+                let first = p.split('.').next().unwrap_or(p);
+                if names.len() == 1 && !names.iter().any(|n| n == first) { format!("{}.{p}", names[0]) } else { p.clone() }
+            }).collect();
+            Observation::Effect { call: call.clone(), payload }
+        }
+        other => other.clone(),
+    }).collect();
+    let sites: Vec<crate::spec::observe::EffectSite> = observations.iter().filter_map(|o| match o {
+        Observation::Effect { call, payload } => {
+            let d = split_call(call).and_then(|(_, _, d)| MethodDescriptor::parse(&d).ok())?;
+            let arguments = parameter_names(call).into_iter().zip(&d.params).map(|(name, t)| crate::spec::observe::CallArgument { name, class: t.class_name().map(str::to_string) }).collect();
+            Some(crate::spec::observe::EffectSite { kind: crate::spec::observe::SiteKind::Call, target: short(call), call: call.clone(), payload: payload.clone(), placement: crate::spec::observe::Placement::Outside, in_method: subject.clone(), arguments })
+        }
+        _ => None,
+    }).collect();
+    let spec = EntryPointSpec {
+        id: subject.clone(),
+        handler: subject.clone(),
+        inputs: claim.contract.inputs.clone(),
+        observations: observations.clone(),
+        environment: environment.clone(),
+        unresolved: Vec::new(),
+        kind: Default::default(),
+        declared: String::new(),
+        bindings: Vec::new(),
+        response: None,
+        statuses: Vec::new(),
+        effects: sites,
+        identity: String::new(),
+        assumptions: Vec::new(),
+        source_line: None,
+        method: String::new(),
+    };
+    let mut assumptions = vec![format!(
+        "{} made by the plan's constructors from the inputs, the same in both builds, each dependency null in both and reached only through the modelled calls' stubs; a constructor's exception is the outcome, as the call's is",
+        made_after.iter().map(|r| format!("{} a {}", r.root, r.class.rsplit('/').next().unwrap_or(&r.class))).collect::<Vec<_>>().join(", ")
+    )];
+    if flat.iter().any(|(_, t)| crate::values::is_string(t)) {
+        assumptions.push(format!("a String input is the values stream's String of at most {bound} UTF-16 code units, any content, never null"));
+    }
+    assumptions.push(format!("a payload string is snapshotted by its content, at most {bound} code units; a longer one leaves the result unresolved"));
+    if environment.calls.iter().filter_map(|c| c.model.as_ref().and_then(|m| crate::environment::lower(c, m).ok())).any(|m| m.key.iter().any(|(_, t)| crate::values::is_string(t))) {
+        assumptions.push(format!("a String key is compared by its content; one of more than {bound} code units, which the environment's table holds no key of, leaves the result unresolved"));
+    }
+    let planned = Planned { before: made_before, after: made_after, names: flat.iter().map(|(p, _)| p.clone()).collect(), domain: words.clone(), assumptions };
+    let claim = CanonicalClaim { observations, ..claim.clone() };
+    check_in(work, &claim, &spec, &spec, before, after, cache, Some(&planned))
 }
 
 /// The claim an entry point's own spec holds a new build to: its inputs, every observation it has, its environment
@@ -530,13 +726,34 @@ fn domain_of(spec: &EntryPointSpec, environment: &EnvironmentModel) -> String {
     s
 }
 
+/// A planned subject's inputs, for [`check_in`]: each build's roots as the effect check makes them
+/// ([`crate::construction::flat_roots`]), the names of their flat inputs in order, and what the result is about.
+struct Planned {
+    before: Vec<crate::construction::Flat>,
+    after: Vec<crate::construction::Flat>,
+    names: Vec<String>,
+    domain: String,
+    assumptions: Vec<String>,
+}
+
 /// [`check`], with the builds, the proof and the JVM run under `work`.
-fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
+#[allow(clippy::too_many_arguments)] // the parts of one check
+fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>, planned: Option<&Planned>) -> Result<Checked, Unsupported> {
     let required = claim.contract.required.clone();
     let environment = claim.environment.clone().unwrap_or_else(|| old.environment.clone());
     let handler = old.handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or("").to_string();
-    let assumed = assumptions(&environment, &handler);
-    let domain = domain_of(old, &environment);
+    let assumed = match planned {
+        Some(p) => {
+            let mut a: Vec<String> = assumptions(&environment, "").into_iter().filter(|a| !a.starts_with("a payload string is snapshotted as the literal")).collect();
+            a.extend(p.assumptions.iter().cloned());
+            a
+        }
+        None => assumptions(&environment, &handler),
+    };
+    let domain = match planned {
+        Some(p) => p.domain.clone(),
+        None => domain_of(old, &environment),
+    };
     let unresolved = |reason: String| Checked {
         outcome: Outcome { verdict: Verdict::Unresolved, domain: domain.clone(), accounting: required.iter().map(|r| Accounted { observation: r.clone(), state: ObservationState::Unresolved }).collect(), witness: None, problem: Some(reason.clone()) },
         reason: Some(reason),
@@ -667,11 +884,11 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         }
     }
     let models = calls.iter().map(|c| lowered(c)).collect();
-    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect(), models };
+    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect(), models, string_bound: claim.bounds.max_array_length as usize, content: planned.is_some() };
 
     let _ = std::fs::remove_dir_all(work);
-    let old_version = prepare(old, &before_cp, &before_local, before, &work.join("before"), &model, 1)?;
-    let new_version = prepare(new, &after_cp, &after_local, after, &work.join("after"), &model, 2)?;
+    let old_version = prepare(old, &before_cp, &before_local, before, &work.join("before"), &model, 1, planned.map(|p| p.before.as_slice()))?;
+    let new_version = prepare(new, &after_cp, &after_local, after, &work.join("after"), &model, 2, planned.map(|p| p.after.as_slice()))?;
 
     let mut options = crate::equivalence::Options::new(&work.join("before"), &work.join("after"), &new_version.target);
     if old_version.target != new_version.target {
@@ -690,7 +907,11 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
     let reuse = result.reuse.clone().filter(|r| matches!(r, crate::spec::cache::Reuse::Exact { .. }));
     // Every result below carries the proof's key and its reuse, an unresolved one included.
     let unresolved = |reason: String| Checked { key: key.clone(), reuse: reuse.clone(), ..unresolved(reason) };
-    let names: Vec<String> = old.inputs.iter().map(|i| i.name.clone()).chain(model.models.iter().flatten().flat_map(crate::environment::Lowered::input_names)).collect();
+    let input_names: Vec<String> = match planned {
+        Some(p) => p.names.clone(),
+        None => old.inputs.iter().map(|i| i.name.clone()).collect(),
+    };
+    let names: Vec<String> = input_names.iter().cloned().chain(model.models.iter().flatten().flat_map(crate::environment::Lowered::input_names)).collect();
     let proof = result.proof.as_deref().map(|p| with_names(p, &names));
     match result.verdict {
         crate::Verdict::Verified => {
@@ -728,20 +949,11 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         crate::Verdict::Violation => {
             let Some(cex) = &result.counterexample else { return Ok(unresolved("a violation without a counterexample".into())) };
             let arguments: Vec<Argument> = cex.inputs.iter().zip(&new_version.params).map(|(t, ty)| argument(t.value.as_ref(), ty)).collect::<Option<_>>().ok_or_else(|| unsupported("a witness value the JVM run can't pass"))?;
-            let shown = old
-                .inputs
+            let shown = input_names
                 .iter()
                 .zip(&arguments)
                 .zip(&new_version.params)
-                .map(|((i, a), t)| {
-                    let value = match (a, t) {
-                        (Argument::Scalar(Value::Int(v)), Type::Boolean) => (*v != 0).to_string(),
-                        (Argument::Scalar(Value::Long(v)), _) => v.to_string(),
-                        (Argument::Scalar(Value::Int(v)), _) => v.to_string(),
-                        _ => "?".into(),
-                    };
-                    format!("{}={value}", i.name)
-                })
+                .map(|((name, a), t)| format!("{name}={}", shown_value(a, t)))
                 .collect::<Vec<_>>()
                 .join(", ");
             let check_dir = work.join("check");
@@ -807,7 +1019,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             }
             let accounting = required.iter().map(|id| Accounted { observation: id.clone(), state: if refuted.contains(id) { ObservationState::Refuted } else { ObservationState::Unresolved } }).collect();
             let stubs = model.calls.iter().map(|c| short(c)).collect::<Vec<_>>().join(", ");
-            let chosen = model.environment_words(arguments.get(old.inputs.len()..).unwrap_or_default());
+            let chosen = model.environment_words(arguments.get(input_names.len()..).unwrap_or_default());
             let (under, how) = if chosen.is_empty() {
                 (String::new(), "each returning normally")
             } else {
@@ -973,13 +1185,47 @@ fn with_names(text: &str, names: &[String]) -> String {
     out
 }
 
+/// A witness's typed value (`witness::exact_argument`'s form) as the JVM run passes it: a scalar, an array of
+/// them, a String by its code units, or the same array or String as an earlier input.
 fn argument(value: Option<&serde_json::Value>, t: &Type) -> Option<Argument> {
     let v = value?;
+    if let Some(i) = v.get("same").and_then(serde_json::Value::as_u64) {
+        return Some(Argument::Same(i as usize));
+    }
+    if crate::values::is_string(t) {
+        return match serde_json::from_value::<crate::spec::plans::WitnessValue>(v.clone()).ok()? {
+            crate::spec::plans::WitnessValue::String { units } => Some(Argument::String(units)),
+            _ => None,
+        };
+    }
+    if let (Type::Array(element), Some(items)) = (t, v.as_array()) {
+        return items.iter().map(|x| match argument(Some(x), element)? {
+            Argument::Scalar(v) => Some(v),
+            _ => None,
+        }).collect::<Option<Vec<_>>>().map(Argument::Array);
+    }
     let n = v.as_i64().or_else(|| v.as_str().and_then(|s| s.parse().ok())).or_else(|| v.as_bool().map(i64::from))?;
     Some(Argument::Scalar(match t {
         Type::Long => Value::Long(n),
         _ => Value::Int(n as i32),
     }))
+}
+
+/// An input's value as a witness shows it: a number, a boolean, a Java String literal, an array's elements.
+fn shown_value(a: &Argument, t: &Type) -> String {
+    let scalar = |v: &Value, t: &Type| match (v, t) {
+        (Value::Int(v), Type::Boolean) => (*v != 0).to_string(),
+        (Value::Long(v), _) => v.to_string(),
+        (Value::Int(v), _) => v.to_string(),
+        _ => "?".into(),
+    };
+    match (a, t) {
+        (Argument::Scalar(v), t) => scalar(v, t),
+        (Argument::String(units), _) => crate::witness::string_literal(units),
+        (Argument::Array(items), Type::Array(element)) => format!("{{{}}}", items.iter().map(|v| scalar(v, element)).collect::<Vec<_>>().join(", ")),
+        (Argument::Same(i), _) => format!("the same as input {i}"),
+        _ => "?".into(),
+    }
 }
 
 /// One build's log decoded; `strings` are the (call, path) pairs whose snapshot is a string, held as the index of
@@ -1016,6 +1262,9 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
                     model.classes.get((*v as usize).wrapping_sub(1)).map(|c| c.replace('/', ".")).unwrap_or_else(|| v.to_string())
                 } else if !strings.contains(&(call, j)) {
                     v.to_string()
+                } else if model.content {
+                    let units: Vec<u16> = (0..(*v).clamp(0, model.string_bound as i64) as usize).map(|u| word(at + model.block(j) + u) as u16).collect();
+                    crate::witness::string_literal(&units)
                 } else {
                     model.literals.get((*v as usize).wrapping_sub(1)).map(|s| format!("{s:?}")).unwrap_or_else(|| v.to_string())
                 };
@@ -1025,6 +1274,9 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
             .join(", ");
         let mut key = vec![nulls];
         key.extend(&values);
+        if model.content {
+            key.extend((model.block(0)..width).map(|k| word(at + k)));
+        }
         attempts.push((call, key, format!("{}({shown})", short(&model.calls[call]))));
     }
     let mark = word(3) & MARK_BITS;
@@ -1033,10 +1285,17 @@ fn decode(log: &[i64], model: &Model, strings: &BTreeSet<(usize, usize)>) -> Tra
         unresolved.push(format!("more attempts than the trace bound, {}", model.bound));
     }
     if mark & UNSNAPSHOTTED != 0 {
-        unresolved.push("a payload value no snapshot holds (a string that is no literal of either build, or an object of another class than the call site's)".into());
+        if model.content {
+            unresolved.push(format!("a payload value no snapshot holds (a string of more than {} code units, or an object of another class than the call site's)", model.string_bound));
+        } else {
+            unresolved.push("a payload value no snapshot holds (a string that is no literal of either build, or an object of another class than the call site's)".into());
+        }
     }
     if mark & UNMADE != 0 {
         unresolved.push("the handler's constructor threw on the null dependencies".into());
+    }
+    if mark & KEY_PAST_BOUND != 0 {
+        unresolved.push(format!("a modelled call keyed by a string of more than {} code units, which the environment's table holds no key of", model.string_bound));
     }
     if mark & UNMODELED != 0 {
         unresolved.push("a call on a dependency that the environment model doesn't model".into());
@@ -1131,13 +1390,19 @@ fn in_package(package: &str, simple: &str) -> String {
 }
 
 /// Writes `spec`'s build into `out` with the stubs in place, and the generated method that runs the handler and
-/// returns its log; `tag` tells the builds' unresolved marks apart.
-fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path, out: &Path, model: &Model, tag: i64) -> Result<Prepared, Unsupported> {
+/// returns its log; `tag` tells the builds' unresolved marks apart. Under a plan (`planned`, its roots in the
+/// method's order, `this` first for an instance method), the method's receiver and parameters are made by it
+/// ([`crate::construction::flat_roots`]), and the entry's inputs are its flat inputs.
+#[allow(clippy::too_many_arguments)] // the parts of one build's preparation
+fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path, out: &Path, model: &Model, tag: i64, planned: Option<&[crate::construction::Flat]>) -> Result<Prepared, Unsupported> {
     let (class_dotted, method_name) = spec.handler.split_once('#').ok_or_else(|| unsupported(format!("a handler that isn't Class#method: {}", spec.handler)))?;
     let class_name = class_dotted.replace('.', "/");
     let class = cp.application(&class_name).ok().flatten().ok_or_else(|| unsupported(format!("no class {class_dotted} under {}", build.display())))?;
     let candidates: Vec<_> = class.methods.iter().filter(|m| m.name == method_name && !m.is_synthetic() && !m.is_bridge()).collect();
     let [method] = candidates.as_slice() else { return Err(unsupported(format!("{} names {} methods", spec.handler, candidates.len()))) };
+    if let Some(roots) = planned {
+        return prepare_planned(spec, cp, local, build, out, model, tag, roots, &class_name, method);
+    }
     if method.is_static() {
         return Err(unsupported(format!("{} is static: a handler is an instance method", spec.handler)));
     }
@@ -1174,12 +1439,41 @@ fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
             }
         }
     }
+    rewrite(spec, cp, local, build, out, model, tag, dependencies, &class_name, method_name, method, &descriptor, Some((constructor, &ctor)), None)
+}
+
+/// [`prepare`] under a plan: the method's receiver and parameters are its roots, each made by its constructor.
+#[allow(clippy::too_many_arguments)] // the parts of one build's preparation
+fn prepare_planned(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path, out: &Path, model: &Model, tag: i64, roots: &[crate::construction::Flat], class_name: &str, method: &crate::classfile::Method) -> Result<Prepared, Unsupported> {
+    let descriptor = method.parsed_descriptor().map_err(|e| unsupported(e.to_string()))?;
+    let instance = !method.is_static();
+    let receiver = roots.first().filter(|r| r.root == "this");
+    if instance != receiver.is_some() || receiver.is_some_and(|r| r.class != class_name) {
+        return Err(unsupported(format!("{}: the plan's receiver this is a root of an instance method, of its class", spec.handler)));
+    }
+    let parameters: Vec<Type> = roots.iter().skip(usize::from(instance)).map(|r| Type::Object(r.class.clone())).collect();
+    if parameters != descriptor.params {
+        return Err(unsupported(format!("{} takes ({}), and the plan's roots make ({})", spec.handler, descriptor.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", "), parameters.iter().map(Type::java_name).collect::<Vec<_>>().join(", "))));
+    }
+    if !(descriptor.ret.is_primitive() || descriptor.ret == Type::Void) || matches!(descriptor.ret, Type::Float | Type::Double) {
+        return Err(unsupported(format!("a result of type {}: the effect trace compares an integral result", descriptor.ret.java_name())));
+    }
+    let dependencies: BTreeSet<String> = roots.iter().flat_map(|r| &r.args).filter_map(|a| match a {
+        crate::construction::FlatArg::Dependency { class } => Some(class.clone()),
+        _ => None,
+    }).collect();
+    rewrite(spec, cp, local, build, out, model, tag, dependencies, class_name, &method.name, method, &descriptor, None, Some((roots, instance)))
+}
+
+/// The rest of [`prepare`]: the build rewritten with its stubs, and the entry method.
+#[allow(clippy::too_many_arguments)] // the parts of one build's preparation
+fn rewrite(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path, out: &Path, model: &Model, tag: i64, mut dependencies: BTreeSet<String>, class_name: &str, method_name: &str, method: &crate::classfile::Method, descriptor: &MethodDescriptor, handler: Option<(&crate::classfile::Method, &MethodDescriptor)>, planned: Option<(&[crate::construction::Flat], bool)>) -> Result<Prepared, Unsupported> {
     for call in &model.calls {
         if let Some((owner, _, _)) = split_call(call) {
             dependencies.insert(owner);
         }
     }
-    let package = package_of(&class_name).to_string();
+    let package = package_of(class_name).to_string();
     let entry = in_package(&package, ENTRY);
     let stubs = in_package(&package, STUBS);
     if local.contains(&entry) || local.contains(&stubs) {
@@ -1272,10 +1566,18 @@ fn prepare(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
     std::fs::write(out.join(format!("{stubs}.class")), stubs_class(&stubs, model, &reads, &unmodeled)).map_err(|e| unsupported(e.to_string()))?;
     let present: Vec<bool> = model.exceptions.iter().map(|e| if e.starts_with("java/") { true } else { local.contains(e) }).collect();
     // The entry method's parameters: the handler's inputs, then the environment model's tables.
-    let mut params = descriptor.params.clone();
+    let mut params: Vec<Type> = match planned {
+        Some((roots, _)) => roots.iter().flat_map(|r| r.inputs().map(|(_, t)| t.clone())).collect(),
+        None => descriptor.params.clone(),
+    };
     params.extend(model.environment_inputs());
     let entry_descriptor = format!("({})[J", params.iter().map(Type::descriptor).collect::<String>());
-    std::fs::write(out.join(format!("{entry}.class")), entry_class(&entry, &stubs, &class_name, method_name, &method.descriptor, &descriptor, &constructor.descriptor, &ctor, model, &present, tag)).map_err(|e| unsupported(e.to_string()))?;
+    let no_constructor = MethodDescriptor { params: Vec::new(), ret: Type::Void };
+    let (ctor_descriptor, ctor) = match handler {
+        Some((constructor, ctor)) => (constructor.descriptor.as_str(), ctor),
+        None => ("()V", &no_constructor),
+    };
+    std::fs::write(out.join(format!("{entry}.class")), entry_class(&entry, &stubs, class_name, method_name, &method.descriptor, descriptor, ctor_descriptor, ctor, model, &present, tag, planned)).map_err(|e| unsupported(e.to_string()))?;
     Ok(Prepared { target: format!("{}#{METHOD}", entry.replace('/', ".")), entry, descriptor: entry_descriptor, params, strings })
 }
 
@@ -1399,7 +1701,7 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
                 slot += if matches!(t, Type::Long | Type::Double) { 2 } else { 1 };
             }
             code.max_locals = slot;
-            let (n, log, at, mask, value, tmp, arg) = (slot, slot + 1, slot + 2, slot + 3, slot + 4, slot + 6, slot + 7);
+            let (n, log, at, mask, value, tmp, arg, len) = (slot, slot + 1, slot + 2, slot + 3, slot + 4, slot + 6, slot + 7, slot + 8);
             // A DTO response's `new`, `dup` and leaves.
             let response = model.models.get(i).and_then(Option::as_ref).and_then(|m| m.response.as_ref()).map_or(0, |r| 3 + r.leaves.iter().map(|(_, t)| t.slots()).sum::<u16>());
             code.max_stack = 8.max(response);
@@ -1452,7 +1754,7 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
                         }
                         code.goto(unresolved);
                     } else if r.chains.is_empty() {
-                        snapshot_leaf(&mut code, &mut w, model, r.leaf, (value, tmp), (store, null, unresolved));
+                        snapshot_leaf(&mut code, &mut w, model, r.leaf, (value, tmp), (store, null, unresolved), (log, at, len, j));
                     } else {
                         // The argument is one of the chains' classes, or (with several classes passed) a payload
                         // without this path, or one the stub can't read.
@@ -1489,7 +1791,7 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
                                     }
                                 }
                             }
-                            snapshot_leaf(&mut code, &mut w, model, r.leaf, (value, tmp), (store, null, unresolved));
+                            snapshot_leaf(&mut code, &mut w, model, r.leaf, (value, tmp), (store, null, unresolved), (log, at, len, j));
                             code.bind(next);
                         }
                         code.goto(if r.several { null } else { unresolved });
@@ -1535,7 +1837,7 @@ fn stubs_class(name: &str, model: &Model, reads: &[Option<Vec<Read>>], unmodeled
             }
             code.bind(done);
             match model.models.get(i).and_then(Option::as_ref) {
-                Some(m) => answer(&mut code, &mut w, name, i, m, &slots, &descriptor.params),
+                Some(m) => answer(&mut code, &mut w, name, i, m, &slots, &descriptor.params, model.string_bound),
                 None => return_default(&mut code, &descriptor.ret),
             }
             let stub_descriptor = if receiver { format!("(Ljava/lang/Object;{}", &d[1..]) } else { d.clone() };
@@ -1615,10 +1917,32 @@ fn used_fields(i: usize, m: &crate::environment::Lowered) -> Vec<String> {
 /// otherwise the answer of the first entry whose key is the call's (for a per-call choice, the first such entry
 /// this trace hasn't used, which it then marks used), or the default. An answer whose outcome is `k` throws a new
 /// instance of the model's `k`-th failure, made by its constructor without arguments; any other outcome returns
-/// the answer's value. `slots` are the call's parameters'.
-fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m: &crate::environment::Lowered, slots: &[u16], params: &[Type]) {
+/// the answer's value. A String key component is compared by its content (`String.equals`, the table's key never
+/// null), and one longer than `string_bound` marks the log, since the table holds no such key: keyed as the
+/// default, two such keys would be coupled. `slots` are the call's parameters'.
+#[allow(clippy::too_many_arguments)] // the parts of one generated stub
+fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m: &crate::environment::Lowered, slots: &[u16], params: &[Type], string_bound: usize) {
     let calls_ref = w.pool.field_ref(stubs, &format!("c{i}"), "I");
     let u_ref = w.pool.field_ref(stubs, "U", "I");
+    for (p, t) in &m.key {
+        if !crate::values::is_string(t) {
+            continue;
+        }
+        let keyed = code.label();
+        code.load(Kind::Ref, slots[*p]);
+        code.if_null(keyed);
+        code.load(Kind::Ref, slots[*p]);
+        let length = w.pool.method_ref("java/lang/String", "length", "()I");
+        code.op_u16(0xb6, length);
+        code.iconst(string_bound as i32);
+        code.if_icmp(Cond::Le, keyed);
+        code.op_u16(0xb2, u_ref);
+        code.iconst(KEY_PAST_BOUND as i32);
+        code.op(0x80); // ior
+        code.op_u16(0xb3, u_ref);
+        return_default(code, &m.ret);
+        code.bind(keyed);
+    }
     let within = code.label();
     code.op_u16(0xb2, calls_ref);
     code.iconst(m.bound as i32);
@@ -1671,6 +1995,14 @@ fn answer(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, i: usize, m:
         }
         for (c, (p, t)) in m.key.iter().enumerate() {
             let k = w.pool.field_ref(stubs, &format!("k{i}_{e}_{c}"), &t.descriptor());
+            if crate::values::is_string(t) {
+                code.op_u16(0xb2, k);
+                code.load(Kind::Ref, slots[*p]);
+                let equals = w.pool.method_ref("java/lang/String", "equals", "(Ljava/lang/Object;)Z");
+                code.op_u16(0xb6, equals);
+                code.if_zero(Cond::Eq, next);
+                continue;
+            }
             code.load(kind_of(&params[*p]), slots[*p]);
             code.op_u16(0xb2, k);
             if *t == Type::Long {
@@ -1748,9 +2080,45 @@ fn make_response(code: &mut CodeBuilder, w: &mut ClassWriter, stubs: &str, value
 }
 
 /// Takes the leaf value on the stack into `value` (a long) and jumps to `store`: an integral value widened, a string
-/// as the index of its literal plus one (null to `null`, another string to `unresolved`).
-fn snapshot_leaf(code: &mut CodeBuilder, w: &mut ClassWriter, model: &Model, leaf: Leaf, (value, tmp): (u16, u16), (store, null, unresolved): (crate::classfile::writer::Label, crate::classfile::writer::Label, crate::classfile::writer::Label)) {
+/// as the index of its literal plus one (null to `null`, another string to `unresolved`). Under the model's
+/// `content`, a string is its length, its code units written into path `j`'s block of the attempt at `at` of `log`
+/// (`len` a local for its length); one longer than the String bound goes to `unresolved`.
+#[allow(clippy::too_many_arguments)] // the parts of one snapshot
+fn snapshot_leaf(code: &mut CodeBuilder, w: &mut ClassWriter, model: &Model, leaf: Leaf, (value, tmp): (u16, u16), (store, null, unresolved): (crate::classfile::writer::Label, crate::classfile::writer::Label, crate::classfile::writer::Label), (log, at, len, j): (u16, u16, u16, usize)) {
     match leaf {
+        Leaf::Str if model.content => {
+            code.store(Kind::Ref, tmp);
+            code.load(Kind::Ref, tmp);
+            code.if_null(null);
+            code.load(Kind::Ref, tmp);
+            let length = w.pool.method_ref("java/lang/String", "length", "()I");
+            code.op_u16(0xb6, length);
+            code.store(Kind::Int, len);
+            code.load(Kind::Int, len);
+            code.iconst(model.string_bound as i32);
+            code.if_icmp(Cond::Gt, unresolved);
+            let char_at = w.pool.method_ref("java/lang/String", "charAt", "(I)C");
+            for u in 0..model.string_bound {
+                let skip = code.label();
+                code.load(Kind::Int, len);
+                code.iconst(u as i32);
+                code.if_icmp(Cond::Le, skip);
+                code.load(Kind::Ref, log);
+                code.load(Kind::Int, at);
+                code.iconst((model.block(j) + u) as i32);
+                code.op(0x60); // iadd
+                code.load(Kind::Ref, tmp);
+                code.iconst(u as i32);
+                code.op_u16(0xb6, char_at);
+                code.op(0x85); // i2l
+                code.op(0x50); // lastore
+                code.bind(skip);
+            }
+            code.load(Kind::Int, len);
+            code.op(0x85); // i2l
+            code.store(Kind::Long, value);
+            code.goto(store);
+        }
         Leaf::Int => {
             code.op(0x85); // i2l
             code.store(Kind::Long, value);
@@ -1820,21 +2188,31 @@ fn kind_of(t: &Type) -> Kind {
 }
 
 /// The generated `observe`: makes the handler, calls it on the inputs, and returns the log, cut to what it holds.
+/// Under a plan (`planned`), its inputs are the plan's flat inputs, and it makes each root by its constructor from
+/// them, a dependency null, inside the call's handler, so that a constructor's exception is the outcome as the
+/// call's is: an input only one build's constructors accept is a difference.
 #[allow(clippy::too_many_arguments)] // the parts of one generated method
-fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_descriptor: &str, descriptor: &MethodDescriptor, ctor_descriptor: &str, ctor: &MethodDescriptor, model: &Model, present: &[bool], tag: i64) -> Vec<u8> {
+fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_descriptor: &str, descriptor: &MethodDescriptor, ctor_descriptor: &str, ctor: &MethodDescriptor, model: &Model, present: &[bool], tag: i64, planned: Option<(&[crate::construction::Flat], bool)>) -> Vec<u8> {
     let mut w = ClassWriter::new(name);
     w.access = flags::PUBLIC | flags::FINAL | flags::SUPER;
     let mut code = CodeBuilder::new();
     let mut slot = 0u16;
     let mut slots = Vec::new();
     let environment = model.environment_inputs();
-    for t in descriptor.params.iter().chain(&environment) {
+    let inputs: Vec<Type> = match planned {
+        Some((roots, _)) => roots.iter().flat_map(|r| r.inputs().map(|(_, t)| t.clone())).collect(),
+        None => descriptor.params.clone(),
+    };
+    for t in inputs.iter().chain(&environment) {
         slots.push(slot);
         slot += if matches!(t, Type::Long | Type::Double) { 2 } else { 1 };
     }
     code.max_locals = slot;
-    code.max_stack = 12;
+    let made_stack = planned.map_or(0, |(roots, _)| roots.iter().map(|r| 2 + r.args.iter().map(|a| match a { crate::construction::FlatArg::Input { ty, .. } => ty.slots(), _ => 1 }).sum::<u16>()).max().unwrap_or(0));
+    code.max_stack = 12.max(made_stack + 2);
     let (log, h, thrown, result, cut) = (slot, slot + 1, slot + 2, slot + 3, slot + 5);
+    // Under a plan, each root's object, in order.
+    let objects = slot + 6;
     let width = model.width();
     let capacity = HEADER + model.bound * width;
     let log_ref = w.pool.field_ref(stubs, "LOG", "[J");
@@ -1850,7 +2228,7 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     code.iconst(0);
     code.op_u16(0xb3, u_ref);
     // The environment model's tables, from the inputs after the handler's, and each model's count of calls.
-    let mut at = descriptor.params.len();
+    let mut at = inputs.len();
     for (i, m) in model.models.iter().enumerate() {
         let Some(m) = m else { continue };
         let calls_ref = w.pool.field_ref(stubs, &format!("c{i}"), "I");
@@ -1881,8 +2259,41 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
         code.op(0x50);
     };
 
-    // The handler, made by its constructor with null dependencies.
     let (make_start, make_end, unmade, call_start, call_end, threw, finish) = (code.label(), code.label(), code.label(), code.label(), code.label(), code.label(), code.label());
+    if let Some((roots, instance)) = planned {
+        // The plan's roots, each made by its constructor from the flat inputs, then the call: one region, whose
+        // exceptions are the outcome.
+        code.bind(call_start);
+        let mut input = 0;
+        for (k, r) in roots.iter().enumerate() {
+            let class = w.pool.class(&r.class);
+            code.op_u16(0xbb, class); // new
+            code.op(0x59); // dup
+            for a in &r.args {
+                match a {
+                    crate::construction::FlatArg::Input { ty, .. } => {
+                        code.load(kind_of(ty), slots[input]);
+                        input += 1;
+                    }
+                    crate::construction::FlatArg::Dependency { .. } => code.op(0x01), // aconst_null
+                }
+            }
+            let init = w.pool.method_ref(&r.class, "<init>", &r.descriptor);
+            code.op_u16(0xb7, init);
+            code.store(Kind::Ref, objects + k as u16);
+        }
+        for k in 0..roots.len() {
+            code.load(Kind::Ref, objects + k as u16);
+        }
+        if instance {
+            let m = w.pool.method_ref(handler, method, method_descriptor);
+            code.op_u16(0xb6, m);
+        } else {
+            let m = w.pool.method_ref(handler, method, method_descriptor);
+            code.op_u16(0xb8, m);
+        }
+    } else {
+    // The handler, made by its constructor with null dependencies.
     code.bind(make_start);
     let class = w.pool.class(handler);
     code.op_u16(0xbb, class); // new
@@ -1916,6 +2327,7 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     }
     let m = w.pool.method_ref(handler, method, method_descriptor);
     code.op_u16(0xb6, m);
+    }
     match &descriptor.ret {
         Type::Void => code.op(0x09),
         Type::Long => {}
@@ -2000,7 +2412,7 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     }
     code.load(Kind::Ref, log);
     code.return_(Some(Kind::Ref));
-    let entry_descriptor = format!("({})[J", descriptor.params.iter().chain(&environment).map(Type::descriptor).collect::<String>());
+    let entry_descriptor = format!("({})[J", inputs.iter().chain(&environment).map(Type::descriptor).collect::<String>());
     w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: entry_descriptor, code: Some(code) });
     w.to_bytes()
 }

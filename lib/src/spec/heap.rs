@@ -352,7 +352,7 @@ const ALLOCATION_METHODS: usize = 10_000;
 /// one is counted, whichever branch it is on, so the bound is over every path at once. What a JDK method makes
 /// (application code it calls back included), an exception the JVM throws, and what a class initializer makes are
 /// not counted. `None` when something is made in a loop or a recursion, where no number the code states bounds it.
-fn allocations(build: &Path, subject: &str) -> Result<Option<u32>, String> {
+pub(crate) fn allocations(build: &Path, subject: &str) -> Result<Option<u32>, String> {
     let (class, name) = subject.split_once('#').ok_or_else(|| format!("{subject} is not pkg.Class#method"))?;
     let cp = crate::closure::build_class_path(&[build]).map_err(|e| e.to_string())?;
     let owner = class.replace('.', "/");

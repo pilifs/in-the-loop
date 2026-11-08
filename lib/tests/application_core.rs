@@ -298,16 +298,16 @@ fn v2_a_bounded_supported_list_as_input() {
 }
 
 /// E1: a consumed return value and a declared failure, under one explicit environment: the rate a dependency
-/// returns, or its checked `RateUnavailable`.
+/// returns, or its checked `RateUnavailable`. Wired at the merge (Phase 5 step 1): no stream's refusal is accepted.
 #[test]
 fn e1_a_consumed_return_value_and_a_declared_failure() {
-    claims("quote", "quote-claim", &[Part::Environment, Part::Objects, Part::Values], jvmcontract::environment::check);
+    claims("quote", "quote-claim", &[], jvmcontract::environment::check);
 }
 
-/// E2: a nullable returned DTO, made by the shared construction plan.
+/// E2: a nullable returned DTO, made by the shared construction plan. Wired at the merge: no refusal is accepted.
 #[test]
 fn e2_a_nullable_returned_dto() {
-    claims("quote", "offer-claim", &[Part::Environment, Part::Objects, Part::Values], jvmcontract::environment::check);
+    claims("quote", "offer-claim", &[], jvmcontract::environment::check);
 }
 
 /// R1: the native property cache: a verified property, then its exact reuse, under `prove --cache`.

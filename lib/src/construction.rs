@@ -349,6 +349,158 @@ pub fn root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &st
     }
 }
 
+/// One object of a plan as the effect check's generated entry method makes it (the quote family's E1 and E2 rows,
+/// at the merge, [`flat_roots`]): by the constructor its node names, from the entry's flat inputs in order, a
+/// dependency passed as null.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Flat {
+    /// The root it is (`this`, `request`).
+    pub root: String,
+    /// Its class, an internal name.
+    pub class: String,
+    /// The constructor's descriptor.
+    pub descriptor: String,
+    /// The constructor's arguments, in order.
+    pub args: Vec<FlatArg>,
+}
+
+/// An argument of a [`Flat`] object's constructor.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FlatArg {
+    /// One of the entry's inputs, named by its path from the root (`request.code`): a primitive leaf, a bounded
+    /// array of integral or boolean elements, never null, or a String of the values stream's adapter, never null.
+    Input { path: String, ty: crate::classfile::Type },
+    /// A dependency the environment model stands for (an application interface): passed null, so that it is reached
+    /// only through the effect check's stubs, which answer every call on it.
+    Dependency { class: String },
+}
+
+impl Flat {
+    /// The entry's inputs this object takes, in order.
+    pub fn inputs(&self) -> impl Iterator<Item = (&str, &crate::classfile::Type)> {
+        self.args.iter().filter_map(|a| match a {
+            FlatArg::Input { path, ty } => Some((path.as_str(), ty)),
+            FlatArg::Dependency { .. } => None,
+        })
+    }
+}
+
+/// The roots of `plan`, named `names` in order (`this` first for an instance method, then its parameters), as the
+/// effect check's entry method makes them (E1 and E2 of the quote family): each root one object of its own node,
+/// never null nor another root's, made by the constructor the node names from flat inputs named by their path from
+/// the root, each of which is a primitive leaf, an array of integral or boolean elements of at most `max_length`, a
+/// String of the values stream's adapter of at most `max_length` code units (its domain resolved under this tool's
+/// String model, never null), or a dependency of an application interface, passed null. The check's own bound
+/// makes the arrays and Strings, so a plan that bounds one otherwise is refused, never checked under another bound.
+/// An object inside another, a null or shared root, a factory and a setup sequence are refused by name: the
+/// regression check's plan makes those ([`check_plans`]), without dependencies.
+pub fn flat_roots(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, names: &[String], max_length: u32) -> Result<Vec<Flat>, Unsupported> {
+    use crate::classfile::Type;
+    let gap = |what: String| Unsupported::new(Part::Objects, format!("the plan, as the effect check makes it: {what}"));
+    if let Some(problem) = plan.shape_problem() {
+        return Err(gap(problem));
+    }
+    if !plan.setup.is_empty() {
+        return Err(gap("a setup sequence: the effect check makes its inputs by their constructors only".into()));
+    }
+    let rooted: Vec<&str> = plan.roots.iter().map(|r| r.name.as_str()).collect();
+    if rooted != names.iter().map(String::as_str).collect::<Vec<_>>() {
+        return Err(gap(format!("its roots are {}, and the method's inputs are {}: each is one root, in order", rooted.join(", "), names.join(", "))));
+    }
+    if plan.nodes.len() != plan.roots.len() {
+        return Err(gap(format!("{} nodes for {} roots: an object inside another is not made by the effect check yet", plan.nodes.len(), plan.roots.len())));
+    }
+    let mut out = Vec::new();
+    let mut seen = Vec::new();
+    for r in &plan.roots {
+        let PlanValue::Node { id, nullable, same_as } = &r.value else {
+            return Err(gap(format!("the root {} is {}: each root is an object of its own node", r.name, value_name(&r.value))));
+        };
+        if *nullable || !same_as.is_empty() || seen.contains(id) {
+            return Err(gap(format!("the root {} may be null or another root's object: the effect check makes each root an object of its own", r.name)));
+        }
+        seen.push(*id);
+        let n = plan.nodes.iter().find(|n| n.id == *id).ok_or_else(|| gap(format!("no node {id}")))?;
+        let class = n.class.replace('.', "/");
+        let Maker::Constructor { descriptor } = &n.maker else { return Err(gap(format!("node {id} is made by a factory, which the effect check doesn't call"))) };
+        let cf = cp.application(&class).map_err(|e| gap(format!("node {id}, a {}: {e}", n.class)))?.ok_or_else(|| gap(format!("node {id}'s class {} is not among the application's classes", n.class)))?;
+        if cf.is_interface() || cf.is_abstract() || cf.is_enum() {
+            return Err(gap(format!("node {id}'s class {} is not a concrete class made by its constructor", n.class)));
+        }
+        if cf.super_class.as_deref() != Some("java/lang/Object") {
+            return Err(gap(format!("node {id}'s class {} extends {}; a class that extends another is not supported yet", n.class, cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
+        }
+        let Some(constructor) = cf.methods.iter().find(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic() && m.descriptor == *descriptor) else {
+            return Err(gap(format!("node {id}'s class {} has no constructor {descriptor} a caller can use", n.class)));
+        };
+        if let Some(effect) = side_effect(cp, &class, "<init>", descriptor) {
+            return Err(gap(format!("node {id}'s constructor {descriptor} of {} has a side effect outside the object it makes: {effect}", n.class)));
+        }
+        let parsed = constructor.parsed_descriptor().map_err(|e| gap(format!("node {id}'s constructor {descriptor}: {e}")))?;
+        let pnames = constructor.parameter_names(&cf.pool);
+        if parsed.params.len() != n.args.len() {
+            return Err(gap(format!("node {id}'s constructor {descriptor} takes {} arguments, and the plan gives {}", parsed.params.len(), n.args.len())));
+        }
+        let mut args = Vec::new();
+        for ((pname, pt), arg) in pnames.iter().zip(&parsed.params).zip(&n.args) {
+            let at = format!("{}.{pname}", r.name);
+            let named = |path: &str| if path == at { Ok(()) } else { Err(gap(format!("node {id}'s argument {pname} is {path}, which the check names {at}: an input is named by its path from the root"))) };
+            match arg {
+                PlanValue::Leaf { path, ty } => {
+                    named(path)?;
+                    match java_type(ty) {
+                        Some(t) if t.is_primitive() && t == *pt => {}
+                        _ => return Err(gap(format!("node {id}'s argument {pname} is the leaf {path} of type {ty}, and the constructor takes a {}", pt.java_name()))),
+                    }
+                    args.push(FlatArg::Input { path: path.clone(), ty: pt.clone() });
+                }
+                PlanValue::Array { path, element, max_length: m, nullable } => {
+                    named(path)?;
+                    let t = java_type(element).map(|e| Type::Array(Box::new(e)));
+                    if !t.as_ref().is_some_and(crate::harness::is_leaf) || t.as_ref() != Some(pt) {
+                        return Err(gap(format!("node {id}'s argument {pname} is the array {path} of {element} elements, and the constructor takes a {}: an array input is of integral or boolean elements", pt.java_name())));
+                    }
+                    if *nullable {
+                        return Err(gap(format!("the array {path} may be null: the effect check's arrays never are")));
+                    }
+                    if *m != max_length {
+                        return Err(gap(format!("the array {path} is bounded at {m} elements, and the check makes arrays of at most {max_length} (the claim's max_array_length): one bound for both, never another's label")));
+                    }
+                    args.push(FlatArg::Input { path: path.clone(), ty: pt.clone() });
+                }
+                PlanValue::Adapted { path, domain } => {
+                    named(path)?;
+                    let domain = crate::values::resolve(domain).map_err(|u| Unsupported::new(u.part, format!("the plan's {path}: {}", u.what)))?;
+                    if domain.kind != crate::spec::plans::ValueKind::String || !crate::values::is_string(pt) {
+                        return Err(Unsupported::new(Part::Values, format!("the plan's {path} is an adapted value other than a String argument: the effect check takes a String of the values stream's adapter")));
+                    }
+                    if domain.nullable {
+                        return Err(Unsupported::new(Part::Values, format!("the plan's String {path} may be null: the check's Strings never are")));
+                    }
+                    if domain.max_length != max_length {
+                        return Err(Unsupported::new(Part::Values, format!("the plan's String {path} is bounded at {} code units, and the check makes Strings of at most {max_length} (the claim's max_array_length): one bound for both, never another's label", domain.max_length)));
+                    }
+                    args.push(FlatArg::Input { path: path.clone(), ty: pt.clone() });
+                }
+                PlanValue::Dependency { path, class: dep } => {
+                    named(path)?;
+                    let internal = dep.replace('.', "/");
+                    if *pt != Type::Object(internal.clone()) {
+                        return Err(gap(format!("node {id}'s argument {pname} is the dependency {path}, a {dep}, and the constructor takes a {}", pt.java_name())));
+                    }
+                    if !cp.application(&internal).ok().flatten().is_some_and(|c| c.is_interface()) {
+                        return Err(gap(format!("the dependency {path}, a {dep}, is no application interface: a dependency is passed null and answered by the environment model's stubs, which an object it would need made can't be")));
+                    }
+                    args.push(FlatArg::Dependency { class: internal });
+                }
+                PlanValue::Node { id: inner, .. } => return Err(gap(format!("node {id}'s argument {pname} is node {inner}: an object inside another is not made by the effect check yet"))),
+            }
+        }
+        out.push(Flat { root: r.name.clone(), class, descriptor: descriptor.clone(), args });
+    }
+    Ok(out)
+}
+
 /// The node `id` of `plan`, made at `path`; `within` are the classes it is part of, as for `equivalence::made_of`.
 fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path: &str, within: &mut Vec<String>) -> Result<crate::harness::RecordType, Unsupported> {
     let gap = |what: String| Unsupported::new(Part::Objects, what);

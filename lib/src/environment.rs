@@ -56,11 +56,18 @@
 //! that may) is refused by the effect check, never given an invented one. A call that returns nothing may be
 //! modelled this way too: its only choice is whether it fails.
 //!
-//! **What the key can be**, so far: a primitive integral or boolean argument (`arg0`). A String key needs the values
-//! stream's adapter, a field path (`arg1.code`) or an object's identity the objects stream's construction plan;
-//! both are refused by name until then. The normal result: an integral or boolean primitive, nothing beside a
-//! modelled failure, or a DTO. A value of an adapter's domain is refused, once its domain resolves under this tool's
-//! models (`values::resolve`): no stub makes one.
+//! **What the key can be**, so far: a primitive integral or boolean argument (`arg0`), or a String argument, the
+//! values stream's String: its table keys are Strings of at most the check's String bound (the claim's
+//! `max_array_length`), any content, never null, and the stub compares a call's key with them by content
+//! (`String.equals`). A call keyed by a longer String marks the log unresolved, since no entry holds such a key and
+//! answering it as the default would couple two such keys. A field path (`arg1.code`) or an object's identity is
+//! refused by name. The normal result: an integral or boolean primitive, nothing beside a modelled failure, or a
+//! DTO. A value of an adapter's domain is refused, once its domain resolves under this tool's models
+//! (`values::resolve`): no stub makes one.
+//!
+//! **A method's claim** ([`check`], the quote family's E1 and E2 rows): an ordinary method whose receiver and
+//! parameters its planned domain makes, each dependency the model stands for null and answered by the stubs, is
+//! checked by the effect check's planned entry ([`crate::effects::check_planned`]).
 //!
 //! **DTO responses** (E3, [`Returned::Object`], [`Response`]): the normal result may be an object of an application
 //! class, made by the one node of a construction plan (the objects stream's, [`crate::construction::root`]) by the
@@ -310,9 +317,10 @@ pub fn lower(call: &ModeledCall, model: &CallModel) -> Result<Lowered, Unsupport
         if key.iter().any(|(q, _)| *q == p) {
             return Err(refused(call, format!("the key names {path} twice")));
         }
-        if !integral(t) {
+        // A String key (the values stream's String, bounded by the check's String bound): the stub compares it by
+        // content, and one longer than the bound marks the log unresolved, never keyed as the default.
+        if !integral(t) && !crate::values::is_string(t) {
             let why = match t {
-                Type::Object(c) if c == "java/lang/String" => format!("the key {path} is a String: a String key waits for the values stream's adapter"),
                 Type::Float | Type::Double => format!("the key {path} is a {}: floating point is out of this wave", t.java_name()),
                 _ => format!("the key {path} is a {}: an object key waits for the objects stream's construction plan", t.java_name()),
             };
@@ -479,11 +487,10 @@ pub fn check_model(call: &ModeledCall, model: &CallModel) -> Result<(), Unsuppor
 /// Checks a method's claim whose environment models its dependencies' outcomes (the acceptance contract's Q:
 /// `quotes.QuoteService#quote` under a modelled `Rates.rate` and a recorded `Events.send`) between the builds
 /// `before` and `after`. The entry point of rows E1 and E2 (`tests/application_core.rs`). Its receiver and request
-/// are made by the objects stream's construction plan, and its code is a String of the values stream's adapter:
-/// until both are integrated, it is refused.
+/// are made by its construction plan, its code is a String of the values stream's adapter, and the effect check
+/// compares the two builds' logs under one environment ([`crate::effects::check_planned`], which says how).
 pub fn check(claim: &crate::spec::CanonicalClaim, before: &Path, after: &Path) -> Result<crate::spec::Outcome, Unsupported> {
-    let _ = (before, after);
-    Err(Unsupported::new(Part::Environment, format!("a claim of {} under an environment model of its dependencies' outcomes: its receiver and request need the objects stream's construction plan and its code the values stream's String adapter, so the environment stream builds it after integration (llm-dlc/loops/application-core-environment.md)", claim.contract.subject)))
+    crate::effects::check_planned(claim, before, after, None).map(|c| c.outcome)
 }
 
 /// Reads `--environment FILE` of `effects` and `compare`: the modelled calls a person declares, as a JSON list of
@@ -595,7 +602,6 @@ mod tests {
             (refusal(RATE, failing(&["shop.Unavailable", "shop/Unavailable"])), "twice"),
             (refusal(RATE, query(&["this"], "long", 1)), "the receiver's identity"),
             (refusal(RATE, query(&["arg0.code"], "long", 1)), "field path"),
-            (refusal("shop/Rates#rate(Ljava/lang/String;)J", query(&["arg0"], "long", 1)), "values stream's adapter"),
             (refusal(RATE, query(&["arg0"], "int", 1)), "where the call returns long"),
             (refusal(RATE, query(&["arg0"], "long", 0)), "1 to 8"),
             (refusal(RATE, query(&["arg0"], "long", 9)), "1 to 8"),
@@ -608,6 +614,10 @@ mod tests {
             assert_eq!(gap.part, Part::Environment);
             assert!(gap.what.contains(words) && gap.what.starts_with("a modelled call's model of its results ("), "{words}: {gap}");
         }
+        // A String key is the values stream's String, compared by its content in the stub.
+        let keyed = query(&["arg0"], "long", 1);
+        let lowered = lower(&call("shop/Rates#rate(Ljava/lang/String;)J", &keyed), &keyed).expect("a String key is encoded");
+        assert_eq!(lowered.key, vec![(0, Type::Object("java/lang/String".into()))]);
         let model = query(&["arg0"], "long", 1);
         let undeclared = ModeledCall { outcomes: vec!["returns".into(), "shop.Unavailable".into()], ..call(RATE, &model) };
         assert!(lower(&undeclared, &model).unwrap_err().what.contains("outcomes name shop.Unavailable"));
@@ -619,8 +629,9 @@ mod tests {
         let file = std::env::temp_dir().join(format!("environment-{}.json", std::process::id()));
         std::fs::write(&file, serde_json::to_string(&[call(RATE, &model)]).unwrap()).unwrap();
         assert_eq!(load(&file).unwrap().len(), 1);
-        std::fs::write(&file, serde_json::to_string(&[call("shop/Rates#rate(Ljava/lang/String;)J", &model)]).unwrap()).unwrap();
-        assert!(load(&file).unwrap_err().what.contains("values stream's adapter"));
+        let double = query(&["arg0"], "double", 2);
+        std::fs::write(&file, serde_json::to_string(&[call("shop/Rates#rate(I)D", &double)]).unwrap()).unwrap();
+        assert!(load(&file).unwrap_err().what.contains("integral or boolean"));
         std::fs::write(&file, serde_json::to_string(&[ModeledCall { model: None, ..call(RATE, &model) }]).unwrap()).unwrap();
         assert!(load(&file).unwrap_err().what.contains("has no model"));
         let _ = std::fs::remove_file(&file);

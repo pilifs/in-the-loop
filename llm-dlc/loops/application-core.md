@@ -876,6 +876,65 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     request made by their plan, a String key (`Rates.rate(code)`, `Offers.find(code)`), the String in the event's
     snapshot, and `offer-claim`'s DTO. The effect check takes integral handler inputs only today, so this is a
     harness of its own, or `equivalence` with stubs. Then items 6–7.
+- 2026-11-08, **Phase 5 step 1, interface request 5 done (its second half): Q's E1 and E2 rows through
+  `environment::check`**, on the frozen quote fixture.
+  - **The reproducer**: the contract's E1 and E2 rows accepted the environment, objects and values streams'
+    refusals. They now accept none (`claims("quote", …, &[], environment::check)`), and they failed before on
+    `environment::check`'s refusal.
+  - **The change**:
+    - `environment::check` runs the new `effects::check_planned`. The effect check's generated method takes the
+      plan's flat inputs (`this.feeCents`, `this.floorCents`, `request.code`, `request.quantities`) and the
+      environment's tables. It makes each root by the constructor its node names, every dependency of an
+      application interface passed null and reached only through the stubs, and calls the method.
+    - A constructor's exception is the outcome, as the call's is, so an input only one build's constructors accept
+      is a difference.
+    - `construction::flat_roots` reads the plan this way: a primitive leaf, a bounded array, the values stream's
+      String (resolved, never null), or a dependency. A plan that bounds a String or an array otherwise than the
+      claim's `max_array_length` is refused, never checked under another label.
+    - A modelled call's String key is compared by its content (`environment::lower` accepts it). A call keyed by
+      a String past the bound marks the log unresolved (a new mark bit, 128; the build tag moves to 256), since
+      answering it as the default would couple two such keys.
+    - Under a plan, a payload String is snapshotted by its content: its length, then its code units, in a block of
+      the attempt. One past the bound leaves the result unresolved. The Spring path keeps its literal snapshots.
+    - A payload path of a call of one argument is read from it: the frozen claim's `code` of
+      `send(QuoteEvent event)` is `event.code`.
+    - The domain is enforced as the regression check's gate does: its classes must be the plans', and a version
+      whose plan makes more input objects than its bound, or whose code may make more objects in one call than its
+      allocation bound (`spec::heap::allocations`, now `pub(crate)`), leaves the result unresolved.
+    - Refused by name: an object inside another, a null or shared root, a factory, a setup sequence, a
+      correspondence, and an observation other than the result, the exception and the effects.
+    - The witness shows Strings and arrays (`request.code="VIP"`, `request.quantities={1, 2}`), and the JVM run
+      passes them.
+  - **Checks**:
+    - The contract's E1 and E2 reach all sixteen of `expected.json`'s verdicts, with no refusal accepted, in about
+      65 s:
+      - `quote-claim`: `after` and `alias-to-copy` verified; `ignored-rate`, `wrong-query-key`, `wrong-prefix` and
+        `helper-extra-field` refuted on the result, `missing-catch` on the exception, `wrong-branch-event` on the
+        event; each witness replayed on a JVM.
+      - `offer-claim`: `helper-extra-field` refuted on the result, the other seven verified.
+    - The new `tests/environment_quotes.rs` (4 tests):
+      - a wrong String key refuted with the environment naming `"STD"`, and an event on the wrong branch with its
+        code shown by content;
+      - a key and a payload String past the bound each left unresolved;
+      - six refusals by name, and an allocation bound of 0 left unresolved;
+      - a cached proof reused exactly, but not under a String and array bound of 3 or a never-null response.
+    - Three sabotages fail them: keys compared by identity; no bound on a key; no bound on a payload String.
+    - Changed tests, each a refusal of a String key that no longer holds:
+      - `environment`'s unit tests now lower a String key, and load a `double` result's refusal instead;
+      - `tests/effects.rs`'s void result keyed by a String topic is still refused by name, now as a void result
+        where the call returns an object.
+    - The integration check passes, and so do `environment` 16, `environment_responses` 8 and `observations` 12.
+    - Two of the integration check's four runs failed only on `bmc::bits`' timing test, the flake already on the
+      for-review list. It passed in the other runs and in six runs of the library's suite on their own, debug and
+      release. This change touches no `bmc` code.
+  - **For the for-review list**:
+    - A planned subject runs no boundary walk: its effects are the claim's observed calls, and every call on a
+      dependency goes through a stub, a modelled one or one that marks the log.
+    - A constructor's exception counts as the outcome, which is stricter than leaving the input outside the domain.
+    - The frozen claim's relative payload paths are read from the call's one argument, an interpretation.
+  - **Docs**: `lib/README.md` (a new paragraph, the String key in the modelled-results paragraph, E2's sentence),
+    the module docs of `environment` and `effects`.
+  - **Next**: item 6's smaller requests, then item 7's README sentences. Then step 2's joint acceptance as jobs.
 - Status: working
 
 ## Loop settings
