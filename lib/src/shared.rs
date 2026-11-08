@@ -39,6 +39,14 @@
 //! whose methods the helper's closure holds, in either version, may have no static initializer, nor may its
 //! application superclasses: a redirected call initializes the other version's class rather than its own.
 //!
+//! **A changed read-only heap helper** (an instance method, R2 of `llm-dlc/loops/application-core-reuse.md`) is
+//! shared the same way once it has a summary ([`crate::reuse::application`]): [`plan_with`] asks for one for each
+//! changed instance method both versions call, declared by the same class, and [`substitute`] sends each call of it,
+//! in both versions, to that version's adapter, which reads the helper's footprint from the actual receiver and calls
+//! the new version's lifted helper. Both versions so call one function of the same values. Every call is in the
+//! summary's domain, which is every value of the fields and arguments it reads, so applicability at a call site is
+//! discharged by reading them there; a receiver mutated between two calls is read twice.
+//!
 //! Either way the reuse is sound for the caller's proof only where the helper's two versions agree, which the
 //! helper's proof shows for every input of its parameter types; so every call, in either version and with any
 //! arguments, is in its domain, and the applicability check at a call site has nothing left to assert. A helper
@@ -187,6 +195,17 @@ pub fn plan_with(before: &ClassPath, after: &ClassPath, before_target: &MemberRe
         inside.extend(closure.methods);
         candidates.push(Callee { owner: callee.owner.clone(), name: callee.name.clone(), descriptor: callee.descriptor.clone(), throws: throws.into_iter().collect(), proved });
     }
+    // R2: a changed instance method both versions call, declared by the same class, is shared where `prove` gives
+    // its read-only summary ([`crate::proof_cache::Helpers`] asks [`crate::reuse::application`]), and applied at each
+    // call in both versions by [`substitute`]. Its footprint is established there, for both versions, from the
+    // bytecode: here only the calls are matched.
+    for callee in after_reach.instance_calls.intersection(&before_reach.instance_calls) {
+        if *callee == *target || *callee == *before_target || identical_closure(before, after, std::slice::from_ref(callee)) {
+            continue;
+        }
+        let Some(proof) = prove(callee) else { continue };
+        candidates.push(Callee { owner: callee.owner.clone(), name: callee.name.clone(), descriptor: callee.descriptor.clone(), throws: Vec::new(), proved: Some(proof) });
+    }
     // A callee only ever called from inside another shared callee is never reached once that one is a stub.
     plan.callees = candidates.into_iter().filter(|c| after_reach.callers.get(&c.member()).is_some_and(|callers| callers.iter().any(|caller| !inside.contains(caller)))).collect();
     plan
@@ -230,7 +249,14 @@ pub fn sharing(callees: &[Callee], used: &[String]) -> String {
     };
     for (name, callee) in used.iter().filter(|(_, c)| c.proved.is_some()) {
         let proof = callee.proved.as_ref().expect("filtered");
-        out.push_str(&format!("; {name} changed, its two versions proved to have the same outcome on every input (claim {}), and taken as one function in both", proof.key));
+        match crate::reuse::applied(&proof.key, &callee.member()) {
+            Some(a) => out.push_str(&format!(
+                "; {name} changed, applied by its summary at each call: its two versions, lifted over what they read ({}), proved to have the same outcome on every value of it (claim {}), and each call's values read from its actual receiver",
+                a.summary.reads.join(", "),
+                proof.key
+            )),
+            None => out.push_str(&format!("; {name} changed, its two versions proved to have the same outcome on every input (claim {}), and taken as one function in both", proof.key)),
+        }
     }
     out
 }
@@ -245,6 +271,10 @@ struct Reach {
     /// The targets of `invokestatic` instructions in those methods, with the methods that make the call.
     static_calls: BTreeSet<MemberRef>,
     callers: BTreeMap<MemberRef, BTreeSet<MemberRef>>,
+    /// The application instance methods `invokevirtual` and `invokespecial` instructions in those methods call (no
+    /// constructor), as the class path resolves them, with the methods that make the call (in `callers`): the
+    /// read-only helpers a summary may stand for (R2).
+    instance_calls: BTreeSet<MemberRef>,
     /// Application classes whose static fields the methods read or write.
     statics: BTreeSet<String>,
     /// Whether every call could be followed: false when a virtual call may reach an implementation not listed.
@@ -252,7 +282,7 @@ struct Reach {
 }
 
 fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
-    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), statics: BTreeSet::new(), closed: true };
+    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), closed: true };
     let mut seen: HashSet<MemberRef> = HashSet::new();
     let mut work: VecDeque<MemberRef> = VecDeque::from([root.clone()]);
     while let Some(reference) = work.pop_front() {
@@ -299,6 +329,8 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                     if matches!(insn, Insn::InvokeStatic(_)) {
                         out.static_calls.insert(callee.clone());
                         out.callers.entry(callee.clone()).or_default().insert(declared.clone());
+                    } else if callee.name != "<init>" {
+                        out.instance_call(cp, &callee, &declared);
                     }
                     work.push_back(callee);
                 }
@@ -306,6 +338,9 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                     let Ok(callee) = class.pool.member(i) else { continue };
                     if !cp.is_application(&callee.owner) {
                         continue; // the JDK is the same in both versions
+                    }
+                    if matches!(insn, Insn::InvokeVirtual(_)) {
+                        out.instance_call(cp, &callee, &declared);
                     }
                     let resolved = cp.find_method(&callee.owner, &callee.name, &callee.descriptor);
                     let fixed = cp.is_effectively_final(&callee.owner) || resolved.as_ref().is_some_and(|(_, m)| m.is_private() || m.is_final() || m.is_static());
@@ -332,6 +367,20 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
         }
     }
     out
+}
+
+impl Reach {
+    /// Records a call of the instance method `callee` (as the instruction names it) from `caller`, as the class
+    /// path resolves it.
+    fn instance_call(&mut self, cp: &ClassPath, callee: &MemberRef, caller: &MemberRef) {
+        let Some((class, method)) = cp.find_method(&callee.owner, &callee.name, &callee.descriptor) else { return };
+        if method.is_static() || !cp.is_application(&class.name) {
+            return;
+        }
+        let declared = MemberRef::new(&class.name, &callee.name, &callee.descriptor);
+        self.callers.entry(declared.clone()).or_default().insert(caller.clone());
+        self.instance_calls.insert(declared);
+    }
 }
 
 /// Whether a callee's bytecode is part of the proof: an application class, or a JDK class the proof analyses.
@@ -1022,12 +1071,65 @@ pub fn substitute_directory(before_dir: &Path, output: &Path, prefix: &str, call
 /// `before_dir`, relocated under `before`) that call one into `dir`, with those calls redirected to the new version
 /// ([`substitute_directory`]), puts `dir` second on the checker's class path `entries` (after the harness), and
 /// returns the names of the helpers so shared, as [`names`] gives them; otherwise changes nothing.
+///
+/// A proved instance method is a read-only helper whose summary [`crate::reuse::application`] made (R2): each call of
+/// it, in both versions, becomes a call of that version's adapter ([`crate::reuse::footprint::adapters`]), which
+/// reads the fields of its footprint from the actual receiver and calls the new version's lifted helper; the lifted
+/// helper and the adapters are written into `dir` too. A call is so redirected only where the version's class path
+/// resolves it to the helper as declared, by name and descriptor, and only from an `invokevirtual` or an
+/// `invokespecial`. A proved instance method with no application on this thread keeps its body in both versions,
+/// which is the versions as written.
 pub fn substitute(callees: &[Callee], before_dir: &Path, dir: &Path, entries: &mut Vec<std::path::PathBuf>) -> Result<Vec<String>, Error> {
     if callees.iter().all(|c| c.proved.is_none()) {
         return Ok(Vec::new());
     }
     std::fs::create_dir_all(dir)?;
-    substitute_directory(before_dir, dir, "before", callees)?;
+    let applications: Vec<crate::reuse::Application> = callees.iter().filter_map(|c| c.proved.as_ref().and_then(|p| crate::reuse::applied(&p.key, &c.member()))).collect();
+    if let Some(other) = applications.iter().find(|a| a.after != applications[0].after) {
+        return Err(Error::new(format!("the summaries of one check apply to two builds, {} and {}", applications[0].after.display(), other.after.display())));
+    }
+    let summarized = |c: &Callee| applications.iter().any(|a| a.helper == c.member());
+    let statics: Vec<Callee> = callees.iter().filter(|c| !summarized(c)).cloned().collect();
+    if applications.is_empty() {
+        substitute_directory(before_dir, dir, "before", &statics)?;
+    } else {
+        let mut before_cp = ClassPath::new();
+        before_cp.add(before_dir)?;
+        let after_dir = applications[0].after.clone();
+        let mut after_cp = ClassPath::new();
+        after_cp.add(&after_dir)?;
+        let summary_call = |cp: &ClassPath, prefix: Option<&str>, invoke: Invoke, m: &MemberRef| -> Option<MemberRef> {
+            if !matches!(invoke, Invoke::Virtual | Invoke::Special) {
+                return None;
+            }
+            let (class, method) = cp.find_method(&m.owner, &m.name, &m.descriptor)?;
+            if method.is_static() {
+                return None;
+            }
+            let declared = original_owner(&class.name, prefix.unwrap_or(""));
+            if prefix.is_some() && declared == class.name {
+                return None; // not one of the previous version's relocated classes
+            }
+            applications.iter().find(|a| a.helper.owner == declared && a.helper.name == m.name && a.helper.descriptor == m.descriptor).map(|a| if prefix.is_some() { a.adapters.before.clone() } else { a.adapters.after.clone() })
+        };
+        redirect_calls_directory(before_dir, dir, &|invoke, m| {
+            if invoke == Invoke::Static {
+                let owner = original_owner(&m.owner, "before");
+                return statics.iter().find(|c| c.proved.is_some() && owner != m.owner && c.owner == owner && c.name == m.name && c.descriptor == m.descriptor).map(Callee::member);
+            }
+            summary_call(&before_cp, Some("before"), invoke, m)
+        })?;
+        redirect_calls_directory(&after_dir, dir, &|invoke, m| summary_call(&after_cp, None, invoke, m))?;
+        for a in &applications {
+            for (name, bytes) in &a.classes {
+                let file = dir.join(format!("{name}.class"));
+                if let Some(parent) = file.parent() {
+                    std::fs::create_dir_all(parent)?;
+                }
+                std::fs::write(file, bytes)?;
+            }
+        }
+    }
     entries.insert(1.min(entries.len()), dir.to_path_buf());
     Ok(names(callees).into_iter().zip(callees).filter(|(_, c)| c.proved.is_some()).map(|(n, _)| n).collect())
 }

@@ -494,8 +494,17 @@ two versions' lifted helpers are proved by a regression check of their own under
 that proof's key, the fields and arguments read, its domain (every value of them, whatever else a receiver holds),
 and the proofs it rests on. A helper whose versions differ, or whose two versions read fields the other's receiver
 doesn't declare alike (a change of layout, with no representation adapter established), has none.
-`tests/reuse_summaries.rs` holds these on the frozen quote fixture's `fee` and its `helper-extra-field` defect. A
-caller's use of a summary is the next step, and no check uses one yet.
+A changed caller checked with `--cache` and `--engine native` reuses the summary of a changed helper it calls
+([`shared::substitute`](src/shared.rs)): each call of the helper, in both versions, goes to that version's adapter, a
+static method that reads the footprint's fields from the actual receiver at that call, as its own version lays them
+out, and calls the new version's lifted helper. So two calls on one object around a mutation, or a call on an object
+another parameter may write, are different inputs, and a receiver state a history reached is covered, since the
+summary's proof is over every value of the fields. The caller's claim carries the whole summary as an assumption of
+kind `summary`, with its proof's key, since that proof is positional in the fields' values. A helper with no summary
+keeps its body in both versions. `tests/reuse_summaries.rs` holds these: on the frozen quote fixture's `fee` and its
+`helper-extra-field` defect, and on a caller of a tariff's fee, whose stale read, read through an alias, extra read
+and broken precondition are each refuted with a replayed witness, and whose classes with the summary applied agree
+with the versions as written on a JVM.
 
 `impact --before DIR --after DIR` ([`impact`](src/impact.rs)) says which claims a change from one build to another
 invalidates. The claims are `--target`s, or a `--claims` file (`build.py`'s `claim.json` or `--plan` output serves as

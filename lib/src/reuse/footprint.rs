@@ -442,6 +442,65 @@ pub fn lift(cp: &ClassPath, footprint: &Footprint, fields: &[FieldRead]) -> Resu
     Ok(Lifted { method: MemberRef::new(&lifted_class, &helper.name, &lifted_descriptor), bytes: w.to_bytes() })
 }
 
+/// The suffix of the class holding a summary's call-site adapters: `quotes/QuoteService$Footprint$fee$Call`.
+pub const CALL: &str = "$Call";
+
+/// A summary's adapters at the call site ([`adapters`]): one static method per version, which takes what a call of
+/// the helper leaves on the stack (the receiver, then the arguments), reads the footprint's fields from that
+/// receiver as its own version lays them out, and calls the one lifted helper both versions share.
+#[derive(Debug, Clone)]
+pub struct Adapters {
+    /// The previous version's adapter: `quotes/QuoteService$Footprint$fee$Call`, `before`,
+    /// `(Lbefore/quotes/QuoteService;I)J`.
+    pub before: MemberRef,
+    /// The new version's: `after`, `(Lquotes/QuoteService;I)J`.
+    pub after: MemberRef,
+    /// Their class file.
+    pub bytes: Vec<u8>,
+}
+
+/// The adapters of the helper `helper` (as the new version declares it, with `params` and `result`) lifted over
+/// `fields` into `lifted`, the new version's lifted helper; the previous version's classes are relocated under
+/// `prefix` (`before`), its receiver class and the classes declaring its fields included. Each adapter loads the
+/// arguments, then each field of `fields` from the actual receiver (its first read throws the `NullPointerException`
+/// a call on `null` throws, before anything else runs, as the call would), and returns the lifted helper's outcome.
+/// So a call through an adapter reads the receiver's state at that call, never an earlier one. `fields` must not be
+/// empty: with nothing read, the receiver's null check would be left out.
+pub fn adapters(helper: &MemberRef, params: &[Type], result: &Type, fields: &[FieldRead], lifted: &MemberRef, prefix: &str) -> Result<Adapters, Unsupported> {
+    if fields.is_empty() {
+        return Err(refused(helper, "it reads no field of its receiver, so an adapter would leave out the null check of its call"));
+    }
+    let class = format!("{}{LIFTED}{}{CALL}", helper.owner, helper.name);
+    let mut w = ClassWriter::new(&class);
+    let ret = kind_of(result);
+    let method = |w: &mut ClassWriter, name: &str, owner: &dyn Fn(&str) -> String| -> MemberRef {
+        let descriptor = MethodDescriptor::new(std::iter::once(Type::Object(owner(&helper.owner))).chain(params.iter().cloned()).collect(), result.clone()).descriptor();
+        let mut b = CodeBuilder::new();
+        let mut slot = 1u16;
+        for p in params {
+            b.load(kind_of(p), slot);
+            slot += p.slots();
+        }
+        let mut stack = slot - 1;
+        for f in fields {
+            b.load(Kind::Ref, 0);
+            let index = w.pool.field_ref(&owner(&f.declared_by), &f.name, &f.descriptor);
+            b.op_u16(0xb4, index); // getfield
+            stack += f.ty().slots();
+        }
+        let index = w.pool.method_ref(&lifted.owner, &lifted.name, &lifted.descriptor);
+        b.op_u16(0xb8, index); // invokestatic
+        b.return_(Some(ret));
+        b.max_stack = (stack + 1).max(result.slots());
+        b.max_locals = slot;
+        w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: name.to_string(), descriptor: descriptor.clone(), code: Some(b) });
+        MemberRef::new(&class, name, &descriptor)
+    };
+    let before = method(&mut w, "before", &|c: &str| format!("{prefix}/{c}"));
+    let after = method(&mut w, "after", &|c: &str| c.to_string());
+    Ok(Adapters { before, after, bytes: w.to_bytes() })
+}
+
 /// Whether `method`'s own code calls `callee` (a static method, as declared or as named).
 fn callee_of(class: &ClassFile, method: &Method, callee: &MemberRef) -> bool {
     let Some(code) = &method.code else { return false };

@@ -33,10 +33,13 @@
 //!
 //! **Read-only heap helpers** (R2) are summarized from a proof of their own: [`footprint`] establishes a helper's read
 //! footprint from its bytecode and lifts it over that footprint, and [`summarize`] proves the two versions' lifted
-//! helpers equal and gives the [`Summary`] naming that proof. No caller applies one yet: [`summaries`] offers none,
-//! and a caller keeps the helper's body. The proof is of the lifted function, positional in the fields' values; which
-//! field is which parameter is the summary's `reads`, established again from each version's bytecode whenever a
-//! summary is made, so a claim that uses one has to carry the summary, not only its proof's key.
+//! helpers equal and gives the [`Summary`] naming that proof. A changed caller checked under the proof cache and the
+//! own checker reuses it ([`application`], through [`crate::proof_cache::Helpers`] and [`crate::shared`]): each call
+//! of the helper in both versions goes to an adapter that reads the footprint from the actual receiver at that call
+//! and calls the new version's lifted helper. The proof is of the lifted function, positional in the fields' values;
+//! which field is which parameter is the summary's `reads`, established again from each version's bytecode whenever a
+//! summary is made, so a claim that uses one carries the whole summary, not only its proof's key. [`summaries`], the
+//! Phase 0 hook for a caller that asks by name, still offers none: a summary is made for a caller's own two builds.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -580,6 +583,22 @@ pub mod footprint;
 /// and a lifted proof that isn't a verified one in the cache, a refutation included (the summary is then not there,
 /// and a caller keeps the helper's body).
 pub fn summarize(options: &crate::equivalence::Options, helper: &MemberRef, work: &Path) -> Result<Summary, Unsupported> {
+    summarized(options, helper, work).map(|s| s.summary)
+}
+
+/// What [`summarized`] establishes besides the summary: what a caller needs to apply it.
+struct Summarized {
+    summary: Summary,
+    /// The cache record's provenance of the summary's proof, and whether that proof was an exact hit of the cache.
+    from: String,
+    found: bool,
+    /// The new version's footprint, and the fields both versions' lifted helpers take.
+    after: footprint::Footprint,
+    fields: Vec<footprint::FieldRead>,
+    lifted: footprint::Lifted,
+}
+
+fn summarized(options: &crate::equivalence::Options, helper: &MemberRef, work: &Path) -> Result<Summarized, Unsupported> {
     let refuse = |why: String| Unsupported::new(Part::Reuse, format!("{} has no read-only summary: {why}", footprint::helper_name(helper)));
     let class_path = |dir: &Path| -> Result<ClassPath, Unsupported> {
         let mut cp = ClassPath::new();
@@ -623,10 +642,10 @@ pub fn summarize(options: &crate::equivalence::Options, helper: &MemberRef, work
         })
         .map_err(|e| refuse(format!("its lifted classes can't be written: {e}")))?;
     }
-    let (key, outcome) = crate::proof_cache::lifted_proof(options, &lifted_after.target(), &dir.join("before"), &dir.join("after"), &dir.join("proof")).map_err(&refuse)?;
+    let (key, outcome, from) = crate::proof_cache::lifted_proof(options, &lifted_after.target(), &dir.join("before"), &dir.join("after"), &dir.join("proof")).map_err(&refuse)?;
     let depends_on = outcome.stated.iter().flat_map(|s| &s.assumptions).filter(|a| a.kind == crate::statement::AssumptionKind::Callee).filter_map(|a| a.id.clone()).collect();
     let read = |fp: &footprint::Footprint| fp.fields.iter().map(|f| f.name.as_str()).collect::<Vec<_>>().join(", ");
-    Ok(Summary {
+    let summary = Summary {
         helper: footprint::helper_name(&after.helper),
         proof: key.0,
         reads: footprint::Footprint::reads(&fields, &after.params),
@@ -642,7 +661,67 @@ pub fn summarize(options: &crate::equivalence::Options, helper: &MemberRef, work
         relation: crate::spec::plans::OutcomeRelation::Equal,
         effects: crate::spec::plans::Effects::ReadOnly,
         depends_on,
-    })
+    };
+    let found = matches!(outcome.reuse, Some(cache::Reuse::Exact { .. }));
+    Ok(Summarized { summary, from, found, after, fields, lifted: lifted_after })
+}
+
+/// A helper's summary as a changed caller applies it at its calls (R2), under the tool's own checker: each call of
+/// the helper, in either version, becomes a call of that version's adapter ([`footprint::adapters`]), which reads
+/// the footprint's fields from the actual receiver at that call and calls the new version's lifted helper. Both
+/// versions so call one function of the same values, which the checker's hashing makes one circuit per arguments,
+/// as it does for a pure helper proved equivalent ([`crate::shared`]).
+///
+/// **Why every call is in the summary's domain.** The summary's proof shows the two versions' lifted helpers equal on
+/// every value of the fields and arguments, so it needs nothing of a call beyond those values: no precondition, no
+/// alias or null fact (`facts` is empty), and no state a constructor made. The adapter reads them from the receiver
+/// the call has, after whatever the caller did to it, and the footprint ([`footprint::footprint`], established again
+/// for both versions here) shows they are all the helper reads. The previous version's adapter reads its own
+/// version's layout, field by field, and passes the values on: the representation adapter is explicit, never a
+/// method of the old layout redirected to code of the new.
+#[derive(Debug, Clone)]
+pub struct Application {
+    pub summary: Summary,
+    /// The cache record's provenance of the summary's proof, and whether that proof was an exact hit of the cache.
+    pub from: String,
+    pub found: bool,
+    /// The helper as the new version declares it.
+    pub helper: MemberRef,
+    /// The new version's classes, whose calls of the helper go to its adapter.
+    pub after: PathBuf,
+    pub adapters: footprint::Adapters,
+    /// The classes a check with it needs, by internal name: the lifted helper and the adapters.
+    pub classes: Vec<(String, Vec<u8>)>,
+}
+
+thread_local! {
+    /// The summaries checks on this thread made applications of, latest last, by their proofs' claim keys:
+    /// how [`crate::shared::substitute`] finds what a helper the plan shares by a summary needs.
+    static APPLIED: std::cell::RefCell<Vec<Application>> = const { std::cell::RefCell::new(Vec::new()) };
+}
+
+/// [`summarize`], with what a caller of `helper` under `options` needs to apply the summary at its calls; the
+/// application is kept for [`applied`].
+pub fn application(options: &crate::equivalence::Options, helper: &MemberRef, work: &Path) -> Result<Application, Unsupported> {
+    let s = summarized(options, helper, work)?;
+    let adapters = footprint::adapters(&s.after.helper, &s.after.params, &s.after.result, &s.fields, &s.lifted.method, "before")?;
+    let application = Application {
+        classes: vec![(s.lifted.method.owner.clone(), s.lifted.bytes.clone()), (adapters.after.owner.clone(), adapters.bytes.clone())],
+        summary: s.summary,
+        from: s.from,
+        found: s.found,
+        helper: s.after.helper,
+        after: options.after.clone(),
+        adapters,
+    };
+    APPLIED.with(|a| a.borrow_mut().push(application.clone()));
+    Ok(application)
+}
+
+/// The latest application made on this thread of the summary whose proof's claim key is `key`, for `helper` as the
+/// new version declares it.
+pub fn applied(key: &str, helper: &MemberRef) -> Option<Application> {
+    APPLIED.with(|a| a.borrow().iter().rev().find(|x| x.summary.proof == key && x.helper == *helper).cloned())
 }
 
 /// Copies the files under `from` into `to`, keeping their paths.

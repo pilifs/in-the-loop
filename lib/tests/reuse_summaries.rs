@@ -23,9 +23,11 @@ fn tmp(name: &str) -> PathBuf {
 /// Compiles the Java `sources` (directories of a source tree, later ones replacing the files of earlier ones) into
 /// `target/tmp/reuse-summaries/NAME`, once per run of the tests, so that tests side by side never remove each
 /// other's classes. The tests need `javac`.
+/// The builds compiled so far in this run.
+static COMPILED: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+
 fn compile(name: &str, sources: &[&Path]) -> PathBuf {
-    static BUILT: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
-    let mut built = BUILT.lock().unwrap_or_else(|e| e.into_inner());
+    let mut built = COMPILED.lock().unwrap_or_else(|e| e.into_inner());
     let out = tmp(name).join("classes");
     if built.iter().any(|b| b == name) {
         return out;
@@ -43,7 +45,15 @@ fn compile(name: &str, sources: &[&Path]) -> PathBuf {
     out
 }
 
+/// Writes `files` and compiles them as [`compile`] does, once per run: tests side by side that need one build wait
+/// for each other here, rather than rewrite its sources while another compiles them.
 fn compile_text(name: &str, files: &[(&str, &str)]) -> PathBuf {
+    static WRITING: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    let _writing = WRITING.lock().unwrap_or_else(|e| e.into_inner());
+    let built = tmp(name).join("classes");
+    if COMPILED.lock().unwrap_or_else(|e| e.into_inner()).iter().any(|b| b == name) {
+        return built;
+    }
     let src = tmp(name).join("src");
     let _ = std::fs::remove_dir_all(&src);
     for (path, text) in files {
@@ -296,4 +306,305 @@ fn a_helper_whose_versions_read_fields_of_different_layouts_has_no_summary() {
     let refused = reuse::summarize(&o, &MemberRef::new("l/L", "f", "(I)J"), &tmp("layout")).unwrap_err();
     assert!(refused.what.contains("the version before's receiver has no instance field l.L.b of type long"), "{}", refused.what);
     assert!(refused.what.contains("no representation adapter is established"), "{}", refused.what);
+}
+
+// R2 at a caller: a changed helper's summary, proved on its own, reused by a changed caller at each of its calls.
+
+const TARIFF_BEFORE: &str = "package r;
+public class Tariff {
+    long feeCents;
+    long floorCents;
+    public Tariff(long feeCents, long floorCents) { this.feeCents = feeCents; this.floorCents = floorCents; }
+    long fee(int lines) { return lines <= 2 ? feeCents : feeCents / 2; }
+}
+";
+/// A safe rewrite of the helper.
+const TARIFF_AFTER: &str = "package r;
+public class Tariff {
+    long feeCents;
+    long floorCents;
+    public Tariff(long feeCents, long floorCents) { this.feeCents = feeCents; this.floorCents = floorCents; }
+    long fee(int lines) {
+        if (lines > 2) {
+            return feeCents / 2;
+        }
+        return feeCents;
+    }
+}
+";
+/// The helper starts reading an extra field.
+const TARIFF_EXTRA: &str = "package r;
+public class Tariff {
+    long feeCents;
+    long floorCents;
+    public Tariff(long feeCents, long floorCents) { this.feeCents = feeCents; this.floorCents = floorCents; }
+    long fee(int lines) {
+        if (lines > 2) {
+            return feeCents / 2 < floorCents ? floorCents : feeCents / 2;
+        }
+        return feeCents;
+    }
+}
+";
+const BILL_BEFORE: &str = "package r;
+public class Bill {
+    static long total(Tariff t, int lines, long amount) { return amount + t.fee(lines); }
+    static long twice(Tariff t, int lines) { long a = t.fee(lines); t.feeCents = t.feeCents + 1; long b = t.fee(lines); return a + b; }
+    static long pair(Tariff a, Tariff b, int lines) { a.feeCents = 7; return b.fee(lines); }
+}
+";
+/// A safe rewrite of every caller.
+const BILL_AFTER: &str = "package r;
+public class Bill {
+    static long total(Tariff t, int lines, long amount) { long f = t.fee(lines); return f + amount; }
+    static long twice(Tariff t, int lines) { long a = t.fee(lines); t.feeCents++; return a + t.fee(lines); }
+    static long pair(Tariff a, Tariff b, int lines) { a.feeCents = 7; long r = b.fee(lines); return r; }
+}
+";
+/// Defects: `twice` reuses the fee read before its mutation of the fee, and `pair` reads before the write, which
+/// differs only when the two tariffs are one.
+const BILL_STALE: &str = "package r;
+public class Bill {
+    static long total(Tariff t, int lines, long amount) { long f = t.fee(lines); return f + amount; }
+    static long twice(Tariff t, int lines) { long a = t.fee(lines); t.feeCents++; return a + a; }
+    static long pair(Tariff a, Tariff b, int lines) { long r = b.fee(lines); a.feeCents = 7; return r; }
+}
+";
+
+fn tariff(build: &str) -> PathBuf {
+    let (tariff, bill) = match build {
+        "before" => (TARIFF_BEFORE, BILL_BEFORE),
+        "after" => (TARIFF_AFTER, BILL_AFTER),
+        "stale" => (TARIFF_AFTER, BILL_STALE),
+        "extra" => (TARIFF_EXTRA, BILL_AFTER),
+        _ => unreachable!(),
+    };
+    compile_text(&format!("tariff-{build}"), &[("r/Tariff.java", tariff), ("r/Bill.java", bill)])
+}
+
+fn tariff_fee() -> MemberRef {
+    MemberRef::new("r/Tariff", "fee", "(I)J")
+}
+
+fn bill(after: &str, target: &str, cache: &Path, run: &str) -> jvmcontract::equivalence::Outcome {
+    let mut o = options(&tariff("before"), &tariff(after), cache, run);
+    o.target = format!("r.Bill#{target}");
+    jvmcontract::equivalence::run(&o).unwrap()
+}
+
+fn summaries_used(outcome: &jvmcontract::equivalence::Outcome) -> Vec<(String, String)> {
+    let stated = outcome.stated.as_ref().expect("a statement");
+    stated.assumptions.iter().filter(|a| a.kind == jvmcontract::statement::AssumptionKind::Summary).map(|a| (a.id.clone().unwrap_or_default(), a.text.clone())).collect()
+}
+
+fn reproduced(outcome: &jvmcontract::equivalence::Outcome) -> bool {
+    outcome.verdict == jvmcontract::Verdict::Violation && outcome.replay.as_ref().is_some_and(|r| r.reproduced)
+}
+
+/// The summary a claim carries, read back from its assumption's text: the whole applicability record.
+fn carried(text: &str) -> Summary {
+    serde_json::from_str(&text[text.find('{').expect("the summary's JSON")..]).unwrap()
+}
+
+/// The tariff's `fee`, rewritten, has a summary proved on its own and stored. A changed caller then reuses it: its
+/// claim carries the whole summary, under its proof's key, and its proof applies the summary at each call, in both
+/// versions, through an adapter that reads the fee policy from the actual receiver. Two calls on one tariff around a
+/// mutation of the policy are two inputs, and so is a call on a tariff another parameter may write. An unchanged
+/// rerun of the caller is an exact hit of its own claim.
+#[test]
+fn a_changed_callers_proof_reuses_the_helpers_summary_at_each_call() {
+    let cache = fresh("caller-cache");
+    let summary = reuse::summarize(&options(&tariff("before"), &tariff("after"), &cache, "caller-helper"), &tariff_fee(), &tmp("caller-helper")).unwrap();
+    assert_eq!(summary.reads, ["this.feeCents", "arg0"]);
+    assert_eq!(entries(&cache), 1, "the helper's own proof");
+
+    let total = bill("after", "total", &cache, "caller-total");
+    assert_eq!(total.verdict, jvmcontract::Verdict::Verified, "{}", total.output);
+    let used = summaries_used(&total);
+    assert_eq!(used.len(), 1, "{used:?}");
+    assert_eq!(used[0].0, summary.proof, "the assumption's id is the helper proof's claim key");
+    assert_eq!(carried(&used[0].1), summary, "the claim carries the whole summary, its reads included");
+    assert!(total.output.contains("Tariff.fee, changed, is applied by its summary at each call in both versions") && total.output.contains("found in the proof cache"), "{}", total.output);
+    assert!(total.proof.as_deref().unwrap_or("").contains("Tariff.fee changed, applied by its summary at each call"), "{:?}", total.proof);
+    assert_eq!(entries(&cache), 2, "the caller's claim is new, and the helper's proof is the one stored");
+    // Each call in both versions goes to its version's adapter, which reads the fee from the receiver it is given.
+    let substituted = total.work.join("substituted-classes");
+    for class in ["r/Bill.class", "before/r/Bill.class", "r/Tariff$Footprint$fee.class", "r/Tariff$Footprint$fee$Call.class"] {
+        assert!(substituted.join(class).exists(), "{class} in {}", substituted.display());
+    }
+
+    for target in ["twice", "pair"] {
+        let o = bill("after", target, &cache, &format!("caller-{target}"));
+        assert_eq!(o.verdict, jvmcontract::Verdict::Verified, "{target}: {}", o.output);
+        assert_eq!(summaries_used(&o).iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>(), [summary.proof.as_str()], "{target}");
+    }
+    let mut o = options(&tariff("before"), &tariff("after"), &cache, "caller-pair-alias");
+    o.target = "r.Bill#pair".into();
+    o.may_alias = vec![("a".into(), "b".into())];
+    let aliased = jvmcontract::equivalence::run(&o).unwrap();
+    assert_eq!(aliased.verdict, jvmcontract::Verdict::Verified, "{}", aliased.output);
+
+    let again = bill("after", "total", &cache, "caller-total-again");
+    assert_eq!(again.verdict, jvmcontract::Verdict::Verified);
+    assert!(matches!(again.reuse, Some(jvmcontract::spec::cache::Reuse::Exact { .. })), "{}", again.output);
+}
+
+/// The summary is applied on the receiver's state at each call, so a caller that reuses a fee read before it
+/// mutated the policy is refuted, and so is one whose read comes before a write through another parameter, once the
+/// two may be one tariff (and only then). Each witness replays.
+#[test]
+fn a_caller_that_reads_the_receiver_before_its_mutation_or_through_an_alias_is_refuted() {
+    let cache = fresh("stale-cache");
+    let twice = bill("stale", "twice", &cache, "stale-twice");
+    assert!(reproduced(&twice), "{}", twice.output);
+    assert_eq!(summaries_used(&twice).len(), 1, "refuted with the summary applied: {}", twice.output);
+
+    let apart = bill("stale", "pair", &cache, "stale-pair");
+    assert_eq!(apart.verdict, jvmcontract::Verdict::Verified, "two tariffs: the write is to the other one: {}", apart.output);
+    let mut o = options(&tariff("before"), &tariff("stale"), &cache, "stale-pair-alias");
+    o.target = "r.Bill#pair".into();
+    o.may_alias = vec![("a".into(), "b".into())];
+    let aliased = jvmcontract::equivalence::run(&o).unwrap();
+    assert!(reproduced(&aliased), "{}", aliased.output);
+    assert_eq!(summaries_used(&aliased).len(), 1, "{}", aliased.output);
+}
+
+/// A helper that starts reading an extra field has no summary (lifted over both fields, its versions differ), so
+/// its caller keeps its body in both versions and is refuted on the floor it now reads, with a replayed witness.
+#[test]
+fn a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted() {
+    let cache = fresh("extra-cache");
+    let total = bill("extra", "total", &cache, "extra-total");
+    assert!(total.output.contains("Tariff.fee, changed, keeps its body in both versions") && total.output.contains("its two versions differ"), "{}", total.output);
+    assert!(summaries_used(&total).is_empty());
+    assert!(reproduced(&total), "{}", total.output);
+}
+
+const CLAMPED_BEFORE: &str = "package p;
+public class Tariff {
+    long feeCents;
+    public Tariff(long feeCents) { this.feeCents = feeCents < 0 ? 0 : feeCents; }
+    long fee(int lines) { return lines <= 2 ? feeCents : feeCents / 2; }
+}
+";
+/// Halving by a shift: the same as before on every fee the constructor makes (none is negative), not on a negative
+/// odd one.
+const CLAMPED_AFTER: &str = "package p;
+public class Tariff {
+    long feeCents;
+    public Tariff(long feeCents) { this.feeCents = feeCents < 0 ? 0 : feeCents; }
+    long fee(int lines) { return lines <= 2 ? feeCents : feeCents >> 1; }
+}
+";
+const CLAMPED_BILL: &str = "package p;
+public class Bill {
+    static long once(Tariff t, int lines) { return t.fee(lines); }
+    static long again(Tariff t, int lines) { long a = t.fee(lines); t.feeCents = t.feeCents - 3; return a + t.fee(lines); }
+}
+";
+
+/// A helper whose versions agree only on what its constructor makes: its precondition (a fee that isn't negative)
+/// holds at a first call on a constructor-made tariff and not at a second one after the caller lowered the fee. No
+/// summary is offered: a summary is proved on every value of the fields it reads, and a proof over constructor-made
+/// receivers would not cover the state the caller reached. So the callers keep the helper's body: a single call on a
+/// constructor-made tariff is verified, as the constructor domain makes it, and the second call is refuted, replayed.
+#[test]
+fn a_summary_over_constructor_made_receivers_is_not_offered_where_a_later_call_breaks_its_precondition() {
+    let before = compile_text("clamped-before", &[("p/Tariff.java", CLAMPED_BEFORE), ("p/Bill.java", CLAMPED_BILL)]);
+    let after = compile_text("clamped-after", &[("p/Tariff.java", CLAMPED_AFTER), ("p/Bill.java", CLAMPED_BILL)]);
+    let cache = fresh("clamped-cache");
+    let run = |target: &str| {
+        let mut o = options(&before, &after, &cache, &format!("clamped-{target}"));
+        o.target = format!("p.Bill#{target}");
+        jvmcontract::equivalence::run(&o).unwrap()
+    };
+    let once = run("once");
+    assert!(once.output.contains("Tariff.fee, changed, keeps its body in both versions") && once.output.contains("its two versions differ"), "{}", once.output);
+    assert_eq!(once.verdict, jvmcontract::Verdict::Verified, "{}", once.output);
+    assert!(summaries_used(&once).is_empty());
+    let again = run("again");
+    assert!(summaries_used(&again).is_empty());
+    assert!(reproduced(&again), "{}", again.output);
+}
+
+/// The classes a caller's proof runs with its summary applied (its callers redirected to the adapters, the lifted
+/// helper and the adapters) give, on a real JVM over a grid, what the versions as written give. Tested, not proved.
+/// The adapters read fields of the other package's receiver classes, so every class runs opened, as a JVM replay of
+/// a harness runs them ([`jvmcontract::relocate::opened`]).
+#[test]
+fn a_callers_classes_with_the_summary_applied_agree_with_the_versions_as_written_on_the_jvm() {
+    let cache = fresh("jvm-cache");
+    let total = bill("after", "twice", &cache, "jvm-twice");
+    assert_eq!(total.verdict, jvmcontract::Verdict::Verified, "{}", total.output);
+    let run = tmp("jvm-run");
+    let _ = std::fs::remove_dir_all(&run);
+    let open = |from: &Path, to: &Path| {
+        for f in java_class_files(from) {
+            let target = to.join(f.strip_prefix(from).unwrap());
+            std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+            std::fs::write(&target, jvmcontract::relocate::opened(&std::fs::read(&f).unwrap()).unwrap()).unwrap();
+        }
+    };
+    let applied = run.join("applied");
+    let written = run.join("written");
+    for (dir, with) in [(&applied, true), (&written, false)] {
+        open(&tariff("after"), dir);
+        open(&total.work.join("before-classes"), dir);
+        if with {
+            open(&total.work.join("substituted-classes"), dir);
+        }
+    }
+    let driver = r#"package drv;
+public class Driver {
+    public static void main(String[] args) throws Exception {
+        long[] fees = {Long.MIN_VALUE, -7, -1, 0, 1, 2, 9, Long.MAX_VALUE};
+        int[] lines = {Integer.MIN_VALUE, -1, 0, 2, 3, 7};
+        StringBuilder out = new StringBuilder();
+        for (String version : new String[] {"before.r", "r"}) {
+            Class<?> tariff = Class.forName(version + ".Tariff");
+            Class<?> bill = Class.forName(version + ".Bill");
+            java.lang.reflect.Constructor<?> make = tariff.getDeclaredConstructor(long.class, long.class);
+            java.lang.reflect.Method total = bill.getDeclaredMethod("total", tariff, int.class, long.class);
+            java.lang.reflect.Method twice = bill.getDeclaredMethod("twice", tariff, int.class);
+            java.lang.reflect.Method pair = bill.getDeclaredMethod("pair", tariff, tariff, int.class);
+            for (java.lang.reflect.Method m : new java.lang.reflect.Method[] {total, twice, pair}) m.setAccessible(true);
+            for (long fee : fees) for (int n : lines) {
+                Object t = make.newInstance(fee, 3L);
+                out.append(total.invoke(null, t, n, 5L)).append(' ').append(twice.invoke(null, t, n)).append(' ');
+                out.append(pair.invoke(null, make.newInstance(1L, 1L), t, n)).append(' ').append(pair.invoke(null, t, t, n)).append('\n');
+                try { total.invoke(null, null, n, 5L); } catch (java.lang.reflect.InvocationTargetException e) { out.append(e.getCause().getClass().getName()).append('\n'); }
+            }
+        }
+        System.out.print(out);
+    }
+}
+"#;
+    let src = run.join("src/drv");
+    std::fs::create_dir_all(&src).unwrap();
+    std::fs::write(src.join("Driver.java"), driver).unwrap();
+    let classes = run.join("driver");
+    assert!(Command::new("javac").args(["-proc:none", "-nowarn", "-d"]).arg(&classes).arg(src.join("Driver.java")).status().expect("javac").success());
+    let output = |dir: &Path| {
+        let out = Command::new("java").args(["-Xverify:all", "-cp"]).arg(format!("{}:{}", classes.display(), dir.display())).arg("drv.Driver").output().expect("the test needs java");
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8(out.stdout).unwrap()
+    };
+    let (with, without) = (output(&applied), output(&written));
+    assert_eq!(with.lines().count(), 2 * 8 * 6 * 2, "{with}");
+    assert!(with.contains("java.lang.NullPointerException"), "a call on null still throws: {with}");
+    assert_eq!(with, without);
+}
+
+fn java_class_files(dir: &Path) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    let Ok(entries) = std::fs::read_dir(dir) else { return out };
+    for e in entries {
+        let p = e.unwrap().path();
+        if p.is_dir() {
+            out.extend(java_class_files(&p));
+        } else if p.extension().is_some_and(|x| x == "class") {
+            out.push(p);
+        }
+    }
+    out
 }

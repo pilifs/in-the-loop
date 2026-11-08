@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-08T04:34:25.544Z",
-  "ended": "2026-11-08T05:25:39.733Z",
-  "duration_seconds": 3074,
+  "ended": "2026-11-08T05:45:48.983Z",
+  "duration_seconds": 4283,
   "stats": {
-    "turns": 20,
-    "api_calls": 147,
-    "tool_calls": 148,
+    "turns": 25,
+    "api_calls": 200,
+    "tool_calls": 202,
     "tool_errors": 1,
-    "compactions": 4,
-    "peak_context_tokens": 197070,
+    "compactions": 5,
+    "peak_context_tokens": 203594,
     "usage": {
-      "input_tokens": 298,
-      "output_tokens": 162303,
-      "cache_read_input_tokens": 15767817,
-      "cache_creation_input_tokens": 563016
+      "input_tokens": 404,
+      "output_tokens": 229437,
+      "cache_read_input_tokens": 23097196,
+      "cache_creation_input_tokens": 750160
     }
   },
   "tools": {
-    "Bash": 122,
-    "Read": 11,
-    "Edit": 4,
+    "Bash": 170,
+    "Read": 15,
+    "Edit": 6,
     "Write": 4,
     "SendMessage": 3,
     "ListAgents": 2,
@@ -105,24 +105,38 @@
     {
       "index": 4,
       "started": "2026-11-08T05:09:17.148Z",
-      "ended": "2026-11-08T05:25:39.733Z",
-      "turns": 4,
-      "api_calls": 44,
+      "ended": "2026-11-08T05:26:05.840Z",
+      "turns": 5,
+      "api_calls": 47,
       "usage": {
-        "input_tokens": 88,
-        "output_tokens": 76391,
-        "cache_read_input_tokens": 5525474,
-        "cache_creation_input_tokens": 183991
+        "input_tokens": 94,
+        "output_tokens": 77972,
+        "cache_read_input_tokens": 6125039,
+        "cache_creation_input_tokens": 190515
       },
-      "peak_context_tokens": 197070
+      "peak_context_tokens": 203594
+    },
+    {
+      "index": 5,
+      "started": "2026-11-08T05:26:54.554Z",
+      "ended": "2026-11-08T05:45:48.983Z",
+      "turns": 4,
+      "api_calls": 50,
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 65553,
+        "cache_read_input_tokens": 6729814,
+        "cache_creation_input_tokens": 180620
+      },
+      "peak_context_tokens": 193699
     }
   ],
   "log": {
-    "sha256": "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7",
-    "bytes": 5038890,
-    "lines": 1725,
-    "gzip_bytes": 1040469,
-    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7.jsonl.gz"
+    "sha256": "bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983",
+    "bytes": 6701375,
+    "lines": 2351,
+    "gzip_bytes": 1352359,
+    "path": "llm-dlc/traces/aa238023-596d-49bd-8039-52502ec096fc/logs/bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -157,6 +171,14 @@
       "summary": "application-core reuse R2: a read-only helper's footprint proved from its bytecode, lifted over it, and summarized from a proof of its own",
       "body": "R2's first part, in lib/src/reuse/footprint.rs (a submodule of reuse.rs, so no shared file changed), reuse::summarize and proof_cache::lifted_proof. footprint::footprint establishes a heap helper's read footprint from its bytecode rather than listing likely reads. The helper is an instance method no application class overrides, with primitive parameters and result. The only reference it handles is its receiver, loaded only to read a primitive field at once, and its static callees are walked under the same rules with no reference at all. So its getfields are all it reads of the heap, and since it writes nothing its outcome is a function of those fields' values and its arguments. The brief's exclusions (a write, an allocation, an exception of its own, a static field, an external call, a call on an object, an override, recursion, an escaping reference, an array) are each refused by name, and so are a division by anything but a non-zero constant, a switch and floating point.\n\nfootprint::lift is the explicit representation adapter: the helper as a static method of its own class over its arguments and then the values of the fields either version reads, with each field read replaced by a parameter. reuse::summarize proves the two versions' lifted helpers equal by a regression check of their own, under the caller's cache, engine and bounds and in the proof stack that keeps dependency proofs acyclic. It gives a spec::plans::Summary naming the proof's claim key, the fields and arguments read, the domain (every value of them, whatever else a receiver holds), and the proofs it rests on. A helper whose versions differ, or whose versions read fields the other's receiver doesn't declare alike, has none. No caller applies a summary yet; that, with the caller's claim carrying the summaries it used, is the next part.\n\nVerified inline with a new tests/reuse_summaries.rs (5 tests): the frozen quote fixture's fee reads feeCents before and after, and its helper-extra-field defect also reads floorCents; 17 helpers outside the category are each refused in the words of their case; the lifting agrees with the helper on a real JVM over 560 cases, lifted over one field more than it reads; fee's summary has its proof verified in the cache, and an exact rerun gives the same summary with nothing new stored; the extra read and a layout change get no summary. The 231 unit tests, tests/reuse.rs (11), application_core (14), summaries, compare, heap, effects and foundations pass. Found: the lifted proof is positional in the fields' values, so a caller's claim must carry the whole summary (its reads), not only the proof's key; this is recorded under Progress for the next part. The contract's R2 row still stops at the objects stream's receiver refusal, as it checks fee through the plain regression entry point.",
       "log_sha256": "6b3ea33ae1ea03437007ee782d57a6cf2bb49a89801356c6a39d57bc074a1be7"
+    },
+    {
+      "change_id": "stxzsnsyrspozwzzxnppnsyxyxmnkwpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "application-core reuse R2: a changed caller reuses a read-only helper's summary at each call, through adapters that read the receiver there",
+      "body": "Under --cache and the own checker, shared::plan_with now asks for a summary of each changed instance method both versions of a regression target call, declared by the same class. proof_cache::Helpers sends such a method to reuse::application, which makes the summary (its lifted proof from the cache, or proved now) and two call-site adapters (reuse::footprint::adapters). shared::substitute then rewrites every call of the helper, in both versions, into a static call of that version's adapter. The adapter reads each footprint field from the actual receiver as its own version lays it out, and calls the new version's lifted helper, so both versions call one function of the same values. Because the summary's proof covers every value of the fields and arguments, reading them at the call discharges applicability on the actual pre-call state: a receiver mutated between two calls is read twice, and a write through an aliasing parameter is seen. The caller's claim carries the whole summary as an assumption of kind summary, basis proved, with its proof's key (J3's helper assumptions). A helper with no summary keeps its body in both versions, with a note saying why.\n\nVerified inline in lib/tests/reuse_summaries.rs (5 new tests, 10 in all, three runs). A tariff's rewritten fee is proved on its own, then reused by three changed callers, which are verified: one call, two calls around a mutation, and a write through another parameter with and without may_alias. A stale read after a mutation, and a read before an aliased write, are refuted with the summary applied, and their witnesses replay. A helper that reads an extra field, and helper versions that agree only on constructor-made receivers, get no summary. Their callers keep the body: the first is refuted, the second verified for a single call in the constructor domain and refuted, replayed, once a second call follows a lowered fee. On a JVM with -Xverify:all, the classes with the summary applied agree with the versions as written over a grid. Also passing: the 231 unit tests, reuse (11), application_core (14), summaries (40), compare, heap (49), effects (18), foundations (5) and observations (12). The contract's R2 row still stops at the objects stream's construction::receiver, since the quote's target is an instance method. That is for the merge.",
+      "log_sha256": "bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983"
     }
   ],
   "logs": {
@@ -176,6 +198,12 @@
       "bytes": 2487360,
       "lines": 827,
       "gzip_bytes": 519335,
+      "url": null
+    },
+    "bdcda79bb98f44a0d3978beb5acd9846cb0ba957c96d0e92783d9c020950f983": {
+      "bytes": 6701375,
+      "lines": 2351,
+      "gzip_bytes": 1352359,
       "url": null
     },
     "e77a9a79565f6c97a8533e2a7f7f238645f3d119ad5aee7236e6154d3c10cd20": {

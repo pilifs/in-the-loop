@@ -654,6 +654,9 @@ impl<'a> Helpers<'a> {
         if !self.active() {
             return None;
         }
+        if self.is_instance(callee) {
+            return self.summarize(callee);
+        }
         let target = crate::shared::target_of(callee);
         let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
         let mut note = |why: String| {
@@ -738,12 +741,74 @@ impl<'a> Helpers<'a> {
     }
 }
 
+impl Helpers<'_> {
+    /// Whether the new version declares `callee` as an instance method: a read-only helper a summary may stand for
+    /// ([`Self::summarize`]).
+    fn is_instance(&self, callee: &MemberRef) -> bool {
+        let mut cp = crate::classpath::ClassPath::new();
+        cp.add(&self.options.after).is_ok() && cp.find_method(&callee.owner, &callee.name, &callee.descriptor).is_some_and(|(_, m)| !m.is_static())
+    }
+
+    /// R2: the summary of a changed read-only heap helper, `callee` as the new version declares it, from the cache or
+    /// proved now ([`crate::reuse::application`]), applied at each of the caller's calls in both versions by
+    /// [`crate::shared::substitute`]; `None`, with a note, when there is none and the helper keeps its body. The
+    /// caller's claim gains the whole summary as an assumption of kind `summary`, basis `proved`, with its proof's
+    /// claim key as its id: its proof is positional in the fields' values, so the claim names which field is which
+    /// (its `reads`), and not only the key.
+    fn summarize(&mut self, callee: &MemberRef) -> Option<crate::shared::Proved> {
+        let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
+        let notes = &mut self.notes;
+        let mut note = |why: &str| {
+            let _ = writeln!(notes, "note: {name}, changed, keeps its body in both versions: {why}");
+        };
+        let caller = self.options.target.clone();
+        let names_callee = |t: &String| crate::verifier::parse_target(t).is_some_and(|(c, m)| c == callee.owner && m == callee.name);
+        if names_callee(&caller) || PROVING.with(|p| p.borrow().iter().any(names_callee)) {
+            note("its summary would rest on the proof it is used in");
+            return None;
+        }
+        let left = self.budget.saturating_sub(self.spent);
+        if left < Duration::from_secs(1) {
+            note("no time is left for its summary's proof");
+            return None;
+        }
+        let mut options = self.options.clone();
+        options.timeout_seconds = left.as_secs().max(1);
+        let started = Instant::now();
+        let applied = crate::reuse::application(&options, callee, &self.work.join(format!("{}.{}", callee.owner.replace('/', "."), callee.name)));
+        self.spent += started.elapsed();
+        let _ = writeln!(self.notes, "note: {name}'s summary took {:.3} s", started.elapsed().as_secs_f64());
+        let a = match applied {
+            Ok(a) => a,
+            Err(u) => {
+                let _ = writeln!(self.notes, "note: {name}, changed, keeps its body in both versions: {}", u.what);
+                return None;
+            }
+        };
+        let how = if a.found { "found in the proof cache" } else { "proved now and stored in the proof cache" };
+        let key = a.summary.proof.clone();
+        let _ = writeln!(
+            self.notes,
+            "note: {name}, changed, is applied by its summary at each call in both versions: its two versions, lifted over the fields it reads ({}), have the same outcome on every value of them and of its arguments, {how} (claim {key}); each call reads them from its actual receiver",
+            a.summary.reads.join(", ")
+        );
+        let json = serde_json::to_string(&a.summary).expect("a summary serializes");
+        self.assumptions.push(Assumption {
+            kind: AssumptionKind::Summary,
+            text: format!("{name}, changed, is its summary at each call in either version, applied on the receiver's state at that call: {json}"),
+            basis: Basis::Proved,
+            id: Some(key.clone()),
+        });
+        Some(crate::shared::Proved { key, from: a.from })
+    }
+}
+
 /// R2: the regression proof of a read-only helper lifted over its footprint ([`crate::reuse::footprint::lift`]): the
 /// check of `target` in `before` and `after` (each a version's classes with its lifted helper), under the caller's
 /// cache, engine, bounds and tools, but over the helper's own inputs, as a changed helper's proof is ([`Helpers`]).
-/// Gives the claim key it was proved under and its outcome, or why there is no proof to use: no cache, another
+/// Gives the claim key it was proved under, its outcome and its cache record's provenance, or why there is no proof to use: no cache, another
 /// engine, a proof it would rest on, a result other than verified, or one not stored.
-pub fn lifted_proof(options: &Options, target: &str, before: &Path, after: &Path, work: &Path) -> Result<(ClaimKey, Outcome), String> {
+pub fn lifted_proof(options: &Options, target: &str, before: &Path, after: &Path, work: &Path) -> Result<(ClaimKey, Outcome, String), String> {
     if options.cache.is_none() || options.engine != crate::Engine::Native {
         return Err("a helper's summary is proved only under the proof cache and the own checker (--cache, --engine native)".into());
     }
@@ -775,7 +840,7 @@ pub fn lifted_proof(options: &Options, target: &str, before: &Path, after: &Path
     applicable(&outcome)?;
     let key = KEYS.with(|k| k.borrow().iter().rev().find(|(t, _)| t == target).map(|(_, key)| key.clone())).ok_or("its claim has no key")?;
     match cache::lookup(options.cache.as_ref().expect("checked"), &key) {
-        Ok(Some(r)) if r.outcome.verdict == crate::spec::Verdict::Verified => Ok((key, outcome)),
+        Ok(Some(r)) if r.outcome.verdict == crate::spec::Verdict::Verified => Ok((key, outcome, r.provenance)),
         _ => Err(format!("its proof is not in the proof cache (claim {})", key.0)),
     }
 }

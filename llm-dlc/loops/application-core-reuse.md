@@ -283,6 +283,54 @@ measurement stays as recorded.
     claim then carries each summary it used, with its key. After that come the adversarial cases at a caller: a read
     field mutated between two calls, a precondition holding at one call and not the next, an alias, and a
     constructor-domain summary offered at a state a history reached.
+- 2026-11-08, **R2, second part: a changed caller reuses the helper's summary at each call**, in `lib/src/shared.rs`
+  (`plan_with`, `substitute`), `proof_cache::Helpers` and `reuse::application`, with the adapters in
+  `reuse::footprint::adapters`:
+  - **Asked for**: under `--cache` and the own checker, `plan_with` asks for a summary of each changed instance method
+    both versions call, declared by the same class (calls as the class path resolves them, `invokevirtual` and
+    `invokespecial`). `Helpers::prove` sends an instance method to `reuse::application`, which makes the summary (from
+    the cache, or proved now) and its adapters. A refusal is a note, "keeps its body in both versions: …", and the
+    helper keeps its body.
+  - **Applied at each call** (`shared::substitute`): every call of the helper, in both versions, becomes an
+    `invokestatic` of that version's adapter, `r/Tariff$Footprint$fee$Call.before` or `.after`. The adapter takes the
+    receiver and the arguments, reads each footprint field from the actual receiver as its own version lays it out,
+    and calls the new version's lifted helper. Both versions so call one function of the same values. Its first field
+    read throws the `NullPointerException` the call would. A helper that reads no field gets no adapter.
+  - **Why every call is in the domain**: the summary's proof is over every value of the fields and arguments, with no
+    precondition, alias or null fact, and no constructor domain. Reading those values at the call discharges its
+    applicability on the actual pre-call state. A mutation between two calls is read twice, and a write through an
+    aliasing parameter is seen.
+  - **The caller's claim** carries the whole summary as an assumption of kind `summary`, basis `proved`, with its
+    proof's key as its id (J3's helper assumptions). The proof line says the helper is "applied by its summary at each
+    call".
+  - **Verified inline**, `tests/reuse_summaries.rs`, 5 new tests (10 in all), on a tariff whose `fee` is rewritten
+    and a caller class `Bill`:
+    - the helper's own proof is stored first, then reused by three changed callers: `total`, `twice` (a mutation of
+      the fee between two calls) and `pair` (a write through another parameter, with and without `may_alias`). Each
+      is verified, its claim carrying the summary whole. The rewritten classes call the adapters, and an unchanged
+      rerun is an exact hit;
+    - the adversarial cases each reach the right result:
+      - a stale read after a mutation is refuted, with the summary applied, and its witness replays;
+      - a read before a write through an alias is verified while the tariffs are apart, and refuted, replayed, once
+        `may_alias` lets them be one;
+      - a helper that starts reading an extra field gets no summary, and its caller is refuted with its body kept;
+      - helper versions that agree only on constructor-made fees (`/ 2` and `>> 1`, with the constructor clamping
+        negatives) get no summary, since a summary is proved over every value. A single call is verified in the
+        constructor domain, and a second call after the caller lowers the fee is refuted, replayed;
+    - on a JVM with `-Xverify:all`, the classes with the summary applied give what the versions as written give over
+      a grid (192 lines, a call on `null` included).
+
+    Also passing: the 231 unit tests, `reuse` (11), `application_core` (14), `summaries` (40), `compare`, `heap`
+    (49), `effects` (18), `foundations` (5) and `observations` (12). The test helper `compile_text` now serializes
+    writing the sources, after a race between two tests compiling the same build.
+  - **R2 stands at the unit level**: a changed heap-reading helper's evidence is reused by a changed caller.
+    Inapplicable summaries and broken preconditions keep the body and reach the right verdict. No abstraction is
+    involved, so there is no spurious witness to refine: the substitution is exact by the summary's proof, as for a
+    proved pure helper. The contract's R2 row still stops at the objects stream's `construction::receiver`, because
+    the quote's `quote` is an instance target. At the merge it should reach `fee`'s summary through this path.
+    Bounded reads of primitive arrays are not done (the brief puts them after the field-only case).
+  - **Next**: R3, the measurement of preparation reuse as a queued job: a small `compare` run with several claims,
+    and an unchanged rerun, timed by stage. J4 comes at the merge.
 - Status: working
 
 ## Loop settings
