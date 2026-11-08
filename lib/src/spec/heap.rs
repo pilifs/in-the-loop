@@ -324,7 +324,8 @@ fn foreign_inputs(contract: &super::PreservationContract, parameters: &[crate::s
     let foreign: Vec<String> = contract
         .inputs
         .iter()
-        .filter(|i| !parameters.iter().any(|p| p.name == i.name && p.ty == i.ty))
+        // A contract may write a generic parameter's type erased: `java.util.List` for `java.util.List<basket.Line>`.
+        .filter(|i| !parameters.iter().any(|p| p.name == i.name && (p.ty == i.ty || p.ty.split('<').next() == Some(i.ty.as_str()))))
         .map(|i| format!("{}: {}", i.name, i.ty))
         .collect();
     if foreign.is_empty() {

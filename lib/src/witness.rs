@@ -684,6 +684,11 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
                 crate::harness::Root::Result => result_value,
                 crate::harness::Root::Receiver => receiver.unwrap_or(Value::Null),
                 crate::harness::Root::Arg(i) => arg_values.get(i).copied().unwrap_or(Value::Null),
+                // A list's object (V2), as the replay made it.
+                crate::harness::Root::Element(i, j) => match layout.element(i, j) {
+                    Some(Slot::Record { name, .. }) => built.iter().find(|(n, _)| n == name).map(|(_, v)| *v).unwrap_or(Value::Null),
+                    _ => Value::Null,
+                },
             },
             Some((parent, _, name, _)) => match references[*parent].1 {
                 Value::Ref(p) => match m.heap.get(p) {

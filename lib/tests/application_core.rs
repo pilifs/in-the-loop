@@ -275,8 +275,25 @@ fn v2_a_bounded_supported_list_as_input() {
     // plain checks, under the frozen claims' list bound of 3 (`basket-*-claim.json`'s `max_length`).
     regressions_within("basket", "basket.Basket#total", &[], Some(3));
     regressions_within("basket", "basket.Basket#clearAll", &[], Some(3));
-    for claim in ["basket-total-claim", "basket-first-claim", "basket-clear-claim"] {
-        claims("basket", claim, &[Part::Objects, Part::Values], spec::heap::check);
+    // The frozen claims' adapted list root too (Phase 5 step 1): no refusal is accepted.
+    claims("basket", "basket-total-claim", &[], spec::heap::check);
+    claims("basket", "basket-clear-claim", &[], spec::heap::check);
+    // `basket-first-claim` bounds each version's allocations at 0, and `copied-first`'s copy makes a Line (and the
+    // IllegalArgumentException its constructor may throw): the allocation gate leaves it unresolved, where
+    // `expected.json` says refuted on `identity:result==lines[0]`. A frozen fixture's bound against its expectation,
+    // as O3's was: the user's decision (application-core.md's Progress). Until then that one case is held to exactly
+    // the gate's outcome, and every other to its expectation.
+    let first = golden("basket-first-claim");
+    for (name, verdict) in cases("basket", "basket-first-claim") {
+        let what = format!("basket-first-claim {name}");
+        let result = spec::heap::check(&first, &build("basket", "before"), &build("basket", &name));
+        if name == "copied-first" {
+            let o = result.unwrap_or_else(|u| panic!("{what}: refused: {u}"));
+            assert_eq!(o.verdict, spec::Verdict::Unresolved, "{what}: {o:?}");
+            assert!(o.problem.as_deref().is_some_and(|p| p.contains("may make 2 objects in one call, more than the claim's allocation bound of 0")), "{what}: {o:?}");
+            continue;
+        }
+        holds(&what, result, &verdict, &[]);
     }
 }
 

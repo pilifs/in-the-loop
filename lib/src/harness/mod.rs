@@ -676,12 +676,26 @@ impl RecordType {
 }
 
 /// Where a reference of [`RefPath`] starts: the result, the receiver made by its constructor (`this`, O1 of
-/// `llm-dlc/loops/application-core-objects.md`), or the target's argument `args[i]`.
+/// `llm-dlc/loops/application-core-objects.md`), the target's argument `args[i]`, or the `j`th of the objects the
+/// list `args[i]`'s elements are picked among (`Element(i, j)`, V2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Root {
     Result,
     Receiver,
     Arg(usize),
+    Element(usize, usize),
+}
+
+/// The path identity relations name the `j`th of the objects the elements of the list `list` are picked among
+/// (`values::ListAdapter`'s `m{j}`): `lines[0]` for the first, which is always the list's element 0 when it has
+/// one, and `lines.m1` for another, the element at each index whose pick is it. Comparing the result with each of
+/// them, before and now, compares it with each element: both versions' lists pick the same objects.
+pub fn element_path(list: &str, j: usize) -> String {
+    if j == 0 {
+        format!("{list}[0]")
+    } else {
+        format!("{list}.m{j}")
+    }
 }
 
 /// A reference that identity relations are observed over, in one version (step H3 of
@@ -1087,12 +1101,29 @@ impl Layout {
                         field_refs(&mut out, name, at, Root::Arg(i), fields);
                     }
                 }
-                // A list's elements are picked by the same choices in both versions, and have no reference fields
-                // (`equivalence` refuses an element class with any): no identity relation among them can differ.
-                Slot::Plain(_) | Slot::List { .. } => {}
+                // A list's objects (V2), each a root of its own: the result may be one of them. Their fields are
+                // primitive (`equivalence` refuses an element class with a reference field).
+                Slot::List { name, elements, .. } => {
+                    for (j, e) in elements.iter().enumerate() {
+                        let Slot::Record { record, before, .. } = e else { continue };
+                        let made = if previous { before.as_ref() } else { Some(record) };
+                        if let Some(fields) = made.and_then(|r| r.fields.as_ref()) {
+                            out.push(RefPath { path: element_path(name, j), ty: fields.class.clone(), root: Root::Element(i, j), field: None });
+                        }
+                    }
+                }
+                Slot::Plain(_) => {}
             }
         }
         out
+    }
+
+    /// The object of a list a [`Root::Element`] names: the record slot it is made by.
+    pub fn element(&self, i: usize, j: usize) -> Option<&Slot> {
+        match self.args.get(i) {
+            Some(Slot::List { elements, .. }) => elements.get(j),
+            _ => None,
+        }
     }
 
     /// The identity relations compared, each as "holds in the previous version iff in the new one" (step H3), as
@@ -1107,6 +1138,10 @@ impl Layout {
         let mut pairs = Vec::new();
         for (i, x) in new.iter().enumerate() {
             for y in &new[i + 1..] {
+                // Two objects of one list are two objects, made apart, in both versions.
+                if matches!((x.root, y.root), (Root::Element(a, _), Root::Element(b, _)) if a == b) {
+                    continue;
+                }
                 let (Some(ox), Some(oy)) = (ty_in(&old, &x.path), ty_in(&old, &y.path)) else { continue };
                 if x.ty == y.ty || ox == oy {
                     pairs.push((x.path.clone(), y.path.clone()));
@@ -2678,6 +2713,12 @@ fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, 
                                     if previous { old_local } else { new_local }
                                 }
                             },
+                            Root::Element(i, j) => {
+                                let slot = layout.element(i, j).expect("a list's object");
+                                let at = records.iter().position(|r| *r == slot).expect("a list's object record");
+                                let (new_local, old_local) = object_slots(at);
+                                if previous { old_local } else { new_local }
+                            }
                         };
                         code.load(Kind::Ref, from);
                         code.store(Kind::Ref, local);
@@ -3348,6 +3389,13 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     // The identity relations within each version, "holds before iff it holds now"; a field of null reads as null.
     let with_args = before.is_none_or(|b| b.arguments.is_none());
     let in_version = |path: &str, previous: bool| -> String {
+        // A list's object (V2), by the name of the record it is made as: `lines.m0_before`.
+        for slot in layout.lists() {
+            let Slot::List { name, elements, .. } = slot else { continue };
+            if let Some((_, Slot::Record { name: made, .. })) = elements.iter().enumerate().find(|(j, _)| element_path(name, *j) == path) {
+                return format!("{made}_{}", if previous { "before" } else { "after" });
+            }
+        }
         let (root, rest) = path.split_once('.').map(|(r, rest)| (r, format!(".{rest}"))).unwrap_or((path, String::new()));
         let root = match (root, previous) {
             ("result", true) => "a".to_string(),

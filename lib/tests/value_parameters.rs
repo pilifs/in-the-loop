@@ -220,7 +220,7 @@ fn a_list_parameter_is_proved_and_its_defects_refuted_on_witnesses_of_one_object
     assert_eq!((lines.kind, lines.max_length, lines.null, lines.ty.as_str()), (ParameterKind::Value, Some(3), false, "java.util.List<basket.Line>"));
     assert_eq!(stated.bounds.max_value_length, Some(3));
     assert_eq!(stated.models.values, vec![values::list_model()]);
-    assert_eq!(stated.domain.input_objects, Some((3, 3)), "three lines made in each version");
+    assert_eq!(stated.domain.input_objects, Some((4, 4)), "three lines and the list made in each version");
 
     for (build, target, before, after) in [("duplicate-skipped", "basket.Basket#total", "2", "1"), ("alias-blind", "basket.Basket#clearAll", "1", "2")] {
         let o = equivalence::run(&basket_options(build, target, &format!("{build}-refuted"))).unwrap();
@@ -240,7 +240,8 @@ fn a_list_parameter_is_proved_and_its_defects_refuted_on_witnesses_of_one_object
 }
 
 /// Kernels over lists the adapter doesn't take, or takes only part of: a raw list, a wildcard's, one of elements
-/// that hold an array, and one whose result may be an element.
+/// that hold an array, and two whose result may be an element, one of the element class (`firstOf`, compared for
+/// identity with each element) and one of `Object` (`anyOf`, which the check doesn't follow).
 fn kernels() -> &'static Path {
     static ROOT: OnceLock<PathBuf> = OnceLock::new();
     ROOT.get_or_init(|| {
@@ -250,7 +251,7 @@ fn kernels() -> &'static Path {
             std::fs::create_dir_all(&src).unwrap();
             std::fs::write(src.join("Item.java"), format!("package l;\npublic final class Item {{\n    int n;\n    public Item(int n) {{\n        {item}\n    }}\n}}\n")).unwrap();
             std::fs::write(src.join("Box.java"), "package l;\npublic final class Box {\n    int[] cells;\n    public Box(int n) {\n        cells = new int[] {n};\n    }\n}\n").unwrap();
-            std::fs::write(src.join("Kernels.java"), "package l;\nimport java.util.List;\npublic final class Kernels {\n    public static int count(List<Item> xs) { int c = 0; for (Item x : xs) { c += x.n; } return c; }\n    @SuppressWarnings(\"rawtypes\") public static int raw(List xs) { return xs.size(); }\n    public static int wild(List<? extends Item> xs) { return xs.size(); }\n    public static int boxes(List<Box> xs) { return xs.size(); }\n    public static Item firstOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n}\n").unwrap();
+            std::fs::write(src.join("Kernels.java"), "package l;\nimport java.util.List;\npublic final class Kernels {\n    public static int count(List<Item> xs) { int c = 0; for (Item x : xs) { c += x.n; } return c; }\n    @SuppressWarnings(\"rawtypes\") public static int raw(List xs) { return xs.size(); }\n    public static int wild(List<? extends Item> xs) { return xs.size(); }\n    public static int boxes(List<Box> xs) { return xs.size(); }\n    public static Item firstOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n    public static Object anyOf(List<Item> xs) { return xs.isEmpty() ? null : xs.get(0); }\n}\n").unwrap();
             javac(&root.join(name), &[src.join("Item.java"), src.join("Box.java"), src.join("Kernels.java")]);
         }
         root
@@ -268,7 +269,8 @@ fn kernel_options(after: &str, target: &str, work: &str) -> equivalence::Options
 /// What the list wiring leaves out is refused by name, never decided otherwise: JBMC, which runs the list models its
 /// own way (`--engine jbmc` refused, and under `--confirm` not asked); a list a property's harness would make; a raw
 /// list, a wildcard's and one whose elements hold an array, whose elements the adapter can't make or whose
-/// references aren't observed; and a result that may be one of the elements, whose identity isn't observed yet.
+/// references aren't observed; and a result that may be one of the elements but isn't followed into its fields
+/// (an `Object`), whose identity with them couldn't be observed.
 #[test]
 fn a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
     let mut jbmc = basket_options("after", "basket.Basket#total", "total-jbmc");
@@ -294,7 +296,7 @@ fn a_list_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.problem.as_deref().unwrap_or_default().contains("java.util.List"), "{}", o.output);
 
-    for (target, words) in [("raw", "a raw List"), ("wild", "not a wildcard"), ("boxes", "a field of an array or an object"), ("firstOf", "an identity this check doesn't observe yet")] {
+    for (target, words) in [("raw", "a raw List"), ("wild", "not a wildcard"), ("boxes", "a field of an array or an object"), ("anyOf", "an identity it couldn't observe")] {
         let o = equivalence::run(&kernel_options("after", &format!("l.Kernels#{target}"), target)).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{target}: {}", o.output);
         assert!(o.problem.as_deref().unwrap_or_default().contains(words), "{target}: {}", o.output);
@@ -328,4 +330,113 @@ fn a_list_parameters_cached_evidence_moves_with_its_bound_and_its_elements_const
     assert_eq!(edited.verdict, Verdict::Verified, "{}", edited.output);
     assert!(key(&edited).is_none(), "an edited element constructor is another claim: {}", edited.output);
     assert!(key(&run("after-item", 3, "count-edited-rerun")).is_some_and(|k| k != hit), "and has a key of its own");
+}
+
+/// A frozen basket claim (`tests/fixtures/application-core/golden/`), to be changed by a test.
+fn basket_claim(name: &str) -> jvmcontract::spec::CanonicalClaim {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("tests/fixtures/application-core/golden/{name}.json"));
+    serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap()
+}
+
+/// Each version's plan of a claim, to be changed by a test.
+fn plans(claim: &mut jvmcontract::spec::CanonicalClaim) -> [&mut jvmcontract::spec::plans::ConstructionPlan; 2] {
+    let Some(jvmcontract::spec::Construction::Planned { before, after }) = claim.domain.as_mut().map(|d| &mut d.made_by) else { panic!("a planned domain") };
+    [before, after]
+}
+
+/// The list domain of a plan's root `lines`, to be changed by a test.
+fn list_domain(plan: &mut jvmcontract::spec::plans::ConstructionPlan) -> &mut jvmcontract::spec::plans::ValueDomain {
+    match &mut plan.roots[0].value {
+        jvmcontract::spec::plans::PlanValue::Adapted { domain, .. } => domain,
+        other => panic!("an adapted root: {other:?}"),
+    }
+}
+
+/// A planned domain's adapted list root (V2, through the domain gate): the claim's own bound of 3 lines, not the
+/// check's array bound of 4, and the result compared with each of the list's objects for identity, so that
+/// `identity:result==lines[0]` is preserved by the rewrite and refuted where the result is a copy of the first line
+/// (under the frozen `basket-first-claim` with each version's allocation bound raised to the copy's 2 objects, the
+/// `Line` and the exception its constructor may throw), on a witness replayed on a JVM. A kernel returning the
+/// element class without a plan is proved with the same identities stated.
+#[test]
+fn a_planned_list_root_has_its_own_bound_and_the_results_identity_with_its_elements_is_observed() {
+    let mut claim = basket_claim("basket-first-claim");
+    let bounds = &mut claim.domain.as_mut().unwrap().bounds;
+    bounds.before.allocations = 2;
+    bounds.after.allocations = 2;
+    let check = |claim: &jvmcontract::spec::CanonicalClaim, build: &str| jvmcontract::spec::heap::check(claim, &basket("before"), &basket(build)).unwrap();
+    let proved = check(&claim, "after");
+    assert_eq!(proved.verdict, jvmcontract::spec::Verdict::Verified, "{proved:?}");
+    assert!(proved.domain.contains("lines: an immutable List.of of ≤ 3 elements"), "the plan's bound, not the check's 4: {}", proved.domain);
+    let state = |o: &jvmcontract::spec::Outcome, id: &str| o.accounting.iter().find(|a| a.observation == id).map(|a| a.state);
+    assert_eq!(state(&proved, "identity:result==lines[0]"), Some(jvmcontract::spec::ObservationState::Preserved), "{proved:?}");
+
+    let copied = check(&claim, "copied-first");
+    assert_eq!(copied.verdict, jvmcontract::spec::Verdict::Refuted, "{copied:?}");
+    assert_eq!(state(&copied, "identity:result==lines[0]"), Some(jvmcontract::spec::ObservationState::Refuted), "{copied:?}");
+    assert_eq!(state(&copied, "result"), Some(jvmcontract::spec::ObservationState::Unresolved), "the copy's fields are the first line's: {copied:?}");
+    assert!(copied.witness.as_deref().is_some_and(|w| w.contains("lines=List.of(")), "{copied:?}");
+
+    // Under the frozen bound of 0, the copy's code is outside the claim: unresolved, never refuted or proved.
+    let frozen = check(&basket_claim("basket-first-claim"), "copied-first");
+    assert_eq!(frozen.verdict, jvmcontract::spec::Verdict::Unresolved, "{frozen:?}");
+
+    let o = equivalence::run(&kernel_options("after", "l.Kernels#firstOf", "first-of")).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let identities = &o.stated.as_ref().expect("a statement").observations.identities;
+    assert_eq!(identities, &["result == xs[0]", "result == xs.m1", "result == xs.m2"], "{}", o.output);
+}
+
+/// What a planned list root leaves out is refused by name before any check, never run as another domain: a list
+/// that may be null, an adapted String root, a list stated under another model or a stronger level than the
+/// tool's, a list of more than the adapter's 10, roots that differ between the versions, and elements of another
+/// class than the parameter's.
+#[test]
+fn a_planned_list_roots_unsupported_forms_are_refused_by_name() {
+    let refused = |what: &str, change: &dyn Fn(&mut jvmcontract::spec::CanonicalClaim), words: &str| {
+        let mut claim = basket_claim("basket-total-claim");
+        change(&mut claim);
+        let u = jvmcontract::spec::heap::check(&claim, &basket("before"), &basket("after")).expect_err(what);
+        assert!(u.what.contains(words), "{what}: {u}");
+    };
+    fn both(c: &mut jvmcontract::spec::CanonicalClaim, f: &dyn Fn(&mut jvmcontract::spec::plans::ValueDomain)) {
+        for p in plans(c) {
+            f(list_domain(p));
+        }
+    }
+    refused("a null list", &|c| both(c, &|d| d.nullable = true), "a list that may be null");
+    refused("a String root", &|c| both(c, &|d| d.kind = jvmcontract::spec::plans::ValueKind::String), "an adapted String root");
+    refused("another model", &|c| both(c, &|d| d.model.source = "an earlier list model".into()), "evidence of another model's semantics isn't this one's");
+    refused("a stronger level", &|c| both(c, &|d| d.model.level = jvmcontract::spec::plans::EvidenceLevel::Proved), "never borrows a stronger level");
+    refused("too long", &|c| both(c, &|d| d.max_length = 11), "of at most 10");
+    refused("roots that differ", &|c| list_domain(plans(c)[0]).max_length = 2, "both versions are given the same list");
+    refused(
+        "another element class",
+        &|c| both(c, &|d| d.kind = jvmcontract::spec::plans::ValueKind::List { element: jvmcontract::spec::plans::ElementKind::Object { class: "basket.Basket".into() } }),
+        "a plan's elements are of the parameter's element class",
+    );
+}
+
+/// A planned list claim's cached evidence: an exact rerun reuses it, and the same claim with its list bounded at 2
+/// is another key.
+#[test]
+fn a_planned_list_claims_cached_evidence_moves_with_the_lists_bound() {
+    let cache = tmp("planned-list-cache");
+    let run = |claim: &jvmcontract::spec::CanonicalClaim| {
+        let mut reused = jvmcontract::spec::heap::Reused::default();
+        let o = jvmcontract::spec::heap::check_with(claim, &basket("before"), &basket("after"), Some(&cache), &mut reused).unwrap();
+        assert_eq!(o.verdict, jvmcontract::spec::Verdict::Verified, "{o:?}");
+        reused
+    };
+    let claim = basket_claim("basket-total-claim");
+    let cold = run(&claim);
+    assert!(cold.key.is_some() && cold.exact.is_none(), "{cold:?}");
+    let rerun = run(&claim);
+    assert!(rerun.exact.is_some(), "an exact hit: {rerun:?}");
+    let mut shorter = claim.clone();
+    for p in plans(&mut shorter) {
+        list_domain(p).max_length = 2;
+    }
+    let other = run(&shorter);
+    assert!(other.exact.is_none() && other.key.is_some() && other.key != cold.key, "another bound is another claim: {other:?}");
 }

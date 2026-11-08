@@ -387,6 +387,8 @@ pub fn domain(layout: &Layout, max_array_length: u32) -> Domain {
             Slot::Record { record, before, .. } if record.is_made() => Some((before.as_ref().unwrap_or(record).objects(), record.objects())),
             _ => None,
         })
+        // Each list is an object of its own too, beside the objects its elements are picked among.
+        .chain(layout.lists().into_iter().map(|_| (1, 1)))
         .collect();
     let input_objects = (!made.is_empty()).then(|| made.iter().fold((0, 0), |(b, a), (x, y)| (b + x, a + y)));
     Domain { parameters, shared_arrays: false, may_alias: layout.alias_groups(), text: layout.domain(max_array_length), input_objects }
@@ -573,9 +575,29 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
         (None, None, _) => "the result, equal in both versions".into(),
     };
     let arrays = layout.params.iter().filter(|p| matches!(p.ty, Type::Array(_))).map(|p| p.name.clone()).collect();
-    let objects = layout
+    // A list's objects (V2) are its own: one entry for the list, each object's fields under its name
+    // (`lines: m0.unitCents, m0.quantity, m1.unitCents, …`), so that the list is compared as a whole.
+    let list_objects: Vec<&Slot> = layout.lists().into_iter().flat_map(|l| if let Slot::List { elements, .. } = l { elements.iter().collect() } else { Vec::new() }).collect();
+    let lists: Vec<String> = layout
+        .lists()
+        .into_iter()
+        .filter_map(|l| {
+            let Slot::List { name, elements, .. } = l else { return None };
+            let paths: Vec<String> = elements
+                .iter()
+                .filter_map(|e| match e {
+                    Slot::Record { name: made, record, before: Some(_), .. } => record.fields.as_ref().map(|f| f.paths().iter().map(|(p, _)| format!("{}.{p}", made.strip_prefix(&format!("{name}.")).unwrap_or(made))).collect::<Vec<_>>()),
+                    _ => None,
+                })
+                .flatten()
+                .collect();
+            (!paths.is_empty()).then(|| format!("{name}: {}", paths.join(", ")))
+        })
+        .collect();
+    let mut objects: Vec<String> = layout
         .records()
         .iter()
+        .filter(|s| !list_objects.contains(s))
         .filter_map(|s| match s {
             // The equations an output relation for a field takes the place of are left out, and the relation
             // follows (H5's rest): `p: under the correspondence; p.cents under the output relation …`.
@@ -603,6 +625,7 @@ pub fn regression_observations(layout: &Layout, ret: &Type, relation: Option<&st
             _ => None,
         })
         .collect();
+    objects.extend(lists);
     Observations { result, exceptions: exception_categories("the same in both versions", &layout.checked), arrays, objects, identities: Vec::new() }
 }
 

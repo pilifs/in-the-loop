@@ -33,9 +33,13 @@ pub struct Plans {
 /// (`this.capacity`, `q.amount.cents`) and objects made so in turn; and a setup sequence of at most
 /// [`MAX_SETUP_CALLS`] calls on the receiver, of primitive leaves (`setup.0.n`), the same in both versions. A root
 /// may be null, or one of the objects of other roots, or the same node as another root, one object ([`choices`],
-/// the same in both versions). What it doesn't make yet is refused by its stream's name, before any check: such a
-/// choice or sharing inside a nested object, a null array, a factory, a dependency (the objects stream's), and an
-/// adapted String or list (the values stream's adapter).
+/// the same in both versions). A root may also be an adapted list (`List<E>` of the values stream's
+/// `values::ListAdapter`, V2), named as the root, never null, of objects of an application class made by its
+/// constructor, as the check makes a list parameter's elements: its domain resolved under this tool's list model
+/// (`values::resolve`, which refuses a claim stated under another model, JDK or a stronger level), and the same in
+/// both versions. What it doesn't make yet is refused by its stream's name, before any check: such a choice or
+/// sharing inside a nested object, a null array, a factory, a dependency (the objects stream's), an adapted String
+/// root, and an adapted value inside a node (the values stream's adapter).
 pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Result<(), Unsupported> {
     for (version, plan) in [("previous", before), ("new", after)] {
         if let Some(problem) = plan.shape_problem() {
@@ -92,6 +96,14 @@ pub fn check_plans(before: &ConstructionPlan, after: &ConstructionPlan) -> Resul
     let names = |p: &ConstructionPlan| p.roots.iter().map(|r| r.name.clone()).collect::<Vec<_>>();
     if names(before) != names(after) {
         return Err(Unsupported::new(Part::Objects, format!("the plans' roots differ: {} before, {} now; both versions are given the same inputs", names(before).join(", "), names(after).join(", "))));
+    }
+    // An adapted list root is one value both versions are given: the same domain in each.
+    for r in &after.roots {
+        let PlanValue::Adapted { domain, .. } = &r.value else { continue };
+        let previous = before.roots.iter().find(|b| b.name == r.name).map(|b| &b.value);
+        if !matches!(previous, Some(PlanValue::Adapted { domain: d, .. }) if d == domain) {
+            return Err(Unsupported::new(Part::Objects, format!("the plans' root {} differs: the new version's is an adapted list, and the previous version's is {}; both versions are given the same list", r.name, previous.map(value_name).map(|n| format!("{n}, another value")).unwrap_or_else(|| "absent".into()))));
+        }
     }
     if choices(before) != choices(after) {
         return Err(Unsupported::new(Part::Objects, format!("the plans' choices of null and of one object differ: {} before, {} now; both versions are given the same choices, so that their identity relations start alike", choices(before), choices(after))));
@@ -181,6 +193,9 @@ fn supported(version: &str, at: &str, value: &PlanValue, used: &mut Vec<u32>) ->
 /// node of the same class at another root), or a node another root is too (one object, always): never a node that is
 /// part of another (`inner`), and a node at two roots has no choice at either.
 fn supported_root(version: &str, plan: &ConstructionPlan, r: &crate::spec::plans::Root, inner: &[u32]) -> Result<(), Unsupported> {
+    if let PlanValue::Adapted { path, domain } = &r.value {
+        return adapted_root(&format!("the {version} version's"), &r.name, path, domain).map(|_| ());
+    }
     let PlanValue::Node { id, nullable, same_as } = &r.value else { return supported(version, &r.name, &r.value, &mut Vec::new()) };
     let gap = |what: String| Unsupported::new(Part::Objects, format!("the {version} version's root {}: {what}", r.name));
     if inner.contains(id) {
@@ -203,6 +218,25 @@ fn supported_root(version: &str, plan: &ConstructionPlan, r: &crate::spec::plans
         }
     }
     Ok(())
+}
+
+/// The root `name` of a plan (`whose`: "the new version's"), adapted as `domain` at `path`, as the check makes it: a list (V2) named as
+/// the root, never null, of objects of an application class, its domain resolved under this tool's list model
+/// ([`crate::values::resolve`]). An adapted String root is refused: the String adapter takes a String parameter of a
+/// check without a plan, and a plan's String root is not made yet.
+fn adapted_root(whose: &str, name: &str, path: &str, domain: &crate::spec::plans::ValueDomain) -> Result<crate::spec::plans::ValueDomain, Unsupported> {
+    let gap = |what: String| Unsupported::new(Part::Values, format!("{whose} root {name}: {what}"));
+    if path != name {
+        return Err(Unsupported::new(Part::Objects, format!("{whose} root {name} is the adapted value {path}: an adapted root is named as the root")));
+    }
+    // A list of Strings is named by `values::ListAdapter::new`, through `resolve`.
+    if domain.kind == crate::spec::plans::ValueKind::String {
+        return Err(gap("an adapted String root: the String adapter takes a String parameter of a check without a plan, and a plan's String root is not made yet".into()));
+    }
+    if domain.nullable {
+        return Err(gap("a list that may be null: the check makes a list parameter that is never null, and a null list is not made yet".into()));
+    }
+    crate::values::resolve(domain).map_err(|u| gap(u.what))
 }
 
 /// The choices of a plan's roots (O2), by root name, as the harness makes them: the roots that may be null, the
@@ -275,6 +309,9 @@ pub fn array_bound_problem(plan: &ConstructionPlan, max_array_length: u32) -> Op
 pub enum Rooted {
     Leaf(crate::classfile::Type),
     Object(crate::harness::RecordType),
+    /// An adapted list (V2), its domain resolved under this tool's list model: the check makes its elements as a
+    /// list parameter's, objects of its element class made by their constructor.
+    List(crate::spec::plans::ValueDomain),
 }
 
 /// The root `name` of `plan`, as the harness makes it, from the classes of `cp`; none where the plan has no such
@@ -303,6 +340,7 @@ pub fn root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &st
             let first = plan.roots.iter().find(|r| matches!(r.value, PlanValue::Node { id: i, .. } if i == *id)).map(|r| r.name.as_str()).unwrap_or(name);
             node(cp, plan, *id, first, &mut Vec::new()).map(|r| Some(Rooted::Object(r)))
         }
+        PlanValue::Adapted { path, domain } => adapted_root("the plan's", name, path, domain).map(|d| Some(Rooted::List(d))),
         other => Err(Unsupported::new(Part::Objects, format!("the plan's root {name} is {}, which check_plans refuses", value_name(other)))),
     }
 }

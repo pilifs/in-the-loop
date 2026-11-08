@@ -1039,12 +1039,20 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // A list parameter is a value of the values stream's list adapter (`values::ListAdapter`, V2): one of the JDK's
     // immutable lists, by `List.of`, of at most --max-array-length objects of the element class its generic
     // signature names, each made by its constructor, any two possibly one object.
+    // Under a plan, the list is its adapted root (`construction::Rooted::List`), bounded by its own domain.
     let mut list_elements: Vec<Option<harness::RecordType>> = vec![None; names.len()];
+    let mut list_bounds: Vec<u32> = vec![options.max_array_length; names.len()];
     for (i, (name, t)) in names.iter().zip(&descriptor.params).enumerate() {
         if crate::values::is_list(t) {
-            if plan.is_some_and(|p| p.after.roots.iter().any(|r| r.name == *name)) {
-                return refuse(&mut out, line, format!("the plan has a root {name}, a list parameter: a plan's adapted list root is not taken by this check yet; without a plan, the check makes the list by the values stream's list adapter"));
-            }
+            let rooted = match plan {
+                Some(p) => match planned(&after_cp, &p.after, name) {
+                    Ok(Some(crate::construction::Rooted::List(d))) => Some(d),
+                    Ok(Some(_)) => return refuse(&mut out, line, format!("the plan's root {name} is not of the parameter's type {}: a list parameter's root is an adapted list", t.java_name())),
+                    Ok(None) => return refuse(&mut out, line, format!("the plan has no root {name}, a list parameter of {method_name}")),
+                    Err(gap) => return refuse(&mut out, line, gap),
+                },
+                None => None,
+            };
             if options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() || options.correspondence.as_ref().is_some_and(|c| !c.inputs.is_empty() || !c.outputs.is_empty()) {
                 return refuse(&mut out, line, format!("parameter {name} is a list: a list parameter with --before-target, --before-arguments, --results-agree-when or a correspondence is not supported yet; both versions are given the same list's elements"));
             }
@@ -1052,8 +1060,21 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 Ok(e) => e,
                 Err(gap) => return refuse(&mut out, line, format!("parameter {name} has type {}: {gap}", t.java_name())),
             };
-            if let Err(u) = crate::values::ListAdapter::new(crate::spec::plans::ElementKind::Object { class: element.java_name() }, options.max_array_length, false) {
-                return refuse(&mut out, line, format!("parameter {name} is a list of at most {} elements (--max-array-length): {}", options.max_array_length, u.what));
+            if let Some(d) = &rooted {
+                let crate::spec::plans::ValueKind::List { element: crate::spec::plans::ElementKind::Object { class } } = &d.kind else {
+                    return refuse(&mut out, line, format!("the plan's root {name} is a list of other elements than the objects of {}, its parameter's element class", element.java_name()));
+                };
+                if *class != element.java_name() {
+                    return refuse(&mut out, line, format!("the plan's root {name} is a list of {class}, and {method_name}'s parameter {name} is a java.util.List<{}>: a plan's elements are of the parameter's element class", element.java_name()));
+                }
+                list_bounds[i] = d.max_length;
+            }
+            let (bound, by) = match &rooted {
+                Some(_) => (list_bounds[i], "the plan's bound"),
+                None => (options.max_array_length, "--max-array-length"),
+            };
+            if let Err(u) = crate::values::ListAdapter::new(crate::spec::plans::ElementKind::Object { class: element.java_name() }, bound, false) {
+                return refuse(&mut out, line, format!("parameter {name} is a list of at most {bound} elements ({by}): {}", u.what));
             }
             list_elements[i] = Some(element);
             records.push(None);
@@ -1100,7 +1121,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // List.of has size 1), and its fallback or confirmation would be another claim.
     let lists_taken = list_elements.iter().any(Option::is_some);
     if lists_taken && options.engine == crate::Engine::Jbmc {
-        return refuse(&mut out, line, format!("{method_name} takes a java.util.List, which the tool's own checker takes under the stated bound of {} elements (--engine native or auto); JBMC runs the list models its own way (VF-023), so --engine jbmc wouldn't check the same claim", options.max_array_length));
+        let bound = list_elements.iter().zip(&list_bounds).filter(|(e, _)| e.is_some()).map(|(_, b)| *b).max().unwrap_or(options.max_array_length);
+        return refuse(&mut out, line, format!("{method_name} takes a java.util.List, which the tool's own checker takes under the stated bound of {bound} elements (--engine native or auto); JBMC runs the list models its own way (VF-023), so --engine jbmc wouldn't check the same claim"));
     }
     let mut checker_parameters = crate::bmc::Parameters::default();
     if let Some(a) = &strings {
@@ -1111,12 +1133,6 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, format!("the plan's root {} is no parameter of {method_name}, whose parameters are {}", extra.name, names.join(", ")));
     }
     let result_record = record_of(&after_cp, &descriptor.ret)?;
-    // A list's elements are compared by their fields after the call, and picked alike in both versions; an object
-    // result could be one of them, an identity this check doesn't observe yet (the planned claim's
-    // `identity:result==lines[0]`), so it is refused rather than compared by its fields alone.
-    if lists_taken && matches!(descriptor.ret, Type::Object(_)) && result_record.is_none() {
-        return refuse(&mut out, line, format!("{method_name} takes a list and returns a {}: whether the result is one of the list's elements is an identity this check doesn't observe yet, so it is not compared by its fields alone", descriptor.ret.java_name()));
-    }
 
     // The previous version: the target under the same name with the same parameters, or the method named by
     // --before-target, called with the arguments --before-arguments gives.
@@ -1390,7 +1406,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Some(after) => {
                 let name = &names[i];
                 match list_element(&before_cp, &before_method, &before_class.pool, i)? {
-                    Ok(b) if b.same_shape(after) => Some(harness::ListParam { element: after.clone(), before: Some(b), max_length: options.max_array_length }),
+                    Ok(b) if b.same_shape(after) => Some(harness::ListParam { element: after.clone(), before: Some(b), max_length: list_bounds[i] }),
                     Ok(b) => return refuse(&mut out, line, format!("parameter {name}'s elements are made differently in the two versions: {} before, {} now; elements of another construction or other fields are not supported yet", b.describe(), after.describe())),
                     Err(gap) => return refuse(&mut out, line, format!("in the previous version, parameter {name}: {gap}")),
                 }
@@ -1399,6 +1415,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let mut layout = harness::Layout::with_lists(before_receiver, &names, &descriptor.params, &both_records, &list_params, result);
     layout.result_fields = result_fields;
+    // A list's elements are compared by their fields after the call, and picked alike in both versions. An object
+    // result followed into its fields is compared with each of the list's objects for identity too (the planned
+    // claim's `identity:result==lines[0]`, `harness::Root::Element`); one that isn't followed (an interface, an
+    // abstract class, a JDK class) could be one of them unobserved, so it is refused rather than compared alone.
+    if lists_taken && matches!(descriptor.ret, Type::Object(_)) && result_record.is_none() && (layout.result_fields.0.is_none() || layout.result_fields.1.is_none()) {
+        return refuse(&mut out, line, format!("{method_name} takes a list and returns a {}, which this check doesn't follow into its fields: whether the result is one of the list's elements is an identity it couldn't observe, so it is not compared alone", descriptor.ret.java_name()));
+    }
     layout.result_equations = result_equations;
     layout.checked = declared_checked(options, [(&before_class, &before_method), (&class, &method)])?;
     // The plan's setup sequence (O3): the same calls in both versions, on the same symbolic arguments.

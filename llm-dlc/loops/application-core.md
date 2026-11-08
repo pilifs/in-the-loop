@@ -690,6 +690,62 @@ Settled by the user on 2026-11-08, as the planning session proposed them on 2026
     schema's description of a witness value (the list of nodes).
   - **Next**: item 1's last part, the planned domain's adapted list root (the three `basket-*-claim`s through
     `spec::heap::check`, `first`'s `identity:result==lines[0]` included); then items 2–7.
+- 2026-11-08, **Phase 5 step 1, interface request 1 (its last part): a plan's adapted list root, and a result's
+  identity with the list's elements**, for V2's three frozen claims.
+  - **The reproducer**: the contract's V2 claims accepted the objects' and values' refusals. They now accept none,
+    and they failed before: the plan's root `lines` was refused by `construction::check_plans`.
+  - **The plan's root**:
+    - `construction::check_plans` takes a root that is a `PlanValue::Adapted` list of objects, named as the root.
+      It resolves the domain under this tool's list model (`values::resolve`, item 2's first call site), which
+      refuses another model's identity, another JDK or a stronger level.
+    - It refuses a list that may be null, an adapted String root, and an adapted root that differs between the
+      versions. An adapted value inside a node is still refused as before.
+    - `construction::root` gives it as `Rooted::List`, and the check makes it as a list parameter, under the
+      domain's own bound (the frozen claims' 3), not `--max-array-length` (their 4).
+  - **The result's identity**: an object result that the check follows into its fields (`Basket#first`'s `Line`)
+    is no longer refused.
+    - The harness, the replay and the Java text compare it for identity with each of the list's objects, before and
+      now (`harness::Root::Element`). The first object is named `lines[0]`, which it always is when the list has an
+      element 0. The others are `lines.m1` and so on: each is the element at every index whose pick is it.
+    - So comparing the result with each object compares it with every element.
+    - A result the check doesn't follow (`Object`, an interface) is still refused.
+  - **The accounting**:
+    - The statement states the list's objects as one observation of the list (`lines: m0.unitCents, …`), so a
+      claim's `field:lines` is compared.
+    - The list counts among the input objects, so the frozen claims count 4 = 3 lines + the list.
+    - A contract input may name a generic parameter by its erased type (`java.util.List`).
+  - **Checks**:
+    - The contract passes 14 of 14. `basket-total-claim` and `basket-clear-claim` reach all of `expected.json`'s
+      ten verdicts: the rewrite verified, `duplicate-skipped` refuted on `result` under total, `alias-blind` on
+      `result` under clear, each witness replayed on a JVM.
+    - `basket-first-claim` reaches four of its five: `after`, `alias-blind` and `duplicate-skipped` verified,
+      `identity:result==lines[0]` preserved, and `last-not-first` refuted on `result`. `copied-first` is left
+      unresolved, as below.
+    - `tests/value_parameters.rs` has 3 new tests (10 in all):
+      - the plan's own bound, and the identity preserved by the rewrite and refuted on `copied-first` with the
+        claim's allocation bound raised to 2, replayed on a JVM. `firstOf` without a plan is proved with the
+        identities `result == xs[0]`, `xs.m1` and `xs.m2` stated;
+      - seven refusals of a plan's list root, by name;
+      - a planned claim's cached proof reused exactly, but not with the list bounded at 2.
+    - Two sabotages fail the test: identity references without the list's objects, and the replay reading them
+      as null.
+    - The integration check passes, and so does every other test binary but `integration.rs` (JBMC).
+  - **For the user: `basket-first-claim`'s allocation bound** (a frozen fixture against its expectation, as O3's
+    was).
+    - The claim bounds each version's allocations at 0. `copied-first`'s code makes 2 objects: the copied `Line`,
+      and the `IllegalArgumentException` its constructor may throw.
+    - So the allocation gate leaves it unresolved ("the new version's code may make 2 objects in one call, more
+      than the claim's allocation bound of 0"), where `expected.json` says refuted on `identity:result==lines[0]`.
+      The gate stays as it is.
+    - Until the user decides, the contract holds that one case to exactly the gate's outcome, and every other case
+      to `expected.json`.
+    - The options:
+      1. bound the claim's allocations at 2 in each version, as O3's decision counted the exception `allows`
+         throws. Then the case is refuted on the identity, as the new test shows;
+      2. keep 0, and expect `unresolved` for `copied-first`: a defect outside the claim.
+  - **Docs**: `lib/README.md` (the list paragraph and the plan paragraph's refusals).
+  - **Next**: the rest of item 2, `values::resolve` wherever a modelled call's `Returned::Adapted` is read. Then
+    items 3–7.
 - Status: working
 
 ## Loop settings
